@@ -27,9 +27,9 @@
 #endif
 
 #if defined (CONFIG_LITTLE_ENDIAN)
-#  include <byteorder/little_endian.h>
+#  include <little_endian.h>
 #elif defined (CONFIG_BIG_ENDIAN)
-#  include <byteorder/big_endian.h>
+#  include <big_endian.h>
 #else
 #  error "Must be LITTLE/BIG Endian Host"
 #endif
