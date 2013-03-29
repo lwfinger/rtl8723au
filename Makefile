@@ -66,69 +66,68 @@ CONFIG_DRVEXT_MODULE = n
 export TopDIR ?= $(shell pwd)
 
 
-OUTSRC_FILES := hal/OUTSRC/odm_debug.o	\
-		hal/OUTSRC/odm_interface.o\
-		hal/OUTSRC/odm_HWConfig.o\
-		hal/OUTSRC/odm.o\
-		hal/OUTSRC/HalPhyRf.o
+OUTSRC_FILES := hal/odm_debug.o	\
+		hal/odm_interface.o\
+		hal/odm_HWConfig.o\
+		hal/odm.o\
+		hal/HalPhyRf.o
 										
 RTL871X = rtl8723a
 
-HAL_COMM_FILES := hal/$(RTL871X)/$(RTL871X)_xmit.o \
-		hal/$(RTL871X)/$(RTL871X)_sreset.o
+HAL_COMM_FILES := hal/$(RTL871X)_xmit.o \
+		hal/$(RTL871X)_sreset.o
 
 MODULE_NAME = 8723au
-OUTSRC_FILES += hal/OUTSRC/$(RTL871X)/Hal8723UHWImg_CE.o
+OUTSRC_FILES += hal/Hal8723UHWImg_CE.o
 
-#hal/OUTSRC/$(RTL871X)/HalHWImg8723A_FW.o
-OUTSRC_FILES += hal/OUTSRC/$(RTL871X)/HalHWImg8723A_BB.o\
-		hal/OUTSRC/$(RTL871X)/HalHWImg8723A_MAC.o\
-		hal/OUTSRC/$(RTL871X)/HalHWImg8723A_RF.o\
-		hal/OUTSRC/$(RTL871X)/odm_RegConfig8723A.o
+OUTSRC_FILES += hal/HalHWImg8723A_BB.o\
+		hal/HalHWImg8723A_MAC.o\
+		hal/HalHWImg8723A_RF.o\
+		hal/odm_RegConfig8723A.o
 
-OUTSRC_FILES += hal/OUTSRC/rtl8192c/HalDMOutSrc8192C_CE.o
+OUTSRC_FILES += hal/HalDMOutSrc8192C_CE.o
 clean_more ?=
 clean_more += clean_odm-8192c
 
 PWRSEQ_FILES := hal/HalPwrSeqCmd.o \
-		hal/$(RTL871X)/Hal8723PwrSeq.o
+		hal/Hal8723PwrSeq.o
 
 CHIP_FILES += $(HAL_COMM_FILES) $(OUTSRC_FILES) $(PWRSEQ_FILES)
 
 ifeq ($(CONFIG_BT_COEXIST), y)
-CHIP_FILES += hal/$(RTL871X)/rtl8723a_bt-coexist.o
+CHIP_FILES += hal/rtl8723a_bt-coexist.o
 endif
 
 HCI_NAME = usb
 
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
-			os_dep/linux/os_intfs.o \
-			os_dep/linux/$(HCI_NAME)_intf.o \
-			os_dep/linux/$(HCI_NAME)_ops_linux.o \
-			os_dep/linux/ioctl_linux.o \
-			os_dep/linux/xmit_linux.o \
-			os_dep/linux/mlme_linux.o \
-			os_dep/linux/recv_linux.o \
-			os_dep/linux/ioctl_cfg80211.o \
-			os_dep/linux/rtw_android.o
+			os_dep/os_intfs.o \
+			os_dep/$(HCI_NAME)_intf.o \
+			os_dep/$(HCI_NAME)_ops_linux.o \
+			os_dep/ioctl_linux.o \
+			os_dep/xmit_linux.o \
+			os_dep/mlme_linux.o \
+			os_dep/recv_linux.o \
+			os_dep/ioctl_cfg80211.o \
+			os_dep/rtw_android.o
 
 _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_com.o \
-			hal/$(RTL871X)/$(RTL871X)_hal_init.o \
-			hal/$(RTL871X)/$(RTL871X)_phycfg.o \
-			hal/$(RTL871X)/$(RTL871X)_rf6052.o \
-			hal/$(RTL871X)/$(RTL871X)_dm.o \
-			hal/$(RTL871X)/$(RTL871X)_rxdesc.o \
-			hal/$(RTL871X)/$(RTL871X)_cmd.o \
-			hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_halinit.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_led.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_xmit.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_recv.o
+			hal/$(RTL871X)_hal_init.o \
+			hal/$(RTL871X)_phycfg.o \
+			hal/$(RTL871X)_rf6052.o \
+			hal/$(RTL871X)_dm.o \
+			hal/$(RTL871X)_rxdesc.o \
+			hal/$(RTL871X)_cmd.o \
+			hal/$(HCI_NAME)_halinit.o \
+			hal/rtl$(MODULE_NAME)_led.o \
+			hal/rtl$(MODULE_NAME)_xmit.o \
+			hal/rtl$(MODULE_NAME)_recv.o
 
-_HAL_INTFS_FILES += hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_ops_linux.o
+_HAL_INTFS_FILES += hal/$(HCI_NAME)_ops_linux.o
 
 ifeq ($(CONFIG_MP_INCLUDED), y)
-_HAL_INTFS_FILES += hal/$(RTL871X)/$(RTL871X)_mp.o
+_HAL_INTFS_FILES += hal/$(RTL871X)_mp.o
 endif
 
 _HAL_INTFS_FILES += $(CHIP_FILES)
@@ -268,20 +267,12 @@ config_r:
 
 .PHONY: modules clean clean_odm-8192c
 
-clean_odm-8192c:
-	cd hal/OUTSRC/rtl8192c ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-
 clean: $(clean_more)
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
 	rm -fr .tmp_versions
 	rm -fr Module.symvers ; rm -fr Module.markers ; rm -fr modules.order
 	cd core ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd hal/$(RTL871X)/$(HCI_NAME) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd hal/$(RTL871X) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd hal/OUTSRC/$(RTL871X) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko 
-	cd hal/OUTSRC/ ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko 
 	cd hal ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd os_dep/linux ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 endif
 
