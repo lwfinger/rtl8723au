@@ -274,8 +274,10 @@ void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode)
 
 _func_enter_;
 
-	DBG_871X("%s: Mode=%d SmartPS=%d UAPSD=%d BcnMode=0x%02x\n", __FUNCTION__,
-			Mode, pwrpriv->smart_ps, padapter->registrypriv.uapsd_enable, pwrpriv->bcn_ant_mode);
+	DBG_871X_LEVEL(_drv_info_, "%s: Mode=%d SmartPS=%d UAPSD=%d BcnMode=0x%02x\n",
+		       __FUNCTION__, Mode, pwrpriv->smart_ps,
+		       padapter->registrypriv.uapsd_enable,
+		       pwrpriv->bcn_ant_mode);
 
 	H2CSetPwrMode.Mode = Mode;
 	H2CSetPwrMode.SmartPS = pwrpriv->smart_ps;

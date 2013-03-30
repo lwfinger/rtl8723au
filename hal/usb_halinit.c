@@ -3505,25 +3505,20 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 
 	init_rate = get_highest_rate_idx(mask)&0x3f;
 
-	if(pHalData->fw_ractrl == true)
-	{
-		u8 arg = 0;
-
-		//arg = (cam_idx-4)&0x1f;//MACID
-		arg = mac_id&0x1f;//MACID
+	if(pHalData->fw_ractrl == true) {
+		u8 arg = mac_id&0x1f;//MACID
 
 		arg |= BIT(7);
 
 		if (shortGIrate==true)
 			arg |= BIT(5);
 
-		DBG_871X("update raid entry, mask=0x%x, arg=0x%x\n", mask, arg);
+		DBG_871X_LEVEL(_drv_info_, "update raid entry, mask=0x%x, arg=0x%x\n",
+			       mask, arg);
 
 		rtl8192c_set_raid_cmd(padapter, mask, arg);
 
-	}
-	else
-	{
+	} else {
 		if (shortGIrate==true)
 			init_rate |= BIT(6);
 

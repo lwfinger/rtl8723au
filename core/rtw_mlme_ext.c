@@ -7309,8 +7309,6 @@ static int _issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int p
 	struct mlme_ext_priv	*pmlmeext;
 	struct mlme_ext_info	*pmlmeinfo;
 
-	//DBG_871X("%s:%d\n", __FUNCTION__, power_mode);
-
 	if(!padapter)
 		return -1;
 
@@ -7319,9 +7317,7 @@ static int _issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int p
 	pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL)
-	{
 		return -1;
-	}
 
 	//update attribute
 	pattrib = &pmgntframe->attrib;
@@ -7336,28 +7332,19 @@ static int _issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int p
 	fctrl = &(pwlanhdr->frame_ctl);
 	*(fctrl) = 0;
 
-	if((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE || da)
-	{
+	if ((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE || da)
 		SetFrDs(fctrl);
-	}
-	else if((pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE)
-	{
+	else if ((pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE)
 		SetToDs(fctrl);
-	}
 
 	if (power_mode)
-	{
 		SetPwrMgt(fctrl);
-	}
 
-	if(da) //for ap mode
-	{
+	if(da) { //for ap mode
 		memcpy(pwlanhdr->addr1, da, ETH_ALEN);
 		memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
 		memcpy(pwlanhdr->addr3, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
-	}
-	else
-	{
+	} else {
 		memcpy(pwlanhdr->addr1, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
 		memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
 		memcpy(pwlanhdr->addr3, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
@@ -7372,42 +7359,34 @@ static int _issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int p
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
-	if(wait_ack)
-	{
+	if (wait_ack)
 		ret = dump_mgntframe_and_wait_ack(padapter, pmgntframe);
-	}
 	else
-	{
 		dump_mgntframe(padapter, pmgntframe);
-	}
-
 	return ret;
 }
 
-
-//when wait_ms >0 , this function shoule be called at process context
+//when wait_ms > 0 , this function should be called at process context
 //da == NULL for station mode
 int issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
 {
 	int ret;
 	int i = 0;
 
-	do
-	{
-		ret = _issue_nulldata(padapter, da, power_mode, wait_ms>0?true:false);
-
+	do {
+		ret = _issue_nulldata(padapter, da, power_mode, wait_ms > 0 ? true : false);
 		i++;
 
-		if((wait_ms>0)&&( ret==_FAIL))
+		if ((wait_ms > 0) && (ret == _FAIL))
 			rtw_msleep_os(wait_ms);
 
-	}while((i<try_cnt) && ((ret==_FAIL)||(wait_ms==0)));
+	} while ((i < try_cnt) && ((ret == _FAIL) || (wait_ms == 0)));
 
 	if(ret != _FAIL)
 		ret = _SUCCESS;
 	else
-		DBG_871X("%s, FAIL!, try_cnt=%d, wait_ms=%d\n", __func__, try_cnt, wait_ms);
-
+		DBG_871X_LEVEL(_drv_emerg_, "%s, FAIL!, try_cnt=%d, wait_ms=%d\n", __func__,
+			       try_cnt, wait_ms);
 	return ret;
 }
 
