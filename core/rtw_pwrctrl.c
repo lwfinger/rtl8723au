@@ -544,7 +544,7 @@ _func_enter_;
 		if(pwdinfo->opp_ps == 0)
 #endif //CONFIG_P2P
 		{
-			DBG_871X_LEVEL(_drv_info_. "rtw_set_ps_mode: Leave 802.11 power save\n");
+			DBG_871X_LEVEL(_drv_info_, "rtw_set_ps_mode: Leave 802.11 power save\n");
 
 #ifdef CONFIG_TDLS
 			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
@@ -572,7 +572,7 @@ _func_enter_;
 		}
 	} else {
 		if(PS_RDY_CHECK(padapter)) {
-			DBG_871X_LEVEL(_drv_info_"rtw_set_ps_mode: Enter 802.11 power save\n");
+			DBG_871X_LEVEL(_drv_info_, "rtw_set_ps_mode: Enter 802.11 power save\n");
 
 #ifdef CONFIG_TDLS
 			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
