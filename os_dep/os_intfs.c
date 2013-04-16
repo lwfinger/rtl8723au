@@ -28,14 +28,7 @@
 #include <hal_intf.h>
 #include <rtw_ioctl.h>
 #include <rtw_version.h>
-
-#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
-#endif
-
-#ifdef CONFIG_PCI_HCI
-#include <pci_osintf.h>
-#endif
 
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>

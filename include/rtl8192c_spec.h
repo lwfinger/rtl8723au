@@ -689,59 +689,6 @@ Default: 00b.
 #define	RTL_EEPROM_ID						0x8129
 
 
-#ifdef CONFIG_PCI_HCI
-#define RT_IBSS_INT_MASKS				(IMR_BcnInt | IMR_TBDOK | IMR_TBDER)
-#define RT_AC_INT_MASKS				(IMR_VIDOK | IMR_VODOK | IMR_BEDOK|IMR_BKDOK)
-#define RT_BSS_INT_MASKS				(RT_IBSS_INT_MASKS)
-
-//
-// Interface type.
-//
-typedef	enum _INTERFACE_SELECT_8192CPCIe{
-	INTF_SEL0_SOLO_MINICARD			= 0,		// WiFi solo-mCard
-	INTF_SEL1_BT_COMBO_MINICARD		= 1,		// WiFi+BT combo-mCard
-	INTF_SEL2_PCIe					= 2,		// PCIe Card
-} INTERFACE_SELECT_8192CPCIe, *PINTERFACE_SELECT_8192CPCIe;
-
-#define RTL8190_EEPROM_ID					0x8129	// 0-1
-#define EEPROM_HPON						0x02 // LDO settings.2-5
-#define EEPROM_CLK							0x06 // Clock settings.6-7
-#define EEPROM_TESTR						0x08 // SE Test mode.8
-
-#define EEPROM_VID							0x0A // SE Vendor ID.A-B
-#define EEPROM_DID							0x0C // SE Device ID. C-D
-#define EEPROM_SVID							0x0E // SE Vendor ID.E-F
-#define EEPROM_SMID						0x10 // SE PCI Subsystem ID. 10-11
-
-#define EEPROM_MAC_ADDR					0x16 // SEMAC Address. 12-17
-
-//----------------------------------------------------------------
-// Ziv - Let PCIe and USB use the same define. Modify address mapping later.
-#define EEPROM_CCK_TX_PWR_INX					0x5A
-#define EEPROM_HT40_1S_TX_PWR_INX			0x60
-#define EEPROM_HT40_2S_TX_PWR_INX_DIFF		0x66
-#define EEPROM_HT20_TX_PWR_INX_DIFF			0x69
-#define EEPROM_OFDM_TX_PWR_INX_DIFF			0x6C
-#define EEPROM_HT40_MAX_PWR_OFFSET			0x6F
-#define EEPROM_HT20_MAX_PWR_OFFSET			0x72
-
-#define EEPROM_CHANNEL_PLAN				0x75
-#define EEPROM_TSSI_A						0x76
-#define EEPROM_TSSI_B						0x77
-#define EEPROM_THERMAL_METER				0x78
-#define EEPROM_RF_OPT1						0x79
-#define EEPROM_RF_OPT2						0x7A
-#define EEPROM_RF_OPT3						0x7B
-#define EEPROM_RF_OPT4						0x7C
-#define EEPROM_VERSION						0x7E
-#define EEPROM_CUSTOMER_ID				0x7F
-
-#define EEPROM_NORMAL_BoardType			EEPROM_RF_OPT1	//[7:5]
-
-#endif
-
-#ifdef CONFIG_USB_HCI
-
 //should be renamed and moved to another file
 typedef	enum _BOARD_TYPE_8192CUSB{
 	BOARD_USB_DONGLE			= 0,		// USB dongle
@@ -891,8 +838,6 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 #define	EEPROM_USB_REMOTE_WAKEUP			BIT(1)
 #define	EEPROM_USB_DEVICE_PWR				BIT(2)
 #define	EEPROM_EP_NUMBER						(BIT(3)|BIT(4))
-
-#endif
 
 
 /*===================================================================

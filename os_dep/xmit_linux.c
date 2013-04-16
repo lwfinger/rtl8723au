@@ -159,22 +159,11 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	
       	}
 #endif
-#if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	pxmitbuf->pallocated_buf = rtw_zmalloc(alloc_sz);
-	if (pxmitbuf->pallocated_buf == NULL)
-	{
-		return _FAIL;
-	}
-
-	pxmitbuf->pbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitbuf->pallocated_buf), XMITBUF_ALIGN_SZ);
-#endif
-
 	return _SUCCESS;	
 }
 
 void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz)
 {
-#ifdef CONFIG_USB_HCI
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
@@ -197,12 +186,6 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	if(pxmitbuf->pallocated_buf)
 		rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
-
-#endif
-#if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	if(pxmitbuf->pallocated_buf)
-		rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
-#endif
 }
 
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)

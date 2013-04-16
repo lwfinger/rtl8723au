@@ -199,12 +199,6 @@ _WriteFW(
 	u32	page, offset;
 	u8		*bufferPtr = (u8*)buffer;
 
-#ifdef CONFIG_PCI_HCI
-	// 20100120 Joseph: Add for 88CE normal chip.
-	// Fill in zero to make firmware image to dword alignment.
-	_FillDummy(bufferPtr, &size);
-#endif
-
 	pageNums = size / MAX_PAGE_SIZE ;
 	//RT_ASSERT((pageNums <= 4), ("Page numbers should not greater then 4 \n"));
 	remainSize = size % MAX_PAGE_SIZE;
@@ -2433,42 +2427,26 @@ static s32 c2h_handler_8723a(_adapter *padapter, struct c2h_evt_hdr *c2h_evt)
 	case C2H_DBG:
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("C2HCommandHandler: %s\n", c2h_evt->payload));
 		break;
-
 	case C2H_CCX_TX_RPT:
 		handle_txrpt_ccx_8723a(padapter, c2h_evt->payload);
 		break;
-
-#ifdef CONFIG_BT_COEXIST
-#ifdef CONFIG_PCI_HCI
-	case C2H_BT_RSSI:
-		BT_FwC2hBtRssi(padapter, c2h_evt->payload);
-		break;
-#endif
-#endif
-
 	case C2H_EXT_RA_RPT:
-//		C2HExtRaRptHandler(padapter, tmpBuf, C2hEvent.CmdLen);
 		break;
-
 	case C2H_HW_INFO_EXCH:
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("[BT], C2H_HW_INFO_EXCH\n"));
-		for (i = 0; i < c2h_evt->plen; i++) {
+		for (i = 0; i < c2h_evt->plen; i++)
 			RT_TRACE(_module_hal_init_c_, _drv_info_, ("[BT], tmpBuf[%d]=0x%x\n", i, c2h_evt->payload[i]));
-		}
 		break;
-
 	case C2H_C2H_H2C_TEST:
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("[BT], C2H_H2C_TEST\n"));
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("[BT], tmpBuf[0]/[1]/[2]/[3]/[4]=0x%x/ 0x%x/ 0x%x/ 0x%x/ 0x%x\n",
 			c2h_evt->payload[0], c2h_evt->payload[1], c2h_evt->payload[2], c2h_evt->payload[3], c2h_evt->payload[4]));
 		break;
-
 #ifdef CONFIG_BT_COEXIST
 	case C2H_BT_INFO:
 		BT_FwC2hBtInfo(padapter, c2h_evt->payload, c2h_evt->plen);
 		break;
 #endif
-
 #ifdef CONFIG_MP_INCLUDED
 	case C2H_BT_MP_INFO:
 		DBG_8192C("%s ,  Got  C2H_BT_MP_INFO \n",__FUNCTION__);
@@ -3734,16 +3712,6 @@ void rtl8723a_fill_default_txdesc(
 		pdesc->txdw5 = le32_to_cpu(pdesc->txdw5);
 		pdesc->txdw6 = le32_to_cpu(pdesc->txdw6);
 		pdesc->txdw7 = le32_to_cpu(pdesc->txdw7);
-#ifdef CONFIG_PCI_HCI
-		pdesc->txdw8 = le32_to_cpu(pdesc->txdw8);
-		pdesc->txdw9 = le32_to_cpu(pdesc->txdw9);
-		pdesc->txdw10 = le32_to_cpu(pdesc->txdw10);
-		pdesc->txdw11 = le32_to_cpu(pdesc->txdw11);
-		pdesc->txdw12 = le32_to_cpu(pdesc->txdw12);
-		pdesc->txdw13 = le32_to_cpu(pdesc->txdw13);
-		pdesc->txdw14 = le32_to_cpu(pdesc->txdw14);
-		pdesc->txdw15 = le32_to_cpu(pdesc->txdw15);
-#endif
 	}
 #endif
 	else
@@ -3805,16 +3773,6 @@ void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 	pdesc->txdw5 = cpu_to_le32(pdesc->txdw5);
 	pdesc->txdw6 = cpu_to_le32(pdesc->txdw6);
 	pdesc->txdw7 = cpu_to_le32(pdesc->txdw7);
-#ifdef CONFIG_PCI_HCI
-	pdesc->txdw8 = cpu_to_le32(pdesc->txdw8);
-	pdesc->txdw9 = cpu_to_le32(pdesc->txdw9);
-	pdesc->txdw10 = cpu_to_le32(pdesc->txdw10);
-	pdesc->txdw11 = cpu_to_le32(pdesc->txdw11);
-	pdesc->txdw12 = cpu_to_le32(pdesc->txdw12);
-	pdesc->txdw13 = cpu_to_le32(pdesc->txdw13);
-	pdesc->txdw14 = cpu_to_le32(pdesc->txdw14);
-	pdesc->txdw15 = cpu_to_le32(pdesc->txdw15);
-#endif
 
 	rtl8723a_cal_txdesc_chksum(pdesc);
 }

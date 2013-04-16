@@ -42,31 +42,11 @@
 #define RECV_BLK_CNT 16
 #define RECV_BLK_TH RECV_BLK_CNT
 
-#if defined(CONFIG_USB_HCI)
-
 #ifndef CONFIG_MINIMAL_MEMORY_USAGE
 	#define MAX_RECVBUF_SZ (15360) // 15k < 16k
 #else
 	#define MAX_RECVBUF_SZ (4000) // about 4K
 #endif
-
-#elif defined(CONFIG_PCI_HCI)
-//#ifndef CONFIG_MINIMAL_MEMORY_USAGE
-//	#define MAX_RECVBUF_SZ (9100)
-//#else
-	#define MAX_RECVBUF_SZ (4000) // about 4K
-//#endif
-
-#define RX_MPDU_QUEUE				0
-#define RX_CMD_QUEUE				1
-#define RX_MAX_QUEUE				2
-
-#elif defined(CONFIG_SDIO_HCI)
-
-#define MAX_RECVBUF_SZ (10240)
-
-#endif
-
 
 #define RECV_BULK_IN_ADDR		0x80
 #define RECV_INT_IN_ADDR		0x81
@@ -75,22 +55,14 @@
 #define PHY_LINKQUALITY_SLID_WIN_MAX		20
 
 
-struct phy_stat
-{
+struct phy_stat {
 	unsigned int phydw0;
-
 	unsigned int phydw1;
-
 	unsigned int phydw2;
-
 	unsigned int phydw3;
-
 	unsigned int phydw4;
-
 	unsigned int phydw5;
-
 	unsigned int phydw6;
-
 	unsigned int phydw7;
 };
 
@@ -112,11 +84,6 @@ typedef struct _INTERRUPT_MSG_FORMAT_EX{
 void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf);
 int	rtl8192cu_init_recv_priv(_adapter * padapter);
 void rtl8192cu_free_recv_priv(_adapter * padapter);
-#endif
-
-#ifdef CONFIG_PCI_HCI
-int	rtl8192ce_init_recv_priv(_adapter * padapter);
-void rtl8192ce_free_recv_priv(_adapter * padapter);
 #endif
 
 void rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy_stat *pphy_status);

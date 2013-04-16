@@ -28,22 +28,7 @@
 //================================================================================
 // Interface to manipulate LED objects.
 //================================================================================
-#ifdef CONFIG_USB_HCI
 void rtl8723au_InitSwLeds(PADAPTER padapter);
 void rtl8723au_DeInitSwLeds(PADAPTER padapter);
-#endif
-#ifdef CONFIG_PCI_HCI
-void rtl8723ae_gen_RefreshLedState(PADAPTER Adapter);
-void rtl8723ae_InitSwLeds(PADAPTER padapter);
-void rtl8723ae_DeInitSwLeds(PADAPTER padapter);
-#endif
-#ifdef CONFIG_SDIO_HCI
-void rtl8723as_InitSwLeds(PADAPTER padapter);
-void rtl8723as_DeInitSwLeds(PADAPTER padapter);
-#endif
-#ifdef CONFIG_GSPI_HCI
-void rtl8723as_InitSwLeds(PADAPTER padapter);
-void rtl8723as_DeInitSwLeds(PADAPTER padapter);
-#endif
 
 #endif

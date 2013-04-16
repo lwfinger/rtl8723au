@@ -295,12 +295,6 @@ MPT_InitializeAdapter(
 	dm_CheckTXPowerTracking(&pHalData->odmpriv);	/* trigger thermal meter */
 	PHY_LCCalibrate(pAdapter);
 
-#ifdef CONFIG_PCI_HCI
-	PHY_SetRFPathSwitch(pAdapter, 1/*pHalData->bDefaultAntenna*/);	/* Wifi default use Main */
-#else
-
-#endif
-
 	pMptCtx->backup0xc50 = (u1Byte)PHY_QueryBBReg(pAdapter, rOFDM0_XAAGCCore1, bMaskByte0);
 	pMptCtx->backup0xc58 = (u1Byte)PHY_QueryBBReg(pAdapter, rOFDM0_XBAGCCore1, bMaskByte0);
 	pMptCtx->backup0xc30 = (u1Byte)PHY_QueryBBReg(pAdapter, rOFDM0_RxDetector1, bMaskByte0);

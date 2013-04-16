@@ -24,11 +24,6 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#ifdef CONFIG_PCI_HCI
-#include <pci_hal.h>
-#endif
-
-
 enum RTL871X_HCI_TYPE {
 	RTW_PCIE	= BIT0,
 	RTW_USB		= BIT1,

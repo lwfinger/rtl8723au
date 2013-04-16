@@ -626,21 +626,12 @@ s32 PHY_MACConfig8723A(PADAPTER Adapter)
 	rtStatus = phy_ConfigMACWithParaFile(Adapter, pszMACRegFile);
 #endif//CONFIG_EMBEDDED_FWIMG
 
-#ifdef CONFIG_PCI_HCI
-	//this switching setting cause some 8192cu hw have redownload fw fail issue
-	//improve 2-stream TX EVM by Jenyu
-	if(is92C)
-		rtw_write8(Adapter, REG_SPS0_CTRL+3,0x71);
-#endif
-
 
 	// 2010.07.13 AMPDU aggregation number 9
 	//rtw_write16(Adapter, REG_MAX_AGGR_NUM, MAX_AGGR_NUM);
 	rtw_write8(Adapter, REG_MAX_AGGR_NUM, 0x0A); //By tynli. 2010.11.18.
-#ifdef CONFIG_USB_HCI
 	if(is92C && (BOARD_USB_DONGLE == pHalData->BoardType))
 		rtw_write8(Adapter, 0x40,0x04);
-#endif
 
 	return rtStatus;
 
@@ -1543,30 +1534,15 @@ PHY_BBConfig8723A(
 
 		rtw_write8(Adapter, REG_RF_CTRL, RF_EN|RF_RSTB|RF_SDMRSTB);
 
-#ifdef CONFIG_USB_HCI
 		rtw_write8(Adapter, REG_SYS_FUNC_EN, FEN_USBA | FEN_USBD | FEN_BB_GLB_RSTn | FEN_BBRSTB);
-#else
-		rtw_write8(Adapter, REG_SYS_FUNC_EN, FEN_PPLL|FEN_PCIEA|FEN_DIO_PCIE|FEN_BB_GLB_RSTn|FEN_BBRSTB);
-#endif
 
 		// 2009/10/21 by SD1 Jong. Modified by tynli. Not in Documented in V8.1.
-#ifdef CONFIG_USB_HCI
 		//To Fix MAC loopback mode fail. Suggested by SD4 Johnny. 2010.03.23.
 		rtw_write8(Adapter, REG_LDOHCI12_CTRL, 0x0f);
 		rtw_write8(Adapter, 0x15, 0xe9);
-#endif
 
 		rtw_write8(Adapter, REG_AFE_XTAL_CTRL+1, 0x80);
 
-#ifdef CONFIG_PCI_HCI
-		// Force use left antenna by default for 88C.
-	//	if(!IS_92C_SERIAL(pHalData->VersionID) || IS_92C_1T2R(pHalData->VersionID))
-		if(Adapter->ledpriv.LedStrategy != SW_LED_MODE10)
-		{
-			RegVal = rtw_read32(Adapter, REG_LEDCFG0);
-			rtw_write32(Adapter, REG_LEDCFG0, RegVal|BIT23);
-		}
-#endif
 	}
 
 	//
@@ -1574,11 +1550,9 @@ PHY_BBConfig8723A(
 	//
 	rtStatus = phy_BB8723a_Config_ParaFile(Adapter);
 
-#ifdef CONFIG_USB_HCI
 	if(IS_HARDWARE_TYPE_8192CU(Adapter)&&IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID)
 		&&(pHalData->BoardType == BOARD_USB_High_PA))
 			rtw_write8(Adapter, 0xc72, 0x50);
-#endif
 //only for B-cut
 	if(IS_HARDWARE_TYPE_8723A(Adapter) && pHalData->EEPROMVersion >= 0x01)
 	{
