@@ -2378,53 +2378,36 @@ __inline static struct tx_servq *rtw_get_sta_pending
 
 _func_enter_;
 
-#ifdef CONFIG_RTL8711
-
-	if(IS_MCAST(psta->hwaddr))
-	{
-		ptxservq = &(psta->sta_xmitpriv.be_q); // we will use be_q to queue bc/mc frames in BCMC_stainfo
-		*ppstapending = &padapter->xmitpriv.bm_pending;
-	}
-	else
-#endif
-	{
-		switch (up)
-		{
-			case 1:
-			case 2:
-				ptxservq = &(psta->sta_xmitpriv.bk_q);
-				*ppstapending = &padapter->xmitpriv.bk_pending;
-				(phwxmits+3)->accnt++;
-				RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : BK \n"));
-				break;
-
-			case 4:
-			case 5:
-				ptxservq = &(psta->sta_xmitpriv.vi_q);
-				*ppstapending = &padapter->xmitpriv.vi_pending;
-				(phwxmits+1)->accnt++;
-				RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : VI\n"));
-				break;
-
-			case 6:
-			case 7:
-				ptxservq = &(psta->sta_xmitpriv.vo_q);
-				*ppstapending = &padapter->xmitpriv.vo_pending;
-				(phwxmits+0)->accnt++;
-				RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : VO \n"));
-				break;
-
-			case 0:
-			case 3:
-			default:
-				ptxservq = &(psta->sta_xmitpriv.be_q);
-				*ppstapending = &padapter->xmitpriv.be_pending;
-				(phwxmits+2)->accnt++;
-				RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : BE \n"));
-			break;
-
-		}
-
+	switch (up) {
+	case 1:
+	case 2:
+		ptxservq = &(psta->sta_xmitpriv.bk_q);
+		*ppstapending = &padapter->xmitpriv.bk_pending;
+		(phwxmits+3)->accnt++;
+		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : BK \n"));
+		break;
+	case 4:
+	case 5:
+		ptxservq = &(psta->sta_xmitpriv.vi_q);
+		*ppstapending = &padapter->xmitpriv.vi_pending;
+		(phwxmits+1)->accnt++;
+		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : VI\n"));
+		break;
+	case 6:
+	case 7:
+		ptxservq = &(psta->sta_xmitpriv.vo_q);
+		*ppstapending = &padapter->xmitpriv.vo_pending;
+		(phwxmits+0)->accnt++;
+		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : VO \n"));
+		break;
+	case 0:
+	case 3:
+	default:
+		ptxservq = &(psta->sta_xmitpriv.be_q);
+		*ppstapending = &padapter->xmitpriv.be_pending;
+		(phwxmits+2)->accnt++;
+		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_get_sta_pending : BE \n"));
+	break;
 	}
 
 _func_exit_;

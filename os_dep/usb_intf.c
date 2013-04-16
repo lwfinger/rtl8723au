@@ -211,22 +211,12 @@ static void rtw_dev_remove(struct usb_interface *pusb_intf);
 	/*=== Realtek demoboard ===*/ \
 	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8179)},/* Default ID */
 
-#ifndef CONFIG_RTL8192C
 	#undef RTL8192C_USB_IDS
 	#define RTL8192C_USB_IDS
-#endif
-#ifndef CONFIG_RTL8192D
 	#undef RTL8192D_USB_IDS
 	#define RTL8192D_USB_IDS
-#endif
-#ifndef CONFIG_RTL8723A
-	#undef RTL8723A_USB_IDS
-	#define RTL8723A_USB_IDS
-#endif
-#ifndef CONFIG_RTL8188E
 	#undef RTL8188E_USB_IDS
 	#define RTL8188E_USB_IDS
-#endif
 
 static struct usb_device_id rtw_usb_id_tbl[] ={
 	RTL8192C_USB_IDS

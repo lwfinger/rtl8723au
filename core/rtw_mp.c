@@ -496,26 +496,10 @@ end_of_mp_start_test:
 
 	if (res == _SUCCESS) {
 		/*  set MSR to WIFI_FW_ADHOC_STATE */
-#if  !defined (CONFIG_RTL8712)
 		val8 = rtw_read8(padapter, MSR) & 0xFC; /*  0x0102 */
 		val8 |= WIFI_FW_ADHOC_STATE;
 		rtw_write8(padapter, MSR, val8); /*  Link in ad hoc network */
-#endif
-
-#if  defined (CONFIG_RTL8712)
-		rtw_write8(padapter, MSR, 1); /*  Link in ad hoc network */
-		rtw_write8(padapter, RCR, 0); /*  RCR : disable all pkt, 0x10250048 */
-		rtw_write8(padapter, RCR+2, 0x57); /*  RCR disable Check BSSID, 0x1025004a */
-
-		/*  disable RX filter map , mgt frames will put in RX FIFO 0 */
-		rtw_write16(padapter, RXFLTMAP0, 0x0); /*  0x10250116 */
-
-		val8 = rtw_read8(padapter, EE_9346CR); /*  0x1025000A */
-		if (!(val8 & _9356SEL))/* boot from EFUSE */
-			efuse_change_max_size(padapter);
-#endif
 	}
-
 	return res;
 }
 /*  */
