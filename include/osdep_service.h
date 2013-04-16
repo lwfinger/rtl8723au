@@ -107,12 +107,10 @@ struct	__queue	{
 	_lock	lock;
 };
 
-typedef	struct sk_buff	_pkt;
 typedef unsigned char	_buffer;
 
 typedef struct	__queue	_queue;
 typedef struct	list_head	_list;
-typedef	int	_OS_STATUS;
 
 typedef void*		_thread_hdl_;
 typedef int		thread_return;
@@ -483,7 +481,7 @@ static inline void flush_signals_thread(void)
 		flush_signals(current);
 }
 
-static inline _OS_STATUS res_to_status(sint res)
+static inline int res_to_status(sint res)
 {
 
 

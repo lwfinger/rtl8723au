@@ -975,7 +975,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 
 }
 
-static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
+static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 {
 	u8	*pbuf;
 	u8	shift_sz = 0;
@@ -984,7 +984,7 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 	s32	transfer_len;
 	struct recv_stat	*prxstat;
 	struct phy_stat	*pphy_info = NULL;
-	_pkt				*pkt_copy = NULL;
+	struct sk_buff		*pkt_copy = NULL;
 	union recv_frame	*precvframe = NULL;
 	struct rx_pkt_attrib	*pattrib = NULL;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -1150,7 +1150,7 @@ _exit_recvbuf2recvframe:
 
 void rtl8192cu_recv_tasklet(void *priv)
 {
-	_pkt			*pskb;
+	struct sk_buff		*pskb;
 	_adapter		*padapter = (_adapter*)priv;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
