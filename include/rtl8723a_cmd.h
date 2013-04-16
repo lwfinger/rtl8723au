@@ -63,35 +63,35 @@ struct cmd_msg_parm {
 	u8 buf[6];
 };
 
-typedef struct _SETPWRMODE_PARM
-{
+#define SETPM_LOWRXBCN			BIT(0)
+#define SETPM_AUTOANTSWITCH		BIT(1)
+#define SETPM_PSALLOWBTHIGHPRI	BIT(2)
+
+struct setpwrmode_parm {
 	u8 Mode;
 	u8 SmartPS;
 	u8 AwakeInterval;	// unit: beacon interval
 	u8 bAllQueueUAPSD;
 
-#define SETPM_LOWRXBCN			BIT(0)
-#define SETPM_AUTOANTSWITCH		BIT(1)
-#define SETPM_PSALLOWBTHIGHPRI	BIT(2)
 	u8 BcnAntMode;
-}__attribute__((__packed__)) SETPWRMODE_PARM, *PSETPWRMODE_PARM;
+} __packed;
 
 struct H2C_SS_RFOFF_PARAM{
 	u8 ROFOn; // 1: on, 0:off
 	u16 gpio_period; // unit: 1024 us
-}__attribute__ ((packed));
+} __packed;
 
-typedef struct JOINBSSRPT_PARM{
+struct joinbssrpt_parm {
 	u8 OpMode;	// RT_MEDIA_STATUS
-}JOINBSSRPT_PARM, *PJOINBSSRPT_PARM;
+};
 
-typedef struct _RSVDPAGE_LOC {
+struct rsvdpage_loc {
 	u8 LocProbeRsp;
 	u8 LocPsPoll;
 	u8 LocNullData;
 	u8 LocQosNull;
 	u8 LocBTQosNull;
-} RSVDPAGE_LOC, *PRSVDPAGE_LOC;
+};
 
 struct P2P_PS_Offload_t {
 	u8 Offload_En:1;
@@ -109,8 +109,7 @@ struct P2P_PS_CTWPeriod_t {
 };
 
 
-typedef struct _B_TYPE_TDMA_PARM
-{
+struct btype_tdma_parm {
 #define B_TDMA_EN				BIT(0)
 #define B_TDMA_FIXANTINBT		BIT(1)
 #define B_TDMA_TXPSPOLL			BIT(2)
@@ -123,11 +122,7 @@ typedef struct _B_TYPE_TDMA_PARM
 	u8 TBTTOnPeriod;
 	u8 MedPeriod;
 	u8 rsvd30;
-}__attribute__((__packed__)) B_TYPE_TDMA_PARM, *PB_TYPE_TDMA_PARM;
-
-typedef struct _SCAN_EN_PARM {
-	u8 En;
-}__attribute__((__packed__)) SCAN_EN_PARM, *PSCAN_EN_PARM;
+} __packed;
 
 // BT_PWR
 #define SET_H2CCMD_BT_PWR_IDX(__pH2CCmd, __Value)							SET_BITS_TO_LE_1BYTE_8BIT(__pH2CCmd, 0, 8, __Value)
@@ -135,18 +130,6 @@ typedef struct _SCAN_EN_PARM {
 // BT_FW_PATCH
 #define SET_H2CCMD_BT_FW_PATCH_ENABLE(__pH2CCmd, __Value)					SET_BITS_TO_LE_4BYTE(__pH2CCmd, 0, 8, __Value) //	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value)
 #define SET_H2CCMD_BT_FW_PATCH_SIZE(__pH2CCmd, __Value)						SET_BITS_TO_LE_4BYTE(__pH2CCmd, 8, 16, __Value) //	SET_BITS_TO_LE_2BYTE((__pH2CCmd)+1, 0, 16, __Value)
-
-typedef struct _LOWPWR_LPS_PARM
-{
-	u8 bcn_count:4;
-	u8 tb_bcn_threshold:3;
-	u8 enable:1;
-	u8 bcn_interval;
-	u8 drop_threshold;
-	u8 max_early_period;
-	u8 max_bcn_timeout_period;
-}__attribute__((__packed__)) LOWPWR_LPS_PARM, *PLOWPWR_LPS_PARM;
-
 
 // host message to firmware cmd
 void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode);

@@ -269,7 +269,7 @@ void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 
 void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode)
 {
-	SETPWRMODE_PARM H2CSetPwrMode;
+	struct setpwrmode_parm H2CSetPwrMode;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 
 _func_enter_;
@@ -579,7 +579,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
 	u8	PageNum, PageNeed, TxDescLen;
 	u16	BufIndex;
 	u32	TotalPacketLen;
-	RSVDPAGE_LOC	RsvdPageLoc;
+	struct rsvdpage_loc	RsvdPageLoc;
 
 
 	DBG_871X("%s\n", __FUNCTION__);
@@ -702,7 +702,7 @@ exit:
 
 void rtl8723a_set_FwJoinBssReport_cmd(PADAPTER padapter, u8 mstatus)
 {
-	JOINBSSRPT_PARM	JoinBssRptParm;
+	struct joinbssrpt_parm	JoinBssRptParm;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
@@ -785,6 +785,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	struct xmit_priv	*pxmitpriv;
 	struct mlme_ext_priv	*pmlmeext;
 	struct mlme_ext_info	*pmlmeinfo;
+	struct rsvdpage_loc	RsvdPageLoc;
 	u8	fakemac[6]={0x00,0xe0,0x4c,0x00,0x00,0x00};
 	u32	BeaconLength, ProbeRspLength, PSPollLength;
 	u32	NullDataLength, QosNullLength, BTQosNullLength;
@@ -792,8 +793,6 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	u8	PageNum, PageNeed, TxDescLen;
 	u16	BufIndex;
 	u32	TotalPacketLen;
-	RSVDPAGE_LOC	RsvdPageLoc;
-
 
 	DBG_871X("+%s\n", __FUNCTION__);
 
