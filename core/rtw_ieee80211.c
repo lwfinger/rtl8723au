@@ -1099,13 +1099,13 @@ void rtw_macaddr_cfg(u8 *mac_addr)
 	if (mac_addr == NULL)
 		return;
 
-	if (rtw_initmac) {	/* 	Users specify the mac address */
+	if (rtw_initmac) {	/*	Users specify the mac address */
 		int jj, kk;
 
 		for (jj = 0, kk = 0; jj < ETH_ALEN; jj++, kk += 3)
 			mac[jj] = key_2char2num(rtw_initmac[kk], rtw_initmac[kk + 1]);
 		memcpy(mac_addr, mac, ETH_ALEN);
-	} else {	/* 	Use the mac address stored in the Efuse */
+	} else {	/*	Use the mac address stored in the Efuse */
 		memcpy(mac, mac_addr, ETH_ALEN);
 	}
 
@@ -1417,8 +1417,8 @@ int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 	return match;
 }
 
-/* 	attr_content: The output buffer, contains the "body field" of WFD attribute. */
-/* 	attr_contentlen: The data length of the "body field" of WFD attribute. */
+/*	attr_content: The output buffer, contains the "body field" of WFD attribute. */
+/*	attr_contentlen: The data length of the "body field" of WFD attribute. */
 int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id , u8 *attr_content, uint *attr_contentlen)
 {
 	int match;
@@ -1430,14 +1430,14 @@ int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id , u8 
 	    (_rtw_memcmp(wfd_ie + 2, wfd_oui , 4) != true))
 		return match;
 
-	/* 	1 (WFD IE) + 1 (Length) + 3 (OUI) + 1 (OUI Type) */
+	/*	1 (WFD IE) + 1 (Length) + 3 (OUI) + 1 (OUI Type) */
 	cnt = 6;
 	while (cnt < wfd_ielen) {
 		u16 attrlen = RTW_GET_BE16(wfd_ie + cnt + 1);
 
 		attr_id = wfd_ie[cnt];
 		if (attr_id == target_attr_id) {
-			/* 	3 -> 1 byte for attribute ID field, 2 bytes for length field */
+			/*	3 -> 1 byte for attribute ID field, 2 bytes for length field */
 			if (attr_content)
 				memcpy(attr_content, &wfd_ie[cnt + 3], attrlen);
 			if (attr_contentlen)

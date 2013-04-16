@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -53,34 +53,34 @@ u32 rtw_atoi(u8* s)
 	{
 	  if(s[i] >= '0' && s[i] <= '9')
 		 num = num * 10 + s[i] -'0';
-	  else if(s[0] == '-' && i==0) 
+	  else if(s[0] == '-' && i==0)
 		 flag =1;
-	  else 
+	  else
 		  break;
 	 }
 
 	if(flag == 1)
 	   num = num * -1;
 
-	 return(num); 
+	 return(num);
 
 }
 
 inline u8* _rtw_vmalloc(u32 sz)
 {
-	u8 	*pbuf;
+	u8	*pbuf;
 	pbuf = vmalloc(sz);
-	
-	return pbuf;	
+
+	return pbuf;
 }
 
 inline u8* _rtw_zvmalloc(u32 sz)
 {
-	u8 	*pbuf;
+	u8	*pbuf;
 	pbuf = _rtw_vmalloc(sz);
 	if (pbuf != NULL)
 		memset(pbuf, 0, sz);
-	return pbuf;	
+	return pbuf;
 }
 
 inline void _rtw_vmfree(u8 *pbuf, u32 sz)
@@ -91,19 +91,19 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 u8* _rtw_malloc(u32 sz)
 {
 
-	u8 	*pbuf=NULL;
+	u8	*pbuf=NULL;
 
 	pbuf = kmalloc(sz,in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
-	return pbuf;	
+	return pbuf;
 }
 
 u8* _rtw_zmalloc(u32 sz)
 {
-	u8 	*pbuf = _rtw_malloc(sz);
+	u8	*pbuf = _rtw_malloc(sz);
 
 	if (pbuf != NULL)
 		memset(pbuf, 0, sz);
-	return pbuf;	
+	return pbuf;
 }
 
 void	_rtw_mfree(u8 *pbuf, u32 sz)
@@ -148,7 +148,7 @@ void _rtw_init_listhead(_list *list)
 }
 
 /*
-For the following list_xxx operations, 
+For the following list_xxx operations,
 caller must guarantee the atomic context.
 Otherwise, there will be racing condition.
 */
@@ -291,10 +291,10 @@ inline s32 rtw_get_time_interval_ms(u32 start, u32 end)
 	return rtw_systime_to_ms(end-start);
 }
 
-void rtw_sleep_schedulable(int ms)	
+void rtw_sleep_schedulable(int ms)
 {
     u32 delta;
-    
+
     delta = (ms * HZ)/1000;//(ms)
     if (delta == 0) {
         delta = 1;// 1 ms
@@ -308,7 +308,7 @@ void rtw_sleep_schedulable(int ms)
 
 void rtw_msleep_os(int ms)
 {
-  	msleep((unsigned int)ms);
+	msleep((unsigned int)ms);
 }
 
 void rtw_usleep_os(int us)
@@ -325,23 +325,23 @@ void _rtw_mdelay_os(int ms, const char *func, const int line)
 {
 	DBG_871X("%s:%d %s(%d)\n", func, line, __FUNCTION__, ms);
 
-   	mdelay((unsigned long)ms); 
+	mdelay((unsigned long)ms);
 }
 
 void _rtw_udelay_os(int us, const char *func, const int line)
 {
 	DBG_871X("%s:%d %s(%d)\n", func, line, __FUNCTION__, us);
-	
-      udelay((unsigned long)us); 
+
+      udelay((unsigned long)us);
 }
 #else
 void rtw_mdelay_os(int ms)
 {
-   	mdelay((unsigned long)ms); 
+	mdelay((unsigned long)ms);
 }
 void rtw_udelay_os(int us)
 {
-      udelay((unsigned long)us); 
+      udelay((unsigned long)us);
 }
 #endif
 
@@ -472,19 +472,19 @@ inline int ATOMIC_DEC_RETURN(ATOMIC_T *v)
 * @param mode please refer to linux document
 * @return Linux specific error code
 */
-static int openFile(struct file **fpp, char *path, int flag, int mode) 
-{ 
-	struct file *fp; 
- 
-	fp=filp_open(path, flag, mode); 
+static int openFile(struct file **fpp, char *path, int flag, int mode)
+{
+	struct file *fp;
+
+	fp=filp_open(path, flag, mode);
 	if(IS_ERR(fp)) {
 		*fpp=NULL;
 		return PTR_ERR(fp);
 	}
 	else {
-		*fpp=fp; 
+		*fpp=fp;
 		return 0;
-	}	
+	}
 }
 
 /*
@@ -492,17 +492,17 @@ static int openFile(struct file **fpp, char *path, int flag, int mode)
 * @param fp the pointer of struct file to close
 * @return always 0
 */
-static int closeFile(struct file *fp) 
-{ 
+static int closeFile(struct file *fp)
+{
 	filp_close(fp,NULL);
-	return 0; 
+	return 0;
 }
 
-static int readFile(struct file *fp,char *buf,int len) 
-{ 
+static int readFile(struct file *fp,char *buf,int len)
+{
 	int rlen=0, sum=0;
-	
-	if (!fp->f_op || !fp->f_op->read) 
+
+	if (!fp->f_op || !fp->f_op->read)
 		return -EPERM;
 
 	while(sum<len) {
@@ -514,17 +514,17 @@ static int readFile(struct file *fp,char *buf,int len)
 		else
 			break;
 	}
-	
+
 	return  sum;
 
 }
 
-static int writeFile(struct file *fp,char *buf,int len) 
-{ 
+static int writeFile(struct file *fp,char *buf,int len)
+{
 	int wlen=0, sum=0;
-	
-	if (!fp->f_op || !fp->f_op->write) 
-		return -EPERM; 
+
+	if (!fp->f_op || !fp->f_op->write)
+		return -EPERM;
 
 	while(sum<len) {
 		wlen=fp->f_op->write(fp,buf+sum,len-sum, &fp->f_pos);
@@ -546,25 +546,25 @@ static int writeFile(struct file *fp,char *buf,int len)
 * @return Linux specific error code
 */
 static int isFileReadable(char *path)
-{ 
+{
 	struct file *fp;
 	int ret = 0;
 	mm_segment_t oldfs;
 	char buf;
- 
-	fp=filp_open(path, O_RDONLY, 0); 
+
+	fp=filp_open(path, O_RDONLY, 0);
 	if(IS_ERR(fp)) {
 		ret = PTR_ERR(fp);
 	}
 	else {
 		oldfs = get_fs(); set_fs(get_ds());
-		
+
 		if(1!=readFile(fp, &buf, 1))
 			ret = PTR_ERR(fp);
-		
+
 		set_fs(oldfs);
 		filp_close(fp,NULL);
-	}	
+	}
 	return ret;
 }
 
@@ -589,9 +589,9 @@ static int retriveFromFile(char *path, u8* buf, u32 sz)
 			ret=readFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
-			
+
 			DBG_871X("%s readFile, ret:%d\n",__FUNCTION__, ret);
-			
+
 		} else {
 			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
 		}
@@ -614,7 +614,7 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 	int ret =0;
 	mm_segment_t oldfs;
 	struct file *fp;
-	
+
 	if(path && buf) {
 		if( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
 			DBG_871X("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
@@ -625,10 +625,10 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 			closeFile(fp);
 
 			DBG_871X("%s writeFile, ret:%d\n",__FUNCTION__, ret);
-			
+
 		} else {
 			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
-		}	
+		}
 	} else {
 		DBG_871X("%s NULL pointer\n",__FUNCTION__);
 		ret =  -EINVAL;
@@ -688,7 +688,7 @@ struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv, void *old_p
 #endif
 	if (!pnetdev)
 		goto RETURN;
-	
+
 	pnpi = netdev_priv(pnetdev);
 	pnpi->priv=old_priv;
 	pnpi->sizeof_priv=sizeof_priv;
@@ -709,16 +709,16 @@ struct net_device *rtw_alloc_etherdev(int sizeof_priv)
 #endif
 	if (!pnetdev)
 		goto RETURN;
-	
+
 	pnpi = netdev_priv(pnetdev);
-	
+
 	pnpi->priv = rtw_zvmalloc(sizeof_priv);
 	if (!pnpi->priv) {
 		free_netdev(pnetdev);
 		pnetdev = NULL;
 		goto RETURN;
 	}
-	
+
 	pnpi->sizeof_priv=sizeof_priv;
 RETURN:
 	return pnetdev;
@@ -727,10 +727,10 @@ RETURN:
 void rtw_free_netdev(struct net_device * netdev)
 {
 	struct rtw_netdev_priv_indicator *pnpi;
-	
+
 	if(!netdev)
 		goto RETURN;
-	
+
 	pnpi = netdev_priv(netdev);
 
 	if(!pnpi->priv)
@@ -744,7 +744,7 @@ RETURN:
 }
 
 /*
-* Jeff: this function should be called under ioctl (rtnl_lock is accquired) while 
+* Jeff: this function should be called under ioctl (rtnl_lock is accquired) while
 * LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26)
 */
 int rtw_change_ifname(_adapter *padapter, const char *ifname)
@@ -758,7 +758,7 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
 		goto error;
 
 	rereg_priv = &padapter->rereg_nd_name_priv;
-	
+
 	//free the old_pnetdev
 	if(rereg_priv->old_pnetdev) {
 		free_netdev(rereg_priv->old_pnetdev);
@@ -805,9 +805,9 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
 	return 0;
 
 error:
-	
+
 	return -1;
-	
+
 }
 #endif //MEM_ALLOC_REFINE_ADAPTOR
 
@@ -870,4 +870,3 @@ keep_ori:
 	if (ori && ori_len > 0)
 		_rtw_mfree(ori, ori_len);
 }
-

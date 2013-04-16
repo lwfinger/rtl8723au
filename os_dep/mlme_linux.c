@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -44,19 +44,19 @@ void _dynamic_check_timer_handlder (void *FunctionContext)
 {
 	_adapter *adapter = (_adapter *)FunctionContext;
 
-#if (MP_DRIVER == 1)	
+#if (MP_DRIVER == 1)
 if (adapter->registrypriv.mp_mode == 1)
 	return;
 #endif
 	rtw_dynamic_check_timer_handlder(adapter);
-	
+
 	_set_timer(&adapter->mlmepriv.dynamic_chk_timer, 2000);
 }
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 void _rtw_set_scan_deny_timer_hdl(void *FunctionContext)
 {
-	_adapter *adapter = (_adapter *)FunctionContext;	 
+	_adapter *adapter = (_adapter *)FunctionContext;
 	rtw_set_scan_deny_timer_hdl(adapter);
 }
 #endif
@@ -83,7 +83,7 @@ extern void rtw_indicate_wx_disassoc_event(_adapter *padapter);
 void rtw_os_indicate_connect(_adapter *adapter)
 {
 
-_func_enter_;	
+_func_enter_;
 
 #ifdef CONFIG_IOCTL_CFG80211
 	rtw_cfg80211_indicate_connect(adapter);
@@ -95,7 +95,7 @@ _func_enter_;
 	if(adapter->pid[2] !=0)
 		rtw_signal_process(adapter->pid[2], SIGALRM);
 
-_func_exit_;	
+_func_exit_;
 }
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
@@ -115,7 +115,7 @@ void rtw_reset_securitypriv( _adapter *adapter )
 	u32	backupTKIPcountermeasure_time = 0;
 
 	if(adapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)//802.1x
-	{		 
+	{
 		// Added by Albert 2009/02/18
 		// We have to backup the PMK information for WiFi PMK Caching test item.
 		//
@@ -127,7 +127,7 @@ void rtw_reset_securitypriv( _adapter *adapter )
 		memcpy( &backupPMKIDList[ 0 ], &adapter->securitypriv.PMKIDList[ 0 ], sizeof( RT_PMKID_LIST ) * NUM_PMKID_CACHE );
 		backupPMKIDIndex = adapter->securitypriv.PMKIDIndex;
 		backupTKIPCountermeasure = adapter->securitypriv.btkip_countermeasure;
-		backupTKIPcountermeasure_time = adapter->securitypriv.btkip_countermeasure_time;		
+		backupTKIPcountermeasure_time = adapter->securitypriv.btkip_countermeasure_time;
 
 		memset((unsigned char *)&adapter->securitypriv, 0, sizeof (struct security_priv));
 		//_init_timer(&(adapter->securitypriv.tkip_timer),adapter->pnetdev, rtw_use_tkipkey_handler, adapter);
@@ -137,13 +137,13 @@ void rtw_reset_securitypriv( _adapter *adapter )
 		memcpy( &adapter->securitypriv.PMKIDList[ 0 ], &backupPMKIDList[ 0 ], sizeof( RT_PMKID_LIST ) * NUM_PMKID_CACHE );
 		adapter->securitypriv.PMKIDIndex = backupPMKIDIndex;
 		adapter->securitypriv.btkip_countermeasure = backupTKIPCountermeasure;
-		adapter->securitypriv.btkip_countermeasure_time = backupTKIPcountermeasure_time;		
+		adapter->securitypriv.btkip_countermeasure_time = backupTKIPcountermeasure_time;
 
 		adapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
 		adapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
 
 	}
-	else //reset values in securitypriv 
+	else //reset values in securitypriv
 	{
 		//if(adapter->mlmepriv.fw_state & WIFI_STATION_STATE)
 		//{
@@ -165,7 +165,7 @@ void rtw_reset_securitypriv( _adapter *adapter )
 void rtw_os_indicate_disconnect( _adapter *adapter )
 {
    //RT_PMKID_LIST   backupPMKIDList[ NUM_PMKID_CACHE ];
-  
+
 _func_enter_;
 
 	netif_carrier_off(adapter->pnetdev); // Do it first for tx broadcast pkt after disconnection issue!
@@ -196,37 +196,37 @@ _func_enter_;
 	if(authmode==_WPA_IE_ID_)
 	{
 		RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("rtw_report_sec_ie, authmode=%d\n", authmode));
-		
+
 		buff = rtw_malloc(IW_CUSTOM_MAX);
-		
+
 		memset(buff,0,IW_CUSTOM_MAX);
-		
+
 		p=buff;
-		
+
 		p+=sprintf(p,"ASSOCINFO(ReqIEs=");
 
 		len = sec_ie[1]+2;
 		len =  (len < IW_CUSTOM_MAX) ? len:IW_CUSTOM_MAX;
-			
+
 		for(i=0;i<len;i++){
 			p+=sprintf(p,"%02x",sec_ie[i]);
 		}
 
 		p+=sprintf(p,")");
-		
+
 		memset(&wrqu,0,sizeof(wrqu));
-		
+
 		wrqu.data.length=p-buff;
-		
+
 		wrqu.data.length = (wrqu.data.length<IW_CUSTOM_MAX) ? wrqu.data.length:IW_CUSTOM_MAX;
-		
+
 #ifndef CONFIG_IOCTL_CFG80211
 		wireless_send_event(adapter->pnetdev,IWEVCUSTOM,&wrqu,buff);
 #endif
 
 		if(buff)
 		    rtw_mfree(buff, IW_CUSTOM_MAX);
-		
+
 	}
 
 _func_exit_;
@@ -236,7 +236,7 @@ _func_exit_;
 void _survey_timer_hdl (void *FunctionContext)
 {
 	_adapter *padapter = (_adapter *)FunctionContext;
-	
+
 	survey_timer_hdl(padapter);
 }
 
@@ -273,7 +273,7 @@ void _reassoc_timer_hdl(void *FunctionContext)
 */
 
 void init_mlme_ext_timer(_adapter *padapter)
-{	
+{
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
 	_init_timer(&pmlmeext->survey_timer, padapter->pnetdev, _survey_timer_hdl, padapter);
@@ -299,14 +299,14 @@ void rtw_indicate_sta_assoc_event(_adapter *padapter, struct sta_info *psta)
 
 	if(pstapriv->sta_aid[psta->aid - 1] != psta)
 		return;
-	
-	
-	wrqu.addr.sa_family = ARPHRD_ETHER;	
-	
+
+
+	wrqu.addr.sa_family = ARPHRD_ETHER;
+
 	memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
 	DBG_871X("+rtw_indicate_sta_assoc_event\n");
-	
+
 #ifndef CONFIG_IOCTL_CFG80211
 	wireless_send_event(padapter->pnetdev, IWEVREGISTERED, &wrqu, NULL);
 #endif
@@ -326,18 +326,18 @@ void rtw_indicate_sta_disassoc_event(_adapter *padapter, struct sta_info *psta)
 
 	if(pstapriv->sta_aid[psta->aid - 1] != psta)
 		return;
-	
-	
-	wrqu.addr.sa_family = ARPHRD_ETHER;	
-	
+
+
+	wrqu.addr.sa_family = ARPHRD_ETHER;
+
 	memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
 	DBG_871X("+rtw_indicate_sta_disassoc_event\n");
-	
+
 #ifndef CONFIG_IOCTL_CFG80211
 	wireless_send_event(padapter->pnetdev, IWEVEXPIRED, &wrqu, NULL);
 #endif
-	
+
 }
 
 
@@ -361,7 +361,7 @@ static int mgnt_netdev_open(struct net_device *pnetdev)
 
 
 	init_usb_anchor(&phostapdpriv->anchored);
-	
+
 	if(!rtw_netif_queue_stopped(pnetdev))
 		rtw_netif_start_queue(pnetdev);
 	else
@@ -369,10 +369,10 @@ static int mgnt_netdev_open(struct net_device *pnetdev)
 
 
 	netif_carrier_on(pnetdev);
-		
-	//rtw_write16(phostapdpriv->padapter, 0x0116, 0x0100);//only excluding beacon 
-		
-	return 0;	
+
+	//rtw_write16(phostapdpriv->padapter, 0x0116, 0x0100);//only excluding beacon
+
+	return 0;
 }
 static int mgnt_netdev_close(struct net_device *pnetdev)
 {
@@ -386,10 +386,10 @@ static int mgnt_netdev_close(struct net_device *pnetdev)
 
 	if (!rtw_netif_queue_stopped(pnetdev))
 		rtw_netif_stop_queue(pnetdev);
-	
+
 	//rtw_write16(phostapdpriv->padapter, 0x0116, 0x3f3f);
-	
-	return 0;	
+
+	return 0;
 }
 
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
@@ -408,8 +408,8 @@ int hostapd_mode_init(_adapter *padapter)
 	unsigned char mac[ETH_ALEN];
 	struct hostapd_priv *phostapdpriv;
 	struct net_device *pnetdev;
-	
-	pnetdev = rtw_alloc_etherdev(sizeof(struct hostapd_priv));	
+
+	pnetdev = rtw_alloc_etherdev(sizeof(struct hostapd_priv));
 	if (!pnetdev)
 	   return -ENOMEM;
 
@@ -417,49 +417,49 @@ int hostapd_mode_init(_adapter *padapter)
        ether_setup(pnetdev);
 
 	//pnetdev->type = ARPHRD_IEEE80211;
-	
+
 	phostapdpriv = rtw_netdev_priv(pnetdev);
 	phostapdpriv->pmgnt_netdev = pnetdev;
 	phostapdpriv->padapter= padapter;
 	padapter->phostapdpriv = phostapdpriv;
-	
+
 	//pnetdev->init = NULL;
-	
+
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 
 	DBG_871X("register rtl871x_mgnt_netdev_ops to netdev_ops\n");
 
 	pnetdev->netdev_ops = &rtl871x_mgnt_netdev_ops;
-	
+
 #else
 
 	pnetdev->open = mgnt_netdev_open;
 
-	pnetdev->stop = mgnt_netdev_close;	
-	
+	pnetdev->stop = mgnt_netdev_close;
+
 	pnetdev->hard_start_xmit = mgnt_xmit_entry;
-	
+
 	//pnetdev->set_mac_address = r871x_net_set_mac_address;
-	
+
 	//pnetdev->get_stats = r871x_net_get_stats;
 
 	//pnetdev->do_ioctl = r871x_mp_ioctl;
-	
+
 #endif
 
-	pnetdev->watchdog_timeo = HZ; /* 1 second timeout */	
+	pnetdev->watchdog_timeo = HZ; /* 1 second timeout */
 
 	//pnetdev->wireless_handlers = NULL;
 
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
 	pnetdev->features |= NETIF_F_IP_CSUM;
-#endif	
+#endif
 
-	
-	
+
+
 	if(dev_alloc_name(pnetdev,"mgnt.wlan%d") < 0)
 	{
-		DBG_871X("hostapd_mode_init(): dev_alloc_name, fail! \n");		
+		DBG_871X("hostapd_mode_init(): dev_alloc_name, fail! \n");
 	}
 
 
@@ -472,9 +472,9 @@ int hostapd_mode_init(_adapter *padapter)
 	mac[3]=0x87;
 	mac[4]=0x11;
 	mac[5]=0x12;
-				
+
 	memcpy(pnetdev->dev_addr, mac, ETH_ALEN);
-	
+
 
 	netif_carrier_off(pnetdev);
 
@@ -482,11 +482,11 @@ int hostapd_mode_init(_adapter *padapter)
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0) {
 		DBG_871X("hostapd_mode_init(): register_netdev fail!\n");
-		
+
 		if(pnetdev)
 			rtw_free_netdev(pnetdev);
 	}
-	
+
 	return 0;
 }
 
@@ -497,9 +497,8 @@ void hostapd_mode_unload(_adapter *padapter)
 
 	unregister_netdev(pnetdev);
 	rtw_free_netdev(pnetdev);
-	
+
 }
 
 #endif
 #endif
-

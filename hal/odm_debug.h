@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -27,11 +27,11 @@
 //	Define the debug levels
 //
 //	1.	DBG_TRACE and DBG_LOUD are used for normal cases.
-//	So that, they can help SW engineer to develope or trace states changed 
-//	and also help HW enginner to trace every operation to and from HW, 
-//	e.g IO, Tx, Rx. 
+//	So that, they can help SW engineer to develope or trace states changed
+//	and also help HW enginner to trace every operation to and from HW,
+//	e.g IO, Tx, Rx.
 //
-//	2.	DBG_WARNNING and DBG_SERIOUS are used for unusual or error cases, 
+//	2.	DBG_WARNNING and DBG_SERIOUS are used for unusual or error cases,
 //	which help us to debug SW or HW.
 //
 //-----------------------------------------------------------------------------
@@ -41,8 +41,8 @@
 #define ODM_DBG_OFF					1
 
 //
-//	Fatal bug. 
-//	For example, Tx/Rx/IO locked up, OS hangs, memory access violation, 
+//	Fatal bug.
+//	For example, Tx/Rx/IO locked up, OS hangs, memory access violation,
 //	resource allocation failed, unexpected HW behavior, HW BUG and so on.
 //
 #define ODM_DBG_SERIOUS				2
@@ -54,8 +54,8 @@
 #define ODM_DBG_WARNING				3
 
 //
-//	Normal case with useful information about current SW or HW state. 
-//	For example, Tx/Rx descriptor to fill, Tx/Rx descriptor completed status, 
+//	Normal case with useful information about current SW or HW state.
+//	For example, Tx/Rx descriptor to fill, Tx/Rx descriptor completed status,
 //	SW protocol state change, dynamic mechanism state change and so on.
 //
 #define ODM_DBG_LOUD					4
@@ -70,8 +70,8 @@
 //
 //-----------------------------------------------------------------------------
 //BB Functions
-#define ODM_COMP_DIG					BIT0	
-#define ODM_COMP_RA_MASK				BIT1	
+#define ODM_COMP_DIG					BIT0
+#define ODM_COMP_RA_MASK				BIT1
 #define ODM_COMP_DYNAMIC_TXPWR		BIT2
 #define ODM_COMP_FA_CNT				BIT3
 #define ODM_COMP_RSSI_MONITOR		BIT4
@@ -83,7 +83,7 @@
 #define ODM_COMP_PATH_DIV				BIT10
 #define ODM_COMP_PSD					BIT11
 #define ODM_COMP_DYNAMIC_PRICCA		BIT12
-#define ODM_COMP_RXHP				BIT13			
+#define ODM_COMP_RXHP				BIT13
 //MAC Functions
 #define ODM_COMP_EDCA_TURBO			BIT16
 #define ODM_COMP_EARLY_MODE			BIT17
@@ -169,7 +169,7 @@
 #endif
 
 
-void 
+void
 ODM_InitDebugSetting(
 	IN		PDM_ODM_T		pDM_Odm
 	);
@@ -189,7 +189,7 @@ ODM_InitDebugSetting(
 				DbgPrint("%s", szTitle);													\
 				for (__i=0;__i<u4bHexDataLen;__i++)									\
 				{																	\
-					if ((__i & 15) == 0) 												\
+					if ((__i & 15) == 0)												\
 					{																\
 						DbgPrint("\n");												\
 					}																\
@@ -265,9 +265,9 @@ ODM_InitDebugSetting(
 				DbgPrint(_TitleString);												\
 				DbgPrint(": %d, <%s>\n", _Len, buffer);									\
 			}
-			
+
 #else	// of #if DBG
-#define DbgPrint(...)	
+#define DbgPrint(...)
 #define PRINT_DATA(_TitleString, _HexData, _HexDataLen)
 #define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen)
 #define RT_PRINT_ADDR(_Comp, _Level, _TitleString, _Ptr)
@@ -279,4 +279,3 @@ ODM_InitDebugSetting(
 
 
 #endif	// __ODM_DBG_H__
-

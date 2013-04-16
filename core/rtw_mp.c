@@ -437,7 +437,7 @@ s32 mp_start_test(PADAPTER padapter)
 	mpt_ProStartTest(padapter);
 
 	/* 3 1. initialize a new WLAN_BSSID_EX */
-/* 	memset(&bssid, 0, sizeof(WLAN_BSSID_EX)); */
+/*	memset(&bssid, 0, sizeof(WLAN_BSSID_EX)); */
 	memcpy(bssid.MacAddress, pmppriv->network_macaddr, ETH_ALEN);
 	bssid.Ssid.SsidLength = strlen("mp_pseudo_adhoc");
 	memcpy(bssid.Ssid.Ssid, (u8 *)"mp_pseudo_adhoc", bssid.Ssid.SsidLength);

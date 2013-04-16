@@ -43,7 +43,7 @@ int rtw_os_recv_resource_init(struct recv_priv *precvpriv, _adapter *padapter)
 int rtw_os_recv_resource_alloc(_adapter *padapter, union recv_frame *precvframe)
 {
 	int	res=_SUCCESS;
-	
+
 	precvframe->u.hdr.pkt_newalloc = precvframe->u.hdr.pkt = NULL;
 
 	return res;
@@ -108,7 +108,7 @@ void rtw_handle_tkip_mic_err(_adapter *padapter,u8 bgroup)
 	union iwreq_data wrqu;
 	struct iw_michaelmicfailure    ev;
 	struct mlme_priv*              pmlmepriv  = &padapter->mlmepriv;
-	struct security_priv	*psecuritypriv = &padapter->securitypriv;	
+	struct security_priv	*psecuritypriv = &padapter->securitypriv;
 	u32 cur_time = 0;
 
 	if( psecuritypriv->last_mic_err_time == 0 )
@@ -240,7 +240,7 @@ _func_enter_;
 		goto _recv_indicatepkt_drop;
 	}
 
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():skb != NULL !!!\n"));		
+	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():skb != NULL !!!\n"));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():precv_frame->u.hdr.rx_head=%p  precv_frame->hdr.rx_data=%p\n", precv_frame->u.hdr.rx_head, precv_frame->u.hdr.rx_data));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("precv_frame->hdr.rx_tail=%p precv_frame->u.hdr.rx_end=%p precv_frame->hdr.len=%d \n", precv_frame->u.hdr.rx_tail, precv_frame->u.hdr.rx_end, precv_frame->u.hdr.len));
 
@@ -254,9 +254,9 @@ _func_enter_;
 
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
-	 	struct sk_buff *pskb2=NULL;
-	 	struct sta_info *psta = NULL;
-	 	struct sta_priv *pstapriv = &padapter->stapriv;
+		struct sk_buff *pskb2=NULL;
+		struct sta_info *psta = NULL;
+		struct sta_priv *pstapriv = &padapter->stapriv;
 		struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 		int bmcast = IS_MCAST(pattrib->dst);
 
@@ -276,16 +276,16 @@ _func_enter_;
 
 			if(psta)
 			{
-				struct net_device *pnetdev= (struct net_device*)padapter->pnetdev;			
+				struct net_device *pnetdev= (struct net_device*)padapter->pnetdev;
 
 				//DBG_871X("directly forwarding to the rtw_xmit_entry\n");
 
 				//skb->ip_summed = CHECKSUM_NONE;
-				skb->dev = pnetdev;				
+				skb->dev = pnetdev;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 				skb_set_queue_mapping(skb, rtw_recv_select_queue(skb));
 #endif //LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35)
-			
+
 				rtw_xmit_entry(skb, pnetdev);
 
 				if(bmcast)
@@ -301,7 +301,7 @@ _func_enter_;
 			//DBG_871X("to APSelf\n");
 		}
 	}
-	
+
 
 #ifdef CONFIG_BR_EXT
 
@@ -320,12 +320,12 @@ _func_enter_;
 			//priv->ext_stats.rx_data_drops++;
 			//DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n");
 			//return FAIL;
-#if 1			
+#if 1
 			// bypass this frame to upper layer!!
 #else
 			goto _recv_indicatepkt_drop;
 #endif
-		}	
+		}
 	}
 
 #endif	// CONFIG_BR_EXT

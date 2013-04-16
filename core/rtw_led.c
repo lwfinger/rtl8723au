@@ -21,9 +21,9 @@
 #include <drv_types.h>
 
 /*  */
-/* 	Description: */
-/* 		Callback function of LED BlinkTimer, */
-/* 		it just schedules to corresponding BlinkWorkItem/led_blink_hdl */
+/*	Description: */
+/*		Callback function of LED BlinkTimer, */
+/*		it just schedules to corresponding BlinkWorkItem/led_blink_hdl */
 /*  */
 void BlinkTimerCallback(void *data)
 {
@@ -41,9 +41,9 @@ void BlinkTimerCallback(void *data)
 }
 
 /*  */
-/* 	Description: */
-/* 		Callback function of LED BlinkWorkItem. */
-/* 		We dispatch acture LED blink action according to LedStrategy. */
+/*	Description: */
+/*		Callback function of LED BlinkWorkItem. */
+/*		We dispatch acture LED blink action according to LedStrategy. */
 /*  */
 void BlinkWorkItemCallback(struct work_struct *work)
 {
@@ -52,8 +52,8 @@ void BlinkWorkItemCallback(struct work_struct *work)
 }
 
 /*  */
-/* 	Description: */
-/* 		Reset status of LED_871x object. */
+/*	Description: */
+/*		Reset status of LED_871x object. */
 /*  */
 void ResetLedStatus(PLED_871x pLed)
 {
@@ -72,8 +72,8 @@ void ResetLedStatus(PLED_871x pLed)
 }
 
  /*  */
-/* 	Description: */
-/* 		Initialize an LED_871x object. */
+/*	Description: */
+/*		Initialize an LED_871x object. */
 /*  */
 void
 InitLed871x(
@@ -94,8 +94,8 @@ InitLed871x(
 
 
 /*  */
-/* 	Description: */
-/* 		DeInitialize an LED_871x object. */
+/*	Description: */
+/*		DeInitialize an LED_871x object. */
 /*  */
 void
 DeInitLed871x(
@@ -108,9 +108,9 @@ DeInitLed871x(
 }
 
 /*  */
-/* 	Description: */
-/* 		Implementation of LED blinking behavior. */
-/* 		It toggle off LED and schedule corresponding timer if necessary. */
+/*	Description: */
+/*		Implementation of LED blinking behavior. */
+/*		It toggle off LED and schedule corresponding timer if necessary. */
 /*  */
 
 void SwLedOn(_adapter *padapter, PLED_871x pLed);
@@ -1727,9 +1727,9 @@ static void SwLedControlMode6(_adapter *padapter, LED_CTL_MODE LedAction)
 		 ("ledcontrol 6 Led %d\n", pLed0->CurrLedState));
 }
 
-/* 	Description: */
-/* 	Handler function of LED Blinking. */
-/* 	We dispatch acture LED blink action according to LedStrategy. */
+/*	Description: */
+/*	Handler function of LED Blinking. */
+/*	We dispatch acture LED blink action according to LedStrategy. */
 void BlinkHandler(PLED_871x	 pLed)
 {
 	_adapter *padapter = pLed->padapter;

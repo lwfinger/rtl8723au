@@ -19,6 +19,3 @@
 #define _PCI_OPS_LINUX_C_
 
 #include <drv_types.h>
-
-
-
