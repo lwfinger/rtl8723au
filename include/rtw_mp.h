@@ -154,7 +154,7 @@ struct mp_tx
 	u8 *pallocated_buf;
 	u8 *buf;
 	u32 buf_size, write_size;
-	_thread_hdl_ PktTxThread;
+	void *PktTxThread;
 };
 
 #include <Hal8723APhyCfg.h>
@@ -200,7 +200,7 @@ typedef struct _MPT_CONTEXT
 	bool			bMptDrvUnload;
 
 	_sema			MPh2c_Sema;
-	_timer			MPh2c_timeout_timer;
+	struct timer_list MPh2c_timeout_timer;
 // Event used to sync H2c for BT control
 
 	bool		MptH2cRspEvent;

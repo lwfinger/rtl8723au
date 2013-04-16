@@ -62,29 +62,11 @@ struct recv_reorder_ctrl
 	u16 wend_b;
 	u8 wsize_b;
 	_queue pending_recvframe_queue;
-	_timer reordering_ctrl_timer;
+	struct timer_list reordering_ctrl_timer;
 };
 
 struct	stainfo_rxcache	{
 	u16	tid_rxseq[16];
-/*
-	unsigned short	tid0_rxseq;
-	unsigned short	tid1_rxseq;
-	unsigned short	tid2_rxseq;
-	unsigned short	tid3_rxseq;
-	unsigned short	tid4_rxseq;
-	unsigned short	tid5_rxseq;
-	unsigned short	tid6_rxseq;
-	unsigned short	tid7_rxseq;
-	unsigned short	tid8_rxseq;
-	unsigned short	tid9_rxseq;
-	unsigned short	tid10_rxseq;
-	unsigned short	tid11_rxseq;
-	unsigned short	tid12_rxseq;
-	unsigned short	tid13_rxseq;
-	unsigned short	tid14_rxseq;
-	unsigned short	tid15_rxseq;
-*/
 };
 
 
@@ -317,7 +299,7 @@ struct recv_priv
 	int FalseAlmCnt_all;
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-	_timer signal_stat_timer;
+	struct timer_list signal_stat_timer;
 	u32 signal_stat_sampling_interval;
 	//u32 signal_stat_converging_constant;
 	struct signal_stat signal_qual_data;
@@ -476,7 +458,7 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue);
 
 void rtw_reordering_ctrl_timeout_handler(void *pcontext);
 
-__inline static u8 *get_rxmem(union recv_frame *precvframe)
+static inline u8 *get_rxmem(union recv_frame *precvframe)
 {
 	//always return rx_head...
 	if(precvframe==NULL)
@@ -485,14 +467,14 @@ __inline static u8 *get_rxmem(union recv_frame *precvframe)
 	return precvframe->u.hdr.rx_head;
 }
 
-__inline static u8 *get_rx_status(union recv_frame *precvframe)
+static inline u8 *get_rx_status(union recv_frame *precvframe)
 {
 
 	return get_rxmem(precvframe);
 
 }
 
-__inline static u8 *get_recvframe_data(union recv_frame *precvframe)
+static inline u8 *get_recvframe_data(union recv_frame *precvframe)
 {
 
 	//alwasy return rx_data
@@ -503,7 +485,7 @@ __inline static u8 *get_recvframe_data(union recv_frame *precvframe)
 
 }
 
-__inline static u8 *recvframe_push(union recv_frame *precvframe, sint sz)
+static inline u8 *recvframe_push(union recv_frame *precvframe, sint sz)
 {
 	// append data before rx_data
 
@@ -531,7 +513,7 @@ __inline static u8 *recvframe_push(union recv_frame *precvframe, sint sz)
 }
 
 
-__inline static u8 *recvframe_pull(union recv_frame *precvframe, sint sz)
+static inline u8 *recvframe_pull(union recv_frame *precvframe, sint sz)
 {
 	// rx_data += sz; move rx_data sz bytes  hereafter
 
@@ -556,7 +538,7 @@ __inline static u8 *recvframe_pull(union recv_frame *precvframe, sint sz)
 
 }
 
-__inline static u8 *recvframe_put(union recv_frame *precvframe, sint sz)
+static inline u8 *recvframe_put(union recv_frame *precvframe, sint sz)
 {
 	// rx_tai += sz; move rx_tail sz bytes  hereafter
 
@@ -585,7 +567,7 @@ __inline static u8 *recvframe_put(union recv_frame *precvframe, sint sz)
 
 
 
-__inline static u8 *recvframe_pull_tail(union recv_frame *precvframe, sint sz)
+static inline u8 *recvframe_pull_tail(union recv_frame *precvframe, sint sz)
 {
 	// rmv data from rx_tail (by yitsen)
 
@@ -611,17 +593,17 @@ __inline static u8 *recvframe_pull_tail(union recv_frame *precvframe, sint sz)
 
 
 
-__inline static _buffer * get_rxbuf_desc(union recv_frame *precvframe)
+static inline unsigned char *get_rxbuf_desc(union recv_frame *precvframe)
 {
-	_buffer * buf_desc;
+	unsigned char *buf_desc;
 
-	if(precvframe==NULL)
+	if (precvframe == NULL)
 		return NULL;
 	return buf_desc;
 }
 
 
-__inline static union recv_frame *rxmem_to_recvframe(u8 *rxmem)
+static inline union recv_frame *rxmem_to_recvframe(u8 *rxmem)
 {
 	//due to the design of 2048 bytes alignment of recv_frame, we can reference the union recv_frame
 	//from any given member of recv_frame.
@@ -631,7 +613,7 @@ __inline static union recv_frame *rxmem_to_recvframe(u8 *rxmem)
 
 }
 
-__inline static union recv_frame *pkt_to_recvframe(struct sk_buff *pkt)
+static inline union recv_frame *pkt_to_recvframe(struct sk_buff *pkt)
 {
 
 	u8 * buf_star;
@@ -641,7 +623,7 @@ __inline static union recv_frame *pkt_to_recvframe(struct sk_buff *pkt)
 	return precv_frame;
 }
 
-__inline static u8 *pkt_to_recvmem(struct sk_buff *pkt)
+static inline u8 *pkt_to_recvmem(struct sk_buff *pkt)
 {
 	// return the rx_head
 
@@ -651,7 +633,7 @@ __inline static u8 *pkt_to_recvmem(struct sk_buff *pkt)
 
 }
 
-__inline static u8 *pkt_to_recvdata(struct sk_buff *pkt)
+static inline u8 *pkt_to_recvdata(struct sk_buff *pkt)
 {
 	// return the rx_data
 
@@ -662,13 +644,13 @@ __inline static u8 *pkt_to_recvdata(struct sk_buff *pkt)
 }
 
 
-__inline static sint get_recvframe_len(union recv_frame *precvframe)
+static inline sint get_recvframe_len(union recv_frame *precvframe)
 {
 	return precvframe->u.hdr.len;
 }
 
 
-__inline static s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
+static inline s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
 {
 	s32	SignalPower; // in dBm.
 

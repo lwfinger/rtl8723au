@@ -570,7 +570,7 @@ typedef struct hal_data_8723a
 	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
 	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
 	_lock		SdioTxFIFOFreePageLock;
-	_thread_hdl_	SdioXmitThread;
+	void *SdioXmitThread;
 	_sema		SdioXmitSema;
 	_sema		SdioXmitTerminateSema;
 

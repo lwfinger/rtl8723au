@@ -1099,15 +1099,10 @@ typedef struct _BT_TRAFFIC
 	BT_TRAFFIC_STATISTICS		Bt30TrafficStatistics;
 } BT_TRAFFIC, *PBT_TRAFFIC;
 
-#define RT_WORK_ITEM _workitem
-#define RT_THREAD _thread_hdl_
-
 typedef struct _BT_SECURITY
 {
 	// WPA auth state
 	// May need to remove to BTSecInfo ...
-	//BT_STATE_WPA_AUTH BTWPAAuthState;
-	//u8				PMK[PMK_LEN];
 	RT_TIMER			BTWPAAuthTimer;
 	OCTET_STRING		RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
@@ -1126,17 +1121,17 @@ typedef struct _BT30Info
 	BT_SECURITY			BtSec;
 
 #if(BT_THREAD == 0)
-	RT_WORK_ITEM		HCICmdWorkItem;
+	_workitem		HCICmdWorkItem;
 	RT_TIMER				BTHCICmdTimer;
 #endif
 #if (SENDTXMEHTOD==0)
-	RT_WORK_ITEM		HCISendACLDataWorkItem;
+	_workitem		HCISendACLDataWorkItem;
 	RT_TIMER				BTHCISendAclDataTimer;
 #elif(SENDTXMEHTOD==2)
-	RT_THREAD			BTTxThread;
+	void *BTTxThread;
 #endif
-	RT_WORK_ITEM		BTPsDisableWorkItem;
-	RT_WORK_ITEM		BTConnectWorkItem;
+	_workitem		BTPsDisableWorkItem;
+	_workitem		BTConnectWorkItem;
 	RT_TIMER				BTHCIDiscardAclDataTimer;
 	RT_TIMER				BTHCIJoinTimeoutTimer;
 	RT_TIMER				BTTestSendPacketTimer;

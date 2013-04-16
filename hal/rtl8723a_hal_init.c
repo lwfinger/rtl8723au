@@ -5059,10 +5059,8 @@ void rtl8723a_clone_haldata(_adapter* dst_adapter, _adapter* src_adapter)
 {
 #ifdef CONFIG_SDIO_HCI
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(dst_adapter);
-	//_thread_hdl_  SdioXmitThread;
 	_sema             temp_SdioXmitSema;
 	_sema             temp_SdioXmitTerminateSema;
-	//u8                    SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
 	_lock                temp_SdioTxFIFOFreePageLock;
 
 	memcpy(&temp_SdioXmitSema, &(pHalData->SdioXmitSema), sizeof(_sema));

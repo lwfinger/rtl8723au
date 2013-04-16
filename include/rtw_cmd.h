@@ -133,7 +133,7 @@ extern struct evt_obj *rtw_dequeue_evt(_queue *queue);
 extern void rtw_free_evt_obj(struct evt_obj *pcmd);
 #endif
 
-thread_return rtw_cmd_thread(thread_context context);
+int rtw_cmd_thread(void *context);
 
 extern u32 rtw_init_cmd_priv (struct cmd_priv *pcmdpriv);
 extern void rtw_free_cmd_priv (struct cmd_priv *pcmdpriv);

@@ -315,22 +315,6 @@ typedef struct _SW_Antenna_Switch_
 	RT_WORK_ITEM			SwAntennaSwitchWorkitem;
 	#endif
 #endif
-/* CE Platform use
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-	_timer SwAntennaSwitchTimer; 
-	u8Byte lastTxOkCnt;
-	u8Byte lastRxOkCnt;
-	u8Byte TXByteCnt_A;
-	u8Byte TXByteCnt_B;
-	u8Byte RXByteCnt_A;
-	u8Byte RXByteCnt_B;
-	u1Byte DoubleComfirm;
-	u1Byte TrafficLoad;
-	//SW Antenna Switch
-
-
-#endif
-*/
 #ifdef CONFIG_HW_ANTENNA_DIVERSITY
 	//Hybrid Antenna Diversity
 	u4Byte		CCK_Ant1_Cnt[ASSOCIATE_ENTRY_NUM];

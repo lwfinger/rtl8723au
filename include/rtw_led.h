@@ -109,24 +109,24 @@ typedef struct _LED_871x{
 	LED_STATE_871x		CurrLedState; // Current LED state.
 	LED_STATE_871x		BlinkingLedState; // Next state for blinking, either RTW_LED_ON or RTW_LED_OFF are.
 
-	u8					bLedOn; // true if LED is ON, false if LED is OFF.
+	u8 bLedOn; // true if LED is ON, false if LED is OFF.
 
-	u8					bLedBlinkInProgress; // true if it is blinking, false o.w..
+	u8 bLedBlinkInProgress; // true if it is blinking, false o.w..
 
-	u8					bLedWPSBlinkInProgress;
+	u8 bLedWPSBlinkInProgress;
 
-	u32					BlinkTimes; // Number of times to toggle led state for blinking.
+	u32 BlinkTimes; // Number of times to toggle led state for blinking.
 
-	_timer				BlinkTimer; // Timer object for led blinking.
+	struct timer_list BlinkTimer; // Timer object for led blinking.
 
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	u8					bSWLedCtrl;
+	u8 bSWLedCtrl;
 
 	// ALPHA, added by chiyoko, 20090106
-	u8					bLedNoLinkBlinkInProgress;
-	u8					bLedLinkBlinkInProgress;
-	u8					bLedStartToLinkBlinkInProgress;
-	u8					bLedScanBlinkInProgress;
+	u8 bLedNoLinkBlinkInProgress;
+	u8 bLedLinkBlinkInProgress;
+	u8 bLedStartToLinkBlinkInProgress;
+	u8 bLedScanBlinkInProgress;
 
 	#if LINUX_VERSION_CODE > KERNEL_VERSION(2,5,0)
 	_workitem			BlinkWorkItem; // Workitem used by BlinkTimer to manipulate H/W to blink LED.

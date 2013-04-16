@@ -27,7 +27,7 @@
 struct pkt_file {
 	struct sk_buff *pkt;
 	__kernel_size_t pkt_len;	 //the remainder length of the open_file
-	_buffer *cur_buffer;
+	unsigned char *cur_buffer;
 	u8 *buf_start;
 	u8 *cur_addr;
 	__kernel_size_t buf_len;

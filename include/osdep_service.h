@@ -99,21 +99,14 @@ typedef struct mutex		_mutex;
 #else
 typedef struct semaphore	_mutex;
 #endif
-typedef struct timer_list _timer;
 
 struct	__queue	{
 	struct	list_head	queue;
 	_lock	lock;
 };
 
-typedef unsigned char	_buffer;
-
 typedef struct	__queue	_queue;
 typedef struct	list_head	_list;
-
-typedef void*		_thread_hdl_;
-typedef int		thread_return;
-typedef void*	thread_context;
 
 #define thread_exit() complete_and_exit(NULL, 0)
 
@@ -220,7 +213,7 @@ static inline void rtw_list_delete(_list *plist)
 	list_del_init(plist);
 }
 
-static inline void _init_timer(_timer *ptimer, struct net_device *nic_hdl,
+static inline void _init_timer(struct timer_list *ptimer, struct net_device *nic_hdl,
 				 void *pfunc, void* cntx)
 {
 	//setup_timer(ptimer, pfunc,(u32)cntx);
@@ -229,12 +222,12 @@ static inline void _init_timer(_timer *ptimer, struct net_device *nic_hdl,
 	init_timer(ptimer);
 }
 
-static inline void _set_timer(_timer *ptimer,u32 delay_time)
+static inline void _set_timer(struct timer_list *ptimer,u32 delay_time)
 {
 	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
 }
 
-static inline void _cancel_timer(_timer *ptimer,u8 *bcancelled)
+static inline void _cancel_timer(struct timer_list *ptimer, u8 *bcancelled)
 {
 	del_timer_sync(ptimer);
 	*bcancelled=  true;//TRUE ==1; FALSE==0
@@ -461,12 +454,12 @@ extern void	rtw_udelay_os(int us);
 extern void rtw_yield_os(void);
 
 
-static inline unsigned char _cancel_timer_ex(_timer *ptimer)
+static inline unsigned char _cancel_timer_ex(struct timer_list *ptimer)
 {
 	return del_timer_sync(ptimer);
 }
 
-static __inline void thread_enter(char *name)
+static inline void thread_enter(char *name)
 {
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION(3,7,0))
 	daemonize("%s", name);

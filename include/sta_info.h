@@ -135,7 +135,7 @@ struct sta_info {
 	u8	ANonce[32];
 	u32	TDLS_PeerKey_Lifetime;
 	u16	TPK_count;
-	_timer	TPK_timer;
+	struct timer_list	TPK_timer;
 	struct TDLS_PeerKey	tpk;
 	_adapter *padapter;
 	u16	stat_code;
@@ -143,19 +143,19 @@ struct sta_info {
 	u16	ch_switch_time;
 	u16	ch_switch_timeout;
 	u8	option;
-	_timer	option_timer;
-	_timer	base_ch_timer;
-	_timer	off_ch_timer;
+	struct timer_list option_timer;
+	struct timer_list base_ch_timer;
+	struct timer_list off_ch_timer;
 
-	_timer handshake_timer;
-	_timer alive_timer1;
-	_timer alive_timer2;
+	struct timer_list handshake_timer;
+	struct timer_list alive_timer1;
+	struct timer_list alive_timer2;
 	u8 timer_flag;
 	u8 alive_count;
 #endif //CONFIG_TDLS
 
 	//for A-MPDU TX, ADDBA timeout check
-	_timer addba_retry_timer;
+	struct timer_list addba_retry_timer;
 
 	//for A-MPDU Rx reordering buffer control
 	struct recv_reorder_ctrl recvreorder_ctrl[16];
