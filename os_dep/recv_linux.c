@@ -411,8 +411,6 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
-#ifdef CONFIG_USB_HCI
-
 	precvbuf->ref_cnt--;
 
 	//free skb in recv_buf
@@ -422,18 +420,9 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 	precvbuf->reuse = false;
 
 	if(precvbuf->irp_pending == false)
-	{
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
-	}
-
-
-#endif
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		precvbuf->pskb = NULL;
-#endif
-
 }
-void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext);
+
 void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
 {
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
@@ -445,6 +434,4 @@ void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 	_adapter *padapter = preorder_ctrl->padapter;
 
 	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
-
 }
-

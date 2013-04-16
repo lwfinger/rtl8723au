@@ -1391,20 +1391,14 @@ _func_exit_;
 }
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 extern int rtw_resume_process(_adapter *padapter);
-#endif
 static void resume_workitem_callback(struct work_struct *work)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(work, struct pwrctrl_priv, resume_work);
 	_adapter *adapter = container_of(pwrpriv, _adapter, pwrctrlpriv);
 
 	DBG_871X("%s\n", __func__);
-
-	#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	rtw_resume_process(adapter);
-	#endif
-
 }
 
 void rtw_resume_in_workqueue(struct pwrctrl_priv *pwrpriv)
@@ -1421,9 +1415,7 @@ void rtw_resume_in_workqueue(struct pwrctrl_priv *pwrpriv)
 #endif //CONFIG_RESUME_IN_WORKQUEUE
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 extern int rtw_resume_process(_adapter *padapter);
-#endif
 static void rtw_early_suspend(struct early_suspend *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -1440,10 +1432,8 @@ static void rtw_late_resume(struct early_suspend *h)
 
 	DBG_871X("%s\n", __func__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		rtw_resume_process(adapter);
 		pwrpriv->do_late_resume = false;
-		#endif
 	}
 }
 
@@ -1475,9 +1465,7 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 #endif //CONFIG_HAS_EARLYSUSPEND
 
 #ifdef CONFIG_ANDROID_POWER
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 extern int rtw_resume_process(PADAPTER padapter);
-#endif
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -1494,10 +1482,8 @@ static void rtw_late_resume(android_early_suspend_t *h)
 
 	DBG_871X("%s\n", __func__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		rtw_resume_process(adapter);
 		pwrpriv->do_late_resume = false;
-		#endif
 	}
 }
 

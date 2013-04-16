@@ -553,33 +553,6 @@ typedef struct hal_data_8723a
 
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8			bMacPwrCtrlOn;
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	//
-	// SDIO ISR Related
-	//
-//	u32			IntrMask[1];
-//	u32			IntrMaskToSet[1];
-//	LOG_INTERRUPT		InterruptLog;
-	u32			sdio_himr;
-	u32			sdio_hisr;
-
-	//
-	// SDIO Tx FIFO related.
-	//
-	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
-	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-	_lock		SdioTxFIFOFreePageLock;
-	void *SdioXmitThread;
-	_sema		SdioXmitSema;
-	_sema		SdioXmitTerminateSema;
-
-	//
-	// SDIO Rx FIFO related.
-	//
-	u8			SdioRxFIFOCnt;
-	u16			SdioRxFIFOSize;
-#endif
 } HAL_DATA_8723A, *PHAL_DATA_8723A;
 
 typedef struct hal_data_8723a HAL_DATA_TYPE, *PHAL_DATA_TYPE;

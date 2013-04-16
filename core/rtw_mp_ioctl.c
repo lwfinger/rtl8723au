@@ -1486,9 +1486,6 @@ NDIS_STATUS oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
 {
 	u8		bpwrup;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	PADAPTER	padapter = (PADAPTER)(poid_par_priv->adapter_context);
-#endif
 
 _func_enter_;
 

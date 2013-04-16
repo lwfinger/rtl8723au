@@ -251,10 +251,6 @@ struct recv_priv
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	_queue	recv_buf_pending_queue;
-#endif
-
 	//For display the phy informatiom
 	u8 is_signal_dbg;	// for debug
 	u8 signal_strength_dbg;	// for debug

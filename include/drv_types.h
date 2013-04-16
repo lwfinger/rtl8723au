@@ -225,14 +225,6 @@ struct registry_priv
 
 #define MAX_CONTINUAL_URB_ERR 4
 
-#ifdef CONFIG_SDIO_HCI
-#include <drv_types_sdio.h>
-#define INTF_DATA SDIO_DATA
-#elif defined(CONFIG_GSPI_HCI)
-#include <drv_types_gspi.h>
-#define INTF_DATA GSPI_DATA
-#endif
-
 struct dvobj_priv
 {
 	_adapter *if1;

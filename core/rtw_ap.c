@@ -1471,10 +1471,8 @@ void update_beacon(_adapter *padapter, u8 ie_id, u8 *oui, u8 tx)
 	_exit_critical_bh(&pmlmepriv->bcn_update_lock, &irqL);
 
 #ifndef CONFIG_INTERRUPT_BASED_TXBCN
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	if (tx)
 		set_tx_beacon_cmd(padapter);
-#endif
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN */
 }
 

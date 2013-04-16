@@ -218,13 +218,7 @@ void rtw_os_pkt_complete(_adapter *padapter, struct sk_buff *pkt)
 void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
 {
 	if(pxframe->pkt)
-	{
-		//RT_TRACE(_module_xmit_osdep_c_,_drv_err_,("linux : rtw_os_xmit_complete, dev_kfree_skb()\n"));	
-
-		//dev_kfree_skb_any(pxframe->pkt);	
 		rtw_os_pkt_complete(padapter, pxframe->pkt);
-		
-	}	
 
 	pxframe->pkt = NULL;
 }
@@ -233,20 +227,6 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 {
 	_adapter *pri_adapter = padapter;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	if(!padapter)
-		return;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = padapter->pbuddy_adapter;
-#endif
-
-	if (_rtw_queue_empty(&pri_adapter->xmitpriv.pending_xmitbuf_queue) == false)
-		_rtw_up_sema(&pri_adapter->xmitpriv.xmit_sema);
-
-
-#else
 	unsigned long  irqL;
 	struct xmit_priv *pxmitpriv;
 
@@ -258,12 +238,9 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 	_enter_critical_bh(&pxmitpriv->lock, &irqL);
 
 	if(rtw_txframes_pending(padapter))	
-	{
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
-	}
 
 	_exit_critical_bh(&pxmitpriv->lock, &irqL);
-#endif
 }
 
 static void rtw_check_xmit_resource(_adapter *padapter, struct sk_buff *pkt)

@@ -30,14 +30,8 @@
 #include <rtw_ioctl.h>
 #include <rtw_ioctl_set.h>
 #include <rtw_ioctl_query.h>
-
-//#ifdef CONFIG_MP_INCLUDED
 #include <rtw_mp_ioctl.h>
-//#endif
-
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif //CONFIG_USB_HCI
 #include <rtw_version.h>
 
 #ifdef CONFIG_MP_INCLUDED
@@ -46,10 +40,6 @@
 #include <rtl8723a_pg.h>
 #include <rtl8723a_hal.h>
 #include <rtw_bt_mp.h>
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_ops.h>
-#endif
-
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27))
 #define  iwe_stream_add_event(a, b, c, d, e)  iwe_stream_add_event(b, c, d, e)
@@ -8082,18 +8072,8 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 			}
 		}
 //		DBG_871X("}\n");
-	}
-	else if (strcmp(tmp[0], "mac") == 0)
-	{
-		#ifdef CONFIG_SDIO_HCI
-		addr = EEPROM_MAC_ADDR_8723AS;
-		#endif
-		#ifdef CONFIG_GSPI_HCI
-		addr = EEPROM_MAC_ADDR_8723AS;
-		#endif
-		#ifdef CONFIG_USB_HCI
+	} else if (strcmp(tmp[0], "mac") == 0) {
 		addr = EEPROM_MAC_ADDR_8723AU;
-		#endif
 		cnts = 6;
 
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (void *)&max_available_size, false);
@@ -8534,29 +8514,18 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 		}
 
 		//mac,00e04c871200
-		#ifdef CONFIG_SDIO_HCI
-		addr = EEPROM_MAC_ADDR_8723AS;
-		#endif
-		#ifdef CONFIG_GSPI_HCI
-		addr = EEPROM_MAC_ADDR_8723AS;
-		#endif
-		#ifdef CONFIG_USB_HCI
 		addr = EEPROM_MAC_ADDR_8723AU;
-		#endif
 		cnts = strlen(tmp[1]);
-		if (cnts%2)
-		{
+		if (cnts%2) {
 			err = -EINVAL;
 			goto exit;
 		}
 		cnts /= 2;
-		if (cnts == 0)
-		{
+		if (cnts == 0) {
 			err = -EINVAL;
 			goto exit;
 		}
-		if (cnts > 6)
-		{
+		if (cnts > 6) {
 			DBG_871X("%s: error data for mac addr=\"%s\"\n", __FUNCTION__, tmp[1]);
 			err = -EFAULT;
 			goto exit;
@@ -8567,9 +8536,7 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 		DBG_871X("%s: MAC address=%s\n", __FUNCTION__, tmp[1]);
 
 		for (jj=0, kk=0; jj<cnts; jj++, kk+=2)
-		{
 			setdata[jj] = key_2char2num(tmp[1][kk], tmp[1][kk+1]);
-		}
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (void *)&max_available_size, false);
 		if ((addr+cnts) > max_available_size)
 		{
