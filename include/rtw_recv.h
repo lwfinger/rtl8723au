@@ -270,7 +270,7 @@ struct recv_priv
 	u8	rx_pending_cnt;
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
-	PURB	int_in_urb;
+	struct urb *	int_in_urb;
 	u8	*int_in_buf;
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
@@ -371,7 +371,7 @@ struct recv_buf
 
 #ifdef CONFIG_USB_HCI
 
-	PURB	purb;
+	struct urb *purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;
 
