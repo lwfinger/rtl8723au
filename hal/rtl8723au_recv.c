@@ -80,10 +80,6 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
-
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 	if(precvpriv->pallocated_recv_buf==NULL){
 		res= _FAIL;
@@ -93,9 +89,6 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
-	//precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
-	//						((uint) (precvpriv->pallocated_recv_buf) &(4-1));
-
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
