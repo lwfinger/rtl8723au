@@ -44,11 +44,6 @@
 #define EUROPE						0x1 //temp, should be provided later
 #define JAPAN						0x2 //temp, should be provided later
 
-#ifdef CONFIG_SDIO_HCI
-#define eeprom_cis0_sz	17
-#define eeprom_cis1_sz	50
-#endif
-
 #define	EEPROM_CID_DEFAULT			0x0
 #define	EEPROM_CID_ALPHA				0x1
 #define	EEPROM_CID_Senao				0x3
@@ -125,15 +120,7 @@ struct eeprom_priv
 	u8		mac_addr[6];	//PermanentAddress
 	u16		channel_plan;
 	u8		EepromOrEfuse;
-
 	u8		efuse_eeprom_data[HWSET_MAX_SIZE_512]; //92C:256bytes, 88E:512bytes, we use union set (512bytes)
-
-#ifdef CONFIG_SDIO_HCI
-	u8		sdio_setting;
-	u32		ocr;
-	u8		cis0[eeprom_cis0_sz];
-	u8		cis1[eeprom_cis1_sz];
-#endif
 };
 
 

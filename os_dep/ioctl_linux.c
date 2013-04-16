@@ -6123,9 +6123,7 @@ static int rtw_dbg_port(struct net_device *dev,
 						
 						DBG_871X("free_xmitbuf_cnt=%d, free_xmitframe_cnt=%d, free_xmit_extbuf_cnt=%d\n", 
 							pxmitpriv->free_xmitbuf_cnt, pxmitpriv->free_xmitframe_cnt, pxmitpriv->free_xmit_extbuf_cnt);
-						#ifdef CONFIG_USB_HCI
 						DBG_871X("rx_urb_pending_cn=%d\n", precvpriv->rx_pending_cnt);
-						#endif
 					}
 					break;	
 				case 0x09:

@@ -52,7 +52,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	u8			*TxPwrLevel = pMptCtx->TxPwrLevel;
 #endif
 	u8			OFDM_min_index = 6, rf; //OFDM BB Swing should be less than +3.0dB, which is required by Arthur
-#ifdef CONFIG_USB_HCI
 	u8			ThermalValue_HP_count = 0;
 	u32			ThermalValue_HP = 0;
 	s32			index_mapping_HP[index_mapping_HP_NUM] = {
@@ -60,9 +59,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 					7,	9,	10,	12,	13,
 					15,	16,	18,	19,	21
 					};
-
 	s8			index_HP;
-#endif
 
 	pdmpriv->TXPowerTrackingCallbackCnt++;	//cosa add for debug
 	pdmpriv->bTXPowerTrackingInit = true;
@@ -72,11 +69,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	else if(pHalData->CurrentChannel != 14 && pdmpriv->bCCKinCH14)
 		pdmpriv->bCCKinCH14 = false;
 
-	//DBG_8192C("===>dm_TXPowerTrackingCallback_ThermalMeter_92C\n");
-
 	ThermalValue = (u8)PHY_QueryRFReg(Adapter, RF_PATH_A, RF_T_METER, 0x1f);	// 0x24: RF Reg[4:0]
-
-	//DBG_8192C("\n\nReadback Thermal Meter = 0x%x pre thermal meter 0x%x EEPROMthermalmeter 0x%x\n",ThermalValue,pdmpriv->ThermalValue,  pHalData->EEPROMThermalMeter);
 
 	rtl8192c_PHY_APCalibrate(Adapter, (ThermalValue - pHalData->EEPROMThermalMeter));
 
@@ -85,9 +78,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	else
 		rf = 1;
 
-	if(ThermalValue)
-	{
-//		if(!pHalData->ThermalValue)
+	if(ThermalValue) {
 		{
 			//Query OFDM path A default setting
 			ele_D = PHY_QueryBBReg(Adapter, rOFDM0_XATxIQImbalance, bMaskDWord)&bMaskOFDM_D;
@@ -96,7 +87,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				if(ele_D == (OFDMSwingTable[i]&bMaskOFDM_D))
 				{
 					OFDM_index_old[0] = (u8)i;
-					//DBG_8192C("Initial pathA ele_D reg0x%x = 0x%x, OFDM_index=0x%x\n", rOFDM0_XATxIQImbalance, ele_D, OFDM_index_old[0]);
 					break;
 				}
 			}
@@ -147,18 +137,11 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				pdmpriv->ThermalValue_IQK = ThermalValue;
 				pdmpriv->ThermalValue_DPK = pHalData->EEPROMThermalMeter;
 
-#ifdef CONFIG_USB_HCI
 				for(i = 0; i < rf; i++)
 					pdmpriv->OFDM_index_HP[i] = pdmpriv->OFDM_index[i] = OFDM_index_old[i];
 				pdmpriv->CCK_index_HP = pdmpriv->CCK_index = CCK_index_old;
-#else
-				for(i = 0; i < rf; i++)
-					pdmpriv->OFDM_index[i] = OFDM_index_old[i];
-				pdmpriv->CCK_index = CCK_index_old;
-#endif
 			}
 
-#ifdef CONFIG_USB_HCI
 			if(pHalData->BoardType == BOARD_USB_High_PA)
 			{
 				pdmpriv->ThermalValue_HP[pdmpriv->ThermalValue_HP_index] = ThermalValue;
@@ -178,39 +161,27 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				if(ThermalValue_HP_count)
 					ThermalValue = (u8)(ThermalValue_HP / ThermalValue_HP_count);
 			}
-#endif
 		}
 
 		delta = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
-#ifdef CONFIG_USB_HCI
-		if(pHalData->BoardType == BOARD_USB_High_PA)
-		{
+		if(pHalData->BoardType == BOARD_USB_High_PA) {
 			if(pdmpriv->bDoneTxpower)
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 			else
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
-		}
-		else
-#endif
-		{
+		} else {
 			delta_HP = 0;
 		}
 		delta_LCK = (ThermalValue > pdmpriv->ThermalValue_LCK)?(ThermalValue - pdmpriv->ThermalValue_LCK):(pdmpriv->ThermalValue_LCK - ThermalValue);
 		delta_IQK = (ThermalValue > pdmpriv->ThermalValue_IQK)?(ThermalValue - pdmpriv->ThermalValue_IQK):(pdmpriv->ThermalValue_IQK - ThermalValue);
 
-		//DBG_8192C("Readback Thermal Meter = 0x%lx pre thermal meter 0x%lx EEPROMthermalmeter 0x%lx delta 0x%lx delta_LCK 0x%lx delta_IQK 0x%lx\n", ThermalValue, pHalData->ThermalValue, pHalData->EEPROMThermalMeter, delta, delta_LCK, delta_IQK);
-
-		if(delta_LCK > 1)
-		{
+		if(delta_LCK > 1) {
 			pdmpriv->ThermalValue_LCK = ThermalValue;
 			rtl8192c_PHY_LCCalibrate(Adapter);
 		}
 
-		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl)
-		{
-#ifdef CONFIG_USB_HCI
-			if(pHalData->BoardType == BOARD_USB_High_PA)
-			{
+		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl) {
+			if(pHalData->BoardType == BOARD_USB_High_PA) {
 				pdmpriv->bDoneTxpower = true;
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
 
@@ -224,9 +195,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] - index_HP;
 					CCK_index = pdmpriv->CCK_index_HP -index_HP;
-				}
-				else
-				{
+				} else {
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] + index_HP;
 					CCK_index = pdmpriv->CCK_index_HP + index_HP;
@@ -234,48 +203,26 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 
-			}
-			else
-#endif
-			{
-				if(ThermalValue > pdmpriv->ThermalValue)
-				{
+			} else {
+				if(ThermalValue > pdmpriv->ThermalValue) {
 					for(i = 0; i < rf; i++)
 						pdmpriv->OFDM_index[i] -= delta;
 					pdmpriv->CCK_index -= delta;
-				}
-				else
-				{
+				} else {
 					for(i = 0; i < rf; i++)
 						pdmpriv->OFDM_index[i] += delta;
 					pdmpriv->CCK_index += delta;
 				}
 			}
 
-			/*if(is2T)
-			{
-				DBG_8192C("temp OFDM_A_index=0x%x, OFDM_B_index=0x%x, CCK_index=0x%x\n",
-					pdmpriv->OFDM_index[0], pdmpriv->OFDM_index[1], pdmpriv->CCK_index);
-			}
-			else
-			{
-				DBG_8192C("temp OFDM_A_index=0x%x, CCK_index=0x%x\n",
-					pdmpriv->OFDM_index[0], pdmpriv->CCK_index);
-			}*/
 
 			//no adjust
-#ifdef CONFIG_USB_HCI
-			if(pHalData->BoardType != BOARD_USB_High_PA)
-#endif
-			{
-				if(ThermalValue > pHalData->EEPROMThermalMeter)
-				{
+			if(pHalData->BoardType != BOARD_USB_High_PA) {
+				if(ThermalValue > pHalData->EEPROMThermalMeter) {
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index[i]+1;
 					CCK_index = pdmpriv->CCK_index+1;
-				}
-				else
-				{
+				} else {
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index[i];
 					CCK_index = pdmpriv->CCK_index;

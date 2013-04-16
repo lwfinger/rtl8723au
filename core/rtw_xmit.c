@@ -27,11 +27,7 @@
 #include <osdep_intf.h>
 #include <circ_buf.h>
 #include <ip.h>
-
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif
-
 
 static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
 static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
@@ -261,7 +257,6 @@ _func_enter_;
 	rtw_alloc_hwxmits(padapter);
 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
 
-#ifdef CONFIG_USB_HCI
 	pxmitpriv->txirp_cnt=1;
 
 	_rtw_init_sema(&(pxmitpriv->tx_retevt), 0);
@@ -271,7 +266,6 @@ _func_enter_;
 	pxmitpriv->bkq_cnt = 0;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
-#endif
 
 
 #ifdef CONFIG_XMIT_ACK
@@ -2272,9 +2266,6 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	_adapter *padapter = pxmitpriv->adapter;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	int i, inx[4];
-#ifdef CONFIG_USB_HCI
-//	int j, tmp, acirp_cnt[4];
-#endif
 
 _func_enter_;
 
@@ -2284,25 +2275,19 @@ _func_enter_;
 	{
 		int j, tmp, acirp_cnt[4];
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 		for(j=0; j<4; j++)
 			inx[j] = pxmitpriv->wmm_para_seq[j];
-#endif
 	}
 
 	_enter_critical_bh(&pxmitpriv->lock, &irqL0);
 
-	for(i = 0; i < entry; i++)
-	{
+	for(i = 0; i < entry; i++) {
 		phwxmit = phwxmit_i + inx[i];
-
-		//_enter_critical_ex(&phwxmit->sta_queue->lock, &irqL0);
 
 		sta_phead = get_list_head(phwxmit->sta_queue);
 		sta_plist = get_next(sta_phead);
 
-		while ((rtw_end_of_queue_search(sta_phead, sta_plist)) == false)
-		{
+		while ((rtw_end_of_queue_search(sta_phead, sta_plist)) == false) {
 
 			ptxservq= LIST_CONTAINOR(sta_plist, struct tx_servq, tx_pending);
 
@@ -3504,14 +3489,7 @@ void enqueue_pending_xmitbuf(
 	rtw_list_insert_tail(&pxmitbuf->list, get_list_head(pqueue));
 	_exit_critical_bh(&pqueue->lock, &irql);
 
-
-
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	if (pri_adapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = pri_adapter->pbuddy_adapter;
-#endif  //SDIO_HCI + CONCURRENT
 	_rtw_up_sema(&(pri_adapter->xmitpriv.xmit_sema));
-
 }
 
 struct xmit_buf* dequeue_pending_xmitbuf(
@@ -3547,9 +3525,7 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 {
 	unsigned long irql;
 	struct xmit_buf *pxmitbuf;
-#ifdef CONFIG_USB_HCI
 	struct xmit_frame *pxmitframe;
-#endif
 	_queue *pqueue;
 
 
@@ -3571,24 +3547,15 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 
 			pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
-#ifdef CONFIG_USB_HCI
 			pxmitframe = (struct xmit_frame*)pxmitbuf->priv_data;
 			if(pxmitframe)
-			{
 				type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_SIZE + pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
-			}
 			else
-			{
 				DBG_871X("%s, !!!ERROR!!! For USB, TODO ITEM \n", __FUNCTION__);
-			}
-#else
-			type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_OFFSET);
-#endif
 
 			if ((type == WIFI_PROBEREQ) ||
-				(type == WIFI_DATA_NULL) ||
-				(type == WIFI_QOS_DATA_NULL))
-			{
+			    (type == WIFI_DATA_NULL) ||
+			    (type == WIFI_QOS_DATA_NULL)) {
 				rtw_list_delete(&pxmitbuf->list);
 				break;
 			}

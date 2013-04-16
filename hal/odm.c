@@ -3128,7 +3128,6 @@ odm_DynamicTxPowerInit(
 	pdmpriv->bDynamicTxPowerEnable = false;
 
 	#if (RTL8192C_SUPPORT==1)
-	#ifdef CONFIG_USB_HCI
 
 	#ifdef CONFIG_INTEL_PROXIM
 	if((pHalData->BoardType == BOARD_USB_High_PA)||(Adapter->proximity.proxim_support==true))
@@ -3142,9 +3141,6 @@ odm_DynamicTxPowerInit(
 		pdmpriv->bDynamicTxPowerEnable = true;
 	}
 	else
-	#else
-		pdmpriv->bDynamicTxPowerEnable = false;
-	#endif
 	#endif
 
 	pdmpriv->LastDTPLvl = TxHighPwrLevel_Normal;

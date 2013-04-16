@@ -193,7 +193,6 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 		rtl8723a_silentreset_for_specific_platform(padapter);
 	}
 
-#ifdef CONFIG_USB_HCI
 	//total xmit irp = 4
 	//DBG_8192C("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__FUNCTION__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt);
 	//if(pxmitpriv->txirp_cnt == NR_XMITBUFF+1)
@@ -216,7 +215,6 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 			}
 		}
 	}
-#endif // #ifdef CONFIG_USB_HCI
 }
 
 void rtl8723a_sreset_linked_status_check(_adapter *padapter)

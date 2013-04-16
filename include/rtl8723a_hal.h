@@ -39,36 +39,34 @@
 
 #include "../hal/odm_precomp.h"
 
-#ifdef CONFIG_USB_HCI
+//2TODO: We should define 8192S firmware related macro settings here!!
+#define RTL819X_DEFAULT_RF_TYPE			RF_1T2R
+#define RTL819X_TOTAL_RF_PATH				2
 
-	//2TODO: We should define 8192S firmware related macro settings here!!
-	#define RTL819X_DEFAULT_RF_TYPE			RF_1T2R
-	#define RTL819X_TOTAL_RF_PATH				2
-
-	//TODO:  The following need to check!!
-	#define RTL8723_FW_UMC_IMG				"rtl8192CU\\rtl8723fw.bin"
-	#define RTL8723_FW_UMC_B_IMG			"rtl8192CU\\rtl8723fw_B.bin"
-	#define RTL8723_PHY_REG					"rtl8723S\\PHY_REG_1T.txt"
-	#define RTL8723_PHY_RADIO_A				"rtl8723S\\radio_a_1T.txt"
-	#define RTL8723_PHY_RADIO_B				"rtl8723S\\radio_b_1T.txt"
-	#define RTL8723_AGC_TAB					"rtl8723S\\AGC_TAB_1T.txt"
-	#define RTL8723_PHY_MACREG				"rtl8723S\\MAC_REG.txt"
-	#define RTL8723_PHY_REG_PG				"rtl8723S\\PHY_REG_PG.txt"
-	#define RTL8723_PHY_REG_MP				"rtl8723S\\PHY_REG_MP.txt"
+//TODO:  The following need to check!!
+#define RTL8723_FW_UMC_IMG				"rtl8192CU\\rtl8723fw.bin"
+#define RTL8723_FW_UMC_B_IMG			"rtl8192CU\\rtl8723fw_B.bin"
+#define RTL8723_PHY_REG					"rtl8723S\\PHY_REG_1T.txt"
+#define RTL8723_PHY_RADIO_A				"rtl8723S\\radio_a_1T.txt"
+#define RTL8723_PHY_RADIO_B				"rtl8723S\\radio_b_1T.txt"
+#define RTL8723_AGC_TAB					"rtl8723S\\AGC_TAB_1T.txt"
+#define RTL8723_PHY_MACREG				"rtl8723S\\MAC_REG.txt"
+#define RTL8723_PHY_REG_PG				"rtl8723S\\PHY_REG_PG.txt"
+#define RTL8723_PHY_REG_MP				"rtl8723S\\PHY_REG_MP.txt"
 
 //---------------------------------------------------------------------
 //		RTL8723S From header
 //---------------------------------------------------------------------
 
-	// Fw Array
-	#define Rtl8723_FwImageArray				Rtl8723UFwImgArray
-	#define Rtl8723_FwUMCBCutImageArray		Rtl8723UFwUMCBCutImgArray
+// Fw Array
+#define Rtl8723_FwImageArray				Rtl8723UFwImgArray
+#define Rtl8723_FwUMCBCutImageArray		Rtl8723UFwUMCBCutImgArray
 
-	#define Rtl8723_ImgArrayLength				Rtl8723UImgArrayLength
-	#define Rtl8723_UMCBCutImgArrayLength		Rtl8723UUMCBCutImgArrayLength
+#define Rtl8723_ImgArrayLength				Rtl8723UImgArrayLength
+#define Rtl8723_UMCBCutImgArrayLength		Rtl8723UUMCBCutImgArrayLength
 
-	#define Rtl8723_PHY_REG_Array_PG			Rtl8723UPHY_REG_Array_PG
-	#define Rtl8723_PHY_REG_Array_PGLength		Rtl8723UPHY_REG_Array_PGLength
+#define Rtl8723_PHY_REG_Array_PG			Rtl8723UPHY_REG_Array_PG
+#define Rtl8723_PHY_REG_Array_PGLength		Rtl8723UPHY_REG_Array_PGLength
 
 #if MP_DRIVER == 1
 	#define Rtl8723E_FwBTImgArray				Rtl8723EFwBTImgArray
@@ -104,7 +102,6 @@
 	#define Rtl8723_RadioA_1TArrayLength			Rtl8723URadioA_1TArrayLength
 	#define Rtl8723_RadioB_1TArrayLength			Rtl8723URadioB_1TArrayLength
 #endif
-#endif
 
 #define DRVINFO_SZ				4 // unit is 8bytes
 #define PageNum_128(_Len)		(u32)(((_Len)>>7) + ((_Len)&0x7F ? 1:0))
@@ -116,8 +113,8 @@
 #define MAX_PAGE_SIZE			4096	// @ page : 4k bytes
 
 #define IS_FW_HEADER_EXIST(_pFwHdr)	((le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x92C0 ||\
-									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
-									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
+					(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
+					(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
 
 typedef enum _FIRMWARE_SOURCE {
 	FW_SOURCE_IMG_FILE = 0,
@@ -538,18 +535,11 @@ typedef struct hal_data_8723a
 	//
 	// For USB Interface HAL related
 	//
-#ifdef CONFIG_USB_HCI
 	u32	UsbBulkOutSize;
 
 	// Interrupt relatd register information.
 	u32	IntArray[2];
 	u32	IntrMask[2];
-#endif
-
-
-	//
-	// For SDIO Interface HAL related
-	//
 
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8			bMacPwrCtrlOn;

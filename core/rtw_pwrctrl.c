@@ -843,24 +843,18 @@ _func_enter_;
 	{
 		_enter_pwrlock(&pwrpriv->lock);
 
-		if ((padapter->bSurpriseRemoved == true)
-			|| (padapter->hw_init_completed == false)
-#ifdef CONFIG_USB_HCI
-			|| (padapter->bDriverStopped == true)
-#endif
-			|| (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
-			)
-		{
+		if ((padapter->bSurpriseRemoved == true) ||
+		    (padapter->hw_init_completed == false) ||
+		    (padapter->bDriverStopped == true) ||
+		    (pwrpriv->pwr_mode == PS_MODE_ACTIVE))
 			bReady = true;
-		}
 
 		_exit_pwrlock(&pwrpriv->lock);
 
 		if(true == bReady)
 			break;
 
-		if(rtw_get_passing_time_ms(start_time)>100)
-		{
+		if(rtw_get_passing_time_ms(start_time)>100) {
 			DBG_871X("Wait for cpwm event  than 100 ms!!!\n");
 			break;
 		}
@@ -1597,7 +1591,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	}
 	if(rf_off == pwrpriv->rf_pwrstate )
 	{
-#ifdef CONFIG_USB_HCI
 #ifdef CONFIG_AUTOSUSPEND
 		 if(pwrpriv->brfoffbyhw == true)
 		{
@@ -1616,7 +1609,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 			}
 		}
 		else
-#endif
 #endif
 		{
 #ifdef CONFIG_IPS

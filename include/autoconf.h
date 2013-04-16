@@ -30,7 +30,6 @@
 #define DRV_NAME "rtl8723as-vau"
 
 #define CONFIG_RTL8723A 1
-#define CONFIG_USB_HCI	1
 #define PLATFORM_LINUX	1
 
 #define CONFIG_EMBEDDED_FWIMG	1

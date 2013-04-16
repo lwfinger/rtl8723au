@@ -172,18 +172,10 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 
 	// 2010/10/18 MH Accorsing to SD3 eechou's suggestion, we need to disable turbo scan for RU.
 	// Otherwise, external PA will be broken if power index > 0x20.
-#ifdef CONFIG_USB_HCI
 	if (pHalData->EEPROMRegulatory != 0 || pHalData->ExternalPA)
-#else
-	if (pHalData->EEPROMRegulatory != 0)
-#endif
-	{
-		//DbgPrint("TurboScanOff=1 EEPROMRegulatory=%d ExternalPA=%d\n", pHalData->EEPROMRegulatory, pHalData->ExternalPA);
 		TurboScanOff = true;
-	}
 
-	if(pmlmeext->sitesurvey_res.state == SCAN_PROCESS)
-	{
+	if(pmlmeext->sitesurvey_res.state == SCAN_PROCESS) {
 		TxAGC[RF_PATH_A] = 0x3f3f3f3f;
 		TxAGC[RF_PATH_B] = 0x3f3f3f3f;
 
@@ -196,11 +188,9 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 				TxAGC[idx1] =
 					pPowerlevel[idx1] | (pPowerlevel[idx1]<<8) |
 					(pPowerlevel[idx1]<<16) | (pPowerlevel[idx1]<<24);
-#ifdef CONFIG_USB_HCI
 				// 2010/10/18 MH For external PA module. We need to limit power index to be less than 0x20.
 				if (TxAGC[idx1] > 0x20 && pHalData->ExternalPA)
 					TxAGC[idx1] = 0x20;
-#endif
 			}
 		}
 	}

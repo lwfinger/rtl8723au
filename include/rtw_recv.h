@@ -221,7 +221,6 @@ struct recv_priv
 	uint  rx_smallpacket_crcerr;
 	uint  rx_middlepacket_crcerr;
 
-#ifdef CONFIG_USB_HCI
 	//u8 *pallocated_urb_buf;
 	_sema allrxreturnevt;
 	uint	ff_hwaddr;
@@ -232,7 +231,6 @@ struct recv_priv
 	u8	*int_in_buf;
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
-#endif
 	struct tasklet_struct irq_prepare_beacon_tasklet;
 	struct tasklet_struct recv_tasklet;
 	struct sk_buff_head free_recv_skb_queue;
@@ -297,36 +295,23 @@ struct sta_recv_priv {
 };
 
 
-struct recv_buf
-{
+struct recv_buf {
 	_list list;
-
 	_lock recvbuf_lock;
-
 	u32	ref_cnt;
-
 	PADAPTER adapter;
-
 	u8	*pbuf;
 	u8	*pallocated_buf;
-
 	u32	len;
 	u8	*phead;
 	u8	*pdata;
 	u8	*ptail;
 	u8	*pend;
-
-#ifdef CONFIG_USB_HCI
-
 	struct urb *purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;
-
 	u8  irp_pending;
 	int  transfer_len;
-
-#endif
-
 	struct sk_buff	*pskb;
 	u8	reuse;
 };

@@ -241,9 +241,6 @@ struct xmit_buf
 
 	struct submit_ctx *sctx;
 
-#ifdef CONFIG_USB_HCI
-
-	//u32 sz[8];
 	u32	ff_hwaddr;
 
 	struct urb *pxmit_urb[8];
@@ -253,7 +250,6 @@ struct xmit_buf
 
 	sint last[8];
 
-#endif
 
 #if defined(DBG_XMIT_BUF )|| defined(DBG_XMIT_BUF_EXT)
 	u8 no;

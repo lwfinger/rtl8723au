@@ -797,19 +797,15 @@ phy_ConfigBBExternalPA(
 	PADAPTER			Adapter
 )
 {
-#ifdef CONFIG_USB_HCI
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u16 i=0;
 	u32 temp=0;
 
 	if(!pHalData->ExternalPA)
-	{
 		return;
-	}
 
 	// 2010/10/19 MH According to Jenyu/EEChou 's opinion, we need not to execute the
 	// same code as SU. It is already updated in PHY_REG_1T_HP.txt.
-#endif
 }
 
 /*-----------------------------------------------------------------------------
@@ -1639,7 +1635,6 @@ PHY_ConfigRFExternalPA(
 )
 {
 	int	rtStatus = _SUCCESS;
-#ifdef CONFIG_USB_HCI
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u16 i=0;
 
@@ -1650,7 +1645,6 @@ PHY_ConfigRFExternalPA(
 
 	// 2010/10/19 MH According to Jenyu/EEChou 's opinion, we need not to execute the
 	// same code as SU. It is already updated in radio_a_1T_HP.txt.
-#endif
 	return rtStatus;
 }
 //****************************************
@@ -2734,7 +2728,6 @@ void rtl8192c_PHY_SetRFPathSwitch(
 // Move from phycfg.c to gen.c to be code independent later
 //
 //-------------------------Move to other DIR later----------------------------*/
-#ifdef CONFIG_USB_HCI
 
 //
 //	Description:
@@ -2743,20 +2736,12 @@ void rtl8192c_PHY_SetRFPathSwitch(
 //
 void DumpBBDbgPort_92CU(PADAPTER Adapter)
 {
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0000);
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0803);
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0a06);
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0007);
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0100);
 	PHY_SetBBReg(Adapter, 0x0a28, 0x00ff0000, 0x000f0000);
-
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0100);
 	PHY_SetBBReg(Adapter, 0x0a28, 0x00ff0000, 0x00150000);
 }
-
-#endif

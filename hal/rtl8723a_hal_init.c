@@ -76,9 +76,7 @@ _BlockWrite(
 	u8			*bufferPtr	= (u8*)buffer;
 	u32			i=0, offset=0;
 
-#ifdef CONFIG_USB_HCI
 	blockSize_p1 = 254;
-#endif
 
 	//3 Phase #1
 	blockCount_p1 = buffSize / blockSize_p1;
@@ -92,11 +90,7 @@ _BlockWrite(
 
 	for (i = 0; i < blockCount_p1; i++)
 	{
-#ifdef CONFIG_USB_HCI
 		ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + i * blockSize_p1), blockSize_p1, (bufferPtr + i * blockSize_p1));
-#else
-		ret = rtw_write32(padapter, (FW_8723A_START_ADDRESS + i * blockSize_p1), le32_to_cpu(*((u32*)(bufferPtr + i * blockSize_p1))));
-#endif
 		if(ret == _FAIL)
 			goto exit;
 	}
@@ -115,14 +109,12 @@ _BlockWrite(
 						(buffSize-offset), blockSize_p2 ,blockCount_p2, remainSize_p2));
 		}
 
-#ifdef CONFIG_USB_HCI
 		for (i = 0; i < blockCount_p2; i++) {
 			ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + offset + i*blockSize_p2), blockSize_p2, (bufferPtr + offset + i*blockSize_p2));
 
 			if(ret == _FAIL)
 				goto exit;
 		}
-#endif
 	}
 
 	//3 Phase #3
@@ -3821,11 +3813,9 @@ void rtl8723a_fill_fake_txdesc(
 	//offset 16
 	ptxdesc->txdw4 |= cpu_to_le32(BIT(8));//driver uses rate
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	// USB interface drop packet if the checksum of descriptor isn't correct.
 	// Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.).
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
-#endif
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -5010,26 +5000,7 @@ void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter)
 
 void rtl8723a_clone_haldata(_adapter* dst_adapter, _adapter* src_adapter)
 {
-#ifdef CONFIG_SDIO_HCI
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(dst_adapter);
-	_sema             temp_SdioXmitSema;
-	_sema             temp_SdioXmitTerminateSema;
-	_lock                temp_SdioTxFIFOFreePageLock;
-
-	memcpy(&temp_SdioXmitSema, &(pHalData->SdioXmitSema), sizeof(_sema));
-	memcpy(&temp_SdioXmitTerminateSema, &(pHalData->SdioXmitTerminateSema), sizeof(_sema));
-	memcpy(&temp_SdioTxFIFOFreePageLock, &(pHalData->SdioTxFIFOFreePageLock), sizeof(_lock));
-
 	memcpy(dst_adapter->HalData, src_adapter->HalData, dst_adapter->hal_data_sz);
-
-	memcpy(&(pHalData->SdioXmitSema), &temp_SdioXmitSema, sizeof(_sema));
-	memcpy(&(pHalData->SdioXmitTerminateSema), &temp_SdioXmitTerminateSema, sizeof(_sema));
-	memcpy(&(pHalData->SdioTxFIFOFreePageLock), &temp_SdioTxFIFOFreePageLock, sizeof(_lock));
-
-#else
-	memcpy(dst_adapter->HalData, src_adapter->HalData, dst_adapter->hal_data_sz);
-#endif
-
 }
 
 void rtl8723a_start_thread(_adapter *padapter)

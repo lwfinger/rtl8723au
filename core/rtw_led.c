@@ -89,9 +89,7 @@ InitLed871x(
 
 	_init_timer(&(pLed->BlinkTimer), padapter->pnetdev, BlinkTimerCallback, pLed);
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	_init_workitem(&(pLed->BlinkWorkItem), BlinkWorkItemCallback, pLed);
-#endif
 }
 
 
