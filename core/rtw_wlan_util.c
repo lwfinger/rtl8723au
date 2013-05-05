@@ -2280,7 +2280,7 @@ int rtw_handle_dualmac(_adapter *adapter, bool init)
 			DBG_871X("%s(): SECONDARY_ADAPTER\n",__FUNCTION__);
 		}
 #endif
-	}else {
+	} else {
 		pbuddy_padapter = NULL;
 	}
 exit:

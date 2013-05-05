@@ -38,7 +38,7 @@ do { if (wapi_debug_component & (component)) \
 }while (0);
 
 #define WAPI_DATA(component, x, buf, len) \
-do { if (wapi_debug_component & (component)){ \
+do { if (wapi_debug_component & (component)) { \
 	printk("%s:\n", x);\
 	dump_buf((buf), (len));}\
 }while (0);

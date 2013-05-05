@@ -93,7 +93,7 @@ void rtl8192cu_cal_txdesc_chksum(struct tx_desc	*ptxdesc)
 		//Clear first
 		ptxdesc->txdw7 &= cpu_to_le32(0xffff0000);
 
-		for (index = 0 ; index < count ; index++){
+		for (index = 0 ; index < count ; index++) {
 			checksum = checksum ^ le16_to_cpu(*(usPtr + index));
 		}
 
@@ -329,7 +329,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		ptxdesc->txdw5 |= cpu_to_le32(0x00180000);//retry limit = 6
 
 #ifdef CONFIG_INTEL_PROXIM
-		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)){
+		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)) {
 			DBG_871X("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
 			ptxdesc->txdw5 |= cpu_to_le32( pattrib->rate);
 		}
@@ -991,12 +991,12 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 #endif
 //else CONFIG_TDLS, process as TDLS Buffer STA
 #else
-	if (pmlmeinfo->tdls_setup_state&TDLS_LINKED_STATE ){	//&& pattrib->ether_type!=0x0806)
+	if (pmlmeinfo->tdls_setup_state&TDLS_LINKED_STATE ) {	//&& pattrib->ether_type!=0x0806)
 		res = xmit_tdls_enqueue_for_sleeping_sta(padapter, pxmitframe);
-		if (res==true){
+		if (res==true) {
 			_exit_critical_bh(&pxmitpriv->lock, &irqL);
 			return false;
-		}else if (res==2){
+		} else if (res==2) {
 			goto enqueue;
 		}
 	}

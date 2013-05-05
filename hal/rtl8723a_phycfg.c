@@ -162,7 +162,7 @@ rtl8192c_PHY_SetBBReg(
 
 	//RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_SetBBReg(): RegAddr(%#lx), BitMask(%#lx), Data(%#lx)\n", RegAddr, BitMask, Data));
 
-	if (BitMask!= bMaskDWord){//if not "double word" write
+	if (BitMask!= bMaskDWord) {//if not "double word" write
 		OriginalValue = rtw_read32(Adapter, RegAddr);
 		BitShift = phy_CalculateBitShift(BitMask);
 		Data = ((OriginalValue & (~BitMask)) | (Data << BitShift));
@@ -565,14 +565,14 @@ phy_ConfigMACWithHeaderFile(
 		if ((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL)
 			return _FAIL;
 
-		for (i = 0 ;i < ArrayLength;i=i+2){ // Add by tynli for 2 column
+		for (i = 0 ;i < ArrayLength;i=i+2) { // Add by tynli for 2 column
 			rtw_IOL_append_WB_cmd(xmit_frame, ptrArray[i], (u8)ptrArray[i+1]);
 		}
 
 		return rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000);
 	}
 #else
-	for (i = 0 ;i < ArrayLength;i=i+2){ // Add by tynli for 2 column
+	for (i = 0 ;i < ArrayLength;i=i+2) { // Add by tynli for 2 column
 		rtw_write8(Adapter, ptrArray[i], (u8)ptrArray[i+1]);
 	}
 #endif
@@ -883,7 +883,7 @@ phy_ConfigBBWithHeaderFile(
 		#else
 		for (i=0;i<PHY_REGArrayLen;i=i+2)
 		{
-			if (Rtl819XPHY_REGArray_Table[i] == 0xfe){
+			if (Rtl819XPHY_REGArray_Table[i] == 0xfe) {
 				#ifdef CONFIG_LONG_DELAY_ISSUE
 				rtw_msleep_os(50);
 				#else
@@ -1396,7 +1396,7 @@ phy_BB8723a_Config_ParaFile(
 	rtStatus = phy_ConfigBBWithParaFile(Adapter,pszBBRegFile);
 #endif//#ifdef CONFIG_EMBEDDED_FWIMG
 
-	if (rtStatus != _SUCCESS){
+	if (rtStatus != _SUCCESS) {
 		//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():Write BB Reg Fail!!"));
 		goto phy_BB8190_Config_ParaFile_Fail;
 	}
@@ -1416,7 +1416,7 @@ phy_BB8723a_Config_ParaFile(
 	rtStatus = phy_ConfigBBWithMpParaFile(Adapter, pszBBRegMpFile);
 #endif
 
-	if (rtStatus != _SUCCESS){
+	if (rtStatus != _SUCCESS) {
 //		RT_TRACE(COMP_INIT, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():Write BB Reg MP Fail!!"));
 		goto phy_BB8190_Config_ParaFile_Fail;
 	}
@@ -1446,7 +1446,7 @@ phy_BB8723a_Config_ParaFile(
 #endif
 	}
 
-	if (rtStatus != _SUCCESS){
+	if (rtStatus != _SUCCESS) {
 		//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():BB_PG Reg Fail!!"));
 		goto phy_BB8190_Config_ParaFile_Fail;
 	}
@@ -1466,7 +1466,7 @@ phy_BB8723a_Config_ParaFile(
 	rtStatus = phy_ConfigBBWithParaFile(Adapter, pszAGCTableFile);
 #endif
 
-	if (rtStatus != _SUCCESS){
+	if (rtStatus != _SUCCESS) {
 		//RT_TRACE(COMP_FPGA, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():AGC Table Fail\n"));
 		goto phy_BB8190_Config_ParaFile_Fail;
 	}
@@ -2696,7 +2696,7 @@ _PHY_DumpRFReg(PADAPTER	pAdapter)
 
 	//RTPRINT(FINIT, INIT_RF, ("PHY_DumpRFReg()====>\n"));
 
-	for (rfRegOffset = 0x00;rfRegOffset<=0x30;rfRegOffset++){
+	for (rfRegOffset = 0x00;rfRegOffset<=0x30;rfRegOffset++) {
 		rfRegValue = PHY_QueryRFReg(pAdapter,RF_PATH_A, rfRegOffset, bMaskDWord);
 		//RTPRINT(FINIT, INIT_RF, (" 0x%02x = 0x%08x\n",rfRegOffset,rfRegValue));
 	}
@@ -2715,10 +2715,10 @@ void rtl8192c_PHY_SetRFPathSwitch(
 	return;
 #endif
 
-	if (IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL( pHalData->VersionID)) {
 		_PHY_SetRFPathSwitch(pAdapter, bMain, true);
 	}
-	else{
+	else {
 		// For 88C 1T1R
 		_PHY_SetRFPathSwitch(pAdapter, bMain, false);
 	}

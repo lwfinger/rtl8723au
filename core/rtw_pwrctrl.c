@@ -104,8 +104,8 @@ int ips_leave(_adapter * padapter)
 		{
 			DBG_871X("==>%s, channel(%d), processing(%x)\n", __func__, padapter->mlmeextpriv.cur_channel, pwrpriv->bips_processing);
 			set_channel_bwmode(padapter, padapter->mlmeextpriv.cur_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-			for (keyid = 0;keyid<4;keyid++){
-				if (pmlmepriv->key_mask & BIT(keyid)){
+			for (keyid = 0;keyid<4;keyid++) {
+				if (pmlmepriv->key_mask & BIT(keyid)) {
 					if (keyid == psecuritypriv->dot11PrivacyKeyIndex)
 						result = rtw_set_key(padapter, psecuritypriv, keyid, 1);
 					else
@@ -1531,7 +1531,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	if (padapter->pbuddy_adapter)
 		LeaveAllPowerSaveMode(padapter->pbuddy_adapter);
 
-	if ((padapter->isprimary == false) && padapter->pbuddy_adapter){
+	if ((padapter->isprimary == false) && padapter->pbuddy_adapter) {
 		padapter = padapter->pbuddy_adapter;
 		pwrpriv = &padapter->pwrctrlpriv;
 		pmlmepriv = &padapter->mlmepriv;
@@ -1553,7 +1553,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 }
 
 	//System suspend is not allowed to wakeup
-	if ((pwrpriv->bInternalAutoSuspend == false) && (true == pwrpriv->bInSuspend )){
+	if ((pwrpriv->bInternalAutoSuspend == false) && (true == pwrpriv->bInSuspend )) {
 		ret = _FAIL;
 		goto exit;
 	}
@@ -1568,8 +1568,8 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 	{
 #if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
-		if (true == pwrpriv->bInternalAutoSuspend){
-			if (0 == pwrpriv->autopm_cnt){
+		if (true == pwrpriv->bInternalAutoSuspend) {
+			if (0 == pwrpriv->autopm_cnt) {
 			#if (LINUX_VERSION_CODE>= KERNEL_VERSION(2, 6, 33))
 				if (usb_autopm_get_interface(adapter_to_dvobj(padapter)->pusbintf) < 0)
 				{
@@ -1627,7 +1627,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	if (padapter->bDriverStopped
 		|| !padapter->bup
 		|| !padapter->hw_init_completed
-	){
+	) {
 		DBG_8192C("%s: bDriverStopped =%d, bup =%d, hw_init_completed =%u\n"
 			, caller
 			, padapter->bDriverStopped
@@ -1672,7 +1672,7 @@ int rtw_pm_set_ips(_adapter *padapter, u8 mode)
 		rtw_ips_mode_req(pwrctrlpriv, mode);
 		DBG_871X("%s %s\n", __func__, mode == IPS_NORMAL?"IPS_NORMAL":"IPS_LEVEL_2");
 		return 0;
-	} else if (mode == IPS_NONE){
+	} else if (mode == IPS_NONE) {
 		rtw_ips_mode_req(pwrctrlpriv, mode);
 		DBG_871X("%s %s\n", __func__, "IPS_NONE");
 		if ((padapter->bSurpriseRemoved == 0)&&(_FAIL == rtw_pwr_wakeup(padapter)) )

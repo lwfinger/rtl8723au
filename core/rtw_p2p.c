@@ -3524,7 +3524,7 @@ _func_enter_;
 
 			pmlmeext->cur_channel = pcfg80211_wdinfo->restore_channel;
 
-		}else
+		} else
 #endif //CONFIG_CONCURRENT_MODE
 		if ( pcfg80211_wdinfo->restore_channel != pmlmeext->cur_channel )
 		{
@@ -4098,13 +4098,13 @@ _func_enter_;
 		if (enqueue)
 		{
 			ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
-			if (ph2c==NULL){
+			if (ph2c==NULL) {
 				res= _FAIL;
 				goto exit;
 			}
 
 			pdrvextra_cmd_parm = (struct drvextra_cmd_parm*)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-			if (pdrvextra_cmd_parm==NULL){
+			if (pdrvextra_cmd_parm==NULL) {
 				rtw_mfree((unsigned char *)ph2c, sizeof(struct cmd_obj));
 				res= _FAIL;
 				goto exit;

@@ -163,7 +163,7 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
-	if (pHalData->BoardType == BOARD_USB_High_PA){
+	if (pHalData->BoardType == BOARD_USB_High_PA) {
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,true);
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
 	}
@@ -172,13 +172,13 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
 
 
-	if (pHalData->rf_type == RF_1T1R){
+	if (pHalData->rf_type == RF_1T1R) {
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T1R);
 	}
-	else if (pHalData->rf_type == RF_2T2R){
+	else if (pHalData->rf_type == RF_2T2R) {
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_2T2R);
 	}
-	else if (pHalData->rf_type == RF_1T2R){
+	else if (pHalData->rf_type == RF_1T2R) {
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T2R);
 	}
 }
@@ -369,7 +369,7 @@ _record_initrate:
 		{
 			if (Adapter->stapriv.asoc_sta_count > 2)
 				bLinked = true;
-		} else{//Station mode
+		} else {//Station mode
 			if (check_fwstate(pmlmepriv, _FW_LINKED)== true)
 				bLinked = true;
 		}

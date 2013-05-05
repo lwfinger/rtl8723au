@@ -112,7 +112,7 @@ _func_enter_;
 
 	pxmitpriv->pallocated_frame_buf = rtw_zvmalloc(NR_XMITFRAME * sizeof(struct xmit_frame) + 4);
 
-	if (pxmitpriv->pallocated_frame_buf  == NULL){
+	if (pxmitpriv->pallocated_frame_buf  == NULL) {
 		pxmitpriv->pxmit_frame_buf =NULL;
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_frame fail!\n"));
 		res= _FAIL;
@@ -152,7 +152,7 @@ _func_enter_;
 
 	pxmitpriv->pallocated_xmitbuf = rtw_zvmalloc(NR_XMITBUFF * sizeof(struct xmit_buf) + 4);
 
-	if (pxmitpriv->pallocated_xmitbuf  == NULL){
+	if (pxmitpriv->pallocated_xmitbuf  == NULL) {
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_buf fail!\n"));
 		res= _FAIL;
 		goto exit;
@@ -210,7 +210,7 @@ _func_enter_;
 
 	pxmitpriv->pallocated_xmit_extbuf = rtw_zvmalloc(num_xmit_extbuf * sizeof(struct xmit_buf) + 4);
 
-	if (pxmitpriv->pallocated_xmit_extbuf  == NULL){
+	if (pxmitpriv->pallocated_xmit_extbuf  == NULL) {
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_extbuf fail!\n"));
 		res= _FAIL;
 		goto exit;
@@ -861,7 +861,7 @@ _func_exit_;
 	return res;
 }
 
-static s32 xmitframe_addmic(_adapter *padapter, struct xmit_frame *pxmitframe){
+static s32 xmitframe_addmic(_adapter *padapter, struct xmit_frame *pxmitframe) {
 	sint			curfragnum,length;
 	u8	*pframe, *payload,mic[8];
 	struct	mic_data		micdata;
@@ -899,14 +899,14 @@ _func_enter_;
 	if (pattrib->encrypt ==_TKIP_)//if (psecuritypriv->dot11PrivacyAlgrthm==_TKIP_PRIVACY_)
 	{
 		//encode mic code
-		if (stainfo!= NULL){
+		if (stainfo!= NULL) {
 			u8 null_key[16]={0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
 
 			pframe = pxmitframe->buf_addr + hw_hdr_offset;
 
 			if (bmcst)
 			{
-				if (_rtw_memcmp(psecuritypriv->dot118021XGrptxmickey[psecuritypriv->dot118021XGrpKeyid].skey, null_key, 16)==true){
+				if (_rtw_memcmp(psecuritypriv->dot118021XGrptxmickey[psecuritypriv->dot118021XGrpKeyid].skey, null_key, 16)==true) {
 					//DbgPrint("\nxmitframe_addmic:stainfo->dot11tkiptxmickey==0\n");
 					//rtw_msleep_os(10);
 					return _FAIL;
@@ -916,7 +916,7 @@ _func_enter_;
 			}
 			else
 			{
-				if (_rtw_memcmp(&stainfo->dot11tkiptxmickey.skey[0],null_key, 16)==true){
+				if (_rtw_memcmp(&stainfo->dot11tkiptxmickey.skey[0],null_key, 16)==true) {
 					//DbgPrint("\nxmitframe_addmic:stainfo->dot11tkiptxmickey==0\n");
 					//rtw_msleep_os(10);
 					return _FAIL;
@@ -925,14 +925,14 @@ _func_enter_;
 				rtw_secmicsetkey(&micdata, &stainfo->dot11tkiptxmickey.skey[0]);
 			}
 
-			if (pframe[1]&1){   //ToDS==1
+			if (pframe[1]&1) {   //ToDS==1
 				rtw_secmicappend(&micdata, &pframe[16], 6);  //DA
 				if (pframe[1]&2)  //From Ds==1
 					rtw_secmicappend(&micdata, &pframe[24], 6);
 				else
 				rtw_secmicappend(&micdata, &pframe[10], 6);
 			}
-			else{	//ToDS==0
+			else {	//ToDS==0
 				rtw_secmicappend(&micdata, &pframe[4], 6);   //DA
 				if (pframe[1]&2)  //From Ds==1
 					rtw_secmicappend(&micdata, &pframe[16], 6);
@@ -950,19 +950,19 @@ _func_enter_;
 
 			payload=pframe;
 
-			for (curfragnum=0;curfragnum<pattrib->nr_frags;curfragnum++){
+			for (curfragnum=0;curfragnum<pattrib->nr_frags;curfragnum++) {
 				payload=(u8 *)RND4((SIZE_PTR)(payload));
 				RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("===curfragnum=%d, pframe= 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x, 0x%.2x,!!!\n",
 					curfragnum,*payload, *(payload+1),*(payload+2),*(payload+3),*(payload+4),*(payload+5),*(payload+6),*(payload+7)));
 
 				payload=payload+pattrib->hdrlen+pattrib->iv_len;
 				RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("curfragnum=%d pattrib->hdrlen=%d pattrib->iv_len=%d",curfragnum,pattrib->hdrlen,pattrib->iv_len));
-				if ((curfragnum+1)==pattrib->nr_frags){
+				if ((curfragnum+1)==pattrib->nr_frags) {
 					length=pattrib->last_txcmdsz-pattrib->hdrlen-pattrib->iv_len-( (pattrib->bswenc) ? pattrib->icv_len : 0);
 					rtw_secmicappend(&micdata, payload,length);
 					payload=payload+length;
 				}
-				else{
+				else {
 					length=pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-( (pattrib->bswenc) ? pattrib->icv_len : 0);
 					rtw_secmicappend(&micdata, payload, length);
 					payload=payload+length+pattrib->icv_len;
@@ -987,7 +987,7 @@ _func_enter_;
 					*(payload+curfragnum), *(payload+curfragnum+1), *(payload+curfragnum+2),*(payload+curfragnum+3),
 					*(payload+curfragnum+4),*(payload+curfragnum+5),*(payload+curfragnum+6),*(payload+curfragnum+7)));
 			}
-			else{
+			else {
 				RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("xmitframe_addmic: rtw_get_stainfo==NULL!!!\n"));
 			}
 	}
@@ -997,7 +997,7 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-static s32 xmitframe_swencrypt(_adapter *padapter, struct xmit_frame *pxmitframe){
+static s32 xmitframe_swencrypt(_adapter *padapter, struct xmit_frame *pxmitframe) {
 
 	struct	pkt_attrib	 *pattrib = &pxmitframe->attrib;
 	//struct	security_priv	*psecuritypriv=&padapter->securitypriv;
@@ -1009,7 +1009,7 @@ _func_enter_;
 	{
 		//DBG_871X("start xmitframe_swencrypt\n");
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_alert_,("### xmitframe_swencrypt\n"));
-		switch (pattrib->encrypt){
+		switch (pattrib->encrypt) {
 		case _WEP40_:
 		case _WEP104_:
 			rtw_wep_encrypt(padapter, (u8 *)pxmitframe);
@@ -1080,15 +1080,15 @@ _func_enter_;
 		if ((check_fwstate(pmlmepriv,  WIFI_STATION_STATE) == true)) {
 			//to_ds = 1, fr_ds = 0;
 #ifdef CONFIG_TDLS
-			if ((ptdlsinfo->setup_state == TDLS_LINKED_STATE)){
+			if ((ptdlsinfo->setup_state == TDLS_LINKED_STATE)) {
 				ptdls_sta = rtw_get_stainfo(pstapriv, pattrib->dst);
-				if ((ptdls_sta!=NULL)&&(ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE)&&(pattrib->ether_type!=0x0806)){
+				if ((ptdls_sta!=NULL)&&(ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE)&&(pattrib->ether_type!=0x0806)) {
 					//TDLS data transfer, ToDS=0, FrDs=0
 					memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
 					memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 					memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv), ETH_ALEN);
 					direct_link=1;
-				}else{
+				} else {
 					// 1.Data transfer to AP
 					// 2.Arp pkt will relayed by AP
 					SetToDs(fctrl);
@@ -1096,7 +1096,7 @@ _func_enter_;
 					memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 					memcpy(pwlanhdr->addr3, pattrib->dst, ETH_ALEN);
 				}
-			}else
+			} else
 #endif //CONFIG_TDLS
 			{
 				//Data transfer to AP
@@ -1157,7 +1157,7 @@ _func_enter_;
 
 		//Update Seq Num will be handled by f/w
 		{
-			if (psta){
+			if (psta) {
 #ifdef CONFIG_TDLS
 				if (direct_link==1)
 				{
@@ -1212,7 +1212,7 @@ _func_enter_;
 #ifdef CONFIG_TDLS
 				if (direct_link==1)
 				{
-					if (pattrib->encrypt){
+					if (pattrib->encrypt) {
 						pattrib->encrypt= _AES_;
 						pattrib->iv_len=8;
 						pattrib->icv_len=8;
@@ -1299,7 +1299,7 @@ int rtw_build_tdls_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *
 {
 	int res=_SUCCESS;
 
-	switch (action){
+	switch (action) {
 		case TDLS_SETUP_REQUEST:
 			rtw_build_tdls_setup_req_ies(padapter, pxmitframe, pframe);
 			break;
@@ -1359,7 +1359,7 @@ _func_enter_;
 
 	SetFrameSubType(fctrl, pattrib->subtype);
 
-	switch (action){
+	switch (action) {
 		case TDLS_SETUP_REQUEST:
 		case TDLS_SETUP_RESPONSE:
 		case TDLS_SETUP_CONFIRM:
@@ -1415,24 +1415,24 @@ _func_enter_;
 
 	//  1. update seq_num per link by sta_info
 	//  2. rewrite encrypt to _AES_, also rewrite iv_len, icv_len
-	if (tdls_seq==1){
+	if (tdls_seq==1) {
 		ptdls_sta=rtw_get_stainfo(pstapriv, pattrib->dst);
-		if (ptdls_sta){
+		if (ptdls_sta) {
 			ptdls_sta->sta_xmitpriv.txseq_tid[pattrib->priority]++;
 			ptdls_sta->sta_xmitpriv.txseq_tid[pattrib->priority] &= 0xFFF;
 			pattrib->seqnum = ptdls_sta->sta_xmitpriv.txseq_tid[pattrib->priority];
 			SetSeqNum(hdr, pattrib->seqnum);
 
-			if (pattrib->encrypt){
+			if (pattrib->encrypt) {
 				pattrib->encrypt= _AES_;
 				pattrib->iv_len=8;
 				pattrib->icv_len=8;
 			}
-		}else{
+		} else {
 			res=_FAIL;
 			goto exit;
 		}
-	}else if (psta){
+	} else if (psta) {
 		psta->sta_xmitpriv.txseq_tid[pattrib->priority]++;
 		psta->sta_xmitpriv.txseq_tid[pattrib->priority] &= 0xFFF;
 		pattrib->seqnum = psta->sta_xmitpriv.txseq_tid[pattrib->priority];
@@ -1620,7 +1620,7 @@ _func_enter_;
 	if (psta==NULL)
 		return _FAIL;
 
-	if (pxmitframe->buf_addr == NULL){
+	if (pxmitframe->buf_addr == NULL) {
 		DBG_8192C("==> %s buf_addr==NULL\n",__FUNCTION__);
 		return _FAIL;
 	}
@@ -2167,7 +2167,7 @@ _func_enter_;
 
 	rtw_list_delete(&pxmitframe->list);
 
-	if (pxmitframe->pkt){
+	if (pxmitframe->pkt) {
 		pndis_pkt = pxmitframe->pkt;
 		pxmitframe->pkt = NULL;
 	}
@@ -2883,9 +2883,9 @@ sint xmitframe_enqueue_for_tdls_sleeping_sta(_adapter *padapter, struct xmit_fra
 	int i;
 
 	ptdls_sta=rtw_get_stainfo(pstapriv, pattrib->dst);
-	if (ptdls_sta==NULL){
+	if (ptdls_sta==NULL) {
 		return ret;
-	}else if (ptdls_sta->tdls_sta_state&TDLS_LINKED_STATE){
+	} else if (ptdls_sta->tdls_sta_state&TDLS_LINKED_STATE) {
 
 		if (pattrib->triggered==1)
 		{

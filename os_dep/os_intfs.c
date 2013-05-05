@@ -340,7 +340,7 @@ void rtw_proc_init_one(struct net_device *dev)
 		{
 			if (rtw_proc_cnt == 0)
 			{
-				if (rtw_proc){
+				if (rtw_proc) {
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
 					remove_proc_entry(rtw_proc_name, proc_net);
 #else
@@ -663,7 +663,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 
 	if (rtw_proc_cnt == 0)
 	{
-		if (rtw_proc){
+		if (rtw_proc) {
 			remove_proc_entry("ver_info", rtw_proc);
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
@@ -1093,14 +1093,14 @@ void rtw_stop_drv_threads (_adapter *padapter)
 		//Below is to termindate rtw_cmd_thread & event_thread...
 		_rtw_up_sema(&padapter->cmdpriv.cmd_queue_sema);
 		//_rtw_up_sema(&padapter->cmdpriv.cmd_done_sema);
-		if (padapter->cmdThread){
+		if (padapter->cmdThread) {
 			_rtw_down_sema(&padapter->cmdpriv.terminate_cmdthread_sema);
 		}
 	}
 
 #ifdef CONFIG_EVENT_THREAD_MODE
         _rtw_up_sema(&padapter->evtpriv.evt_notify);
-	if (padapter->evtThread){
+	if (padapter->evtThread) {
 		_rtw_down_sema(&padapter->evtpriv.terminate_evtthread_sema);
 	}
 #endif
@@ -1927,7 +1927,7 @@ int _netdev_open(struct net_device *pnetdev)
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+871x_drv - dev_open\n"));
 	DBG_871X("+871x_drv - drv_open, bup=%d\n", padapter->bup);
 
-	if (pwrctrlpriv->ps_flag == true){
+	if (pwrctrlpriv->ps_flag == true) {
 		padapter->net_closed = false;
 		goto netdev_open_normal_process;
 	}
@@ -2178,7 +2178,7 @@ static int netdev_close(struct net_device *pnetdev)
 		rtw_dev_unload(padapter);
 	}
 	else*/
-	if (padapter->pwrctrlpriv.rf_pwrstate == rf_on){
+	if (padapter->pwrctrlpriv.rf_pwrstate == rf_on) {
 		DBG_871X("(2)871x_drv - drv_close, bup=%d, hw_init_completed=%d\n", padapter->bup, padapter->hw_init_completed);
 
 		//s1.

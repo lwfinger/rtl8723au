@@ -469,7 +469,7 @@ phy_IQCalibrate_8192C(
 
 
 
-	if (IS_HARDWARE_TYPE_8192D(pAdapter)){
+	if (IS_HARDWARE_TYPE_8192D(pAdapter)) {
 		//==============================
 		//3 Path Diversity
 		////Neil Chen--2011--05--20
@@ -497,7 +497,7 @@ phy_IQCalibrate_8192C(
 		pHalData->bRfPiEnable = (u1Byte)PHY_QueryBBReg(pAdapter, rFPGA0_XA_HSSIParameter1, BIT(8));
 	}
 
-	if (!pHalData->bRfPiEnable){
+	if (!pHalData->bRfPiEnable) {
 		// Switch BB to PI mode to do IQ Calibration.
 		phy_PIModeSwitch(pAdapter, true);
 	}
@@ -550,9 +550,9 @@ phy_IQCalibrate_8192C(
 	PHY_SetBBReg(pAdapter, rTx_IQK, bMaskDWord, 0x01007c00);
 	PHY_SetBBReg(pAdapter, rRx_IQK, bMaskDWord, 0x01004800);
 
-	for (i = 0 ; i < retryCount ; i++){
+	for (i = 0 ; i < retryCount ; i++) {
 		PathAOK = phy_PathA_IQK_8192C(pAdapter, is2T);
-		if (PathAOK == 0x03){
+		if (PathAOK == 0x03) {
 			RTPRINT(FINIT, INIT_IQK, ("Path A IQK Success!!\n"));
 				result[t][0] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 				result[t][1] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
@@ -569,19 +569,19 @@ phy_IQCalibrate_8192C(
 		}
 	}
 
-	if (0x00 == PathAOK){
+	if (0x00 == PathAOK) {
 		RTPRINT(FINIT, INIT_IQK, ("Path A IQK failed!!\n"));
 	}
 
-	if (is2T){
+	if (is2T) {
 		phy_PathAStandBy(pAdapter);
 
 		// Turn Path B ADDA on
 		phy_PathADDAOn(pAdapter, ADDA_REG, false, is2T);
 
-		for (i = 0 ; i < retryCount ; i++){
+		for (i = 0 ; i < retryCount ; i++) {
 			PathBOK = phy_PathB_IQK_8192C(pAdapter);
-			if (PathBOK == 0x03){
+			if (PathBOK == 0x03) {
 				RTPRINT(FINIT, INIT_IQK, ("Path B IQK Success!!\n"));
 				result[t][4] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_B, bMaskDWord)&0x3FF0000)>>16;
 				result[t][5] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_B, bMaskDWord)&0x3FF0000)>>16;
@@ -597,7 +597,7 @@ phy_IQCalibrate_8192C(
 			}
 		}
 
-		if (0x00 == PathBOK){
+		if (0x00 == PathBOK) {
 			RTPRINT(FINIT, INIT_IQK, ("Path B IQK failed!!\n"));
 		}
 	}
@@ -608,7 +608,7 @@ phy_IQCalibrate_8192C(
 
 	if (t!=0)
 	{
-		if (!pHalData->bRfPiEnable){
+		if (!pHalData->bRfPiEnable) {
 			// Switch back BB to SI mode after finish IQ Calibration.
 			phy_PIModeSwitch(pAdapter, false);
 		}
@@ -634,7 +634,7 @@ phy_IQCalibrate_8192C(
 		{
 			// Restore RX initial gain
 			PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00032ed3);
-			if (is2T){
+			if (is2T) {
 				PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00032ed3);
 			}
 		}
@@ -1444,7 +1444,7 @@ if (pAdapter->registrypriv.mp_mode == 1)
 	{
 		phy_LCCalibrate(pAdapter, true);
 	}
-	else{
+	else {
 		// For 88C 1T1R
 		phy_LCCalibrate(pAdapter, false);
 	}
@@ -1479,10 +1479,10 @@ PHY_APCalibrate_8192C(
 #endif
 		return;
 
-	if (IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL( pHalData->VersionID)) {
 		phy_APCalibrate_8192C(pAdapter, delta, true);
 	}
-	else{
+	else {
 		// For 88C 1T1R
 		phy_APCalibrate_8192C(pAdapter, delta, false);
 	}

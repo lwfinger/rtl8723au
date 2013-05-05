@@ -60,13 +60,13 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 	//DBG_871X("%s %s:%d\n",__FUNCTION__, current->comm, current->pid);
 
-	if ((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)){
+	if ((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)) {
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usbctrl_vendorreq:(padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
 		status = -EPERM;
 		goto exit;
 	}
 
-	if (len>MAX_VENDOR_REQ_CMD_SIZE){
+	if (len>MAX_VENDOR_REQ_CMD_SIZE) {
 		DBG_8192C( "[%s] Buffer len error ,vendor request failed\n", __FUNCTION__ );
 		status = -EINVAL;
 		goto exit;
@@ -150,7 +150,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 				}
 			}
 
-			if (rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == true ){
+			if (rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == true ) {
 				padapter->bSurpriseRemoved = true;
 				break;
 			}
@@ -407,7 +407,7 @@ InterruptRecognized8723AU(
 		struct reportpwrstate_parm report;
 		memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
 #ifdef CONFIG_LPS_LCLK
-		if ( ((pHalData->IntArray[0])&UHIMR_CPWM)){
+		if ( ((pHalData->IntArray[0])&UHIMR_CPWM)) {
 			_set_workitem(&Adapter->pwrctrlpriv.cpwm_event);
 			pHalData->IntArray[0]&= ~UHIMR_CPWM;
 		}
@@ -583,7 +583,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 
 				// for first fragment packet, driver need allocate 1536+drvinfo_sz+RXDESC_SIZE to defrag packet.
 				// modify alloc_sz for recvive crc error packet by thomas 2011-06-02
-				if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)){
+				if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)) {
 					//alloc_sz = 1664;	//1664 is 128 alignment.
 					if (skb_len <= 1650)
 						alloc_sz = 1664;
@@ -684,7 +684,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 
 		pattrib = &precvframe->u.hdr.attrib;
 
-		if (pattrib->crc_err){
+		if (pattrib->crc_err) {
 			DBG_8192C("%s()-%d: RX Warning! rx CRC ERROR !!\n", __FUNCTION__, __LINE__);
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 			goto _exit_recvbuf2recvframe;
@@ -715,7 +715,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 
 		// for first fragment packet, driver need allocate 1536+drvinfo_sz+RXDESC_SIZE to defrag packet.
 		// modify alloc_sz for recvive crc error packet by thomas 2011-06-02
-		if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)){
+		if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)) {
 			//alloc_sz = 1664;	//1664 is 128 alignment.
 			if (skb_len <= 1650)
 				alloc_sz = 1664;
@@ -876,7 +876,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	#ifdef CONFIG_PREALLOC_RECV_SKB
 		precvbuf->reuse = true;
 	#else
-		if (precvbuf->pskb){
+		if (precvbuf->pskb) {
 			DBG_8192C("==> free skb(%p)\n",precvbuf->pskb);
 			dev_kfree_skb_any(precvbuf->pskb);
 		}
@@ -917,7 +917,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 
 		DBG_8192C("###=> usb_read_port_complete => urb status(%d)\n", purb->status);
 
-		if (rtw_inc_and_chk_continual_urb_error(adapter_to_dvobj(padapter)) == true ){
+		if (rtw_inc_and_chk_continual_urb_error(adapter_to_dvobj(padapter)) == true ) {
 			padapter->bSurpriseRemoved = true;
 		}
 

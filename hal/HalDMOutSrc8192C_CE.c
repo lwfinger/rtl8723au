@@ -355,7 +355,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			//RTPRINT(FINIT, INIT_IQK, ("TxPwrTracking path A: X = 0x%x, Y = 0x%x ele_A = 0x%x ele_C = 0x%x ele_D = 0x%x\n", X, Y, ele_A, ele_C, ele_D));
 
 			//Adjust CCK according to IQK result
-			if (!pdmpriv->bCCKinCH14){
+			if (!pdmpriv->bCCKinCH14) {
 				rtw_write8(Adapter, 0xa22, CCKSwingTable_Ch1_Ch13[CCK_index][0]);
 				rtw_write8(Adapter, 0xa23, CCKSwingTable_Ch1_Ch13[CCK_index][1]);
 				rtw_write8(Adapter, 0xa24, CCKSwingTable_Ch1_Ch13[CCK_index][2]);
@@ -365,7 +365,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				rtw_write8(Adapter, 0xa28, CCKSwingTable_Ch1_Ch13[CCK_index][6]);
 				rtw_write8(Adapter, 0xa29, CCKSwingTable_Ch1_Ch13[CCK_index][7]);
 			}
-			else{
+			else {
 				rtw_write8(Adapter, 0xa22, CCKSwingTable_Ch14[CCK_index][0]);
 				rtw_write8(Adapter, 0xa23, CCKSwingTable_Ch14[CCK_index][1]);
 				rtw_write8(Adapter, 0xa24, CCKSwingTable_Ch14[CCK_index][2]);
@@ -384,7 +384,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				X = pdmpriv->RegEB4;
 				Y = pdmpriv->RegEBC;
 
-				if (X != 0){
+				if (X != 0) {
 					if ((X & 0x00000200) != 0)	//consider minus
 						X = X | 0xFFFFFC00;
 					ele_A = ((X * ele_D)>>8)&0x000003FF;
@@ -408,7 +408,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 					PHY_SetBBReg(Adapter, rOFDM0_ECCAThreshold, BIT25, value32);
 
 				}
-				else{
+				else {
 					PHY_SetBBReg(Adapter, rOFDM0_XBTxIQImbalance, bMaskDWord, OFDMSwingTable[OFDM_index[1]]);
 					PHY_SetBBReg(Adapter, rOFDM0_XDTxAFE, bMaskH4Bits, 0x00);
 					PHY_SetBBReg(Adapter, rOFDM0_ECCAThreshold, BIT27|BIT25, 0x00);
@@ -605,7 +605,7 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter )
 	}
 */
 
-	if (pDM_SWAT_Table->SWAS_NoLink_State == 0){
+	if (pDM_SWAT_Table->SWAS_NoLink_State == 0) {
 		//switch channel
 		pDM_SWAT_Table->SWAS_NoLink_State = 1;
 		pDM_SWAT_Table->CurAntenna = (pDM_SWAT_Table->CurAntenna==Antenna_A)?Antenna_B:Antenna_A;
@@ -871,7 +871,7 @@ _PHY_SaveADDARegisters(
 	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Save ADDA parameters.\n"));
-	for ( i = 0 ; i < RegisterNum ; i++){
+	for ( i = 0 ; i < RegisterNum ; i++) {
 		ADDABackup[i] = PHY_QueryBBReg(pAdapter, ADDAReg[i], bMaskDWord);
 	}
 }
@@ -886,7 +886,7 @@ _PHY_SaveMACRegisters(
 	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Save MAC parameters.\n"));
-	for ( i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++){
+	for ( i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++) {
 		MACBackup[i] =rtw_read8(pAdapter, MACReg[i]);
 	}
 	MACBackup[i] = rtw_read32(pAdapter, MACReg[i]);
@@ -904,7 +904,7 @@ _PHY_ReloadADDARegisters(
 	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Reload ADDA power saving parameters !\n"));
-	for (i = 0 ; i < RegiesterNum ; i++){
+	for (i = 0 ; i < RegiesterNum ; i++) {
 		PHY_SetBBReg(pAdapter, ADDAReg[i], bMaskDWord, ADDABackup[i]);
 	}
 }
@@ -919,7 +919,7 @@ _PHY_ReloadMACRegisters(
 	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Reload MAC parameters !\n"));
-	for (i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++){
+	for (i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++) {
 		rtw_write8(pAdapter, MACReg[i], (u8)MACBackup[i]);
 	}
 	rtw_write32(pAdapter, MACReg[i], MACBackup[i]);
@@ -939,15 +939,15 @@ _PHY_PathADDAOn(
 	//RTPRINT(FINIT, INIT_IQK, ("ADDA ON.\n"));
 
 	pathOn = isPathAOn ? 0x04db25a4 : 0x0b1b25a4;
-	if (false == is2T){
+	if (false == is2T) {
 		pathOn = 0x0bdb25a0;
 		PHY_SetBBReg(pAdapter, ADDAReg[0], bMaskDWord, 0x0b1b25a0);
 	}
-	else{
+	else {
 		PHY_SetBBReg(pAdapter, ADDAReg[0], bMaskDWord, pathOn);
 	}
 
-	for ( i = 1 ; i < IQK_ADDA_REG_NUM ; i++){
+	for ( i = 1 ; i < IQK_ADDA_REG_NUM ; i++) {
 		PHY_SetBBReg(pAdapter, ADDAReg[i], bMaskDWord, pathOn);
 	}
 
@@ -966,7 +966,7 @@ _PHY_MACSettingCalibration(
 
 	rtw_write8(pAdapter, MACReg[i], 0x3F);
 
-	for (i = 1 ; i < (IQK_MAC_REG_NUM - 1); i++){
+	for (i = 1 ; i < (IQK_MAC_REG_NUM - 1); i++) {
 		rtw_write8(pAdapter, MACReg[i], (u8)(MACBackup[i]&(~BIT3)));
 	}
 	rtw_write8(pAdapter, MACReg[i], (u8)(MACBackup[i]&(~BIT5)));
@@ -1135,7 +1135,7 @@ _PHY_IQCalibrate(
 		pdmpriv->bRfPiEnable = (u8)PHY_QueryBBReg(pAdapter, rFPGA0_XA_HSSIParameter1, BIT(8));
 	}
 
-	if (!pdmpriv->bRfPiEnable){
+	if (!pdmpriv->bRfPiEnable) {
 		// Switch BB to PI mode to do IQ Calibration.
 		_PHY_PIModeSwitch(pAdapter, true);
 	}
@@ -1172,9 +1172,9 @@ _PHY_IQCalibrate(
 	PHY_SetBBReg(pAdapter, rTx_IQK, bMaskDWord, 0x01007c00);
 	PHY_SetBBReg(pAdapter, rRx_IQK, bMaskDWord, 0x01004800);
 
-	for (i = 0 ; i < retryCount ; i++){
+	for (i = 0 ; i < retryCount ; i++) {
 		PathAOK = _PHY_PathA_IQK(pAdapter, is2T);
-		if (PathAOK == 0x03){
+		if (PathAOK == 0x03) {
 				DBG_8192C("Path A IQK Success!!\n");
 				result[t][0] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 				result[t][1] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
@@ -1191,19 +1191,19 @@ _PHY_IQCalibrate(
 		}
 	}
 
-	if (0x00 == PathAOK){
+	if (0x00 == PathAOK) {
 		DBG_8192C("Path A IQK failed!!\n");
 	}
 
-	if (is2T){
+	if (is2T) {
 		_PHY_PathAStandBy(pAdapter);
 
 		// Turn Path B ADDA on
 		_PHY_PathADDAOn(pAdapter, ADDA_REG, false, is2T);
 
-		for (i = 0 ; i < retryCount ; i++){
+		for (i = 0 ; i < retryCount ; i++) {
 			PathBOK = _PHY_PathB_IQK(pAdapter);
-			if (PathBOK == 0x03){
+			if (PathBOK == 0x03) {
 				DBG_8192C("Path B IQK Success!!\n");
 				result[t][4] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_B, bMaskDWord)&0x3FF0000)>>16;
 				result[t][5] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_B, bMaskDWord)&0x3FF0000)>>16;
@@ -1219,7 +1219,7 @@ _PHY_IQCalibrate(
 			}
 		}
 
-		if (0x00 == PathBOK){
+		if (0x00 == PathBOK) {
 			DBG_8192C("Path B IQK failed!!\n");
 		}
 	}
@@ -1230,7 +1230,7 @@ _PHY_IQCalibrate(
 
 	if (t!=0)
 	{
-		if (!pdmpriv->bRfPiEnable){
+		if (!pdmpriv->bRfPiEnable) {
 			// Switch back BB to SI mode after finish IQ Calibration.
 			_PHY_PIModeSwitch(pAdapter, false);
 		}
@@ -1246,7 +1246,7 @@ _PHY_IQCalibrate(
 
 		// Restore RX initial gain
 		PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00032ed3);
-		if (is2T){
+		if (is2T) {
 			PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00032ed3);
 		}
 
@@ -1809,10 +1809,10 @@ rtl8192c_PHY_IQCalibrate(
 
 	for (i=0; i<3; i++)
 	{
-		if (IS_92C_SERIAL( pHalData->VersionID)){
+		if (IS_92C_SERIAL( pHalData->VersionID)) {
 			 _PHY_IQCalibrate(pAdapter, result, i, true);
 		}
-		else{
+		else {
 			// For 88C 1T1R
 			_PHY_IQCalibrate(pAdapter, result, i, false);
 		}
@@ -1888,7 +1888,7 @@ rtl8192c_PHY_IQCalibrate(
 	if ((RegE94 != 0)/*&&(RegEA4 != 0)*/)
 		_PHY_PathAFillIQKMatrix(pAdapter, bPathAOK, result, final_candidate, (RegEA4 == 0));
 
-	if (IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL( pHalData->VersionID)) {
 		if ((RegEB4 != 0)/*&&(RegEC4 != 0)*/)
 		_PHY_PathBFillIQKMatrix(pAdapter, bPathBOK, result, final_candidate, (RegEC4 == 0));
 	}
@@ -1924,10 +1924,10 @@ rtl8192c_PHY_LCCalibrate(
 	if (pmlmeext->sitesurvey_res.state == SCAN_PROCESS)
 		return;
 
-	if (IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL( pHalData->VersionID)) {
 		_PHY_LCCalibrate(pAdapter, true);
 	}
-	else{
+	else {
 		// For 88C 1T1R
 		_PHY_LCCalibrate(pAdapter, false);
 	}
@@ -1948,10 +1948,10 @@ void rtl8192c_PHY_APCalibrate(PADAPTER pAdapter, char delta)
 	if (pdmpriv->bAPKdone)
 		return;
 
-	if (IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL( pHalData->VersionID)) {
 		_PHY_APCalibrate(pAdapter, delta, true);
 	}
-	else{
+	else {
 		// For 88C 1T1R
 		_PHY_APCalibrate(pAdapter, delta, false);
 	}

@@ -96,7 +96,7 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 	struct signal_stat * signal_stat;
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
-	if (prframe == NULL || padapter==NULL){
+	if (prframe == NULL || padapter==NULL) {
 		return;
 	}
 

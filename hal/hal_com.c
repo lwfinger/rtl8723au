@@ -31,16 +31,16 @@
 
 void dump_chip_info(HAL_VERSION	ChipVersion)
 {
-	if (IS_81XXC(ChipVersion)){
+	if (IS_81XXC(ChipVersion)) {
 		DBG_871X("Chip Version Info: %s_",IS_92C_SERIAL(ChipVersion)?"CHIP_8192C":"CHIP_8188C");
 	}
-	else if (IS_92D(ChipVersion)){
+	else if (IS_92D(ChipVersion)) {
 		DBG_871X("Chip Version Info: CHIP_8192D_");
 	}
-	else if (IS_8723_SERIES(ChipVersion)){
+	else if (IS_8723_SERIES(ChipVersion)) {
 		DBG_871X("Chip Version Info: CHIP_8723A_");
 	}
-	else if (IS_8188E(ChipVersion)){
+	else if (IS_8188E(ChipVersion)) {
 		DBG_871X("Chip Version Info: CHIP_8188E_");
 	}
 
@@ -192,7 +192,7 @@ _TwoOutPipeMapping(
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
 
-	if (bWIFICfg){ //WMM
+	if (bWIFICfg) { //WMM
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
 		//{  0,		1,	0,	1,	0,	0,	0,	0,		0	};
@@ -209,7 +209,7 @@ _TwoOutPipeMapping(
 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];//TXCMD
 
 	}
-	else{//typical setting
+	else {//typical setting
 
 
 		//BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
@@ -237,7 +237,7 @@ static void _ThreeOutPipeMapping(
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
 
-	if (bWIFICfg){//for WMM
+	if (bWIFICfg) {//for WMM
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
 		//{  1,		2,	1,	0,	0,	0,	0,	0,		0	};
@@ -254,7 +254,7 @@ static void _ThreeOutPipeMapping(
 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];//TXCMD
 
 	}
-	else{//typical setting
+	else {//typical setting
 
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA

@@ -49,7 +49,7 @@ static u8 _is_fw_read_cmd_down(_adapter* padapter, u8 msgbox_num)
 
 	do{
 		valid = rtw_read8(padapter,REG_HMETFR) & BIT(msgbox_num);
-		if (0 == valid ){
+		if (0 == valid ) {
 			read_down = true;
 		}
 	}while ( (!read_down) && (retry_cnts--));
@@ -105,7 +105,7 @@ _func_enter_;
 	do{
 		h2c_box_num = pHalData->LastHMEBoxNum;
 
-		if (!_is_fw_read_cmd_down(padapter, h2c_box_num)){
+		if (!_is_fw_read_cmd_down(padapter, h2c_box_num)) {
 			DBG_8192C(" fw read cmd failed...\n");
 			goto exit;
 		}
@@ -114,7 +114,7 @@ _func_enter_;
 		{
 			memcpy((u8*)(&h2c_cmd)+1, pCmdBuffer, CmdLen );
 		}
-		else{
+		else {
 			memcpy((u8*)(&h2c_cmd_ex), pCmdBuffer, EX_MESSAGE_BOX_SIZE);
 			memcpy((u8*)(&h2c_cmd)+1, pCmdBuffer+2,( CmdLen-EX_MESSAGE_BOX_SIZE));
 			*(u8*)(&h2c_cmd) |= BIT(7);
@@ -122,7 +122,7 @@ _func_enter_;
 
 		*(u8*)(&h2c_cmd) |= ElementID;
 
-		if (h2c_cmd & BIT(7)){
+		if (h2c_cmd & BIT(7)) {
 			msgbox_ex_addr = REG_HMEBOX_EXT_0 + (h2c_box_num *EX_MESSAGE_BOX_SIZE);
 			h2c_cmd_ex = le16_to_cpu( h2c_cmd_ex );
 			rtw_write16(padapter, msgbox_ex_addr, h2c_cmd_ex);
@@ -1065,7 +1065,7 @@ _func_enter_;
 	if (IFACE_PORT0==reset_port) {
 		buf[0] = 0x1; buf[1] = 0;
 
-	} else{
+	} else {
 		buf[0] = 0x0; buf[1] = 0x1;
 	}
 	FillH2CCmd(padapter, H2C_RESET_TSF, 2, buf);

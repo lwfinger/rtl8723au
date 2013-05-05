@@ -293,7 +293,7 @@ odm_SignalScaleMapping(
 	{
 		return odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(pDM_Odm, CurrSig);
 	}
-	else{
+	else {
 		return odm_SignalScaleMapping_92CSeries(pDM_Odm,CurrSig);
 	}
 
@@ -313,7 +313,7 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
 #if (DM_ODM_SUPPORT_TYPE &  ODM_MP)
 	// mapping to 5 bars for vista signal strength
 	// signal quality in driver will be displayed to signal strength
-	if (isCCKrate){
+	if (isCCKrate) {
 		// in vista.
 		if (PWDB_ALL >= 50)
 			SQ = 100;
@@ -326,7 +326,7 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
 		else
 			SQ = 20;
 	}
-	else{//OFDM rate
+	else {//OFDM rate
 
 		// mapping to 5 bars for vista signal strength
 		// signal quality in driver will be displayed to signal strength
@@ -527,7 +527,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 			//Modification for ext-LNA board
 			if (pDM_Odm->BoardType == ODM_BOARD_HIGHPWR)
 			{
-				if ((cck_agc_rpt>>7) == 0){
+				if ((cck_agc_rpt>>7) == 0) {
 					PWDB_ALL = (PWDB_ALL>94)?100:(PWDB_ALL +6);
 				}
 				else
@@ -565,13 +565,13 @@ odm_RxPhyStatus92CSeries_Parsing(
 		{
 			u1Byte	SQ,SQ_rpt;
 
-			if ((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)){//pMgntInfo->CustomerID == RT_CID_819x_Lenovo
+			if ((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)) {//pMgntInfo->CustomerID == RT_CID_819x_Lenovo
 				SQ = odm_SQ_process_patch_RT_CID_819x_Lenovo(pDM_Odm,isCCKrate,PWDB_ALL,0,0);
 			}
-			else if (pPhyInfo->RxPWDBAll > 40 && !pDM_Odm->bInHctTest){
+			else if (pPhyInfo->RxPWDBAll > 40 && !pDM_Odm->bInHctTest) {
 				SQ = 100;
 			}
-			else{
+			else {
 				SQ_rpt = pPhyStaRpt->cck_sig_qual_ofdm_pwdb_all;
 
 				if (SQ_rpt > 64)
@@ -663,10 +663,10 @@ odm_RxPhyStatus92CSeries_Parsing(
 		pPhyInfo->RecvSignalPower = rx_pwr_all;
 	#endif
 
-		if ((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)){
+		if ((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)) {
 			//do nothing
 		}
-		else{//pMgntInfo->CustomerID != RT_CID_819x_Lenovo
+		else {//pMgntInfo->CustomerID != RT_CID_819x_Lenovo
 			//
 			// (3)EVM of HT rate
 			//
@@ -764,7 +764,7 @@ odm_Process_RSSIForDM(
 	}
 
 	pEntry = pDM_Odm->pODM_StaInfo[pPktinfo->StationID];
-	if (!IS_STA_VALID(pEntry) ){
+	if (!IS_STA_VALID(pEntry) ) {
 		return;
 	}
 	if ((!pPktinfo->bPacketMatchBSSID) )
@@ -837,7 +837,7 @@ odm_Process_RSSIForDM(
 
 		if (!isCCKrate)//ofdm rate
 		{
-			if (pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B] == 0){
+			if (pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B] == 0) {
 				RSSI_Ave = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_A];
 			}
 			else

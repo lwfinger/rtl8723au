@@ -188,7 +188,7 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 	u32 txdma_status;
 
 
-	if ( (txdma_status=rtw_read32(padapter, REG_TXDMA_STATUS)) !=0x00){
+	if ( (txdma_status=rtw_read32(padapter, REG_TXDMA_STATUS)) !=0x00) {
 		DBG_871X("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
 		rtl8723a_silentreset_for_specific_platform(padapter);
 	}
@@ -201,13 +201,13 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 	{
 		diff_time = jiffies_to_msecs(current_time - psrtpriv->last_tx_time);
 
-		if (diff_time > 2000){
-			if (psrtpriv->last_tx_complete_time==0){
+		if (diff_time > 2000) {
+			if (psrtpriv->last_tx_complete_time==0) {
 				psrtpriv->last_tx_complete_time = current_time;
 			}
-			else{
+			else {
 				diff_time = jiffies_to_msecs(current_time - psrtpriv->last_tx_complete_time);
-				if (diff_time > 4000){
+				if (diff_time > 4000) {
 					//padapter->Wifi_Error_Status = WIFI_TX_HANG;
 					DBG_8192C("%s tx hang\n", __FUNCTION__);
 					rtl8723a_silentreset_for_specific_platform(padapter);

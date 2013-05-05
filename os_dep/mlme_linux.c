@@ -208,7 +208,7 @@ _func_enter_;
 		len = sec_ie[1]+2;
 		len =  (len < IW_CUSTOM_MAX) ? len:IW_CUSTOM_MAX;
 
-		for (i=0;i<len;i++){
+		for (i=0;i<len;i++) {
 			p+=sprintf(p,"%02x",sec_ie[i]);
 		}
 

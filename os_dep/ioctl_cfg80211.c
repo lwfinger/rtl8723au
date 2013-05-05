@@ -601,13 +601,13 @@ static u8 set_pairwise_key(_adapter *padapter, struct sta_info *psta)
 	u8	res=_SUCCESS;
 
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
-	if ( ph2c == NULL){
+	if ( ph2c == NULL) {
 		res= _FAIL;
 		goto exit;
 	}
 
 	psetstakey_para = (struct set_stakey_parm*)rtw_zmalloc(sizeof(struct set_stakey_parm));
-	if (psetstakey_para==NULL){
+	if (psetstakey_para==NULL) {
 		rtw_mfree((u8 *) ph2c, sizeof(struct cmd_obj));
 		res=_FAIL;
 		goto exit;
@@ -642,12 +642,12 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
 	DBG_8192C("%s\n", __FUNCTION__);
 
 	pcmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct	cmd_obj));
-	if (pcmd==NULL){
+	if (pcmd==NULL) {
 		res= _FAIL;
 		goto exit;
 	}
 	psetkeyparm=(struct setkey_parm*)rtw_zmalloc(sizeof(struct setkey_parm));
-	if (psetkeyparm==NULL){
+	if (psetkeyparm==NULL) {
 		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
 		res= _FAIL;
 		goto exit;
@@ -1929,7 +1929,7 @@ if (padapter->registrypriv.mp_mode == 1)
 		goto check_need_indicate_scan_done;
 	}
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
-	if (ATOMIC_READ(&pbuddy_mlmepriv->set_scan_deny)==1){
+	if (ATOMIC_READ(&pbuddy_mlmepriv->set_scan_deny)==1) {
 		DBG_871X(FUNC_NDEV_FMT  ": deny scan by buddy_intf\n", FUNC_NDEV_ARG(ndev));
 		need_indicate_scan_done = true;
 		goto check_need_indicate_scan_done;
@@ -2165,10 +2165,10 @@ static int rtw_cfg80211_set_key_mgt(struct security_priv *psecuritypriv, u32 key
 		psecuritypriv->dot11AuthAlgrthm = dot11AuthAlgrthm_8021X;
 	}
 #ifdef CONFIG_WAPI_SUPPORT
-	else if (key_mgt ==WLAN_AKM_SUITE_WAPI_PSK){
+	else if (key_mgt ==WLAN_AKM_SUITE_WAPI_PSK) {
 		psecuritypriv->dot11AuthAlgrthm = dot11AuthAlgrthm_WAPI;
 	}
-	else if (key_mgt ==WLAN_AKM_SUITE_WAPI_CERT){
+	else if (key_mgt ==WLAN_AKM_SUITE_WAPI_CERT) {
 		psecuritypriv->dot11AuthAlgrthm = dot11AuthAlgrthm_WAPI;
 	}
 #endif
@@ -2204,7 +2204,7 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 	}
 
 	buf = rtw_zmalloc(ielen);
-	if (buf == NULL){
+	if (buf == NULL) {
 		ret =  -ENOMEM;
 		goto exit;
 	}
@@ -2220,7 +2220,7 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 	}
 
 	pos = buf;
-	if (ielen < RSN_HEADER_LEN){
+	if (ielen < RSN_HEADER_LEN) {
 		RT_TRACE(_module_rtl871x_ioctl_os_c,_drv_err_,("Ie len too short %d\n", ielen));
 		ret  = -1;
 		goto exit;
@@ -2416,7 +2416,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		goto exit;
 	}
 
-	if (sme->ssid_len > IW_ESSID_MAX_SIZE){
+	if (sme->ssid_len > IW_ESSID_MAX_SIZE) {
 
 		ret= -E2BIG;
 		goto exit;
@@ -2584,7 +2584,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
 			pwep =(NDIS_802_11_WEP	 *) rtw_malloc(wep_total_len);
-			if (pwep == NULL){
+			if (pwep == NULL) {
 				DBG_871X(" wpa_set_encryption: pwep allocate fail !!!\n");
 				ret = -ENOMEM;
 				goto exit;
@@ -2635,10 +2635,10 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	}
 
 #ifdef CONFIG_WAPI_SUPPORT
-      if (sme->crypto.akm_suites[0] ==WLAN_AKM_SUITE_WAPI_PSK){
+      if (sme->crypto.akm_suites[0] ==WLAN_AKM_SUITE_WAPI_PSK) {
 		padapter->wapiInfo.bWapiPSK = true;
 	}
-	else if (sme->crypto.akm_suites[0] ==WLAN_AKM_SUITE_WAPI_CERT){
+	else if (sme->crypto.akm_suites[0] ==WLAN_AKM_SUITE_WAPI_CERT) {
 	      padapter->wapiInfo.bWapiPSK = false;
 	}
 #endif
@@ -4000,7 +4000,7 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy, struct net_device
 			ready_on_channel = true;
 			//pmlmeext->cur_channel = remain_ch;
 			//set_channel_bwmode(padapter, remain_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-		}else
+		} else
 #endif //CONFIG_CONCURRENT_MODE
 		if (remain_ch != pmlmeext->cur_channel )
 		{
@@ -4193,7 +4193,7 @@ static int	_cfg80211_rtw_mgmt_tx(struct net_device *ndev, u8 tx_ch,
 		if (tx_ch != co_channel)
 			set_channel_bwmode(padapter, tx_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 
-	}else
+	} else
 #endif //CONFIG_CONCURRENT_MODE
 	if ( tx_ch != pmlmeext->cur_channel )
 	{
@@ -4468,7 +4468,7 @@ static int	cfg80211_rtw_mgmt_tx(struct wiphy *wiphy, struct net_device *ndev,
 		if (tx_ch != co_channel)
 			set_channel_bwmode(padapter, tx_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 
-	}else
+	} else
 #endif //CONFIG_CONCURRENT_MODE
 	if ( tx_ch != pmlmeext->cur_channel )
 	{

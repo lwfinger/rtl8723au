@@ -68,11 +68,11 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (precvpriv->int_in_urb == NULL){
+	if (precvpriv->int_in_urb == NULL) {
 		DBG_8192C("alloc_urb for interrupt in endpoint fail !!!!\n");
 	}
 	precvpriv->int_in_buf = rtw_zmalloc(USB_INTR_CONTENT_LENGTH);
-	if (precvpriv->int_in_buf == NULL){
+	if (precvpriv->int_in_buf == NULL) {
 		DBG_8192C("alloc_mem for interrupt in endpoint fail !!!!\n");
 	}
 #endif
@@ -81,7 +81,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
-	if (precvpriv->pallocated_recv_buf==NULL){
+	if (precvpriv->pallocated_recv_buf==NULL) {
 		res= _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
 		goto exit;
@@ -283,12 +283,12 @@ void update_recvframe_phyinfo(
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
 
 	pkt_info.StationID = 0xFF;
-	if (pkt_info.bPacketBeacon){
-		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true){
+	if (pkt_info.bPacketBeacon) {
+		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true) {
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 		}
 		//to do Ad-hoc
-	} else{
+	} else {
 		sa = get_sa(wlanhdr);
 	}
 
@@ -303,7 +303,7 @@ void update_recvframe_phyinfo(
 
 	#ifdef CONFIG_CONCURRENT_MODE
 	//get Primary adapter's odmpriv
-	if (padapter->adapter_type > PRIMARY_ADAPTER){
+	if (padapter->adapter_type > PRIMARY_ADAPTER) {
 		pHalData = GET_HAL_DATA(padapter->pbuddy_adapter);
 	}
 	#endif

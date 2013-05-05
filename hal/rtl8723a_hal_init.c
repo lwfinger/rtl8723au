@@ -128,7 +128,7 @@ _BlockWrite(
 				("_BlockWrite: [P3] buffSize_p3(%d) blockSize_p3(%d) blockCount_p3(%d)\n",
 				(buffSize-offset), blockSize_p3, blockCount_p3));
 
-		for (i = 0 ; i < blockCount_p3 ; i++){
+		for (i = 0 ; i < blockCount_p3 ; i++) {
 			ret = rtw_write8(padapter, (FW_8723A_START_ADDRESS + offset + i), *(bufferPtr + offset + i));
 
 			if (ret == _FAIL)
@@ -419,7 +419,7 @@ int _WriteBTFWtoTxPktBuf8723A(
 	}while ((!(BcnValidReg&BIT(0))) && DLBcnCount<5);
 
 
-	if (DLBcnCount >=5){
+	if (DLBcnCount >=5) {
 		DBG_871X(" check rsvd page download OK DLBcnCount =%d \n",DLBcnCount);
 		rtStatus = _FAIL;
 		goto exit;
@@ -572,7 +572,7 @@ FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware)
 	if ( !(IS_HARDWARE_TYPE_8723A(Adapter)) && IS_8723A_B_CUT(pHalData->VersionID))
 			return _FAIL ; //&& (Adapter->registrypriv.bBtFwSupport)))
 
-	if (Adapter->bBTFWReady){
+	if (Adapter->bBTFWReady) {
 		DBG_871X("BT Firmware is ready!!\n");
 		return _FAIL;
 	}
@@ -793,7 +793,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		);
 	}
 	_FWDownloadEnable(padapter, false);
-	if (_SUCCESS != rtStatus){
+	if (_SUCCESS != rtStatus) {
 		DBG_871X("DL Firmware failed!\n");
 		goto Exit;
 	}
@@ -2345,7 +2345,7 @@ void rtl8723a_GetHalODMVar(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T podmpriv = &pHalData->odmpriv;
-	switch (eVariable){
+	switch (eVariable) {
 		case HAL_ODM_STA_INFO:
 			break;
 		default:
@@ -2361,23 +2361,23 @@ void rtl8723a_SetHalODMVar(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T podmpriv = &pHalData->odmpriv;
-	switch (eVariable){
+	switch (eVariable) {
 		case HAL_ODM_STA_INFO:
 			{
 				struct sta_info *psta = (struct sta_info *)pValue1;
 				#ifdef CONFIG_CONCURRENT_MODE
 				//get Primary adapter's odmpriv
-				if (Adapter->adapter_type > PRIMARY_ADAPTER && Adapter->pbuddy_adapter){
+				if (Adapter->adapter_type > PRIMARY_ADAPTER && Adapter->pbuddy_adapter) {
 					pHalData = GET_HAL_DATA(Adapter->pbuddy_adapter);
 					podmpriv = &pHalData->odmpriv;
 				}
 				#endif
 
-				if (bSet){
+				if (bSet) {
 					DBG_8192C("Set STA_(%d) info\n",psta->mac_id);
 					ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS,psta->mac_id,psta);
 				}
-				else{
+				else {
 					DBG_8192C("Clean STA_(%d) info\n",psta->mac_id);
 					ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS,psta->mac_id,NULL);
 				}
@@ -2540,7 +2540,7 @@ void rtl8723a_CheckAntenna_Selection(PADAPTER padapter)
 
 	val = rtw_read8(padapter, REG_LEDCFG2);
 	// Let 8051 take control antenna settting
-	if (!(val &BIT(7))){
+	if (!(val &BIT(7))) {
 		val |= BIT(7); // DPDT_SEL_EN, 0x4C[23]
 		rtw_write8(padapter, REG_LEDCFG2, val);
 	}
@@ -2977,7 +2977,7 @@ s32 CardDisableHWSM(PADAPTER padapter, u8 resetMCU)
 	int rtStatus = _SUCCESS;
 
 
-	if (padapter->bSurpriseRemoved){
+	if (padapter->bSurpriseRemoved) {
 		return rtStatus;
 	}
 	//==== RF Off Sequence ====
@@ -3410,12 +3410,12 @@ Hal_EfuseParseXtal_8723A(
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(pAdapter);
 
-	if (!AutoLoadFail){
+	if (!AutoLoadFail) {
 		pHalData->CrystalCap = hwinfo[EEPROM_XTAL_K_8723A];
 		if (pHalData->CrystalCap == 0xFF)
 			pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
 	}
-	else{
+	else {
 		pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
 	}
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: CrystalCap=0x%2x\n", __FUNCTION__, pHalData->CrystalCap));
@@ -3668,7 +3668,7 @@ void rtl8723a_fill_default_txdesc(
 #endif //CONFIG_XMIT_ACK
 
 #ifdef CONFIG_INTEL_PROXIM
-		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)){
+		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)) {
 			DBG_871X("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
 			ptxdesc->datarate = pattrib->rate;
 		}
