@@ -1388,7 +1388,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 			if(pht_info) {
 					bcn_channel = pht_info->primary_channel;
 			} else { /* we don't find channel IE, so don't check it */
-					DBG_871X("Oops: %s we don't find channel IE, so don't check it \n", __func__);
+					DBG_871X("Oops: %s we don't find channel IE, so don't check it\n", __func__);
 					bcn_channel = Adapter->mlmeextpriv.cur_channel;
 			}
 	}

@@ -192,7 +192,7 @@ _WriteFW(
 	u8		*bufferPtr = (u8*)buffer;
 
 	pageNums = size / MAX_PAGE_SIZE ;
-	//RT_ASSERT((pageNums <= 4), ("Page numbers should not greater then 4 \n"));
+	//RT_ASSERT((pageNums <= 4), ("Page numbers should not greater then 4\n"));
 	remainSize = size % MAX_PAGE_SIZE;
 
 	for (page = 0; page < pageNums; page++) {
@@ -420,7 +420,7 @@ int _WriteBTFWtoTxPktBuf8723A(
 
 
 	if(DLBcnCount >=5){
-		DBG_871X(" check rsvd page download OK DLBcnCount =%d  \n",DLBcnCount);
+		DBG_871X(" check rsvd page download OK DLBcnCount =%d \n",DLBcnCount);
 		rtStatus = _FAIL;
 		goto exit;
 	}
@@ -480,7 +480,7 @@ SetFwBTFwPatchCmd(
 
 	FillH2CCmd(Adapter, H2C_BT_FW_PATCH, H2C_BT_FW_PATCH_LEN, u1BTFwPatchParm);
 
-	RT_TRACE(_module_mp_, _drv_notice_,("<----SetFwBTFwPatchCmd(): FwSize = %d \n", FwSize));
+	RT_TRACE(_module_mp_, _drv_notice_,("<----SetFwBTFwPatchCmd(): FwSize = %d\n", FwSize));
 }
 
 void
@@ -2441,7 +2441,7 @@ static s32 c2h_handler_8723a(_adapter *padapter, struct c2h_evt_hdr *c2h_evt)
 #endif
 #ifdef CONFIG_MP_INCLUDED
 	case C2H_BT_MP_INFO:
-		DBG_8192C("%s ,  Got  C2H_BT_MP_INFO \n",__FUNCTION__);
+		DBG_8192C("%s ,  Got  C2H_BT_MP_INFO\n",__FUNCTION__);
 		MPTBT_FwC2hBtMpCtrl(padapter, c2h_evt->payload, c2h_evt->plen);
 		break;
 #endif
@@ -4530,9 +4530,9 @@ _func_enter_;
 					ulCommand = ulCommand | CAM_POLLINIG | CAM_WRITE;
 					// write content 0 is equall to mark invalid
 					rtw_write32(padapter, WCAMI, ulContent);  //delay_ms(40);
-					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A4: %lx \n",ulContent));
+					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A4: %lx\n",ulContent));
 					rtw_write32(padapter, RWCAM, ulCommand);  //delay_ms(40);
-					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A0: %lx \n",ulCommand));
+					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A0: %lx\n",ulCommand));
 				}
 			}
 			break;

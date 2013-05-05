@@ -2436,7 +2436,7 @@ _func_enter_;
 
 	status = _SUCCESS;
 
-	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("===> usb_inirp_init \n"));
+	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("===> usb_inirp_init\n"));
 
 	precvpriv->ff_hwaddr = RECV_BULK_IN_ADDR;
 
@@ -2446,7 +2446,7 @@ _func_enter_;
 	{
 		if(_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf) == false )
 		{
-			RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_port error \n"));
+			RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_port error\n"));
 			status = _FAIL;
 			goto exit;
 		}
@@ -2459,7 +2459,7 @@ _func_enter_;
 	_read_interrupt = pintfhdl->io_ops._read_interrupt;
 	if(_read_interrupt(pintfhdl, RECV_INT_IN_ADDR) == false )
 	{
-		RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_interrupt error \n"));
+		RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_interrupt error\n"));
 		status = _FAIL;
 	}
 	pHalData->IntrMask[0]=rtw_read32(Adapter, REG_USB_HIMR);
@@ -2470,7 +2470,7 @@ _func_enter_;
 
 exit:
 
-	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("<=== usb_inirp_init \n"));
+	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("<=== usb_inirp_init\n"));
 
 _func_exit_;
 
@@ -2484,7 +2484,7 @@ unsigned int rtl8723au_inirp_deinit(PADAPTER Adapter)
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
-	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n ===> usb_rx_deinit \n"));
+	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n ===> usb_rx_deinit\n"));
 
 	rtw_read_port_cancel(Adapter);
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
@@ -2492,7 +2492,7 @@ unsigned int rtl8723au_inirp_deinit(PADAPTER Adapter)
 	MSG_8192C("%s pHalData->IntrMask = 0x%04x\n",__FUNCTION__, pHalData->IntrMask[0]);
 	pHalData->IntrMask[0]=0x0;
 	rtw_write32(Adapter, REG_USB_HIMR,pHalData->IntrMask[0]);
-	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n <=== usb_rx_deinit \n"));
+	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n <=== usb_rx_deinit\n"));
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 	return _SUCCESS;
 }
@@ -2851,7 +2851,7 @@ static u32 Hal_readPGDataFromConfigFile(
 		vfs_read(fp, temp, 2, &pos);
 		PROMContent[i] = simple_strtoul(temp, NULL, 16 );
 		pos += 1; // Filter the space character
-		DBG_871X("%02X \n", PROMContent[i]);
+		DBG_871X("%02X\n", PROMContent[i]);
 	}
 	DBG_871X("\n");
 	set_fs(fs);
@@ -2909,7 +2909,7 @@ Hal_ReadMACAddrFromFile_8723AU(
 				end++;
 				head = end;
 			}
-			DBG_871X("%02x \n", pEEPROM->mac_addr[i]);
+			DBG_871X("%02x\n", pEEPROM->mac_addr[i]);
 		}
 		DBG_871X("\n");
 		set_fs(fs);
@@ -3272,7 +3272,7 @@ GetHalDefVar8192CUsb(
 			{
 				u8Byte	DebugComponents = *((u32*)pValue);
 				PDM_ODM_T	pDM_Odm = &(pHalData->odmpriv);
-				printk("pDM_Odm->DebugComponents = 0x%llx \n",pDM_Odm->DebugComponents );
+				printk("pDM_Odm->DebugComponents = 0x%llx\n",pDM_Odm->DebugComponents );
 			}
 			break;
 		default:
@@ -3561,7 +3561,7 @@ _func_enter_;
 
 	padapter->HalData = rtw_zmalloc(sizeof(HAL_DATA_TYPE));
 	if(padapter->HalData == NULL){
-		DBG_8192C("cant not alloc memory for HAL DATA \n");
+		DBG_8192C("cant not alloc memory for HAL DATA\n");
 	}
 	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
 

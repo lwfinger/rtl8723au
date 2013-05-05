@@ -56,7 +56,7 @@ static void _restore_security_setting(_adapter *padapter)
 	{
 		psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 		if (psta == NULL) {
-			//DEBUG_ERR( ("Set wpa_set_encryption: Obtain Sta_info fail \n"));
+			//DEBUG_ERR( ("Set wpa_set_encryption: Obtain Sta_info fail\n"));
 		}
 		else
 		{

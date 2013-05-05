@@ -930,11 +930,11 @@ _func_enter_;
 
 	switch(p2p_ps_state) {
 	case P2P_PS_DISABLE:
-		DBG_8192C("P2P_PS_DISABLE \n");
+		DBG_8192C("P2P_PS_DISABLE\n");
 		memset(p2p_ps_offload, 0 ,1);
 		break;
 	case P2P_PS_ENABLE:
-		DBG_8192C("P2P_PS_ENABLE \n");
+		DBG_8192C("P2P_PS_ENABLE\n");
 		// update CTWindow value.
 		if( pwdinfo->ctwindow > 0 ) {
 			p2p_ps_offload->CTWindow_En = 1;
@@ -990,11 +990,11 @@ _func_enter_;
 		}
 		break;
 	case P2P_PS_SCAN:
-		DBG_8192C("P2P_PS_SCAN \n");
+		DBG_8192C("P2P_PS_SCAN\n");
 		p2p_ps_offload->discovery = 1;
 		break;
 	case P2P_PS_SCAN_DONE:
-		DBG_8192C("P2P_PS_SCAN_DONE \n");
+		DBG_8192C("P2P_PS_SCAN_DONE\n");
 		p2p_ps_offload->discovery = 0;
 		pwdinfo->p2p_ps = P2P_PS_ENABLE;
 		break;

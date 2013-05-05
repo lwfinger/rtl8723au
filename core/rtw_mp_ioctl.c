@@ -508,7 +508,7 @@ _func_enter_;
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		*(u32*)poid_par_priv->information_buf =  Adapter->mppriv.rx_pktcount;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
-		RT_TRACE(_module_mp_, _drv_alert_, ("recv_ok:%d \n",Adapter->mppriv.rx_pktcount));
+		RT_TRACE(_module_mp_, _drv_alert_, ("recv_ok:%d\n",Adapter->mppriv.rx_pktcount));
 	} else {
 		status = NDIS_STATUS_INVALID_LENGTH;
 	}
@@ -533,7 +533,7 @@ _func_enter_;
 	if (poid_par_priv->information_buf_len == sizeof(u32)) {
 		*(u32*)poid_par_priv->information_buf =  Adapter->mppriv.rx_crcerrpktcount;
 		*poid_par_priv->bytes_rw = poid_par_priv->information_buf_len;
-		RT_TRACE(_module_mp_, _drv_alert_, ("recv_err:%d \n",Adapter->mppriv.rx_crcerrpktcount));
+		RT_TRACE(_module_mp_, _drv_alert_, ("recv_err:%d\n",Adapter->mppriv.rx_crcerrpktcount));
 	} else {
 		status = NDIS_STATUS_INVALID_LENGTH;
 	}

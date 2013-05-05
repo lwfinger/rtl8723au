@@ -95,7 +95,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 #endif
 
 	if ( pIo_buf== NULL) {
-		DBG_8192C( "[%s] pIo_buf == NULL \n", __FUNCTION__ );
+		DBG_8192C( "[%s] pIo_buf == NULL\n", __FUNCTION__ );
 		status = -ENOMEM;
 		goto release_mutex;
 	}
@@ -744,7 +744,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
 		} else {
 			if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)) {
-				DBG_8192C("recvbuf2recvframe: alloc_skb fail , drop frag frame \n");
+				DBG_8192C("recvbuf2recvframe: alloc_skb fail , drop frag frame\n");
 				rtw_free_recvframe(precvframe, pfree_recv_queue);
 				goto _exit_recvbuf2recvframe;
 			}
@@ -822,7 +822,7 @@ void rtl8192cu_recv_tasklet(void *priv)
 	{
 		if ((padapter->bDriverStopped == true)||(padapter->bSurpriseRemoved== true))
 		{
-			DBG_8192C("recv_tasklet => bDriverStopped or bSurpriseRemoved \n");
+			DBG_8192C("recv_tasklet => bDriverStopped or bSurpriseRemoved\n");
 			dev_kfree_skb_any(pskb);
 			break;
 		}
@@ -913,7 +913,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	}
 	else
 	{
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete : purb->status(%d) != 0 \n", purb->status));
+		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete : purb->status(%d) != 0\n", purb->status));
 
 		DBG_8192C("###=> usb_read_port_complete => urb status(%d)\n", purb->status);
 

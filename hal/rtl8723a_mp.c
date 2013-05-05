@@ -974,7 +974,7 @@ void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
 	}
-	//DbgPrint("\n MPT_ProSetCarrierSupp() is finished. \n");
+	//DbgPrint("\n MPT_ProSetCarrierSupp() is finished.\n");
 }
 
 void Hal_SetCCKContinuousTx(PADAPTER pAdapter, u8 bStart)
