@@ -177,7 +177,7 @@ u8 rtl8192c_set_FwSelectSuspend_cmd(_adapter *padapter ,u8 bfwpoll, u16 period)
 {
 	u8	res=_SUCCESS;
 	struct H2C_SS_RFOFF_PARAM param;
-	DBG_8192C("==>%s bfwpoll(%x)\n",__FUNCTION__,bfwpoll);
+	DBG_8192C("==>%s bfwpoll(%x)\n",__func__,bfwpoll);
 	param.gpio_period = period;//Polling GPIO_11 period time
 	param.ROFOn = (true == bfwpoll)?1:0;
 	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));
@@ -275,7 +275,7 @@ void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode)
 _func_enter_;
 
 	DBG_871X_LEVEL(_drv_info_, "%s: Mode=%d SmartPS=%d UAPSD=%d BcnMode=0x%02x\n",
-		       __FUNCTION__, Mode, pwrpriv->smart_ps,
+		       __func__, Mode, pwrpriv->smart_ps,
 		       padapter->registrypriv.uapsd_enable,
 		       pwrpriv->bcn_ant_mode);
 
@@ -301,7 +301,7 @@ void ConstructBeacon(_adapter *padapter, u8 *pframe, u32 *pLength)
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 
-	//DBG_871X("%s\n", __FUNCTION__);
+	//DBG_871X("%s\n", __func__);
 
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
 
@@ -388,7 +388,7 @@ _ConstructBeacon:
 
 	*pLength = pktlen;
 
-	//DBG_871X("%s bcn_sz=%d\n", __FUNCTION__, pktlen);
+	//DBG_871X("%s bcn_sz=%d\n", __func__, pktlen);
 
 }
 
@@ -400,7 +400,7 @@ void ConstructPSPoll(_adapter *padapter, u8 *pframe, u32 *pLength)
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	//DBG_871X("%s\n", __FUNCTION__);
+	//DBG_871X("%s\n", __func__);
 
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
 
@@ -441,7 +441,7 @@ void ConstructNullFunctionData(
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 
-	//DBG_871X("%s:%d\n", __FUNCTION__, bForcePowerSave);
+	//DBG_871X("%s:%d\n", __func__, bForcePowerSave);
 
 	pwlanhdr = (struct rtw_ieee80211_hdr*)pframe;
 
@@ -506,7 +506,7 @@ void ConstructProbeRsp(_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
 
 
-	//DBG_871X("%s\n", __FUNCTION__);
+	//DBG_871X("%s\n", __func__);
 
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
 
@@ -582,11 +582,11 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
 	struct rsvdpage_loc	RsvdPageLoc;
 
 
-	DBG_871X("%s\n", __FUNCTION__);
+	DBG_871X("%s\n", __func__);
 
 	ReservedPagePacket = (u8*)rtw_zmalloc(1000);
 	if (ReservedPagePacket == NULL) {
-		DBG_871X("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
+		DBG_871X("%s: alloc ReservedPagePacket fail!\n", __func__);
 		return;
 	}
 
@@ -693,7 +693,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
 
 	rtw_hal_mgnt_xmit(padapter, pmgntframe);
 
-	DBG_871X("%s: Set RSVD page location to Fw\n", __FUNCTION__);
+	DBG_871X("%s: Set RSVD page location to Fw\n", __func__);
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8*)&RsvdPageLoc);
 
 exit:
@@ -709,7 +709,7 @@ void rtl8723a_set_FwJoinBssReport_cmd(PADAPTER padapter, u8 mstatus)
 
 _func_enter_;
 
-	DBG_871X("%s mstatus(%x)\n", __FUNCTION__,mstatus);
+	DBG_871X("%s mstatus(%x)\n", __func__,mstatus);
 
 	if (mstatus == 1)
 	{
@@ -794,11 +794,11 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	u16	BufIndex;
 	u32	TotalPacketLen;
 
-	DBG_871X("+%s\n", __FUNCTION__);
+	DBG_871X("+%s\n", __func__);
 
 	ReservedPagePacket = (u8*)rtw_zmalloc(1024);
 	if (ReservedPagePacket == NULL) {
-		DBG_871X("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
+		DBG_871X("%s: alloc ReservedPagePacket fail!\n", __func__);
 		return;
 	}
 
@@ -866,7 +866,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 
 	rtw_hal_mgnt_xmit(padapter, pmgntframe);
 
-	DBG_8192C("%s: Set RSVD page location to Fw\n", __FUNCTION__);
+	DBG_8192C("%s: Set RSVD page location to Fw\n", __func__);
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8*)&RsvdPageLoc);
 
 exit:
@@ -879,7 +879,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(PADAPTER padapter)
 	u8 bRecover = false;
 
 
-	DBG_8192C("+%s\n", __FUNCTION__);
+	DBG_8192C("+%s\n", __func__);
 
 	pHalData = GET_HAL_DATA(padapter);
 

@@ -677,7 +677,7 @@ static s32 update_attrib(_adapter *padapter, struct sk_buff *pkt, struct pkt_att
 		if (psta == NULL)	{ // if we cannot get psta => drrp the pkt
 			RT_TRACE(_module_rtl871x_xmit_c_, _drv_alert_, ("\nupdate_attrib => get sta_info fail, ra:" MAC_FMT"\n", MAC_ARG(pattrib->ra)));
 			#ifdef DBG_TX_DROP_FRAME
-			DBG_871X("DBG_TX_DROP_FRAME %s get sta_info fail, ra:" MAC_FMT"\n", __FUNCTION__, MAC_ARG(pattrib->ra));
+			DBG_871X("DBG_TX_DROP_FRAME %s get sta_info fail, ra:" MAC_FMT"\n", __func__, MAC_ARG(pattrib->ra));
 			#endif
 			res =_FAIL;
 			goto exit;
@@ -692,7 +692,7 @@ static s32 update_attrib(_adapter *padapter, struct sk_buff *pkt, struct pkt_att
 	if (psta)
 	{
 		pattrib->mac_id = psta->mac_id;
-		//DBG_8192C("%s ==> mac_id(%d)\n",__FUNCTION__,pattrib->mac_id );
+		//DBG_8192C("%s ==> mac_id(%d)\n",__func__,pattrib->mac_id );
 		pattrib->psta = psta;
 	}
 	else
@@ -700,7 +700,7 @@ static s32 update_attrib(_adapter *padapter, struct sk_buff *pkt, struct pkt_att
 		// if we cannot get psta => drop the pkt
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_alert_, ("\nupdate_attrib => get sta_info fail, ra:" MAC_FMT "\n", MAC_ARG(pattrib->ra)));
 		#ifdef DBG_TX_DROP_FRAME
-		DBG_871X("DBG_TX_DROP_FRAME %s get sta_info fail, ra:" MAC_FMT"\n", __FUNCTION__, MAC_ARG(pattrib->ra));
+		DBG_871X("DBG_TX_DROP_FRAME %s get sta_info fail, ra:" MAC_FMT"\n", __func__, MAC_ARG(pattrib->ra));
 		#endif
 		res = _FAIL;
 		goto exit;
@@ -744,7 +744,7 @@ static s32 update_attrib(_adapter *padapter, struct sk_buff *pkt, struct pkt_att
 		{
 			RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("\npsta->ieee8021x_blocked == true,  pattrib->ether_type(%.4x) != 0x888e\n",pattrib->ether_type));
 			#ifdef DBG_TX_DROP_FRAME
-			DBG_871X("DBG_TX_DROP_FRAME %s psta->ieee8021x_blocked == true,  pattrib->ether_type(%04x) != 0x888e\n", __FUNCTION__,pattrib->ether_type);
+			DBG_871X("DBG_TX_DROP_FRAME %s psta->ieee8021x_blocked == true,  pattrib->ether_type(%04x) != 0x888e\n", __func__,pattrib->ether_type);
 			#endif
 			res = _FAIL;
 			goto exit;
@@ -796,7 +796,7 @@ static s32 update_attrib(_adapter *padapter, struct sk_buff *pkt, struct pkt_att
 			{
 				RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("\npadapter->securitypriv.busetkipkey(%d)==_FAIL drop packet\n", padapter->securitypriv.busetkipkey));
 				#ifdef DBG_TX_DROP_FRAME
-				DBG_871X("DBG_TX_DROP_FRAME %s padapter->securitypriv.busetkipkey(%d)==_FAIL drop packet\n", __FUNCTION__, padapter->securitypriv.busetkipkey);
+				DBG_871X("DBG_TX_DROP_FRAME %s padapter->securitypriv.busetkipkey(%d)==_FAIL drop packet\n", __func__, padapter->securitypriv.busetkipkey);
 				#endif
 				res =_FAIL;
 				goto exit;
@@ -1621,7 +1621,7 @@ _func_enter_;
 		return _FAIL;
 
 	if (pxmitframe->buf_addr == NULL) {
-		DBG_8192C("==> %s buf_addr==NULL\n",__FUNCTION__);
+		DBG_8192C("==> %s buf_addr==NULL\n",__func__);
 		return _FAIL;
 	}
 
@@ -1750,7 +1750,7 @@ _func_enter_;
 
 			break;
 		} else {
-			RT_TRACE(_module_rtl871x_xmit_c_, _drv_err_, ("%s: There're still something in packet!\n", __FUNCTION__));
+			RT_TRACE(_module_rtl871x_xmit_c_, _drv_err_, ("%s: There're still something in packet!\n", __func__));
 		}
 
 		addr = (SIZE_PTR)(pframe);
@@ -2666,7 +2666,7 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 				}
 
 				if (skb_is_nonlinear(skb))
-					DEBUG_ERR("%s(): skb_is_nonlinear!!\n", __FUNCTION__);
+					DEBUG_ERR("%s(): skb_is_nonlinear!!\n", __func__);
 
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18))
@@ -2690,7 +2690,7 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 
 					}
 					// we just print warning message and let it go
-					//DEBUG_WARN("%s()-%d: nat25_db_handle INSERT Warning!\n", __FUNCTION__, __LINE__);
+					//DEBUG_WARN("%s()-%d: nat25_db_handle INSERT Warning!\n", __func__, __LINE__);
 					//return -1; // return -1 will cause system crash on 2011/08/30!
 					return 0;
 				}
@@ -2801,7 +2801,7 @@ s32 rtw_xmit(_adapter *padapter, struct sk_buff **ppkt)
 	if (pxmitframe == NULL) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("rtw_xmit: no more pxmitframe\n"));
 		//#ifdef DBG_TX_DROP_FRAME
-		DBG_871X("DBG_TX_DROP_FRAME %s no more pxmitframe\n", __FUNCTION__);
+		DBG_871X("DBG_TX_DROP_FRAME %s no more pxmitframe\n", __func__);
 		//#endif
 		return -1;
 	}
@@ -2843,7 +2843,7 @@ s32 rtw_xmit(_adapter *padapter, struct sk_buff **ppkt)
 	if (res == _FAIL) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("rtw_xmit: update attrib fail\n"));
 		#ifdef DBG_TX_DROP_FRAME
-		DBG_871X("DBG_TX_DROP_FRAME %s update attrib fail\n", __FUNCTION__);
+		DBG_871X("DBG_TX_DROP_FRAME %s update attrib fail\n", __func__);
 		#endif
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
 		return -1;
@@ -3534,7 +3534,7 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 			if (pxmitframe)
 				type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_SIZE + pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
 			else
-				DBG_871X("%s, !!!ERROR!!! For USB, TODO ITEM\n", __FUNCTION__);
+				DBG_871X("%s, !!!ERROR!!! For USB, TODO ITEM\n", __func__);
 
 			if ((type == WIFI_PROBEREQ) ||
 			    (type == WIFI_DATA_NULL) ||

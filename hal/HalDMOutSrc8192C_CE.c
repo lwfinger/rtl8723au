@@ -612,7 +612,7 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter )
 
 		//PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300, pDM_SWAT_Table->CurAntenna);
 		rtw_antenna_select_cmd(Adapter, pDM_SWAT_Table->CurAntenna, false);
-		//DBG_8192C("%s change antenna to ANT_( %s ).....\n",__FUNCTION__, (pDM_SWAT_Table->CurAntenna==Antenna_A)?"A":"B");
+		//DBG_8192C("%s change antenna to ANT_( %s ).....\n",__func__, (pDM_SWAT_Table->CurAntenna==Antenna_A)?"A":"B");
 		return true;
 	}
 	else

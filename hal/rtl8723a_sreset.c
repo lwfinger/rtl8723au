@@ -142,7 +142,7 @@ void rtl8723a_silentreset_for_specific_platform(_adapter *padapter)
 
 #ifdef DBG_CONFIG_ERROR_RESET
 
-	DBG_871X("%s\n", __FUNCTION__);
+	DBG_871X("%s\n", __func__);
 
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
@@ -189,12 +189,12 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 
 
 	if ( (txdma_status=rtw_read32(padapter, REG_TXDMA_STATUS)) !=0x00) {
-		DBG_871X("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
+		DBG_871X("%s REG_TXDMA_STATUS:0x%08x\n", __func__, txdma_status);
 		rtl8723a_silentreset_for_specific_platform(padapter);
 	}
 
 	//total xmit irp = 4
-	//DBG_8192C("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__FUNCTION__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt);
+	//DBG_8192C("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__func__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt);
 	//if (pxmitpriv->txirp_cnt == NR_XMITBUFF+1)
 	current_time = rtw_get_current_time();
 	if (0==pxmitpriv->free_xmitbuf_cnt)
@@ -209,7 +209,7 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 				diff_time = jiffies_to_msecs(current_time - psrtpriv->last_tx_complete_time);
 				if (diff_time > 4000) {
 					//padapter->Wifi_Error_Status = WIFI_TX_HANG;
-					DBG_8192C("%s tx hang\n", __FUNCTION__);
+					DBG_8192C("%s tx hang\n", __func__);
 					rtl8723a_silentreset_for_specific_platform(padapter);
 				}
 			}

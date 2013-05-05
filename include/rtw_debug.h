@@ -222,7 +222,7 @@
 	#define _func_enter_ \
 	do {	\
 		if (GlobalDebugLevel >= _drv_debug_) { \
-			_dbgdump("\n %s : %s enters at %d\n", DRIVER_PREFIX, __FUNCTION__, __LINE__);\
+			_dbgdump("\n %s : %s enters at %d\n", DRIVER_PREFIX, __func__, __LINE__);\
 		}		\
 	} while (0)
 
@@ -230,7 +230,7 @@
 	#define _func_exit_ \
 	do {	\
 		if (GlobalDebugLevel >= _drv_debug_) { \
-			_dbgdump("\n %s : %s exits at %d\n", DRIVER_PREFIX, __FUNCTION__, __LINE__); \
+			_dbgdump("\n %s : %s exits at %d\n", DRIVER_PREFIX, __func__, __LINE__); \
 		}	\
 	} while (0)
 

@@ -58,7 +58,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 #endif
 
 
-	//DBG_871X("%s %s:%d\n",__FUNCTION__, current->comm, current->pid);
+	//DBG_871X("%s %s:%d\n",__func__, current->comm, current->pid);
 
 	if ((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)) {
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usbctrl_vendorreq:(padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
@@ -67,7 +67,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 	}
 
 	if (len>MAX_VENDOR_REQ_CMD_SIZE) {
-		DBG_8192C( "[%s] Buffer len error ,vendor request failed\n", __FUNCTION__ );
+		DBG_8192C( "[%s] Buffer len error ,vendor request failed\n", __func__ );
 		status = -EINVAL;
 		goto exit;
 	}
@@ -95,7 +95,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 #endif
 
 	if ( pIo_buf== NULL) {
-		DBG_8192C( "[%s] pIo_buf == NULL\n", __FUNCTION__ );
+		DBG_8192C( "[%s] pIo_buf == NULL\n", __func__ );
 		status = -ENOMEM;
 		goto release_mutex;
 	}
@@ -428,7 +428,7 @@ static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 	if (padapter->bSurpriseRemoved || padapter->bDriverStopped||padapter->bReadPortCancel)
 	{
 		DBG_8192C("%s() RX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-		__FUNCTION__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
+		__func__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
 		return;
 	}
 
@@ -622,7 +622,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 
 				} else {
 					rtw_free_recvframe(precvframe_if2, pfree_recv_queue);
-					DBG_8192C("%s()-%d: alloc_skb() failed!\n", __FUNCTION__, __LINE__);
+					DBG_8192C("%s()-%d: alloc_skb() failed!\n", __func__, __LINE__);
 				}
 
 			}
@@ -672,7 +672,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 		precvframe = rtw_alloc_recvframe(pfree_recv_queue);
 		if (precvframe==NULL) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("recvbuf2recvframe: precvframe==NULL\n"));
-			DBG_8192C("%s()-%d: rtw_alloc_recvframe() failed! RX Drop!\n", __FUNCTION__, __LINE__);
+			DBG_8192C("%s()-%d: rtw_alloc_recvframe() failed! RX Drop!\n", __func__, __LINE__);
 			goto _exit_recvbuf2recvframe;
 		}
 
@@ -685,7 +685,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 		pattrib = &precvframe->u.hdr.attrib;
 
 		if (pattrib->crc_err) {
-			DBG_8192C("%s()-%d: RX Warning! rx CRC ERROR !!\n", __FUNCTION__, __LINE__);
+			DBG_8192C("%s()-%d: RX Warning! rx CRC ERROR !!\n", __func__, __LINE__);
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 			goto _exit_recvbuf2recvframe;
 		}
@@ -695,7 +695,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
 		if ((pattrib->pkt_len<=0) || (pkt_offset>transfer_len))
 		{
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("recvbuf2recvframe: pkt_len<=0\n"));
-			DBG_8192C("%s()-%d: RX Warning!\n", __FUNCTION__, __LINE__);
+			DBG_8192C("%s()-%d: RX Warning!\n", __func__, __LINE__);
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 			goto _exit_recvbuf2recvframe;
 		}
@@ -882,7 +882,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 	#endif
 		DBG_8192C("%s()-%d: RX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-		__FUNCTION__, __LINE__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
+		__func__, __LINE__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
 		goto exit;
 	}
 
@@ -893,7 +893,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete: (purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE)\n"));
 			precvbuf->reuse = true;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
-			DBG_8192C("%s()-%d: RX Warning!\n", __FUNCTION__, __LINE__);
+			DBG_8192C("%s()-%d: RX Warning!\n", __func__, __LINE__);
 		}
 		else
 		{

@@ -118,7 +118,7 @@ void* rtw_malloc2d(int h, int w, int size)
 	void **a = (void **) rtw_zmalloc( h*sizeof(void *) + h*w*size );
 	if (a == NULL)
 	{
-		DBG_871X("%s: alloc memory fail!\n", __FUNCTION__);
+		DBG_871X("%s: alloc memory fail!\n", __func__);
 		return NULL;
 	}
 
@@ -323,14 +323,14 @@ void rtw_usleep_os(int us)
 #ifdef DBG_DELAY_OS
 void _rtw_mdelay_os(int ms, const char *func, const int line)
 {
-	DBG_871X("%s:%d %s(%d)\n", func, line, __FUNCTION__, ms);
+	DBG_871X("%s:%d %s(%d)\n", func, line, __func__, ms);
 
 	mdelay((unsigned long)ms);
 }
 
 void _rtw_udelay_os(int us, const char *func, const int line)
 {
-	DBG_871X("%s:%d %s(%d)\n", func, line, __FUNCTION__, us);
+	DBG_871X("%s:%d %s(%d)\n", func, line, __func__, us);
 
       udelay((unsigned long)us);
 }
@@ -387,7 +387,7 @@ inline void rtw_lock_suspend()
 	#endif
 
 	#if  defined(CONFIG_WAKELOCK) || defined(CONFIG_ANDROID_POWER)
-	//DBG_871X("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
+	//DBG_871X("####%s: suspend_lock_count:%d####\n", __func__, rtw_suspend_lock.stat.count);
 	#endif
 }
 
@@ -400,7 +400,7 @@ inline void rtw_unlock_suspend()
 	#endif
 
 	#if  defined(CONFIG_WAKELOCK) || defined(CONFIG_ANDROID_POWER)
-	//DBG_871X("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
+	//DBG_871X("####%s: suspend_lock_count:%d####\n", __func__, rtw_suspend_lock.stat.count);
 	#endif
 }
 
@@ -583,20 +583,20 @@ static int retriveFromFile(char *path, u8* buf, u32 sz)
 
 	if (path && buf) {
 		if ( 0 == (ret=openFile(&fp,path, O_RDONLY, 0)) ) {
-			DBG_871X("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
+			DBG_871X("%s openFile path:%s fp=%p\n",__func__, path ,fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
 			ret=readFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
 
-			DBG_871X("%s readFile, ret:%d\n",__FUNCTION__, ret);
+			DBG_871X("%s readFile, ret:%d\n",__func__, ret);
 
 		} else {
-			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
+			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__func__, path, ret);
 		}
 	} else {
-		DBG_871X("%s NULL pointer\n",__FUNCTION__);
+		DBG_871X("%s NULL pointer\n",__func__);
 		ret =  -EINVAL;
 	}
 	return ret;
@@ -617,20 +617,20 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 
 	if (path && buf) {
 		if ( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
-			DBG_871X("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
+			DBG_871X("%s openFile path:%s fp=%p\n",__func__, path ,fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
 			ret=writeFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
 
-			DBG_871X("%s writeFile, ret:%d\n",__FUNCTION__, ret);
+			DBG_871X("%s writeFile, ret:%d\n",__func__, ret);
 
 		} else {
-			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
+			DBG_871X("%s openFile path:%s Fail, ret:%d\n",__func__, path, ret);
 		}
 	} else {
-		DBG_871X("%s NULL pointer\n",__FUNCTION__);
+		DBG_871X("%s NULL pointer\n",__func__);
 		ret =  -EINVAL;
 	}
 	return ret;

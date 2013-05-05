@@ -345,7 +345,7 @@ _func_enter_;
 
 			preorder_ctrl->indicate_seq = 0xffff;
 			#ifdef DBG_RX_SEQ
-			DBG_871X("DBG_RX_SEQ %s:%d IndicateSeq: %d\n", __FUNCTION__, __LINE__,
+			DBG_871X("DBG_RX_SEQ %s:%d IndicateSeq: %d\n", __func__, __LINE__,
 				preorder_ctrl->indicate_seq);
 			#endif
 			preorder_ctrl->wend_b= 0xffff;
@@ -498,7 +498,7 @@ _func_enter_;
 		_exit_critical_bh(&ppending_recvframe_queue->lock, &irqL);
 
 	}
-	DBG_871X("%s\n",__FUNCTION__);
+	DBG_871X("%s\n",__func__);
 	if (!(psta->state & WIFI_AP_STATE))
 		rtw_hal_set_odm_var(padapter, HAL_ODM_STA_INFO, psta, false);
 

@@ -797,18 +797,18 @@ int WFD_info_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE)
 		u8	attr_content[ 10 ] = { 0x00 };
 		u32	attr_contentlen = 0;
 
-		DBG_871X( "[%s] Found WFD IE\n", __FUNCTION__ );
+		DBG_871X( "[%s] Found WFD IE\n", __func__ );
 		rtw_get_wfd_attr_content( wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, attr_content, &attr_contentlen);
 		if ( attr_contentlen )
 		{
 			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16( attr_content + 2 );
-			DBG_8192C( "[%s] Peer PORT NUM = %d\n", __FUNCTION__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
+			DBG_8192C( "[%s] Peer PORT NUM = %d\n", __func__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
 			return( true );
 		}
 	}
 	else
 	{
-		DBG_871X( "[%s] NO WFD IE\n", __FUNCTION__ );
+		DBG_871X( "[%s] NO WFD IE\n", __func__ );
 
 	}
 	return( _FAIL );
@@ -1188,7 +1188,7 @@ void HTOnAssocRsp(_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	DBG_871X("%s\n", __FUNCTION__);
+	DBG_871X("%s\n", __func__);
 
 	if ((pmlmeinfo->HT_info_enable) && (pmlmeinfo->HT_caps_enable))
 	{
@@ -2210,7 +2210,7 @@ void process_addba_req(_adapter *padapter, u8 *paddba_req, u8 *addr)
 		#ifdef CONFIG_UPDATE_INDICATE_SEQ_WHILE_PROCESS_ADDBA_REQ
 		preorder_ctrl->indicate_seq = start_seq;
 		#ifdef DBG_RX_SEQ
-		DBG_871X("DBG_RX_SEQ %s:%d IndicateSeq: %d, start_seq: %d\n", __FUNCTION__, __LINE__,
+		DBG_871X("DBG_RX_SEQ %s:%d IndicateSeq: %d, start_seq: %d\n", __func__, __LINE__,
 			preorder_ctrl->indicate_seq, start_seq);
 		#endif
 		#else
@@ -2257,13 +2257,13 @@ int rtw_handle_dualmac(_adapter *adapter, bool init)
 	if (init) {
 		if (pbuddy_padapter == NULL) {
 			pbuddy_padapter = adapter;
-			DBG_871X("%s(): pbuddy_padapter == NULL, Set pbuddy_padapter\n",__FUNCTION__);
+			DBG_871X("%s(): pbuddy_padapter == NULL, Set pbuddy_padapter\n",__func__);
 		} else {
 			adapter->pbuddy_adapter = pbuddy_padapter;
 			pbuddy_padapter->pbuddy_adapter = adapter;
 			// clear global value
 			pbuddy_padapter = NULL;
-			DBG_871X("%s(): pbuddy_padapter exist, Exchange Information\n",__FUNCTION__);
+			DBG_871X("%s(): pbuddy_padapter exist, Exchange Information\n",__func__);
 		}
 #ifdef CONFIG_DUALMAC_CONCURRENT
 		if (dvobj->InterfaceNumber == 0) {
@@ -2271,13 +2271,13 @@ int rtw_handle_dualmac(_adapter *adapter, bool init)
 			adapter->isprimary = true;
 			adapter->adapter_type = PRIMARY_ADAPTER;
 			adapter->iface_type = IFACE_PORT0;
-			DBG_871X("%s(): PRIMARY_ADAPTER\n",__FUNCTION__);
+			DBG_871X("%s(): PRIMARY_ADAPTER\n",__func__);
 		} else {
 			//set adapter_type/iface type
 			adapter->isprimary = false;
 			adapter->adapter_type = SECONDARY_ADAPTER;
 			adapter->iface_type = IFACE_PORT1;
-			DBG_871X("%s(): SECONDARY_ADAPTER\n",__FUNCTION__);
+			DBG_871X("%s(): SECONDARY_ADAPTER\n",__func__);
 		}
 #endif
 	} else {

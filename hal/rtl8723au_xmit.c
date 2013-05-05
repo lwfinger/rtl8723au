@@ -330,7 +330,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 #ifdef CONFIG_INTEL_PROXIM
 		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)) {
-			DBG_871X("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
+			DBG_871X("\n %s pattrib->rate=%d\n",__func__,pattrib->rate);
 			ptxdesc->txdw5 |= cpu_to_le32( pattrib->rate);
 		}
 		else
@@ -436,7 +436,7 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 	ret = _rtw_down_sema(&pxmitpriv->xmit_sema);
 	if (_FAIL == ret) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_emerg_,
-				 ("%s: down SdioXmitBufSema fail!\n", __FUNCTION__));
+				 ("%s: down SdioXmitBufSema fail!\n", __func__));
 		return _FAIL;
 	}
 
@@ -444,7 +444,7 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 	if (ret) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
 				 ("%s: bDriverStopped(%d) bSurpriseRemoved(%d)!\n",
-				  __FUNCTION__, padapter->bDriverStopped, padapter->bSurpriseRemoved));
+				  __func__, padapter->bDriverStopped, padapter->bSurpriseRemoved));
 		return _FAIL;
 	}
 
@@ -455,7 +455,7 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 	ret = rtw_register_tx_alive(padapter);
 	if (ret != _SUCCESS) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
-				 ("%s: wait to leave LPS_LCLK\n", __FUNCTION__));
+				 ("%s: wait to leave LPS_LCLK\n", __func__));
 		return _SUCCESS;
 	}
 #endif

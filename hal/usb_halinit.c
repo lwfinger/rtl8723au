@@ -1290,7 +1290,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 	// Check if MAC has already power on. by tynli. 2011.05.27.
 	val8 = rtw_read8(Adapter, REG_CR);
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
-			 ("%s: REG_CR 0x100=0x%02x\n", __FUNCTION__, val8));
+			 ("%s: REG_CR 0x100=0x%02x\n", __func__, val8));
 	//Fix 92DU-VC S3 hang with the reason is that secondary mac is not initialized.
 	//0x100 value of first mac is 0xEA while 0x100 value of secondary is 0x00
 	//by sherry 20111102
@@ -1299,7 +1299,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 	} else {
 		pHalData->bMACFuncEnable = true;
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
-				 ("%s: MAC has already power on\n", __FUNCTION__));
+				 ("%s: MAC has already power on\n", __func__));
 	}
 
 
@@ -1444,7 +1444,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	PHY_SetBBReg(Adapter, rFPGA0_XAB_RFInterfaceSW, bMaskDWord, 0x07000760);	//0x870[6:5]=b'11
 	PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, bMaskDWord, 0x66F60210); //0x860[6:5]=b'00
 
-	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: 0x870 = value 0x%x\n", __FUNCTION__, PHY_QueryBBReg(Adapter, 0x870, bMaskDWord)));
+	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: 0x870 = value 0x%x\n", __func__, PHY_QueryBBReg(Adapter, 0x870, bMaskDWord)));
 
 #endif
 
@@ -1625,11 +1625,11 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 	if (!IS_HARDWARE_TYPE_8192DU(Adapter) && ((rtw_read32(Adapter, rFPGA0_RFMOD) & 0xFF000000) != 0x83000000))
 	{
 		PHY_SetBBReg(Adapter, rFPGA0_RFMOD, BIT(24), 1);
-		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("%s: IQK fail recorver\n", __FUNCTION__));
+		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("%s: IQK fail recorver\n", __func__));
 	}
 	else
 	{
-		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: IQK OK\n", __FUNCTION__));
+		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: IQK OK\n", __func__));
 	}
 
 #ifdef CONFIG_XMIT_ACK
@@ -1642,7 +1642,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 exit:
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);
 
-	DBG_871X("%s in %dms\n", __FUNCTION__, rtw_get_passing_time_ms(init_start_time));
+	DBG_871X("%s in %dms\n", __func__, rtw_get_passing_time_ms(init_start_time));
 
 	#ifdef DBG_HAL_INIT_PROFILING
 	hal_init_stages_timestamp[HAL_INIT_STAGES_END]=rtw_get_current_time();
@@ -2158,7 +2158,7 @@ _ResetDigitalProcedure1(
 		{
 			u8 val;
 			if ( (val=rtw_read8(Adapter, REG_MCUFWDL)))
-				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
+				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __func__, __LINE__, val);
 		}
 		#endif
 
@@ -2187,7 +2187,7 @@ _ResetDigitalProcedure1(
 				}
 
 				if (retry_cnts >= 100) {
-					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __FUNCTION__);
+					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __func__);
 					// if 8051 reset fail we trigger GPIO 0 for LA
 					//PlatformEFIOWrite4Byte(	Adapter,
 					//						REG_GPIO_PIN_CTRL,
@@ -2197,22 +2197,22 @@ _ResetDigitalProcedure1(
 					rtw_mdelay_os(10);
 				}
 				else {
-					//DBG_871X("%s =====> 8051 reset success (%d) .\n", __FUNCTION__, retry_cnts);
+					//DBG_871X("%s =====> 8051 reset success (%d) .\n", __func__, retry_cnts);
 				}
 			}
 			else {
-				DBG_871X("%s =====> 8051 in RAM but !Adapter->bFWReady\n", __FUNCTION__);
+				DBG_871X("%s =====> 8051 in RAM but !Adapter->bFWReady\n", __func__);
 			}
 		}
 		else {
-			//DBG_871X("%s =====> 8051 in ROM.\n", __FUNCTION__);
+			//DBG_871X("%s =====> 8051 in ROM.\n", __func__);
 		}
 
 		#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
 		{
 			u8 val;
 			if ( (val=rtw_read8(Adapter, REG_MCUFWDL)))
-				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
+				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __func__, __LINE__, val);
 		}
 		#endif
 
@@ -2401,7 +2401,7 @@ u32 rtl8723au_hal_deinit(PADAPTER padapter)
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
 
-	DBG_8192C("==> %s\n", __FUNCTION__);
+	DBG_8192C("==> %s\n", __func__);
 
 #ifdef CONFIG_BT_COEXIST
 	BT_HaltProcess(padapter);
@@ -2489,7 +2489,7 @@ unsigned int rtl8723au_inirp_deinit(PADAPTER Adapter)
 	rtw_read_port_cancel(Adapter);
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	pHalData->IntrMask[0]=rtw_read32(Adapter, REG_USB_HIMR);
-	MSG_8192C("%s pHalData->IntrMask = 0x%04x\n",__FUNCTION__, pHalData->IntrMask[0]);
+	MSG_8192C("%s pHalData->IntrMask = 0x%04x\n",__func__, pHalData->IntrMask[0]);
 	pHalData->IntrMask[0]=0x0;
 	rtw_write32(Adapter, REG_USB_HIMR,pHalData->IntrMask[0]);
 	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n <=== usb_rx_deinit\n"));
@@ -2616,7 +2616,7 @@ _ReadMACAddress(
 		//sMacAddr[5] = (u8)GetRandomNumber(1, 254);
 		memcpy(pEEPROM->mac_addr, sMacAddr, ETH_ALEN);
 	}
-	DBG_8192C("%s MAC Address from EFUSE = "MAC_FMT"\n",__FUNCTION__, MAC_ARG(pEEPROM->mac_addr));
+	DBG_8192C("%s MAC Address from EFUSE = "MAC_FMT"\n",__func__, MAC_ARG(pEEPROM->mac_addr));
 	//NicIFSetMacAddress(Adapter, Adapter->PermanentAddress);
 	//RT_PRINT_ADDR(COMP_INIT|COMP_EFUSE, DBG_LOUD, "MAC Addr: %s", Adapter->PermanentAddress);
 
@@ -2758,7 +2758,7 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 		// if hw supported, 8051 (SIE) will generate WeakUP signal( D+/D- toggle) when autoresume
 		Adapter->pwrctrlpriv.bSupportRemoteWakeup = (PROMContent[EEPROM_TEST_USB_OPT] & BIT1)?true :false;
 
-		DBG_8192C("%s...bHWPwrPindetect(%x)-bHWPowerdown(%x) ,bSupportRemoteWakeup(%x)\n",__FUNCTION__,
+		DBG_8192C("%s...bHWPwrPindetect(%x)-bHWPowerdown(%x) ,bSupportRemoteWakeup(%x)\n",__func__,
 		Adapter->pwrctrlpriv.bHWPwrPindetect,Adapter->pwrctrlpriv.bHWPowerdown ,Adapter->pwrctrlpriv.bSupportRemoteWakeup);
 
 		DBG_8192C("### PS params=>  power_mgnt(%x),usbss_enable(%x) ###\n",Adapter->registrypriv.power_mgnt,Adapter->registrypriv.usbss_enable);
@@ -2984,7 +2984,7 @@ readAdapterInfo(
 	//hal_CustomizedBehavior_8723U(Adapter);
 
 //	Adapter->bDongle = (PROMContent[EEPROM_EASY_REPLACEMENT] == 1)? 0: 1;
-	DBG_8192C("%s(): REPLACEMENT = %x\n",__FUNCTION__,padapter->bDongle);
+	DBG_8192C("%s(): REPLACEMENT = %x\n",__func__,padapter->bDongle);
 }
 
 static void _ReadPROMContent(
@@ -3129,7 +3129,7 @@ static int _ReadAdapterInfo8723AU(PADAPTER	Adapter)
 
 	_InitOtherVariable(Adapter);
 
-	//MSG_8192C("%s()(done), rf_chip=0x%x, rf_type=0x%x\n",  __FUNCTION__, pHalData->rf_chip, pHalData->rf_type);
+	//MSG_8192C("%s()(done), rf_chip=0x%x, rf_type=0x%x\n",  __func__, pHalData->rf_chip, pHalData->rf_type);
 
 	MSG_8192C("<==== _ReadAdapterInfo8723AU in %d ms\n", rtw_get_passing_time_ms(start));
 
@@ -3489,7 +3489,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 	{
 		rate_bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv,mac_id,mask,rssi_level);
 		printk("%s => mac_id:%d, networkType:0x%02x, mask:0x%08x\n\t ==> rssi_level:%d, rate_bitmap:0x%08x\n",
-			__FUNCTION__,mac_id,networkType,mask,rssi_level,rate_bitmap);
+			__func__,mac_id,networkType,mask,rssi_level,rate_bitmap);
 	}
 #endif
 
