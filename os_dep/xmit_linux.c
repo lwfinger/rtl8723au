@@ -59,7 +59,7 @@ _func_enter_;
        len =  rtw_remainder_len(pfile);
 	len = (rlen > len)? len: rlen;
 
-       if(rmem)
+       if (rmem)
 	  skb_copy_bits(pfile->pkt, pfile->buf_len-pfile->pkt_len, rmem, len);
 
        pfile->cur_addr += len;
@@ -132,7 +132,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_TX
 	pxmitbuf->pallocated_buf = rtw_usb_buffer_alloc(pusbd, (size_t)alloc_sz, &pxmitbuf->dma_transfer_addr);
 	pxmitbuf->pbuf = pxmitbuf->pallocated_buf;
-	if(pxmitbuf->pallocated_buf == NULL)
+	if (pxmitbuf->pallocated_buf == NULL)
 		return _FAIL;
 #else // CONFIG_USE_USB_BUFFER_ALLOC_TX
 
@@ -147,10 +147,10 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 
 #endif // CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-	for(i=0; i<8; i++)
+	for (i=0; i<8; i++)
 	{
 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
-		if(pxmitbuf->pxmit_urb[i] == NULL)
+		if (pxmitbuf->pxmit_urb[i] == NULL)
 		{
 			DBG_871X("pxmitbuf->pxmit_urb[i]==NULL");
 			return _FAIL;
@@ -167,9 +167,9 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
 
-	for(i=0; i<8; i++)
+	for (i=0; i<8; i++)
 	{
-		if(pxmitbuf->pxmit_urb[i])
+		if (pxmitbuf->pxmit_urb[i])
 		{
 			//usb_kill_urb(pxmitbuf->pxmit_urb[i]);
 			usb_free_urb(pxmitbuf->pxmit_urb[i]);
@@ -181,7 +181,7 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	pxmitbuf->pallocated_buf =  NULL;
 	pxmitbuf->dma_transfer_addr = 0;
 #else	// CONFIG_USE_USB_BUFFER_ALLOC_TX
-	if(pxmitbuf->pallocated_buf)
+	if (pxmitbuf->pallocated_buf)
 		rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 }
@@ -196,13 +196,13 @@ void rtw_os_pkt_complete(_adapter *padapter, struct sk_buff *pkt)
 
 	queue = skb_get_queue_mapping(pkt);
 	if (padapter->registrypriv.wifi_spec) {
-		if(__netif_subqueue_stopped(padapter->pnetdev, queue) &&
+		if (__netif_subqueue_stopped(padapter->pnetdev, queue) &&
 			(pxmitpriv->hwxmits[queue].accnt < WMM_XMIT_THRESHOLD))
 		{
 			netif_wake_subqueue(padapter->pnetdev, queue);
 		}
 	} else {
-		if(__netif_subqueue_stopped(padapter->pnetdev, queue))
+		if (__netif_subqueue_stopped(padapter->pnetdev, queue))
 			netif_wake_subqueue(padapter->pnetdev, queue);
 	}
 #else
@@ -215,7 +215,7 @@ void rtw_os_pkt_complete(_adapter *padapter, struct sk_buff *pkt)
 
 void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
 {
-	if(pxframe->pkt)
+	if (pxframe->pkt)
 		rtw_os_pkt_complete(padapter, pxframe->pkt);
 
 	pxframe->pkt = NULL;
@@ -228,14 +228,14 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 	unsigned long  irqL;
 	struct xmit_priv *pxmitpriv;
 
-	if(!padapter)
+	if (!padapter)
 		return;
 
 	pxmitpriv = &padapter->xmitpriv;
 
 	_enter_critical_bh(&pxmitpriv->lock, &irqL);
 
-	if(rtw_txframes_pending(padapter))
+	if (rtw_txframes_pending(padapter))
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 
 	_exit_critical_bh(&pxmitpriv->lock, &irqL);
@@ -255,13 +255,13 @@ static void rtw_check_xmit_resource(_adapter *padapter, struct sk_buff *pkt)
 			netif_stop_subqueue(padapter->pnetdev, queue);
 		}
 	} else {
-		if(pxmitpriv->free_xmitframe_cnt<=4) {
+		if (pxmitpriv->free_xmitframe_cnt<=4) {
 			if (!netif_tx_queue_stopped(netdev_get_tx_queue(padapter->pnetdev, queue)))
 				netif_stop_subqueue(padapter->pnetdev, queue);
 		}
 	}
 #else
-	if(pxmitpriv->free_xmitframe_cnt<=4)
+	if (pxmitpriv->free_xmitframe_cnt<=4)
 	{
 		if (!rtw_netif_queue_stopped(padapter->pnetdev))
 			rtw_netif_stop_queue(padapter->pnetdev);

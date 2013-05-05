@@ -49,10 +49,10 @@ static u8 _is_fw_read_cmd_down(_adapter* padapter, u8 msgbox_num)
 
 	do{
 		valid = rtw_read8(padapter,REG_HMETFR) & BIT(msgbox_num);
-		if(0 == valid ){
+		if (0 == valid ){
 			read_down = true;
 		}
-	}while( (!read_down) && (retry_cnts--));
+	}while ( (!read_down) && (retry_cnts--));
 
 	return read_down;
 
@@ -81,7 +81,7 @@ _func_enter_;
 
 #ifdef CONFIG_CONCURRENT_MODE
 
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
+	if (padapter->adapter_type > PRIMARY_ADAPTER)
 	{
 		padapter = padapter->pbuddy_adapter;
 	}
@@ -105,12 +105,12 @@ _func_enter_;
 	do{
 		h2c_box_num = pHalData->LastHMEBoxNum;
 
-		if(!_is_fw_read_cmd_down(padapter, h2c_box_num)){
+		if (!_is_fw_read_cmd_down(padapter, h2c_box_num)){
 			DBG_8192C(" fw read cmd failed...\n");
 			goto exit;
 		}
 
-		if(CmdLen<=3)
+		if (CmdLen<=3)
 		{
 			memcpy((u8*)(&h2c_cmd)+1, pCmdBuffer, CmdLen );
 		}
@@ -122,7 +122,7 @@ _func_enter_;
 
 		*(u8*)(&h2c_cmd) |= ElementID;
 
-		if(h2c_cmd & BIT(7)){
+		if (h2c_cmd & BIT(7)){
 			msgbox_ex_addr = REG_HMEBOX_EXT_0 + (h2c_box_num *EX_MESSAGE_BOX_SIZE);
 			h2c_cmd_ex = le16_to_cpu( h2c_cmd_ex );
 			rtw_write16(padapter, msgbox_ex_addr, h2c_cmd_ex);
@@ -138,7 +138,7 @@ _func_enter_;
 
 		pHalData->LastHMEBoxNum = (h2c_box_num+1) % RTL92C_MAX_H2C_BOX_NUMS;
 
-	}while((!bcmd_down) && (retry_cnts--));
+	}while ((!bcmd_down) && (retry_cnts--));
 
 	ret = _SUCCESS;
 
@@ -159,7 +159,7 @@ u8 rtl8192c_h2c_msg_hdl(_adapter *padapter, unsigned char *pbuf)
 	u8 *pCmdBuffer;
 	struct cmd_msg_parm  *pcmdmsg;
 
-	if(!pbuf)
+	if (!pbuf)
 		return H2C_PARAMETERS_ERROR;
 
 	pcmdmsg = (struct cmd_msg_parm*)pbuf;
@@ -234,19 +234,19 @@ void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 	u8 raid = (bitmap>>28) & 0x0f;
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(pAdapter) && pAdapter->adapter_type > PRIMARY_ADAPTER)
+	if (rtw_buddy_adapter_up(pAdapter) && pAdapter->adapter_type > PRIMARY_ADAPTER)
 		pHalData = GET_HAL_DATA(pAdapter->pbuddy_adapter);
 #endif //CONFIG_CONCURRENT_MODE
 
 	bitmap &=0x0fffffff;
-	if(rssi_level != DM_RATR_STA_INIT)
+	if (rssi_level != DM_RATR_STA_INIT)
 		bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv, macid, bitmap, rssi_level);
 
 	bitmap |= ((raid<<28)&0xf0000000);
 #endif //CONFIG_ODM_REFRESH_RAMASK
 
 
-	if(pHalData->fw_ractrl == true)
+	if (pHalData->fw_ractrl == true)
 	{
 		rtl8192c_set_raid_cmd(pAdapter, bitmap, arg);
 	}
@@ -335,7 +335,7 @@ void ConstructBeacon(_adapter *padapter, u8 *pframe, u32 *pLength)
 	pframe += 2;
 	pktlen += 2;
 
-	if( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
+	if ( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
 	{
 		//DBG_871X("ie len=%d\n", cur_network->IELength);
 		pktlen += cur_network->IELength - sizeof(NDIS_802_11_FIXED_IEs);
@@ -356,7 +356,7 @@ void ConstructBeacon(_adapter *padapter, u8 *pframe, u32 *pLength)
 	// DS parameter set
 	pframe = rtw_set_ie(pframe, _DSSET_IE_, 1, (unsigned char *)&(cur_network->Configuration.DSConfig), &pktlen);
 
-	if( (pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE)
+	if ( (pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE)
 	{
 		u32 ATIMWindow;
 		// IBSS Parameter Set...
@@ -452,7 +452,7 @@ void ConstructNullFunctionData(
 		SetPwrMgt(fctrl);
 	}
 
-	switch(cur_network->network.InfrastructureMode)
+	switch (cur_network->network.InfrastructureMode)
 	{
 		case Ndis802_11Infrastructure:
 			SetToDs(fctrl);
@@ -525,7 +525,7 @@ void ConstructProbeRsp(_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr
 	pktlen = sizeof(struct rtw_ieee80211_hdr_3addr);
 	pframe += pktlen;
 
-	if(cur_network->IELength>MAX_IE_SZ)
+	if (cur_network->IELength>MAX_IE_SZ)
 		return;
 
 	memcpy(pframe, cur_network->IEs, cur_network->IELength);
@@ -545,7 +545,7 @@ CheckFwRsvdPageContent(
 	HAL_DATA_TYPE*	pHalData = GET_HAL_DATA(Adapter);
 	u32	MaxBcnPageNum;
 
-	if(pHalData->FwRsvdPageStartOffset != 0)
+	if (pHalData->FwRsvdPageStartOffset != 0)
 	{
 		/*MaxBcnPageNum = PageNum_128(pMgntInfo->MaxBeaconSize);
 		RT_ASSERT((MaxBcnPageNum <= pHalData->FwRsvdPageStartOffset),
@@ -711,7 +711,7 @@ _func_enter_;
 
 	DBG_871X("%s mstatus(%x)\n", __FUNCTION__,mstatus);
 
-	if(mstatus == 1)
+	if (mstatus == 1)
 	{
 		bool bRecover = false;
 		u8 v8;
@@ -757,7 +757,7 @@ _func_enter_;
 		// prevent from setting 0x422[6] to 0 after download reserved page, or it will cause
 		// the beacon cannot be sent by HW.
 		// 2010.06.23. Added by tynli.
-		if(bRecover)
+		if (bRecover)
 		{
 			rtw_write8(padapter, REG_FWHW_TXQ_CTRL+2, pHalData->RegFwHwTxQCtrl | BIT(6));
 			pHalData->RegFwHwTxQCtrl |= BIT(6);
@@ -928,7 +928,7 @@ void rtl8192c_set_p2p_ps_offload_cmd(_adapter* padapter, u8 p2p_ps_state)
 
 _func_enter_;
 
-	switch(p2p_ps_state) {
+	switch (p2p_ps_state) {
 	case P2P_PS_DISABLE:
 		DBG_8192C("P2P_PS_DISABLE\n");
 		memset(p2p_ps_offload, 0 ,1);
@@ -936,18 +936,18 @@ _func_enter_;
 	case P2P_PS_ENABLE:
 		DBG_8192C("P2P_PS_ENABLE\n");
 		// update CTWindow value.
-		if( pwdinfo->ctwindow > 0 ) {
+		if ( pwdinfo->ctwindow > 0 ) {
 			p2p_ps_offload->CTWindow_En = 1;
 			ctwindow = pwdinfo->ctwindow;
-			if(!IS_HARDWARE_TYPE_8723A(padapter))
+			if (!IS_HARDWARE_TYPE_8723A(padapter))
 				rtl8192c_set_p2p_ctw_period_cmd(padapter, ctwindow);
 		}
 
 		// hw only support 2 set of NoA
-		for( i=0 ; i<pwdinfo->noa_num ; i++) {
+		for ( i=0 ; i<pwdinfo->noa_num ; i++) {
 			// To control the register setting for which NOA
 			rtw_write8(padapter, 0x5CF, (i << 4));
-			if(i == 0)
+			if (i == 0)
 				p2p_ps_offload->NoA0_En = 1;
 			else
 				p2p_ps_offload->NoA1_En = 1;
@@ -961,10 +961,10 @@ _func_enter_;
 			tsf_low = rtw_read32(padapter, REG_TSFTR);
 
 			start_time = pwdinfo->noa_start_time[i];
-			if(pwdinfo->noa_count[i] != 1) {
-				while( start_time <= (tsf_low+(50*1024) ) ) {
+			if (pwdinfo->noa_count[i] != 1) {
+				while ( start_time <= (tsf_low+(50*1024) ) ) {
 					start_time += pwdinfo->noa_interval[i];
-					if(pwdinfo->noa_count[i] != 255)
+					if (pwdinfo->noa_count[i] != 255)
 						pwdinfo->noa_count[i]--;
 				}
 			}
@@ -979,7 +979,7 @@ _func_enter_;
 
 			p2p_ps_offload->Offload_En = 1;
 
-			if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO)) {
+			if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO)) {
 				p2p_ps_offload->role= 1;
 				p2p_ps_offload->AllStaSleep = 0;
 			} else {
@@ -1025,17 +1025,17 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 	dump_mgntframe_and_wait(adapter, xmit_frame, max_wating_ms);
 
 	IoOffloadLoc.LocCmd = 0;
-	if(_SUCCESS != FillH2CCmd(adapter, H2C_92C_IO_OFFLOAD, sizeof(IO_OFFLOAD_LOC), (u8 *)&IoOffloadLoc))
+	if (_SUCCESS != FillH2CCmd(adapter, H2C_92C_IO_OFFLOAD, sizeof(IO_OFFLOAD_LOC), (u8 *)&IoOffloadLoc))
 		goto exit;
 
 	//polling if the IO offloading is done
-	while( (passing_time_ms=rtw_get_passing_time_ms(start_time)) <= max_wating_ms) {
-		if(0x00 != (polling_ret=rtw_read8(adapter, 0x1c3)))
+	while ( (passing_time_ms=rtw_get_passing_time_ms(start_time)) <= max_wating_ms) {
+		if (0x00 != (polling_ret=rtw_read8(adapter, 0x1c3)))
 			break;
 		rtw_msleep_os(5);
 	}
 
-	if(polling_ret == 0xff)
+	if (polling_ret == 0xff)
 		ret =_SUCCESS;
 	else {
 		DBG_871X("IOL %s, polling_ret:0x%02x\n"

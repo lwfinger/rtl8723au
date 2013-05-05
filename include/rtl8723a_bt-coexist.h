@@ -117,7 +117,7 @@ typedef struct _CHNL_TXPOWER_TRIPLE
 
 // ===== Below this line is sync from SD7 driver COMMON/bt_hci.h =====
 #define BT_THREAD		0
-#if(BT_THREAD == 1)
+#if (BT_THREAD == 1)
 #define SENDTXMEHTOD	2
 #else
 #define SENDTXMEHTOD	1  // 0=workitem, 1= SendDirectily, 2=thread
@@ -1120,14 +1120,14 @@ typedef struct _BT30Info
 	BT_TRAFFIC			BtTraffic;
 	BT_SECURITY			BtSec;
 
-#if(BT_THREAD == 0)
+#if (BT_THREAD == 0)
 	_workitem		HCICmdWorkItem;
 	RT_TIMER				BTHCICmdTimer;
 #endif
 #if (SENDTXMEHTOD==0)
 	_workitem		HCISendACLDataWorkItem;
 	RT_TIMER				BTHCISendAclDataTimer;
-#elif(SENDTXMEHTOD==2)
+#elif (SENDTXMEHTOD==2)
 	void *BTTxThread;
 #endif
 	_workitem		BTPsDisableWorkItem;

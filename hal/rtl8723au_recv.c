@@ -43,7 +43,7 @@ void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf)
 
 	precvbuf->ref_cnt = 0;
 
-	if(precvbuf->pbuf)
+	if (precvbuf->pbuf)
 	{
 		precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pbuf;
 		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
@@ -68,11 +68,11 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if(precvpriv->int_in_urb == NULL){
+	if (precvpriv->int_in_urb == NULL){
 		DBG_8192C("alloc_urb for interrupt in endpoint fail !!!!\n");
 	}
 	precvpriv->int_in_buf = rtw_zmalloc(USB_INTR_CONTENT_LENGTH);
-	if(precvpriv->int_in_buf == NULL){
+	if (precvpriv->int_in_buf == NULL){
 		DBG_8192C("alloc_mem for interrupt in endpoint fail !!!!\n");
 	}
 #endif
@@ -81,7 +81,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
-	if(precvpriv->pallocated_recv_buf==NULL){
+	if (precvpriv->pallocated_recv_buf==NULL){
 		res= _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
 		goto exit;
@@ -92,7 +92,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
-	for(i=0; i < NR_RECVBUFF ; i++)
+	for (i=0; i < NR_RECVBUFF ; i++)
 	{
 		_rtw_init_listhead(&precvbuf->list);
 
@@ -101,7 +101,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
 
 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
-		if(res==_FAIL)
+		if (res==_FAIL)
 			break;
 
 		precvbuf->ref_cnt = 0;
@@ -126,7 +126,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 		skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 
-		for(i=0; i<NR_PREALLOC_RECV_SKB; i++)
+		for (i=0; i<NR_PREALLOC_RECV_SKB; i++)
 		{
 
 	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
@@ -135,7 +135,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 			pskb = __netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
 	#endif
 
-			if(pskb)
+			if (pskb)
 			{
 				pskb->dev = padapter->pnetdev;
 
@@ -166,19 +166,19 @@ void rtl8192cu_free_recv_priv (_adapter *padapter)
 
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
-	for(i=0; i < NR_RECVBUFF ; i++)
+	for (i=0; i < NR_RECVBUFF ; i++)
 	{
 		rtw_os_recvbuf_resource_free(padapter, precvbuf);
 		precvbuf++;
 	}
 
-	if(precvpriv->pallocated_recv_buf)
+	if (precvpriv->pallocated_recv_buf)
 		rtw_mfree(precvpriv->pallocated_recv_buf, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
-	if(precvpriv->int_in_urb)
+	if (precvpriv->int_in_urb)
 		usb_free_urb(precvpriv->int_in_urb);
-	if(precvpriv->int_in_buf)
+	if (precvpriv->int_in_buf)
 		rtw_mfree(precvpriv->int_in_buf, USB_INTR_CONTENT_LENGTH);
 #endif
 
@@ -283,8 +283,8 @@ void update_recvframe_phyinfo(
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
 
 	pkt_info.StationID = 0xFF;
-	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true){
+	if (pkt_info.bPacketBeacon){
+		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true){
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 		}
 		//to do Ad-hoc
@@ -303,7 +303,7 @@ void update_recvframe_phyinfo(
 
 	#ifdef CONFIG_CONCURRENT_MODE
 	//get Primary adapter's odmpriv
-	if(padapter->adapter_type > PRIMARY_ADAPTER){
+	if (padapter->adapter_type > PRIMARY_ADAPTER){
 		pHalData = GET_HAL_DATA(padapter->pbuddy_adapter);
 	}
 	#endif

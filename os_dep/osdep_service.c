@@ -34,10 +34,10 @@
 * @return: one of RTW_STATUS_CODE
 */
 inline int RTW_STATUS_CODE(int error_code){
-	if(error_code >=0)
+	if (error_code >=0)
 		return _SUCCESS;
 
-	switch(error_code) {
+	switch (error_code) {
 		//case -ETIMEDOUT:
 		//	return RTW_STATUS_TIMEDOUT;
 		default:
@@ -49,17 +49,17 @@ u32 rtw_atoi(u8* s)
 {
 	int num=0,flag=0;
 	int i;
-	for(i=0;i<=strlen(s);i++)
+	for (i=0;i<=strlen(s);i++)
 	{
-	  if(s[i] >= '0' && s[i] <= '9')
+	  if (s[i] >= '0' && s[i] <= '9')
 		 num = num * 10 + s[i] -'0';
-	  else if(s[0] == '-' && i==0)
+	  else if (s[0] == '-' && i==0)
 		 flag =1;
 	  else
 		  break;
 	 }
 
-	if(flag == 1)
+	if (flag == 1)
 	   num = num * -1;
 
 	 return(num);
@@ -116,13 +116,13 @@ void* rtw_malloc2d(int h, int w, int size)
 	int j;
 
 	void **a = (void **) rtw_zmalloc( h*sizeof(void *) + h*w*size );
-	if(a == NULL)
+	if (a == NULL)
 	{
 		DBG_871X("%s: alloc memory fail!\n", __FUNCTION__);
 		return NULL;
 	}
 
-	for( j=0; j<h; j++ )
+	for ( j=0; j<h; j++ )
 		a[j] = ((char *)(a+h)) + j*w*size;
 
 	return a;
@@ -477,7 +477,7 @@ static int openFile(struct file **fpp, char *path, int flag, int mode)
 	struct file *fp;
 
 	fp=filp_open(path, flag, mode);
-	if(IS_ERR(fp)) {
+	if (IS_ERR(fp)) {
 		*fpp=NULL;
 		return PTR_ERR(fp);
 	}
@@ -505,11 +505,11 @@ static int readFile(struct file *fp,char *buf,int len)
 	if (!fp->f_op || !fp->f_op->read)
 		return -EPERM;
 
-	while(sum<len) {
+	while (sum<len) {
 		rlen=fp->f_op->read(fp,buf+sum,len-sum, &fp->f_pos);
-		if(rlen>0)
+		if (rlen>0)
 			sum+=rlen;
-		else if(0 != rlen)
+		else if (0 != rlen)
 			return rlen;
 		else
 			break;
@@ -526,11 +526,11 @@ static int writeFile(struct file *fp,char *buf,int len)
 	if (!fp->f_op || !fp->f_op->write)
 		return -EPERM;
 
-	while(sum<len) {
+	while (sum<len) {
 		wlen=fp->f_op->write(fp,buf+sum,len-sum, &fp->f_pos);
-		if(wlen>0)
+		if (wlen>0)
 			sum+=wlen;
-		else if(0 != wlen)
+		else if (0 != wlen)
 			return wlen;
 		else
 			break;
@@ -553,13 +553,13 @@ static int isFileReadable(char *path)
 	char buf;
 
 	fp=filp_open(path, O_RDONLY, 0);
-	if(IS_ERR(fp)) {
+	if (IS_ERR(fp)) {
 		ret = PTR_ERR(fp);
 	}
 	else {
 		oldfs = get_fs(); set_fs(get_ds());
 
-		if(1!=readFile(fp, &buf, 1))
+		if (1!=readFile(fp, &buf, 1))
 			ret = PTR_ERR(fp);
 
 		set_fs(oldfs);
@@ -581,8 +581,8 @@ static int retriveFromFile(char *path, u8* buf, u32 sz)
 	mm_segment_t oldfs;
 	struct file *fp;
 
-	if(path && buf) {
-		if( 0 == (ret=openFile(&fp,path, O_RDONLY, 0)) ){
+	if (path && buf) {
+		if ( 0 == (ret=openFile(&fp,path, O_RDONLY, 0)) ){
 			DBG_871X("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
@@ -615,8 +615,8 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 	mm_segment_t oldfs;
 	struct file *fp;
 
-	if(path && buf) {
-		if( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
+	if (path && buf) {
+		if ( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
 			DBG_871X("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
@@ -643,7 +643,7 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 */
 int rtw_is_file_readable(char *path)
 {
-	if(isFileReadable(path) == 0)
+	if (isFileReadable(path) == 0)
 		return true;
 	else
 		return false;
@@ -728,12 +728,12 @@ void rtw_free_netdev(struct net_device * netdev)
 {
 	struct rtw_netdev_priv_indicator *pnpi;
 
-	if(!netdev)
+	if (!netdev)
 		goto RETURN;
 
 	pnpi = netdev_priv(netdev);
 
-	if(!pnpi->priv)
+	if (!pnpi->priv)
 		goto RETURN;
 
 	rtw_vmfree(pnpi->priv, pnpi->sizeof_priv);
@@ -754,19 +754,19 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
 	struct rereg_nd_name_data *rereg_priv;
 	int ret;
 
-	if(!padapter)
+	if (!padapter)
 		goto error;
 
 	rereg_priv = &padapter->rereg_nd_name_priv;
 
 	//free the old_pnetdev
-	if(rereg_priv->old_pnetdev) {
+	if (rereg_priv->old_pnetdev) {
 		free_netdev(rereg_priv->old_pnetdev);
 		rereg_priv->old_pnetdev = NULL;
 	}
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26))
-	if(!rtnl_is_locked())
+	if (!rtnl_is_locked())
 		unregister_netdev(cur_pnetdev);
 	else
 #endif
@@ -789,7 +789,7 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
 	memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26))
-	if(!rtnl_is_locked())
+	if (!rtnl_is_locked())
 		ret = register_netdev(pnetdev);
 	else
 #endif

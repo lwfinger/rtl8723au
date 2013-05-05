@@ -148,15 +148,15 @@
 	#define	_MODULE_DEFINE_	_module_efuse_
 #endif
 
-#define RT_TRACE(_Comp, _Level, Fmt) do{}while(0)
-#define _func_enter_ do{}while(0)
-#define _func_exit_ do{}while(0)
-#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen) do{}while(0)
+#define RT_TRACE(_Comp, _Level, Fmt) do{}while (0)
+#define _func_enter_ do{}while (0)
+#define _func_exit_ do{}while (0)
+#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen) do{}while (0)
 
-#define DBG_871X(x, ...) do {} while(0)
-#define MSG_8192C(x, ...) do {} while(0)
-#define DBG_8192C(x,...) do {} while(0)
-#define DBG_871X_LEVEL(x,...) do {} while(0)
+#define DBG_871X(x, ...) do {} while (0)
+#define MSG_8192C(x, ...) do {} while (0)
+#define DBG_8192C(x,...) do {} while (0)
+#define DBG_871X_LEVEL(x,...) do {} while (0)
 
 #undef	_dbgdump
 #define _dbgdump	printk
@@ -187,12 +187,12 @@
 	#undef MSG_8192C
 	#define MSG_8192C(...)     do {\
 		_dbgdump(DRIVER_PREFIX __VA_ARGS__);\
-	}while(0)
+	}while (0)
 
 	#undef DBG_8192C
 	#define DBG_8192C(...)     do {\
 		_dbgdump(DRIVER_PREFIX __VA_ARGS__);\
-	}while(0)
+	}while (0)
 #endif
 #endif /* CONFIG_DEBUG */
 
@@ -207,7 +207,7 @@
 	#undef RT_TRACE
 	#define RT_TRACE(_Comp, _Level, Fmt)\
 	do {\
-		if((_Comp & GlobalDebugComponents) && (_Level <= GlobalDebugLevel)) {\
+		if ((_Comp & GlobalDebugComponents) && (_Level <= GlobalDebugLevel)) {\
 			_dbgdump("%s [0x%08x,%d]", DRIVER_PREFIX, (unsigned int)_Comp, _Level);\
 			_dbgdump Fmt;\
 		}\

@@ -35,7 +35,7 @@ _FWDownloadEnable(
 {
 	u8	tmp;
 
-	if(enable)
+	if (enable)
 	{
 		// 8051 enable
 		tmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
@@ -91,7 +91,7 @@ _BlockWrite(
 	for (i = 0; i < blockCount_p1; i++)
 	{
 		ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + i * blockSize_p1), blockSize_p1, (bufferPtr + i * blockSize_p1));
-		if(ret == _FAIL)
+		if (ret == _FAIL)
 			goto exit;
 	}
 
@@ -112,7 +112,7 @@ _BlockWrite(
 		for (i = 0; i < blockCount_p2; i++) {
 			ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + offset + i*blockSize_p2), blockSize_p2, (bufferPtr + offset + i*blockSize_p2));
 
-			if(ret == _FAIL)
+			if (ret == _FAIL)
 				goto exit;
 		}
 	}
@@ -128,10 +128,10 @@ _BlockWrite(
 				("_BlockWrite: [P3] buffSize_p3(%d) blockSize_p3(%d) blockCount_p3(%d)\n",
 				(buffSize-offset), blockSize_p3, blockCount_p3));
 
-		for(i = 0 ; i < blockCount_p3 ; i++){
+		for (i = 0 ; i < blockCount_p3 ; i++){
 			ret = rtw_write8(padapter, (FW_8723A_START_ADDRESS + offset + i), *(bufferPtr + offset + i));
 
-			if(ret == _FAIL)
+			if (ret == _FAIL)
 				goto exit;
 		}
 	}
@@ -167,7 +167,7 @@ _FillDummy(
 	u8	remain = (u8)(FwLen%4);
 	remain = (remain==0)?0:(4-remain);
 
-	while(remain>0)
+	while (remain>0)
 	{
 		pFwBuf[FwLen] = 0;
 		FwLen++;
@@ -199,7 +199,7 @@ _WriteFW(
 		offset = page * MAX_PAGE_SIZE;
 		ret = _PageWrite(padapter, page, bufferPtr+offset, MAX_PAGE_SIZE);
 
-		if(ret == _FAIL)
+		if (ret == _FAIL)
 			goto exit;
 	}
 	if (remainSize) {
@@ -207,7 +207,7 @@ _WriteFW(
 		page = pageNums;
 		ret = _PageWrite(padapter, page, bufferPtr+offset, remainSize);
 
-		if(ret == _FAIL)
+		if (ret == _FAIL)
 			goto exit;
 	}
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("_WriteFW Done- for Normal chip.\n"));
@@ -274,7 +274,7 @@ void rtl8723a_FirmwareSelfReset(PADAPTER padapter)
 		while (u1bTmp & BIT2)
 		{
 			Delay--;
-			if(Delay == 0)
+			if (Delay == 0)
 				break;
 			rtw_udelay_os(50);
 			u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
@@ -356,7 +356,7 @@ int _WriteBTFWtoTxPktBuf8723A(
 	SetBcnCtrlReg(Adapter, BIT(4), 0);
 
 	// Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame.
-	if(pHalData->RegFwHwTxQCtrl & BIT(6))
+	if (pHalData->RegFwHwTxQCtrl & BIT(6))
 		bRecover=true;
 	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (pHalData->RegFwHwTxQCtrl&( ~BIT(6))));
 	pHalData->RegFwHwTxQCtrl &= (~BIT(6));
@@ -406,7 +406,7 @@ int _WriteBTFWtoTxPktBuf8723A(
 
 		// check rsvd page download OK.
 		BcnValidReg = PlatformEFIORead1Byte(Adapter, REG_TDECTRL+2);
-		while(!(BcnValidReg & BIT(0)) && count <200)
+		while (!(BcnValidReg & BIT(0)) && count <200)
 		{
 			count++;
 			//PlatformSleepUs(10);
@@ -416,16 +416,16 @@ int _WriteBTFWtoTxPktBuf8723A(
 		}
 		DLBcnCount++;
 		DBG_871X("##0x208:%08x,0x210=%08x\n",PlatformEFIORead4Byte(Adapter, REG_TDECTRL),PlatformEFIORead4Byte(Adapter, 0x210));
-	}while((!(BcnValidReg&BIT(0))) && DLBcnCount<5);
+	}while ((!(BcnValidReg&BIT(0))) && DLBcnCount<5);
 
 
-	if(DLBcnCount >=5){
+	if (DLBcnCount >=5){
 		DBG_871X(" check rsvd page download OK DLBcnCount =%d \n",DLBcnCount);
 		rtStatus = _FAIL;
 		goto exit;
 	}
 
-	if(!(BcnValidReg&BIT(0)))
+	if (!(BcnValidReg&BIT(0)))
 	{
 		DBG_871X("_WriteFWtoTxPktBuf(): 1 Download RSVD page failed!\n");
 		rtStatus = _FAIL;
@@ -444,7 +444,7 @@ int _WriteBTFWtoTxPktBuf8723A(
 
 exit:
 
-	if(pGenBufReservedPagePacket)
+	if (pGenBufReservedPagePacket)
 	{
 		DBG_871X("_WriteBTFWtoTxPktBuf8723A => rtw_mfree pGenBufReservedPagePacket!\n");
 		rtw_mfree((u8*)pGenBufReservedPagePacket, TotalPktLen);
@@ -519,19 +519,19 @@ _CheckWLANFwPatchBTFwReady(
 	//---------------------------------------------------------
 	do{
 		u1bTmp = PlatformEFIORead1Byte(Adapter, REG_MCUFWDL+1);
-		if(u1bTmp&BIT(7))
+		if (u1bTmp&BIT(7))
 			break;
 
 		count++;
 		RT_TRACE(_module_mp_, _drv_info_,("0x81=%x, wait for 50 ms (%d) times.\n",
 					u1bTmp, count));
 		rtw_msleep_os(50); // 50ms
-	}while(!(u1bTmp&BIT(7)) && count < 50);
+	}while (!(u1bTmp&BIT(7)) && count < 50);
 
 	RT_TRACE(_module_mp_, _drv_notice_,("_CheckWLANFwPatchBTFwReady():"
 				" Polling ready bit 0x81[7] for %d times.\n", count));
 
-	if(count >= 50)
+	if (count >= 50)
 	{
 		RT_TRACE(_module_mp_, _drv_notice_,("_CheckWLANFwPatchBTFwReady():"
 				" Polling ready bit 0x81[7] FAIL!!\n"));
@@ -569,7 +569,7 @@ FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware)
 	// Patch BT Fw. Download BT RAM code to Tx packet buffer. Added by tynli. 2011.10.
 	// Only for 8723AE for Toshiba. Suggested by SD1 Jackie.
 	//
-	if( !(IS_HARDWARE_TYPE_8723A(Adapter)) && IS_8723A_B_CUT(pHalData->VersionID))
+	if ( !(IS_HARDWARE_TYPE_8723A(Adapter)) && IS_8723A_B_CUT(pHalData->VersionID))
 			return _FAIL ; //&& (Adapter->registrypriv.bBtFwSupport)))
 
 	if (Adapter->bBTFWReady){
@@ -603,7 +603,7 @@ FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware)
 	Adapter->bFWReady = true;
 	DBG_871X("FirmwareDownloadBT to _WriteBTFWtoTxPktBuf8723A !\n");
 	rtStatus = _WriteBTFWtoTxPktBuf8723A(Adapter, pBTFirmwareBuf, BTFirmwareLen);
-	if(rtStatus != _SUCCESS) {
+	if (rtStatus != _SUCCESS) {
 		RT_TRACE(_module_mp_, _drv_info_,("BT Firmware download to Tx packet buffer fail!\n"));
 		DBG_871X("BT Firmware download to Tx packet buffer fail!\n");
 	} else {
@@ -649,7 +649,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 	pFirmware = (PRT_FIRMWARE_8723A)rtw_zmalloc(sizeof(RT_FIRMWARE_8723A));
 	pBTFirmware = (PRT_FIRMWARE_8723A)rtw_zmalloc(sizeof(RT_FIRMWARE_8723A));
 
-	if(!pFirmware||!pBTFirmware)
+	if (!pFirmware||!pBTFirmware)
 	{
 		rtStatus = _FAIL;
 		goto Exit;
@@ -666,7 +666,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		}
 		else if (IS_8723A_B_CUT(pHalData->VersionID))
 		{
-			if(padapter->registrypriv.mp_mode == 1)
+			if (padapter->registrypriv.mp_mode == 1)
 			{
 			FwImage = (u8*)Rtl8723_FwUMCBCutMPImageArray;
 			FwImageLen = Rtl8723_UMCBCutMPImgArrayLength;
@@ -700,7 +700,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 //	RT_TRACE(_module_hal_init_c_, _drv_err_, ("rtl8723a_FirmwareDownload: %s\n", pFwImageFileName));
 
 	#ifdef CONFIG_FILE_FWIMG
-	if(rtw_is_file_readable(rtw_fw_file_path) == true)
+	if (rtw_is_file_readable(rtw_fw_file_path) == true)
 	{
 		DBG_871X("%s accquire FW from file:%s\n", __FUNCTION__, rtw_fw_file_path);
 		pFirmware->eFWSource = FW_SOURCE_IMG_FILE; // We should decided by Reg.
@@ -712,7 +712,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		pFirmware->eFWSource = FW_SOURCE_HEADER_FILE;
 	}
 
-	switch(pFirmware->eFWSource)
+	switch (pFirmware->eFWSource)
 	{
 		case FW_SOURCE_IMG_FILE:
 			#ifdef CONFIG_FILE_FWIMG
@@ -721,7 +721,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 			pFirmware->szFwBuffer = fw_buffer_8723a;
 			#endif //CONFIG_FILE_FWIMG
 
-			if(pFirmware->ulFwLength <= 0)
+			if (pFirmware->ulFwLength <= 0)
 			{
 				rtStatus = _FAIL;
 				goto Exit;
@@ -740,7 +740,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 	}
 
 	#ifdef DBG_FW_STORE_FILE_PATH //used to store firmware to file...
-	if(pFirmware->ulFwLength > 0)
+	if (pFirmware->ulFwLength > 0)
 	{
 		rtw_store_to_file(DBG_FW_STORE_FILE_PATH, pFirmware->szFwBuffer, pFirmware->ulFwLength);
 	}
@@ -776,13 +776,13 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 
 	_FWDownloadEnable(padapter, true);
 	fwdl_start_time = rtw_get_current_time();
-	while(1) {
+	while (1) {
 		//reset the FWDL chksum
 		rtw_write8(padapter, REG_MCUFWDL, rtw_read8(padapter, REG_MCUFWDL)|FWDL_ChkSum_rpt);
 
 		rtStatus = _WriteFW(padapter, pFirmwareBuf, FirmwareLen);
 
-		if(rtStatus == _SUCCESS
+		if (rtStatus == _SUCCESS
 			||(rtw_get_passing_time_ms(fwdl_start_time) > 500 && writeFW_retry++ >= 3)
 		)
 			break;
@@ -793,7 +793,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		);
 	}
 	_FWDownloadEnable(padapter, false);
-	if(_SUCCESS != rtStatus){
+	if (_SUCCESS != rtStatus){
 		DBG_871X("DL Firmware failed!\n");
 		goto Exit;
 	}
@@ -2097,18 +2097,18 @@ Hal_EfusePgPacketWrite_BT(
 	u16 startAddr=0;
 	u8 efuseType=EFUSE_BT;
 
-	if(!hal_EfusePgCheckAvailableAddr(pAdapter, efuseType, bPseudoTest))
+	if (!hal_EfusePgCheckAvailableAddr(pAdapter, efuseType, bPseudoTest))
 		return false;
 
 	hal_EfuseConstructPGPkt(offset, word_en, pData, &targetPkt);
 
-	if(!hal_EfusePartialWriteCheck(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
+	if (!hal_EfusePartialWriteCheck(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
 		return false;
 
-	if(!hal_EfusePgPacketWriteHeader(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
+	if (!hal_EfusePgPacketWriteHeader(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
 		return false;
 
-	if(!hal_EfusePgPacketWriteData(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
+	if (!hal_EfusePgPacketWriteData(pAdapter, efuseType, &startAddr, &targetPkt, bPseudoTest))
 		return false;
 
 	return true;
@@ -2345,7 +2345,7 @@ void rtl8723a_GetHalODMVar(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T podmpriv = &pHalData->odmpriv;
-	switch(eVariable){
+	switch (eVariable){
 		case HAL_ODM_STA_INFO:
 			break;
 		default:
@@ -2361,19 +2361,19 @@ void rtl8723a_SetHalODMVar(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T podmpriv = &pHalData->odmpriv;
-	switch(eVariable){
+	switch (eVariable){
 		case HAL_ODM_STA_INFO:
 			{
 				struct sta_info *psta = (struct sta_info *)pValue1;
 				#ifdef CONFIG_CONCURRENT_MODE
 				//get Primary adapter's odmpriv
-				if(Adapter->adapter_type > PRIMARY_ADAPTER && Adapter->pbuddy_adapter){
+				if (Adapter->adapter_type > PRIMARY_ADAPTER && Adapter->pbuddy_adapter){
 					pHalData = GET_HAL_DATA(Adapter->pbuddy_adapter);
 					podmpriv = &pHalData->odmpriv;
 				}
 				#endif
 
-				if(bSet){
+				if (bSet){
 					DBG_8192C("Set STA_(%d) info\n",psta->mac_id);
 					ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS,psta->mac_id,psta);
 				}
@@ -2540,7 +2540,7 @@ void rtl8723a_CheckAntenna_Selection(PADAPTER padapter)
 
 	val = rtw_read8(padapter, REG_LEDCFG2);
 	// Let 8051 take control antenna settting
-	if(!(val &BIT(7))){
+	if (!(val &BIT(7))){
 		val |= BIT(7); // DPDT_SEL_EN, 0x4C[23]
 		rtw_write8(padapter, REG_LEDCFG2, val);
 	}
@@ -2753,7 +2753,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 		rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
 		value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
 		u4bTmp = value32 & 0x0000001F;
-//		if( IS_MULTI_FUNC_CHIP(padapter) )
+//		if ( IS_MULTI_FUNC_CHIP(padapter) )
 //			value32 |= ((u4bTmp<<8) | 0x00110000); // Set pin 8 and pin 12 to output mode.
 //		else
 			value32 |= ((u4bTmp<<8) | 0x001D0000); // Set pin 8, 10, 11 and pin 12 to output mode.
@@ -2770,7 +2770,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	}
 
 	//3. Disable LED0 & 1
-	if(IS_HARDWARE_TYPE_8192DU(padapter))
+	if (IS_HARDWARE_TYPE_8192DU(padapter))
 	{
 		rtw_write16(padapter, REG_LEDCFG0, 0x8888);
 	}
@@ -2848,11 +2848,11 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 		// enter IPS/HW&SW radio off. For S3/S4/S5/Disable, we can stop 8051 because
 		// we will init FW when power on again.
 		{	// If we want to SS mode, we can not reset 8051.
-			if(rtw_read8(padapter, REG_MCUFWDL) & BIT1)
+			if (rtw_read8(padapter, REG_MCUFWDL) & BIT1)
 			{ //IF fw in RAM code, do reset
 
 
-				if(padapter->bFWReady)
+				if (padapter->bFWReady)
 				{
 					// 2010/08/25 MH Accordign to RD alfred's suggestion, we need to disable other
 					// HRCV INT to influence 8051 reset.
@@ -2863,7 +2863,7 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 
 					rtw_write8(padapter, REG_HMETFR+3, 0x20);//8051 reset by self
 
-					while( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(padapter, REG_SYS_FUNC_EN)))
+					while ( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(padapter, REG_SYS_FUNC_EN)))
 					{
 						rtw_udelay_os(50);//us
 					}
@@ -2885,7 +2885,7 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 		}
 	}
 
-	if(bWithoutHWSM) {
+	if (bWithoutHWSM) {
 	/*****************************
 		Without HW auto state machine
 	g.	SYS_CLKR 0x08[15:0] = 0x30A3			//disable MAC clock
@@ -2953,7 +2953,7 @@ void _DisableAnalog(PADAPTER padapter, bool bWithoutHWSM)
 
 	rtw_write8(padapter, REG_SPS0_CTRL, value8);
 
-	if(bWithoutHWSM)
+	if (bWithoutHWSM)
 	{
 		//value16 |= (APDM_HOST | /*AFSM_HSUS |*/PFM_ALDN);
 		// 2010/08/31 According to Filen description, we need to use HW to shut down 8051 automatically.
@@ -3035,13 +3035,13 @@ Hal_InitPGData(
 	u32			i;
 	u16			value16;
 
-	if(false == pEEPROM->bautoload_fail_flag)
+	if (false == pEEPROM->bautoload_fail_flag)
 	{ // autoload OK.
 //		if (IS_BOOT_FROM_EEPROM(padapter))
 		if (true == pEEPROM->EepromOrEfuse)
 		{
 			// Read all Content from EEPROM or EFUSE.
-			for(i = 0; i < HWSET_MAX_SIZE; i += 2)
+			for (i = 0; i < HWSET_MAX_SIZE; i += 2)
 			{
 //				value16 = EF2Byte(ReadEEprom(pAdapter, (u2Byte) (i>>1)));
 //				*((u16*)(&PROMContent[i])) = value16;
@@ -3098,14 +3098,14 @@ Hal_EEValueCheck(
 	OUT		void *		pOutValue
 	)
 {
-	switch(EEType)
+	switch (EEType)
 	{
 		case EETYPE_TX_PWR:
 			{
 				u8	*pIn, *pOut;
 				pIn = (u8*)pInValue;
 				pOut = (u8*)pOutValue;
-				if(*pIn >= 0 && *pIn <= 63)
+				if (*pIn >= 0 && *pIn <= 63)
 				{
 					*pOut = *pIn;
 				}
@@ -3133,11 +3133,11 @@ Hal_ReadPowerValueFromPROM_8723A(
 
 	memset(pwrInfo, 0, sizeof(TxPowerInfo));
 
-	if(AutoLoadFail)
+	if (AutoLoadFail)
 	{
 		for (group = 0; group < MAX_CHNL_GROUP; group++)
 		{
-			for(rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
+			for (rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
 			{
 				pwrInfo->CCKIndex[rfPath][group]		= EEPROM_Default_TxPowerLevel;
 				pwrInfo->HT40_1SIndex[rfPath][group]	= EEPROM_Default_TxPowerLevel;
@@ -3152,7 +3152,7 @@ Hal_ReadPowerValueFromPROM_8723A(
 		return;
 	}
 
-	for(rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
+	for (rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
 	{
 		for (group = 0; group < MAX_CHNL_GROUP; group++)
 		{
@@ -3167,12 +3167,12 @@ Hal_ReadPowerValueFromPROM_8723A(
 
 	for (group = 0; group < MAX_CHNL_GROUP; group++)
 	{
-		for(rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
+		for (rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
 		{
 			pwrInfo->HT40_2SIndexDiff[rfPath][group] = 0;
 			pwrInfo->HT20IndexDiff[rfPath][group] =
 			(PROMContent[EEPROM_HT20_TX_PWR_INX_DIFF_8723A + group] >> (rfPath * 4)) & 0xF;
-			if(pwrInfo->HT20IndexDiff[rfPath][group] & BIT3)	//4bit sign number to 8 bit sign number
+			if (pwrInfo->HT20IndexDiff[rfPath][group] & BIT3)	//4bit sign number to 8 bit sign number
 				pwrInfo->HT20IndexDiff[rfPath][group] |= 0xF0;
 
 			pwrInfo->OFDMIndexDiff[rfPath][group] =
@@ -3219,9 +3219,9 @@ Hal_EfuseParseTxPowerInfo_8723A(
 	u8			pwr, diff;
 
 	Hal_ReadPowerValueFromPROM_8723A(&pwrInfo, PROMContent, AutoLoadFail);
-	for(rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
+	for (rfPath = 0 ; rfPath < rfPathMax ; rfPath++)
 	{
-		for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+		for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 		{
 			group = Hal_GetChnlGroup(ch);
 
@@ -3240,9 +3240,9 @@ Hal_EfuseParseTxPowerInfo_8723A(
 		}
 	}
 #if 1
-	for(rfPath = 0 ; rfPath < RF_PATH_MAX ; rfPath++)
+	for (rfPath = 0 ; rfPath < RF_PATH_MAX ; rfPath++)
 	{
-		for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+		for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 		{
 			RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
 				("RF(%u)-Ch(%u) [CCK / HT40_1S / HT40_2S] = [0x%x / 0x%x / 0x%x]\n",
@@ -3252,26 +3252,26 @@ Hal_EfuseParseTxPowerInfo_8723A(
 
 		}
 	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+	for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-A Ht20 to HT40 Diff[%u] = 0x%x(%d)\n", ch,
 			pHalData->TxPwrHt20Diff[RF_PATH_A][ch], pHalData->TxPwrHt20Diff[RF_PATH_A][ch]));
 	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+	for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-A Legacy to Ht40 Diff[%u] = 0x%x\n", ch, pHalData->TxPwrLegacyHtDiff[RF_PATH_A][ch]));
 	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+	for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-B Ht20 to HT40 Diff[%u] = 0x%x(%d)\n", ch,
 			pHalData->TxPwrHt20Diff[RF_PATH_B][ch], pHalData->TxPwrHt20Diff[RF_PATH_B][ch]));
 	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
+	for (ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
 	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-B Legacy to HT40 Diff[%u] = 0x%x\n", ch, pHalData->TxPwrLegacyHtDiff[RF_PATH_B][ch]));
 	}
 #endif
-	if(!AutoLoadFail)
+	if (!AutoLoadFail)
 	{
 		pHalData->EEPROMRegulatory = PROMContent[RF_OPTION1_8723A]&0x7;	//bit0~2
 	}
@@ -3281,7 +3281,7 @@ Hal_EfuseParseTxPowerInfo_8723A(
 	}
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("EEPROMRegulatory = 0x%x\n", pHalData->EEPROMRegulatory));
 
-	if(!AutoLoadFail)
+	if (!AutoLoadFail)
 		pHalData->bTXPowerDataReadFromEEPORM = true;
 }
 
@@ -3334,7 +3334,7 @@ Hal_EfuseParseEEPROMVer(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
-	if(!AutoLoadFail)
+	if (!AutoLoadFail)
 		pHalData->EEPROMVersion = hwinfo[EEPROM_VERSION_8723A];
 	else
 		pHalData->EEPROMVersion = 1;
@@ -3412,7 +3412,7 @@ Hal_EfuseParseXtal_8723A(
 
 	if (!AutoLoadFail){
 		pHalData->CrystalCap = hwinfo[EEPROM_XTAL_K_8723A];
-		if(pHalData->CrystalCap == 0xFF)
+		if (pHalData->CrystalCap == 0xFF)
 			pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
 	}
 	else{
@@ -3519,11 +3519,11 @@ static void fill_txdesc_vcs(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 			break;
 	}
 
-	if(pattrib->vcs_mode) {
+	if (pattrib->vcs_mode) {
 		ptxdesc->hw_rts_en = 1; // ENABLE HW RTS
 
 		// Set RTS BW
-		if(pattrib->ht_en)
+		if (pattrib->ht_en)
 		{
 			if (pattrib->bwmode & HT_CHANNEL_WIDTH_40)
 				ptxdesc->rts_bw = 1;
@@ -3668,7 +3668,7 @@ void rtl8723a_fill_default_txdesc(
 #endif //CONFIG_XMIT_ACK
 
 #ifdef CONFIG_INTEL_PROXIM
-		if((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)){
+		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)){
 			DBG_871X("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
 			ptxdesc->datarate = pattrib->rate;
 		}
@@ -3920,11 +3920,11 @@ static void hw_var_set_opmode(PADAPTER padapter, u8 variable, u8 *val)
 		// dis BCN ATIM WND of another port if it is station
 #ifdef CONFIG_CONCURRENT_MODE
 		if (padapter->iface_type == IFACE_PORT1) {
-			if(check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
+			if (check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
 				rtw_write8(padapter, REG_BCN_CTRL,
 					rtw_read8(padapter, REG_BCN_CTRL) & ~EN_BCN_FUNCTION);
 		} else {
-			if(check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
+			if (check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
 				rtw_write8(padapter, REG_BCN_CTRL_1,
 					rtw_read8(padapter, REG_BCN_CTRL_1) & ~EN_BCN_FUNCTION);
 		}
@@ -4904,7 +4904,7 @@ void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
 				{
 					valRCR = rtw_read32(padapter, REG_RCR);
 					valRCR &= 0x00070000;
-					if(valRCR)
+					if (valRCR)
 						*val = false;
 					else
 						*val = true;

@@ -667,13 +667,13 @@ void addba_timer_hdl(struct sta_info *psta);
 	do { \
 		/*DBG_871X("%s set_survey_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
 		_set_timer(&(mlmeext)->survey_timer, (ms)); \
-	} while(0)
+	} while (0)
 
 #define set_link_timer(mlmeext, ms) \
 	do { \
 		/*DBG_871X("%s set_link_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
 		_set_timer(&(mlmeext)->link_timer, (ms)); \
-	} while(0)
+	} while (0)
 
 extern int cckrates_included(unsigned char *rate, int ratelen);
 extern int cckratesonly_included(unsigned char *rate, int ratelen);

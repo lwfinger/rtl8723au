@@ -60,7 +60,7 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 	u8	tmp1byte;
 	u8	bPbcPressed = false;
 
-	if(!padapter->registrypriv.hw_wps_pbc)
+	if (!padapter->registrypriv.hw_wps_pbc)
 		return;
 
 	tmp1byte = rtw_read8(padapter, GPIO_IO_SEL);
@@ -84,7 +84,7 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 		bPbcPressed = true;
 	}
 
-	if( true == bPbcPressed)
+	if ( true == bPbcPressed)
 	{
 		// Here we only set bPbcPressed to true
 		// After trigger PBC, the variable will be set to false
@@ -134,7 +134,7 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 
 	pDM_Odm->Adapter = Adapter;
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PLATFORM,ODM_CE);
-	if(Adapter->interface_type == RTW_GSPI )
+	if (Adapter->interface_type == RTW_GSPI )
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,ODM_ITRF_SDIO);
 	else
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,Adapter->interface_type);//RTL871X_HCI_TYPE
@@ -142,12 +142,12 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_IC_TYPE,ODM_RTL8723A);
 
 
-	if(IS_8723A_A_CUT(pHalData->VersionID))
+	if (IS_8723A_A_CUT(pHalData->VersionID))
 	{
 		fab_ver = ODM_UMC;
 		cut_ver = ODM_CUT_A;
 	}
-	else if(IS_8723A_B_CUT(pHalData->VersionID))
+	else if (IS_8723A_B_CUT(pHalData->VersionID))
 	{
 		fab_ver = ODM_UMC;
 		cut_ver = ODM_CUT_B;
@@ -163,7 +163,7 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
-	if(pHalData->BoardType == BOARD_USB_High_PA){
+	if (pHalData->BoardType == BOARD_USB_High_PA){
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,true);
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
 	}
@@ -172,13 +172,13 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
 
 
-	if(pHalData->rf_type == RF_1T1R){
+	if (pHalData->rf_type == RF_1T1R){
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T1R);
 	}
-	else if(pHalData->rf_type == RF_2T2R){
+	else if (pHalData->rf_type == RF_2T2R){
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_2T2R);
 	}
-	else if(pHalData->rf_type == RF_1T2R){
+	else if (pHalData->rf_type == RF_1T2R){
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T2R);
 	}
 }
@@ -211,7 +211,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 
 
 #ifdef CONFIG_ANTENNA_DIVERSITY
-	if(pHalData->AntDivCfg)
+	if (pHalData->AntDivCfg)
 		pdmpriv->InitODMFlag |= ODM_BB_ANT_DIV;
 #endif
 
@@ -244,7 +244,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_POWER_SAVING,&(pwrctrlpriv->bpower_saving));
 
 
-	for(i=0; i< NUM_STA; i++)
+	for (i=0; i< NUM_STA; i++)
 	{
 		//pDM_Odm->pODM_StaInfo[i] = NULL;
 		ODM_CmnInfoPtrArrayHook(pDM_Odm, ODM_CMNINFO_STA_STATUS,i,NULL);
@@ -274,7 +274,7 @@ rtl8723a_InitHalDm(
 	Update_ODM_ComInfo_8723a(Adapter);
 	ODM_DMInit(pDM_Odm);
 	// Save REG_INIDATA_RATE_SEL value for TXDESC.
-	for(i = 0 ; i<32 ; i++)
+	for (i = 0 ; i<32 ; i++)
 	{
 		pdmpriv->INIDATA_RATE[i] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL+i) & 0x3f;
 	}
@@ -328,12 +328,12 @@ if (Adapter->registrypriv.mp_mode == 1)
 #ifdef CONFIG_P2P
 	// Fw is under p2p powersaving mode, driver should stop dynamic mechanism.
 	// modifed by thomas. 2011.06.11.
-	if(Adapter->wdinfo.p2p_ps_enable)
+	if (Adapter->wdinfo.p2p_ps_enable)
 		bFwPSAwake = false;
 #endif //CONFIG_P2P
 
 
-	if( (hw_init_completed == true)
+	if ( (hw_init_completed == true)
 		&& ((!bFwCurrentInPSMode) && bFwPSAwake))
 	{
 		//
@@ -343,18 +343,18 @@ if (Adapter->registrypriv.mp_mode == 1)
 
 
 #ifdef CONFIG_CONCURRENT_MODE
-		if(Adapter->adapter_type > PRIMARY_ADAPTER)
+		if (Adapter->adapter_type > PRIMARY_ADAPTER)
 			goto _record_initrate;
 #endif
 
 _record_initrate:
 
 		// Read REG_INIDATA_RATE_SEL value for TXDESC.
-		if(check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE) == true) {
+		if (check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE) == true) {
 			pdmpriv->INIDATA_RATE[0] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL) & 0x3f;
 		} else {
 			u8	i;
-			for(i=1 ; i < (Adapter->stapriv.asoc_sta_count + 1); i++)
+			for (i=1 ; i < (Adapter->stapriv.asoc_sta_count + 1); i++)
 				pdmpriv->INIDATA_RATE[i] = rtw_read8(Adapter, (REG_INIDATA_RATE_SEL+i)) & 0x3f;
 		}
 	}
@@ -364,13 +364,13 @@ _record_initrate:
 		struct mlme_priv	*pmlmepriv = &Adapter->mlmepriv;
 		u8	bLinked=false;
 
-		if(	(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) ||
+		if (	(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) ||
 			(check_fwstate(pmlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == true))
 		{
-			if(Adapter->stapriv.asoc_sta_count > 2)
+			if (Adapter->stapriv.asoc_sta_count > 2)
 				bLinked = true;
 		} else{//Station mode
-			if(check_fwstate(pmlmepriv, _FW_LINKED)== true)
+			if (check_fwstate(pmlmepriv, _FW_LINKED)== true)
 				bLinked = true;
 		}
 

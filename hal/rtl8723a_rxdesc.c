@@ -47,7 +47,7 @@ static void process_rssi(_adapter *padapter,union recv_frame *prframe)
 	{
 
 	#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-		if(signal_stat->update_req) {
+		if (signal_stat->update_req) {
 			signal_stat->total_num = 0;
 			signal_stat->total_val = 0;
 			signal_stat->update_req = 0;
@@ -59,7 +59,7 @@ static void process_rssi(_adapter *padapter,union recv_frame *prframe)
 	#else //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 		//Adapter->RxStats.RssiCalculateCnt++;	//For antenna Test
-		if(padapter->recvpriv.signal_strength_data.total_num++ >= PHY_RSSI_SLID_WIN_MAX)
+		if (padapter->recvpriv.signal_strength_data.total_num++ >= PHY_RSSI_SLID_WIN_MAX)
 		{
 			padapter->recvpriv.signal_strength_data.total_num = PHY_RSSI_SLID_WIN_MAX;
 			last_rssi = padapter->recvpriv.signal_strength_data.elements[padapter->recvpriv.signal_strength_data.index];
@@ -68,13 +68,13 @@ static void process_rssi(_adapter *padapter,union recv_frame *prframe)
 		padapter->recvpriv.signal_strength_data.total_val  +=pattrib->phy_info.SignalStrength;
 
 		padapter->recvpriv.signal_strength_data.elements[padapter->recvpriv.signal_strength_data.index++] = pattrib->phy_info.SignalStrength;
-		if(padapter->recvpriv.signal_strength_data.index >= PHY_RSSI_SLID_WIN_MAX)
+		if (padapter->recvpriv.signal_strength_data.index >= PHY_RSSI_SLID_WIN_MAX)
 			padapter->recvpriv.signal_strength_data.index = 0;
 
 
 		tmp_val = padapter->recvpriv.signal_strength_data.total_val/padapter->recvpriv.signal_strength_data.total_num;
 
-		if(padapter->recvpriv.is_signal_dbg) {
+		if (padapter->recvpriv.is_signal_dbg) {
 			padapter->recvpriv.signal_strength= padapter->recvpriv.signal_strength_dbg;
 			padapter->recvpriv.rssi=(s8)translate2dbm((u8)padapter->recvpriv.signal_strength_dbg);
 		} else {
@@ -96,7 +96,7 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 	struct signal_stat * signal_stat;
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
-	if(prframe == NULL || padapter==NULL){
+	if (prframe == NULL || padapter==NULL){
 		return;
 	}
 
@@ -106,7 +106,7 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-	if(signal_stat->update_req) {
+	if (signal_stat->update_req) {
 		signal_stat->total_num = 0;
 		signal_stat->total_val = 0;
 		signal_stat->update_req = 0;
@@ -117,12 +117,12 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
 
 #else //CONFIG_NEW_SIGNAL_STAT_PROCESS
-	if(pattrib->phy_info.SignalQuality != 0)
+	if (pattrib->phy_info.SignalQuality != 0)
 	{
 			//
 			// 1. Record the general EVM to the sliding window.
 			//
-			if(padapter->recvpriv.signal_qual_data.total_num++ >= PHY_LINKQUALITY_SLID_WIN_MAX)
+			if (padapter->recvpriv.signal_qual_data.total_num++ >= PHY_LINKQUALITY_SLID_WIN_MAX)
 			{
 				padapter->recvpriv.signal_qual_data.total_num = PHY_LINKQUALITY_SLID_WIN_MAX;
 				last_evm = padapter->recvpriv.signal_qual_data.elements[padapter->recvpriv.signal_qual_data.index];
@@ -131,7 +131,7 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 			padapter->recvpriv.signal_qual_data.total_val += pattrib->phy_info.SignalQuality;
 
 			padapter->recvpriv.signal_qual_data.elements[padapter->recvpriv.signal_qual_data.index++] = pattrib->phy_info.SignalQuality;
-			if(padapter->recvpriv.signal_qual_data.index >= PHY_LINKQUALITY_SLID_WIN_MAX)
+			if (padapter->recvpriv.signal_qual_data.index >= PHY_LINKQUALITY_SLID_WIN_MAX)
 				padapter->recvpriv.signal_qual_data.index = 0;
 
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("Total SQ=%d  pattrib->signal_qual= %d\n", padapter->recvpriv.signal_qual_data.total_val, pattrib->phy_info.SignalQuality));

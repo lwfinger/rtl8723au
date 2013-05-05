@@ -376,7 +376,7 @@ enum {
 	MEM_STAT_RX_FREE
 };
 
-#define rtw_update_mem_stat(flag, sz) do {} while(0)
+#define rtw_update_mem_stat(flag, sz) do {} while (0)
 extern u8*	_rtw_vmalloc(u32 sz);
 extern u8*	_rtw_zvmalloc(u32 sz);
 extern void	_rtw_vmfree(u8 *pbuf, u32 sz);

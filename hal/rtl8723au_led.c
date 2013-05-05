@@ -47,7 +47,7 @@ SwLedOn(
 	u8	LedCfg;
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
-	if( (padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
+	if ( (padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{
 		return;
 	}
@@ -70,7 +70,7 @@ SwLedOff(
 	u8	LedCfg;
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
-	if((padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
+	if ((padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{
 		goto exit;
 	}

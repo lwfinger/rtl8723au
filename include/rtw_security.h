@@ -197,7 +197,7 @@ struct sha256_state {
 
 #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)\
 do{\
-	switch(psecuritypriv->dot11AuthAlgrthm)\
+	switch (psecuritypriv->dot11AuthAlgrthm)\
 	{\
 		case dot11AuthAlgrthm_Open:\
 		case dot11AuthAlgrthm_Shared:\
@@ -205,7 +205,7 @@ do{\
 			encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
 			break;\
 		case dot11AuthAlgrthm_8021X:\
-			if(bmcst)\
+			if (bmcst)\
 				encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
 			else\
 				encry_algo =(u8) psta->dot118021XPrivacy;\
@@ -214,12 +214,12 @@ do{\
 		     encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
 		     break;\
 	}\
-}while(0)
+}while (0)
 
 
 #define SET_ICE_IV_LEN( iv_len, icv_len, encrypt)\
 do{\
-	switch(encrypt)\
+	switch (encrypt)\
 	{\
 		case _WEP40_:\
 		case _WEP104_:\
@@ -243,7 +243,7 @@ do{\
 			icv_len = 0;\
 			break;\
 	}\
-}while(0)
+}while (0)
 
 
 #define GET_TKIP_PN(iv,dot11txpn)\
@@ -254,7 +254,7 @@ do{\
 	dot11txpn._byte_.TSC3=iv[5];\
 	dot11txpn._byte_.TSC4=iv[6];\
 	dot11txpn._byte_.TSC5=iv[7];\
-}while(0)
+}while (0)
 
 
 #define ROL32( A, n )	( ((A) << (n)) | ( ((A)>>(32-(n)))  & ( (1UL << (n)) - 1 ) ) )

@@ -69,19 +69,19 @@ _ConfigChipOutEP(
 	// Normal and High queue
 	value8 = rtw_read8(pAdapter, (REG_NORMAL_SIE_EP + 1));
 
-	if(value8 & USB_NORMAL_SIE_EP_MASK){
+	if (value8 & USB_NORMAL_SIE_EP_MASK){
 		pHalData->OutEpQueueSel |= TX_SELE_HQ;
 		pHalData->OutEpNumber++;
 	}
 
-	if((value8 >> USB_NORMAL_SIE_EP_SHIFT) & USB_NORMAL_SIE_EP_MASK){
+	if ((value8 >> USB_NORMAL_SIE_EP_SHIFT) & USB_NORMAL_SIE_EP_MASK){
 		pHalData->OutEpQueueSel |= TX_SELE_NQ;
 		pHalData->OutEpNumber++;
 	}
 
 	// Low queue
 	value8 = rtw_read8(pAdapter, (REG_NORMAL_SIE_EP + 2));
-	if(value8 & USB_NORMAL_SIE_EP_MASK){
+	if (value8 & USB_NORMAL_SIE_EP_MASK){
 		pHalData->OutEpQueueSel |= TX_SELE_LQ;
 		pHalData->OutEpNumber++;
 	}
@@ -103,8 +103,8 @@ static bool HalUsbSetQueuePipeMapping8192CUsb(
 	_ConfigChipOutEP(pAdapter, NumOutPipe);
 
 	// Normal chip with one IN and one OUT doesn't have interrupt IN EP.
-	if(1 == pHalData->OutEpNumber){
-		if(1 != NumInPipe){
+	if (1 == pHalData->OutEpNumber){
+		if (1 != NumInPipe){
 			return result;
 		}
 	}
@@ -159,7 +159,7 @@ static u8 _InitPowerOn(PADAPTER padapter)
 	rtw_write8(padapter, REG_RSV_CTRL, 0x0);
 
 	// HW Power on sequence
-	if(!HalPwrSeqCmdParsing(padapter, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_USB_MSK, rtl8723A_card_enable_flow ))
+	if (!HalPwrSeqCmdParsing(padapter, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_USB_MSK, rtl8723A_card_enable_flow ))
 				return _FAIL;
 
 	// 0x04[19] = 1, suggest by Jackie 2011.05.09, reset 8051
@@ -185,7 +185,7 @@ static void _dbg_dump_macreg(_adapter *padapter)
 	u32 offset = 0;
 	u32 val32 = 0;
 	u32 index =0 ;
-	for(index=0;index<64;index++)
+	for (index=0;index<64;index++)
 	{
 		offset = index*4;
 		val32 = rtw_read32(padapter,offset);
@@ -214,16 +214,16 @@ static u8 _LLTWrite(
 	do{
 
 		value = rtw_read32(Adapter, REG_LLT_INIT);
-		if(_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)){
+		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)){
 			break;
 		}
 
-		if(count > POLLING_LLT_THRESHOLD){
+		if (count > POLLING_LLT_THRESHOLD){
 			//RT_TRACE(COMP_INIT,DBG_SERIOUS,("Failed to polling write LLT done at address %d!\n", address));
 			status = _FAIL;
 			break;
 		}
-	}while(count++);
+	}while (count++);
 
 	return status;
 
@@ -244,15 +244,15 @@ static u8 _LLTRead(
 	do{
 
 		value = rtw_read32(Adapter, REG_LLT_INIT);
-		if(_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)){
+		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)){
 			return (u8)value;
 		}
 
-		if(count > POLLING_LLT_THRESHOLD){
+		if (count > POLLING_LLT_THRESHOLD){
 			//RT_TRACE(COMP_INIT,DBG_SERIOUS,("Failed to polling read LLT done at address %d!\n", address));
 			break;
 		}
-	}while(count++);
+	}while (count++);
 
 	return 0xFF;
 
@@ -270,9 +270,9 @@ _SetMacID(
 	)
 {
 	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
+	for (i=0 ; i< MAC_ADDR_LEN ; i++){
 #ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
+		if (Adapter->iface_type == IFACE_PORT1)
 			rtw_write32(Adapter, REG_MACID1+i, MacID[i]);
 		else
 #endif
@@ -286,9 +286,9 @@ _SetBSSID(
 	)
 {
 	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
+	for (i=0 ; i< MAC_ADDR_LEN ; i++){
 #ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
+		if (Adapter->iface_type == IFACE_PORT1)
 			rtw_write32(Adapter, REG_BSSID1+i, BSSID[i]);
 		else
 #endif
@@ -347,7 +347,7 @@ _InitQueueReservedPage(
 			numLQ = bWiFiConfig?WMM_NORMAL_PAGE_NUM_LPQ:NORMAL_PAGE_NUM_LPQ;
 		}
 		// NOTE: This step shall be proceed before writting REG_RQPN.
-		if(pHalData->OutEpQueueSel & TX_SELE_NQ){
+		if (pHalData->OutEpQueueSel & TX_SELE_NQ){
 			numNQ = bWiFiConfig?WMM_NORMAL_PAGE_NUM_NPQ:NORMAL_PAGE_NUM_NPQ;
 		}
 		value8 = (u8)_NPQ(numNQ);
@@ -369,7 +369,7 @@ _InitTxBufferBoundary(
 
 	u8	txpktbuf_bndy;
 
-	if(!pregistrypriv->wifi_spec){
+	if (!pregistrypriv->wifi_spec){
 		txpktbuf_bndy = TX_PAGE_BOUNDARY;
 	}
 	else{//for WMM
@@ -433,7 +433,7 @@ _InitNormalChipOneOutEpPriority(
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
 
 	u16	value = 0;
-	switch(pHalData->OutEpQueueSel)
+	switch (pHalData->OutEpQueueSel)
 	{
 		case TX_SELE_HQ:
 			value = QUEUE_HIGH;
@@ -473,7 +473,7 @@ _InitNormalChipTwoOutEpPriority(
 	u16	valueHi = 0;
 	u16	valueLow = 0;
 
-	switch(pHalData->OutEpQueueSel)
+	switch (pHalData->OutEpQueueSel)
 	{
 		case (TX_SELE_HQ | TX_SELE_LQ):
 			valueHi = QUEUE_HIGH;
@@ -492,7 +492,7 @@ _InitNormalChipTwoOutEpPriority(
 			break;
 	}
 
-	if(!pregistrypriv->wifi_spec ){
+	if (!pregistrypriv->wifi_spec ){
 		beQ		= valueLow;
 		bkQ		= valueLow;
 		viQ		= valueHi;
@@ -521,7 +521,7 @@ _InitNormalChipThreeOutEpPriority(
 	struct registry_priv *pregistrypriv = &Adapter->registrypriv;
 	u16			beQ,bkQ,viQ,voQ,mgtQ,hiQ;
 
-	if(!pregistrypriv->wifi_spec ){// typical setting
+	if (!pregistrypriv->wifi_spec ){// typical setting
 		beQ		= QUEUE_LOW;
 		bkQ		= QUEUE_LOW;
 		viQ		= QUEUE_NORMAL;
@@ -547,7 +547,7 @@ _InitNormalChipQueuePriority(
 {
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
 
-	switch(pHalData->OutEpNumber)
+	switch (pHalData->OutEpNumber)
 	{
 		case 1:
 			_InitNormalChipOneOutEpPriority(Adapter);
@@ -734,7 +734,7 @@ static void _InitHWLed(PADAPTER Adapter)
 {
 	struct led_priv *pledpriv = &(Adapter->ledpriv);
 
-	if( pledpriv->LedStrategy != HW_LED)
+	if ( pledpriv->LedStrategy != HW_LED)
 		return;
 
 // HW led control
@@ -803,10 +803,10 @@ usb_AggSettingTxUpdate(
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	u32			value32;
 
-	if(Adapter->registrypriv.wifi_spec)
+	if (Adapter->registrypriv.wifi_spec)
 		pHalData->UsbTxAggMode = false;
 
-	if(pHalData->UsbTxAggMode){
+	if (pHalData->UsbTxAggMode){
 		value32 = rtw_read32(Adapter, REG_TDECTRL);
 		value32 = value32 & ~(BLK_DESC_NUM_MASK << BLK_DESC_NUM_SHIFT);
 		value32 |= ((pHalData->UsbTxAggDescNum & BLK_DESC_NUM_MASK) << BLK_DESC_NUM_SHIFT);
@@ -847,7 +847,7 @@ usb_AggSettingRxUpdate(
 	valueDMA = rtw_read8(Adapter, REG_TRXDMA_CTRL);
 	valueUSB = rtw_read8(Adapter, REG_USB_SPECIAL_OPTION);
 
-	switch(pHalData->UsbRxAggMode)
+	switch (pHalData->UsbRxAggMode)
 	{
 		case USB_RX_AGG_DMA:
 			valueDMA |= RXDMA_AGG_EN;
@@ -871,7 +871,7 @@ usb_AggSettingRxUpdate(
 	rtw_write8(Adapter, REG_TRXDMA_CTRL, valueDMA);
 	rtw_write8(Adapter, REG_USB_SPECIAL_OPTION, valueUSB);
 
-	switch(pHalData->UsbRxAggMode)
+	switch (pHalData->UsbRxAggMode)
 	{
 		case USB_RX_AGG_DMA:
 			rtw_write8(Adapter, REG_RXDMA_AGG_PG_TH, pHalData->UsbRxAggPageCount);
@@ -893,7 +893,7 @@ usb_AggSettingRxUpdate(
 			break;
 	}
 
-	switch(PBP_128)
+	switch (PBP_128)
 	{
 		case PBP_128:
 			pHalData->HwRxPageSize = 128;
@@ -980,7 +980,7 @@ _InitRFType(
 
 	pHalData->rf_chip	= RF_6052;
 
-	if(false == is92CU){
+	if (false == is92CU){
 		pHalData->rf_type = RF_1T1R;
 		DBG_8192C("Set RF Chip ID to RF_6052 and RF type to 1T1R.\n");
 		return;
@@ -1042,7 +1042,7 @@ HalDetectPwrDownMode(
 	EFUSE_ShadowRead(Adapter, 1, EEPROM_RF_OPT3, (u32 *)&tmpvalue);
 
 	// 2010/08/25 MH INF priority > PDN Efuse value.
-	if(tmpvalue & BIT4 && pwrctrlpriv->reg_pdnmode)
+	if (tmpvalue & BIT4 && pwrctrlpriv->reg_pdnmode)
 	{
 		pHalData->pwrdown = true;
 	}
@@ -1077,7 +1077,7 @@ HalDetectSelectiveSuspendMode(
 	EFUSE_ShadowRead(Adapter, 1, EEPROM_USB_OPTIONAL1, (u32 *)&tmpvalue);
 
 	DBG_8192C("HalDetectSelectiveSuspendMode(): SS ");
-	if(tmpvalue & BIT1)
+	if (tmpvalue & BIT1)
 	{
 		DBG_8192C("Enable\n");
 	}
@@ -1162,7 +1162,7 @@ rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 	u8	val8;
 	rt_rf_power_state rfpowerstate = rf_off;
 
-	if(pAdapter->pwrctrlpriv.bHWPowerdown)
+	if (pAdapter->pwrctrlpriv.bHWPowerdown)
 	{
 		val8 = rtw_read8(pAdapter, REG_HSISR);
 		DBG_8192C("pwrdown, 0x5c(BIT7)=%02x\n", val8);
@@ -1256,12 +1256,12 @@ u32 rtl8723au_hal_init(PADAPTER Adapter)
 	int hal_init_profiling_i;
 	u32 hal_init_stages_timestamp[HAL_INIT_STAGES_NUM]; //used to record the time of each stage's starting point
 
-	for(hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM;hal_init_profiling_i++)
+	for (hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM;hal_init_profiling_i++)
 		hal_init_stages_timestamp[hal_init_profiling_i]=0;
 
 	#define HAL_INIT_PROFILE_TAG(stage) hal_init_stages_timestamp[(stage)]=rtw_get_current_time();
 #else
-	#define HAL_INIT_PROFILE_TAG(stage) do {} while(0)
+	#define HAL_INIT_PROFILE_TAG(stage) do {} while (0)
 #endif //DBG_HAL_INIT_PROFILING
 
 
@@ -1269,11 +1269,11 @@ u32 rtl8723au_hal_init(PADAPTER Adapter)
 _func_enter_;
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
-	if(Adapter->pwrctrlpriv.bkeepfwalive)
+	if (Adapter->pwrctrlpriv.bkeepfwalive)
 	{
 		_ps_open_RF(Adapter);
 
-		if(pHalData->bIQKInitialized ){
+		if (pHalData->bIQKInitialized ){
 			rtl8192c_PHY_IQCalibrate(Adapter,true);
 		}
 		else{
@@ -1305,7 +1305,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 	status = _InitPowerOn(Adapter);
-	if(status == _FAIL){
+	if (status == _FAIL){
 		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("Failed to init power on!\n"));
 		goto exit;
 	}
@@ -1339,7 +1339,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 	if (!pHalData->bMACFuncEnable)
 	{
 		status =  InitLLTTable(Adapter, boundary);
-		if(status == _FAIL){
+		if (status == _FAIL){
 			RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("Failed to init LLT table\n"));
 			goto exit;
 		}
@@ -1347,7 +1347,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
-	if(pHalData->bRDGEnable){
+	if (pHalData->bRDGEnable){
 		_InitRDGSetting(Adapter);
 	}
 
@@ -1364,7 +1364,7 @@ else
 #endif
 {
 	status = rtl8723a_FirmwareDownload(Adapter);
-	if(status != _SUCCESS)
+	if (status != _SUCCESS)
 	{
 		Adapter->bFWReady = false;
 		pHalData->fw_ractrl = false;
@@ -1381,7 +1381,7 @@ else
 
 	rtl8723a_InitializeFirmwareVars(Adapter);
 
-	if(pwrctrlpriv->reg_rfoff == true){
+	if (pwrctrlpriv->reg_rfoff == true){
 		pwrctrlpriv->rf_pwrstate = rf_off;
 	}
 
@@ -1402,7 +1402,7 @@ else
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
 #if (HAL_MAC_ENABLE == 1)
 	status = PHY_MACConfig8723A(Adapter);
-	if(status == _FAIL)
+	if (status == _FAIL)
 	{
 		DBG_8192C("PHY_MACConfig8723A fault !!\n");
 		goto exit;
@@ -1416,7 +1416,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	//
 #if (HAL_BB_ENABLE == 1)
 	status = PHY_BBConfig8723A(Adapter);
-	if(status == _FAIL)
+	if (status == _FAIL)
 	{
 		DBG_8192C("PHY_BBConfig8723A fault !!\n");
 		goto exit;
@@ -1427,7 +1427,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 #if (HAL_RF_ENABLE == 1)
 	status = PHY_RFConfig8723A(Adapter);
-	if(status == _FAIL)
+	if (status == _FAIL)
 	{
 		DBG_8192C("PHY_RFConfig8723A fault !!\n");
 		goto exit;
@@ -1528,7 +1528,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	//
 	rtw_write32(Adapter, REG_BAR_MODE_CTRL, 0x0201ffff);
 
-	if(pregistrypriv->wifi_spec)
+	if (pregistrypriv->wifi_spec)
 		rtw_write16(Adapter,REG_FAST_EDCA_CTRL ,0);
 
 	// Move by Neo for USB SS from above setp
@@ -1548,9 +1548,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 		//sherry masked that it has been done in _RfPowerSave
 		//20110927
 		//recovery for 8192cu and 9723Au 20111017
-		if(pwrctrlpriv->rf_pwrstate == rf_on)
+		if (pwrctrlpriv->rf_pwrstate == rf_on)
 		{
-			if(pHalData->bIQKInitialized ){
+			if (pHalData->bIQKInitialized ){
 				rtl8192c_PHY_IQCalibrate(Adapter,true);
 			} else {
 				rtl8192c_PHY_IQCalibrate(Adapter,false);
@@ -1579,7 +1579,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 	rtw_write32(Adapter,0x20c,0xfd0320);
 #if 1
 	//2011/01/07 ,suggest by Johnny,for solved the problem that too many protocol error on USB bus
-	if(!IS_81xxC_VENDOR_UMC_A_CUT(pHalData->VersionID) )//&& !IS_92C_SERIAL(pHalData->VersionID))// TSMC , 8188
+	if (!IS_81xxC_VENDOR_UMC_A_CUT(pHalData->VersionID) )//&& !IS_92C_SERIAL(pHalData->VersionID))// TSMC , 8188
 	{
 		// 0xE6=0x94
 		rtw_write8(Adapter, 0xFE40, 0xE6);
@@ -1647,7 +1647,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);
 	#ifdef DBG_HAL_INIT_PROFILING
 	hal_init_stages_timestamp[HAL_INIT_STAGES_END]=rtw_get_current_time();
 
-	for(hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM-1;hal_init_profiling_i++) {
+	for (hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM-1;hal_init_profiling_i++) {
 		DBG_871X("DBG_HAL_INIT_PROFILING: %35s, %u, %5u, %5u\n"
 			, hal_init_stages_str[hal_init_profiling_i]
 			, hal_init_stages_timestamp[hal_init_profiling_i]
@@ -1675,7 +1675,7 @@ phy_SsPwrSwitch92CU(
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	u8				value8;
 
-	switch( eRFPowerState )
+	switch ( eRFPowerState )
 	{
 		case rf_on:
 			if (bRegSSPwrLvl == 1)
@@ -1997,17 +1997,17 @@ _DisableRF_AFE(
 
 	do
 	{
-		if(rtw_read8(Adapter, REG_APSD_CTRL) & APSDOFF_STATUS){
+		if (rtw_read8(Adapter, REG_APSD_CTRL) & APSDOFF_STATUS){
 			//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable RF, AFE, AD, DA Done!\n"));
 			break;
 		}
 
-		if(pollingCount++ > POLLING_READY_TIMEOUT_COUNT){
+		if (pollingCount++ > POLLING_READY_TIMEOUT_COUNT){
 			//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("Failed to polling APSDOFF_STATUS done!\n"));
 			return _FAIL;
 		}
 
-	}while(true);
+	}while (true);
 
 #endif
 
@@ -2138,7 +2138,7 @@ _ResetDigitalProcedure1(
 
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
 
-	if(pHalData->FirmwareVersion <=  0x20){
+	if (pHalData->FirmwareVersion <=  0x20){
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
@@ -2157,7 +2157,7 @@ _ResetDigitalProcedure1(
 		#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
 		{
 			u8 val;
-			if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
+			if ( (val=rtw_read8(Adapter, REG_MCUFWDL)))
 				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
 		}
 		#endif
@@ -2170,23 +2170,23 @@ _ResetDigitalProcedure1(
 	} else {
 		u8 retry_cnts = 0;
 
-		if(rtw_read8(Adapter, REG_MCUFWDL) & BIT1)
+		if (rtw_read8(Adapter, REG_MCUFWDL) & BIT1)
 		{ //IF fw in RAM code, do reset
 
 			rtw_write8(Adapter, REG_MCUFWDL, 0);
-			if(Adapter->bFWReady){
+			if (Adapter->bFWReady){
 				// 2010/08/25 MH Accordign to RD alfred's suggestion, we need to disable other
 				// HRCV INT to influence 8051 reset.
 				rtw_write8(Adapter, REG_FWIMR, 0x20);
 
 				rtw_write8(Adapter, REG_HMETFR+3, 0x20);//8051 reset by self
 
-				while( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(Adapter, REG_SYS_FUNC_EN)))
+				while ( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(Adapter, REG_SYS_FUNC_EN)))
 				{
 					rtw_udelay_os(50);//PlatformStallExecution(50);//us
 				}
 
-				if(retry_cnts >= 100){
+				if (retry_cnts >= 100){
 					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __FUNCTION__);
 					// if 8051 reset fail we trigger GPIO 0 for LA
 					//PlatformEFIOWrite4Byte(	Adapter,
@@ -2211,7 +2211,7 @@ _ResetDigitalProcedure1(
 		#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
 		{
 			u8 val;
-			if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
+			if ( (val=rtw_read8(Adapter, REG_MCUFWDL)))
 				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
 		}
 		#endif
@@ -2222,7 +2222,7 @@ _ResetDigitalProcedure1(
 	// Clear rpwm value for initial toggle bit trigger.
 	rtw_write8(Adapter, REG_USB_HRPWM, 0x00);
 
-	if(bWithoutHWSM){
+	if (bWithoutHWSM){
 	/*****************************
 		Without HW auto state machine
 	g.	SYS_CLKR 0x08[15:0] = 0x30A3			//disable MAC clock
@@ -2273,7 +2273,7 @@ _DisableAnalog(
 	u8 value8=0;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(bWithoutHWSM){
+	if (bWithoutHWSM){
 	/*****************************
 	n.	LDOA15_CTRL 0x20[7:0] = 0x04		// disable A15 power
 	o.	LDOV12D_CTRL 0x21[7:0] = 0x54		// disable digital core power
@@ -2302,7 +2302,7 @@ i.	APS_FSMCO 0x04[15:0] = 0x4802		// set USB suspend
 	rtw_write8(Adapter, REG_SPS0_CTRL, value8);
 
 
-	if(bWithoutHWSM)
+	if (bWithoutHWSM)
 	{
 		//value16 |= (APDM_HOST | /*AFSM_HSUS |*/PFM_ALDN);
 		// 2010/08/31 According to Filen description, we need to use HW to shut down 8051 automatically.
@@ -2364,7 +2364,7 @@ CardDisableRTL8723U(
 	rtw_write8(Adapter, REG_RF_CTRL, 0x00);
 
 	//	==== Reset digital sequence   ======
-	if((rtw_read8(Adapter, REG_MCUFWDL)&BIT7) &&
+	if ((rtw_read8(Adapter, REG_MCUFWDL)&BIT7) &&
 		Adapter->bFWReady) //8051 RAM code
 	{
 		rtl8723a_FirmwareSelfReset(Adapter);
@@ -2378,7 +2378,7 @@ CardDisableRTL8723U(
 	rtw_write8(Adapter, REG_MCUFWDL, 0x00);
 
 	//	==== Reset digital sequence end ======
-//	if((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW) )
+//	if ((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW) )
 	{
 		// Card disable power action flow
 		HalPwrSeqCmdParsing(Adapter, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_USB_MSK, rtl8723A_card_disable_flow);
@@ -2442,9 +2442,9 @@ _func_enter_;
 
 	//issue Rx irp to receive data
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
-	for(i=0; i<NR_RECVBUFF; i++)
+	for (i=0; i<NR_RECVBUFF; i++)
 	{
-		if(_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf) == false )
+		if (_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf) == false )
 		{
 			RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_port error\n"));
 			status = _FAIL;
@@ -2457,7 +2457,7 @@ _func_enter_;
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	_read_interrupt = pintfhdl->io_ops._read_interrupt;
-	if(_read_interrupt(pintfhdl, RECV_INT_IN_ADDR) == false )
+	if (_read_interrupt(pintfhdl, RECV_INT_IN_ADDR) == false )
 	{
 		RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_interrupt error\n"));
 		status = _FAIL;
@@ -2505,10 +2505,10 @@ _GetChannelGroup(
 {
 	//RT_ASSERT((channel < 14), ("Channel %d no is supported!\n"));
 
-	if(channel < 3){	// Channel 1~3
+	if (channel < 3){	// Channel 1~3
 		return 0;
 	}
-	else if(channel < 9){ // Channel 4~9
+	else if (channel < 9){ // Channel 4~9
 		return 1;
 	}
 
@@ -2530,7 +2530,7 @@ _ReadIDs(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(false == AutoloadFail){
+	if (false == AutoloadFail){
 		// VID, PID
 		pHalData->EEPROMVID = le16_to_cpu( *(u16 *)&PROMContent[EEPROM_VID]);
 		pHalData->EEPROMPID = le16_to_cpu( *(u16 *)&PROMContent[EEPROM_PID]);
@@ -2551,18 +2551,18 @@ _ReadIDs(
 	}
 
 	// For customized behavior.
-	if((pHalData->EEPROMVID == 0x103C) && (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
+	if ((pHalData->EEPROMVID == 0x103C) && (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
 		pHalData->CustomerID = RT_CID_819x_HP;
 
 	//	Decide CustomerID according to VID/DID or EEPROM
-	switch(pHalData->EEPROMCustomerID)
+	switch (pHalData->EEPROMCustomerID)
 	{
 		case EEPROM_CID_DEFAULT:
-			if((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3308))
+			if ((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3308))
 				pHalData->CustomerID = RT_CID_DLINK;
-			else if((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3309))
+			else if ((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3309))
 				pHalData->CustomerID = RT_CID_DLINK;
-			else if((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x330a))
+			else if ((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x330a))
 				pHalData->CustomerID = RT_CID_DLINK;
 			break;
 		case EEPROM_CID_WHQL:
@@ -2606,7 +2606,7 @@ _ReadMACAddress(
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
 
-	if(false == AutoloadFail){
+	if (false == AutoloadFail){
 		//Read Permanent MAC address and set value to hardware
 		memcpy(pEEPROM->mac_addr, &PROMContent[EEPROM_MAC_ADDR], ETH_ALEN);
 	}
@@ -2633,8 +2633,8 @@ _ReadBoardType(
 	u32			value32;
 	u8			boardType = BOARD_USB_DONGLE;
 
-	if(AutoloadFail){
-		if(IS_8723_SERIES(pHalData->VersionID))
+	if (AutoloadFail){
+		if (IS_8723_SERIES(pHalData->VersionID))
 			pHalData->rf_type = RF_1T1R;
 		else
 		        pHalData->rf_type = RF_2T2R;
@@ -2670,7 +2670,7 @@ _ReadLEDSetting(
 	//
 	// Led mode
 	//
-	switch(pHalData->CustomerID)
+	switch (pHalData->CustomerID)
 	{
 		case RT_CID_DEFAULT:
 			pledpriv->LedStrategy = SW_LED_MODE1;
@@ -2686,7 +2686,7 @@ _ReadLEDSetting(
 			break;
 	}
 
-	if( BOARD_MINICARD == pHalData->BoardType )
+	if ( BOARD_MINICARD == pHalData->BoardType )
 	{
 		pledpriv->LedStrategy = SW_LED_MODE6;
 	}
@@ -2710,14 +2710,14 @@ _ReadThermalMeter(
 	//
 	// ThermalMeter from EEPROM
 	//
-	if(!AutoloadFail)
+	if (!AutoloadFail)
 		tempval = PROMContent[EEPROM_THERMAL_METER];
 	else
 		tempval = EEPROM_Default_ThermalMeter;
 
 	pHalData->EEPROMThermalMeter = (tempval&0x1f);	//[4:0]
 
-	if(pHalData->EEPROMThermalMeter == 0x1f || AutoloadFail)
+	if (pHalData->EEPROMThermalMeter == 0x1f || AutoloadFail)
 		pdmpriv->bAPKThermalMeterIgnore = true;
 
 	pdmpriv->ThermalMeter[0] = pHalData->EEPROMThermalMeter;
@@ -2736,12 +2736,12 @@ _ReadRFSetting(
 // Read HW power down mode selection
 static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadFail)
 {
-	if(AutoloadFail){
+	if (AutoloadFail){
 		Adapter->pwrctrlpriv.bHWPowerdown = false;
 		Adapter->pwrctrlpriv.bSupportRemoteWakeup = false;
 	}
 	else	{
-		//if(SUPPORT_HW_RADIO_DETECT(Adapter))
+		//if (SUPPORT_HW_RADIO_DETECT(Adapter))
 			Adapter->pwrctrlpriv.bHWPwrPindetect = Adapter->registrypriv.hwpwrp_detect;
 		//else
 			//Adapter->pwrctrlpriv.bHWPwrPindetect = false;//dongle not support new
@@ -2749,7 +2749,7 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 
 		//hw power down mode selection , 0:rf-off / 1:power down
 
-		if(Adapter->registrypriv.hwpdn_mode==2)
+		if (Adapter->registrypriv.hwpdn_mode==2)
 			Adapter->pwrctrlpriv.bHWPowerdown = (PROMContent[EEPROM_RF_OPT3] & BIT4);
 		else
 			Adapter->pwrctrlpriv.bHWPowerdown = Adapter->registrypriv.hwpdn_mode;
@@ -2776,7 +2776,7 @@ Hal_EfuseParsePIDVID_8723AU(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-	if(AutoLoadFail)
+	if (AutoLoadFail)
 	{
 		pHalData->EEPROMVID = 0;
 		pHalData->EEPROMPID = 0;
@@ -3009,7 +3009,7 @@ static void _ReadPROMContent(
 
 	//pHalData->EEType = IS_BOOT_FROM_EEPROM(Adapter) ? EEPROM_93C46 : EEPROM_BOOT_EFUSE;
 
-	//if(IS_HARDWARE_TYPE_8723A(Adapter))
+	//if (IS_HARDWARE_TYPE_8723A(Adapter))
 	//	readAdapterInfo_8723U(Adapter);
 	//else
 		readAdapterInfo(Adapter);
@@ -3024,7 +3024,7 @@ _InitOtherVariable(
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
 
-	//if(Adapter->bInHctTest){
+	//if (Adapter->bInHctTest){
 	//	pMgntInfo->PowerSaveControl.bInactivePs = FALSE;
 	//	pMgntInfo->PowerSaveControl.bIPSModeBackup = FALSE;
 	//	pMgntInfo->PowerSaveControl.bLeisurePs = FALSE;
@@ -3172,7 +3172,7 @@ void SetHwReg8723AU(PADAPTER Adapter, u8 variable, u8* val)
 
 _func_enter_;
 
-	switch(variable)
+	switch (variable)
 	{
 		case HW_VAR_RXDMA_AGG_PG_TH:
 #ifdef CONFIG_USB_RX_AGGREGATION
@@ -3235,7 +3235,7 @@ GetHalDefVar8192CUsb(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8			bResult = _SUCCESS;
 
-	switch(eVariable)
+	switch (eVariable)
 	{
 		case HAL_DEF_UNDERCORATEDSMOOTHEDPWDB:
 			*((int *)pValue) = pHalData->dmpriv.UndecoratedSmoothedPWDB;
@@ -3301,7 +3301,7 @@ SetHalDefVar8192CUsb(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8			bResult = _SUCCESS;
 
-	switch(eVariable)
+	switch (eVariable)
 	{
 		case HAL_DEF_DBG_DUMP_RXPKT:
 			pHalData->bDumpRxPkt = *(( u8*)pValue);
@@ -3312,29 +3312,29 @@ SetHalDefVar8192CUsb(
 				struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 				DM_ODM_T		*podmpriv = &pHalData->odmpriv;
 
-				if(dm_func == 0){ //disable all dynamic func
+				if (dm_func == 0){ //disable all dynamic func
 					podmpriv->SupportAbility = DYNAMIC_FUNC_DISABLE;
 					DBG_8192C("==> Disable all dynamic function...\n");
 				}
-				else if(dm_func == 1){//disable DIG
+				else if (dm_func == 1){//disable DIG
 					podmpriv->SupportAbility  &= (~DYNAMIC_BB_DIG);
 					DBG_8192C("==> Disable DIG...\n");
 				}
-				else if(dm_func == 2){//disable High power
+				else if (dm_func == 2){//disable High power
 					podmpriv->SupportAbility  &= (~DYNAMIC_BB_DYNAMIC_TXPWR);
 				}
-				else if(dm_func == 3){//disable tx power tracking
+				else if (dm_func == 3){//disable tx power tracking
 					podmpriv->SupportAbility  &= (~DYNAMIC_RF_CALIBRATION);
 					DBG_8192C("==> Disable tx power tracking...\n");
 				}
-				else if(dm_func == 4){//disable BT coexistence
+				else if (dm_func == 4){//disable BT coexistence
 					pdmpriv->DMFlag &= (~DYNAMIC_FUNC_BT);
 				}
-				else if(dm_func == 5){//disable antenna diversity
+				else if (dm_func == 5){//disable antenna diversity
 					podmpriv->SupportAbility  &= (~DYNAMIC_BB_ANT_DIV);
 				}
-				else if(dm_func == 6){//turn on all dynamic func
-					if(!(podmpriv->SupportAbility  & DYNAMIC_BB_DIG))
+				else if (dm_func == 6){//turn on all dynamic func
+					if (!(podmpriv->SupportAbility  & DYNAMIC_BB_DIG))
 					{
 						DIG_T	*pDigTable = &podmpriv->DM_DigTable;
 						pDigTable->CurIGValue= rtw_read8(Adapter,0xc50);
@@ -3349,7 +3349,7 @@ SetHalDefVar8192CUsb(
 			{
 				u8 bRSSIDump = *((u8*)pValue);
 				PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-				if(bRSSIDump)
+				if (bRSSIDump)
 					pDM_Odm->DebugComponents	=	ODM_COMP_DIG|ODM_COMP_FA_CNT	;
 				else
 					pDM_Odm->DebugComponents	= 0;
@@ -3379,7 +3379,7 @@ u32  _update_92cu_basic_rate(_adapter *padapter, unsigned int mask)
 	unsigned int BrateCfg = 0;
 
 
-	if(pHalData->VersionID != VERSION_TEST_CHIP_88C)
+	if (pHalData->VersionID != VERSION_TEST_CHIP_88C)
 		BrateCfg = mask  & 0x15F;
 	else	//for 88CU 46PING setting, Disable CCK 2M, 5.5M, Others must tuning
 		BrateCfg = mask  & 0x159;
@@ -3397,7 +3397,7 @@ void _update_response_rate(_adapter *padapter,unsigned int mask)
 	rtw_write8(padapter,REG_RRSR+1, (mask>>8)&0xff);
 
 	// Set RTS initial rate
-	while(mask > 0x1)
+	while (mask > 0x1)
 	{
 		mask = (mask>> 1);
 		RateIndex++;
@@ -3420,7 +3420,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
 #ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(padapter) && padapter->adapter_type > PRIMARY_ADAPTER)
+	if (rtw_buddy_adapter_up(padapter) && padapter->adapter_type > PRIMARY_ADAPTER)
 		pHalData = GET_HAL_DATA(padapter->pbuddy_adapter);
 #endif //CONFIG_CONCURRENT_MODE
 
@@ -3430,7 +3430,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 	}
 
 	psta = pmlmeinfo->FW_sta_info[mac_id].psta;
-	if(psta == NULL)
+	if (psta == NULL)
 	{
 		return;
 	}
@@ -3459,7 +3459,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 
 		case 1://for broadcast/multicast
 			supportRateNum = rtw_get_rateset_len(pmlmeinfo->FW_sta_info[mac_id].SupportedRates);
-			if(pmlmeext->cur_wireless_mode & WIRELESS_11B)
+			if (pmlmeext->cur_wireless_mode & WIRELESS_11B)
 				networkType = WIRELESS_11B;
 			else
 				networkType = WIRELESS_11G;
@@ -3499,7 +3499,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id,u8 rssi_level )
 
 	init_rate = get_highest_rate_idx(mask)&0x3f;
 
-	if(pHalData->fw_ractrl == true) {
+	if (pHalData->fw_ractrl == true) {
 		u8 arg = mac_id&0x1f;//MACID
 
 		arg |= BIT(7);
@@ -3536,7 +3536,7 @@ static void rtl8723au_init_default_value(PADAPTER padapter)
 static u8 rtl8192cu_ps_func(PADAPTER Adapter,HAL_INTF_PS_FUNC efunc_id, u8 *val)
 {
 	u8 bResult = true;
-	switch(efunc_id){
+	switch (efunc_id){
 
 		#if defined(CONFIG_AUTOSUSPEND) && defined(SUPPORT_HW_RFOFF_DETECTED)
 		case HAL_USB_SELECT_SUSPEND:
@@ -3560,7 +3560,7 @@ void rtl8723au_set_hal_ops(_adapter * padapter)
 _func_enter_;
 
 	padapter->HalData = rtw_zmalloc(sizeof(HAL_DATA_TYPE));
-	if(padapter->HalData == NULL){
+	if (padapter->HalData == NULL){
 		DBG_8192C("cant not alloc memory for HAL DATA\n");
 	}
 	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
