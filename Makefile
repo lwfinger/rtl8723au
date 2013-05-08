@@ -10,6 +10,7 @@ EXTRA_CFLAGS += -Wno-unused
 EXTRA_CFLAGS += -Wno-uninitialized
 
 EXTRA_CFLAGS += -I$(src)/include
+EXTRA_CFLAGS += -Iinclude/generated/uapi
 
 CONFIG_AUTOCFG_CP = y
 
