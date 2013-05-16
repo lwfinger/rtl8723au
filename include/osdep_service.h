@@ -457,7 +457,7 @@ static inline unsigned char _cancel_timer_ex(struct timer_list *ptimer)
 
 static inline void thread_enter(char *name)
 {
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3,7,0))
+#ifdef daemonize
 	daemonize("%s", name);
 	allow_signal(SIGTERM);
 #endif
