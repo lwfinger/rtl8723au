@@ -27,13 +27,11 @@
 #define _drv_always_			1
 #define _drv_emerg_			2
 #define _drv_alert_			3
-#define _drv_crit_			4
-#define _drv_err_			5
-#define	_drv_warning_			6
-#define _drv_notice_			7
-#define _drv_info_			8
-#define _drv_dump_			9
-#define	_drv_debug_			10
+#define _drv_err_			4
+#define	_drv_warning_			5
+#define _drv_notice_			6
+#define _drv_info_			7
+#define	_drv_debug_			8
 
 #define _module_rtl871x_xmit_c_		BIT(0)
 #define _module_xmit_osdep_c_		BIT(1)
@@ -148,110 +146,76 @@
 	#define	_MODULE_DEFINE_	_module_efuse_
 #endif
 
-#define RT_TRACE(_Comp, _Level, Fmt) do{}while (0)
-#define _func_enter_ do{}while (0)
-#define _func_exit_ do{}while (0)
-#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen) do{}while (0)
-
-#define DBG_871X(x, ...) do {} while (0)
-#define MSG_8192C(x, ...) do {} while (0)
-#define DBG_8192C(x,...) do {} while (0)
-#define DBG_871X_LEVEL(x,...) do {} while (0)
-
-#undef	_dbgdump
+#ifdef pr_info
+#define _dbgdump	pr_info
+#else
 #define _dbgdump	printk
+#endif
 
 #define DRIVER_PREFIX	"RTL8723AU: "
 #define DEBUG_LEVEL	(_drv_err_)
-#if	defined (_dbgdump)
-	#undef DBG_871X_LEVEL
-	#define DBG_871X_LEVEL(level, fmt, arg...)     \
-	do {\
-		if (level <= DEBUG_LEVEL) {\
-			if (level <= _drv_err_ && level > _drv_always_) \
-				_dbgdump(DRIVER_PREFIX"ERROR " fmt, ##arg);\
-			else \
-				_dbgdump(DRIVER_PREFIX fmt, ##arg);\
-		}\
-	} while (0)
-#endif
-
-#ifdef CONFIG_DEBUG
-#if	defined (_dbgdump)
-	#undef DBG_871X
-	#define DBG_871X(...)				\
-		do {					\
-			_dbgdump(DRIVER_PREFIX __VA_ARGS__);\
-		} while (0)
-
-	#undef MSG_8192C
-	#define MSG_8192C(...)     do {\
-		_dbgdump(DRIVER_PREFIX __VA_ARGS__);\
-	}while (0)
-
-	#undef DBG_8192C
-	#define DBG_8192C(...)     do {\
-		_dbgdump(DRIVER_PREFIX __VA_ARGS__);\
-	}while (0)
-#endif
-#endif /* CONFIG_DEBUG */
-
-#ifdef CONFIG_DEBUG_RTL871X
-#ifndef _RTL871X_DEBUG_C_
-	extern u32 GlobalDebugLevel;
-	extern u64 GlobalDebugComponents;
-#endif
-
-#if	defined (_dbgdump) && defined (_MODULE_DEFINE_)
-
-	#undef RT_TRACE
-	#define RT_TRACE(_Comp, _Level, Fmt)\
-	do {\
-		if ((_Comp & GlobalDebugComponents) && (_Level <= GlobalDebugLevel)) {\
-			_dbgdump("%s [0x%08x,%d]", DRIVER_PREFIX, (unsigned int)_Comp, _Level);\
-			_dbgdump Fmt;\
-		}\
+#define DBG_871X_LEVEL(_level, fmt, arg...) 				\
+	do {								\
+		if (_level <= GlobalDebugLevel)				\
+			_dbgdump(DRIVER_PREFIX"ERROR " fmt, ##arg);\
 	} while (0)
 
-#endif
-
-
-#if	defined (_dbgdump)
-
-	#undef  _func_enter_
-	#define _func_enter_ \
-	do {	\
-		if (GlobalDebugLevel >= _drv_debug_) { \
-			_dbgdump("\n %s : %s enters at %d\n", DRIVER_PREFIX, __func__, __LINE__);\
-		}		\
+#define DBG_871X(...)							\
+	do {								\
+		_dbgdump(DRIVER_PREFIX __VA_ARGS__);			\
 	} while (0)
 
-	#undef  _func_exit_
-	#define _func_exit_ \
-	do {	\
-		if (GlobalDebugLevel >= _drv_debug_) { \
-			_dbgdump("\n %s : %s exits at %d\n", DRIVER_PREFIX, __func__, __LINE__); \
-		}	\
+#define MSG_8192C(...)							\
+     do {								\
+	_dbgdump(DRIVER_PREFIX __VA_ARGS__);				\
 	} while (0)
 
-	#undef RT_PRINT_DATA
-	#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen)			\
-		if (((_Comp) & GlobalDebugComponents) && (_Level <= GlobalDebugLevel))	\
-		{									\
-			int __i;								\
-			u8	*ptr = (u8 *)_HexData;				\
-			_dbgdump("%s", DRIVER_PREFIX);						\
-			_dbgdump(_TitleString);						\
-			for (__i = 0; __i < (int)_HexDataLen; __i++) {				\
-				_dbgdump("%02X%s", ptr[__i], (((__i + 1) % 4) == 0)?"  ":" ");	\
-				if (((__i + 1) % 16) == 0)		\
-					_dbgdump("\n");			\
-			}								\
-			_dbgdump("\n");							\
-		}
-#endif
-#endif /* CONFIG_DEBUG_RTL871X */
+#define DBG_8192C(...)							\
+     do {								\
+	_dbgdump(DRIVER_PREFIX __VA_ARGS__);				\
+	} while (0)
 
+extern u32 GlobalDebugLevel;
+
+
+#define RT_TRACE(_Comp, _Level, Fmt)					\
+do {									\
+	if (_Level <= GlobalDebugLevel) {				\
+		_dbgdump("%s [0x%08x,%d]", DRIVER_PREFIX,		\
+			 (unsigned int)_Comp, _Level);			\
+		_dbgdump Fmt;						\
+	}								\
+} while (0)
+
+#define _func_enter_							\
+	do {								\
+		if (GlobalDebugLevel >= _drv_debug_)			\
+			_dbgdump("%s : %s enters at %d\n",		\
+				 DRIVER_PREFIX, __func__, __LINE__);	\
+	} while (0)
+
+#define _func_exit_ 							\
+	do {								\
+		if (GlobalDebugLevel >= _drv_debug_)			\
+			_dbgdump("%s : %s exits at %d\n",		\
+				 DRIVER_PREFIX, __func__, __LINE__);	\
+	} while (0)
+
+#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData,		\
+		      _HexDataLen)					\
+	if (_Level <= GlobalDebugLevel) {				\
+		int __i;						\
+		u8	*ptr = (u8 *)_HexData;				\
+		_dbgdump("%s", DRIVER_PREFIX);				\
+		_dbgdump(_TitleString);					\
+		for (__i = 0; __i < (int)_HexDataLen; __i++) {		\
+			printk("%02X%s", ptr[__i],			\
+			       (((__i + 1) % 4) == 0) ? "  " : " ");	\
+			if (((__i + 1) % 16) == 0)			\
+				printk("\n");				\
+		}							\
+		printk("\n");						\
+	}
 
 #ifdef CONFIG_PROC_DEBUG
 

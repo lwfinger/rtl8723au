@@ -219,7 +219,6 @@ static u8 _LLTWrite(
 		}
 
 		if (count > POLLING_LLT_THRESHOLD) {
-			//RT_TRACE(COMP_INIT,DBG_SERIOUS,("Failed to polling write LLT done at address %d!\n", address));
 			status = _FAIL;
 			break;
 		}
@@ -249,7 +248,6 @@ static u8 _LLTRead(
 		}
 
 		if (count > POLLING_LLT_THRESHOLD) {
-			//RT_TRACE(COMP_INIT,DBG_SERIOUS,("Failed to polling read LLT done at address %d!\n", address));
 			break;
 		}
 	}while (count++);
@@ -1089,15 +1087,7 @@ HalDetectSelectiveSuspendMode(
 
 	// 2010/09/01 MH According to Dongle Selective Suspend INF. We can switch SS mode.
 	if (pdvobjpriv->RegUsbSS && !SUPPORT_HW_RADIO_DETECT(pHalData))
-	{
-		//PMGNT_INFO				pMgntInfo = &(Adapter->MgntInfo);
-
-		//if (!pMgntInfo->bRegDongleSS)
-		//{
-		//	RT_TRACE(COMP_INIT, DBG_LOUD, ("Dongle disable SS\n"));
-			pdvobjpriv->RegUsbSS = false;
-		//}
-	}
+		pdvobjpriv->RegUsbSS = false;
 }	// HalDetectSelectiveSuspendMode
 /*-----------------------------------------------------------------------------
  * Function:	HwSuspendModeEnable92Cu()
@@ -1137,14 +1127,11 @@ HwSuspendModeEnable92Cu(
 	// We need to enable HW suspend mode when enter S3/S4 or disable. We need
 	// to disable HW suspend mode for IPS/radio_off.
 	//
-	//RT_TRACE(COMP_RF, DBG_LOUD, ("HwSuspendModeEnable92Cu = %d\n", Type));
 	if (Type == false)
 	{
 		reg |= BIT14;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
 		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
 		reg |= BIT12;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
 		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
 	}
 	else
@@ -1286,7 +1273,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 		goto exit;
 	}
 
-//	pHalData->bMACFuncEnable = false;
 	// Check if MAC has already power on. by tynli. 2011.05.27.
 	val8 = rtw_read8(Adapter, REG_CR);
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
@@ -1622,13 +1608,10 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 	rtw_hal_set_hwreg(Adapter, HW_VAR_NAV_UPPER, (u8*)&NavUpper);
 
 	// 2011/03/09 MH debug only, UMC-B cut pass 2500 S5 test, but we need to fin root cause.
-	if (!IS_HARDWARE_TYPE_8192DU(Adapter) && ((rtw_read32(Adapter, rFPGA0_RFMOD) & 0xFF000000) != 0x83000000))
-	{
+	if (!IS_HARDWARE_TYPE_8192DU(Adapter) && ((rtw_read32(Adapter, rFPGA0_RFMOD) & 0xFF000000) != 0x83000000)) {
 		PHY_SetBBReg(Adapter, rFPGA0_RFMOD, BIT(24), 1);
 		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("%s: IQK fail recorver\n", __func__));
-	}
-	else
-	{
+	} else {
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: IQK OK\n", __func__));
 	}
 
@@ -1723,7 +1706,6 @@ phy_SsPwrSwitch92CU(
 				rtw_mdelay_os(1);
 
 				// 1. Enable MAC Clock. Can not be enabled now.
-				//WriteXBYTE(REG_SYS_CLKR+1, ReadXBYTE(REG_SYS_CLKR+1) | BIT(3));
 
 				// 2. Force PWM, Enable SPS18_LDO_Marco_Block
 				rtw_write8(Adapter, REG_SPS0_CTRL,
@@ -1753,16 +1735,11 @@ phy_SsPwrSwitch92CU(
 				}
 
 				// 5. gated MAC Clock
-				//WriteXBYTE(REG_SYS_CLKR+1, ReadXBYTE(REG_SYS_CLKR+1) & ~(BIT(3)));
-				//rtw_write8(Adapter, REG_SYS_CLKR+1, rtw_read8(Adapter, REG_SYS_CLKR+1)|(BIT3));
 
 				{
-					//u8			eRFPath = RF_PATH_A,value8 = 0, retry = 0;
 					u8		bytetmp;
 					//PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, 0x0, bMaskByte0, 0x0);
 					// 2010/08/12 MH Add for B path under SS test.
-					//if (pHalData->RF_Type ==  RF_2T2R)
-						//PHY_SetRFReg(Adapter, RF_PATH_B, 0x0, bMaskByte0, 0x0);
 
 					bytetmp = rtw_read8(Adapter, REG_APSD_CTRL);
 					rtw_write8(Adapter, REG_APSD_CTRL, bytetmp & ~BIT6);
@@ -1775,7 +1752,6 @@ phy_SsPwrSwitch92CU(
 					// Enable TX
 					rtw_write8(Adapter, REG_TXPAUSE, 0x0);
 				}
-				//CardSelectiveSuspendLeave(Adapter);
 			}
 
 			break;
@@ -1833,7 +1809,7 @@ phy_SsPwrSwitch92CU(
 				}
 				else	// Level 2 or others.
 				{
-					RT_TRACE(COMP_POWER, DBG_LOUD, ("SS LVL2\n"));
+					RT_TRACE(_module_hci_hal_init_c_, _drv_debug_, ("SS LVL2\n"));
 					{
 						u8			eRFPath = RF_PATH_A,value8 = 0;
 						rtw_write8(Adapter, REG_TXPAUSE, 0xFF);
@@ -1961,8 +1937,6 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	//3. Disable LED0 & 1
 	rtw_write16(Adapter, REG_LEDCFG0, 0x8080);
 
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable GPIO and LED.\n"));
-
 } //end of _DisableGPIO()
 
 static void
@@ -1975,7 +1949,6 @@ _ResetFWDownloadRegister(
 	value32 = rtw_read32(Adapter, REG_MCUFWDL);
 	value32 &= ~(MCUFWDL_EN | MCUFWDL_RDY);
 	rtw_write32(Adapter, REG_MCUFWDL, value32);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset FW download register.\n"));
 }
 
 
@@ -1995,23 +1968,17 @@ _DisableRF_AFE(
 
 #if (RTL8192CU_ASIC_VERIFICATION)
 
-	do
-	{
-		if (rtw_read8(Adapter, REG_APSD_CTRL) & APSDOFF_STATUS) {
-			//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable RF, AFE, AD, DA Done!\n"));
+	do {
+		if (rtw_read8(Adapter, REG_APSD_CTRL) & APSDOFF_STATUS)
 			break;
-		}
 
-		if (pollingCount++ > POLLING_READY_TIMEOUT_COUNT) {
-			//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("Failed to polling APSDOFF_STATUS done!\n"));
+		if (pollingCount++ > POLLING_READY_TIMEOUT_COUNT)
 			return _FAIL;
-		}
 
 	}while (true);
 
 #endif
 
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable RF, AFE,AD, DA.\n"));
 	return rtStatus;
 
 }
@@ -2027,7 +1994,6 @@ _ResetBB(
 	value16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 	value16 &= ~(FEN_BBRSTB | FEN_BB_GLB_RSTn);
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, value16);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset BB.\n"));
 }
 
 static void
@@ -2041,7 +2007,6 @@ _ResetMCU(
 	value16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 	value16 &= ~FEN_CPUEN;
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, value16);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset MCU.\n"));
 }
 
 static void
@@ -2058,7 +2023,6 @@ _DisableMAC_AFE_PLL(
 
 	value32 |= APFM_OFF;
 	rtw_write32(Adapter, REG_APS_FSMCO, value32);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable MAC, AFE PLL.\n"));
 }
 
 static void
@@ -2073,7 +2037,6 @@ _AutoPowerDownToHostOff(
 
 	value32 |= APDM_HOST;//card disable
 	rtw_write32(Adapter, REG_APS_FSMCO, value32);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Auto Power Down to Host-off state.\n"));
 
 	// set USB suspend
 	value32 = rtw_read32(Adapter, REG_APS_FSMCO);
@@ -2094,10 +2057,6 @@ _SetUsbSuspend(
 	// set USB suspend
 	value32 |= AFSM_HSUS;
 	rtw_write32(Adapter, REG_APS_FSMCO, value32);
-
-	//RT_ASSERT(0 == (rtw_read32(Adapter, REG_APS_FSMCO) & BIT(12)),(""));
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Set USB suspend.\n"));
-
 }
 
 static void
@@ -2125,8 +2084,6 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 
 	value8 &=( ~FEN_BB_GLB_RSTn );
 	rtw_write8(Adapter, REG_SYS_FUNC_EN, value8); //0x14
-
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
 }
 
 static void
@@ -2241,8 +2198,6 @@ _ResetDigitalProcedure1(
 		// Disable all RF/BB power
 		rtw_write8(Adapter, REG_RF_CTRL, 0x00);
 	}
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Reset Digital.\n"));
-
 }
 
 static void
@@ -2281,12 +2236,10 @@ _DisableAnalog(
 	******************************/
 
 		rtw_write8(Adapter, REG_LDOA15_CTRL, 0x04);
-		//PlatformIOWrite1Byte(Adapter, REG_LDOV12D_CTRL, 0x54);
 
 		value8 = rtw_read8(Adapter, REG_LDOV12D_CTRL);
 		value8 &= (~LDV12_EN);
 		rtw_write8(Adapter, REG_LDOV12D_CTRL, value8);
-		//RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8));
 	}
 
 /*****************************
@@ -3276,7 +3229,6 @@ GetHalDefVar8192CUsb(
 			}
 			break;
 		default:
-			//RT_TRACE(COMP_INIT, DBG_WARNING, ("GetHalDefVar8192CUsb(): Unkown variable: %d!\n", eVariable));
 			bResult = _FAIL;
 			break;
 	}
@@ -3364,7 +3316,6 @@ SetHalDefVar8192CUsb(
 			}
 			break;
 		default:
-			//RT_TRACE(COMP_INIT, DBG_TRACE, ("SetHalDefVar819xUsb(): Unkown variable: %d!\n", eVariable));
 			bResult = _FAIL;
 			break;
 	}
@@ -3372,23 +3323,6 @@ SetHalDefVar8192CUsb(
 	return bResult;
 }
 
-/*
-u32  _update_92cu_basic_rate(_adapter *padapter, unsigned int mask)
-{
-	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(padapter);
-	unsigned int BrateCfg = 0;
-
-
-	if (pHalData->VersionID != VERSION_TEST_CHIP_88C)
-		BrateCfg = mask  & 0x15F;
-	else	//for 88CU 46PING setting, Disable CCK 2M, 5.5M, Others must tuning
-		BrateCfg = mask  & 0x159;
-
-	BrateCfg |= 0x01; // default enable 1M ACK rate
-
-	return BrateCfg;
-}
-*/
 void _update_response_rate(_adapter *padapter,unsigned int mask)
 {
 	u8	RateIndex = 0;

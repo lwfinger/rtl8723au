@@ -30,37 +30,6 @@ ODM_InitDebugSetting(
 	)
 {
 pDM_Odm->DebugLevel				=	ODM_DBG_TRACE;
-
-pDM_Odm->DebugComponents			=
-\
-#if DBG
-//BB Functions
-//									ODM_COMP_DIG					|
-//									ODM_COMP_RA_MASK				|
-//									ODM_COMP_DYNAMIC_TXPWR		|
-//									ODM_COMP_FA_CNT				|
-//									ODM_COMP_RSSI_MONITOR			|
-//									ODM_COMP_CCK_PD				|
-//									ODM_COMP_ANT_DIV				|
-//									ODM_COMP_PWR_SAVE				|
-//									ODM_COMP_PWR_TRAIN			|
-//									ODM_COMP_RATE_ADAPTIVE		|
-//									ODM_COMP_PATH_DIV				|
-//									ODM_COMP_DYNAMIC_PRICCA		|
-//									ODM_COMP_RXHP					|
-
-//MAC Functions
-//									ODM_COMP_EDCA_TURBO			|
-//									ODM_COMP_EARLY_MODE			|
-//RF Functions
-//									ODM_COMP_TX_PWR_TRACK			|
-//									ODM_COMP_RX_GAIN_TRACK		|
-//									ODM_COMP_CALIBRATION			|
-//Common
-//									ODM_COMP_COMMON				|
-//									ODM_COMP_INIT					|
-#endif
-									0;
 }
 
 #if 0
@@ -179,9 +148,7 @@ extern	void	ODM_DBGP_Flag_Init(void)
 
 #endif
 
-
 #if 0
-u4Byte GlobalDebugLevel			=	DBG_LOUD;
 //
 // 2009/06/22 MH Allow Fre build to print none debug info at init time.
 //
@@ -257,13 +224,6 @@ u8Byte GlobalDebugComponents	=	\
 #define FuncEntry
 #define FuncExit
 u8Byte GlobalDebugComponents	= 0;
-#endif
-
-#if (RT_PLATFORM==PLATFORM_LINUX)
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0))
-EXPORT_SYMBOL(GlobalDebugComponents);
-EXPORT_SYMBOL(GlobalDebugLevel);
-#endif
 #endif
 
 /*------------------Declare variable-----------------------

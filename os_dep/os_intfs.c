@@ -35,10 +35,15 @@
 #include <rtw_br_ext.h>
 #endif //CONFIG_BR_EXT
 
+static int rtw_debug = 1;
+
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
 MODULE_AUTHOR("Realtek Semiconductor Corp.");
 MODULE_VERSION(DRIVERVERSION);
+
+module_param_named(debug, rtw_debug, int, 0444);
+MODULE_PARM_DESC(debug, "Set debug level (0-8) (default 1)");
 
 /* module param defaults */
 int rtw_chip_version = 0x00;
@@ -697,6 +702,7 @@ uint loadparam( _adapter *padapter,  struct net_device *	pnetdev)
 
 _func_enter_;
 
+	GlobalDebugLevel = rtw_debug;
 	registry_par->chip_version = (u8)rtw_chip_version;
 	registry_par->rfintfs = (u8)rtw_rfintfs;
 	registry_par->lbkmode = (u8)rtw_lbkmode;
