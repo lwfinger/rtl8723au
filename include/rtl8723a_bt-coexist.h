@@ -21,7 +21,7 @@
 #define __RTL8723A_BT_COEXIST_H__
 
 #include <drv_types.h>
-#include "../hal/OUTSRC/odm_precomp.h"
+#include <odm_precomp.h>
 
 
 #define __BT_C__ 1

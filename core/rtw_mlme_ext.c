@@ -6444,8 +6444,8 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 			else
 				BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
 #ifdef CONFIG_BT_COEXIST
-			if ((BT_1Ant(padapter) == true) &&
-			    (pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
+			if (((BT_1Ant(padapter) == true) &&
+			    (pmlmeinfo->assoc_AP_vendor != broadcomAP)) ||
 			    (_rtw_memcmp(raddr, tendaAPMac, 3) == false)) {
 				/*  max buffer size is 8 MSDU */
 				BA_para_set &= ~RTW_IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
