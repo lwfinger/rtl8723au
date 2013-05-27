@@ -35,11 +35,11 @@
 //2 Config Flags and Structs - defined by each ODM Type
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
-	#include "../8192cd_cfg.h"
-	#include "../odm_inc.h"
+	#include "8192cd_cfg.h"
+	#include "odm_inc.h"
 
-	#include "../8192cd.h"
-	#include "../8192cd_util.h"
+	#include "8192cd.h"
+	#include "8192cd_util.h"
 	#ifdef _BIG_ENDIAN_
 	#define	ODM_ENDIAN_TYPE				ODM_ENDIAN_BIG
 	#else
@@ -47,18 +47,18 @@
 	#endif
 
 	#ifdef AP_BUILD_WORKAROUND
-	#include "../8192cd_headers.h"
-	#include "../8192cd_debug.h"		
+	#include "8192cd_headers.h"
+	#include "8192cd_debug.h"		
 	#endif
 	
 #elif (DM_ODM_SUPPORT_TYPE == ODM_ADSL)
 	// Flags
-	#include "../8192cd_cfg.h"		// OUTSRC needs ADSL config flags.
-	#include "../odm_inc.h"			// OUTSRC needs some extra flags.
+	#include "8192cd_cfg.h"		// OUTSRC needs ADSL config flags.
+	#include "odm_inc.h"			// OUTSRC needs some extra flags.
 	// Data Structure
-	#include "../common_types.h"	// OUTSRC and rtl8192cd both needs basic type such as UINT8 and BIT0.
-	#include "../8192cd.h"			// OUTSRC needs basic ADSL struct definition.
-	#include "../8192cd_util.h"		// OUTSRC needs basic I/O function.
+	#include "common_types.h"	// OUTSRC and rtl8192cd both needs basic type such as UINT8 and BIT0.
+	#include "8192cd.h"			// OUTSRC needs basic ADSL struct definition.
+	#include "8192cd_util.h"		// OUTSRC needs basic I/O function.
 	#ifdef _BIG_ENDIAN_
 	#define	ODM_ENDIAN_TYPE				ODM_ENDIAN_BIG
 	#else
@@ -67,8 +67,8 @@
 
 	#ifdef ADSL_AP_BUILD_WORKAROUND
 	// NESTED_INC: Functions defined outside should not be included!! Marked by Annie, 2011-10-14.
-	#include "../8192cd_headers.h"
-	#include "../8192cd_debug.h"	
+	#include "8192cd_headers.h"
+	#include "8192cd_debug.h"	
 	#endif	
 	
 #elif (DM_ODM_SUPPORT_TYPE ==ODM_CE)
@@ -99,29 +99,7 @@
 	#include "Hal8192CEMACImg_ADSL.h"
 
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
-	#if(RTL8192CE_SUPPORT ==1)
-	#include "Hal8192CEFWImg_CE.h"
-	#include "Hal8192CEPHYImg_CE.h"
-	#include "Hal8192CEMACImg_CE.h"	
-	#elif(RTL8192CU_SUPPORT ==1)
-	#include "Hal8192CUFWImg_CE.h"
-	#include "Hal8192CUPHYImg_CE.h"
-	#include "Hal8192CUMACImg_CE.h"
-	#elif(RTL8192DE_SUPPORT ==1)
-	#include "Hal8192DEFWImg_CE.h"
-	#include "Hal8192DEPHYImg_CE.h"
-	#include "Hal8192DEMACImg_CE.h"	
-	#elif(RTL8192DU_SUPPORT ==1)
-	#include "Hal8192DUFWImg_CE.h"
-	#include "Hal8192DUPHYImg_CE.h"
-	#include "Hal8192DUMACImg_CE.h"	
-	#elif(RTL8723AS_SUPPORT==1)
-	#include "Hal8723SHWImg_CE.h"
-	#elif(RTL8723AU_SUPPORT==1)
 	#include "Hal8723UHWImg_CE.h"	 
-	#elif(RTL8188E_SUPPORT==1)
-	#include "Hal8188EFWImg_CE.h"	
-	#endif
 #elif (DM_ODM_SUPPORT_TYPE == ODM_MP)
 
 #endif
@@ -150,7 +128,7 @@
 	#include "HalPhyRf.h"
 	#if (RTL8192C_SUPPORT==1) 
 		#ifdef CONFIG_INTEL_PROXIM
-		#include "../proxim/intel_proxim.h"	
+		#include "intel_proxim.h"	
 		#endif	
 		#include  "HalDMOutSrc8192C_CE.h"
 		#include <rtl8192c_hal.h>

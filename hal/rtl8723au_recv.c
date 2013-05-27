@@ -29,9 +29,16 @@
 
 #include <usb_ops.h>
 
+#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
+
+#error "Shall be Linux or Windows, but not both!\n"
+
+#endif
+
 #include <wifi.h>
 #include <circ_buf.h>
 
+//#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
 void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf)
@@ -43,7 +50,7 @@ void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf)
 
 	precvbuf->ref_cnt = 0;
 
-	if (precvbuf->pbuf)
+	if(precvbuf->pbuf)
 	{
 		precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pbuf;
 		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
@@ -62,37 +69,48 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	_rtw_init_sema(&precvpriv->terminate_recvthread_sema, 0);//will be removed
 #endif
 
+#ifdef PLATFORM_LINUX
 	tasklet_init(&precvpriv->recv_tasklet,
 	     (void(*)(unsigned long))rtl8192cu_recv_tasklet,
 	     (unsigned long)padapter);
+#endif
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
+#ifdef PLATFORM_LINUX
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if (precvpriv->int_in_urb == NULL) {
-		DBG_8192C("alloc_urb for interrupt in endpoint fail !!!!\n");
+	if(precvpriv->int_in_urb == NULL){
+		DBG_8723A("alloc_urb for interrupt in endpoint fail !!!!\n");
 	}
+#endif
 	precvpriv->int_in_buf = rtw_zmalloc(USB_INTR_CONTENT_LENGTH);
-	if (precvpriv->int_in_buf == NULL) {
-		DBG_8192C("alloc_mem for interrupt in endpoint fail !!!!\n");
+	if(precvpriv->int_in_buf == NULL){
+		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
 	}
 #endif
 
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
+#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
+	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
+#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
+
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
-	if (precvpriv->pallocated_recv_buf==NULL) {
+	if(precvpriv->pallocated_recv_buf==NULL){
 		res= _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
 		goto exit;
 	}
-	memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
+	_rtw_memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
+	//precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
+	//						((uint) (precvpriv->pallocated_recv_buf) &(4-1));
+
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
-	for (i=0; i < NR_RECVBUFF ; i++)
+	for(i=0; i < NR_RECVBUFF ; i++)
 	{
 		_rtw_init_listhead(&precvbuf->list);
 
@@ -101,7 +119,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
 
 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
-		if (res==_FAIL)
+		if(res==_FAIL)
 			break;
 
 		precvbuf->ref_cnt = 0;
@@ -115,6 +133,9 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	}
 
 	precvpriv->free_recv_buf_queue_cnt = NR_RECVBUFF;
+
+#ifdef PLATFORM_LINUX
+
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
 
 #ifdef CONFIG_PREALLOC_RECV_SKB
@@ -126,7 +147,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 		skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 
-		for (i=0; i<NR_PREALLOC_RECV_SKB; i++)
+		for(i=0; i<NR_PREALLOC_RECV_SKB; i++)
 		{
 
 	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
@@ -135,7 +156,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 			pskb = __netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
 	#endif
 
-			if (pskb)
+			if(pskb)
 			{
 				pskb->dev = padapter->pnetdev;
 
@@ -152,6 +173,8 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	}
 #endif
 
+#endif
+
 exit:
 
 	return res;
@@ -166,25 +189,30 @@ void rtl8192cu_free_recv_priv (_adapter *padapter)
 
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
-	for (i=0; i < NR_RECVBUFF ; i++)
+	for(i=0; i < NR_RECVBUFF ; i++)
 	{
 		rtw_os_recvbuf_resource_free(padapter, precvbuf);
 		precvbuf++;
 	}
 
-	if (precvpriv->pallocated_recv_buf)
+	if(precvpriv->pallocated_recv_buf)
 		rtw_mfree(precvpriv->pallocated_recv_buf, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
-	if (precvpriv->int_in_urb)
+#ifdef PLATFORM_LINUX
+	if(precvpriv->int_in_urb)
+	{
 		usb_free_urb(precvpriv->int_in_urb);
-	if (precvpriv->int_in_buf)
+	}
+#endif
+	if(precvpriv->int_in_buf)
 		rtw_mfree(precvpriv->int_in_buf, USB_INTR_CONTENT_LENGTH);
 #endif
 
+#ifdef PLATFORM_LINUX
 
 	if (skb_queue_len(&precvpriv->rx_skb_queue)) {
-		DBG_8192C(KERN_WARNING "rx_skb_queue not empty\n");
+		DBG_8723A(KERN_WARNING "rx_skb_queue not empty\n");
 	}
 
 	skb_queue_purge(&precvpriv->rx_skb_queue);
@@ -192,12 +220,15 @@ void rtl8192cu_free_recv_priv (_adapter *padapter)
 #ifdef CONFIG_PREALLOC_RECV_SKB
 
 	if (skb_queue_len(&precvpriv->free_recv_skb_queue)) {
-		DBG_8192C(KERN_WARNING "free_recv_skb_queue not empty, %d\n", skb_queue_len(&precvpriv->free_recv_skb_queue));
+		DBG_8723A(KERN_WARNING "free_recv_skb_queue not empty, %d\n", skb_queue_len(&precvpriv->free_recv_skb_queue));
 	}
 
 	skb_queue_purge(&precvpriv->free_recv_skb_queue);
 
 #endif
+
+#endif
+
 }
 
 
@@ -220,7 +251,7 @@ void update_recvframe_attrib(
 	prxreport = (PRXREPORT)&report;
 
 	pattrib = &precvframe->u.hdr.attrib;
-	memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
+	_rtw_memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
 
 	// update rx report to recv_frame attribute
 	pattrib->pkt_len = (u16)prxreport->pktlen;
@@ -265,12 +296,13 @@ void update_recvframe_phyinfo(
 	u8					*wlanhdr;
 	ODM_PACKET_INFO_T	pkt_info;
 	u8 *sa;
+	//_irqL		irqL;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
 
-	pkt_info.bPacketMatchBSSID =false;
-	pkt_info.bPacketToSelf = false;
-	pkt_info.bPacketBeacon = false;
+	pkt_info.bPacketMatchBSSID =_FALSE;
+	pkt_info.bPacketToSelf = _FALSE;
+	pkt_info.bPacketBeacon = _FALSE;
 
 	wlanhdr = get_recvframe_data(precvframe);
 
@@ -283,12 +315,19 @@ void update_recvframe_phyinfo(
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
 
 	pkt_info.StationID = 0xFF;
-	if (pkt_info.bPacketBeacon) {
-		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true) {
+	if(pkt_info.bPacketBeacon){
+		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
+			#if 0
+			{
+				printk("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
+					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
+			}
+			#endif
 		}
 		//to do Ad-hoc
-	} else {
+	}
+	else{
 		sa = get_sa(wlanhdr);
 	}
 
@@ -297,13 +336,13 @@ void update_recvframe_phyinfo(
 	if (psta)
 	{
              pkt_info.StationID = psta->mac_id;
-		//printk("%s ==> StationID(%d)\n",__func__,pkt_info.StationID);
+		//printk("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID);
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 
 	#ifdef CONFIG_CONCURRENT_MODE
 	//get Primary adapter's odmpriv
-	if (padapter->adapter_type > PRIMARY_ADAPTER) {
+	if(padapter->adapter_type > PRIMARY_ADAPTER){
 		pHalData = GET_HAL_DATA(padapter->pbuddy_adapter);
 	}
 	#endif
@@ -314,7 +353,7 @@ void update_recvframe_phyinfo(
 	//_exit_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
-		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true))
+		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))
 	{
 		if (psta)
 		{
@@ -324,7 +363,7 @@ void update_recvframe_phyinfo(
 	}
 	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
 	{
-		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == true)
+		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == _TRUE)
 		{
 			if (psta)
 			{

@@ -37,7 +37,7 @@ void	PHY_SetMonitorMode8192C(IN	PADAPTER	pAdapter,
 //
 void	
 PHY_IQCalibrate_8192C(		IN	PADAPTER	pAdapter,	
-				IN	bool 	bReCovery);
+							IN	bool 	bReCovery);
 							
 //
 // LC calibrate
@@ -56,7 +56,7 @@ PHY_APCalibrate_8192C(		IN	PADAPTER	pAdapter,
 #define ODM_TARGET_CHNL_NUM_2G_5G	59
 
 
-void
+VOID
 ODM_ResetIQKResult(
 	IN PDM_ODM_T	pDM_Odm 
 );

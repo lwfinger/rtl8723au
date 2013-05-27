@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -32,7 +32,7 @@
 #define BMC		BIT(24)
 #define LSG		BIT(26)
 #define FSG		BIT(27)
-#define OWN		BIT(31)
+#define OWN 		BIT(31)
 
 
 //OFFSET 4
@@ -114,9 +114,11 @@ struct txrpt_ccx_8192c {
 void dump_txrpt_ccx_8192c(void *buf);
 void handle_txrpt_ccx_8192c(_adapter *adapter, void *buf);
 #else
-#define dump_txrpt_ccx_8192c(buf) do {} while (0)
-#define handle_txrpt_ccx_8192c(adapter, buf) do {} while (0)
+#define dump_txrpt_ccx_8192c(buf) do {} while(0)
+#define handle_txrpt_ccx_8192c(adapter, buf) do {} while(0)
 #endif
+
+#ifdef CONFIG_USB_HCI
 
 #ifdef CONFIG_USB_TX_AGGREGATION
 #define MAX_TX_AGG_PACKET_NUMBER 0xFF
@@ -139,3 +141,25 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt);
 #endif
 
 #endif
+
+#ifdef CONFIG_PCI_HCI
+s32	rtl8192ce_init_xmit_priv(_adapter * padapter);
+void	rtl8192ce_free_xmit_priv(_adapter * padapter);
+
+s32	rtl8192ce_enqueue_xmitbuf(struct rtw_tx_ring *ring, struct xmit_buf *pxmitbuf);
+struct xmit_buf *rtl8192ce_dequeue_xmitbuf(struct rtw_tx_ring *ring);
+
+void	rtl8192ce_xmitframe_resume(_adapter *padapter);
+
+s32	rtl8192ce_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe);
+
+s32	rtl8192ce_hal_xmit(_adapter *padapter, struct xmit_frame *pxmitframe);
+
+#ifdef CONFIG_HOSTAPD_MLME
+s32	rtl8192ce_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt);
+#endif
+
+#endif
+
+#endif
+

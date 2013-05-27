@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,6 +20,8 @@
 #ifndef _RTW_MP_IOCTL_H_
 #define _RTW_MP_IOCTL_H_
 
+//#include <drv_conf.h>
+//#include <osdep_service.h>
 #include <drv_types.h>
 #include <mp_custom_oid.h>
 #include <rtw_ioctl.h>
@@ -27,6 +29,13 @@
 #include <rtw_efuse.h>
 #include <rtw_mp.h>
 
+#if 0
+#define TESTFWCMDNUMBER			1000000
+#define TEST_H2CINT_WAIT_TIME		500
+#define TEST_C2HINT_WAIT_TIME		500
+#define HCI_TEST_SYSCFG_HWMASK		1
+#define _BUSCLK_40M			(4 << 2)
+#endif
 //------------------------------------------------------------------------------
 typedef struct CFG_DBG_MSG_STRUCT {
 	u32 DebugLevel;
@@ -74,7 +83,27 @@ typedef struct _DR_VARIABLE_STRUCT_ {
 
 //int mp_start_joinbss(_adapter *padapter, NDIS_802_11_SSID *pssid);
 
+//void _irqlevel_changed_(_irqL *irqlevel, /*bool*/unsigned char bLower);
+#ifdef PLATFORM_OS_XP
+static void _irqlevel_changed_(_irqL *irqlevel, u8 bLower)
+{
+
+	if (bLower == LOWER) {
+		*irqlevel = KeGetCurrentIrql();
+
+		if (*irqlevel > PASSIVE_LEVEL) {
+			KeLowerIrql(PASSIVE_LEVEL);
+		}
+	} else {
+		if (KeGetCurrentIrql() == PASSIVE_LEVEL) {
+			KeRaiseIrql(DISPATCH_LEVEL, irqlevel);
+		}
+	}
+
+}
+#else
 #define _irqlevel_changed_(a,b)
+#endif
 
 //oid_rtl_seg_81_80_00
 NDIS_STATUS oid_rt_pro_set_data_rate_hdl(struct oid_par_priv* poid_par_priv);
@@ -358,7 +387,7 @@ struct oid_obj_priv oid_rtl_seg_87_12_00[]=
 	{1, &oid_rt_pro_read_efuse_hdl},		//0x05	Q	OID_RT_PRO_READ_EFUSE
 	{1, &oid_rt_pro_write_efuse_hdl},		//0x06	S	OID_RT_PRO_WRITE_EFUSE
 	{1, &oid_rt_pro_rw_efuse_pgpkt_hdl},		//0x07	Q,S
-	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08	Q
+	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08 	Q
 	{1, &oid_rt_set_bandwidth_hdl},			//0x09
 	{1, &oid_rt_set_crystal_cap_hdl},		//0x0a
 	{1, &oid_rt_set_rx_packet_type_hdl},		//0x0b	S
@@ -499,7 +528,7 @@ enum RTL871X_MP_IOCTL_SUBCODE {
 	GEN_MP_IOCTL_SUBCODE(TRIGGER_GPIO),
 	GEN_MP_IOCTL_SUBCODE(SET_DM_BT),		/*35*/
 	GEN_MP_IOCTL_SUBCODE(DEL_BA),			/*36*/
-	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*37*/
+	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*37*/	
 	MAX_MP_IOCTL_SUBCODE,
 };
 
@@ -564,3 +593,4 @@ extern struct mp_ioctl_handler mp_ioctl_hdl[];
 #endif /* _RTW_MP_IOCTL_C_ */
 
 #endif
+

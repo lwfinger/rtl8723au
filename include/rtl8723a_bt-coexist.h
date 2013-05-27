@@ -21,7 +21,7 @@
 #define __RTL8723A_BT_COEXIST_H__
 
 #include <drv_types.h>
-#include <odm_precomp.h>
+#include "odm_precomp.h"
 
 
 #define __BT_C__ 1
@@ -47,6 +47,7 @@ typedef enum _RT_MEDIA_STATUS {
 
 #define	BT_TMP_BUF_SIZE		100
 
+void BT_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt);
 void BT_WifiScanNotify(PADAPTER padapter, u8 scanType);
 void BT_WifiAssociateNotify(PADAPTER padapter, u8 action);
 void BT_WifiMediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus);
@@ -55,7 +56,7 @@ void BT_HaltProcess(PADAPTER padapter);
 void BT_LpsLeave(PADAPTER padapter);
 
 
-#define	BT_HsConnectionEstablished(Adapter)					false
+#define	BT_HsConnectionEstablished(Adapter)					_FALSE
 // ===== End of sync from SD7 driver COMMON/BT.h =====
 #endif // __BT_C__
 
@@ -66,6 +67,30 @@ void BT_LpsLeave(PADAPTER padapter);
 #define MAXRSNIELEN				256
 
 // HEADER/QoSType.h
+#if 0
+//
+// BSS QOS data.
+// Ref: BssDscr in 8185 code. [def. in BssDscr.h]
+//
+typedef struct _BSS_QOS
+{
+	// Part 0. Ref. 8185 QoS code (From Emily)
+	QOS_MODE				bdQoSMode;
+	u8					bdWMMIEBuf[MAX_WMMELE_LENGTH];
+	OCTET_STRING			bdWMMIE;
+
+	QOS_ELE_SUBTYPE		EleSubType;
+
+	// Part 2. EDCA Parameter (perAC)
+	u8					*pWMMInfoEle;
+	u8					*pWMMParamEle;
+
+	// QBSS Load.
+	u8					QBssLoad[QBSS_LOAD_SIZE];
+	u8					bQBssLoadValid;
+} BSS_QOS, *PBSS_QOS;
+#endif
+
 // COMMON/Protocol802_11.h
 //----------------------------------------------------------------------------
 //      802.11 Management frame Status Code field
@@ -82,7 +107,7 @@ typedef struct _OCTET_STRING{
 enum
 {
 	AESCCMP_BLK_SIZE		=   16,     // # octets in an AES block
-	AESCCMP_MAX_PACKET		=   4*512,  // largest packet size
+	AESCCMP_MAX_PACKET 		=   4*512,  // largest packet size
 	AESCCMP_N_RESERVED		=   0,      // reserved nonce octet value
 	AESCCMP_A_DATA			=   0x40,   // the Adata bit in the flags
 	AESCCMP_M_SHIFT			=   3,      // how much to shift the 3-bit M field
@@ -117,7 +142,7 @@ typedef struct _CHNL_TXPOWER_TRIPLE
 
 // ===== Below this line is sync from SD7 driver COMMON/bt_hci.h =====
 #define BT_THREAD		0
-#if (BT_THREAD == 1)
+#if(BT_THREAD == 1)
 #define SENDTXMEHTOD	2
 #else
 #define SENDTXMEHTOD	1  // 0=workitem, 1= SendDirectily, 2=thread
@@ -159,7 +184,7 @@ typedef struct _CHNL_TXPOWER_TRIPLE
 //=============================================
 
 #define CAM_BT_START_INDEX		(HALF_CAM_ENTRY - 4)   // MAX_BT_ASOC_ENTRY_NUM : 4 !!!
-#define BT_HWCAM_STAR			CAM_BT_START_INDEX  // We used  HALF_CAM_ENTRY ~ HALF_CAM_ENTRY -MAX_BT_ASOC_ENTRY_NUM
+#define BT_HWCAM_STAR    		CAM_BT_START_INDEX  // We used  HALF_CAM_ENTRY ~ HALF_CAM_ENTRY -MAX_BT_ASOC_ENTRY_NUM
 
 typedef enum _HCI_STATUS
 {
@@ -442,7 +467,7 @@ typedef enum _HCI_EXTENSION_COMMANDS
 	HCI_EXTENSION_VERSION_NOTIFY					=0x0100,
 	HCI_LINK_STATUS_NOTIFY							=0x0101,
 	HCI_BT_OPERATION_NOTIFY							=0x0102,
-	HCI_ENABLE_WIFI_SCAN_NOTIFY						=0x0103,
+	HCI_ENABLE_WIFI_SCAN_NOTIFY 						=0x0103,
 
 
 	//The following is for IVT
@@ -570,7 +595,7 @@ typedef enum _HCI_STATE_MACHINE
 	HCI_STATE_AUTHENTICATING		=0x04,
 	HCI_STATE_CONNECTED			=0x08,
 	HCI_STATE_DISCONNECTING		=0x10,
-	HCI_STATE_DISCONNECTED		=0x20
+	HCI_STATE_DISCONNECTED 		=0x20
 } HCI_STATE_MACHINE, *PHCI_STATE_MACHINE;
 
 typedef enum _AMP_ASSOC_STRUCTURE_TYPE
@@ -713,7 +738,7 @@ typedef enum _BT_STATE_WPA_AUTH
 } BT_STATE_WPA_AUTH, *PBT_STATE_WPA_AUTH;
 
 #define BT_WPA_AUTH_TIMEOUT_PERIOD		1000
-#define BTMaxWPAAuthReTransmitCoun		5
+#define BTMaxWPAAuthReTransmitCoun 		5
 
 #define MAX_AMP_ASSOC_FRAG_LEN			248
 #define TOTAL_ALLOCIATE_ASSOC_LEN			1000
@@ -1099,10 +1124,15 @@ typedef struct _BT_TRAFFIC
 	BT_TRAFFIC_STATISTICS		Bt30TrafficStatistics;
 } BT_TRAFFIC, *PBT_TRAFFIC;
 
+#define RT_WORK_ITEM _workitem
+#define RT_THREAD _thread_hdl_
+
 typedef struct _BT_SECURITY
 {
 	// WPA auth state
 	// May need to remove to BTSecInfo ...
+	//BT_STATE_WPA_AUTH BTWPAAuthState;
+	//u8				PMK[PMK_LEN];
 	RT_TIMER			BTWPAAuthTimer;
 	OCTET_STRING		RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
@@ -1120,18 +1150,18 @@ typedef struct _BT30Info
 	BT_TRAFFIC			BtTraffic;
 	BT_SECURITY			BtSec;
 
-#if (BT_THREAD == 0)
-	_workitem		HCICmdWorkItem;
+#if(BT_THREAD == 0)
+	RT_WORK_ITEM		HCICmdWorkItem;
 	RT_TIMER				BTHCICmdTimer;
 #endif
 #if (SENDTXMEHTOD==0)
-	_workitem		HCISendACLDataWorkItem;
+	RT_WORK_ITEM		HCISendACLDataWorkItem;
 	RT_TIMER				BTHCISendAclDataTimer;
-#elif (SENDTXMEHTOD==2)
-	void *BTTxThread;
+#elif(SENDTXMEHTOD==2)
+	RT_THREAD			BTTxThread;
 #endif
-	_workitem		BTPsDisableWorkItem;
-	_workitem		BTConnectWorkItem;
+	RT_WORK_ITEM		BTPsDisableWorkItem;
+	RT_WORK_ITEM		BTConnectWorkItem;
 	RT_TIMER				BTHCIDiscardAclDataTimer;
 	RT_TIMER				BTHCIJoinTimeoutTimer;
 	RT_TIMER				BTTestSendPacketTimer;
@@ -1144,7 +1174,7 @@ typedef struct _BT30Info
 	RT_TIMER				BTAuthTimeoutTimer;
 	RT_TIMER				BTAsocTimeoutTimer;
 
-	void *				pBtChnlList;
+	PVOID				pBtChnlList;
 }BT30Info, *PBT30Info;
 
 typedef struct _PACKET_IRP_ACL_DATA
@@ -1208,7 +1238,7 @@ typedef struct _BTData_ENTRY
 
 #define BTHCI_SM_WITH_INFO(_Adapter, _StateToEnter, _StateCmd, _EntryNum)	\
 {										\
-	RTPRINT(FIOCTL, IOCTL_STATE, ("[BT state change] caused by ""%s"", line=%d\n", __func__, __LINE__));							\
+	RTPRINT(FIOCTL, IOCTL_STATE, ("[BT state change] caused by ""%s"", line=%d\n", __FUNCTION__, __LINE__));							\
 	BTHCI_StateMachine(_Adapter, _StateToEnter, _StateCmd, _EntryNum);\
 }
 
@@ -1229,6 +1259,7 @@ HCI_STATUS BTHCI_HandleHCICMD(PADAPTER padapter, PPACKET_IRP_HCICMD_DATA pHciCmd
 
 #ifdef __HALBTC87231ANT_C__ // HAL/BTCoexist/HalBtc87231Ant.h
 // ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h =====
+#define GET_BT_INFO(padapter)	(&GET_HAL_DATA(padapter)->BtInfo)
 
 #define	BTC_FOR_SCAN_START				1
 #define	BTC_FOR_SCAN_FINISH				0
@@ -1276,8 +1307,11 @@ typedef struct _BTDM_8723A_1ANT
 	u8		RSSI_BT_Last;
 
 	u8		bWiFiHalt;
+	u8		bRAChanged;
 } BTDM_8723A_1ANT, *PBTDM_8723A_1ANT;
 
+void BTDM_1AntSignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt);
+void BTDM_1AntForDhcp(PADAPTER padapter);
 void BTDM_1AntBtCoexist8723A(PADAPTER padapter);
 
 // ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h =====
@@ -1323,7 +1357,7 @@ typedef struct _BTDM_8723A_2ANT
 	u8		bPreRfRxLpfShrink;
 	u8		bCurRfRxLpfShrink;
 
-	u8		bPreLowPenaltyRa;
+	u8 		bPreLowPenaltyRa;
 	u8		bCurLowPenaltyRa;
 
 	u8		preBtRetryIndex;
@@ -1337,7 +1371,7 @@ typedef struct _BTDM_8723A_2ANT
 	u8		bPreAdcBackOff;
 	u8		bCurAdcBackOff;
 
-	u8		bPreAgcTableEn;
+	u8 		bPreAgcTableEn;
 	u8		bCurAgcTableEn;
 
 	u32		preVal0x6c0;
@@ -1703,6 +1737,7 @@ void BTDM_SWCoexAllOff(PADAPTER padapter);
 void BTDM_HWCoexAllOff(PADAPTER padapter);
 void BTDM_CoexAllOff(PADAPTER padapter);
 void BTDM_TurnOffBtCoexistBeforeEnterIPS(PADAPTER padapter);
+void BTDM_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt);
 void BTDM_Coexist(PADAPTER padapter);
 #define BT_CoexistMechanism BTDM_Coexist
 void BTDM_UpdateCoexState(PADAPTER padapter);
@@ -1771,3 +1806,4 @@ extern u32 BTCoexDbgLevel;
 
 
 #endif // __RTL8723A_BT_COEXIST_H__
+

@@ -121,6 +121,8 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#ifdef AP_BUILD_WORKAROUND
 	#include "../typedef.h"
 	#else
+	typedef void					VOID,*PVOID;
+	typedef unsigned char			bool,*Pbool;
 	typedef unsigned char			u1Byte,*pu1Byte;
 	typedef unsigned short			u2Byte,*pu2Byte;
 	typedef unsigned int			u4Byte,*pu4Byte;
@@ -138,6 +140,9 @@ typedef enum _RT_SPINLOCK_TYPE{
 	
 	#define 	DEV_BUS_TYPE  		RT_PCI_INTERFACE
 	
+	#define _TRUE				1
+	#define _FALSE				0
+	
 #elif (DM_ODM_SUPPORT_TYPE == ODM_ADSL)
 
 	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
@@ -145,6 +150,7 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define ADSL_BUILD_WORKAROUND
 	//
 
+	typedef unsigned char		bool,*Pbool;
 	typedef unsigned char		u1Byte,*pu1Byte;
 	typedef unsigned short		u2Byte,*pu2Byte;
 	typedef unsigned int			u4Byte,*pu4Byte;
@@ -161,9 +167,22 @@ typedef enum _RT_SPINLOCK_TYPE{
 	
 	#define DEV_BUS_TYPE  	RT_PCI_INTERFACE
 	
+	#define _TRUE				1
+	#define _FALSE				0
+
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	#include <basic_types.h>
 
+#if 0
+	typedef u8					u1Byte, *pu1Byte;
+	typedef u16					u2Byte,*pu2Byte;
+	typedef u32					u4Byte,*pu4Byte;
+	typedef u64					u8Byte,*pu8Byte;
+	typedef s8					s1Byte,*ps1Byte;
+	typedef s16					s2Byte,*ps2Byte;
+	typedef s32					s4Byte,*ps4Byte;
+	typedef s64					s8Byte,*ps8Byte;
+#else
 	#define u1Byte 		u8
 	#define pu1Byte 		u8*	
 
@@ -188,6 +207,7 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define s8Byte 		s64
 	#define ps8Byte 		s64*	
 	
+#endif
 	#ifdef CONFIG_USB_HCI
 		#define DEV_BUS_TYPE  	RT_USB_INTERFACE
 	#elif defined(CONFIG_PCI_HCI)
@@ -210,6 +230,12 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define	STA_INFO_T			struct sta_info
 	#define	PSTA_INFO_T		struct sta_info *
 		
+
+
+	#define TRUE 	_TRUE	
+	#define FALSE	_FALSE
+	
+
 	#define SET_TX_DESC_ANTSEL_A_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 24, 1, __Value)
 	#define SET_TX_DESC_ANTSEL_B_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 25, 1, __Value)
 	#define SET_TX_DESC_ANTSEL_C_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 29, 1, __Value)

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -57,19 +57,19 @@
 //
 // IQ calibrate
 //
-void rtl8192c_PHY_IQCalibrate( IN PADAPTER pAdapter , IN bool bReCovery);
+VOID rtl8192c_PHY_IQCalibrate( IN PADAPTER pAdapter , IN bool bReCovery);
 
 //
 // LC calibrate
 //
-void rtl8192c_PHY_LCCalibrate(IN	PADAPTER	pAdapter);
+VOID rtl8192c_PHY_LCCalibrate(IN	PADAPTER	pAdapter);
 
 //
 // AP calibrate
 //
-void rtl8192c_PHY_APCalibrate(IN	PADAPTER	pAdapter, IN	char		delta);
+VOID rtl8192c_PHY_APCalibrate(IN	PADAPTER	pAdapter, IN 	char		delta);
 
-void rtl8192c_odm_CheckTXPowerTracking(IN PADAPTER Adapter);
+VOID rtl8192c_odm_CheckTXPowerTracking(IN PADAPTER Adapter);
 
 #ifdef CONFIG_ANTENNA_DIVERSITY
 void	odm_AntDivCompare8192C(PADAPTER Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
@@ -77,3 +77,4 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter);
 #endif
 
 #endif	//__HAL8190PCIDM_H__
+

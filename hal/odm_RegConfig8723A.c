@@ -31,7 +31,7 @@ odm_ConfigRFReg_8723A(
 	IN	u4Byte				    RegAddr
 	)
 {
-	if (Addr == 0xfe)
+	if(Addr == 0xfe)
 	{
 		#ifdef CONFIG_LONG_DELAY_ISSUE
 		ODM_sleep_ms(50);

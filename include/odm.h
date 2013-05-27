@@ -75,7 +75,7 @@
 #define	AFH_PSD		1	//0:normal PSD scan, 1: only do 20 pts PSD
 #define	MODE_40M		0	//0:20M, 1:40M
 #define	PSD_TH2		3  
-#define	PSD_CHM	20   // Minimum channel number for BT AFH
+#define	PSD_CHMIN		20   // Minimum channel number for BT AFH
 #define	SIR_STEP_SIZE	3
 #define   Smooth_Size_1 	5
 #define	Smooth_TH_1	3
@@ -204,7 +204,7 @@ typedef struct _Dynamic_Power_Saving_
 	
 }PS_T,*pPS_T;
 
-typedef struct false_ALARM_STATISTICS{
+typedef struct _FALSE_ALARM_STATISTICS{
 	u4Byte	Cnt_Parity_Fail;
 	u4Byte	Cnt_Rate_Illegal;
 	u4Byte	Cnt_Crc8_fail;
@@ -512,12 +512,45 @@ typedef		struct _ODM_STA_INFO{
 	// ODM Write
 	//1 TX_INFO (may changed by IC)
 	//TX_INFO_T		pTxInfo;				// Define in IC folder. Move lower layer.
+#if 0
+	u1Byte		ANTSEL_A;			//in Jagar: 4bit; others: 2bit
+	u1Byte		ANTSEL_B;			//in Jagar: 4bit; others: 2bit
+	u1Byte		ANTSEL_C;			//only in Jagar: 4bit
+	u1Byte		ANTSEL_D;			//only in Jagar: 4bit
+	u1Byte		TX_ANTL;			//not in Jagar: 2bit
+	u1Byte		TX_ANT_HT;			//not in Jagar: 2bit
+	u1Byte		TX_ANT_CCK;			//not in Jagar: 2bit
+	u1Byte		TXAGC_A;			//not in Jagar: 4bit
+	u1Byte		TXAGC_B;			//not in Jagar: 4bit
+	u1Byte		TXPWR_OFFSET;		//only in Jagar: 3bit
+	u1Byte		TX_ANT;				//only in Jagar: 4bit for TX_ANTL/TX_ANTHT/TX_ANT_CCK
+#endif
+
 	//
 	// 	Please use compile flag to disabe the strcutrue for other IC except 88E.
 	//	Move To lower layer.
 	//
 	// ODM Write Wilson will handle this part(said by Luke.Lee)
 	//TX_RPT_T		pTxRpt;				// Define in IC folder. Move lower layer.
+#if 0	
+	//1 For 88E RA (don't redefine the naming)
+	u1Byte		rate_id;
+	u1Byte		rate_SGI;
+	u1Byte		rssi_sta_ra;
+	u1Byte		SGI_enable;
+	u1Byte		Decision_rate;
+	u1Byte		Pre_rate;
+	u1Byte		Active;
+
+	// Driver write Wilson handle.
+	//1 TX_RPT (don't redefine the naming)
+	u2Byte		RTY[4];				// ???
+	u2Byte		TOTAL;				// ???
+	u2Byte		DROP;				// ???
+	//
+	// Please use compile flag to disabe the strcutrue for other IC except 88E.
+	//
+#endif
 
 }ODM_STA_INFO_T, *PODM_STA_INFO_T;
 #endif
@@ -631,7 +664,7 @@ typedef enum _ODM_Support_Ability_Definition
 	ODM_BB_CCK_PD					= BIT5,
 	ODM_BB_ANT_DIV				= BIT6,
 	ODM_BB_PWR_SAVE				= BIT7,
-	ODM_BB_PWR_TRA			= BIT8,
+	ODM_BB_PWR_TRAIN				= BIT8,
 	ODM_BB_RATE_ADAPTIVE			= BIT9,
 	ODM_BB_PATH_DIV				= BIT10,
 	ODM_BB_PSD					= BIT11,
@@ -1038,6 +1071,9 @@ typedef enum _ANT_DIV_TYPE
 // 2011/09/22 MH Copy from SD4 defined structure. We use to support PHY DM integration.
 //
 #if(DM_ODM_SUPPORT_TYPE & ODM_MP)
+#if (RT_PLATFORM != PLATFORM_LINUX)
+typedef 
+#endif
 struct DM_Out_Source_Dynamic_Mechanism_Structure
 #else// for AP,ADSL,CE Team
 typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
@@ -1298,7 +1334,11 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 #if(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	
+#if (RT_PLATFORM != PLATFORM_LINUX)
+} DM_ODM_T, *PDM_ODM_T;		// DM_Dynamic_Mechanism_Structure
+#else
 };
+#endif	
 
 #else// for AP,ADSL,CE Team
 } DM_ODM_T, *PDM_ODM_T;		// DM_Dynamic_Mechanism_Structure
@@ -1363,21 +1403,57 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 {
 	DIG_TYPE_THRESH_HIGH	= 0,
 	DIG_TYPE_THRESH_LOW	= 1,
-	DIG_TYPE_BACKOFF	= 2,
-	DIG_TYPE_RX_GAIN_MIN	=3,
+	DIG_TYPE_BACKOFF		= 2,
+	DIG_TYPE_RX_GAIN_MIN	= 3,
 	DIG_TYPE_RX_GAIN_MAX	= 4,
-	DIG_TYPE_ENABLE 	= 5,
-	DIG_TYPE_DISABLE 	= 6,	
+	DIG_TYPE_ENABLE 		= 5,
+	DIG_TYPE_DISABLE 		= 6,	
 	DIG_OP_TYPE_MAX
 }DM_DIG_OP_E;
+/*
+typedef enum tag_CCK_Packet_Detection_Threshold_Type_Definition
+{
+	CCK_PD_STAGE_LowRssi = 0,
+	CCK_PD_STAGE_HighRssi = 1,
+	CCK_PD_STAGE_MAX = 3,
+}DM_CCK_PDTH_E;
+
+typedef enum tag_DIG_EXT_PORT_ALGO_Definition
+{
+	DIG_EXT_PORT_STAGE_0 = 0,
+	DIG_EXT_PORT_STAGE_1 = 1,
+	DIG_EXT_PORT_STAGE_2 = 2,
+	DIG_EXT_PORT_STAGE_3 = 3,
+	DIG_EXT_PORT_STAGE_MAX = 4,
+}DM_DIG_EXT_PORT_ALG_E;
+
+typedef enum tag_DIG_Connect_Definition
+{
+	DIG_STA_DISCONNECT = 0,	
+	DIG_STA_CONNECT = 1,
+	DIG_STA_BEFORE_CONNECT = 2,
+	DIG_MultiSTA_DISCONNECT = 3,
+	DIG_MultiSTA_CONNECT = 4,
+	DIG_CONNECT_MAX
+}DM_DIG_CONNECT_E;
+
+
+#define DM_MultiSTA_InitGainChangeNotify(Event) {DM_DigTable.CurMultiSTAConnectState = Event;}
+
+#define DM_MultiSTA_InitGainChangeNotify_CONNECT(_ADAPTER)	\
+	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_CONNECT)
+
+#define DM_MultiSTA_InitGainChangeNotify_DISCONNECT(_ADAPTER)	\
+	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_DISCONNECT)
+*/
 #define		DM_DIG_THRESH_HIGH			40
 #define		DM_DIG_THRESH_LOW			35
 
 #define		DM_SCAN_RSSI_TH				0x14 //scan return issue for LC
 
 
-#define		DMfalseALARM_THRESH_LOW	400
-#define		DMfalseALARM_THRESH_HIGH	1000
+#define		DM_FALSEALARM_THRESH_LOW	400
+#define		DM_FALSEALARM_THRESH_HIGH	1000
 
 #define		DM_DIG_MAX_NIC				0x3e
 #define		DM_DIG_MIN_NIC				0x1e //0x22//0x1c
@@ -1407,7 +1483,7 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 
 #define		DM_DIG_BACKOFF_MAX			12
 #define		DM_DIG_BACKOFF_MIN			-4
-#define		DM_DIG_BACKOFF_DEFAULT			10
+#define		DM_DIG_BACKOFF_DEFAULT		10
 
 //3===========================================================
 //3 AGC RX High Power Mode
@@ -1448,6 +1524,12 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 //3===========================================================
 //3 Tx Power Tracking
 //3===========================================================
+#if 0 //mask this, since these have been defined in typdef.h, vivi
+#define	OFDM_TABLE_SIZE 	37
+#define	OFDM_TABLE_SIZE_92D 	43
+#define	CCK_TABLE_SIZE		33
+#endif	
+
 
 //3===========================================================
 //3 Rate Adaptive
@@ -1521,34 +1603,34 @@ extern	u1Byte CCKSwingTable_Ch14 [CCK_TABLE_SIZE][8];
 #define SWAW_STEP_PEAK		0
 #define SWAW_STEP_DETERMINE	1
 
-void ODM_Write_DIG(PDM_ODM_T	pDM_Odm, 	u1Byte	CurrentIGI);
-void ODM_Write_CCK_CCA_Thres(PDM_ODM_T	pDM_Odm, u1Byte	CurCCK_CCAThres);
+VOID ODM_Write_DIG(IN	PDM_ODM_T	pDM_Odm, 	IN	u1Byte	CurrentIGI);
+VOID ODM_Write_CCK_CCA_Thres(IN	PDM_ODM_T	pDM_Odm, IN	u1Byte	CurCCK_CCAThres);
 
-void
+VOID
 ODM_SetAntenna(
 	IN 	PDM_ODM_T	pDM_Odm,
-	u1Byte		Antenna);
+	IN	u1Byte		Antenna);
 
 
 #define dm_RF_Saving	ODM_RF_Saving
-void ODM_RF_Saving(	PDM_ODM_T	pDM_Odm,
-							u1Byte		bForceInNormal );
+void ODM_RF_Saving(	IN	PDM_ODM_T	pDM_Odm,
+							IN	u1Byte		bForceInNormal );
 
 #define SwAntDivRestAfterLink	ODM_SwAntDivRestAfterLink
-void ODM_SwAntDivRestAfterLink(	PDM_ODM_T	pDM_Odm);
+VOID ODM_SwAntDivRestAfterLink(	IN	PDM_ODM_T	pDM_Odm);
 
 #define dm_CheckTXPowerTracking 	ODM_TXPowerTrackingCheck
-void	
+VOID	
 ODM_TXPowerTrackingCheck(
-		PDM_ODM_T		pDM_Odm
+	IN		PDM_ODM_T		pDM_Odm
 	);
 
 bool 
 ODM_RAStateCheck(
-	PDM_ODM_T		pDM_Odm,
-	s4Byte			RSSI,
-	bool			bForceUpdate,
-	pu1Byte			pRATRState
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		s4Byte			RSSI,
+	IN		bool			bForceUpdate,
+	OUT		pu1Byte			pRATRState
 	);
 
 #if(DM_ODM_SUPPORT_TYPE & (ODM_MP|ODM_AP|ODM_ADSL))
@@ -1556,27 +1638,27 @@ ODM_RAStateCheck(
 // function prototype
 //============================================================
 //#define DM_ChangeDynamicInitGainThresh		ODM_ChangeDynamicInitGainThresh
-//void	ODM_ChangeDynamicInitGainThresh(PADAPTER	pAdapter,
-//											INT32		DM_Type,
-//											INT32		DM_Value);
-void
+//void	ODM_ChangeDynamicInitGainThresh(IN	PADAPTER	pAdapter,
+//											IN	INT32		DM_Type,
+//											IN	INT32		DM_Value);
+VOID
 ODM_ChangeDynamicInitGainThresh(
-	PDM_ODM_T	pDM_Odm,
-	u4Byte  DM_Type,
-	u4Byte DM_Value
+	IN	PDM_ODM_T	pDM_Odm,
+	IN	u4Byte  DM_Type,
+	IN	u4Byte DM_Value
 	);
 
 bool
 ODM_CheckPowerStatus(
-	PADAPTER		Adapter
+	IN	PADAPTER		Adapter
 	);
 
 
 #if (DM_ODM_SUPPORT_TYPE != ODM_ADSL) 
-void
+VOID
 ODM_RateAdaptiveStateApInit(
-	PADAPTER	Adapter	,
-	PRT_WLAN_STA  pEntry
+	IN	PADAPTER	Adapter	,
+	IN	PRT_WLAN_STA  pEntry
 	);
 #endif
 #define AP_InitRateAdaptiveState	ODM_RateAdaptiveStateApInit
@@ -1584,17 +1666,17 @@ ODM_RateAdaptiveStateApInit(
 
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 #ifdef WIFI_WMM
-void
+VOID
 ODM_IotEdcaSwitch(
-	PDM_ODM_T	pDM_Odm,
-	unsigned char		enable
+	IN	PDM_ODM_T	pDM_Odm,
+	IN	unsigned char		enable
 	);
 #endif
 
 bool
 ODM_ChooseIotMainSTA(
-	PDM_ODM_T		pDM_Odm,
-	PSTA_INFO_T		pstat
+	IN	PDM_ODM_T		pDM_Odm,
+	IN	PSTA_INFO_T		pstat
 	);
 #endif
 
@@ -1602,27 +1684,27 @@ ODM_ChooseIotMainSTA(
 #ifdef HW_ANT_SWITCH
 u1Byte
 ODM_Diversity_AntennaSelect(
-	PDM_ODM_T	pDM_Odm,
-	u1Byte	*data
+	IN	PDM_ODM_T	pDM_Odm,
+	IN	u1Byte	*data
 );
 #endif
 #endif
 
 #define SwAntDivResetBeforeLink		ODM_SwAntDivResetBeforeLink
-void ODM_SwAntDivResetBeforeLink(PDM_ODM_T	pDM_Odm);
+VOID ODM_SwAntDivResetBeforeLink(IN	PDM_ODM_T	pDM_Odm);
 
 //#define SwAntDivCheckBeforeLink8192C	ODM_SwAntDivCheckBeforeLink8192C
 #define SwAntDivCheckBeforeLink	ODM_SwAntDivCheckBeforeLink8192C
 bool 
 ODM_SwAntDivCheckBeforeLink8192C(
-		PDM_ODM_T		pDM_Odm
+	IN		PDM_ODM_T		pDM_Odm
 	);
 
 
 #endif
 
 #define dm_SWAW_RSSI_Check	ODM_SwAntDivChkPerPktRssi
-void ODM_SwAntDivChkPerPktRssi(	
+VOID ODM_SwAntDivChkPerPktRssi(	
 	IN PDM_ODM_T		pDM_Odm,
 	IN u1Byte			StationID,
 	IN PODM_PHY_INFO_T pPhyInfo
@@ -1642,117 +1724,117 @@ GetPSDData(
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 
-void
+VOID
 odm_DIGbyRSSI_LPS(
-		PDM_ODM_T		pDM_Odm
+	IN		PDM_ODM_T		pDM_Odm
 	);
 
 u4Byte ODM_Get_Rate_Bitmap(
-	PDM_ODM_T	pDM_Odm,
-	u4Byte		macid,
-	u4Byte 		ra_mask,	
-	u1Byte 		rssi_level);
+	IN	PDM_ODM_T	pDM_Odm,
+	IN	u4Byte		macid,
+	IN	u4Byte 		ra_mask,	
+	IN	u1Byte 		rssi_level);
 #endif
 	
 
 #if(DM_ODM_SUPPORT_TYPE & (ODM_MP))
 #define	dm_PSDMonitorCallback	odm_PSDMonitorCallback
-void	odm_PSDMonitorCallback(PRT_TIMER		pTimer);
+VOID	odm_PSDMonitorCallback(PRT_TIMER		pTimer);
 
-void
+VOID
 odm_PSDMonitorWorkItemCallback(
-    IN void *            pContext
+    IN PVOID            pContext
     );
 
 
-void
+VOID
 PatchDCTone(
-	PDM_ODM_T	pDM_Odm,
+	IN	PDM_ODM_T	pDM_Odm,
 	pu4Byte		PSD_report,
 	u1Byte 		initial_gain_psd
 );
-void
+VOID
 ODM_PSDMonitor(
-	PDM_ODM_T	pDM_Odm
+	IN	PDM_ODM_T	pDM_Odm
 	);
-void	odm_PSD_Monitor(PDM_ODM_T	pDM_Odm);
-void	odm_PSDMonitorInit(PDM_ODM_T 	pDM_Odm);
+VOID	odm_PSD_Monitor(PDM_ODM_T	pDM_Odm);
+VOID	odm_PSDMonitorInit(PDM_ODM_T 	pDM_Odm);
 
-void
+VOID
 ODM_PSDDbgControl(
-	PADAPTER	Adapter,
-	u4Byte		mode,
-	u4Byte		btRssi
+	IN	PADAPTER	Adapter,
+	IN	u4Byte		mode,
+	IN	u4Byte		btRssi
 	);
 
 #endif	// DM_ODM_SUPPORT_TYPE
 
 
 
-void ODM_DMInit( PDM_ODM_T	pDM_Odm);
+VOID ODM_DMInit( IN	PDM_ODM_T	pDM_Odm);
 
-void
+VOID
 ODM_DMWatchdog(
-		PDM_ODM_T			pDM_Odm			// For common use in the future
+	IN		PDM_ODM_T			pDM_Odm			// For common use in the future
 	);
 
-void
+VOID
 ODM_CmnInfoInit(
-		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
-		u4Byte			Value	
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		ODM_CMNINFO_E	CmnInfo,
+	IN		u4Byte			Value	
 	);
 
-void
+VOID
 ODM_CmnInfoHook(
-		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
-		void *			pValue	
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		ODM_CMNINFO_E	CmnInfo,
+	IN		PVOID			pValue	
 	);
 
-void
+VOID
 ODM_CmnInfoPtrArrayHook(
-		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
-		u2Byte			Index,
-		void *			pValue	
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		ODM_CMNINFO_E	CmnInfo,
+	IN		u2Byte			Index,
+	IN		PVOID			pValue	
 	);
 
-void
+VOID
 ODM_CmnInfoUpdate(
-		PDM_ODM_T		pDM_Odm,
-		u4Byte			CmnInfo,
-		u8Byte			Value	
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		u4Byte			CmnInfo,
+	IN		u8Byte			Value	
 	);
 
-void 
+VOID 
 ODM_InitAllTimers(
     IN PDM_ODM_T	pDM_Odm 
     );
 
-void 
+VOID 
 ODM_CancelAllTimers(
     IN PDM_ODM_T    pDM_Odm 
     );
 
-void
+VOID
 ODM_ReleaseAllTimers(
     IN PDM_ODM_T	pDM_Odm 
     );
 
-void
+VOID
 ODM_ResetIQKResult(
     IN PDM_ODM_T pDM_Odm 
     );
 
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
-void ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm );
-void ODM_FreeAllWorkItems(IN PDM_ODM_T	pDM_Odm );
+VOID ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm );
+VOID ODM_FreeAllWorkItems(IN PDM_ODM_T	pDM_Odm );
 
-void odm_PathDivChkAntSwitch(PDM_ODM_T pDM_Odm);
-void ODM_PathDivRestAfterLink(
-	PDM_ODM_T		pDM_Odm
+VOID odm_PathDivChkAntSwitch(PDM_ODM_T pDM_Odm);
+VOID ODM_PathDivRestAfterLink(
+	IN	PDM_ODM_T		pDM_Odm
 	);
 
 
@@ -1769,13 +1851,13 @@ void ODM_PathDivRestAfterLink(
 
 //#define   PATHDIV_ENABLE 	 1
 
-//void odm_PathDivChkAntSwitch(PADAPTER	Adapter,u1Byte	Step);
-void ODM_PathDivRestAfterLink(
-	PDM_ODM_T	pDM_Odm
+//VOID odm_PathDivChkAntSwitch(PADAPTER	Adapter,u1Byte	Step);
+VOID ODM_PathDivRestAfterLink(
+	IN	PDM_ODM_T	pDM_Odm
 	);
 
 #define dm_PathDiv_RSSI_Check	ODM_PathDivChkPerPktRssi
-void ODM_PathDivChkPerPktRssi(PADAPTER		Adapter,
+VOID ODM_PathDivChkPerPktRssi(PADAPTER		Adapter,
 										bool			bIsDefPort,
 										bool			bMatchBSSID,
 										PRT_WLAN_STA	pEntry,
@@ -1803,18 +1885,18 @@ PlatformDivision64(
 #define PathDivCheckBeforeLink8192C	ODM_PathDiversityBeforeLink92C
 bool 
 ODM_PathDiversityBeforeLink92C(
-	//PADAPTER	Adapter
-		PDM_ODM_T		pDM_Odm
+	//IN	PADAPTER	Adapter
+	IN		PDM_ODM_T		pDM_Odm
 	);
 
 #define DM_ChangeDynamicInitGainThresh		ODM_ChangeDynamicInitGainThresh
-//void	ODM_ChangeDynamicInitGainThresh(PADAPTER	pAdapter,
-//											INT32		DM_Type,
-//											INT32		DM_Value);
+//void	ODM_ChangeDynamicInitGainThresh(IN	PADAPTER	pAdapter,
+//											IN	INT32		DM_Type,
+//											IN	INT32		DM_Value);
 //
 
 
-void
+VOID
 ODM_CCKPathDiversityChkPerPktRssi(
 	PADAPTER		Adapter,
 	bool			bIsDefPort,
@@ -1836,11 +1918,11 @@ typedef enum tag_DIG_Connect_Definition
 }DM_DIG_CONNECT_E;
 
 
-void
+VOID
 ODM_FillTXPathInTXDESC(
-		PADAPTER	Adapter,
-		PRT_TCB		pTcb,
-		pu1Byte		pDesc
+		IN	PADAPTER	Adapter,
+		IN	PRT_TCB		pTcb,
+		IN	pu1Byte		pDesc
 );
 
 
@@ -1865,35 +1947,39 @@ ODM_FillTXPathInTXDESC(
 	IS_HARDWARE_TYPE_8723A(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_8723A(_Adapter) :\
 	odm_TXPowerTrackingCallback_ThermalMeter_8188E(_Adapter)
 
-void
+VOID
 ODM_SetTxAntByTxInfo_88C_92D(
-		PDM_ODM_T		pDM_Odm,
-		pu1Byte			pDesc,
-		u1Byte			macId	
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		pu1Byte			pDesc,
+	IN		u1Byte			macId	
 	);
 #endif	// #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
-void
+VOID
 ODM_AntselStatistics_88C(
-		PDM_ODM_T		pDM_Odm,
-		u1Byte			MacId,
-		u4Byte			PWDBAll,
-		bool			isCCKrate
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		u1Byte			MacId,
+	IN		u4Byte			PWDBAll,
+	IN		bool			isCCKrate
 );
 
 #if( DM_ODM_SUPPORT_TYPE & (ODM_MP |ODM_CE))
 
-void
+VOID
 ODM_SingleDualAntennaDefaultSetting(
-		PDM_ODM_T		pDM_Odm
+	IN		PDM_ODM_T		pDM_Odm
 	);
 
 bool
 ODM_SingleDualAntennaDetection(
-		PDM_ODM_T		pDM_Odm,
-		u1Byte			mode
+	IN		PDM_ODM_T		pDM_Odm,
+	IN		u1Byte			mode
 	);
 
 #endif	// #if((DM_ODM_SUPPORT_TYPE==ODM_MP)||(DM_ODM_SUPPORT_TYPE==ODM_CE))
+
+#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
+void odm_dtc(PDM_ODM_T pDM_Odm);
+#endif /* #if (DM_ODM_SUPPORT_TYPE == ODM_CE) */
 
 #endif
 

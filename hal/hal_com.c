@@ -25,41 +25,56 @@
 #include <hal_intf.h>
 #include <hal_com.h>
 
+#ifdef CONFIG_RTL8192C
+#include <rtl8192c_hal.h>
+#endif
+#ifdef CONFIG_RTL8192D
+#include <rtl8192d_hal.h>
+#endif
+#ifdef CONFIG_RTL8723A
 #include <rtl8723a_hal.h>
+#endif
+#ifdef CONFIG_RTL8188E
+#include <rtl8188e_hal.h>
+#endif
 
 #define _HAL_INIT_C_
 
 void dump_chip_info(HAL_VERSION	ChipVersion)
 {
-	if (IS_81XXC(ChipVersion)) {
-		DBG_871X("Chip Version Info: %s_",IS_92C_SERIAL(ChipVersion)?"CHIP_8192C":"CHIP_8188C");
+	int cnt = 0;
+	u8 buf[128];
+
+	if(IS_81XXC(ChipVersion)){
+		cnt += sprintf((buf+cnt), "Chip Version Info: %s_", IS_92C_SERIAL(ChipVersion)?"CHIP_8192C":"CHIP_8188C");
 	}
-	else if (IS_92D(ChipVersion)) {
-		DBG_871X("Chip Version Info: CHIP_8192D_");
+	else if(IS_92D(ChipVersion)){
+		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8192D_");
 	}
-	else if (IS_8723_SERIES(ChipVersion)) {
-		DBG_871X("Chip Version Info: CHIP_8723A_");
+	else if(IS_8723_SERIES(ChipVersion)){
+		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8723A_");
 	}
-	else if (IS_8188E(ChipVersion)) {
-		DBG_871X("Chip Version Info: CHIP_8188E_");
+	else if(IS_8188E(ChipVersion)){
+		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8188E_");
 	}
 
-	DBG_871X("%s_",IS_NORMAL_CHIP(ChipVersion)?"Normal_Chip":"Test_Chip");
-	DBG_871X("%s_",IS_CHIP_VENDOR_TSMC(ChipVersion)?"TSMC":"UMC");
-	if (IS_A_CUT(ChipVersion)) DBG_871X("A_CUT_");
-	else if (IS_B_CUT(ChipVersion)) DBG_871X("B_CUT_");
-	else if (IS_C_CUT(ChipVersion)) DBG_871X("C_CUT_");
-	else if (IS_D_CUT(ChipVersion)) DBG_871X("D_CUT_");
-	else if (IS_E_CUT(ChipVersion)) DBG_871X("E_CUT_");
-	else DBG_871X("UNKNOWN_CUT(%d)_",ChipVersion.CUTVersion);
+	cnt += sprintf((buf+cnt), "%s_", IS_NORMAL_CHIP(ChipVersion)?"Normal_Chip":"Test_Chip");
+	cnt += sprintf((buf+cnt), "%s_", IS_CHIP_VENDOR_TSMC(ChipVersion)?"TSMC":"UMC");
+	if(IS_A_CUT(ChipVersion)) cnt += sprintf((buf+cnt), "A_CUT_");
+	else if(IS_B_CUT(ChipVersion)) cnt += sprintf((buf+cnt), "B_CUT_");
+	else if(IS_C_CUT(ChipVersion)) cnt += sprintf((buf+cnt), "C_CUT_");
+	else if(IS_D_CUT(ChipVersion)) cnt += sprintf((buf+cnt), "D_CUT_");
+	else if(IS_E_CUT(ChipVersion)) cnt += sprintf((buf+cnt), "E_CUT_");
+	else cnt += sprintf((buf+cnt), "UNKNOWN_CUT(%d)_", ChipVersion.CUTVersion);
 
-	if (IS_1T1R(ChipVersion))	DBG_871X("1T1R_");
-	else if (IS_1T2R(ChipVersion))	DBG_871X("1T2R_");
-	else if (IS_2T2R(ChipVersion))	DBG_871X("2T2R_");
-	else DBG_871X("UNKNOWN_RFTYPE(%d)_",ChipVersion.RFType);
+	if(IS_1T1R(ChipVersion)) cnt += sprintf((buf+cnt), "1T1R_");
+	else if(IS_1T2R(ChipVersion)) cnt += sprintf((buf+cnt), "1T2R_");
+	else if(IS_2T2R(ChipVersion)) cnt += sprintf((buf+cnt), "2T2R_");
+	else cnt += sprintf((buf+cnt), "UNKNOWN_RFTYPE(%d)_", ChipVersion.RFType);
 
+	cnt += sprintf((buf+cnt), "RomVer(%d)\n", ChipVersion.ROMVer);
 
-	DBG_871X("RomVer(%d)\n",ChipVersion.ROMVer);
+	DBG_8723A("%s", buf);
 }
 
 
@@ -77,16 +92,16 @@ hal_com_get_channel_plan(
 	u8 swConfig;
 	u8 chnlPlan;
 
-	swConfig = true;
+	swConfig = _TRUE;
 	if (!AutoLoadFail)
 	{
 		if (!rtw_is_channel_plan_valid(sw_channel_plan))
-			swConfig = false;
+			swConfig = _FALSE;
 		if (hw_channel_plan & EEPROM_CHANNEL_PLAN_BY_HW_MASK)
-			swConfig = false;
+			swConfig = _FALSE;
 	}
 
-	if (swConfig == true)
+	if (swConfig == _TRUE)
 		chnlPlan = sw_channel_plan;
 	else
 		chnlPlan = hw_channel_plan & (~EEPROM_CHANNEL_PLAN_BY_HW_MASK);
@@ -101,7 +116,7 @@ u8	MRateToHwRate(u8 rate)
 {
 	u8	ret = DESC_RATE1M;
 
-	switch (rate)
+	switch(rate)
 	{
 		// CCK and OFDM non-HT rates
 	case IEEE80211_CCK_RATE_1MB:	ret = DESC_RATE1M;	break;
@@ -140,14 +155,14 @@ void	HalSetBrateCfg(
 {
 	u8	i, is_brate, brate;
 
-	for (i=0;i<NDIS_802_11_LENGTH_RATES_EX;i++)
+	for(i=0;i<NDIS_802_11_LENGTH_RATES_EX;i++)
 	{
 		is_brate = mBratesOS[i] & IEEE80211_BASIC_RATE_MASK;
 		brate = mBratesOS[i] & 0x7f;
 
-		if ( is_brate )
+		if( is_brate )
 		{
-			switch (brate)
+			switch(brate)
 			{
 				case IEEE80211_CCK_RATE_1MB:	*pBrateCfg |= RATE_1M;	break;
 				case IEEE80211_CCK_RATE_2MB:	*pBrateCfg |= RATE_2M;	break;
@@ -166,7 +181,7 @@ void	HalSetBrateCfg(
 	}
 }
 
-static void
+static VOID
 _OneOutPipeMapping(
 	IN	PADAPTER	pAdapter
 	)
@@ -184,7 +199,7 @@ _OneOutPipeMapping(
 	pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];//TXCMD
 }
 
-static void
+static VOID
 _TwoOutPipeMapping(
 	IN	PADAPTER	pAdapter,
 	IN	bool		bWIFICfg
@@ -192,7 +207,7 @@ _TwoOutPipeMapping(
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
 
-	if (bWIFICfg) { //WMM
+	if(bWIFICfg){ //WMM
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
 		//{  0,		1,	0,	1,	0,	0,	0,	0,		0	};
@@ -209,7 +224,7 @@ _TwoOutPipeMapping(
 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];//TXCMD
 
 	}
-	else {//typical setting
+	else{//typical setting
 
 
 		//BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
@@ -230,14 +245,14 @@ _TwoOutPipeMapping(
 
 }
 
-static void _ThreeOutPipeMapping(
+static VOID _ThreeOutPipeMapping(
 	IN	PADAPTER	pAdapter,
 	IN	bool		bWIFICfg
 	)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
 
-	if (bWIFICfg) {//for WMM
+	if(bWIFICfg){//for WMM
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
 		//{  1,		2,	1,	0,	0,	0,	0,	0,		0	};
@@ -254,7 +269,7 @@ static void _ThreeOutPipeMapping(
 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];//TXCMD
 
 	}
-	else {//typical setting
+	else{//typical setting
 
 
 		//	BK,	BE,	VI,	VO,	BCN,	CMD,MGT,HIGH,HCCA
@@ -282,11 +297,11 @@ Hal_MappingOutPipe(
 {
 	struct registry_priv *pregistrypriv = &pAdapter->registrypriv;
 
-	bool	 bWIFICfg = (pregistrypriv->wifi_spec) ?true:false;
+	bool	 bWIFICfg = (pregistrypriv->wifi_spec) ?_TRUE:_FALSE;
 
-	bool result = true;
+	bool result = _TRUE;
 
-	switch (NumOutPipe)
+	switch(NumOutPipe)
 	{
 		case 2:
 			_TwoOutPipeMapping(pAdapter, bWIFICfg);
@@ -298,7 +313,7 @@ Hal_MappingOutPipe(
 			_OneOutPipeMapping(pAdapter);
 			break;
 		default:
-			result = false;
+			result = _FALSE;
 			break;
 	}
 
@@ -346,13 +361,18 @@ s32 c2h_evt_read(_adapter *adapter, u8 *buf)
 
 	c2h_evt = (struct c2h_evt_hdr *)buf;
 
-	memset(c2h_evt, 0, 16);
+	_rtw_memset(c2h_evt, 0, 16);
 
 	*buf = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL);
 	*(buf+1) = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL + 1);
 
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "c2h_evt_read(): ",
 		&c2h_evt , sizeof(c2h_evt));
+
+	if (0) {
+		DBG_8723A("%s id:%u, len:%u, seq:%u, trigger:0x%02x\n", __func__
+			, c2h_evt->id, c2h_evt->plen, c2h_evt->seq, trigger);
+	}
 
 	/* Read the content */
 	for (i = 0; i < c2h_evt->plen; i++)

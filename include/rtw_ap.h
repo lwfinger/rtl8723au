@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -42,6 +42,7 @@ void add_RATid(_adapter *padapter, struct sta_info *psta, u8 rssi_level);
 void expire_timeout_chk(_adapter *padapter);
 void update_sta_info_apmode(_adapter *padapter, struct sta_info *psta);
 int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len);
+void rtw_ap_restore_network(_adapter *padapter);
 void rtw_set_macaddr_acl(_adapter *padapter, int mode);
 int rtw_acl_add_sta(_adapter *padapter, u8 *addr);
 int rtw_acl_remove_sta(_adapter *padapter, u8 *addr);
@@ -52,11 +53,13 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta);
 u8 bss_cap_update_on_sta_leave(_adapter *padapter, struct sta_info *psta);
 void sta_info_update(_adapter *padapter, struct sta_info *psta);
 void ap_sta_info_defer_update(_adapter *padapter, struct sta_info *psta);
-u8 ap_free_sta(_adapter *padapter, struct sta_info *psta);
+u8 ap_free_sta(_adapter *padapter, struct sta_info *psta, bool active, u16 reason);
 int rtw_sta_flush(_adapter *padapter);
+int rtw_ap_inform_ch_switch(_adapter *padapter, u8 new_ch, u8 ch_offset);
 void start_ap_mode(_adapter *padapter);
 void stop_ap_mode(_adapter *padapter);
 #endif
 #endif //end of CONFIG_AP_MODE
 
 #endif
+

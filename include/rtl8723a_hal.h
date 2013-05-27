@@ -37,7 +37,8 @@
 #endif
 #include "rtw_efuse.h"
 
-#include "../hal/odm_precomp.h"
+#include "odm_precomp.h"
+
 
 //2TODO: We should define 8192S firmware related macro settings here!!
 #define RTL819X_DEFAULT_RF_TYPE			RF_1T2R
@@ -50,7 +51,7 @@
 #define RTL8723_PHY_RADIO_A				"rtl8723S\\radio_a_1T.txt"
 #define RTL8723_PHY_RADIO_B				"rtl8723S\\radio_b_1T.txt"
 #define RTL8723_AGC_TAB					"rtl8723S\\AGC_TAB_1T.txt"
-#define RTL8723_PHY_MACREG				"rtl8723S\\MAC_REG.txt"
+#define RTL8723_PHY_MACREG 				"rtl8723S\\MAC_REG.txt"
 #define RTL8723_PHY_REG_PG				"rtl8723S\\PHY_REG_PG.txt"
 #define RTL8723_PHY_REG_MP				"rtl8723S\\PHY_REG_MP.txt"
 
@@ -60,15 +61,17 @@
 
 // Fw Array
 #define Rtl8723_FwImageArray				Rtl8723UFwImgArray
-#define Rtl8723_FwUMCBCutImageArray		Rtl8723UFwUMCBCutImgArray
+#define Rtl8723_FwUMCBCutImageArrayWithBT		Rtl8723UFwUMCBCutImgArrayWithBT
+#define Rtl8723_FwUMCBCutImageArrayWithoutBT	Rtl8723UFwUMCBCutImgArrayWithoutBT
 
 #define Rtl8723_ImgArrayLength				Rtl8723UImgArrayLength
-#define Rtl8723_UMCBCutImgArrayLength		Rtl8723UUMCBCutImgArrayLength
+#define Rtl8723_UMCBCutImgArrayWithBTLength		Rtl8723UUMCBCutImgArrayWithBTLength
+#define Rtl8723_UMCBCutImgArrayWithoutBTLength	Rtl8723UUMCBCutImgArrayWithoutBTLength
 
-#define Rtl8723_PHY_REG_Array_PG			Rtl8723UPHY_REG_Array_PG
+#define Rtl8723_PHY_REG_Array_PG 			Rtl8723UPHY_REG_Array_PG
 #define Rtl8723_PHY_REG_Array_PGLength		Rtl8723UPHY_REG_Array_PGLength
 
-#if MP_DRIVER == 1
+#ifdef CONFIG_MP_INCLUDED
 	#define Rtl8723E_FwBTImgArray				Rtl8723EFwBTImgArray
 	#define Rtl8723E_FwBTImgArrayLength			Rtl8723EBTImgArrayLength
 
@@ -96,7 +99,7 @@
 
 	#define Rtl8723_MAC_ArrayLength				Rtl8723UMAC_2T_ArrayLength
 	#define Rtl8723_AGCTAB_1TArrayLength			Rtl8723UAGCTAB_1TArrayLength
-	#define Rtl8723_PHY_REG_1TArrayLength			Rtl8723UPHY_REG_1TArrayLength
+	#define Rtl8723_PHY_REG_1TArrayLength 			Rtl8723UPHY_REG_1TArrayLength
 
 
 	#define Rtl8723_RadioA_1TArrayLength			Rtl8723URadioA_1TArrayLength
@@ -113,8 +116,8 @@
 #define MAX_PAGE_SIZE			4096	// @ page : 4k bytes
 
 #define IS_FW_HEADER_EXIST(_pFwHdr)	((le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x92C0 ||\
-					(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
-					(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
+									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
+									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
 
 typedef enum _FIRMWARE_SOURCE {
 	FW_SOURCE_IMG_FILE = 0,
@@ -264,7 +267,7 @@ enum ChannelPlan
 #define EFUSE_MAP_LEN				128
 #define EFUSE_MAX_SECTION			16
 #define EFUSE_IC_ID_OFFSET			506	//For some inferiority IC purpose. added by Roger, 2009.09.02.
-#define AVAILABLE_EFUSE_ADDR(addr)	(addr < EFUSE_REAL_CONTENT_LEN)
+#define AVAILABLE_EFUSE_ADDR(addr) 	(addr < EFUSE_REAL_CONTENT_LEN)
 //
 // <Roger_Notes>
 // To prevent out of boundary programming case,
@@ -276,7 +279,7 @@ enum ChannelPlan
 //
 
 // PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte.
-#define EFUSE_OOB_PROTECT_BYTES			15
+#define EFUSE_OOB_PROTECT_BYTES 		15
 
 #define EFUSE_REAL_CONTENT_LEN_8723A	512
 #define EFUSE_MAP_LEN_8723A				256
@@ -452,7 +455,7 @@ typedef struct hal_data_8723a
 	u8	RegReg542;
 
 	struct dm_priv	dmpriv;
-	DM_ODM_T		odmpriv;
+	DM_ODM_T 		odmpriv;
 	//_lock			odm_stainfo_lock;
 #ifdef DBG_CONFIG_ERROR_DETECT
 	struct sreset_priv srestpriv;
@@ -500,7 +503,7 @@ typedef struct hal_data_8723a
 	//
 	// Add For EEPROM Efuse switch and  Efuse Shadow map Setting
 	//
-	u8			EepromOrEfuse;
+	u8 			EepromOrEfuse;
 //	u8			EfuseMap[2][HWSET_MAX_SIZE_512]; //92C:256bytes, 88E:512bytes, we use union set (512bytes)
 	u16			EfuseUsedBytes;
 	u8			EfuseUsedPercentage;
@@ -518,14 +521,14 @@ typedef struct hal_data_8723a
 	//
 	//------------------------8723-----------------------------------------//
 	RT_MULTI_FUNC			MultiFunc; // For multi-function consideration.
-	RT_POLARITY_CTL			PolarityCtl; // For Wifi PDn Polarity control.
+	RT_POLARITY_CTL 		PolarityCtl; // For Wifi PDn Polarity control.
 	RT_REGULATOR_MODE		RegulatorMode; // switching regulator or LDO
 	//------------------------8723-----------------------------------------//
 	//
 	// 2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an
 	// independent file in the future.
 
-	bool					bMACFuncEnable;
+	bool 				bMACFuncEnable;
 
 #ifdef CONFIG_P2P
 	struct P2P_PS_Offload_t	p2p_ps_offload;
@@ -535,17 +538,56 @@ typedef struct hal_data_8723a
 	//
 	// For USB Interface HAL related
 	//
+#ifdef CONFIG_USB_HCI
 	u32	UsbBulkOutSize;
 
 	// Interrupt relatd register information.
 	u32	IntArray[2];
 	u32	IntrMask[2];
+#endif
+
+
+	//
+	// For SDIO Interface HAL related
+	//
 
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8			bMacPwrCtrlOn;
+
+#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+	//
+	// SDIO ISR Related
+	//
+//	u32			IntrMask[1];
+//	u32			IntrMaskToSet[1];
+//	LOG_INTERRUPT		InterruptLog;
+	u32			sdio_himr;
+	u32			sdio_hisr;
+
+	//
+	// SDIO Tx FIFO related.
+	//
+	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
+	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
+	_lock		SdioTxFIFOFreePageLock;
+	_thread_hdl_ 	SdioXmitThread;
+	_sema		SdioXmitSema;
+	_sema		SdioXmitTerminateSema;
+
+	//
+	// SDIO Rx FIFO related.
+	//
+	u8			SdioRxFIFOCnt;
+	u16			SdioRxFIFOSize;
+#endif
 } HAL_DATA_8723A, *PHAL_DATA_8723A;
 
+#if 0
+#define HAL_DATA_TYPE HAL_DATA_8723A
+#define PHAL_DATA_TYPE PHAL_DATA_8723A
+#else
 typedef struct hal_data_8723a HAL_DATA_TYPE, *PHAL_DATA_TYPE;
+#endif
 
 #define GET_HAL_DATA(__pAdapter)	((HAL_DATA_TYPE *)((__pAdapter)->HalData))
 #define GET_RF_TYPE(priv)			(GET_HAL_DATA(priv)->rf_type)
@@ -672,6 +714,7 @@ typedef struct phystatus_8723a
 
 
 // rtl8723a_hal_init.c
+int FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware);
 s32 rtl8723a_FirmwareDownload(PADAPTER padapter);
 void rtl8723a_FirmwareSelfReset(PADAPTER padapter);
 void rtl8723a_InitializeFirmwareVars(PADAPTER padapter);
@@ -700,6 +743,9 @@ void Hal_EfuseParseRateIndicationOption(PADAPTER padapter, u8 *hwinfo, bool Auto
 void Hal_EfuseParseXtal_8723A(PADAPTER pAdapter, u8 *hwinfo, u8 AutoLoadFail);
 void Hal_EfuseParseThermalMeter_8723A(PADAPTER padapter, u8 *hwinfo, u8 AutoLoadFail);
 
+//RT_CHANNEL_DOMAIN rtl8723a_HalMapChannelPlan(PADAPTER padapter, u8 HalChannelPlan);
+//VERSION_8192C rtl8723a_ReadChipVersion(PADAPTER padapter);
+//void rtl8723a_ReadBluetoothCoexistInfo(PADAPTER padapter, u8 *PROMContent, bool AutoloadFail);
 void Hal_InitChannelPlan(PADAPTER padapter);
 
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
@@ -718,4 +764,14 @@ void rtl8723a_clone_haldata(_adapter *dst_adapter, _adapter *src_adapter);
 void rtl8723a_start_thread(_adapter *padapter);
 void rtl8723a_stop_thread(_adapter *padapter);
 
+s32 c2h_id_filter_ccx_8723a(u8 id);
+
+
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+void rtl8723a_init_checkbthang_workqueue(_adapter * padapter);
+void rtl8723a_free_checkbthang_workqueue(_adapter * padapter);
+void rtl8723a_cancel_checkbthang_workqueue(_adapter * padapter);
+void rtl8723a_hal_check_bt_hang(_adapter * padapter);
 #endif
+#endif
+

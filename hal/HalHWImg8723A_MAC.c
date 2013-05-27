@@ -33,22 +33,22 @@ CheckCondition(
     u4Byte cond = Condition;
 
     if ( Condition == 0xCDCDCDCD )
-        return true;
+        return TRUE;
 
     cond = Condition & 0x000000FF;
     if ( (_board == cond) && cond != 0x00)
-        return false;
+        return FALSE;
 
     cond = Condition & 0x0000FF00;
     cond = cond >> 8;
     if ( (_interface & cond) == 0 && cond != 0x07)
-        return false;
+        return FALSE;
 
     cond = Condition & 0x00FF0000;
     cond = cond >> 16;
     if ( (_platform & cond) == 0 && cond != 0x0F)
-        return false;
-    return true;
+        return FALSE;
+    return TRUE;
 }
 
 
@@ -151,7 +151,7 @@ ODM_ReadAndConfig_MAC_REG_8723A(
 	IN   PDM_ODM_T  pDM_Odm
 	)
 {
-	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while (0)
+	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
 	u4Byte     hex         = 0;
 	u4Byte     i           = 0;

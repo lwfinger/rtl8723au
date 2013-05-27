@@ -26,15 +26,22 @@
 #include <osdep_intf.h>
 #include <circ_buf.h>
 #include <usb_ops.h>
+//#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
+#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
+#error "Shall be Linux or Windows, but not both!\n"
+#endif
+
 
 s32	rtl8192cu_init_xmit_priv(_adapter *padapter)
 {
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
+#ifdef PLATFORM_LINUX
 	tasklet_init(&pxmitpriv->xmit_tasklet,
 	     (void(*)(unsigned long))rtl8192cu_xmit_tasklet,
 	     (unsigned long)padapter);
+#endif
 	return _SUCCESS;
 }
 
@@ -50,7 +57,7 @@ static void do_queue_select(_adapter	*padapter, struct pkt_attrib *pattrib)
 	RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("### do_queue_select priority=%d ,qsel = %d\n",pattrib->priority ,qsel));
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true)
+	if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE)
 		qsel = 7;//
 #endif
 
@@ -93,7 +100,7 @@ void rtl8192cu_cal_txdesc_chksum(struct tx_desc	*ptxdesc)
 		//Clear first
 		ptxdesc->txdw7 &= cpu_to_le32(0xffff0000);
 
-		for (index = 0 ; index < count ; index++) {
+		for(index = 0 ; index < count ; index++){
 			checksum = checksum ^ le16_to_cpu(*(usPtr + index));
 		}
 
@@ -132,9 +139,9 @@ void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct tx_desc *ptxdesc)
 
 void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
 {
-	//DBG_8192C("cvs_mode=%d\n", pattrib->vcs_mode);
+	//DBG_8723A("cvs_mode=%d\n", pattrib->vcs_mode);
 
-	switch (pattrib->vcs_mode)
+	switch(pattrib->vcs_mode)
 	{
 		case RTS_CTS:
 			*pdw |= cpu_to_le32(BIT(12));
@@ -147,19 +154,19 @@ void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
 			break;
 	}
 
-	if (pattrib->vcs_mode) {
+	if(pattrib->vcs_mode) {
 		*pdw |= cpu_to_le32(BIT(13));
 
 		// Set RTS BW
-		if (pattrib->ht_en)
+		if(pattrib->ht_en)
 		{
 			*pdw |= (pattrib->bwmode&HT_CHANNEL_WIDTH_40)?	cpu_to_le32(BIT(27)):0;
 
-			if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
+			if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
 				*pdw |= cpu_to_le32((0x01<<28)&0x30000000);
-			else if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
+			else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
 				*pdw |= cpu_to_le32((0x02<<28)&0x30000000);
-			else if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
+			else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
 				*pdw |= 0;
 			else
 				*pdw |= cpu_to_le32((0x03<<28)&0x30000000);
@@ -169,17 +176,17 @@ void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
 
 void fill_txdesc_phy(struct pkt_attrib *pattrib, u32 *pdw)
 {
-	//DBG_8192C("bwmode=%d, ch_off=%d\n", pattrib->bwmode, pattrib->ch_offset);
+	//DBG_8723A("bwmode=%d, ch_off=%d\n", pattrib->bwmode, pattrib->ch_offset);
 
-	if (pattrib->ht_en)
+	if(pattrib->ht_en)
 	{
 		*pdw |= (pattrib->bwmode&HT_CHANNEL_WIDTH_40)?	cpu_to_le32(BIT(25)):0;
 
-		if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
+		if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
 			*pdw |= cpu_to_le32((0x01<<20)&0x003f0000);
-		else if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
+		else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
 			*pdw |= cpu_to_le32((0x02<<20)&0x003f0000);
-		else if (pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
+		else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
 			*pdw |= 0;
 		else
 			*pdw |= cpu_to_le32((0x03<<20)&0x003f0000);
@@ -205,7 +212,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 #endif //CONFIG_P2P
 
 #ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
-	if ((false == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0))
+	if((_FALSE == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0))
 	{
 		ptxdesc = (struct tx_desc *)(pmem+PACKET_OFFSET_SZ);
 		pull = 1;
@@ -213,11 +220,11 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	}
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-	memset(ptxdesc, 0, sizeof(struct tx_desc));
+	_rtw_memset(ptxdesc, 0, sizeof(struct tx_desc));
 
-	if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
+	if((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 	{
-		//DBG_8192C("pxmitframe->frame_tag == DATA_FRAMETAG\n");
+		//DBG_8723A("pxmitframe->frame_tag == DATA_FRAMETAG\n");
 
 		//offset 4
 		ptxdesc->txdw1 |= cpu_to_le32(pattrib->mac_id&0x1f);
@@ -229,7 +236,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 		fill_txdesc_sectype(pattrib, ptxdesc);
 
-		if (pattrib->ampdu_en==true)
+		if(pattrib->ampdu_en==_TRUE)
 			ptxdesc->txdw1 |= cpu_to_le32(BIT(5));//AGG EN
 		else
 			ptxdesc->txdw1 |= cpu_to_le32(BIT(6));//AGG BK
@@ -259,11 +266,11 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 			//use REG_INIDATA_RATE_SEL value
 			ptxdesc->txdw5 |= cpu_to_le32(pdmpriv->INIDATA_RATE[pattrib->mac_id]);
 
-		if (0)//for driver dbg
+		if(0)//for driver dbg
 			{
 				ptxdesc->txdw4 |= cpu_to_le32(BIT(8));//driver uses rate
 
-				if (pattrib->ht_en)
+				if(pattrib->ht_en)
 					ptxdesc->txdw5 |= cpu_to_le32(BIT(6));//SGI
 
 				ptxdesc->txdw5 |= cpu_to_le32(0x00000013);//init rate - mcs7
@@ -292,13 +299,13 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 			// ptxdesc->txdw6 = 0; // clear TCP_CHECKSUM and IP_CHECKSUM. It's zero already!!
 			u8 ip_hdr_offset = 32 + pattrib->hdrlen + pattrib->iv_len + 8;
 			ptxdesc->txdw7 = (1 << 31) | (ip_hdr_offset << 16);
-			DBG_8192C("ptxdesc->txdw7 = %08x\n", ptxdesc->txdw7);
+			DBG_8723A("ptxdesc->txdw7 = %08x\n", ptxdesc->txdw7);
 		}
 #endif
 	}
-	else if ((pxmitframe->frame_tag&0x0f)== MGNT_FRAMETAG)
+	else if((pxmitframe->frame_tag&0x0f)== MGNT_FRAMETAG)
 	{
-		//DBG_8192C("pxmitframe->frame_tag == MGNT_FRAMETAG\n");
+		//DBG_8723A("pxmitframe->frame_tag == MGNT_FRAMETAG\n");
 
 		//offset 4
 		ptxdesc->txdw1 |= cpu_to_le32(pattrib->mac_id&0x1f);
@@ -314,6 +321,12 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 #ifdef CONFIG_XMIT_ACK
 		//CCX-TXRPT ack for xmit mgmt frames.
 		if (pxmitframe->ack_report) {
+			#ifdef DBG_CCX
+			static u16 ccx_sw = 0x123;
+			ptxdesc->txdw7 |= cpu_to_le32((((ccx_sw>>8)&0x0f)<<16) | (((ccx_sw>>4)&0x0f)<<28) | (((ccx_sw)&0x0f)<<24));
+			DBG_8723A("%s set ccx, sw:0x%03x\n", __func__, ccx_sw);
+			ccx_sw = (ccx_sw+1)%0xfff;
+			#endif
 			ptxdesc->txdw2 |= cpu_to_le32(BIT(19));
 		}
 #endif //CONFIG_XMIT_ACK
@@ -329,8 +342,8 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		ptxdesc->txdw5 |= cpu_to_le32(0x00180000);//retry limit = 6
 
 #ifdef CONFIG_INTEL_PROXIM
-		if ((padapter->proximity.proxim_on==true)&&(pattrib->intel_proxim==true)) {
-			DBG_871X("\n %s pattrib->rate=%d\n",__func__,pattrib->rate);
+		if((padapter->proximity.proxim_on==_TRUE)&&(pattrib->intel_proxim==_TRUE)){
+			DBG_8723A("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
 			ptxdesc->txdw5 |= cpu_to_le32( pattrib->rate);
 		}
 		else
@@ -339,12 +352,12 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 			ptxdesc->txdw5 |= cpu_to_le32(MRateToHwRate(pmlmeext->tx_rate));
 		}
 	}
-	else if ((pxmitframe->frame_tag&0x0f) == TXAGG_FRAMETAG)
+	else if((pxmitframe->frame_tag&0x0f) == TXAGG_FRAMETAG)
 	{
-		DBG_8192C("pxmitframe->frame_tag == TXAGG_FRAMETAG\n");
+		DBG_8723A("pxmitframe->frame_tag == TXAGG_FRAMETAG\n");
 	}
 #ifdef CONFIG_MP_INCLUDED
-	else if (((pxmitframe->frame_tag&0x0f) == MP_FRAMETAG) &&
+	else if(((pxmitframe->frame_tag&0x0f) == MP_FRAMETAG) &&
 			(padapter->registrypriv.mp_mode == 1))
 	{
 		fill_txdesc_for_mp(padapter, ptxdesc);
@@ -352,7 +365,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 #endif
 	else
 	{
-		DBG_8192C("pxmitframe->frame_tag = %d\n", pxmitframe->frame_tag);
+		DBG_8723A("pxmitframe->frame_tag = %d\n", pxmitframe->frame_tag);
 
 		//offset 4
 		ptxdesc->txdw1 |= cpu_to_le32((4)&0x1f);//CAM_ID(MAC_ID)
@@ -379,7 +392,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	// (2) Enable HW SEQ control for beacon packet, because we use Hw beacon.
 	// (3) Use HW Qos SEQ to control the seq num of Ext port non-Qos packets.
 	// 2010.06.23. Added by tynli.
-	if (!pattrib->qos_en)
+	if(!pattrib->qos_en)
 	{
 		ptxdesc->txdw4 |= cpu_to_le32(BIT(7)); // Hw set sequence number
 		ptxdesc->txdw3 |= cpu_to_le32((8 <<28)); //set bit3 to 1. Suugested by TimChen. 2009.12.29.
@@ -390,7 +403,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
 	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ)<<OFFSET_SHT)&0x00ff0000);//32 bytes for TX Desc
 
-	if (bmcst)
+	if(bmcst)
 	{
 		ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
 	}
@@ -436,26 +449,26 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 	ret = _rtw_down_sema(&pxmitpriv->xmit_sema);
 	if (_FAIL == ret) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_emerg_,
-				 ("%s: down SdioXmitBufSema fail!\n", __func__));
+				 ("%s: down SdioXmitBufSema fail!\n", __FUNCTION__));
 		return _FAIL;
 	}
 
-	ret = (padapter->bDriverStopped == true) || (padapter->bSurpriseRemoved == true);
+	ret = (padapter->bDriverStopped == _TRUE) || (padapter->bSurpriseRemoved == _TRUE);
 	if (ret) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
 				 ("%s: bDriverStopped(%d) bSurpriseRemoved(%d)!\n",
-				  __func__, padapter->bDriverStopped, padapter->bSurpriseRemoved));
+				  __FUNCTION__, padapter->bDriverStopped, padapter->bSurpriseRemoved));
 		return _FAIL;
 	}
 
-	if (check_pending_xmitbuf(pxmitpriv) == false)
+	if(check_pending_xmitbuf(pxmitpriv) == _FALSE)
 		return _SUCCESS;
 
 #ifdef CONFIG_LPS_LCLK
 	ret = rtw_register_tx_alive(padapter);
 	if (ret != _SUCCESS) {
 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
-				 ("%s: wait to leave LPS_LCLK\n", __func__));
+				 ("%s: wait to leave LPS_LCLK\n", __FUNCTION__));
 		return _SUCCESS;
 	}
 #endif
@@ -518,9 +531,9 @@ static s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 			sz = pattrib->last_txcmdsz;
 		}
 
-		pull = update_txdesc(pxmitframe, mem_addr, sz, false);
+		pull = update_txdesc(pxmitframe, mem_addr, sz, _FALSE);
 
-		if (pull)
+		if(pull)
 		{
 			mem_addr += PACKET_OFFSET_SZ; //pull txdesc head
 
@@ -546,7 +559,7 @@ static s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 
 
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_write_port, w_sz=%d\n", w_sz));
-		//DBG_8192C("rtw_write_port, w_sz=%d, sz=%d, txdesc_sz=%d, tid=%d\n", w_sz, sz, w_sz-sz, pattrib->priority);
+		//DBG_8723A("rtw_write_port, w_sz=%d, sz=%d, txdesc_sz=%d, tid=%d\n", w_sz, sz, w_sz-sz, pattrib->priority);
 
 		mem_addr += w_sz;
 
@@ -575,7 +588,7 @@ static u32 xmitframe_need_length(struct xmit_frame *pxmitframe)
 		pattrib->pktlen +
 		((pattrib->bswenc) ? pattrib->icv_len : 0);
 
-	if (pattrib->encrypt ==_TKIP_)
+	if(pattrib->encrypt ==_TKIP_)
 		len += 8;
 
 	return len;
@@ -593,7 +606,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	struct sta_info *psta = NULL;
 	struct tx_servq *ptxservq = NULL;
 
-	unsigned long irqL;
+	_irqL irqL;
 	_list *xmitframe_plist = NULL, *xmitframe_phead = NULL;
 
 	u32	pbuf;	// next pkt address
@@ -617,7 +630,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	// check xmitbuffer is ok
 	if (pxmitbuf == NULL) {
 		pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
-		if (pxmitbuf == NULL) return false;
+		if (pxmitbuf == NULL) return _FALSE;
 	}
 
 
@@ -629,7 +642,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		if (pxmitframe == NULL) {
 			// no more xmit frame, release xmit buffer
 			rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
-			return false;
+			return _FALSE;
 		}
 
 
@@ -664,7 +677,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
 #else
 		res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
-		if (res == false) {
+		if (res == _FALSE) {
 //			rtw_free_xmitframe(pxmitpriv, pxmitframe);
 			continue;
 		}
@@ -725,7 +738,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 	xmitframe_phead = get_list_head(&ptxservq->sta_pending);
 	xmitframe_plist = get_next(xmitframe_phead);
-	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == false)
+	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 		xmitframe_plist = get_next(xmitframe_plist);
@@ -768,7 +781,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
 #else
 		res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
-		if (res == false) {
+		if (res == _FALSE) {
 			rtw_free_xmitframe(pxmitpriv, pxmitframe);
 			continue;
 		}
@@ -778,7 +791,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		rtw_os_xmit_complete(padapter, pxmitframe);
 
 		// (len - TXDESC_SIZE) == pxmitframe->attrib.last_txcmdsz
-		update_txdesc(pxmitframe, pxmitframe->buf_addr, pxmitframe->attrib.last_txcmdsz, true);
+		update_txdesc(pxmitframe, pxmitframe->buf_addr, pxmitframe->attrib.last_txcmdsz, _TRUE);
 
 		// don't need xmitframe any more
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
@@ -800,7 +813,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 			bulkPtr = ((pbuf / bulkSize) + 1) * bulkSize;
 		}
 	}
-	if (_rtw_queue_empty(&ptxservq->sta_pending) == true)
+	if (_rtw_queue_empty(&ptxservq->sta_pending) == _TRUE)
 		rtw_list_delete(&ptxservq->tx_pending);
 
 	_exit_critical_bh(&pxmitpriv->lock, &irqL);
@@ -821,7 +834,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		pfirstframe->pkt_offset = 0;
 	}
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
-	update_txdesc(pfirstframe, pfirstframe->buf_addr, pfirstframe->attrib.last_txcmdsz, true);
+	update_txdesc(pfirstframe, pfirstframe->buf_addr, pfirstframe->attrib.last_txcmdsz, _TRUE);
 
 	//3 4. write xmit buffer to USB FIFO
 	ff_hwaddr = rtw_get_ff_hwaddr(pfirstframe);
@@ -838,7 +851,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 	rtw_free_xmitframe(pxmitpriv, pfirstframe);
 
-	return true;
+	return _TRUE;
 }
 
 #else
@@ -856,12 +869,12 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 	RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("xmitframe_complete()\n"));
 
-	if (pxmitbuf==NULL)
+	if(pxmitbuf==NULL)
 	{
 		pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
-		if (!pxmitbuf)
+		if(!pxmitbuf)
 		{
-			return false;
+			return _FALSE;
 		}
 	}
 
@@ -870,7 +883,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	{
 		pxmitframe =  rtw_dequeue_xframe(pxmitpriv, phwxmits, hwentry);
 
-		if (pxmitframe)
+		if(pxmitframe)
 		{
 			pxmitframe->pxmitbuf = pxmitbuf;
 
@@ -878,9 +891,9 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 			pxmitbuf->priv_data = pxmitframe;
 
-			if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
+			if((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 			{
-				if (pxmitframe->attrib.priority<=15)//TID0~15
+				if(pxmitframe->attrib.priority<=15)//TID0~15
 				{
 					res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
 				}
@@ -892,7 +905,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 			RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("xmitframe_complete(): rtw_dump_xframe\n"));
 
 
-			if (res == _SUCCESS)
+			if(res == _SUCCESS)
 			{
 				rtw_dump_xframe(padapter, pxmitframe);
 			}
@@ -908,14 +921,14 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 		else
 		{
 			rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
-			return false;
+			return _FALSE;
 		}
 
 		break;
 
-	}while (0/*xcnt < (NR_XMITFRAME >> 3)*/);
+	}while(0/*xcnt < (NR_XMITFRAME >> 3)*/);
 
-	return true;
+	return _TRUE;
 
 }
 #endif
@@ -926,21 +939,23 @@ static s32 xmitframe_direct(_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 res = _SUCCESS;
 
+
 	res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
-	if (res == _SUCCESS)
+	if (res == _SUCCESS) {
 		rtw_dump_xframe(padapter, pxmitframe);
+	}
 
 	return res;
 }
 
 /*
  * Return
- *	true	dump packet directly
- *	false	enqueue packet
+ *	_TRUE	dump packet directly
+ *	_FALSE	enqueue packet
  */
 static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 {
-        unsigned long irqL;
+        _irqL irqL;
 	s32 res;
 	struct xmit_buf *pxmitbuf = NULL;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -949,6 +964,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 #ifdef CONFIG_TDLS
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 #endif
 #ifdef CONFIG_CONCURRENT_MODE
 	PADAPTER pbuddy_adapter = padapter->pbuddy_adapter;
@@ -961,7 +977,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 
 #ifndef CONFIG_TDLS
 #ifdef CONFIG_AP_MODE
-	if (xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe) == true)
+	if(xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe) == _TRUE)
 	{
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
@@ -969,7 +985,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 
 		_exit_critical_bh(&pxmitpriv->lock, &irqL);
 
-		if (pattrib->psta)
+		if(pattrib->psta)
 		{
 			psta = pattrib->psta;
 		}
@@ -978,25 +994,25 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 			psta=rtw_get_stainfo(pstapriv, pattrib->ra);
 		}
 
-		if (psta)
+		if(psta)
 		{
-			if (psta->sleepq_len > (NR_XMITFRAME>>3))
+			if(psta->sleepq_len > (NR_XMITFRAME>>3))
 			{
 				wakeup_sta_to_xmit(padapter, psta);
 			}
 		}
 
-		return false;
+		return _FALSE;
 	}
 #endif
 //else CONFIG_TDLS, process as TDLS Buffer STA
 #else
-	if (pmlmeinfo->tdls_setup_state&TDLS_LINKED_STATE ) {	//&& pattrib->ether_type!=0x0806)
+	if(pmlmeinfo->tdls_setup_state&TDLS_LINKED_STATE ){	//&& pattrib->ether_type!=0x0806)
 		res = xmit_tdls_enqueue_for_sleeping_sta(padapter, pxmitframe);
-		if (res==true) {
+		if(res==_TRUE){
 			_exit_critical_bh(&pxmitpriv->lock, &irqL);
-			return false;
-		} else if (res==2) {
+			return _FALSE;
+		}else if(res==2){
 			goto enqueue;
 		}
 	}
@@ -1005,11 +1021,11 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 	if (rtw_txframes_sta_ac_pending(padapter, pattrib) > 0)
 		goto enqueue;
 
-	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == true)
+	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
 		goto enqueue;
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if (check_fwstate(pbuddy_mlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == true)
+	if (check_fwstate(pbuddy_mlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
 		goto enqueue;
 #endif
 
@@ -1028,7 +1044,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
 	}
 
-	return true;
+	return _TRUE;
 
 enqueue:
 	res = rtw_xmitframe_enqueue(padapter, pxmitframe);
@@ -1041,10 +1057,10 @@ enqueue:
 		// Trick, make the statistics correct
 		pxmitpriv->tx_pkts--;
 		pxmitpriv->tx_drop++;
-		return true;
+		return _TRUE;
 	}
 
-	return false;
+	return _FALSE;
 }
 
 s32 rtl8192cu_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
@@ -1054,25 +1070,55 @@ s32 rtl8192cu_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
 
 /*
  * Return
- *	true	dump packet directly ok
- *	false	temporary can't transmit packets to hardware
+ *	_TRUE	dump packet directly ok
+ *	_FALSE	temporary can't transmit packets to hardware
  */
 s32 rtl8192cu_hal_xmit(_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	return pre_xmitframe(padapter, pxmitframe);
 }
 
+s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe)
+{
+	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
+	s32 err;
+
+	if ((err=rtw_xmitframe_enqueue(padapter, pxmitframe)) != _SUCCESS)
+	{
+		rtw_free_xmitframe(pxmitpriv, pxmitframe);
+
+		// Trick, make the statistics correct
+		pxmitpriv->tx_pkts--;
+		pxmitpriv->tx_drop++;
+	}
+	else
+	{
+#ifdef PLATFORM_LINUX
+		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
+#endif
+	}
+
+	return err;
+
+}
+
+
 #ifdef  CONFIG_HOSTAPD_MLME
 
 static void rtl8192cu_hostap_mgnt_xmit_cb(struct urb *urb)
 {
+#ifdef PLATFORM_LINUX
 	struct sk_buff *skb = (struct sk_buff *)urb->context;
 
+	//DBG_8723A("%s\n", __FUNCTION__);
+
 	dev_kfree_skb_any(skb);
+#endif
 }
 
 s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 {
+#ifdef PLATFORM_LINUX
 	u16 fc;
 	int rc, len, pipe;
 	unsigned int bmcst, tid, qsel;
@@ -1086,11 +1132,16 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
 	struct dvobj_priv *pdvobj = adapter_to_dvobj(padapter);
 
+
+	//DBG_8723A("%s\n", __FUNCTION__);
+
 	skb = pkt;
+
 	len = skb->len;
 	tx_hdr = (struct ieee80211_hdr *)(skb->data);
 	fc = le16_to_cpu(tx_hdr->frame_ctl);
 	bmcst = IS_MCAST(tx_hdr->addr1);
+
 	if ((fc & IEEE80211_FCTL_FTYPE) != IEEE80211_FTYPE_MGMT)
 		goto _exit;
 
@@ -1100,7 +1151,7 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	pxmit_skb = netdev_alloc_skb(pnetdev, len + TXDESC_SIZE);
 #endif
 
-	if (!pxmit_skb)
+	if(!pxmit_skb)
 		goto _exit;
 
 	pxmitbuf = pxmit_skb->data;
@@ -1112,15 +1163,17 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 
 	// ----- fill tx desc -----
 	ptxdesc = (struct tx_desc *)pxmitbuf;
-	memset(ptxdesc, 0, sizeof(*ptxdesc));
+	_rtw_memset(ptxdesc, 0, sizeof(*ptxdesc));
 
 	//offset 0
 	ptxdesc->txdw0 |= cpu_to_le32(len&0x0000ffff);
 	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ)<<OFFSET_SHT)&0x00ff0000);//default = 32 bytes for TX Desc
 	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
 
-	if (bmcst)
+	if(bmcst)
+	{
 		ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
+	}
 
 	//offset 4
 	ptxdesc->txdw1 |= cpu_to_le32(0x00);//MAC_ID
@@ -1139,20 +1192,27 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 
 	//offset 20
 
+
 	//HW append seq
 	ptxdesc->txdw4 |= cpu_to_le32(BIT(7)); // Hw set sequence number
 	ptxdesc->txdw3 |= cpu_to_le32((8 <<28)); //set bit3 to 1. Suugested by TimChen. 2009.12.29.
 
+
 	rtl8192cu_cal_txdesc_chksum(ptxdesc);
 	// ----- end of fill tx desc -----
 
+	//
 	skb_put(pxmit_skb, len + TXDESC_SIZE);
 	pxmitbuf = pxmitbuf + TXDESC_SIZE;
-	memcpy(pxmitbuf, skb->data, len);
+	_rtw_memcpy(pxmitbuf, skb->data, len);
+
+	//DBG_8723A("mgnt_xmit, len=%x\n", pxmit_skb->len);
+
 
 	// ----- prepare urb for submit -----
 
 	//translate DMA FIFO addr to pipehandle
+	//pipe = ffaddr2pipehdl(pdvobj, MGT_QUEUE_INX);
 	pipe = usb_sndbulkpipe(pdvobj->pusbdev, pHalData->Queue2EPNum[(u8)MGT_QUEUE_INX]&0x0f);
 
 	usb_fill_bulk_urb(urb, pdvobj->pusbdev, pipe,
@@ -1167,8 +1227,14 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	}
 	usb_free_urb(urb);
 
+
 _exit:
+
 	dev_kfree_skb_any(skb);
+
+#endif
+
 	return 0;
+
 }
 #endif

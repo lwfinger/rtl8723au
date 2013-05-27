@@ -26,45 +26,45 @@ static inline void dump_buf(u8 *buf, u32 len)
 {
 	u32 i;
 	printk("-----------------Len %d----------------\n", len);
-	for (i=0; i<len; i++)
+	for(i=0; i<len; i++)
 		printk("%2.2x-", *(buf+i));
 	printk("\n");
 }
 
 #define WAPI_TRACE(component, x, args...) \
-do { if (wapi_debug_component & (component)) \
+do { if(wapi_debug_component & (component)) \
 	printk(KERN_DEBUG "WAPI" ":" x "" , \
 	       ##args);\
-}while (0);
+}while(0);
 
 #define WAPI_DATA(component, x, buf, len) \
-do { if (wapi_debug_component & (component)) { \
+do { if(wapi_debug_component & (component)){ \
 	printk("%s:\n", x);\
 	dump_buf((buf), (len));}\
-}while (0);
+}while(0);
 
 #define RT_ASSERT_RET(_Exp)								\
-		if (!(_Exp))									\
+		if(!(_Exp))									\
 		{											\
 			printk("RTWLAN: ");					\
-			printk( "Assertion failed! %s,%s,line=%d\n", \
-			#_Exp,__func__,__LINE__);          \
+                	printk( "Assertion failed! %s,%s,line=%d\n", \
+                	#_Exp,__FUNCTION__,__LINE__);          \
 			return;						\
 		}
 #define RT_ASSERT_RET_VALUE(_Exp,Ret)								\
-		if (!(_Exp))									\
+		if(!(_Exp))									\
 		{											\
 			printk("RTWLAN: ");					\
-			printk( "Assertion failed! %s,%s,line=%d\n", \
-			#_Exp,__func__,__LINE__);          \
+                	printk( "Assertion failed! %s,%s,line=%d\n", \
+                	#_Exp,__FUNCTION__,__LINE__);          \
 			return (Ret);						\
 		}
 
 #else
-#define RT_ASSERT_RET(_Exp) do {} while (0)
-#define RT_ASSERT_RET_VALUE(_Exp,Ret) do {} while (0)
-#define WAPI_TRACE(component, x, args...) do {} while (0)
-#define WAPI_DATA(component, x, buf, len) do {} while (0)
+#define RT_ASSERT_RET(_Exp) do {} while(0)
+#define RT_ASSERT_RET_VALUE(_Exp,Ret) do {} while(0)
+#define WAPI_TRACE(component, x, args...) do {} while(0)
+#define WAPI_DATA(component, x, buf, len) do {} while(0)
 #endif
 
 
@@ -75,7 +75,7 @@ enum WAPI_DEBUG {
 	WAPI_RX				= 1<<3,
 	WAPI_MLME				= 1<<4,
 	WAPI_IOCTL				= 1<<5,
-	WAPI_ERR				= 1<<31
+	WAPI_ERR		        	= 1<<31
 };
 
 #define			WAPI_MAX_BKID_NUM				4
@@ -149,7 +149,7 @@ typedef struct _RT_WAPI_T
 //BKID
 	RT_WAPI_BKID		wapiBKID[WAPI_MAX_BKID_NUM];
 	struct list_head		wapiBKIDIdleList;
-	struct list_head		wapiBKIDStoreList;
+	struct list_head  		wapiBKIDStoreList;
 //Key for Tx Multicast/Broadcast
 	RT_WAPI_KEY		      wapiTxMsk;
 

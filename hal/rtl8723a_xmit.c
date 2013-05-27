@@ -29,7 +29,7 @@ void dump_txrpt_ccx_8723a(void *buf)
 {
 	struct txrpt_ccx_8723a *txrpt_ccx = buf;
 
-	DBG_871X("%s:\n"
+	DBG_8723A("%s:\n"
 		"tag1:%u, rsvd:%u, int_bt:%u, int_tri:%u, int_ccx:%u\n"
 		"mac_id:%u, pkt_drop:%u, pkt_ok:%u, bmc:%u\n"
 		"retry_cnt:%u, lifetime_over:%u, retry_over:%u\n"
@@ -50,7 +50,9 @@ void handle_txrpt_ccx_8723a(_adapter *adapter, void *buf)
 {
 	struct txrpt_ccx_8723a *txrpt_ccx = buf;
 
-	//dump_txrpt_ccx_8723a(buf);
+	#ifdef DBG_CCX
+	dump_txrpt_ccx_8723a(buf);
+	#endif
 
 	if (txrpt_ccx->int_ccx) {
 		if (txrpt_ccx->pkt_ok)
