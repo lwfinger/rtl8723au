@@ -32,7 +32,6 @@
 #include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
-#include <rtw_byteorder.h>
 
 #include <rtl8723a_hal.h>
 

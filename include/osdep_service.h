@@ -22,7 +22,6 @@
 
 #include <drv_conf.h>
 #include <basic_types.h>
-//#include <rtl871x_byteorder.h>
 
 #define _FAIL		0
 #define _SUCCESS	1
@@ -1227,8 +1226,6 @@ __inline static void _set_workitem(_workitem *pwork)
 #include <osdep_ce_service.h>
 #endif
 
-#include <rtw_byteorder.h>
-
 #ifndef BIT
 	#define BIT(x)	( 1 << (x))
 #endif
@@ -1419,28 +1416,16 @@ static __inline void thread_enter(char *name);
 #endif //PLATFORM_FREEBSD
 static __inline void thread_enter(char *name)
 {
-#ifdef PLATFORM_LINUX
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0))
+	#ifdef daemonize
 	daemonize("%s", name);
 	#endif
 	allow_signal(SIGTERM);
-#endif
-#ifdef PLATFORM_FREEBSD
-	printf("%s", "RTKTHREAD_enter");
-#endif
 }
 
-#ifdef PLATFORM_FREEBSD
-#define thread_exit() do{printf("%s", "RTKTHREAD_exit");}while(0)
-#endif //PLATFORM_FREEBSD
 __inline static void flush_signals_thread(void) 
 {
-#ifdef PLATFORM_LINUX
 	if (signal_pending (current)) 
-	{
 		flush_signals(current);
-	}
-#endif
 }
 
 __inline static _OS_STATUS res_to_status(sint res)
