@@ -162,12 +162,14 @@
 
 #define DBG_8723A(...)							\
 	do {								\
-		_dbgdump(DRIVER_PREFIX __VA_ARGS__);			\
+		if (_drv_err_ <= GlobalDebugLevel)			\
+			_dbgdump(DRIVER_PREFIX __VA_ARGS__);		\
 	} while (0)
 
 #define MSG_8723A(...)							\
-     do {								\
-	_dbgdump(DRIVER_PREFIX __VA_ARGS__);				\
+	do {								\
+		if (_drv_err_ <= GlobalDebugLevel)			\
+			_dbgdump(DRIVER_PREFIX __VA_ARGS__);		\
 	} while (0)
 
 extern u32 GlobalDebugLevel;
