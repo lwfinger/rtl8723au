@@ -818,11 +818,11 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) && check_fwstate(pmlmepriv, _FW_LINKED) )
 	{
 		//DBG_8723A("%s:%d assoc_ssid:%s\n", __FUNCTION__, __LINE__, pmlmepriv->assoc_ssid.Ssid);
-		DBG_8723A("%s:%d %s(" MAC_FMT "), length:%d assoc_ssid.length:%d\n",__FUNCTION__, __LINE__,
-				pmlmepriv->cur_network.network.Ssid.Ssid,
-				MAC_ARG(pmlmepriv->cur_network.network.MacAddress),
-				pmlmepriv->cur_network.network.Ssid.SsidLength,
-				pmlmepriv->assoc_ssid.SsidLength);
+		DBG_8723A("%s:%d %s( %pM ), length:%d assoc_ssid.length:%d\n",__FUNCTION__, __LINE__,
+			  pmlmepriv->cur_network.network.Ssid.Ssid,
+			  pmlmepriv->cur_network.network.MacAddress,
+			  pmlmepriv->cur_network.network.Ssid.SsidLength,
+			  pmlmepriv->assoc_ssid.SsidLength);
 		
 		rtw_set_roaming(padapter, 1);
 	}
