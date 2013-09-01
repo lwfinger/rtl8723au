@@ -36,11 +36,10 @@ void MPh2c_timeout_handle(void *FunctionContext)
 
 	_rtw_up_sema(&pMptCtx->MPh2c_Sema);
 
-	//_cancel_timer_ex( &pMptCtx->MPh2c_timeout_timer);
-
 	return;
 }
-u32 WaitC2Hevent( PADAPTER pAdapter,bool *C2H_event ,u32 delay_time)
+
+static u32 WaitC2Hevent( PADAPTER pAdapter,bool *C2H_event ,u32 delay_time)
 {
 	PMPT_CONTEXT		pMptCtx=&(pAdapter->mppriv.MptCtx);
 	pMptCtx->bMPh2c_timeout=_FALSE;
@@ -51,7 +50,7 @@ u32 WaitC2Hevent( PADAPTER pAdapter,bool *C2H_event ,u32 delay_time)
 
 	if( pMptCtx->bMPh2c_timeout == _TRUE )
 	{
-		C2H_event =_FALSE;
+		C2H_event = NULL;
 
 		return _FALSE;
 	}
@@ -60,7 +59,7 @@ u32 WaitC2Hevent( PADAPTER pAdapter,bool *C2H_event ,u32 delay_time)
 
 }
 
-BT_CTRL_STATUS
+static BT_CTRL_STATUS
 mptbt_CheckC2hFrame(
 	PADAPTER		Adapter,
 	PBT_H2C			pH2c,
@@ -91,7 +90,7 @@ mptbt_CheckC2hFrame(
 
 extern s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
-BT_CTRL_STATUS
+static BT_CTRL_STATUS
 mptbt_SendH2c(
 	PADAPTER	Adapter,
 	PBT_H2C	pH2c,
@@ -152,7 +151,7 @@ mptbt_SendH2c(
 
 
 
-BT_CTRL_STATUS
+static BT_CTRL_STATUS
 mptbt_CheckBtRspStatus(
 	PADAPTER			Adapter,
 	PBT_EXT_C2H			pExtC2h
@@ -187,9 +186,7 @@ mptbt_CheckBtRspStatus(
 	return retStatus;
 }
 
-
-
-BT_CTRL_STATUS
+static BT_CTRL_STATUS
 mptbt_BtFwOpCodeProcess(
 	PADAPTER		Adapter,
 	u1Byte			btFwOpCode,
@@ -252,10 +249,7 @@ mptbt_BtFwOpCodeProcess(
 	return retStatus;
 }
 
-
-
-
-u2Byte
+static u2Byte
 mptbt_BtReady(
 	PADAPTER		Adapter,
 	PBT_REQ_CMD	pBtReq,
@@ -367,21 +361,21 @@ mptbt_BtReady(
 	return paraLen;
 }
 
-void mptbt_close_WiFiRF(PADAPTER Adapter)
+static void mptbt_close_WiFiRF(PADAPTER Adapter)
 {
 	PHY_SetBBReg(Adapter, 0x824, 0xF, 0x0);
 	PHY_SetBBReg(Adapter, 0x824, 0x700000, 0x0);
 	PHY_SetRFReg(Adapter, RF90_PATH_A, 0x0, 0xF0000, 0x0);
 }
 
-void mptbt_open_WiFiRF(PADAPTER	Adapter)
+static void mptbt_open_WiFiRF(PADAPTER	Adapter)
 {
 	PHY_SetBBReg(Adapter, 0x824, 0x700000, 0x3);
 	PHY_SetBBReg(Adapter, 0x824, 0xF, 0x2);
 	PHY_SetRFReg(Adapter, RF90_PATH_A, 0x0, 0xF0000, 0x3);
 }
 
-u4Byte mptbt_switch_RF(PADAPTER	Adapter, u1Byte	Enter)
+static u4Byte mptbt_switch_RF(PADAPTER	Adapter, u1Byte	Enter)
 {
 	u2Byte	tmp_2byte = 0;
 
@@ -411,7 +405,7 @@ u4Byte mptbt_switch_RF(PADAPTER	Adapter, u1Byte	Enter)
 	return 0;
 }
 
-u2Byte
+static u2Byte
 mptbt_BtSetMode(
 	PADAPTER		Adapter,
 	PBT_REQ_CMD	pBtReq,
@@ -550,7 +544,7 @@ MPTBT_FwC2hBtMpCtrl(
 }
 
 
-u2Byte
+static u2Byte
 mptbt_BtGetGeneral(
 	IN	PADAPTER		Adapter,
 	IN	PBT_REQ_CMD	pBtReq,
@@ -890,7 +884,7 @@ mptbt_BtGetGeneral(
 
 
 
-u2Byte
+static u2Byte
 mptbt_BtSetGeneral(
 	IN	PADAPTER		Adapter,
 	IN	PBT_REQ_CMD	pBtReq,
@@ -1232,7 +1226,7 @@ mptbt_BtSetGeneral(
 
 
 
-u2Byte
+static u2Byte
 mptbt_BtSetTxRxPars(
 	IN	PADAPTER		Adapter,
 	IN	PBT_REQ_CMD	pBtReq,
@@ -1540,7 +1534,7 @@ mptbt_BtSetTxRxPars(
 
 
 
-u2Byte
+static u2Byte
 mptbt_BtTestCtrl(
 	IN	PADAPTER		Adapter,
 	IN	PBT_REQ_CMD	pBtReq,
@@ -1613,7 +1607,7 @@ mptbt_BtTestCtrl(
 }
 
 
-u2Byte
+static u2Byte
 mptbt_TestBT(
 	IN	PADAPTER		Adapter,
 	IN	PBT_REQ_CMD	pBtReq,
