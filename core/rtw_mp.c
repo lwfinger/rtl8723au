@@ -1010,18 +1010,6 @@ void SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 	Hal_SetCarrierSuppressionTx(pAdapter, bStart);
 }
 
-void SetCCKContinuousTx(PADAPTER pAdapter, u8 bStart)
-{
-	PhySetTxPowerLevel(pAdapter);
-	Hal_SetCCKContinuousTx(pAdapter,bStart);
-}
-
-void SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart)
-{
-	PhySetTxPowerLevel(pAdapter);
-	Hal_SetOFDMContinuousTx( pAdapter, bStart);
-}/* mpt_StartOfdmContTx */
-
 void SetContinuousTx(PADAPTER pAdapter, u8 bStart)
 {
 	PhySetTxPowerLevel(pAdapter);
