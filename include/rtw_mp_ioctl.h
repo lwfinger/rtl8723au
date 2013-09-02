@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -105,14 +105,14 @@ static void _irqlevel_changed_(_irqL *irqlevel, u8 bLower)
 #define _irqlevel_changed_(a,b)
 #endif
 
-//oid_rtl_seg_81_80_00
+//rtl8723au_oid_rtl_seg_81_80_00
 NDIS_STATUS oid_rt_pro_set_data_rate_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_start_test_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_stop_test_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_channel_direct_call_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_antenna_bb_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_tx_power_control_hdl(struct oid_par_priv* poid_par_priv);
-//oid_rtl_seg_81_80_20
+//rtl8723au_oid_rtl_seg_81_80_20
 NDIS_STATUS oid_rt_pro_query_tx_packet_sent_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_query_rx_packet_received_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_query_rx_packet_crc32_error_hdl(struct oid_par_priv* poid_par_priv);
@@ -127,7 +127,7 @@ NDIS_STATUS oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv* poid_
 NDIS_STATUS oid_rt_pro_set_single_tone_tx_hdl(struct oid_par_priv* poid_par_priv);
 
 
-//oid_rtl_seg_81_87
+//rtl8723au_oid_rtl_seg_81_87
 NDIS_STATUS oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv* poid_par_priv);
 
@@ -135,11 +135,11 @@ NDIS_STATUS oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv* poid_par_priv);
 
 
-//oid_rtl_seg_81_85
+//rtl8723au_oid_rtl_seg_81_85
 NDIS_STATUS oid_rt_wireless_mode_hdl(struct oid_par_priv* poid_par_priv);
 
 
-// oid_rtl_seg_87_11_00
+// rtl8723au_oid_rtl_seg_87_11_00
 NDIS_STATUS oid_rt_pro8711_join_bss_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_read_register_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_write_register_hdl(struct oid_par_priv* poid_par_priv);
@@ -154,21 +154,21 @@ NDIS_STATUS oid_rt_rd_attrib_mem_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_wr_attrib_mem_hdl (struct oid_par_priv* poid_par_priv);
 NDIS_STATUS  oid_rt_pro_set_rf_intfs_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_poll_rx_status_hdl(struct oid_par_priv* poid_par_priv);
-// oid_rtl_seg_87_11_20
+// rtl8723au_oid_rtl_seg_87_11_20
 NDIS_STATUS oid_rt_pro_cfg_debug_message_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_data_rate_ex_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_basic_rate_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_read_tssi_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_power_tracking_hdl(struct oid_par_priv* poid_par_priv);
-//oid_rtl_seg_87_11_50
+//rtl8723au_oid_rtl_seg_87_11_50
 NDIS_STATUS oid_rt_pro_qry_pwrstate_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_set_pwrstate_hdl(struct oid_par_priv* poid_par_priv);
-//oid_rtl_seg_87_11_F0
+//rtl8723au_oid_rtl_seg_87_11_F0
 NDIS_STATUS oid_rt_pro_h2c_set_rate_table_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_h2c_get_rate_table_hdl(struct oid_par_priv* poid_par_priv);
 
 
-//oid_rtl_seg_87_12_00
+//rtl8723au_oid_rtl_seg_87_12_00
 NDIS_STATUS oid_rt_pro_encryption_ctrl_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_add_sta_info_hdl(struct oid_par_priv* poid_par_priv);
 NDIS_STATUS oid_rt_pro_dele_sta_info_hdl(struct oid_par_priv* poid_par_priv);
@@ -204,8 +204,7 @@ NDIS_STATUS oid_rt_pro_trigger_gpio_hdl(struct oid_par_priv *poid_par_priv);
 
 #ifdef _RTW_MP_IOCTL_C_
 
-const struct oid_obj_priv oid_rtl_seg_81_80_00[] =
-{
+const struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_00[] = {
 	{1, &oid_null_function},			//0x00	OID_RT_PRO_RESET_DUT
 	{1, &oid_rt_pro_set_data_rate_hdl},		//0x01
 	{1, &oid_rt_pro_start_test_hdl},		//0x02
@@ -238,11 +237,9 @@ const struct oid_obj_priv oid_rtl_seg_81_80_00[] =
 	{1, &oid_null_function},			//0x1D	OID_RT_PRO_WRITE_CIS_DATA
 	{1, &oid_null_function},			//0x1E	OID_RT_PRO_READ_CIS_DATA
 	{1, &oid_null_function}				//0x1F	OID_RT_PRO_WRITE_POWER_CONTROL
-
 };
 
-const struct oid_obj_priv oid_rtl_seg_81_80_20[] =
-{
+const struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_20[] = {
 	{1, &oid_null_function},			//0x20	OID_RT_PRO_READ_POWER_CONTROL
 	{1, &oid_null_function},			//0x21	OID_RT_PRO_WRITE_EEPROM
 	{1, &oid_null_function},			//0x22	OID_RT_PRO_READ_EEPROM
@@ -259,11 +256,9 @@ const struct oid_obj_priv oid_rtl_seg_81_80_20[] =
 	{1, &oid_null_function},			//0x2D	OID_RT_PRO_WRITE_EEPROM_BYTE
 	{1, &oid_null_function},			//0x2E	OID_RT_PRO_READ_EEPROM_BYTE
 	{1, &oid_rt_pro_set_modulation_hdl}		//0x2F
-
 };
 
-const struct oid_obj_priv oid_rtl_seg_81_80_40[] =
-{
+const struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_40[] = {
 	{1, &oid_null_function},			//0x40
 	{1, &oid_null_function},			//0x41
 	{1, &oid_null_function},			//0x42
@@ -272,21 +267,17 @@ const struct oid_obj_priv oid_rtl_seg_81_80_40[] =
 	{1, &oid_null_function}				//0x45
 };
 
-const struct oid_obj_priv oid_rtl_seg_81_80_80[] =
-{
+const struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_80[] = {
 	{1, &oid_null_function},			//0x80	OID_RT_DRIVER_OPTION
 	{1, &oid_null_function},			//0x81	OID_RT_RF_OFF
 	{1, &oid_null_function}				//0x82	OID_RT_AUTH_STATUS
-
 };
 
-const struct oid_obj_priv oid_rtl_seg_81_85[] =
-{
+const struct oid_obj_priv rtl8723au_oid_rtl_seg_81_85[] = {
 	{1, &oid_rt_wireless_mode_hdl}			//0x00	OID_RT_WIRELESS_MODE
 };
 
-struct oid_obj_priv oid_rtl_seg_81_87[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_81_87[] = {
 	{1, &oid_null_function},			//0x80	OID_RT_PRO8187_WI_POLL
 	{1, &oid_rt_pro_write_bb_reg_hdl},		//0x81
 	{1, &oid_rt_pro_read_bb_reg_hdl},		//0x82
@@ -294,8 +285,7 @@ struct oid_obj_priv oid_rtl_seg_81_87[] =
 	{1, &oid_rt_pro_read_rf_reg_hdl}		//0x83
 };
 
-struct oid_obj_priv oid_rtl_seg_87_11_00[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_00[] = {
 	{1, &oid_rt_pro8711_join_bss_hdl},		//0x00  //S
 	{1, &oid_rt_pro_read_register_hdl},		//0x01
 	{1, &oid_rt_pro_write_register_hdl},		//0x02
@@ -330,8 +320,7 @@ struct oid_obj_priv oid_rtl_seg_87_11_00[] =
 	{1, &oid_rt_poll_rx_status_hdl}			//0X1F
 };
 
-struct oid_obj_priv oid_rtl_seg_87_11_20[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_20[] = {
 	{1, &oid_rt_pro_cfg_debug_message_hdl},		//0x20
 	{1, &oid_rt_pro_set_data_rate_ex_hdl},		//0x21
 	{1, &oid_rt_pro_set_basic_rate_hdl},		//0x22
@@ -340,24 +329,20 @@ struct oid_obj_priv oid_rtl_seg_87_11_20[] =
 };
 
 
-struct oid_obj_priv oid_rtl_seg_87_11_50[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_50[] = {
 	{1, &oid_rt_pro_qry_pwrstate_hdl},		//0x50
 	{1, &oid_rt_pro_set_pwrstate_hdl}		//0x51
 };
 
-struct oid_obj_priv oid_rtl_seg_87_11_80[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_80[] = {
 	{1, &oid_null_function}				//0x80
 };
 
-struct oid_obj_priv oid_rtl_seg_87_11_B0[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_B0[] = {
 	{1, &oid_null_function}				//0xB0
 };
 
-struct oid_obj_priv oid_rtl_seg_87_11_F0[] =
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_F0[] = {
 	{1, &oid_null_function},			//0xF0
 	{1, &oid_null_function},			//0xF1
 	{1, &oid_null_function},			//0xF2
@@ -374,11 +359,9 @@ struct oid_obj_priv oid_rtl_seg_87_11_F0[] =
 	{1, &oid_null_function},			//0xFD
 	{1, &oid_null_function},			//0xFE	OID_RT_PRO_H2C_C2H_LBK_TEST
 	{1, &oid_null_function}				//0xFF
-
 };
 
-struct oid_obj_priv oid_rtl_seg_87_12_00[]=
-{
+struct oid_obj_priv rtl8723au_oid_rtl_seg_87_12_00[] = {
 	{1, &oid_rt_pro_encryption_ctrl_hdl},		//0x00	Q&S
 	{1, &oid_rt_pro_add_sta_info_hdl},		//0x01	S
 	{1, &oid_rt_pro_dele_sta_info_hdl},		//0x02	S
@@ -387,7 +370,7 @@ struct oid_obj_priv oid_rtl_seg_87_12_00[]=
 	{1, &oid_rt_pro_read_efuse_hdl},		//0x05	Q	OID_RT_PRO_READ_EFUSE
 	{1, &oid_rt_pro_write_efuse_hdl},		//0x06	S	OID_RT_PRO_WRITE_EFUSE
 	{1, &oid_rt_pro_rw_efuse_pgpkt_hdl},		//0x07	Q,S
-	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08 	Q
+	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08	Q
 	{1, &oid_rt_set_bandwidth_hdl},			//0x09
 	{1, &oid_rt_set_crystal_cap_hdl},		//0x0a
 	{1, &oid_rt_set_rx_packet_type_hdl},		//0x0b	S
@@ -405,22 +388,22 @@ struct oid_obj_priv oid_rtl_seg_87_12_00[]=
 
 #else /* _RTL871X_MP_IOCTL_C_ */
 
-extern struct oid_obj_priv oid_rtl_seg_81_80_00[32];
-extern struct oid_obj_priv oid_rtl_seg_81_80_20[16];
-extern struct oid_obj_priv oid_rtl_seg_81_80_40[6];
-extern struct oid_obj_priv oid_rtl_seg_81_80_80[3];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_00[32];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_20[16];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_40[6];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_80_80[3];
 
-extern struct oid_obj_priv oid_rtl_seg_81_85[1];
-extern struct oid_obj_priv oid_rtl_seg_81_87[5];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_85[1];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_81_87[5];
 
-extern struct oid_obj_priv oid_rtl_seg_87_11_00[32];
-extern struct oid_obj_priv oid_rtl_seg_87_11_20[5];
-extern struct oid_obj_priv oid_rtl_seg_87_11_50[2];
-extern struct oid_obj_priv oid_rtl_seg_87_11_80[1];
-extern struct oid_obj_priv oid_rtl_seg_87_11_B0[1];
-extern struct oid_obj_priv oid_rtl_seg_87_11_F0[16];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_00[32];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_20[5];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_50[2];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_80[1];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_B0[1];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_11_F0[16];
 
-extern struct oid_obj_priv oid_rtl_seg_87_12_00[32];
+extern struct oid_obj_priv rtl8723au_oid_rtl_seg_87_12_00[32];
 
 #endif /* _RTL871X_MP_IOCTL_C_ */
 
@@ -528,7 +511,7 @@ enum RTL871X_MP_IOCTL_SUBCODE {
 	GEN_MP_IOCTL_SUBCODE(TRIGGER_GPIO),
 	GEN_MP_IOCTL_SUBCODE(SET_DM_BT),		/*35*/
 	GEN_MP_IOCTL_SUBCODE(DEL_BA),			/*36*/
-	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*37*/	
+	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*37*/
 	MAX_MP_IOCTL_SUBCODE,
 };
 
@@ -542,7 +525,6 @@ u32 mp_ioctl_xmit_packet_hdl(struct oid_par_priv* poid_par_priv);
 
 
 struct mp_ioctl_handler mp_ioctl_hdl[] = {
-
 /*0*/	GEN_MP_IOCTL_HANDLER(sizeof(u32), oid_rt_pro_start_test_hdl, OID_RT_PRO_START_TEST)
 	GEN_MP_IOCTL_HANDLER(sizeof(u32), oid_rt_pro_stop_test_hdl, OID_RT_PRO_STOP_TEST)
 
@@ -593,4 +575,3 @@ extern struct mp_ioctl_handler mp_ioctl_hdl[];
 #endif /* _RTW_MP_IOCTL_C_ */
 
 #endif
-

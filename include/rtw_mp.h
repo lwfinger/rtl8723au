@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -88,19 +88,19 @@ typedef enum _ANTENNA_PATH{
 		ANTENNA_B		,
 		ANTENNA_BD		,
 		ANTENNA_BC		,
-		ANTENNA_BCD 	,
+		ANTENNA_BCD	,
 		ANTENNA_A		,
 		ANTENNA_AD		,
 		ANTENNA_AC		,
-		ANTENNA_ACD 	,
+		ANTENNA_ACD	,
 		ANTENNA_AB		,
-		ANTENNA_ABD 	,
-		ANTENNA_ABC 	,
-		ANTENNA_ABCD	
+		ANTENNA_ABD	,
+		ANTENNA_ABC	,
+		ANTENNA_ABCD
 } ANTENNA_PATH;
 
 
-#define MAX_MP_XMITBUF_SZ 	2048
+#define MAX_MP_XMITBUF_SZ	2048
 #define NR_MP_XMITFRAME		8
 
 struct mp_xmit_frame
@@ -163,28 +163,28 @@ struct mp_tx
 #define u4Byte u32
 #define s4Byte s32
 #define u1Byte		u8
-#define pu1Byte 		u8* 
+#define pu1Byte			u8*
 
 #define u2Byte		u16
-#define pu2Byte 		u16*		
+#define pu2Byte			u16*
 
 #define u4Byte		u32
-#define pu4Byte 		u32*	
+#define pu4Byte			u32*
 
 #define u8Byte		u64
-#define pu8Byte 		u64*
+#define pu8Byte			u64*
 
 #define s1Byte		s8
-#define ps1Byte 		s8* 
+#define ps1Byte			s8*
 
 #define s2Byte		s16
-#define ps2Byte 		s16*	
+#define ps2Byte			s16*
 
 #define s4Byte		s32
-#define ps4Byte 		s32*	
+#define ps4Byte			s32*
 
 #define s8Byte		s64
-#define ps8Byte 		s64*
+#define ps8Byte			s64*
 
 #define UCHAR u8
 #define USHORT u16
@@ -210,7 +210,7 @@ typedef struct _MPT_CONTEXT
 	bool		MptH2cRspEvent;
 	bool		MptBtC2hEvent;
 	bool		bMPh2c_timeout;
-	
+
 	// Indicate a MptWorkItem is scheduled and not yet finished.
 	bool bMptWorkItemInProgress;
 	// An instance which implements function and context of MptWorkItem.
@@ -221,7 +221,7 @@ typedef struct _MPT_CONTEXT
 	// _TEST_MODE, defined in MPT_Req2.h
 	ULONG			MptTestItem;
 	// Variable needed in each implementation of CurrMptAct.
-	ULONG			MptActType; 	// Type of action performed in CurrMptAct.
+	ULONG			MptActType;	// Type of action performed in CurrMptAct.
 	// The Offset of IO operation is depend of MptActType.
 	ULONG			MptIoOffset;
 	// The Value of IO operation is depend of MptActType.
@@ -230,9 +230,9 @@ typedef struct _MPT_CONTEXT
 	ULONG			MptRfPath;
 
 	WIRELESS_MODE		MptWirelessModeToSw;	// Wireless mode to switch.
-	u8			MptChannelToSw; 	// Channel to switch.
-	u8			MptInitGainToSet; 	// Initial gain to set.
-	//ULONG			bMptAntennaA; 		// TRUE if we want to use antenna A.
+	u8			MptChannelToSw;		// Channel to switch.
+	u8			MptInitGainToSet;	// Initial gain to set.
+	//ULONG			bMptAntennaA;		// TRUE if we want to use antenna A.
 	ULONG			MptBandWidth;		// bandwidth to switch.
 	ULONG			MptRateIndex;		// rate index.
 	// Register value kept for Single Carrier Tx test.
@@ -246,14 +246,14 @@ typedef struct _MPT_CONTEXT
 	ULONG			MptRCR;
 	// TRUE if we only receive packets with specific pattern.
 	bool			bMptFilterPattern;
- 	// Rx OK count, statistics used in Mass Production Test.
- 	ULONG			MptRxOkCnt;
- 	// Rx CRC32 error count, statistics used in Mass Production Test.
- 	ULONG			MptRxCrcErrCnt;
+	// Rx OK count, statistics used in Mass Production Test.
+	ULONG			MptRxOkCnt;
+	// Rx CRC32 error count, statistics used in Mass Production Test.
+	ULONG			MptRxCrcErrCnt;
 
 	bool			bCckContTx;	// TRUE if we are in CCK Continuous Tx test.
- 	bool			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
-	bool			bStartContTx; 	// TRUE if we have start Continuous Tx test.
+	bool			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
+	bool			bStartContTx;	// TRUE if we have start Continuous Tx test.
 	// TRUE if we are in Single Carrier Tx test.
 	bool			bSingleCarrier;
 	// TRUE if we are in Carrier Suppression Tx Test.
@@ -273,19 +273,19 @@ typedef struct _MPT_CONTEXT
 	u8		backup0xc50;
 	u8		backup0xc58;
 	u8		backup0xc30;
-	u8 		backup0x52_RF_A;
-	u8 		backup0x52_RF_B;
-	
+	u8		backup0x52_RF_A;
+	u8		backup0x52_RF_B;
+
 	u1Byte			h2cReqNum;
 	u1Byte			c2hBuf[20];
 
     u1Byte          btInBuf[100];
 	ULONG			mptOutLen;
     u1Byte          mptOutBuf[100];
-    
+
 }MPT_CONTEXT, *PMPT_CONTEXT;
 
-enum {	  
+enum {
 	WRITE_REG = 1,
 	READ_REG,
 	WRITE_RF,
@@ -359,7 +359,7 @@ struct mp_priv
 	u16 antenna_tx;
 	u16 antenna_rx;
 //	u8 curr_rfpath;
-	
+
 	u8 check_mp_pkt;
 
 	u8 bSetTxPower;
@@ -419,7 +419,7 @@ struct bb_reg_param {
 };
 //=======================================================================
 
-#define LOWER 	_TRUE
+#define LOWER	_TRUE
 #define RAISE	_FALSE
 
 /* Hardware Registers */
@@ -528,7 +528,7 @@ typedef enum _POWER_MODE_ {
 #define RPTMaxCount 0x000FFFFF;
 
 // parameter 1 : BitMask
-// 	bit 0  : OFDM PPDU
+//	bit 0  : OFDM PPDU
 //	bit 1  : OFDM False Alarm
 //	bit 2  : OFDM MPDU OK
 //	bit 3  : OFDM MPDU Fail
@@ -567,15 +567,15 @@ typedef enum _ENCRY_CTRL_STATE_ {
 	SW_ENCRY_HW_DECRY	//sw encryption & hw decryption
 }ENCRY_CTRL_STATE;
 
-#define Mac_OFDM_OK 			0x00000000
-#define Mac_OFDM_Fail 			0x10000000
-#define Mac_OFDM_FasleAlarm 	0x20000000
+#define Mac_OFDM_OK			0x00000000
+#define Mac_OFDM_Fail			0x10000000
+#define Mac_OFDM_FasleAlarm	0x20000000
 #define Mac_CCK_OK				0x30000000
 #define Mac_CCK_Fail			0x40000000
 #define Mac_CCK_FasleAlarm		0x50000000
-#define Mac_HT_OK 				0x60000000
+#define Mac_HT_OK				0x60000000
 #define Mac_HT_Fail				0x70000000
-#define Mac_HT_FasleAlarm 		0x90000000
+#define Mac_HT_FasleAlarm		0x90000000
 #define Mac_DropPacket			0xA0000000
 
 //=======================================================================
@@ -678,4 +678,3 @@ extern void MP_PHY_SetRFPathSwitch(PADAPTER pAdapter ,bool bMain);
 extern void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart);
 
 #endif //_RTW_MP_H_
-

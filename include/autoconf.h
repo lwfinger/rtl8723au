@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -29,11 +29,11 @@
 #define RTL871X_MODULE_NAME "8723AS-VAU"
 #define DRV_NAME "rtl8723as-vau"
 
-#define CONFIG_RTL8723A 
-#define CONFIG_USB_HCI	
-#define PLATFORM_LINUX	
+#define CONFIG_RTL8723A
+#define CONFIG_USB_HCI
+#define PLATFORM_LINUX
 
-#define CONFIG_EMBEDDED_FWIMG	
+#define CONFIG_EMBEDDED_FWIMG
 //#define CONFIG_FILE_FWIMG
 
 /*
@@ -44,42 +44,42 @@
 #ifdef CONFIG_XMIT_ACK
 	#define CONFIG_ACTIVE_KEEP_ALIVE_CHECK
 #endif
-#define CONFIG_80211N_HT	
-#define CONFIG_RECV_REORDERING_CTRL	
+#define CONFIG_80211N_HT
+#define CONFIG_RECV_REORDERING_CTRL
 
 
-#define SUPPORT_HW_RFOFF_DETECTED	
+#define SUPPORT_HW_RFOFF_DETECTED
 
-//#define CONFIG_IOCTL_CFG80211 
+//#define CONFIG_IOCTL_CFG80211
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
-	#ifndef CONFIG_IOCTL_CFG80211 
-		#define CONFIG_IOCTL_CFG80211 
+	#ifndef CONFIG_IOCTL_CFG80211
+		#define CONFIG_IOCTL_CFG80211
 	#endif
 #endif
 
 #ifdef CONFIG_IOCTL_CFG80211
 	//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
 	#define CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
-	//#define CONFIG_DEBUG_CFG80211 
+	//#define CONFIG_DEBUG_CFG80211
 	#define CONFIG_SET_SCAN_DENY_TIMER
 #endif
 
-#define CONFIG_AP_MODE	
+#define CONFIG_AP_MODE
 #ifdef CONFIG_AP_MODE
-	#define CONFIG_NATIVEAP_MLME 
+	#define CONFIG_NATIVEAP_MLME
 	#ifndef CONFIG_NATIVEAP_MLME
-		#define CONFIG_HOSTAPD_MLME	
-	#endif			
-	//#define CONFIG_FIND_BEST_CHANNEL	
-	//#define CONFIG_NO_WIRELESS_HANDLERS	
+		#define CONFIG_HOSTAPD_MLME
+	#endif
+	//#define CONFIG_FIND_BEST_CHANNEL
+	//#define CONFIG_NO_WIRELESS_HANDLERS
 #endif
 
-#define CONFIG_P2P	
+#define CONFIG_P2P
 #ifdef CONFIG_P2P
 	//Added by Albert 20110812
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
-	
+
 	#ifndef CONFIG_WIFI_TEST
 		#define CONFIG_P2P_REMOVE_GROUP_INFO
 	#endif
@@ -90,21 +90,21 @@
 #endif
 
 //	Added by Kurt 20110511
-//#define CONFIG_TDLS	
+//#define CONFIG_TDLS
 #ifdef CONFIG_TDLS
 //	#ifndef CONFIG_WFD
-//		#define CONFIG_WFD	
+//		#define CONFIG_WFD
 //	#endif
-//	#define CONFIG_TDLS_AUTOSETUP			
-//	#define CONFIG_TDLS_AUTOCHECKALIVE		
+//	#define CONFIG_TDLS_AUTOSETUP
+//	#define CONFIG_TDLS_AUTOCHECKALIVE
 #endif
 
 #define CONFIG_LAYER2_ROAMING
 #define CONFIG_LAYER2_ROAMING_RESUME
 
-//#define CONFIG_CONCURRENT_MODE 
+//#define CONFIG_CONCURRENT_MODE
 #ifdef CONFIG_CONCURRENT_MODE
-	#define CONFIG_TSF_RESET_OFFLOAD 			// For 2 PORT TSF SYNC.
+	#define CONFIG_TSF_RESET_OFFLOAD			// For 2 PORT TSF SYNC.
 	//#define CONFIG_HWPORT_SWAP				//Port0->Sec , Port1 -> Pri
 #endif	// CONFIG_CONCURRENT_MODE
 
@@ -124,8 +124,8 @@
 
 //#define CONFIG_ANTENNA_DIVERSITY
 #ifdef CONFIG_ANTENNA_DIVERSITY
-#define CONFIG_SW_ANTENNA_DIVERSITY	 
-//#define CONFIG_HW_ANTENNA_DIVERSITY	
+#define CONFIG_SW_ANTENNA_DIVERSITY
+//#define CONFIG_HW_ANTENNA_DIVERSITY
 #endif
 
 
@@ -144,7 +144,7 @@
 	//#undef SUPPORT_HW_RFOFF_DETECTED
 #else // #ifdef CONFIG_MP_INCLUDED
 	#define MP_DRIVER		0
-	#undef CONFIG_MP_IWPRIV_SUPPORT 
+	#undef CONFIG_MP_IWPRIV_SUPPORT
 	#define CONFIG_LPS		1
 #endif // #ifdef CONFIG_MP_INCLUDED
 
@@ -159,9 +159,9 @@
 
 #ifdef CONFIG_POWER_SAVING
 
-#define CONFIG_IPS		
-#define CONFIG_LPS		
-//#define CONFIG_LPS_LCLK		
+#define CONFIG_IPS
+#define CONFIG_LPS
+//#define CONFIG_LPS_LCLK
 #endif // #ifdef CONFIG_POWER_SAVING
 
 #ifdef CONFIG_LPS_LCLK
@@ -178,36 +178,36 @@
 
 #if defined(CONFIG_BT_COEXIST) || defined(CONFIG_POWER_SAVING)
 #ifndef CONFIG_USB_INTERRUPT_IN_PIPE
-#define CONFIG_USB_INTERRUPT_IN_PIPE 
+#define CONFIG_USB_INTERRUPT_IN_PIPE
 #endif
 #endif
 
 /*
  * Interface  Related Config
  */
-//#define CONFIG_USB_INTERRUPT_IN_PIPE	
+//#define CONFIG_USB_INTERRUPT_IN_PIPE
 
 
-#define CONFIG_PREALLOC_RECV_SKB	
+#define CONFIG_PREALLOC_RECV_SKB
 //#define CONFIG_REDUCE_USB_TX_INT		// Trade-off: Improve performance, but may cause TX URBs blocked by USB Host/Bus driver on few platforms.
-//#define CONFIG_EASY_REPLACEMENT	
+//#define CONFIG_EASY_REPLACEMENT
 
-/* 
+/*
  * CONFIG_USE_USB_BUFFER_ALLOC_XX uses Linux USB Buffer alloc API and is for Linux platform only now!
  */
-//#define CONFIG_USE_USB_BUFFER_ALLOC_TX 	// Trade-off: For TX path, improve stability on some platforms, but may cause performance degrade on other platforms.
-//#define CONFIG_USE_USB_BUFFER_ALLOC_RX 	// For RX path
+//#define CONFIG_USE_USB_BUFFER_ALLOC_TX	// Trade-off: For TX path, improve stability on some platforms, but may cause performance degrade on other platforms.
+//#define CONFIG_USE_USB_BUFFER_ALLOC_RX	// For RX path
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 #undef CONFIG_PREALLOC_RECV_SKB
 #endif
 
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
-	#ifndef 	CONFIG_USE_USB_BUFFER_ALLOC_TX 
+	#ifndef		CONFIG_USE_USB_BUFFER_ALLOC_TX
 		#define CONFIG_USE_USB_BUFFER_ALLOC_TX
 	#endif
 #endif
 
-/* 
+/*
  * USB VENDOR REQ BUFFER ALLOCATION METHOD
  * if not set we'll use function local variable (stack memory)
  */
@@ -217,7 +217,7 @@
 #define CONFIG_USB_VENDOR_REQ_MUTEX
 #define CONFIG_VENDOR_REQ_RETRY
 
-//#define CONFIG_USB_SUPPORT_ASYNC_VDN_REQ 
+//#define CONFIG_USB_SUPPORT_ASYNC_VDN_REQ
 
 
 /*
@@ -240,7 +240,7 @@
 
 #define RTL8192CU_ASIC_VERIFICATION	0	// For ASIC verification.
 
-#define RTL8192CU_ADHOC_WORKAROUND_SETTING	
+#define RTL8192CU_ADHOC_WORKAROUND_SETTING
 
 #define DISABLE_BB_RF	0
 
@@ -273,26 +273,26 @@
 #endif
 
 #ifdef CONFIG_PLATFORM_TI_DM365
-#define CONFIG_USE_USB_BUFFER_ALLOC_RX 
+#define CONFIG_USE_USB_BUFFER_ALLOC_RX
 #endif
 /*
  * Outsource  Related Config
  */
 
-#define 	RTL8192CE_SUPPORT 				0
-#define 	RTL8192CU_SUPPORT 			0
-#define 	RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)	
+#define		RTL8192CE_SUPPORT				0
+#define		RTL8192CU_SUPPORT			0
+#define		RTL8192C_SUPPORT				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)
 
-#define 	RTL8192DE_SUPPORT 				0
-#define 	RTL8192DU_SUPPORT 			0
-#define 	RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)	
+#define		RTL8192DE_SUPPORT				0
+#define		RTL8192DU_SUPPORT			0
+#define		RTL8192D_SUPPORT				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)
 
-#define 	RTL8723AU_SUPPORT				1
-#define 	RTL8723AS_SUPPORT				0
-#define 	RTL8723AE_SUPPORT				0
-#define 	RTL8723A_SUPPORT				(RTL8723AU_SUPPORT|RTL8723AS_SUPPORT|RTL8723AE_SUPPORT)
+#define		RTL8723AU_SUPPORT				1
+#define		RTL8723AS_SUPPORT				0
+#define		RTL8723AE_SUPPORT				0
+#define		RTL8723A_SUPPORT				(RTL8723AU_SUPPORT|RTL8723AS_SUPPORT|RTL8723AE_SUPPORT)
 
-#define 	RTL8723_FPGA_VERIFICATION		0
+#define		RTL8723_FPGA_VERIFICATION		0
 
 #define RTL8188EE_SUPPORT				0
 #define RTL8188EU_SUPPORT				0
@@ -300,7 +300,7 @@
 #define RTL8188E_SUPPORT				(RTL8188EE_SUPPORT|RTL8188EU_SUPPORT|RTL8188ES_SUPPORT)
 #define RTL8188E_FOR_TEST_CHIP			0
 //#if (RTL8188E_SUPPORT==1)
-#define RATE_ADAPTIVE_SUPPORT 			0
+#define RATE_ADAPTIVE_SUPPORT			0
 #define POWER_TRAINING_ACTIVE			0
 //#endif
 
@@ -344,4 +344,3 @@
 //#define CONFIG_SINGLE_XMIT_BUF
 //RX use 1 urb
 //#define CONFIG_SINGLE_RECV_BUF
-

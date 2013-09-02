@@ -154,7 +154,7 @@
 
 #define DRIVER_PREFIX	"RTL8723AU: "
 #define DEBUG_LEVEL	(_drv_err_)
-#define DBG_8723A_LEVEL(_level, fmt, arg...) 				\
+#define DBG_8723A_LEVEL(_level, fmt, arg...)				\
 	do {								\
 		if (_level <= GlobalDebugLevel)				\
 			_dbgdump(DRIVER_PREFIX"ERROR " fmt, ##arg);\
@@ -191,7 +191,7 @@ do {									\
 				 DRIVER_PREFIX, __func__, __LINE__);	\
 	} while (0)
 
-#define _func_exit_ 							\
+#define _func_exit_							\
 	do {								\
 		if (GlobalDebugLevel >= _drv_debug_)			\
 			_dbgdump("%s : %s exits at %d\n",		\
@@ -336,7 +336,7 @@ do {									\
 	int proc_get_ht_enable(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
-			  
+
 	int proc_set_ht_enable(struct file *file, const char *buffer,
 		unsigned long count, void *data);
 

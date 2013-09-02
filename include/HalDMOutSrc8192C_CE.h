@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -67,7 +67,7 @@ VOID rtl8192c_PHY_LCCalibrate(IN	PADAPTER	pAdapter);
 //
 // AP calibrate
 //
-VOID rtl8192c_PHY_APCalibrate(IN	PADAPTER	pAdapter, IN 	char		delta);
+VOID rtl8192c_PHY_APCalibrate(IN	PADAPTER	pAdapter, IN	char		delta);
 
 VOID rtl8192c_odm_CheckTXPowerTracking(IN PADAPTER Adapter);
 
@@ -77,4 +77,3 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter);
 #endif
 
 #endif	//__HAL8190PCIDM_H__
-
