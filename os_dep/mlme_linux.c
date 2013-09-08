@@ -91,7 +91,7 @@ void _rtw_scan_timeout_handler (void *FunctionContext)
 }
 
 
-void _dynamic_check_timer_handlder (void *FunctionContext)
+static void _dynamic_check_timer_handler (void *FunctionContext)
 {
 	_adapter *adapter = (_adapter *)FunctionContext;
 
@@ -99,7 +99,7 @@ void _dynamic_check_timer_handlder (void *FunctionContext)
 if (adapter->registrypriv.mp_mode == 1)
 	return;
 #endif
-	rtw_dynamic_check_timer_handlder(adapter);
+	rtw_dynamic_check_timer_handler(adapter);
 	
 	_set_timer(&adapter->mlmepriv.dynamic_chk_timer, 2000);
 }
@@ -121,7 +121,7 @@ void rtw_init_mlme_timer(_adapter *padapter)
 	//_init_timer(&(pmlmepriv->sitesurveyctrl.sitesurvey_ctrl_timer), padapter->pnetdev, sitesurvey_ctrl_handler, padapter);
 	_init_timer(&(pmlmepriv->scan_to_timer), padapter->pnetdev, _rtw_scan_timeout_handler, padapter);
 
-	_init_timer(&(pmlmepriv->dynamic_chk_timer), padapter->pnetdev, _dynamic_check_timer_handlder, padapter);
+	_init_timer(&(pmlmepriv->dynamic_chk_timer), padapter->pnetdev, _dynamic_check_timer_handler, padapter);
 
 	#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	_init_timer(&(pmlmepriv->set_scan_deny_timer), padapter->pnetdev, _rtw_set_scan_deny_timer_hdl, padapter);

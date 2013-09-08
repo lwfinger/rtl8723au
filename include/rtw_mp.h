@@ -616,7 +616,7 @@ extern void	SetChannel(PADAPTER pAdapter);
 extern void	SetBandwidth(PADAPTER pAdapter);
 extern void	SetTxPower(PADAPTER pAdapter);
 extern void	SetAntennaPathPower(PADAPTER pAdapter);
-//extern void	SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset);
+extern void	SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset);
 extern void	SetDataRate(PADAPTER pAdapter);
 
 extern void	SetAntenna(PADAPTER pAdapter);

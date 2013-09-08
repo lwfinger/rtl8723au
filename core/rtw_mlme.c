@@ -2535,7 +2535,7 @@ static void rtw_auto_scan_handler(_adapter *padapter)
 
 }
 
-void rtw_dynamic_check_timer_handlder(_adapter *adapter)
+void rtw_dynamic_check_timer_handler(_adapter *adapter)
 {
 #ifdef CONFIG_AP_MODE
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
@@ -2617,7 +2617,7 @@ void rtw_dynamic_check_timer_handlder(_adapter *adapter)
 			adapter->pppoe_connection_in_progress--;
 		}
 
-		// due to rtw_dynamic_check_timer_handlder() is called every 2 seconds
+		// due to rtw_dynamic_check_timer_handler() is called every 2 seconds
 		if (adapter->pppoe_connection_in_progress > 0) {
 			adapter->pppoe_connection_in_progress--;
 		}

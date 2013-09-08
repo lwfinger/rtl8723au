@@ -1091,6 +1091,8 @@ struct _cmd_callback	rtw_cmd_callback[] = {
 	{GEN_CMD_CODE(_SetChannelSwitch), NULL},/*61*/
 	{GEN_CMD_CODE(_TDLS), NULL},/*62*/
 };
+#else
+extern struct _cmd_callback	rtw_cmd_callback[];
 #endif
 
 #endif // _CMD_H_
