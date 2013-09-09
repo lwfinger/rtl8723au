@@ -134,7 +134,7 @@ static struct usb_device_id rtw_usb_id_tbl[] ={
 };
 MODULE_DEVICE_TABLE(usb, rtw_usb_id_tbl);
 
-int const rtw_usb_id_len = sizeof(rtw_usb_id_tbl) / sizeof(struct usb_device_id);
+//int const rtw_usb_id_len = sizeof(rtw_usb_id_tbl) / sizeof(struct usb_device_id);
 
 static struct specific_device_id specific_device_id_tbl[] = {
 	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x8177, .flags=SPEC_DEV_ID_DISABLE_HT},//8188cu 1*1 dongole, (b/g mode only)
@@ -207,7 +207,7 @@ static struct usb_device_id rtl8723a_usb_id_tbl[] ={
 	{}	/* Terminating entry */
 };
 
-struct rtw_usb_drv rtl8723a_usb_drv = {
+static struct rtw_usb_drv rtl8723a_usb_drv = {
 	.usbdrv.name = (char*)"rtl8723au",
 	.usbdrv.probe = rtw_drv_init,
 	.usbdrv.disconnect = rtw_dev_remove,
@@ -1161,7 +1161,7 @@ static script_item_u item;
 
 _adapter  *rtw_sw_export = NULL;
 
-_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
+static _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	struct usb_interface *pusb_intf, const struct usb_device_id *pdid)
 {
 	_adapter *padapter = NULL;

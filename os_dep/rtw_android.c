@@ -37,7 +37,7 @@
 #endif
 #endif /* defined(RTW_ENABLE_WIFI_CONTROL_FUNC) */
 
-const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
+static const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
 	"START",
 	"STOP",
 	"SCAN-ACTIVE",
@@ -97,7 +97,7 @@ typedef struct cmd_tlv {
 #endif /* PNO_SUPPORT */
 
 typedef struct android_wifi_priv_cmd {
-	char *buf;
+	char __user *buf;
 	int used_len;
 	int total_len;
 } android_wifi_priv_cmd;
@@ -231,7 +231,7 @@ int rtw_android_cmdstr_to_num(char *cmdstr)
 	return cmd_num;
 }
 
-int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(net);
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);	
@@ -246,7 +246,7 @@ int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
 	return bytes_written;
 }
 
-int rtw_android_get_link_speed(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_link_speed(struct net_device *net, char *command, int total_len)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(net);
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);	
@@ -260,7 +260,7 @@ int rtw_android_get_link_speed(struct net_device *net, char *command, int total_
 	return bytes_written;
 }
 
-int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	int bytes_written = 0;
@@ -269,7 +269,7 @@ int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len
 	return bytes_written;
 }
 
-int rtw_android_set_country(struct net_device *net, char *command, int total_len)
+static int rtw_android_set_country(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	char *country_code = command + strlen(android_wifi_cmd_str[ANDROID_WIFI_CMD_COUNTRY]) + 1;
@@ -280,7 +280,7 @@ int rtw_android_set_country(struct net_device *net, char *command, int total_len
 	return (ret==_SUCCESS)?0:-1;
 }
 
-int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int total_len)
 {
 	int ret;
 	int bytes_written = 0;
@@ -292,7 +292,7 @@ int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int tota
 	return bytes_written;
 }
 
-int rtw_android_set_block(struct net_device *net, char *command, int total_len)
+static int rtw_android_set_block(struct net_device *net, char *command, int total_len)
 {
 	int ret;
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
@@ -305,7 +305,7 @@ int rtw_android_set_block(struct net_device *net, char *command, int total_len)
 	return 0;
 }
 
-int get_int_from_command( char* pcmd )
+static int get_int_from_command(char *pcmd )
 {
 	int i = 0;
 
@@ -354,7 +354,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		ret = -EFAULT;
 		goto exit;
 	 }
-	if (copy_from_user(command, (void *)priv_cmd.buf, priv_cmd.total_len)) {
+	if (copy_from_user(command, (char __user *)priv_cmd.buf, priv_cmd.total_len)) {
 		ret = -EFAULT;
 		goto exit;
 	}
@@ -584,7 +584,7 @@ response:
 			bytes_written++;
 		}
 		priv_cmd.used_len = bytes_written;
-		if (copy_to_user((void *)priv_cmd.buf, command, bytes_written)) {
+		if (copy_to_user((char __user *)priv_cmd.buf, command, bytes_written)) {
 			DBG_8723A("%s: failed to copy data to user buffer\n", __FUNCTION__);
 			ret = -EFAULT;
 		}
