@@ -2001,27 +2001,4 @@ rtl8192c_PHY_APCalibrate(
 	IN	char 		delta	
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-
-	//default disable APK, because Tx NG issue, suggest by Jenyu, 2011.11.25
-	return;
-
-#if DISABLE_BB_RF
-	return;
-#endif
-
-	if(pdmpriv->bAPKdone)
-		return;
-
-	if(IS_92C_SERIAL( pHalData->VersionID)){
-		_PHY_APCalibrate(pAdapter, delta, _TRUE);
-	}
-	else{
-		// For 88C 1T1R
-		_PHY_APCalibrate(pAdapter, delta, _FALSE);
-	}
 }
-
-
-

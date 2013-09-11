@@ -240,7 +240,7 @@ typedef struct _MPT_CONTEXT
 	// Register value kept for Single Carrier Tx test.
 	u8			btMpOfdmTxPower;
 	// For MP Tx Power index
-	u8			TxPwrLevel[2];	// rf-A, rf-B
+	u8			TxPwrLevel[3];	// rf-A, rf-B, rf-C
 
 	// Content of RCR Regsiter for Mass Production Test.
 	ULONG			MptRCR;
