@@ -1272,17 +1272,9 @@ void rtw_udelay_os(int us)
 }
 #endif
 
-void rtw_yield_os()
+void rtw_yield_os(void)
 {
-#ifdef PLATFORM_LINUX
 	yield();
-#endif
-#ifdef PLATFORM_FREEBSD
-	yield();
-#endif
-#ifdef PLATFORM_WINDOWS
-	SwitchToThread();
-#endif
 }
 
 #define RTW_SUSPEND_LOCK_NAME "rtw_wifi"
@@ -1295,7 +1287,7 @@ static android_suspend_lock_t rtw_suspend_lock ={
 };
 #endif
 
-inline void rtw_suspend_lock_init()
+inline void rtw_suspend_lock_init(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_lock_init(&rtw_suspend_lock, WAKE_LOCK_SUSPEND, RTW_SUSPEND_LOCK_NAME);
@@ -1304,7 +1296,7 @@ inline void rtw_suspend_lock_init()
 	#endif
 }
 
-inline void rtw_suspend_lock_uninit()
+inline void rtw_suspend_lock_uninit(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_lock_destroy(&rtw_suspend_lock);
@@ -1313,7 +1305,7 @@ inline void rtw_suspend_lock_uninit()
 	#endif
 }
 
-inline void rtw_lock_suspend()
+inline void rtw_lock_suspend(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_lock(&rtw_suspend_lock);
@@ -1326,7 +1318,7 @@ inline void rtw_lock_suspend()
 	#endif
 }
 
-inline void rtw_unlock_suspend()
+inline void rtw_unlock_suspend(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_unlock(&rtw_suspend_lock);
@@ -1768,13 +1760,14 @@ RETURN:
 int rtw_change_ifname(_adapter *padapter, const char *ifname)
 {
 	struct net_device *pnetdev;
-	struct net_device *cur_pnetdev = padapter->pnetdev;
+	struct net_device *cur_pnetdev;
 	struct rereg_nd_name_data *rereg_priv;
 	int ret;
 
 	if(!padapter)
 		goto error;
 
+	cur_pnetdev = padapter->pnetdev;
 	rereg_priv = &padapter->rereg_nd_name_priv;
 	
 	//free the old_pnetdev
