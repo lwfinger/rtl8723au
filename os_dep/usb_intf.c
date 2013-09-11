@@ -965,21 +965,17 @@ int rtw_resume_process(_adapter *padapter)
 		pwrpriv->bInternalAutoSuspend = _FALSE;
 #endif	//#ifdef CONFIG_BT_COEXIST
 		pwrpriv->brfoffbyhw = _FALSE;
-		{
-			DBG_8723A("enc_algorithm(%x),wepkeymask(%x)\n",
-				padapter->securitypriv.dot11PrivacyAlgrthm,pwrpriv->wepkeymask);
-			if(	(_WEP40_ == padapter->securitypriv.dot11PrivacyAlgrthm) ||
-				(_WEP104_ == padapter->securitypriv.dot11PrivacyAlgrthm))
-			{
-				sint keyid;	
-		
-				for(keyid=0;keyid<4;keyid++){				
-					if(pwrpriv->wepkeymask & BIT(keyid)) {
-						if(keyid == padapter->securitypriv.dot11PrivacyKeyIndex)
-							rtw_set_key(padapter,&padapter->securitypriv, keyid, 1);
-						else
-							rtw_set_key(padapter,&padapter->securitypriv, keyid, 0);
-					}
+		DBG_8723A("enc_algorithm(%x),wepkeymask(%x)\n",
+			padapter->securitypriv.dot11PrivacyAlgrthm,pwrpriv->wepkeymask);
+		if ((_WEP40_ == padapter->securitypriv.dot11PrivacyAlgrthm) ||
+		    (_WEP104_ == padapter->securitypriv.dot11PrivacyAlgrthm)) {
+			sint keyid;	
+			for (keyid = 0; keyid < 4; keyid++){				
+				if(pwrpriv->wepkeymask & BIT(keyid)) {
+					if(keyid == padapter->securitypriv.dot11PrivacyKeyIndex)
+						rtw_set_key(padapter,&padapter->securitypriv, keyid, 1);
+					else
+						rtw_set_key(padapter,&padapter->securitypriv, keyid, 0);
 				}
 			}
 		}
@@ -1002,12 +998,12 @@ exit:
 	rtw_unlock_suspend();
 	#endif //CONFIG_RESUME_IN_WORKQUEUE
 
-	pwrpriv->bInSuspend = _FALSE;
-	DBG_8723A("<===  %s return %d.............. in %dms\n", __FUNCTION__
-		, ret, rtw_get_passing_time_ms(start_time));
+	if (pwrpriv)
+		pwrpriv->bInSuspend = _FALSE;
+	DBG_8723A("<===  %s return %d.............. in %dms\n", __FUNCTION__,
+		  ret, rtw_get_passing_time_ms(start_time));
 	
 	_func_exit_;
-	
 	return ret;
 }
 
@@ -1021,9 +1017,8 @@ void autosuspend_enter(_adapter* padapter)
 
 	pwrpriv->bInternalAutoSuspend = _TRUE;
 	pwrpriv->bips_processing = _TRUE;
-	
-	if(rf_off == pwrpriv->change_rfpwrstate )
-	{	
+
+	if(rf_off == pwrpriv->change_rfpwrstate ) {	
 #ifndef	CONFIG_BT_COEXIST
 		#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 		usb_enable_autosuspend(dvobj->pusbdev);
