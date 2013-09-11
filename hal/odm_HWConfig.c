@@ -397,14 +397,13 @@ odm_RxPhyStatus92CSeries_Parsing(
 
 	PPHY_STATUS_RPT_8192CD_T pPhyStaRpt = (PPHY_STATUS_RPT_8192CD_T)pPhyStatus;
 
-	isCCKrate = ((pPktinfo->Rate >= DESC92C_RATE1M ) && (pPktinfo->Rate <= DESC92C_RATE11M ))?TRUE :FALSE;
+	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? TRUE : FALSE;
 
 	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_A] = -1;
 	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_B] = -1;
 
 
-	if(isCCKrate)
-	{
+	if(isCCKrate) {
 		u1Byte report;
 		u1Byte cck_agc_rpt;
 
@@ -759,28 +758,18 @@ odm_Process_RSSIForDM(
 	u1Byte			RSSI_max, RSSI_min, i;
 	u4Byte			OFDM_pkt=0;
 	u4Byte			Weighting=0;
-
 	PSTA_INFO_T	pEntry;
 
 	if(pPktinfo->StationID == 0xFF)
 		return;
 
-	// 2011/11/17 MH Need to debug
-	//if (pDM_Odm->SupportPlatform == ODM_MP)
-	{
-
-	}
-
 	pEntry = pDM_Odm->pODM_StaInfo[pPktinfo->StationID];
-	if(!IS_STA_VALID(pEntry) ){
+	if(!IS_STA_VALID(pEntry) )
 		return;
-	}
 	if((!pPktinfo->bPacketMatchBSSID) )
-	{
 		return;
-	}
 
-	isCCKrate = ((pPktinfo->Rate >= DESC92C_RATE1M ) && (pPktinfo->Rate <= DESC92C_RATE11M ))?TRUE :FALSE;
+	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? TRUE : FALSE;
 
 #if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 #if ((RTL8192C_SUPPORT == 1) ||(RTL8192D_SUPPORT == 1))
