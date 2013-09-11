@@ -2483,7 +2483,7 @@ static void rijndaelKeySetupEnc(u32 rk[/*44*/], const u8 cipherKey[])
 		rk[5] = rk[1] ^ rk[4];
 		rk[6] = rk[2] ^ rk[5];
 		rk[7] = rk[3] ^ rk[6];
-		rk += 4;
+		rk = rk + 4;
 	}
 }
 
@@ -2530,7 +2530,7 @@ d##3 = TE0(s##3) ^ TE1(s##0) ^ TE2(s##1) ^ TE3(s##2) ^ rk[4 * i + 3]
 	r = Nr >> 1;
 	for (;;) {
 		ROUND(1,t,s);
-		rk += 8;
+		rk = rk + 8;
 		if (--r == 0)
 			break;
 		ROUND(0,s,t);
