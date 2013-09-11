@@ -513,40 +513,31 @@ static void bthci_DecideBTChannel(PADAPTER padapter, u8 EntryNum)
 	}
 }
 
-
 //Success:return _TRUE
 //Fail:return _FALSE
 static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 {
-//	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo;
 	PBT_HCI_INFO	pBtHciInfo;
 	u8	tempBuf[256];
 	u8	i = 0;
 	u8	BaseMemoryShift = 0;
 	u16	TotalLen = 0;
-
 	PAMP_ASSOC_STRUCTURE	pAmpAsoc;
 
-
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("GetAssocInfo start\n"));
-
 	pBTInfo = GET_BT_INFO(padapter);
 	pBtHciInfo = &pBTInfo->BtHciInfo;
 
-	if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar == 0)
-	{
-
+	if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar == 0) {
 		if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocRemLen < (MAX_AMP_ASSOC_FRAG_LEN))
 			TotalLen = pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocRemLen;
 		else if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocRemLen == (MAX_AMP_ASSOC_FRAG_LEN))
 			TotalLen = MAX_AMP_ASSOC_FRAG_LEN;
-	}
-	else if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar > 0)
+	} else if (pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar > 0)
 		TotalLen = pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar;
 
-	while ((pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar >= BaseMemoryShift) || TotalLen > BaseMemoryShift)
-	{
+	while ((pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar >= BaseMemoryShift) || TotalLen > BaseMemoryShift) {
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD_DETAIL, ("GetAssocInfo, TotalLen=%d, BaseMemoryShift=%d\n",TotalLen,BaseMemoryShift));
 		_rtw_memcpy(tempBuf,
 			(u8*)pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocfragment+BaseMemoryShift,
@@ -560,78 +551,55 @@ static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("TypeID = 0x%x, ", pAmpAsoc->TypeID));
 		RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, "Hex Data: \n", pAmpAsoc->Data, pAmpAsoc->Length);
-		switch (pAmpAsoc->TypeID)
-		{
-			case AMP_MAC_ADDR:
-				{
-					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_MAC_ADDR\n"));
-					if (pAmpAsoc->Length > 6)
-					{
-						return _FALSE;
-					}
+		switch (pAmpAsoc->TypeID) {
+		case AMP_MAC_ADDR:
+			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_MAC_ADDR\n"));
+			if (pAmpAsoc->Length > 6)
+				return _FALSE;
+			_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr, pAmpAsoc->Data,6);
+			RTPRINT_ADDR(FIOCTL, IOCTL_BT_HCICMD, ("Remote Mac address \n"), pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr);
+			break;
+		case AMP_PREFERRED_CHANNEL_LIST:
+			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_PREFERRED_CHANNEL_LIST\n"));
+			pBtHciInfo->BtPreChnlListLen=pAmpAsoc->Length;
+			_rtw_memcpy(pBtHciInfo->BTPreChnllist,
+				pAmpAsoc->Data,
+				pBtHciInfo->BtPreChnlListLen);
+			RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, "Preferred channel list : \n", pBtHciInfo->BTPreChnllist, pBtHciInfo->BtPreChnlListLen);
+			bthci_DecideBTChannel(padapter,EntryNum);
+			break;
+		case AMP_CONNECTED_CHANNEL:
+			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_CONNECTED_CHANNEL\n"));
+			pBtHciInfo->BTConnectChnlListLen=pAmpAsoc->Length;
+			_rtw_memcpy(pBtHciInfo->BTConnectChnllist,
+				pAmpAsoc->Data,
+				pBtHciInfo->BTConnectChnlListLen);
+			break;
+		case AMP_80211_PAL_CAP_LIST:
+			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_80211_PAL_CAP_LIST\n"));
+			pBTInfo->BtAsocEntry[EntryNum].BTCapability=*(u32 *)(pAmpAsoc->Data);
+			if (pBTInfo->BtAsocEntry[EntryNum].BTCapability & 0x00000001) {
+				// TODO:
 
-					_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr, pAmpAsoc->Data,6);
-					RTPRINT_ADDR(FIOCTL, IOCTL_BT_HCICMD, ("Remote Mac address \n"), pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr);
-					break;
-				}
-
-			case AMP_PREFERRED_CHANNEL_LIST:
-				{
-					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_PREFERRED_CHANNEL_LIST\n"));
-					pBtHciInfo->BtPreChnlListLen=pAmpAsoc->Length;
-					_rtw_memcpy(pBtHciInfo->BTPreChnllist,
-						pAmpAsoc->Data,
-						pBtHciInfo->BtPreChnlListLen);
-					RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, "Preferred channel list : \n", pBtHciInfo->BTPreChnllist, pBtHciInfo->BtPreChnlListLen);
-					bthci_DecideBTChannel(padapter,EntryNum);
-					break;
-				}
-
-			case AMP_CONNECTED_CHANNEL:
-				{
-					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_CONNECTED_CHANNEL\n"));
-					pBtHciInfo->BTConnectChnlListLen=pAmpAsoc->Length;
-					_rtw_memcpy(pBtHciInfo->BTConnectChnllist,
-						pAmpAsoc->Data,
-						pBtHciInfo->BTConnectChnlListLen);
-					break;
-
-				}
-
-			case AMP_80211_PAL_CAP_LIST:
-				{
-
-					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_80211_PAL_CAP_LIST\n"));
-					pBTInfo->BtAsocEntry[EntryNum].BTCapability=*(u32 *)(pAmpAsoc->Data);
-					if (pBTInfo->BtAsocEntry[EntryNum].BTCapability && 0x00000001)
-					{
-						// TODO:
-
-						//Signifies PAL capable of utilizing received activity reports.
-					}
-					if (pBTInfo->BtAsocEntry[EntryNum].BTCapability && 0x00000002)
-					{
-						// TODO:
-						//Signifies PAL is capable of utilizing scheduling information received in an activity reports.
-					}
-					break;
-				}
-
-			case AMP_80211_PAL_VISION:
-				{
-					pBtHciInfo->BTPalVersion=*(u8 *)(pAmpAsoc->Data);
-					pBtHciInfo->BTPalCompanyID=*(u16 *)(((u8 *)(pAmpAsoc->Data))+1);
-					pBtHciInfo->BTPalsubversion=*(u16 *)(((u8 *)(pAmpAsoc->Data))+3);
-					RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("==> AMP_80211_PAL_VISION PalVersion  0x%x, PalCompanyID  0x%x, Palsubversion 0x%x\n",
-					pBtHciInfo->BTPalVersion,
-					pBtHciInfo->BTPalCompanyID,
-					pBtHciInfo->BTPalsubversion));
-					break;
-				}
-
-			default:
-					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> Unsupport TypeID !!\n"));
-				break;
+				//Signifies PAL capable of utilizing received activity reports.
+			}
+			if (pBTInfo->BtAsocEntry[EntryNum].BTCapability & 0x00000002) {
+				// TODO:
+				//Signifies PAL is capable of utilizing scheduling information received in an activity reports.
+			}
+			break;
+		case AMP_80211_PAL_VISION:
+			pBtHciInfo->BTPalVersion=*(u8 *)(pAmpAsoc->Data);
+			pBtHciInfo->BTPalCompanyID=*(u16 *)(((u8 *)(pAmpAsoc->Data))+1);
+			pBtHciInfo->BTPalsubversion=*(u16 *)(((u8 *)(pAmpAsoc->Data))+3);
+			RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("==> AMP_80211_PAL_VISION PalVersion  0x%x, PalCompanyID  0x%x, Palsubversion 0x%x\n",
+			pBtHciInfo->BTPalVersion,
+			pBtHciInfo->BTPalCompanyID,
+			pBtHciInfo->BTPalsubversion));
+			break;
+		default:
+			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> Unsupport TypeID !!\n"));
+			break;
 		}
 		i++;
 	}
@@ -646,22 +614,18 @@ static u8 bthci_AddEntry(PADAPTER padapter)
 	PBT_MGNT		pBtMgnt;
 	u8			i;
 
-
 	pBTInfo = GET_BT_INFO(padapter);
 	pBtMgnt = &pBTInfo->BtMgnt;
 
-	for (i = 0; i < MAX_BT_ASOC_ENTRY_NUM; i++)
-	{
-		if (pBTInfo->BtAsocEntry[i].bUsed == _FALSE)
-		{
+	for (i = 0; i < MAX_BT_ASOC_ENTRY_NUM; i++) {
+		if (pBTInfo->BtAsocEntry[i].bUsed == _FALSE) {
 			pBTInfo->BtAsocEntry[i].bUsed = _TRUE;
 			pBtMgnt->CurrentConnectEntryNum = i;
 			break;
 		}
 	}
 
-	if (i == MAX_BT_ASOC_ENTRY_NUM)
-	{
+	if (i == MAX_BT_ASOC_ENTRY_NUM) {
 		RTPRINT(FIOCTL, IOCTL_STATE, ("bthci_AddEntry(), Add entry fail!!\n"));
 		return _FALSE;
 	}
@@ -685,74 +649,49 @@ bthci_CheckLogLinkBehavior(
 	u32	SDUInterArrivatime = TxFlowSpec.SDUInterArrivalTime;
 	u8	match = _FALSE;
 
-	switch (ID)
-	{
-		case 1:
-		{
-			if (ServiceType == BT_LL_BE)
-			{
-				match = _TRUE;
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX best effort flowspec\n"));
-			}
-			else if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 0xffff))
-			{
-				match = _TRUE;
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX guaranteed latency flowspec\n"));
-			}
-			else if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 2500))
-			{
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX guaranteed Large latency flowspec\n"));
-			}
-			break;
+	switch (ID) {
+	case 1:
+		if (ServiceType == BT_LL_BE) {
+			match = _TRUE;
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX best effort flowspec\n"));
+		} else if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 0xffff)) {
+			match = _TRUE;
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX guaranteed latency flowspec\n"));
+		} else if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 2500)) {
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX guaranteed Large latency flowspec\n"));
 		}
-		case 2:
-		{
-			if (ServiceType == BT_LL_BE)
-			{
-				match = _TRUE;
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX best effort flowspec\n"));
+		break;
+	case 2:
+		if (ServiceType == BT_LL_BE) {
+			match = _TRUE;
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  RX best effort flowspec\n"));
 
-			}
-			break;
 		}
-		case 3:
-		{
-			 if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 1492))
-			{
-				match=_TRUE;
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX guaranteed latency flowspec\n"));
-			}
-			else if ((ServiceType==BT_LL_GU) && (MaxSDUSize==2500))
-			{
-				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX guaranteed Large latency flowspec\n"));
-			}
-			break;
+		break;
+	case 3:
+		if ((ServiceType == BT_LL_GU) && (MaxSDUSize == 1492)) {
+			match=_TRUE;
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX guaranteed latency flowspec\n"));
+		} else if ((ServiceType==BT_LL_GU) && (MaxSDUSize==2500)) {
+			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX guaranteed Large latency flowspec\n"));
 		}
-		case 4:
-		{
-			if (ServiceType == BT_LL_BE)
-			{
-				if ((SDUInterArrivatime == 0xffffffff) && (ServiceType == BT_LL_BE) && (MaxSDUSize == 1492))
-				{
-					match = _TRUE;
-					RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX/RX aggregated best effort flowspec\n"));
-				}
+		break;
+	case 4:
+		if (ServiceType == BT_LL_BE) {
+			if ((SDUInterArrivatime == 0xffffffff) && (ServiceType == BT_LL_BE) && (MaxSDUSize == 1492)) {
+				match = _TRUE;
+				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX/RX aggregated best effort flowspec\n"));
 			}
-			else if (ServiceType == BT_LL_GU)
-			{
-				if ((SDUInterArrivatime == 100) && 10000)
-				{
-					match = _TRUE;
-					RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX/RX guaranteed bandwidth flowspec\n"));
-				}
+		} else if (ServiceType == BT_LL_GU) {
+			if (SDUInterArrivatime == 100) {
+				match = _TRUE;
+				RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  TX/RX guaranteed bandwidth flowspec\n"));
 			}
-			break;
 		}
-		default:
-		{
-			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  Unknow Type !!!!!!!!\n"));
-			break;
-		}
+		break;
+	default:
+		RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("Logical Link Type =  Unknow Type !!!!!!!!\n"));
+		break;
 	}
 
 	RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("ID=0x%x, ServiceType=0x%x, MaximumSDUSize=0x%x, SDUInterArrivalTime=0x%x, AccessLatency=0x%x, FlushTimeout=0x%x\n",
@@ -4022,25 +3961,20 @@ bthci_CmdLogicalLinkCancel(
 		CurrentEntryNum, CurrentLogicalHandle));
 
 	CurrentLogEntryNum = 0xff;
-	for (i=0; i<MAX_LOGICAL_LINK_NUM; i++)
-	{
+	for (i=0; i<MAX_LOGICAL_LINK_NUM; i++) {
 		if ((CurrentLogicalHandle == pBTinfo->BtAsocEntry[CurrentEntryNum].LogLinkCmdData[i].BtLogLinkhandle) &&
-			(physicalLinkHandle == pBTinfo->BtAsocEntry[CurrentEntryNum].LogLinkCmdData[i].BtPhyLinkhandle))
-		{
+			(physicalLinkHandle == pBTinfo->BtAsocEntry[CurrentEntryNum].LogLinkCmdData[i].BtPhyLinkhandle)) {
 			CurrentLogEntryNum = i;
 			break;
 		}
 	}
 
-	if (CurrentLogEntryNum == 0xff)
-	{
+	if (CurrentLogEntryNum == 0xff) {
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("LogicalLinkCancel, CurrentLogEntryNum==0xff !!!!\n"));
 		status=HCI_STATUS_UNKNOW_CONNECT_ID;
-	}
-	else
-	{
-		if (pBTinfo->BtAsocEntry[CurrentEntryNum].LogLinkCmdData[CurrentLogEntryNum].bLLCompleteEventIsSet)
-		{
+		return status;
+	} else {
+		if (pBTinfo->BtAsocEntry[CurrentEntryNum].LogLinkCmdData[CurrentLogEntryNum].bLLCompleteEventIsSet) {
 			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("LogicalLinkCancel, LLCompleteEventIsSet!!!!\n"));
 			status=HCI_STATUS_ACL_CONNECT_EXISTS;
 		}
@@ -6450,37 +6384,11 @@ BTHCI_IndicateAMPStatus(
 	}
 }
 
-void
-BTHCI_EventParse(
-	PADAPTER					padapter,
-	void						*pEvntData,
-	u32						dataLen
-	)
+void BTHCI_EventParse(PADAPTER padapter, void *pEvntData, u32 dataLen)
 {
-	PPACKET_IRP_HCIEVENT_DATA PPacketIrpEvent = (PPACKET_IRP_HCIEVENT_DATA)pEvntData;
-	return;
-
-	RTPRINT(FIOCTL, IOCTL_BT_EVENT, ("BT Event Code = 0x%x\n", PPacketIrpEvent->EventCode));
-	RTPRINT(FIOCTL, IOCTL_BT_EVENT, ("BT Event Length = 0x%x\n", PPacketIrpEvent->Length));
-
-	switch (PPacketIrpEvent->EventCode)
-	{
-		case HCI_EVENT_COMMAND_COMPLETE:
-			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("HCI_EVENT_COMMAND_COMPLETE\n"));
-			break;
-		case HCI_EVENT_COMMAND_STATUS:
-			RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("HCI_EVENT_COMMAND_STATUS\n"));
-			break;
-		default:
-			break;
-	}
 }
 
-u16
-BTHCI_GetPhysicalLinkHandle(
-	PADAPTER	padapter,
-	u8		EntryNum
-	)
+u16 BTHCI_GetPhysicalLinkHandle(PADAPTER padapter, u8 EntryNum)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	u16 handle;
@@ -8525,7 +8433,7 @@ void BTDM_1AntLpsLeave(PADAPTER padapter)
 	RTPRINT(FBT, BT_TRACE, ("\n[BTCoex], 1Ant for LPS Leave\n"));
 
 	// Prevent from entering LPS again
-	GET_HAL_DATA(padapter)->bt_coexist.halCoex8723.btdm1Ant.bWiFiHalt == _TRUE;
+	GET_HAL_DATA(padapter)->bt_coexist.halCoex8723.btdm1Ant.bWiFiHalt = _TRUE;
 
 	btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _FALSE, 8);
 //	btdm_1AntPsTdma(padapter, _FALSE, 8);
