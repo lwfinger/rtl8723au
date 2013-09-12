@@ -569,21 +569,19 @@ void Hal_SetTxPower(PADAPTER pAdapter)
 			break;
 	}
 
-	switch (pHalData->rf_chip)
-	{
-		// 2008/09/12 MH Test only !! We enable the TX power tracking for MP!!!!!
-		// We should call normal driver API later!!
-		case RF_8225:
-		case RF_8256:
-		case RF_6052:
-			Hal_SetCCKTxPower(pAdapter, TxPowerLevel);
-			if (pAdapter->mppriv.rateidx < MPT_RATE_6M)	// CCK rate
-				Hal_MPT_CCKTxPowerAdjustbyIndex(pAdapter, TxPowerLevel[rfPath]%2 == 0);
-			Hal_SetOFDMTxPower(pAdapter, TxPowerLevel);
-			break;
-
-		default:
-			break;
+	switch (pHalData->rf_chip) {
+	// 2008/09/12 MH Test only !! We enable the TX power tracking for MP!!!!!
+	// We should call normal driver API later!!
+	case RF_8225:
+	case RF_8256:
+	case RF_6052:
+		Hal_SetCCKTxPower(pAdapter, TxPowerLevel);
+		if (pAdapter->mppriv.rateidx < MPT_RATE_6M)	// CCK rate
+			Hal_MPT_CCKTxPowerAdjustbyIndex(pAdapter, TxPowerLevel[rfPath]%2 == 0);
+		Hal_SetOFDMTxPower(pAdapter, TxPowerLevel);
+		break;
+	default:
+		break;
 	}
 
 //	SetCCKTxPower(pAdapter, TxPower);
@@ -592,25 +590,13 @@ void Hal_SetTxPower(PADAPTER pAdapter)
 
 void Hal_SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset)
 {
-	u32 TxAGCOffset_B, TxAGCOffset_C, TxAGCOffset_D,tmpAGC;
-
-	return ;
-
-	TxAGCOffset_B = (ulTxAGCOffset&0x000000ff);
-	TxAGCOffset_C = ((ulTxAGCOffset&0x0000ff00)>>8);
-	TxAGCOffset_D = ((ulTxAGCOffset&0x00ff0000)>>16);
-
-	tmpAGC = (TxAGCOffset_D<<8 | TxAGCOffset_C<<4 | TxAGCOffset_B);
-	write_bbreg(pAdapter, rFPGA0_TxGainStage,
-			(bXBTxAGC|bXCTxAGC|bXDTxAGC), tmpAGC);
 }
 
 void Hal_SetDataRate(PADAPTER pAdapter)
 {
-		if(!IS_HARDWARE_TYPE_8723A(pAdapter))
+	if(!IS_HARDWARE_TYPE_8723A(pAdapter))
 	        Hal_mpt_SwitchRfSetting(pAdapter);
 }
-
 
 void Hal_SetAntenna(PADAPTER pAdapter)
 {
