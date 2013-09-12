@@ -1559,97 +1559,80 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 
 _func_enter_;
 
-	if(adapter->bDriverStopped || adapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)
-	{
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port:( padapter->bDriverStopped ||padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
+	if(adapter->bDriverStopped || adapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx) {
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
+			 ("usb_read_port:( padapter->bDriverStopped ||padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
+		return _FAIL;
+	}
+
+	if (!precvbuf) {
+		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port:precvbuf ==NULL\n"));
 		return _FAIL;
 	}
 
 #ifdef CONFIG_PREALLOC_RECV_SKB
-	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL))
-	{
+	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
 		if (NULL != (precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
-		{
 			precvbuf->reuse = _TRUE;
-		}
 	}
 #endif
 
 
-	if(precvbuf !=NULL)
-	{
-		rtl8192cu_init_recvbuf(adapter, precvbuf);
+	rtl8192cu_init_recvbuf(adapter, precvbuf);
 
-		//re-assign for linux based on skb
-		if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL))
-		{
-			//precvbuf->pskb = alloc_skb(MAX_RECVBUF_SZ, GFP_ATOMIC);//don't use this after v2.6.25
+	//re-assign for linux based on skb
+	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
+		//precvbuf->pskb = alloc_skb(MAX_RECVBUF_SZ, GFP_ATOMIC);//don't use this after v2.6.25
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-			precvbuf->pskb = dev_alloc_skb(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
+		precvbuf->pskb = dev_alloc_skb(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 #else
-			precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
+		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 #endif
-			if(precvbuf->pskb == NULL)
-			{
-				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("init_recvbuf(): alloc_skb fail!\n"));
-				return _FAIL;
-			}
-
-			tmpaddr = (SIZE_PTR)precvbuf->pskb->data;
-			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
-			skb_reserve(precvbuf->pskb, (RECVBUFF_ALIGN_SZ - alignment));
-
-			precvbuf->phead = precvbuf->pskb->head;
-			precvbuf->pdata = precvbuf->pskb->data;
-			precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
-			precvbuf->pend = skb_end_pointer(precvbuf->pskb);
-			precvbuf->pbuf = precvbuf->pskb->data;
+		if(precvbuf->pskb == NULL) {
+			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("init_recvbuf(): alloc_skb fail!\n"));
+			return _FAIL;
 		}
-		else//reuse skb
-		{
-			precvbuf->phead = precvbuf->pskb->head;
-			precvbuf->pdata = precvbuf->pskb->data;
-			precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
-			precvbuf->pend = skb_end_pointer(precvbuf->pskb);
+
+		tmpaddr = (SIZE_PTR)precvbuf->pskb->data;
+		alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
+		skb_reserve(precvbuf->pskb, (RECVBUFF_ALIGN_SZ - alignment));
+
+		precvbuf->phead = precvbuf->pskb->head;
+		precvbuf->pdata = precvbuf->pskb->data;
+		precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
+		precvbuf->pend = skb_end_pointer(precvbuf->pskb);
 		precvbuf->pbuf = precvbuf->pskb->data;
+	} else { //reuse skb
+		precvbuf->phead = precvbuf->pskb->head;
+		precvbuf->pdata = precvbuf->pskb->data;
+		precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
+		precvbuf->pend = skb_end_pointer(precvbuf->pskb);
+	precvbuf->pbuf = precvbuf->pskb->data;
 
-			precvbuf->reuse = _FALSE;
-		}
-
-		//_enter_critical(&precvpriv->lock, &irqL);
-		//precvpriv->rx_pending_cnt++;
-		//precvbuf->irp_pending = _TRUE;
-		//_exit_critical(&precvpriv->lock, &irqL);
-
-		precvpriv->rx_pending_cnt++;
-
-		purb = precvbuf->purb;
-
-		//translate DMA FIFO addr to pipehandle
-		pipe = ffaddr2pipehdl(pdvobj, addr);
-
-		usb_fill_bulk_urb(purb, pusbd, pipe,
-						precvbuf->pbuf,
-						MAX_RECVBUF_SZ,
-						usb_read_port_complete,
-						precvbuf);//context is precvbuf
-
-		err = usb_submit_urb(purb, GFP_ATOMIC);
-		if((err) && (err != (-EPERM)))
-		{
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("cannot submit rx in-token(err=0x%.8x), URB_STATUS =0x%.8x", err, purb->status));
-			DBG_8723A("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n",err,purb->status);
-			ret = _FAIL;
-		}
+		precvbuf->reuse = _FALSE;
 	}
-	else
-	{
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port:precvbuf ==NULL\n"));
+
+	precvpriv->rx_pending_cnt++;
+
+	purb = precvbuf->purb;
+
+	//translate DMA FIFO addr to pipehandle
+	pipe = ffaddr2pipehdl(pdvobj, addr);
+
+	usb_fill_bulk_urb(purb, pusbd, pipe,
+					precvbuf->pbuf,
+					MAX_RECVBUF_SZ,
+					usb_read_port_complete,
+					precvbuf);//context is precvbuf
+
+	err = usb_submit_urb(purb, GFP_ATOMIC);
+	if((err) && (err != (-EPERM))) {
+		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("cannot submit rx in-token(err=0x%.8x), URB_STATUS =0x%.8x", err, purb->status));
+		DBG_8723A("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n",err,purb->status);
 		ret = _FAIL;
 	}
 
 _func_exit_;
-
 	return ret;
 }
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
@@ -1715,6 +1698,7 @@ void rtl8723au_set_intf_ops(struct _io_ops	*pops)
 	_func_exit_;
 
 }
+
 void rtl8723au_set_hw_type(_adapter *padapter)
 {
 	padapter->chip_type = RTL8723A;
