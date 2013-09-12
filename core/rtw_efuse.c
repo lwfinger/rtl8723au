@@ -705,7 +705,7 @@ u8 rtw_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 {
 	u8	offset, word_en;
 	u8	*map;
-	u8	newdata[PGPKT_DATA_SIZE];
+	u8	newdata[PGPKT_DATA_SIZE + 1];
 	s32	i, j, idx;
 	u8	ret = _SUCCESS;
 	u16	mapLen=0;
@@ -803,7 +803,7 @@ u8 rtw_BT_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 {
 	u8	offset, word_en;
 	u8	*map;
-	u8	newdata[PGPKT_DATA_SIZE];
+	u8	newdata[PGPKT_DATA_SIZE + 1];
 	s32	i, j, idx;
 	u8	ret = _SUCCESS;
 	u16	mapLen=0;
