@@ -1759,8 +1759,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 		wpa_ie = elems.rsn_ie;
 		wpa_ie_len = elems.rsn_ie_len;
 
-		if(rtw_parse_wpa2_ie(wpa_ie-2, wpa_ie_len+2, &group_cipher, &pairwise_cipher, NULL) == _SUCCESS)
-		{
+		if(rtw_parse_wpa2_ie(wpa_ie-2, wpa_ie_len+2, &group_cipher, &pairwise_cipher, NULL) == _SUCCESS) {
 			pstat->dot8021xalg = 1;//psk,  todo:802.1x
 			pstat->wpa_psk |= BIT(1);
 
@@ -1772,9 +1771,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 
 			if(!pstat->wpa2_pairwise_cipher)
 				status = WLAN_STATUS_PAIRWISE_CIPHER_NOT_VALID;
-		}
-		else
-		{
+		} else {
 			status = WLAN_STATUS_INVALID_IE;
 		}
 
@@ -1785,8 +1782,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 		wpa_ie = elems.wpa_ie;
 		wpa_ie_len = elems.wpa_ie_len;
 
-		if(rtw_parse_wpa_ie(wpa_ie-2, wpa_ie_len+2, &group_cipher, &pairwise_cipher, NULL) == _SUCCESS)
-		{
+		if(rtw_parse_wpa_ie(wpa_ie-2, wpa_ie_len+2, &group_cipher, &pairwise_cipher, NULL) == _SUCCESS) {
 			pstat->dot8021xalg = 1;//psk,  todo:802.1x
 			pstat->wpa_psk |= BIT(0);
 
@@ -1799,9 +1795,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			if(!pstat->wpa_pairwise_cipher)
 				status = WLAN_STATUS_PAIRWISE_CIPHER_NOT_VALID;
 
-		}
-		else
-		{
+		} else {
 			status = WLAN_STATUS_INVALID_IE;
 		}
 
@@ -1814,16 +1808,12 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 		goto OnAssocReqFail;
 
 	pstat->flags &= ~(WLAN_STA_WPS | WLAN_STA_MAYBE_WPS);
-	//if (hapd->conf->wps_state && wpa_ie == NULL) { //todo: to check ap if supporting WPS
 	if(wpa_ie == NULL) {
 		if (elems.wps_ie) {
 			DBG_8723A("STA included WPS IE in "
 				   "(Re)Association Request - assume WPS is "
 				   "used\n");
 			pstat->flags |= WLAN_STA_WPS;
-			//wpabuf_free(sta->wps_ie);
-			//sta->wps_ie = wpabuf_alloc_copy(elems.wps_ie + 4,
-			//				elems.wps_ie_len - 4);
 		} else {
 			DBG_8723A("STA did not include WPA/RSN IE "
 				   "in (Re)Association Request - possible WPS "
@@ -1831,20 +1821,17 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			pstat->flags |= WLAN_STA_MAYBE_WPS;
 		}
 
-
 		// AP support WPA/RSN, and sta is going to do WPS, but AP is not ready
 		// that the selected registrar of AP is _FLASE
-		if((psecuritypriv->wpa_psk >0)
-			&& (pstat->flags & (WLAN_STA_WPS|WLAN_STA_MAYBE_WPS)))
-		{
-			if(pmlmepriv->wps_beacon_ie)
-			{
+		if ((psecuritypriv->wpa_psk > 0) &&
+		    (pstat->flags & (WLAN_STA_WPS|WLAN_STA_MAYBE_WPS))) {
+			if(pmlmepriv->wps_beacon_ie) {
 				u8 selected_registrar = 0;
 
-				rtw_get_wps_attr_content(pmlmepriv->wps_beacon_ie, pmlmepriv->wps_beacon_ie_len, WPS_ATTR_SELECTED_REGISTRAR , &selected_registrar, NULL);
+				rtw_get_wps_attr_content(pmlmepriv->wps_beacon_ie, pmlmepriv->wps_beacon_ie_len,
+							 WPS_ATTR_SELECTED_REGISTRAR , &selected_registrar, NULL);
 
-				if(!selected_registrar)
-				{
+				if(!selected_registrar) {
 					DBG_8723A("selected_registrar is _FALSE , or AP is not ready to do WPS\n");
 
 					status = _STATS_UNABLE_HANDLE_STA_;
@@ -1853,21 +1840,16 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 				}
 			}
 		}
-
-	}
-	else
-	{
+	} else {
 		int copy_len;
 
-		if(psecuritypriv->wpa_psk == 0)
-		{
+		if(psecuritypriv->wpa_psk == 0) {
 			DBG_8723A("STA " MAC_FMT ": WPA/RSN IE in association "
 			"request, but AP don't support WPA/RSN\n", MAC_ARG(pstat->hwaddr));
 
 			status = WLAN_STATUS_INVALID_IE;
 
 			goto OnAssocReqFail;
-
 		}
 
 		if (elems.wps_ie) {
@@ -1876,9 +1858,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 				   "used\n");
 			pstat->flags |= WLAN_STA_WPS;
 			copy_len=0;
-		}
-		else
-		{
+		} else {
 			copy_len = ((wpa_ie_len+2) > sizeof(pstat->wpa_ie)) ? (sizeof(pstat->wpa_ie)):(wpa_ie_len+2);
 		}
 
@@ -2057,7 +2037,8 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			if (pstapriv->sta_aid[pstat->aid - 1] == NULL)
 				break;
 
-		//if (pstat->aid > NUM_STA) {
+		if (pstat->aid > NUM_STA)
+			pstat->aid = NUM_STA;
 		if (pstat->aid > pstapriv->max_num_sta) {
 
 			pstat->aid = 0;
@@ -5490,8 +5471,8 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 
 				//	Commented by Kurt 20120113
 				//	Get peer_dev_addr here if peer doesn't issue prov_disc frame.
-				if( _rtw_memcmp(pwdinfo->rx_prov_disc_info.peerDevAddr, empty_addr, ETH_ALEN) );
-					_rtw_memcpy(pwdinfo->rx_prov_disc_info.peerDevAddr, GetAddr2Ptr(pframe), ETH_ALEN);
+				if (!memcmp(pwdinfo->rx_prov_disc_info.peerDevAddr, empty_addr, ETH_ALEN))
+					memcpy(pwdinfo->rx_prov_disc_info.peerDevAddr, GetAddr2Ptr(pframe), ETH_ALEN);
 
 				result = process_p2p_group_negotation_req( pwdinfo, frame_body, len );
 				issue_p2p_GO_response( padapter, GetAddr2Ptr(pframe), frame_body, len, result );
@@ -9609,8 +9590,7 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		chplan_new = pmlmeext->channel_set;
 
 		i = j = k = 0;
-		if (pregistrypriv->wireless_mode & WIRELESS_11G)
-		{
+		if (pregistrypriv->wireless_mode & WIRELESS_11G) {
 			do {
 				if ((i == MAX_CHANNEL_NUM) ||
 					(chplan_sta[i].ChannelNum == 0) ||
@@ -9620,24 +9600,18 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 				if ((j == chplan_ap.Len) || (chplan_ap.Channel[j] > 14))
 					break;
 
-				if (chplan_sta[i].ChannelNum == chplan_ap.Channel[j])
-				{
+				if (chplan_sta[i].ChannelNum == chplan_ap.Channel[j]) {
 					chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 					chplan_new[k].ScanType = SCAN_ACTIVE;
 					i++;
 					j++;
 					k++;
-				}
-				else if (chplan_sta[i].ChannelNum < chplan_ap.Channel[j])
-				{
+				} else if (chplan_sta[i].ChannelNum < chplan_ap.Channel[j]) {
 					chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
-//					chplan_new[k].ScanType = chplan_sta[i].ScanType;
 					chplan_new[k].ScanType = SCAN_PASSIVE;
 					i++;
 					k++;
-				}
-				else if (chplan_sta[i].ChannelNum > chplan_ap.Channel[j])
-				{
+				} else if (chplan_sta[i].ChannelNum > chplan_ap.Channel[j]) {
 					chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 					chplan_new[k].ScanType = SCAN_ACTIVE;
 					j++;
@@ -9648,31 +9622,25 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			// change AP not support channel to Passive scan
 			while ((i < MAX_CHANNEL_NUM) &&
 				(chplan_sta[i].ChannelNum != 0) &&
-				(chplan_sta[i].ChannelNum <= 14))
-			{
+				(chplan_sta[i].ChannelNum <= 14)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
-//				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				chplan_new[k].ScanType = SCAN_PASSIVE;
 				i++;
 				k++;
 			}
 
 			// add channel AP supported
-			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] <= 14))
-			{
+			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] <= 14)) {
 				chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 				chplan_new[k].ScanType = SCAN_ACTIVE;
 				j++;
 				k++;
 			}
-		}
-		else
-		{
+		} else {
 			// keep original STA 2.4G channel plan
 			while ((i < MAX_CHANNEL_NUM) &&
 				(chplan_sta[i].ChannelNum != 0) &&
-				(chplan_sta[i].ChannelNum <= 14))
-			{
+				(chplan_sta[i].ChannelNum <= 14)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
 				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				i++;
@@ -9680,17 +9648,15 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			}
 
 			// skip AP 2.4G channel plan
-			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] <= 14))
-			{
+			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] <= 14)) {
 				j++;
 			}
 		}
 
-		if (pregistrypriv->wireless_mode & WIRELESS_11A)
-		{
+		if (pregistrypriv->wireless_mode & WIRELESS_11A) {
 			do {
 				if ((i == MAX_CHANNEL_NUM) ||
-					(chplan_sta[i].ChannelNum == 0))
+				    (chplan_sta[i].ChannelNum == 0))
 					break;
 
 				if ((j == chplan_ap.Len) || (chplan_ap.Channel[j] == 0))
@@ -9722,29 +9688,23 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			} while (1);
 
 			// change AP not support channel to Passive scan
-			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0))
-			{
+			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
-//				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				chplan_new[k].ScanType = SCAN_PASSIVE;
 				i++;
 				k++;
 			}
 
 			// add channel AP supported
-			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] != 0))
-			{
+			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] != 0)) {
 				chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 				chplan_new[k].ScanType = SCAN_ACTIVE;
 				j++;
 				k++;
 			}
-		}
-		else
-		{
+		} else {
 			// keep original STA 5G channel plan
-			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0))
-			{
+			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
 				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				i++;
@@ -9758,30 +9718,12 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 #ifdef PLATFORM_LINUX
 		k = 0;
 		DBG_8723A("%s: new STA channel plan {", __func__);
-		while ((k < MAX_CHANNEL_NUM) && (chplan_new[k].ChannelNum != 0))
-		{
+		while ((k < MAX_CHANNEL_NUM) && (chplan_new[k].ChannelNum != 0)) {
 			DBG_8723A("%02d(%c),", chplan_new[k].ChannelNum, chplan_new[k].ScanType==SCAN_PASSIVE?'p':'c');
 			k++;
 		}
 		DBG_8723A("}\n");
 #endif
-#endif
-
-#if 0
-		// recover the right channel index
-		channel = chplan_sta[pmlmeext->sitesurvey_res.channel_idx].ChannelNum;
-		k = 0;
-		while ((k < MAX_CHANNEL_NUM) && (chplan_new[k].ChannelNum != 0))
-		{
-			if (chplan_new[k].ChannelNum == channel) {
-				RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_,
-						 ("%s: change mlme_ext sitesurvey channel index from %d to %d\n",
-						  __FUNCTION__, pmlmeext->sitesurvey_res.channel_idx, k));
-				pmlmeext->sitesurvey_res.channel_idx = k;
-				break;
-			}
-			k++;
-		}
 #endif
 	}
 
@@ -9789,12 +9731,10 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 	channel = bssid->Configuration.DSConfig;
 	chplan_new = pmlmeext->channel_set;
 	i = 0;
-	while ((i < MAX_CHANNEL_NUM) && (chplan_new[i].ChannelNum != 0))
-	{
+	while ((i < MAX_CHANNEL_NUM) && (chplan_new[i].ChannelNum != 0)) {
 		if (chplan_new[i].ChannelNum == channel)
 		{
-			if (chplan_new[i].ScanType == SCAN_PASSIVE)
-			{
+			if (chplan_new[i].ScanType == SCAN_PASSIVE) {
 				//5G Bnad 2, 3 (DFS) doesn't change to active scan
 				if(channel >= 52 && channel <= 144)
 					break;
@@ -9826,8 +9766,6 @@ void report_survey_event(_adapter *padapter, union recv_frame *precv_frame)
 	struct C2HEvent_Header *pc2h_evt_hdr;
 	struct mlme_ext_priv *pmlmeext;
 	struct cmd_priv *pcmdpriv;
-	//u8 *pframe = precv_frame->u.hdr.rx_data;
-	//uint len = precv_frame->u.hdr.len;
 
 	if(!padapter)
 		return;
@@ -9837,13 +9775,10 @@ void report_survey_event(_adapter *padapter, union recv_frame *precv_frame)
 
 
 	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
 		return;
-	}
 
 	cmdsz = (sizeof(struct survey_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
-	{
+	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL) {
 		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
 		return;
 	}
@@ -9864,8 +9799,7 @@ void report_survey_event(_adapter *padapter, union recv_frame *precv_frame)
 
 	psurvey_evt = (struct survey_event*)(pevtcmd + sizeof(struct C2HEvent_Header));
 
-	if (collect_bss_info(padapter, precv_frame, (WLAN_BSSID_EX *)&psurvey_evt->bss) == _FAIL)
-	{
+	if (collect_bss_info(padapter, precv_frame, (WLAN_BSSID_EX *)&psurvey_evt->bss) == _FAIL) {
 		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
 		rtw_mfree((u8 *)pevtcmd, cmdsz);
 		return;
@@ -11701,29 +11635,24 @@ u8 mlme_evt_hdl(_adapter *padapter, unsigned char *pbuf)
 	#endif
 
 	// checking if event code is valid
-	if (evt_code >= MAX_C2HEVT)
-	{
+	if (evt_code >= MAX_C2HEVT) {
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\nEvent Code(%d) mismatch!\n", evt_code));
 		goto _abort_event_;
 	}
 
 	// checking if event size match the event parm size
 	if ((wlanevents[evt_code].parmsize != 0) &&
-			(wlanevents[evt_code].parmsize != evt_sz))
-	{
-
+	    (wlanevents[evt_code].parmsize != evt_sz)) {
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\nEvent(%d) Parm Size mismatch (%d vs %d)!\n",
 			evt_code, wlanevents[evt_code].parmsize, evt_sz));
 		goto _abort_event_;
-
 	}
 
 	ATOMIC_INC(&pevt_priv->event_seq);
 
 	peventbuf += 2;
 
-	if(peventbuf)
-	{
+	if (peventbuf) {
 		event_callback = wlanevents[evt_code].event_callback;
 		event_callback(padapter, (u8*)peventbuf);
 

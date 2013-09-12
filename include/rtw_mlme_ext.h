@@ -821,8 +821,7 @@ u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf);
 
 #ifdef _RTW_CMD_C_
 
-struct cmd_hdl wlancmds[] =
-{
+struct cmd_hdl wlancmds[] = {
 	GEN_DRV_CMD_HANDLER(0, NULL) /*0*/
 	GEN_DRV_CMD_HANDLER(0, NULL)
 	GEN_DRV_CMD_HANDLER(0, NULL)
@@ -982,6 +981,7 @@ static struct fwevent wlanevents[] =
 	{0, NULL},
 	{0, NULL},
 	{0, &rtw_cpwm_event_callback},
+	{0, NULL},
 };
 
 #endif//_RTL8192C_CMD_C_
