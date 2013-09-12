@@ -2422,7 +2422,7 @@ exit:
 s32 rtw_free_xmitframe(struct xmit_priv *pxmitpriv, struct xmit_frame *pxmitframe)
 {
 	_irqL irqL;
-	_queue *queue;
+	_queue *queue = NULL;
 	_adapter *padapter = pxmitpriv->adapter;
 	_pkt *pndis_pkt = NULL;
 
@@ -2448,9 +2448,9 @@ _func_enter_;
 		queue = &pxmitpriv->free_xmit_queue;
 	else if(pxmitframe->ext_tag == 1)
 		queue = &pxmitpriv->free_xframe_ext_queue;
-	else
-	{}
 
+	if (!queue)
+		goto check_pkt_complete;
 	_enter_critical_bh(&queue->lock, &irqL);
 
 	rtw_list_delete(&pxmitframe->list);
@@ -2461,7 +2461,6 @@ _func_enter_;
 	} else if(pxmitframe->ext_tag == 1) {
 		pxmitpriv->free_xframe_ext_cnt++;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_debug_, ("rtw_free_xmitframe():free_xframe_ext_cnt=%d\n", pxmitpriv->free_xframe_ext_cnt));
-	} else {
 	}
 
 	_exit_critical_bh(&queue->lock, &irqL);
@@ -2527,38 +2526,12 @@ static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, str
 	xmitframe_phead = get_list_head(pframe_queue);
 	xmitframe_plist = get_next(xmitframe_phead);
 
-	while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
-	{
+	if ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE) {
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
-
 		xmitframe_plist = get_next(xmitframe_plist);
-
-/*#ifdef RTK_DMP_PLATFORM
-#ifdef CONFIG_USB_TX_AGGREGATION
-		if((ptxservq->qcnt>0) && (ptxservq->qcnt<=2))
-		{
-			pxmitframe = NULL;
-
-			tasklet_schedule(&pxmitpriv->xmit_tasklet);
-
-			break;
-		}
-#endif
-#endif*/
 		rtw_list_delete(&pxmitframe->list);
-
 		ptxservq->qcnt--;
-
-		//rtw_list_insert_tail(&pxmitframe->list, &phwxmit->pending);
-
-		//ptxservq->qcnt--;
-
-		break;
-
-		pxmitframe = NULL;
-
 	}
-
 	return pxmitframe;
 }
 
