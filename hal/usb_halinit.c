@@ -1381,42 +1381,8 @@ HwSuspendModeEnable92Cu(
 	IN	u8			Type
 	)
 {
-	//PRT_USB_DEVICE		pDevice = GET_RT_USB_DEVICE(pAdapter);
-	u16	reg = rtw_read16(pAdapter, REG_GPIO_MUXCFG);
-
-	//if (!pDevice->RegUsbSS)
-	{
-		return;
-	}
-
-	//
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW
-	// to enter suspend mode automatically. Otherwise, it will shut down major power
-	// domain and 8051 will stop. When we try to enter selective suspend mode, we
-	// need to prevent HW to enter D2 mode aumotmatically. Another way, Host will
-	// issue a S10 signal to power domain. Then it will cleat SIC setting(from Yngli).
-	// We need to enable HW suspend mode when enter S3/S4 or disable. We need
-	// to disable HW suspend mode for IPS/radio_off.
-	//
-	//RT_TRACE(COMP_RF, DBG_LOUD, ("HwSuspendModeEnable92Cu = %d\n", Type));
-	if (Type == _FALSE)
-	{
-		reg |= BIT14;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-		reg |= BIT12;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-	}
-	else
-	{
-		reg &= (~BIT12);
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-		reg &= (~BIT14);
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-	}
-
 }	// HwSuspendModeEnable92Cu
+
 rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 {
 	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(pAdapter);
@@ -2928,7 +2894,7 @@ _ReadIDs(
 	}
 
 	// For customized behavior.
-	if((pHalData->EEPROMVID == 0x103C) && (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
+	if((pHalData->EEPROMVID == 0x103C) || (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
 		pHalData->CustomerID = RT_CID_819x_HP;
 
 	//	Decide CustomerID according to VID/DID or EEPROM
