@@ -2770,20 +2770,23 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 #endif
 
 	if(updated){
-		DBG_8723A("[by_bssid:%u][assoc_ssid:%s]"
-			#ifdef  CONFIG_LAYER2_ROAMING
-			"[to_roaming:%u] "
-			#endif
-			"new candidate: %s("MAC_FMT") rssi:%d\n",
+#ifdef  CONFIG_LAYER2_ROAMING
+		DBG_8723A("[by_bssid:%u][assoc_ssid:%s][to_roaming:%u] new candidate: %s("MAC_FMT") rssi:%d\n",
 			pmlmepriv->assoc_by_bssid,
 			pmlmepriv->assoc_ssid.Ssid,
-			#ifdef  CONFIG_LAYER2_ROAMING
 			rtw_to_roaming(adapter),
-			#endif
 			(*candidate)->network.Ssid.Ssid,
 			MAC_ARG((*candidate)->network.MacAddress),
-			(int)(*candidate)->network.Rssi
-		);
+			(int)(*candidate)->network.Rssi);
+#else
+		DBG_8723A("[by_bssid:%u][assoc_ssid:%s][to_roaming:%u] new candidate: %s("MAC_FMT") rssi:%d\n",
+			pmlmepriv->assoc_by_bssid,
+			pmlmepriv->assoc_ssid.Ssid,
+			rtw_to_roaming(adapter),
+			(*candidate)->network.Ssid.Ssid,
+			MAC_ARG((*candidate)->network.MacAddress),
+			(int)(*candidate)->network.Rssi);
+#endif
 	}
 
 exit:
