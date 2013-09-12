@@ -966,10 +966,8 @@ PHY_RFShadowRefresh(
 	u32		eRFPath;
 	u32		Offset;
 
-	for (eRFPath = 0; eRFPath < RF6052_MAX_PATH; eRFPath++)
-	{
-		for (Offset = 0; Offset <= RF6052_MAX_REG; Offset++)
-		{
+	for (eRFPath = 0; eRFPath < RF6052_MAX_PATH; eRFPath++) {
+		for (Offset = 0; Offset < RF6052_MAX_REG; Offset++) {
 			RF_Shadow[eRFPath][Offset].Value = 0;
 			RF_Shadow[eRFPath][Offset].Compare = _FALSE;
 			RF_Shadow[eRFPath][Offset].Recorver  = _FALSE;
