@@ -2862,14 +2862,11 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 		}
 
 		/* Indicat the packets to upper layer */
-		if (sub_skb) {
-			//memset(sub_skb->cb, 0, sizeof(sub_skb->cb));
-
+		{
 #ifdef CONFIG_BR_EXT
 			// Insert NAT2.5 RX here!
 			struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 			void *br_port = NULL;
-
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
 			br_port = padapter->pnetdev->br_port;
 #else   // (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
@@ -2878,21 +2875,11 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 			rcu_read_unlock();
 #endif  // (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
 
-
-			if( br_port && (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
-			{
+			if (br_port &&
+			    (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)) {
 				int nat25_handle_frame(_adapter *priv, struct sk_buff *skb);
 				if (nat25_handle_frame(padapter, sub_skb) == -1) {
-					//priv->ext_stats.rx_data_drops++;
-					//DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n");
-					//return FAIL;
-
-#if 1
 					// bypass this frame to upper layer!!
-#else
-					dev_kfree_skb_any(sub_skb);
-					continue;
-#endif
 				}
 			}
 #endif	// CONFIG_BR_EXT
