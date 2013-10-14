@@ -1,0 +1,14 @@
+
+To ge DKMS to work:
+
+- Install dkms
+- Copy this source to the directory /usr/src/8723au-0.1/
+- Run (as root):
+
+    $ dkms add -m 8723au -v 0.1
+
+- Test a build:
+
+    $ dkms build -m 8723au -v 0.1
+
+From now on this drive should be available for any new kernels.
