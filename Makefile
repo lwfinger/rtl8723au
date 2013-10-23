@@ -529,7 +529,7 @@ ifeq ($(CONFIG_RTL8723A), y)
 $(MODULE_NAME)-$(CONFIG_MP_INCLUDED)+= core/rtw_bt_mp.o
 endif
 
-CONFIG_REL8723AS-VAU := m
+CONFIG_RTL8723AS-VAU := m
 obj-$(CONFIG_RTL8723AS-VAU) := $(MODULE_NAME).o
 
 else
