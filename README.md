@@ -1,8 +1,10 @@
 Installing:
 -----------
-Simply run the following commands
-
+To get this file, you should have done
     git clone https://github.com/lwfinger/rtl8723au.git
+
+To install, you need to run the following commands
+
     cd rtl8723au/
     make
     sudo make install
