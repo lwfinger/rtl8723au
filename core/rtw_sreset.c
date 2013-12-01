@@ -75,7 +75,7 @@ u8 sreset_get_wifi_status(_adapter *padapter)
 	}
 	DBG_8723A("==> %s wifi_status(0x%x)\n",__FUNCTION__,status);
 
-	//status restore
+	/* status restore */
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
 	return status;
@@ -126,7 +126,7 @@ void sreset_restore_security_station(_adapter *padapter)
 			val8 = 0xcc;
 		#ifdef CONFIG_WAPI_SUPPORT
 		} else if (padapter->wapiInfo.bWapiEnable && pmlmeinfo->auth_algo == dot11AuthAlgrthm_WAPI) {
-			//Disable TxUseDefaultKey, RxUseDefaultKey, RxBroadcastUseDefaultKey.
+			/* Disable TxUseDefaultKey, RxUseDefaultKey, RxBroadcastUseDefaultKey. */
 			val8 = 0x4c;
 		#endif
 		} else {
@@ -135,34 +135,18 @@ void sreset_restore_security_station(_adapter *padapter)
 		rtw_hal_set_hwreg(padapter, HW_VAR_SEC_CFG, (u8 *)(&val8));
 	}
 
-	#if 0
-	if (	( padapter->securitypriv.dot11PrivacyAlgrthm == _WEP40_ ) ||
-		( padapter->securitypriv.dot11PrivacyAlgrthm == _WEP104_ ))
-	{
-
-		for(EntryId=0; EntryId<4; EntryId++)
-		{
-			if(EntryId == psecuritypriv->dot11PrivacyKeyIndex)
-				rtw_set_key(padapter,&padapter->securitypriv, EntryId, 1);
-			else
-				rtw_set_key(padapter,&padapter->securitypriv, EntryId, 0);
-		}
-
-	}
-	else
-	#endif
 	if((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
 		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_))
 	{
 		psta = rtw_get_stainfo(pstapriv, get_bssid(mlmepriv));
 		if (psta == NULL) {
-			//DEBUG_ERR( ("Set wpa_set_encryption: Obtain Sta_info fail \n"));
+			/* DEBUG_ERR( ("Set wpa_set_encryption: Obtain Sta_info fail \n")); */
 		}
 		else
 		{
-			//pairwise key
+			/* pairwise key */
 			rtw_setstakey_cmd(padapter, (unsigned char *)psta, _TRUE);
-			//group key
+			/* group key */
 			rtw_set_key(padapter,&padapter->securitypriv,padapter->securitypriv.dot118021XGrpKeyid, 0);
 		}
 	}
@@ -174,32 +158,13 @@ void sreset_restore_network_station(_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	#if 0
-	{
-	//=======================================================
-	// reset related register of Beacon control
-
-	//set MSR to nolink
-	Set_MSR(padapter, _HW_STATE_NOLINK_);
-	// reject all data frame
-	rtw_write16(padapter, REG_RXFLTMAP2,0x00);
-	//reset TSF
-	rtw_write8(padapter, REG_DUAL_TSF_RST, (BIT(0)|BIT(1)));
-
-	// disable update TSF
-	SetBcnCtrlReg(padapter, BIT(4), 0);
-
-	//=======================================================
-	}
-	#endif
-
 	rtw_setopmode_cmd(padapter, Ndis802_11Infrastructure);
 
 	{
 		u8 threshold;
 		#ifdef CONFIG_USB_HCI
-		// TH=1 => means that invalidate usb rx aggregation
-		// TH=0 => means that validate usb rx aggregation, use init value.
+		/*  TH=1 => means that invalidate usb rx aggregation */
+		/*  TH=0 => means that validate usb rx aggregation, use init value. */
 		if(mlmepriv->htpriv.ht_option) {
 			if(padapter->registrypriv.wifi_spec==1)
 				threshold = 1;
@@ -215,8 +180,8 @@ void sreset_restore_network_station(_adapter *padapter)
 
 	set_channel_bwmode(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
 
-	//disable dynamic functions, such as high power, DIG
-	//Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, _FALSE);
+	/* disable dynamic functions, such as high power, DIG */
+	/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, _FALSE); */
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_BSSID, pmlmeinfo->network.MacAddress);
 
@@ -228,7 +193,7 @@ void sreset_restore_network_station(_adapter *padapter)
 	Set_MSR(padapter, (pmlmeinfo->state & 0x3));
 
 	mlmeext_joinbss_event_callback(padapter, 1);
-	//restore Sequence No.
+	/* restore Sequence No. */
 	rtw_write8(padapter,0x4dc,padapter->xmitpriv.nqos_ssn);
 
 	sreset_restore_security_station(padapter);
@@ -278,7 +243,6 @@ void sreset_stop_adapter(_adapter *padapter)
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
 		_rtw_join_timeout_handler(padapter);
-
 }
 
 void sreset_start_adapter(_adapter *padapter)
@@ -304,7 +268,6 @@ void sreset_start_adapter(_adapter *padapter)
 
 	if (rtw_netif_queue_stopped(padapter->pnetdev))
 		rtw_netif_wake_queue(padapter->pnetdev);
-
 }
 
 void sreset_reset(_adapter *padapter)
