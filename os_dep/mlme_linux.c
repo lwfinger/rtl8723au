@@ -27,45 +27,6 @@
 #include <mlme_osdep.h>
 
 
-#ifdef RTK_DMP_PLATFORM
-void Linkup_workitem_callback(struct work_struct *work)
-{
-	struct mlme_priv *pmlmepriv = container_of(work, struct mlme_priv, Linkup_workitem);
-	_adapter *padapter = container_of(pmlmepriv, _adapter, mlmepriv);
-
-_func_enter_;
-
-	RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("+ Linkup_workitem_callback\n"));
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,12))
-	kobject_uevent(&padapter->pnetdev->dev.kobj, KOBJ_LINKUP);
-#else
-	kobject_hotplug(&padapter->pnetdev->class_dev.kobj, KOBJ_LINKUP);
-#endif
-
-_func_exit_;
-}
-
-void Linkdown_workitem_callback(struct work_struct *work)
-{
-	struct mlme_priv *pmlmepriv = container_of(work, struct mlme_priv, Linkdown_workitem);
-	_adapter *padapter = container_of(pmlmepriv, _adapter, mlmepriv);
-
-_func_enter_;
-
-	RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("+ Linkdown_workitem_callback\n"));
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,12))
-	kobject_uevent(&padapter->pnetdev->dev.kobj, KOBJ_LINKDOWN);
-#else
-	kobject_hotplug(&padapter->pnetdev->class_dev.kobj, KOBJ_LINKDOWN);
-#endif
-
-_func_exit_;
-}
-#endif
-
-
 /*
 void sitesurvey_ctrl_handler(void *FunctionContext)
 {
@@ -127,10 +88,6 @@ void rtw_init_mlme_timer(_adapter *padapter)
 	_init_timer(&(pmlmepriv->set_scan_deny_timer), padapter->pnetdev, _rtw_set_scan_deny_timer_hdl, padapter);
 	#endif
 
-#ifdef RTK_DMP_PLATFORM
-	_init_workitem(&(pmlmepriv->Linkup_workitem), Linkup_workitem_callback, padapter);
-	_init_workitem(&(pmlmepriv->Linkdown_workitem), Linkdown_workitem_callback, padapter);
-#endif
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
 	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
 		padapter->HalFunc.hal_init_checkbthang_workqueue(padapter);
@@ -155,12 +112,7 @@ _func_enter_;
 	if(adapter->pid[2] !=0)
 		rtw_signal_process(adapter->pid[2], SIGALRM);
 
-#ifdef RTK_DMP_PLATFORM
-	_set_workitem(&adapter->mlmepriv.Linkup_workitem);
-#endif
-
 _func_exit_;
-
 }
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
@@ -210,8 +162,6 @@ void rtw_reset_securitypriv( _adapter *adapter )
 	}
 	else //reset values in securitypriv
 	{
-		//if(adapter->mlmepriv.fw_state & WIFI_STATION_STATE)
-		//{
 		struct security_priv *psec_priv=&adapter->securitypriv;
 
 		psec_priv->dot11AuthAlgrthm =dot11AuthAlgrthm_Open;  //open system
@@ -223,7 +173,6 @@ void rtw_reset_securitypriv( _adapter *adapter )
 
 		psec_priv->ndisauthtype = Ndis802_11AuthModeOpen;
 		psec_priv->ndisencryptstatus = Ndis802_11WEPDisabled;
-		//}
 	}
 }
 
@@ -241,13 +190,9 @@ _func_enter_;
 
 	rtw_indicate_wx_disassoc_event(adapter);
 
-#ifdef RTK_DMP_PLATFORM
-	_set_workitem(&adapter->mlmepriv.Linkdown_workitem);
-#endif
-	 rtw_reset_securitypriv( adapter );
+	rtw_reset_securitypriv( adapter );
 
 _func_exit_;
-
 }
 
 void rtw_report_sec_ie(_adapter *adapter,u8 authmode,u8 *sec_ie)
@@ -463,11 +408,11 @@ static int mgnt_netdev_close(struct net_device *pnetdev)
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 static const struct net_device_ops rtl871x_mgnt_netdev_ops = {
 	.ndo_open = mgnt_netdev_open,
-       .ndo_stop = mgnt_netdev_close,
-       .ndo_start_xmit = mgnt_xmit_entry,
-       //.ndo_set_mac_address = r871x_net_set_mac_address,
-       //.ndo_get_stats = r871x_net_get_stats,
-       //.ndo_do_ioctl = r871x_mp_ioctl,
+	.ndo_stop = mgnt_netdev_close,
+	.ndo_start_xmit = mgnt_xmit_entry,
+	//.ndo_set_mac_address = r871x_net_set_mac_address,
+	//.ndo_get_stats = r871x_net_get_stats,
+	//.ndo_do_ioctl = r871x_mp_ioctl,
 };
 #endif
 
@@ -482,7 +427,7 @@ int hostapd_mode_init(_adapter *padapter)
 	   return -ENOMEM;
 
 	//SET_MODULE_OWNER(pnetdev);
-       ether_setup(pnetdev);
+	ether_setup(pnetdev);
 
 	//pnetdev->type = ARPHRD_IEEE80211;
 
@@ -523,16 +468,12 @@ int hostapd_mode_init(_adapter *padapter)
 	pnetdev->features |= NETIF_F_IP_CSUM;
 #endif
 
-
-
 	if(dev_alloc_name(pnetdev,"mgnt.wlan%d") < 0)
 	{
 		DBG_8723A("hostapd_mode_init(): dev_alloc_name, fail! \n");
 	}
 
-
 	//SET_NETDEV_DEV(pnetdev, pintfpriv->udev);
-
 
 	mac[0]=0x00;
 	mac[1]=0xe0;
@@ -543,9 +484,7 @@ int hostapd_mode_init(_adapter *padapter)
 
 	_rtw_memcpy(pnetdev->dev_addr, mac, ETH_ALEN);
 
-
 	netif_carrier_off(pnetdev);
-
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0)
