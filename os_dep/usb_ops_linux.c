@@ -56,7 +56,8 @@ static int _usbctrl_vendorreq_async_write(struct usb_device *udev, u8 request,
 		reqtype =  REALTEK_USB_VENQT_WRITE;
 	}
 
-	buf = (struct rtl819x_async_write_data *)rtw_zmalloc(sizeof(*buf));
+	buf = (struct rtl819x_async_write_data *)
+		kzalloc(sizeof(*buf), GFP_KERNEL);
 	if (!buf) {
 		rc = -ENOMEM;
 		goto exit;
@@ -64,7 +65,7 @@ static int _usbctrl_vendorreq_async_write(struct usb_device *udev, u8 request,
 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb) {
-		rtw_mfree((u8*)buf, sizeof(*buf));
+		kfree(buf);
 		rc = -ENOMEM;
 		goto exit;
 	}
@@ -84,7 +85,7 @@ static int _usbctrl_vendorreq_async_write(struct usb_device *udev, u8 request,
 
 	rc = usb_submit_urb(urb, GFP_ATOMIC);
 	if (rc < 0) {
-		rtw_mfree((u8*)buf, sizeof(*buf));
+		kfree(buf);
 		usb_free_urb(urb);
 	}
 
@@ -194,7 +195,7 @@ static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
 	{
 		if(pcontext->pbuf)
 		{
-			rtw_mfree(pcontext->pbuf, sizeof(int));
+			kfree(pcontext->pbuf);
 		}
 
 		if(pcontext->purb && (pcontext->purb==purb))
@@ -202,8 +203,7 @@ static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
 			usb_free_urb(pcontext->purb);
 		}
 
-
-		rtw_mfree((u8*)pcontext, sizeof(struct zero_bulkout_context));
+		kfree(pcontext);
 	}
 
 
@@ -229,9 +229,9 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 	}
 
 
-	pcontext = (struct zero_bulkout_context *)rtw_zmalloc(sizeof(struct zero_bulkout_context));
+	pcontext = (struct zero_bulkout_context *)kzalloc(sizeof(struct zero_bulkout_context), GFP_KERNEL);
 
-	pbuf = (unsigned char *)rtw_zmalloc(sizeof(int));
+	pbuf = (unsigned char *)kzalloc(sizeof(int), GFP_KERNEL);
 	purb = usb_alloc_urb(0, GFP_ATOMIC);
 
 	len = 0;
@@ -239,7 +239,6 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 	pcontext->purb = purb;
 	pcontext->pirp = NULL;
 	pcontext->padapter = padapter;
-
 
 	//translate DMA FIFO addr to pipehandle
 	//pipe = ffaddr2pipehdl(pdvobj, addr);
