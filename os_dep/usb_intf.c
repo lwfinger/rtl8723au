@@ -293,13 +293,14 @@ static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
 {
 	u8 rst = _SUCCESS;
 
-	#ifdef CONFIG_USB_VENDOR_REQ_MUTEX
+#ifdef CONFIG_USB_VENDOR_REQ_MUTEX
 	_rtw_mutex_init(&dvobj->usb_vendor_req_mutex);
-	#endif
+#endif
 
 
-	#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
-	dvobj->usb_alloc_vendor_req_buf = rtw_zmalloc(MAX_USB_IO_CTL_SIZE);
+#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
+	dvobj->usb_alloc_vendor_req_buf = kzalloc(MAX_USB_IO_CTL_SIZE,
+						  GFP_KERNEL);
 	if (dvobj->usb_alloc_vendor_req_buf == NULL) {
 		DBG_8723A("alloc usb_vendor_req_buf failed... /n");
 		rst = _FAIL;
@@ -308,7 +309,7 @@ static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
 	dvobj->usb_vendor_req_buf  =
 		(u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(dvobj->usb_alloc_vendor_req_buf ), ALIGNMENT_UNIT);
 exit:
-	#endif
+#endif
 
 	return rst;
 
@@ -347,7 +348,7 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
 
 _func_enter_;
 
-	if ((pdvobjpriv = (struct dvobj_priv*)rtw_zmalloc(sizeof(*pdvobjpriv))) == NULL) {
+	if ((pdvobjpriv = (struct dvobj_priv*)kzalloc(sizeof(*pdvobjpriv), GFP_KERNEL)) == NULL) {
 		goto exit;
 	}
 
@@ -435,7 +436,7 @@ free_dvobj:
 		_rtw_mutex_free(&pdvobjpriv->h2c_fwcmd_mutex);
 		_rtw_mutex_free(&pdvobjpriv->setch_mutex);
 		_rtw_mutex_free(&pdvobjpriv->setbw_mutex);
-		rtw_mfree((u8*)pdvobjpriv, sizeof(*pdvobjpriv));
+		kfree(pdvobjpriv);
 		pdvobjpriv = NULL;
 	}
 exit:
