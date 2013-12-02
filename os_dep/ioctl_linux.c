@@ -170,7 +170,7 @@ static void indicate_wx_custom_event(_adapter *padapter, char *msg)
 		return;
 	}
 
-	buff = rtw_zmalloc(IW_CUSTOM_MAX+1);
+	buff = kzalloc(IW_CUSTOM_MAX + 1, GFP_KERNEL);
 	if(!buff)
 		return;
 
@@ -184,7 +184,7 @@ static void indicate_wx_custom_event(_adapter *padapter, char *msg)
 	wireless_send_event(padapter->pnetdev, IWEVCUSTOM, &wrqu, buff);
 #endif
 
-	rtw_mfree(buff, IW_CUSTOM_MAX+1);
+	kfree(buff);
 
 }
 
@@ -195,11 +195,9 @@ static void request_wps_pbc_event(_adapter *padapter)
 	union iwreq_data wrqu;
 
 
-	buff = rtw_malloc(IW_CUSTOM_MAX);
+	buff = kzalloc(IW_CUSTOM_MAX, GFP_KERNEL);
 	if(!buff)
 		return;
-
-	_rtw_memset(buff, 0, IW_CUSTOM_MAX);
 
 	p=buff;
 
@@ -217,9 +215,8 @@ static void request_wps_pbc_event(_adapter *padapter)
 	wireless_send_event(padapter->pnetdev, IWEVCUSTOM, &wrqu, buff);
 #endif
 
-	if(buff)
-	{
-		rtw_mfree(buff, IW_CUSTOM_MAX);
+	if(buff) {
+		kfree(buff);
 	}
 
 }
@@ -832,13 +829,11 @@ _func_enter_;
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep =(NDIS_802_11_WEP	 *) rtw_malloc(wep_total_len);
-			if(pwep == NULL){
+			pwep =(NDIS_802_11_WEP	 *) kzalloc(wep_total_len, GFP_KERNEL);
+			if (pwep == NULL){
 				RT_TRACE(_module_rtl871x_ioctl_os_c,_drv_err_,(" wpa_set_encryption: pwep allocate fail !!!\n"));
 				goto exit;
 			}
-
-			_rtw_memset(pwep, 0, wep_total_len);
 
 			pwep->KeyLength = wep_key_len;
 			pwep->Length = wep_total_len;
@@ -1044,7 +1039,7 @@ _func_enter_;
 exit:
 
 	if (pwep) {
-		rtw_mfree((u8 *)pwep, wep_total_len);
+		kfree((u8 *)pwep);
 	}
 
 _func_exit_;
@@ -1073,7 +1068,7 @@ static int rtw_set_wpa_ie(_adapter *padapter, char *pie, unsigned short ielen)
 
 	if(ielen)
 	{
-		buf = rtw_zmalloc(ielen);
+		buf = kmalloc(ielen, GFP_KERNEL);
 		if (buf == NULL){
 			ret =  -ENOMEM;
 			goto exit;
@@ -1231,7 +1226,8 @@ static int rtw_set_wpa_ie(_adapter *padapter, char *pie, unsigned short ielen)
 
 exit:
 
-	if (buf) rtw_mfree(buf, ielen);
+	if (buf)
+		kfree(buf);
 
 	return ret;
 }
@@ -3251,14 +3247,12 @@ static int rtw_wx_set_enc_ext(struct net_device *dev,
 	struct ieee_param *param = NULL;
 	struct iw_point *pencoding = &wrqu->encoding;
 	struct iw_encode_ext *pext = (struct iw_encode_ext *)extra;
-	int ret=0;
+	int ret = 0;
 
 	param_len = sizeof(struct ieee_param) + pext->key_len;
-	param = (struct ieee_param *)rtw_malloc(param_len);
+	param = (struct ieee_param *)kzalloc(param_len, GFP_KERNEL);
 	if (param == NULL)
-		return -1;
-
-	_rtw_memset(param, 0, param_len);
+		return -ENOMEM;
 
 	param->cmd = IEEE_CMD_SET_ENCRYPTION;
 	_rtw_memset(param->sta_addr, 0xff, ETH_ALEN);
@@ -3289,7 +3283,8 @@ static int rtw_wx_set_enc_ext(struct net_device *dev,
 #endif
 #endif
 	default:
-		return -1;
+		ret = -1;
+		goto out;
 	}
 
 	strncpy((char *)param->u.crypt.alg, alg_name, IEEE_CRYPT_ALG_NAME_LEN);
@@ -3337,10 +3332,8 @@ static int rtw_wx_set_enc_ext(struct net_device *dev,
 
 	ret =  wpa_set_encryption(dev, param, param_len);
 
-	if(param)
-	{
-		rtw_mfree((u8*)param, param_len);
-	}
+out:
+	kfree(param);
 
 	return ret;
 }
@@ -3423,18 +3416,19 @@ static int rtw_wx_read32(struct net_device *dev,
 	u32 data32;
 	u32 bytes;
 	u8 *ptmp;
+	int ret = 0;
 
 
 	padapter = (PADAPTER)rtw_netdev_priv(dev);
 	p = &wrqu->data;
 	len = p->length;
-	ptmp = (u8*)rtw_malloc(len);
-	if (NULL == ptmp)
+	ptmp = (u8*)kmalloc(len, GFP_KERNEL);
+	if (ptmp == NULL)
 		return -ENOMEM;
 
 	if (copy_from_user(ptmp, p->pointer, len)) {
-		rtw_mfree(ptmp, len);
-		return -EFAULT;
+		ret = -EFAULT;
+		goto out;
 	}
 
 	bytes = 0;
@@ -3456,13 +3450,14 @@ static int rtw_wx_read32(struct net_device *dev,
 			break;
 		default:
 			DBG_8723A(KERN_INFO "%s: usage> read [bytes],[address(hex)]\n", __func__);
-			return -EINVAL;
+			ret = -EINVAL;
+			goto out;
 	}
 	DBG_8723A(KERN_INFO "%s: addr=0x%08X data=%s\n", __func__, addr, extra);
 
-	rtw_mfree(ptmp, len);
-
-	return 0;
+out:
+	kfree(ptmp);
+	return ret;
 }
 
 static int rtw_wx_write32(struct net_device *dev,
@@ -3474,7 +3469,6 @@ static int rtw_wx_write32(struct net_device *dev,
 	u32 addr;
 	u32 data32;
 	u32 bytes;
-
 
 	bytes = 0;
 	addr = 0;
@@ -3665,16 +3659,15 @@ struct	iw_point
 
 	bset = (u8)(p->flags&0xFFFF);
 	len = p->length;
-	pparmbuf = (u8*)rtw_malloc(len);
+	pparmbuf = (u8*)kmalloc(len, GFP_KERNEL);
 	if (pparmbuf == NULL){
 		ret = -ENOMEM;
-		goto _rtw_drvext_hdl_exit;
+		goto out;
 	}
 
 	if(bset)//set info
 	{
 		if (copy_from_user(pparmbuf, p->pointer,len)) {
-			rtw_mfree(pparmbuf, len);
 			ret = -EFAULT;
 			goto _rtw_drvext_hdl_exit;
 		}
@@ -3737,7 +3730,8 @@ struct	iw_point
 
 
 _rtw_drvext_hdl_exit:
-
+	kfree(pparmbuf);
+out:
 	return ret;
 
 #endif
@@ -6284,19 +6278,19 @@ static int rtw_p2p_get(struct net_device *dev,
 }
 
 static int rtw_p2p_get2(struct net_device *dev,
-						struct iw_request_info *info,
-						union iwreq_data *wrqu, char *extra)
+			struct iw_request_info *info,
+			union iwreq_data *wrqu, char *extra)
 {
 	int ret = 0;
 
 #ifdef CONFIG_P2P
 
 	int length = wrqu->data.length;
-	char *buffer = (u8 *)rtw_malloc(length);
+	char *buffer = (u8 *)kmalloc(length, GFP_KERNEL);
 
 	if (buffer == NULL) {
 		ret = -ENOMEM;
-		goto bad;
+		goto exit;
 	}
 
 	if (copy_from_user(buffer, wrqu->data.pointer, wrqu->data.length)) {
@@ -6322,7 +6316,7 @@ static int rtw_p2p_get2(struct net_device *dev,
 	}
 bad:
 	kfree(buffer);
-
+exit:
 #endif //CONFIG_P2P
 
 	return ret;
@@ -7325,16 +7319,15 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 		goto out;
 	}
 
-	param = (struct ieee_param *)rtw_malloc(p->length);
+	param = (struct ieee_param *)kmalloc(p->length, GFP_KERNEL);
 	if (param == NULL)
 	{
 		ret = -ENOMEM;
-		goto out;
+		goto exit;
 	}
 
 	if (copy_from_user(param, p->pointer, p->length))
 	{
-		rtw_mfree((u8*)param, p->length);
 		ret = -EFAULT;
 		goto out;
 	}
@@ -7368,10 +7361,9 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 	if (ret == 0 && copy_to_user(p->pointer, param, p->length))
 		ret = -EFAULT;
 
-	rtw_mfree((u8 *)param, p->length);
-
 out:
-
+	kfree(param);
+exit:
 	//up(&ieee->wx_sem);
 
 	return ret;
@@ -7386,15 +7378,15 @@ static u8 set_pairwise_key(_adapter *padapter, struct sta_info *psta)
 	struct cmd_priv				*pcmdpriv=&padapter->cmdpriv;
 	u8	res=_SUCCESS;
 
-	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
+	ph2c = (struct cmd_obj*)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
 	if ( ph2c == NULL){
 		res= _FAIL;
-		goto exit;
+		goto fail1;
 	}
 
-	psetstakey_para = (struct set_stakey_parm*)rtw_zmalloc(sizeof(struct set_stakey_parm));
+	psetstakey_para = (struct set_stakey_parm*)kzalloc(sizeof(struct set_stakey_parm), GFP_KERNEL);
 	if(psetstakey_para==NULL){
-		rtw_mfree((u8 *) ph2c, sizeof(struct cmd_obj));
+		kfree((u8 *) ph2c);
 		res=_FAIL;
 		goto exit;
 	}
@@ -7411,8 +7403,10 @@ static u8 set_pairwise_key(_adapter *padapter, struct sta_info *psta)
 
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 
+	kfree(psetstakey_para);
 exit:
-
+	kfree(ph2c);
+fail1:
 	return res;
 
 }
@@ -7427,19 +7421,17 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
 
 	DBG_8723A("%s\n", __func__);
 
-	pcmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct	cmd_obj));
-	if(pcmd==NULL){
+	pcmd = (struct cmd_obj*)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
+	if (!pcmd) {
+		res= _FAIL;
+		goto fail;
+	}
+	psetkeyparm=(struct setkey_parm*)kzalloc(sizeof(struct setkey_parm),
+						 GFP_KERNEL);
+	if (!psetkeyparm) {
 		res= _FAIL;
 		goto exit;
 	}
-	psetkeyparm=(struct setkey_parm*)rtw_zmalloc(sizeof(struct setkey_parm));
-	if(psetkeyparm==NULL){
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
-		res= _FAIL;
-		goto exit;
-	}
-
-	_rtw_memset(psetkeyparm, 0, sizeof(struct setkey_parm));
 
 	psetkeyparm->keyid=(u8)keyid;
 	if (is_wep_enc(alg))
@@ -7472,8 +7464,10 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
 
 	res = rtw_enqueue_cmd(pcmdpriv, pcmd);
 
+	kfree(psetkeyparm);
 exit:
-
+	kfree(pcmd);
+fail:
 	return res;
 }
 
@@ -7493,7 +7487,6 @@ static int set_wep_key(_adapter *padapter, u8 *key, u8 keylen, int keyid)
 	}
 
 	return set_group_key(padapter, key, alg, keyid);
-
 }
 
 
@@ -7572,13 +7565,12 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep =(NDIS_802_11_WEP *)rtw_malloc(wep_total_len);
+			pwep = (NDIS_802_11_WEP *)kzalloc(wep_total_len,
+							  GFP_KERNEL);
 			if(pwep == NULL){
 				DBG_8723A(" r871x_set_encryption: pwep allocate fail !!!\n");
 				goto exit;
 			}
-
-			_rtw_memset(pwep, 0, wep_total_len);
 
 			pwep->KeyLength = wep_key_len;
 			pwep->Length = wep_total_len;
@@ -7621,7 +7613,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 			//don't update "psecuritypriv->dot11PrivacyAlgrthm" and
 			//"psecuritypriv->dot11PrivacyKeyIndex=keyid", but can rtw_set_key to cam
 
-		      _rtw_memcpy(&(psecuritypriv->dot11DefKey[wep_key_idx].skey[0]), pwep->KeyMaterial, pwep->KeyLength);
+			_rtw_memcpy(&(psecuritypriv->dot11DefKey[wep_key_idx].skey[0]), pwep->KeyMaterial, pwep->KeyLength);
 
 			psecuritypriv->dot11DefKeylen[wep_key_idx] = pwep->KeyLength;
 
@@ -7814,9 +7806,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 exit:
 
-	if(pwep)
-	{
-		rtw_mfree((u8 *)pwep, wep_total_len);
+	if(pwep) {
+		kfree(pwep);
 	}
 
 	return ret;
@@ -8179,13 +8170,13 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 
 	if(pmlmepriv->wps_beacon_ie)
 	{
-		rtw_mfree(pmlmepriv->wps_beacon_ie, pmlmepriv->wps_beacon_ie_len);
+		kfree(pmlmepriv->wps_beacon_ie);
 		pmlmepriv->wps_beacon_ie = NULL;
 	}
 
 	if(ie_len>0)
 	{
-		pmlmepriv->wps_beacon_ie = rtw_malloc(ie_len);
+		pmlmepriv->wps_beacon_ie = kmalloc(ie_len, GFP_KERNEL);
 		pmlmepriv->wps_beacon_ie_len = ie_len;
 		if ( pmlmepriv->wps_beacon_ie == NULL) {
 			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __func__, __LINE__);
@@ -8197,12 +8188,9 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 		update_beacon(padapter, _VENDOR_SPECIFIC_IE_, wps_oui, _TRUE);
 
 		pmlmeext->bstart_bss = _TRUE;
-
 	}
 
-
 	return ret;
-
 }
 
 static int rtw_set_wps_probe_resp(struct net_device *dev, struct ieee_param *param, int len)
@@ -8222,7 +8210,7 @@ static int rtw_set_wps_probe_resp(struct net_device *dev, struct ieee_param *par
 
 	if(pmlmepriv->wps_probe_resp_ie)
 	{
-		rtw_mfree(pmlmepriv->wps_probe_resp_ie, pmlmepriv->wps_probe_resp_ie_len);
+		kfree(pmlmepriv->wps_probe_resp_ie);
 		pmlmepriv->wps_probe_resp_ie = NULL;
 	}
 
@@ -8259,7 +8247,7 @@ static int rtw_set_wps_assoc_resp(struct net_device *dev, struct ieee_param *par
 
 	if(pmlmepriv->wps_assoc_resp_ie)
 	{
-		rtw_mfree(pmlmepriv->wps_assoc_resp_ie, pmlmepriv->wps_assoc_resp_ie_len);
+		kfree(pmlmepriv->wps_assoc_resp_ie);
 		pmlmepriv->wps_assoc_resp_ie = NULL;
 	}
 
@@ -8395,7 +8383,7 @@ static int rtw_ioctl_set_macaddr_acl(struct net_device *dev, struct ieee_param *
 static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 {
 	struct ieee_param *param;
-	int ret=0;
+	int ret = 0;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 
 	//DBG_8723A("%s\n", __func__);
@@ -8407,26 +8395,25 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 
 	if (padapter->hw_init_completed==_FALSE){
 		ret = -EPERM;
-		goto out;
+		goto fail;
 	}
 
 
 	//if (p->length < sizeof(struct ieee_param) || !p->pointer){
 	if(!p->pointer){
 		ret = -EINVAL;
-		goto out;
+		goto fail;
 	}
 
-	param = (struct ieee_param *)rtw_malloc(p->length);
+	param = (struct ieee_param *)kmalloc(p->length, GFP_KERNEL);
 	if (param == NULL)
 	{
 		ret = -ENOMEM;
-		goto out;
+		goto fail;
 	}
 
 	if (copy_from_user(param, p->pointer, p->length))
 	{
-		rtw_mfree((u8*)param, p->length);
 		ret = -EFAULT;
 		goto out;
 	}
@@ -8530,12 +8517,10 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 		ret = -EFAULT;
 
 
-	rtw_mfree((u8 *)param, p->length);
-
 out:
-
+	kfree((u8 *)param);
+fail:
 	return ret;
-
 }
 #endif
 
@@ -8606,11 +8591,12 @@ static int rtw_wx_set_priv(struct net_device *dev,
 			{
 				u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 				pmlmepriv->wps_probe_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
+				kfree(pmlmepriv->wps_probe_req_ie);
 				pmlmepriv->wps_probe_req_ie = NULL;
 			}
 
-			pmlmepriv->wps_probe_req_ie = rtw_malloc(cp_sz);
+			pmlmepriv->wps_probe_req_ie = kmalloc(cp_sz,
+							      GFP_KERNEL);
 			if ( pmlmepriv->wps_probe_req_ie == NULL) {
 				printk("%s()-%d: rtw_malloc() ERROR!\n", __func__, __LINE__);
 				ret =  -EINVAL;
@@ -8719,7 +8705,6 @@ FREE_EXT:
 	//		dev->name, ret);
 
 	return ret;
-
 }
 
 static int rtw_pm_set(struct net_device *dev,
@@ -12148,7 +12133,7 @@ static int rtw_widi_set_probe_request(struct net_device *dev,
 	u8	*pbuf = NULL;
 	_adapter	*padapter = (_adapter *)rtw_netdev_priv(dev);
 
-	pbuf = rtw_malloc(sizeof(l2_msg_t));
+	pbuf = kmalloc(sizeof(l2_msg_t), GFP_KERNEL);
 	if(pbuf) {
 		_rtw_memcpy(pbuf, wrqu->data.pointer, wrqu->data.length);
 		intel_widi_wk_cmd(padapter, INTEL_WIDI_ISSUE_PROB_WK, pbuf);
@@ -12169,7 +12154,8 @@ static s32 initLoopback(PADAPTER padapter)
 	PLOOPBACKDATA ploopback;
 
 	if (padapter->ploopback == NULL) {
-		ploopback = (PLOOPBACKDATA)rtw_zmalloc(sizeof(LOOPBACKDATA));
+		ploopback = (PLOOPBACKDATA)kzalloc(sizeof(LOOPBACKDATA),
+						   GFP_KERNEL);
 		if (ploopback == NULL)
 			return -ENOMEM;
 
@@ -12188,11 +12174,10 @@ static void freeLoopback(PADAPTER padapter)
 {
 	PLOOPBACKDATA ploopback;
 
-
 	ploopback = padapter->ploopback;
 	if (ploopback) {
-		rtw_mfree((u8*)ploopback, sizeof(LOOPBACKDATA));
 		padapter->ploopback = NULL;
+		kfree((u8*)ploopback);
 	}
 }
 
@@ -12687,31 +12672,32 @@ static int rtw_test(
 	u8 *pbuf, *pch;
 	char *ptmp;
 	u8 *delim = ",";
+	int ret = 0;
 	PADAPTER padapter = rtw_netdev_priv(dev);
 
 
 	DBG_8723A("+%s\n", __func__);
 	len = wrqu->data.length;
 
-	pbuf = (u8*)rtw_zmalloc(len);
+	pbuf = (u8*)kzalloc(len, GFP_KERNEL);
 	if (pbuf == NULL) {
 		DBG_8723A("%s: no memory!\n", __func__);
 		return -ENOMEM;
 	}
 
 	if (copy_from_user(pbuf, wrqu->data.pointer, len)) {
-		rtw_mfree(pbuf, len);
 		DBG_8723A("%s: copy from user fail!\n", __func__);
-		return -EFAULT;
+		ret = -EFAULT;
+		goto out;
 	}
 	DBG_8723A("%s: string=\"%s\"\n", __func__, pbuf);
 
 	ptmp = (char*)pbuf;
 	pch = strsep(&ptmp, delim);
 	if ((pch == NULL) || (strlen(pch) == 0)) {
-		rtw_mfree(pbuf, len);
 		DBG_8723A("%s: parameter error(level 1)!\n", __func__);
-		return -EFAULT;
+		ret = -EFAULT;
+		goto out;
 	}
 
 #ifdef CONFIG_MAC_LOOPBACK_DRIVER
@@ -12722,9 +12708,9 @@ static int rtw_test(
 
 		pch = strsep(&ptmp, delim);
 		if ((pch == NULL) || (strlen(pch) == 0)) {
-			rtw_mfree(pbuf, len);
 			DBG_8723A("%s: parameter error(level 2)!\n", __func__);
-			return -EFAULT;
+			ret = -EFAULT;
+			goto out;
 		}
 
 		sscanf(pch, "%d", &cnt);
@@ -12732,9 +12718,9 @@ static int rtw_test(
 
 		pch = strsep(&ptmp, delim);
 		if ((pch == NULL) || (strlen(pch) == 0)) {
-			rtw_mfree(pbuf, len);
 			DBG_8723A("%s: parameter error(level 2)!\n", __func__);
-			return -EFAULT;
+			ret = -EFAULT;
+			goto out;
 		}
 
 		sscanf(pch, "%d", &size);
@@ -12743,40 +12729,12 @@ static int rtw_test(
 		loopbackTest(padapter, cnt, size, extra);
 		wrqu->data.length = strlen(extra) + 1;
 
-		rtw_mfree(pbuf, len);
-		return 0;
+		kfree(pbuf);
+		return ret;
 	}
 #endif
 
 #ifdef CONFIG_RTL8723A
-#if 0
-	if (strcmp(pch, "poweron") == 0)
-	{
-		s32 ret;
-
-		ret = _InitPowerOn(padapter);
-		DBG_8723A("%s: power on %s\n", __func__, (_FAIL==ret) ? "FAIL!":"OK.");
-		sprintf(extra, "Power ON %s", (_FAIL==ret) ? "FAIL!":"OK.");
-		wrqu->data.length = strlen(extra) + 1;
-
-		rtw_mfree(pbuf, len);
-		return 0;
-	}
-
-	if (strcmp(pch, "dlfw") == 0)
-	{
-		s32 ret;
-
-		ret = rtl8723a_FirmwareDownload(padapter);
-		DBG_8723A("%s: download FW %s\n", __func__, (_FAIL==ret) ? "FAIL!":"OK.");
-		sprintf(extra, "download FW %s", (_FAIL==ret) ? "FAIL!":"OK.");
-		wrqu->data.length = strlen(extra) + 1;
-
-		rtw_mfree(pbuf, len);
-		return 0;
-	}
-#endif
-
 #ifdef CONFIG_BT_COEXIST
 #define GET_BT_INFO(padapter)	(&GET_HAL_DATA(padapter)->BtInfo)
 
@@ -12838,7 +12796,7 @@ static int rtw_test(
 		} while (count < 6);
 
 		if (count == 0) {
-			rtw_mfree(pbuf, len);
+			kfree(pbuf);
 			DBG_8723A("%s: parameter error(level 2)!\n", __func__);
 			return -EFAULT;
 		}
@@ -12856,8 +12814,8 @@ static int rtw_test(
 		wrqu->data.length = strlen(extra) + 1;
 	}
 #endif // CONFIG_RTL8723A
-
-	rtw_mfree(pbuf, len);
+out:
+	kfree(pbuf);
 	return 0;
 }
 
@@ -13333,7 +13291,7 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 	_rtw_memcpy(&wdata, wrq_data, sizeof(wdata));
 
 	input_len = wdata.data.length;
-	input = rtw_zmalloc(input_len);
+	input = kzalloc(input_len, GFP_KERNEL);
 	if (NULL == input)
 		return -ENOMEM;
 	if (copy_from_user(input, wdata.data.pointer, input_len)) {
@@ -13398,7 +13356,7 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 		k = j;
 	}
 
-	buffer = rtw_zmalloc(4096);
+	buffer = kzalloc(4096, GFP_KERNEL);
 	if (NULL == buffer) {
 		err = -ENOMEM;
 		goto exit;
@@ -13518,7 +13476,7 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 		}
 	}
 
-	rtw_mfree(input, input_len);
+	kfree(input);
 	input = NULL;
 
 	extra_size = 0;
@@ -13543,7 +13501,7 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 
 	if (extra_size == 0) {
 		extra = (u8*)&wdata;
-		rtw_mfree(buffer, 4096);
+		kfree(buffer);
 		buffer = NULL;
 	} else
 		extra = buffer;
@@ -13566,7 +13524,7 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 		else
 			n = wdata.data.length;
 
-		output = rtw_zmalloc(4096);
+		output = kmalloc(4096, GFP_KERNEL);
 		if (NULL == output) {
 			err =  -ENOMEM;
 			goto exit;
@@ -13629,11 +13587,11 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
 
 exit:
 	if (input)
-		rtw_mfree(input, input_len);
+		kfree(input);
 	if (buffer)
-		rtw_mfree(buffer, 4096);
+		kfree(buffer);
 	if (output)
-		rtw_mfree(output, 4096);
+		kfree(output);
 
 	return err;
 }

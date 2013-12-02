@@ -136,9 +136,8 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		return _FAIL;
 #else // CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-	pxmitbuf->pallocated_buf = rtw_zmalloc(alloc_sz);
-	if (pxmitbuf->pallocated_buf == NULL)
-	{
+	pxmitbuf->pallocated_buf = kzalloc(alloc_sz, GFP_KERNEL);
+	if (pxmitbuf->pallocated_buf == NULL) {
 		return _FAIL;
 	}
 
@@ -159,9 +158,8 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	}
 #endif
 #if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	pxmitbuf->pallocated_buf = rtw_zmalloc(alloc_sz);
-	if (pxmitbuf->pallocated_buf == NULL)
-	{
+	pxmitbuf->pallocated_buf = kzalloc(alloc_sz);
+	if (pxmitbuf->pallocated_buf == NULL) {
 		return _FAIL;
 	}
 
