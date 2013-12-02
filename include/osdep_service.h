@@ -1728,7 +1728,7 @@ struct rtw_cbuf *rtw_cbuf_alloc(u32 size);
 void rtw_cbuf_free(struct rtw_cbuf *cbuf);
 
 #ifdef CONFIG_XMIT_ACK
-#ifdef CONFIG_XMIT_ACK_POLLING 
+#ifdef CONFIG_XMIT_ACK_POLLING
 s32 c2h_evt_hdl(_adapter *adapter, struct c2h_evt_hdr *c2h_evt, c2h_id_filter filter);
 #endif
 #endif
