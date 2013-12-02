@@ -210,10 +210,9 @@ _func_enter_;
 	{
 		RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("rtw_report_sec_ie, authmode=%d\n", authmode));
 
-		buff = rtw_malloc(IW_CUSTOM_MAX);
-
-		_rtw_memset(buff,0,IW_CUSTOM_MAX);
-
+		buff = kzalloc(IW_CUSTOM_MAX, GFP_KERNEL);
+if (!buff)
+			goto out;
 		p=buff;
 
 		p+=sprintf(p,"ASSOCINFO(ReqIEs=");
@@ -238,9 +237,9 @@ _func_enter_;
 #endif
 
 		if(buff)
-		    rtw_mfree(buff, IW_CUSTOM_MAX);
-
+			kfree(buff);
 	}
+out:
 
 _func_exit_;
 
