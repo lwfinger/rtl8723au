@@ -604,7 +604,7 @@ inline int is_same_ess(WLAN_BSSID_EX *a, WLAN_BSSID_EX *b);
 inline int is_same_ess(WLAN_BSSID_EX *a, WLAN_BSSID_EX *b)
 {
 	/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("(%s,%d)(%s,%d)\n", */
-	/* 		a->Ssid.Ssid,a->Ssid.SsidLength,b->Ssid.Ssid,b->Ssid.SsidLength)); */
+	/*		a->Ssid.Ssid,a->Ssid.SsidLength,b->Ssid.Ssid,b->Ssid.SsidLength)); */
 	return (a->Ssid.SsidLength == b->Ssid.SsidLength)
 		&&  _rtw_memcmp(a->Ssid.Ssid, b->Ssid.Ssid, a->Ssid.SsidLength)==_TRUE;
 }
@@ -638,7 +638,7 @@ _func_enter_;
 _func_exit_;
 
 	return ((src->Ssid.SsidLength == dst->Ssid.SsidLength) &&
-		/* 	(src->Configuration.DSConfig == dst->Configuration.DSConfig) && */
+		/*	(src->Configuration.DSConfig == dst->Configuration.DSConfig) && */
 			( (_rtw_memcmp(src->MacAddress, dst->MacAddress, ETH_ALEN)) == _TRUE) &&
 			( (_rtw_memcmp(src->Ssid.Ssid, dst->Ssid.Ssid, src->Ssid.SsidLength)) == _TRUE) &&
 			((s_cap & WLAN_CAPABILITY_IBSS) ==
@@ -929,9 +929,9 @@ _func_exit_;
 
 /* select the desired network based on the capability of the (i)bss. */
 /*  check items: (1) security */
-/* 			   (2) network_type */
-/* 			   (3) WMM */
-/* 			   (4) HT */
+/*			   (2) network_type */
+/*			   (3) WMM */
+/*			   (4) HT */
 /*                      (5) others */
 int rtw_is_desired_network(_adapter *adapter, struct wlan_network *pnetwork);
 int rtw_is_desired_network(_adapter *adapter, struct wlan_network *pnetwork)
@@ -1567,9 +1567,9 @@ static struct sta_info *rtw_joinbss_update_stainfo(_adapter *padapter, struct wl
 			_rtw_memset((u8 *)&psta->dot11rxpn, 0, sizeof (union pn48));
 		}
 
-		/* 	Commented by Albert 2012/07/21 */
-		/* 	When doing the WPS, the wps_ie_len won't equal to 0 */
-		/* 	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
+		/*	Commented by Albert 2012/07/21 */
+		/*	When doing the WPS, the wps_ie_len won't equal to 0 */
+		/*	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
 		if ( padapter->securitypriv.wps_ie_len != 0 )
 		{
 			psta->ieee8021x_blocked=_TRUE;
@@ -3058,8 +3058,8 @@ int rtw_restruct_wmm_ie(_adapter *adapter, u8 *in_ie, u8 *out_ie, uint in_len, u
 /*  */
 /*  Search by BSSID, */
 /*  Return Value: */
-/* 		-1		:if there is no pre-auth key in the  table */
-/* 		>=0		:if there is pre-auth key, and   return the entry id */
+/*		-1		:if there is no pre-auth key in the  table */
+/*		>=0		:if there is pre-auth key, and   return the entry id */
 /*  */
 /*  */
 
@@ -3362,8 +3362,8 @@ unsigned int rtw_restructure_ht_ie(_adapter *padapter, u8 *in_ie, u8 *out_ie, ui
 			rtw_hal_get_def_var(padapter, HAL_DEF_RX_PACKET_OFFSET, &rx_packet_offset);
 			rtw_hal_get_def_var(padapter, HAL_DEF_MAX_RECVBUF_SZ, &max_recvbuf_sz);
 			/* if(max_recvbuf_sz-rx_packet_offset>(8191-256)) { */
-			/* 	DBG_8723A("%s IEEE80211_HT_CAP_MAX_AMSDU is set\n", __FUNCTION__); */
-			/* 	ht_capie.cap_info = ht_capie.cap_info |IEEE80211_HT_CAP_MAX_AMSDU; */
+			/*	DBG_8723A("%s IEEE80211_HT_CAP_MAX_AMSDU is set\n", __FUNCTION__); */
+			/*	ht_capie.cap_info = ht_capie.cap_info |IEEE80211_HT_CAP_MAX_AMSDU; */
 			/*  */
 		}
 		/*

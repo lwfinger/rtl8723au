@@ -1074,8 +1074,8 @@ void HT_caps_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 	{
 		if (i != 2)
 		{
-			/* 	Commented by Albert 2010/07/12 */
-			/* 	Got the endian issue here. */
+			/*	Commented by Albert 2010/07/12 */
+			/*	Got the endian issue here. */
 			pmlmeinfo->HT_caps.u.HT_cap[i] &= (pIE->data[i]);
 		}
 		else
@@ -1103,9 +1103,9 @@ void HT_caps_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 		}
 	}
 
-	/* 	Commented by Albert 2010/07/12 */
-	/* 	Have to handle the endian issue after copying. */
-	/* 	HT_ext_caps didn't be used yet. */
+	/*	Commented by Albert 2010/07/12 */
+	/*	Have to handle the endian issue after copying. */
+	/*	HT_ext_caps didn't be used yet. */
 	pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info = le16_to_cpu( pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info );
 	pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps = le16_to_cpu( pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps );
 
@@ -1865,9 +1865,9 @@ void update_tx_basic_rate(_adapter *padapter, u8 wirelessmode)
 #ifdef CONFIG_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 
-	/* 	Added by Albert 2011/03/22 */
-	/* 	In the P2P mode, the driver should not support the b mode. */
-	/* 	So, the Tx packet shouldn't use the CCK rate */
+	/*	Added by Albert 2011/03/22 */
+	/*	In the P2P mode, the driver should not support the b mode. */
+	/*	So, the Tx packet shouldn't use the CCK rate */
 	if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 #endif /* CONFIG_P2P */

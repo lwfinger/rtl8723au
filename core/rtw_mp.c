@@ -210,18 +210,18 @@ static void mp_init_xmit_attrib(struct mp_tx *pmptx, PADAPTER padapter)
 
 	pattrib->ether_type = 0x8712;
 	/* _rtw_memcpy(pattrib->src, padapter->eeprompriv.mac_addr, ETH_ALEN); */
-/* 	_rtw_memcpy(pattrib->ta, pattrib->src, ETH_ALEN); */
+/*	_rtw_memcpy(pattrib->ta, pattrib->src, ETH_ALEN); */
 	_rtw_memset(pattrib->dst, 0xFF, ETH_ALEN);
-/* 	pattrib->pctrl = 0; */
-/* 	pattrib->dhcp_pkt = 0; */
-/* 	pattrib->pktlen = 0; */
+/*	pattrib->pctrl = 0; */
+/*	pattrib->dhcp_pkt = 0; */
+/*	pattrib->pktlen = 0; */
 	pattrib->ack_policy = 0;
-/* 	pattrib->pkt_hdrlen = ETH_HLEN; */
+/*	pattrib->pkt_hdrlen = ETH_HLEN; */
 	pattrib->hdrlen = WLAN_HDR_A3_LEN;
 	pattrib->subtype = WIFI_DATA;
 	pattrib->priority = 0;
 	pattrib->qsel = pattrib->priority;
-/* 	do_queue_select(padapter, pattrib); */
+/*	do_queue_select(padapter, pattrib); */
 	pattrib->nr_frags = 1;
 	pattrib->encrypt = 0;
 	pattrib->bswenc = _FALSE;
@@ -540,7 +540,7 @@ s32 mp_start_test(PADAPTER padapter)
 	/* 3 0. update mp_priv */
 
 	if (padapter->registrypriv.rf_config == RF_819X_MAX_TYPE) {
-/* 		switch (phal->rf_type) { */
+/*		switch (phal->rf_type) { */
 		switch (GET_RF_TYPE(padapter)) {
 			case RF_1T1R:
 				pmppriv->antenna_tx = ANTENNA_A;
@@ -566,7 +566,7 @@ s32 mp_start_test(PADAPTER padapter)
 	mpt_ProStartTest(padapter);
 
 	/* 3 1. initialize a new WLAN_BSSID_EX */
-/* 	_rtw_memset(&bssid, 0, sizeof(WLAN_BSSID_EX)); */
+/*	_rtw_memset(&bssid, 0, sizeof(WLAN_BSSID_EX)); */
 	_rtw_memcpy(bssid.MacAddress, pmppriv->network_macaddr, ETH_ALEN);
 	bssid.Ssid.SsidLength = strlen("mp_pseudo_adhoc");
 	_rtw_memcpy(bssid.Ssid.Ssid, (u8*)"mp_pseudo_adhoc", bssid.Ssid.SsidLength);
@@ -668,7 +668,7 @@ void mp_stop_test(PADAPTER padapter)
 	rtw_indicate_disconnect(padapter);
 
 	/* 3 2. clear psta used in mp test mode. */
-/* 	rtw_free_assoc_resources(padapter, 1); */
+/*	rtw_free_assoc_resources(padapter, 1); */
 	psta = rtw_get_stainfo(&padapter->stapriv, tgt_network->network.MacAddress);
 	if (psta) rtw_free_stainfo(padapter, psta);
 
@@ -1048,7 +1048,7 @@ void SetPacketTx(PADAPTER padapter)
 
 	#endif
 	/*  offset 8 */
-	/* 	desc->txdw2 |= cpu_to_le32(AGG_BK); AGG BK  offset 12 */
+	/*	desc->txdw2 |= cpu_to_le32(AGG_BK); AGG BK  offset 12 */
 
 	desc->txdw3 |= cpu_to_le32((pattrib->seqnum<<16)&0x0fff0000);
 

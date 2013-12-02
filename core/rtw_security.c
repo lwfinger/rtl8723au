@@ -765,7 +765,7 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 	struct	sta_info		*stainfo;
 	struct	rx_pkt_attrib	 *prxattrib = &((union recv_frame *)precvframe)->u.hdr.attrib;
 	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
-/* 	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
+/*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
 	u32		res=_SUCCESS;
 
 _func_enter_;
@@ -1298,7 +1298,7 @@ static sint aes_cipher(u8 *key, uint	hdrlen,
 	u8 aes_out[16];
 	u8 padded_buffer[16];
 	u8 mic[8];
-/* 	uint	offset = 0; */
+/*	uint	offset = 0; */
 	uint	frtype  = GetFrameType(pframe);
 	uint	frsubtype  = GetFrameSubType(pframe);
 
@@ -1473,7 +1473,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 {	/*  exclude ICV */
 
 	/*static*/
-/* 	unsigned char	message[MAX_MSG_SIZE]; */
+/*	unsigned char	message[MAX_MSG_SIZE]; */
 
 	/* Intermediate Buffers */
 	sint	curfragnum,length;
@@ -1485,7 +1485,7 @@ u32	rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe)
 	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
 	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
 
-/* 	uint	offset = 0; */
+/*	uint	offset = 0; */
 	u32 res=_SUCCESS;
 _func_enter_;
 
@@ -1600,7 +1600,7 @@ static sint aes_decipher(u8 *key, uint	hdrlen,
 	u8 padded_buffer[16];
 	u8 mic[8];
 
-/* 	uint	offset = 0; */
+/*	uint	offset = 0; */
 	uint	frtype  = GetFrameType(pframe);
 	uint	frsubtype  = GetFrameSubType(pframe);
 _func_enter_;
@@ -1845,7 +1845,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 {	/*  exclude ICV */
 
 	/*static*/
-/* 	unsigned char	message[MAX_MSG_SIZE]; */
+/*	unsigned char	message[MAX_MSG_SIZE]; */
 
 	/* Intermediate Buffers */
 
@@ -1854,7 +1854,7 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 	struct	sta_info		*stainfo;
 	struct	rx_pkt_attrib	 *prxattrib = &((union recv_frame *)precvframe)->u.hdr.attrib;
 	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
-/* 	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
+/*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
 	u32	res=_SUCCESS;
 _func_enter_;
 	pframe=(unsigned char *)((union recv_frame*)precvframe)->u.hdr.rx_data;

@@ -1303,7 +1303,7 @@ NDIS_STATUS oid_rt_pro_rw_efuse_pgpkt_hdl(struct oid_par_priv *poid_par_priv)
 
 _func_enter_;
 
-/* 	RT_TRACE(_module_mp_, _drv_info_, ("+oid_rt_pro_rw_efuse_pgpkt_hdl\n")); */
+/*	RT_TRACE(_module_mp_, _drv_info_, ("+oid_rt_pro_rw_efuse_pgpkt_hdl\n")); */
 
 	*poid_par_priv->bytes_rw = 0;
 
@@ -1592,7 +1592,7 @@ _func_enter_;
 	_irqlevel_changed_(&oldirql, RAISE);
 
 	/* DEBUG_ERR(("\n <=== Query OID_RT_PRO_READ_REGISTER. */
-	/* 	Add:0x%08x Width:%d Value:0x%08x\n",RegRWStruct->offset,RegRWStruct->width,RegRWStruct->value)); */
+	/*	Add:0x%08x Width:%d Value:0x%08x\n",RegRWStruct->offset,RegRWStruct->width,RegRWStruct->value)); */
 
 _func_exit_;
 

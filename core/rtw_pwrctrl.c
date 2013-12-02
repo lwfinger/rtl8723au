@@ -654,8 +654,8 @@ s32 LPS_RF_ON_check(PADAPTER padapter, u32 delay_ms)
 }
 
 /*  */
-/* 	Description: */
-/* 		Enter the leisure power save mode. */
+/*	Description: */
+/*		Enter the leisure power save mode. */
 /*  */
 void LPS_Enter(PADAPTER padapter)
 {
@@ -665,7 +665,7 @@ void LPS_Enter(PADAPTER padapter)
 
 _func_enter_;
 
-/* 	DBG_8723A("+LeisurePSEnter\n"); */
+/*	DBG_8723A("+LeisurePSEnter\n"); */
 
 #ifdef CONFIG_CONCURRENT_MODE
 	if (padapter->iface_type != IFACE_PORT0)
@@ -717,14 +717,14 @@ _func_enter_;
 			pwrpriv->LpsIdleCount++;
 	}
 
-/* 	DBG_8723A("-LeisurePSEnter\n"); */
+/*	DBG_8723A("-LeisurePSEnter\n"); */
 
 _func_exit_;
 }
 
 /*  */
-/* 	Description: */
-/* 		Leave the leisure power save mode. */
+/*	Description: */
+/*		Leave the leisure power save mode. */
 /*  */
 void LPS_Leave(PADAPTER padapter)
 {
@@ -741,7 +741,7 @@ _func_enter_;
 		return; /* Skip power saving for concurrent mode port 1*/
 #endif
 
-/* 	DBG_8723A("+LeisurePSLeave\n"); */
+/*	DBG_8723A("+LeisurePSLeave\n"); */
 
 	if (pwrpriv->bLeisurePs)
 	{
@@ -756,7 +756,7 @@ _func_enter_;
 
 	pwrpriv->bpower_saving = _FALSE;
 
-/* 	DBG_8723A("-LeisurePSLeave\n"); */
+/*	DBG_8723A("-LeisurePSLeave\n"); */
 
 _func_exit_;
 }
@@ -940,7 +940,7 @@ static void rpwmtimeout_workitem_callback(struct work_struct *work)
 
 	pwrpriv = container_of(work, struct pwrctrl_priv, rpwmtimeoutwi);
 	padapter = container_of(pwrpriv, _adapter, pwrctrlpriv);
-/* 	DBG_8723A("+%s: rpwm=0x%02X cpwm=0x%02X\n", __func__, pwrpriv->rpwm, pwrpriv->cpwm); */
+/*	DBG_8723A("+%s: rpwm=0x%02X cpwm=0x%02X\n", __func__, pwrpriv->rpwm, pwrpriv->cpwm); */
 
 	_enter_pwrlock(&pwrpriv->lock);
 	if ((pwrpriv->rpwm == pwrpriv->cpwm) || (pwrpriv->cpwm >= PS_STATE_S2))
@@ -990,7 +990,7 @@ static void pwr_rpwm_timeout_handler(void *FunctionContext)
 
 	padapter = (PADAPTER)FunctionContext;
 	pwrpriv = &padapter->pwrctrlpriv;
-/* 	DBG_8723A("+%s: rpwm=0x%02X cpwm=0x%02X\n", __func__, pwrpriv->rpwm, pwrpriv->cpwm); */
+/*	DBG_8723A("+%s: rpwm=0x%02X cpwm=0x%02X\n", __func__, pwrpriv->rpwm, pwrpriv->cpwm); */
 
 	if ((pwrpriv->rpwm == pwrpriv->cpwm) || (pwrpriv->cpwm >= PS_STATE_S2))
 	{

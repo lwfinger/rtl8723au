@@ -61,7 +61,7 @@ _func_enter_;
 	_rtw_spinlock_init(&psta_xmitpriv->lock);
 
 	/* for(i = 0 ; i < MAX_NUMBLKS; i++) */
-	/* 	_init_txservq(&(psta_xmitpriv->blk_q[i])); */
+	/*	_init_txservq(&(psta_xmitpriv->blk_q[i])); */
 
 	_init_txservq(&psta_xmitpriv->be_q);
 	_init_txservq(&psta_xmitpriv->bk_q);
@@ -129,7 +129,7 @@ _func_enter_;
 	}
 	pxmitpriv->pxmit_frame_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->pallocated_frame_buf), 4);
 	/* pxmitpriv->pxmit_frame_buf = pxmitpriv->pallocated_frame_buf + 4 - */
-	/* 						((SIZE_PTR) (pxmitpriv->pallocated_frame_buf) &3); */
+	/*						((SIZE_PTR) (pxmitpriv->pallocated_frame_buf) &3); */
 
 	pxframe = (struct xmit_frame*) pxmitpriv->pxmit_frame_buf;
 
@@ -168,7 +168,7 @@ _func_enter_;
 
 	pxmitpriv->pxmitbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->pallocated_xmitbuf), 4);
 	/* pxmitpriv->pxmitbuf = pxmitpriv->pallocated_xmitbuf + 4 - */
-	/* 						((SIZE_PTR) (pxmitpriv->pallocated_xmitbuf) &3); */
+	/*						((SIZE_PTR) (pxmitpriv->pallocated_xmitbuf) &3); */
 
 	pxmitbuf = (struct xmit_buf*)pxmitpriv->pxmitbuf;
 
@@ -391,7 +391,7 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 		rtw_os_xmit_resource_free(padapter, pxmitbuf,(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
 
 		/* if(pxmitbuf->pallocated_buf) */
-		/* 	rtw_mfree(pxmitbuf->pallocated_buf, MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ); */
+		/*	rtw_mfree(pxmitbuf->pallocated_buf, MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ); */
 
 		pxmitbuf++;
 	}
@@ -424,7 +424,7 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 		rtw_os_xmit_resource_free(padapter, pxmitbuf,(max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
 
 		/* if(pxmitbuf->pallocated_buf) */
-		/* 	rtw_mfree(pxmitbuf->pallocated_buf, max_xmit_extbuf_size); */
+		/*	rtw_mfree(pxmitbuf->pallocated_buf, max_xmit_extbuf_size); */
 
 		pxmitbuf++;
 	}
@@ -485,8 +485,8 @@ static void update_attrib_vcs_info(_adapter *padapter, struct xmit_frame *pxmitf
 
 	/*  (1) RTS_Threshold is compared to the MPDU, not MSDU. */
 	/*  (2) If there are more than one frag in  this MSDU, only the first frag uses protection frame. */
-	/* 		Other fragments are protected by previous fragment. */
-	/* 		So we only need to check the length of first fragment. */
+	/*		Other fragments are protected by previous fragment. */
+	/*		So we only need to check the length of first fragment. */
 	if(pmlmeext->cur_wireless_mode < WIRELESS_11_24N  || padapter->registrypriv.wifi_spec) {
 		if(sz > padapter->registrypriv.rts_thresh) {
 			pattrib->vcs_mode = RTS_CTS;
@@ -579,8 +579,8 @@ static void update_attrib_phy_info(struct pkt_attrib *pattrib, struct sta_info *
 #endif /* CONFIG_80211N_HT */
 	/* if(pattrib->ht_en && psta->htpriv.ampdu_enable) */
 	/*  */
-	/* 	if(psta->htpriv.agg_enable_bitmap & BIT(pattrib->priority)) */
-	/* 		pattrib->ampdu_en = _TRUE; */
+	/*	if(psta->htpriv.agg_enable_bitmap & BIT(pattrib->priority)) */
+	/*		pattrib->ampdu_en = _TRUE; */
 	/*  */
 
 	pattrib->retry_ctrl = _FALSE;
@@ -630,7 +630,7 @@ static void set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 	/*  get UserPriority from IP hdr */
 	if (pattrib->ether_type == 0x0800) {
 		_rtw_pktfile_read(ppktfile, (u8*)&ip_hdr, sizeof(ip_hdr));
-/* 		UserPriority = (ntohs(ip_hdr.tos) >> 5) & 0x3; */
+/*		UserPriority = (ntohs(ip_hdr.tos) >> 5) & 0x3; */
 		UserPriority = ip_hdr.tos >> 5;
 	} else if (pattrib->ether_type == 0x888e) {
 		/*  "When priority processing of data frames is supported, */
@@ -1774,9 +1774,9 @@ _func_enter_;
 		if (pattrib->iv_len)
 		{
 			/* if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) */
-			/* 	psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv)); */
+			/*	psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv)); */
 			/* else */
-			/* 	psta = rtw_get_stainfo(pstapriv, pattrib->ra); */
+			/*	psta = rtw_get_stainfo(pstapriv, pattrib->ra); */
 
 			if (psta != NULL)
 			{
@@ -2436,7 +2436,7 @@ s32 rtw_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe)
 	{
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_err_,
 			 ("rtw_xmitframe_enqueue: drop xmit pkt for classifier fail\n"));
-/* 		pxmitframe->pkt = NULL; */
+/*		pxmitframe->pkt = NULL; */
 		return _FAIL;
 	}
 
@@ -2472,7 +2472,7 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	int i, inx[4];
 #ifdef CONFIG_USB_HCI
-/* 	int j, tmp, acirp_cnt[4]; */
+/*	int j, tmp, acirp_cnt[4]; */
 #endif
 
 _func_enter_;
@@ -2823,8 +2823,8 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 		else
 		/* if (!priv->pmib->ethBrExtInfo.nat25_disable) */
 		{
-/* 			if (priv->dev->br_port && */
-/* 				 !memcmp(skb->data+MACADDRLEN, priv->br_mac, MACADDRLEN)) { */
+/*			if (priv->dev->br_port && */
+/*				 !memcmp(skb->data+MACADDRLEN, priv->br_mac, MACADDRLEN)) { */
 #if 1
 			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
 				is_vlan_tag = 1;
@@ -3326,7 +3326,7 @@ sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *p
 
 			/* if(psta->sleepq_len > (NR_XMITFRAME>>3)) */
 			/*  */
-			/* 	wakeup_sta_to_xmit(padapter, psta); */
+			/*	wakeup_sta_to_xmit(padapter, psta); */
 			/*  */
 
 			ret = _TRUE;

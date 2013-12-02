@@ -164,15 +164,15 @@ Efuse_CalculateWordCnts(IN u8	word_en)
 }
 
 /*  */
-/* 	Description: */
-/* 		Execute E-Fuse read byte operation. */
-/* 		Refered from SD1 Richard. */
+/*	Description: */
+/*		Execute E-Fuse read byte operation. */
+/*		Refered from SD1 Richard. */
 /*  */
-/* 	Assumption: */
-/* 		1. Boot from E-Fuse and successfully auto-load. */
-/* 		2. PASSIVE_LEVEL (USB interface) */
+/*	Assumption: */
+/*		1. Boot from E-Fuse and successfully auto-load. */
+/*		2. PASSIVE_LEVEL (USB interface) */
 /*  */
-/* 	Created by Roger, 2008.10.21. */
+/*	Created by Roger, 2008.10.21. */
 /*  */
 VOID
 ReadEFuseByte(
@@ -223,21 +223,21 @@ ReadEFuseByte(
 }
 
 /*  */
-/* 	Description: */
-/* 		1. Execute E-Fuse read byte operation according as map offset and */
-/* 		    save to E-Fuse table. */
-/* 		2. Refered from SD1 Richard. */
+/*	Description: */
+/*		1. Execute E-Fuse read byte operation according as map offset and */
+/*		    save to E-Fuse table. */
+/*		2. Refered from SD1 Richard. */
 /*  */
-/* 	Assumption: */
-/* 		1. Boot from E-Fuse and successfully auto-load. */
-/* 		2. PASSIVE_LEVEL (USB interface) */
+/*	Assumption: */
+/*		1. Boot from E-Fuse and successfully auto-load. */
+/*		2. PASSIVE_LEVEL (USB interface) */
 /*  */
-/* 	Created by Roger, 2008.10.21. */
+/*	Created by Roger, 2008.10.21. */
 /*  */
-/* 	2008/12/12 MH	1. Reorganize code flow and reserve bytes. and add description. */
-/* 					2. Add efuse utilization collect. */
-/* 	2008/12/22 MH	Read Efuse must check if we write section 1 data again!!! Sec1 */
-/* 					write addr must be after sec5. */
+/*	2008/12/12 MH	1. Reorganize code flow and reserve bytes. and add description. */
+/*					2. Add efuse utilization collect. */
+/*	2008/12/22 MH	Read Efuse must check if we write section 1 data again!!! Sec1 */
+/*					write addr must be after sec5. */
 /*  */
 
 VOID

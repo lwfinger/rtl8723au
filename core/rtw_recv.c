@@ -54,7 +54,7 @@ _func_enter_;
 	_rtw_spinlock_init(&psta_recvpriv->lock);
 
 	/* for(i=0; i<MAX_RX_NUMBLKS; i++) */
-	/* 	_rtw_init_queue(&psta_recvpriv->blk_strms[i]); */
+	/*	_rtw_init_queue(&psta_recvpriv->blk_strms[i]); */
 
 	_rtw_init_queue(&psta_recvpriv->defrag_q);
 
@@ -96,7 +96,7 @@ _func_enter_;
 
 	precvpriv->precv_frame_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_frame_buf), RXFRAME_ALIGN_SZ);
 	/* precvpriv->precv_frame_buf = precvpriv->pallocated_frame_buf + RXFRAME_ALIGN_SZ - */
-	/* 						((SIZE_PTR) (precvpriv->pallocated_frame_buf) &(RXFRAME_ALIGN_SZ-1)); */
+	/*						((SIZE_PTR) (precvpriv->pallocated_frame_buf) &(RXFRAME_ALIGN_SZ-1)); */
 
 	precvframe = (union recv_frame*) precvpriv->precv_frame_buf;
 
@@ -2198,7 +2198,7 @@ static void recvframe_expand_pkt(
 
 	pfhdr = &prframe->u.hdr;
 
-	/* 	6 is for IP header 8 bytes alignment in QoS packet case. */
+	/*	6 is for IP header 8 bytes alignment in QoS packet case. */
 	if (pfhdr->attrib.qos)
 		shift_sz = 6;
 	else
@@ -2206,8 +2206,8 @@ static void recvframe_expand_pkt(
 
 	/*  for first fragment packet, need to allocate */
 	/*  (1536 + RXDESC_SIZE + drvinfo_sz) to reassemble packet */
-	/* 	8 is for skb->data 8 bytes alignment. */
-/* 	alloc_sz = _RND(1536 + RXDESC_SIZE + pfhdr->attrib.drvinfosize + shift_sz + 8, 128); */
+	/*	8 is for skb->data 8 bytes alignment. */
+/*	alloc_sz = _RND(1536 + RXDESC_SIZE + pfhdr->attrib.drvinfosize + shift_sz + 8, 128); */
 	alloc_sz = 1664; /*  round (1536 + 24 + 32 + shift_sz + 8) to 128 bytes alignment */
 
 	/* 3 1. alloc new skb */
@@ -3671,7 +3671,7 @@ s32 rtw_recv_entry(union recv_frame *precvframe)
 
 _func_enter_;
 
-/* 	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("+rtw_recv_entry\n")); */
+/*	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("+rtw_recv_entry\n")); */
 
 	padapter = precvframe->u.hdr.adapter;
 

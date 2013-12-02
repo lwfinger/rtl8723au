@@ -732,7 +732,7 @@ static void update_bmc_sta(_adapter *padapter)
 /* MAC_ID = AID+1 for sta in ap/adhoc mode */
 /* MAC_ID = 1 for bc/mc for sta/ap/adhoc */
 /* MAC_ID = 0 for bssid for sta/ap/adhoc */
-/* CAM_ID = 0~3 for default key, cmd_id=macid + 3, macid=aid+1; */ 
+/* CAM_ID = 0~3 for default key, cmd_id=macid + 3, macid=aid+1; */
 
 void update_sta_info_apmode(_adapter *padapter, struct sta_info *psta)
 {
@@ -1913,7 +1913,7 @@ static int rtw_ht_operation_update(_adapter *padapter)
 		return 0;
 
 	/* if (!iface->conf->ieee80211n || iface->conf->ht_op_mode_fixed) */
-	/* 	return 0; */
+	/*	return 0; */
 
 	DBG_8723A("%s current operation mode=0x%X\n",
 		   __FUNCTION__, pmlmepriv->ht_op_mode);

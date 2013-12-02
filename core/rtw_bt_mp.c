@@ -1149,9 +1149,9 @@ mptbt_BtSetGeneral(
 	}
 	else if(BT_SET_TRACKING_INTERVAL == setType)
 	{
-		/* 	BT_LO_OP_SET_TRACKING_INTERVAL								= 0x22, */
-		/* 	BT_LO_OP_SET_THERMAL_METER									= 0x23, */
-		/* 	BT_LO_OP_ENABLE_CFO_TRACKING									= 0x24, */
+		/*	BT_LO_OP_SET_TRACKING_INTERVAL								= 0x22, */
+		/*	BT_LO_OP_SET_THERMAL_METER									= 0x23, */
+		/*	BT_LO_OP_ENABLE_CFO_TRACKING									= 0x24, */
 				btOpcode = BT_LO_OP_SET_TRACKING_INTERVAL;
 				h2cParaBuf[0] = calVal;
 				h2cParaLen = 1;
@@ -1598,7 +1598,7 @@ mptbt_TestBT(
 		h2cParaBuf[3] = 0x0;
 		h2cParaBuf[4] = 0x0;
 		h2cParaLen = 1;
-	/* 	retStatus = mptbt_BtFwOpCodeProcess(Adapter, btOpcode, btOpcodeVer, &h2cParaBuf[0], h2cParaLen); */
+	/*	retStatus = mptbt_BtFwOpCodeProcess(Adapter, btOpcode, btOpcodeVer, &h2cParaBuf[0], h2cParaLen); */
 		retStatus = mptbt_BtFwOpCodeProcess(Adapter, btOpcode, btOpcodeVer, h2cParaBuf, h2cParaLen);
 
 	/*  3. construct respond status code and data. */

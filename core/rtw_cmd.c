@@ -1234,9 +1234,9 @@ _func_enter_;
 	phtpriv->ht_option = _FALSE;
 	if(pregistrypriv->ht_enable)
 	{
-		/* 	Added by Albert 2010/06/23 */
-		/* 	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
-		/* 	Especially for Realtek 8192u SoftAP. */
+		/*	Added by Albert 2010/06/23 */
+		/*	For the WEP mode, we will use the bg mode to do the connection to avoid some IOT issue. */
+		/*	Especially for Realtek 8192u SoftAP. */
 		if (	( padapter->securitypriv.dot11PrivacyAlgrthm != _WEP40_ ) &&
 			( padapter->securitypriv.dot11PrivacyAlgrthm != _WEP104_ ) &&
 			( padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_ ))
@@ -1573,7 +1573,7 @@ _func_enter_;
 		goto exit;
 	}
 
-/* 	init_h2fwcmd_w_parm_no_rsp(ph2c, psetrttblparm, GEN_CMD_CODE(_SetRaTable)); */
+/*	init_h2fwcmd_w_parm_no_rsp(ph2c, psetrttblparm, GEN_CMD_CODE(_SetRaTable)); */
 
 	_rtw_init_listhead(&ph2c->list);
 	ph2c->cmdcode =GEN_CMD_CODE(_GetRaTable);
@@ -2362,8 +2362,8 @@ _func_enter_;
 	}
 
 	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
-	pdrvextra_cmd_parm->type_size = intCmdType;	/* 	As the command tppe. */
-	pdrvextra_cmd_parm->pbuf = NULL;		/* 	Must be NULL here */
+	pdrvextra_cmd_parm->type_size = intCmdType;	/*	As the command tppe. */
+	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
 
 	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
 
@@ -2636,8 +2636,8 @@ u8 rtw_drvextra_cmd_hdl(_adapter *padapter, unsigned char *pbuf)
 			break;
 #endif /*  CONFIG_P2P_PS */
 		case P2P_PROTO_WK_CID:
-			/* 	Commented by Albert 2011/07/01 */
-			/* 	I used the type_size as the type command */
+			/*	Commented by Albert 2011/07/01 */
+			/*	I used the type_size as the type command */
 			p2p_protocol_wk_hdl( padapter, pdrvextra_cmd->type_size );
 			break;
 #ifdef CONFIG_AP_MODE

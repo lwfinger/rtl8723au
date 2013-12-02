@@ -639,7 +639,7 @@ _func_enter_;
 		/* SecClearAllKeys(adapter); */
 
 		/* RT_TRACE(COMP_OID_SET, DBG_LOUD, ("set_infrastructure: fw_state:%x after changing mode\n", */
-		/* 									get_fwstate(pmlmepriv) )); */
+		/*									get_fwstate(pmlmepriv) )); */
 
 		_exit_critical_bh(&pmlmepriv->lock, &irqL);
 	}

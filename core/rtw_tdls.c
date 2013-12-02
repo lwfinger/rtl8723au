@@ -100,7 +100,7 @@ void issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, struct sta_info *ptdls_
 
 	fctrl = &(pwlanhdr->frame_ctl);
 	*(fctrl) = 0;
-/* 	SetToDs(fctrl); */
+/*	SetToDs(fctrl); */
 	if (power_mode)
 	{
 		SetPwrMgt(fctrl);
@@ -407,7 +407,7 @@ void rtw_tdls_process_wfd_ie(struct tdls_info *ptdlsinfo, u8 *ptr, u8 length)
 	u8	wfd_ie[ 128 ] = { 0x00 };
 	u32	wfd_ielen = 0;
 	u32	wfd_offset = 0;
-	/* 	Try to get the TCP port information when receiving the negotiation response. */
+	/*	Try to get the TCP port information when receiving the negotiation response. */
 	/*  */
 
 	wfd_offset = 0;
@@ -834,7 +834,7 @@ void issue_tdls_dis_rsp(_adapter *padapter, union recv_frame *precv_frame, u8 di
 	fctrl = &(pwlanhdr->frame_ctl);
 	*(fctrl) = 0;
 
-	/* 	unicast probe request frame */
+	/*	unicast probe request frame */
 	_rtw_memcpy(pwlanhdr->addr1, rx_pkt_pattrib->src, ETH_ALEN);
 	_rtw_memcpy(pattrib->dst, pwlanhdr->addr1, ETH_ALEN);
 
@@ -1915,58 +1915,58 @@ void wfd_ie_tdls(_adapter * padapter, u8 *pframe, u32 *pktlen )
 	u8 wfdie[ MAX_WFD_IE_LEN] = { 0x00 };
 	u32 wfdielen = 0;
 
-	/* 	WFD OUI */
+	/*	WFD OUI */
 	wfdielen = 0;
 	wfdie[ wfdielen++ ] = 0x50;
 	wfdie[ wfdielen++ ] = 0x6F;
 	wfdie[ wfdielen++ ] = 0x9A;
-	wfdie[ wfdielen++ ] = 0x0A;	/* 	WFA WFD v1.0 */
+	wfdie[ wfdielen++ ] = 0x0A;	/*	WFA WFD v1.0 */
 
-	/* 	Commented by Albert 20110825 */
-	/* 	According to the WFD Specification, the negotiation request frame should contain 3 WFD attributes */
-	/* 	1. WFD Device Information */
-	/* 	2. Associated BSSID ( Optional ) */
-	/* 	3. Local IP Adress ( Optional ) */
+	/*	Commented by Albert 20110825 */
+	/*	According to the WFD Specification, the negotiation request frame should contain 3 WFD attributes */
+	/*	1. WFD Device Information */
+	/*	2. Associated BSSID ( Optional ) */
+	/*	3. Local IP Adress ( Optional ) */
 
-	/* 	WFD Device Information ATTR */
-	/* 	Type: */
+	/*	WFD Device Information ATTR */
+	/*	Type: */
 	wfdie[ wfdielen++ ] = WFD_ATTR_DEVICE_INFO;
 
-	/* 	Length: */
-	/* 	Note: In the WFD specification, the size of length field is 2. */
+	/*	Length: */
+	/*	Note: In the WFD specification, the size of length field is 2. */
 	RTW_PUT_BE16(wfdie + wfdielen, 0x0006);
 	wfdielen += 2;
 
-	/* 	Value1: */
-	/* 	WFD device information */
-	/* 	available for WFD session + Preferred TDLS + WSD ( WFD Service Discovery ) */
+	/*	Value1: */
+	/*	WFD device information */
+	/*	available for WFD session + Preferred TDLS + WSD ( WFD Service Discovery ) */
 	RTW_PUT_BE16(wfdie + wfdielen, pwfd_info->wfd_device_type | WFD_DEVINFO_SESSION_AVAIL
 								| WFD_DEVINFO_PC_TDLS | WFD_DEVINFO_WSD);
 	wfdielen += 2;
 
-	/* 	Value2: */
-	/* 	Session Management Control Port */
-	/* 	Default TCP port for RTSP messages is 554 */
+	/*	Value2: */
+	/*	Session Management Control Port */
+	/*	Default TCP port for RTSP messages is 554 */
 	RTW_PUT_BE16(wfdie + wfdielen, pwfd_info->rtsp_ctrlport );
 	wfdielen += 2;
 
-	/* 	Value3: */
-	/* 	WFD Device Maximum Throughput */
-	/* 	300Mbps is the maximum throughput */
+	/*	Value3: */
+	/*	WFD Device Maximum Throughput */
+	/*	300Mbps is the maximum throughput */
 	RTW_PUT_BE16(wfdie + wfdielen, 300);
 	wfdielen += 2;
 
-	/* 	Associated BSSID ATTR */
-	/* 	Type: */
+	/*	Associated BSSID ATTR */
+	/*	Type: */
 	wfdie[ wfdielen++ ] = WFD_ATTR_ASSOC_BSSID;
 
-	/* 	Length: */
-	/* 	Note: In the WFD specification, the size of length field is 2. */
+	/*	Length: */
+	/*	Note: In the WFD specification, the size of length field is 2. */
 	RTW_PUT_BE16(wfdie + wfdielen, 0x0006);
 	wfdielen += 2;
 
-	/* 	Value: */
-	/* 	Associated BSSID */
+	/*	Value: */
+	/*	Associated BSSID */
 	if ( check_fwstate( pmlmepriv, _FW_LINKED) == _TRUE )
 	{
 		_rtw_memcpy( wfdie + wfdielen, &pmlmepriv->assoc_bssid[ 0 ], ETH_ALEN );
@@ -1976,19 +1976,19 @@ void wfd_ie_tdls(_adapter * padapter, u8 *pframe, u32 *pktlen )
 		_rtw_memset( wfdie + wfdielen, 0x00, ETH_ALEN );
 	}
 
-	/* 	Local IP Address ATTR */
+	/*	Local IP Address ATTR */
 	wfdie[ wfdielen++ ] = WFD_ATTR_LOCAL_IP_ADDR;
 
-	/* 	Length: */
-	/* 	Note: In the WFD specification, the size of length field is 2. */
+	/*	Length: */
+	/*	Note: In the WFD specification, the size of length field is 2. */
 	RTW_PUT_BE16(wfdie + wfdielen, 0x0005);
 	wfdielen += 2;
 
-	/* 	Version: */
-	/* 	0x01: Version1;IPv4 */
+	/*	Version: */
+	/*	0x01: Version1;IPv4 */
 	wfdie[ wfdielen++ ] = 0x01;
 
-	/* 	IPv4 Address */
+	/*	IPv4 Address */
 	_rtw_memcpy( wfdie + wfdielen, pwfd_info->ip_address, 4 );
 	wfdielen += 4;
 
@@ -2065,7 +2065,7 @@ void rtw_build_tdls_setup_req_ies(_adapter * padapter, struct xmit_frame * pxmit
 	/* supported channels */
 	pframe = rtw_tdls_set_sup_ch(pmlmeext, pframe, pattrib);
 
-	/* 	SRC IE */
+	/*	SRC IE */
 	pframe = rtw_set_ie( pframe, _SRC_IE_, 16, TDLS_SRC, &(pattrib->pktlen));
 
 	/* RSNIE */
