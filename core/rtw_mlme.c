@@ -118,7 +118,7 @@ static void rtw_free_mlme_ie_data(u8 **ppie, u32 *plen)
 {
 	if(*ppie)
 	{
-		_rtw_mfree(*ppie, *plen);
+		rtw_mfree(*ppie, *plen);
 		*plen = 0;
 		*ppie=NULL;
 	}
@@ -2019,7 +2019,7 @@ _func_enter_;
 					assoc_req_len = psta->assoc_req_len;
 					_rtw_memcpy(passoc_req, psta->passoc_req, assoc_req_len);
 
-					_rtw_mfree(psta->passoc_req , psta->assoc_req_len);
+					rtw_mfree(psta->passoc_req , psta->assoc_req_len);
 					psta->passoc_req = NULL;
 					psta->assoc_req_len = 0;
 				}
@@ -2030,7 +2030,7 @@ _func_enter_;
 			{
 				rtw_cfg80211_indicate_sta_assoc(adapter, passoc_req, assoc_req_len);
 
-				_rtw_mfree(passoc_req, assoc_req_len);
+				rtw_mfree(passoc_req, assoc_req_len);
 			}
 			#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)) || defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 #endif /* CONFIG_IOCTL_CFG80211 */
