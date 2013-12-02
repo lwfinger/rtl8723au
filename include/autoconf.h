@@ -51,11 +51,6 @@
 #define SUPPORT_HW_RFOFF_DETECTED
 
 //#define CONFIG_IOCTL_CFG80211
-#ifdef CONFIG_PLATFORM_ARM_SUNxI
-	#ifndef CONFIG_IOCTL_CFG80211
-		#define CONFIG_IOCTL_CFG80211
-	#endif
-#endif
 
 #ifdef CONFIG_IOCTL_CFG80211
 	//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
@@ -201,12 +196,6 @@
 #undef CONFIG_PREALLOC_RECV_SKB
 #endif
 
-#ifdef CONFIG_PLATFORM_ARM_SUNxI
-	#ifndef		CONFIG_USE_USB_BUFFER_ALLOC_TX
-		#define CONFIG_USE_USB_BUFFER_ALLOC_TX
-	#endif
-#endif
-
 /*
  * USB VENDOR REQ BUFFER ALLOCATION METHOD
  * if not set we'll use function local variable (stack memory)
@@ -255,26 +244,6 @@
 #endif
 
 
-/*
- * Platform  Related Config
- */
-#ifdef CONFIG_PLATFORM_MN10300
-#define CONFIG_SPECIAL_SETTING_FOR_FUNAI_TV
-
-#if	defined (CONFIG_SW_ANTENNA_DIVERSITY)
-	#undef CONFIG_SW_ANTENNA_DIVERSITY
-	#define CONFIG_HW_ANTENNA_DIVERSITY
-#endif
-
-#endif
-
-#ifdef CONFIG_WISTRON_PLATFORM
-
-#endif
-
-#ifdef CONFIG_PLATFORM_TI_DM365
-#define CONFIG_USE_USB_BUFFER_ALLOC_RX
-#endif
 /*
  * Outsource  Related Config
  */

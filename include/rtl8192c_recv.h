@@ -25,26 +25,19 @@
 #include <drv_types.h>
 
 
-#ifdef PLATFORM_OS_XP
-	#define NR_RECVBUFF (16)
-#elif defined(PLATFORM_OS_CE)
-	#define NR_RECVBUFF (4)
+#if defined(CONFIG_GSPI_HCI)
+#define NR_RECVBUFF (32)
+#elif defined(CONFIG_SDIO_HCI)
+#define NR_RECVBUFF (8)
 #else
-
-	#if defined(CONFIG_GSPI_HCI)
-		#define NR_RECVBUFF (32)
-	#elif defined(CONFIG_SDIO_HCI)
-		#define NR_RECVBUFF (8)
-	#else
-	#ifdef CONFIG_SINGLE_RECV_BUF
-		#define NR_RECVBUFF (1)
-	#else
-		#define NR_RECVBUFF (4)
-	#endif //CONFIG_SINGLE_RECV_BUF
-	#endif
-
-	#define NR_PREALLOC_RECV_SKB (8)
+#ifdef CONFIG_SINGLE_RECV_BUF
+#define NR_RECVBUFF (1)
+#else
+#define NR_RECVBUFF (4)
+#endif //CONFIG_SINGLE_RECV_BUF
 #endif
+
+#define NR_PREALLOC_RECV_SKB (8)
 
 
 #define RECV_BLK_SZ 512
@@ -53,22 +46,14 @@
 
 #if defined(CONFIG_USB_HCI)
 
-#ifdef PLATFORM_OS_CE
-#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
+#ifndef CONFIG_MINIMAL_MEMORY_USAGE
+//#define MAX_RECVBUF_SZ (32768) // 32k
+//#define MAX_RECVBUF_SZ (16384) //16K
+//#define MAX_RECVBUF_SZ (10240) //10K
+#define MAX_RECVBUF_SZ (15360) // 15k < 16k
+//#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
 #else
-	#ifndef CONFIG_MINIMAL_MEMORY_USAGE
-		//#define MAX_RECVBUF_SZ (32768) // 32k
-		//#define MAX_RECVBUF_SZ (16384) //16K
-		//#define MAX_RECVBUF_SZ (10240) //10K
-		#ifdef CONFIG_PLATFORM_MSTAR_TITANIA12
-			#define MAX_RECVBUF_SZ (8192) // 8K
-		#else
-		#define MAX_RECVBUF_SZ (15360) // 15k < 16k
-		#endif
-		//#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
-	#else
-		#define MAX_RECVBUF_SZ (4000) // about 4K
-	#endif
+#define MAX_RECVBUF_SZ (4000) // about 4K
 #endif
 
 #elif defined(CONFIG_PCI_HCI)

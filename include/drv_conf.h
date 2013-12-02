@@ -21,18 +21,6 @@
 #define __DRV_CONF_H__
 #include "autoconf.h"
 
-#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
-
-#error "Shall be Linux or Windows, but not both!\n"
-
-#endif
-
-//Older Android kernel doesn't has CONFIG_ANDROID defined,
-//add this to force CONFIG_ANDROID defined
-#ifdef CONFIG_PLATFORM_ANDROID
-#define CONFIG_ANDROID
-#endif
-
 #ifdef CONFIG_ANDROID
 //Some Android build will restart the UI while non-printable ascii is passed
 //between java and c/c++ layer (JNI). We force CONFIG_VALIDATE_SSID

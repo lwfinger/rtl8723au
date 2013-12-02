@@ -27,11 +27,9 @@
 #endif
 
 #if defined (CONFIG_LITTLE_ENDIAN)
-#ifndef CONFIG_PLATFORM_MSTAR389
-#  include <little_endian.h>
-#endif
+#include <little_endian.h>
 #elif defined (CONFIG_BIG_ENDIAN)
-#  include <big_endian.h>
+#include <big_endian.h>
 #else
 #  error "Must be LITTLE/BIG Endian Host"
 #endif
