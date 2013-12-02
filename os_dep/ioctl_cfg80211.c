@@ -184,11 +184,10 @@ struct ieee80211_supported_band *rtw_spt_band_alloc(
 		goto exit;
 	}
 
-	spt_band = (struct ieee80211_supported_band *)rtw_zmalloc(
-		sizeof(struct ieee80211_supported_band)
-		+ sizeof(struct ieee80211_channel)*n_channels
-		+ sizeof(struct ieee80211_rate)*n_bitrates
-	);
+	spt_band = (struct ieee80211_supported_band *)
+		kzalloc(sizeof(struct ieee80211_supported_band) +
+			sizeof(struct ieee80211_channel)*n_channels +
+			sizeof(struct ieee80211_rate)*n_bitrates, GFP_KERNEL);
 	if(!spt_band)
 		goto exit;
 
@@ -239,7 +238,7 @@ void rtw_spt_band_free(struct ieee80211_supported_band *spt_band)
 	{
 
 	}
-	rtw_mfree((u8*)spt_band, size);
+	kfree(spt_band);
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)
@@ -607,15 +606,16 @@ static u8 set_pairwise_key(_adapter *padapter, struct sta_info *psta)
 	struct cmd_priv				*pcmdpriv=&padapter->cmdpriv;
 	u8	res=_SUCCESS;
 
-	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
+	ph2c = (struct cmd_obj*)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
 	if ( ph2c == NULL){
 		res= _FAIL;
 		goto exit;
 	}
 
-	psetstakey_para = (struct set_stakey_parm*)rtw_zmalloc(sizeof(struct set_stakey_parm));
+	psetstakey_para = (struct set_stakey_parm*)
+		kzalloc(sizeof(struct set_stakey_parm), GFP_KERNEL);
 	if(psetstakey_para==NULL){
-		rtw_mfree((u8 *) ph2c, sizeof(struct cmd_obj));
+		kfree(ph2c);
 		res=_FAIL;
 		goto exit;
 	}
@@ -648,14 +648,15 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
-	pcmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct	cmd_obj));
+	pcmd = (struct cmd_obj*)kzalloc(sizeof(struct	cmd_obj), GFP_KERNEL);
 	if(pcmd==NULL){
 		res= _FAIL;
 		goto exit;
 	}
-	psetkeyparm=(struct setkey_parm*)rtw_zmalloc(sizeof(struct setkey_parm));
+	psetkeyparm=(struct setkey_parm*)
+		kzalloc(sizeof(struct setkey_parm), GFP_KERNEL);
 	if(psetkeyparm==NULL){
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
+		kfree(pcmd);
 		res= _FAIL;
 		goto exit;
 	}
@@ -1296,7 +1297,7 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 #endif	// (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
 
 	param_len = sizeof(struct ieee_param) + params->key_len;
-	param = (struct ieee_param *)rtw_malloc(param_len);
+	param = (struct ieee_param *)kmalloc(param_len, GFP_KERNEL);
 	if (param == NULL)
 		return -1;
 
@@ -1390,7 +1391,7 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 addkey_end:
 	if(param)
 	{
-		rtw_mfree((u8*)param, param_len);
+		kfree(param);
 	}
 
 	return ret;
@@ -1806,13 +1807,14 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, in
 			{
 				u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 				pmlmepriv->wps_probe_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
+				kfree(pmlmepriv->wps_probe_req_ie);
 				pmlmepriv->wps_probe_req_ie = NULL;
 			}
 
-			pmlmepriv->wps_probe_req_ie = rtw_malloc(wps_ielen);
+			pmlmepriv->wps_probe_req_ie =
+				kmalloc(wps_ielen, GFP_KERNEL);
 			if ( pmlmepriv->wps_probe_req_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -1834,13 +1836,14 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, in
 			{
 				u32 free_len = pmlmepriv->p2p_probe_req_ie_len;
 				pmlmepriv->p2p_probe_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->p2p_probe_req_ie, free_len);
+				kfree(pmlmepriv->p2p_probe_req_ie);
 				pmlmepriv->p2p_probe_req_ie = NULL;
 			}
 
-			pmlmepriv->p2p_probe_req_ie = rtw_malloc(p2p_ielen);
+			pmlmepriv->p2p_probe_req_ie =
+				kmalloc(p2p_ielen, GFP_KERNEL);
 			if ( pmlmepriv->p2p_probe_req_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -1863,13 +1866,14 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, in
 			{
 				u32 free_len = pmlmepriv->wfd_probe_req_ie_len;
 				pmlmepriv->wfd_probe_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->wfd_probe_req_ie, free_len);
+				kfree(pmlmepriv->wfd_probe_req_ie);
 				pmlmepriv->wfd_probe_req_ie = NULL;
 			}
 
-			pmlmepriv->wfd_probe_req_ie = rtw_malloc(wfd_ielen);
+			pmlmepriv->wfd_probe_req_ie =
+				kmalloc(wfd_ielen, GFP_KERNEL);
 			if ( pmlmepriv->wfd_probe_req_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -2356,7 +2360,7 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 		goto exit;
 	}
 
-	buf = rtw_zmalloc(ielen);
+	buf = kzalloc(ielen, GFP_KERNEL);
 	if (buf == NULL){
 		ret =  -ENOMEM;
 		goto exit;
@@ -2493,13 +2497,14 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 			{
 				u32 free_len = pmlmepriv->p2p_assoc_req_ie_len;
 				pmlmepriv->p2p_assoc_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->p2p_assoc_req_ie, free_len);
+				kfree(pmlmepriv->p2p_assoc_req_ie);
 				pmlmepriv->p2p_assoc_req_ie = NULL;
 			}
 
-			pmlmepriv->p2p_assoc_req_ie = rtw_malloc(p2p_ielen);
+			pmlmepriv->p2p_assoc_req_ie =
+				kmalloc(p2p_ielen, GFP_KERNEL);
 			if ( pmlmepriv->p2p_assoc_req_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				goto exit;
 			}
 			_rtw_memcpy(pmlmepriv->p2p_assoc_req_ie, p2p_ie, p2p_ielen);
@@ -2524,13 +2529,14 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 			{
 				u32 free_len = pmlmepriv->wfd_assoc_req_ie_len;
 				pmlmepriv->wfd_assoc_req_ie_len = 0;
-				rtw_mfree(pmlmepriv->wfd_assoc_req_ie, free_len);
+				kfree(pmlmepriv->wfd_assoc_req_ie);
 				pmlmepriv->wfd_assoc_req_ie = NULL;
 			}
 
-			pmlmepriv->wfd_assoc_req_ie = rtw_malloc(wfd_ielen);
+			pmlmepriv->wfd_assoc_req_ie =
+				kmalloc(wfd_ielen, GFP_KERNEL);
 			if ( pmlmepriv->wfd_assoc_req_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				goto exit;
 			}
 			rtw_get_wfd_ie(buf, ielen, pmlmepriv->wfd_assoc_req_ie, &pmlmepriv->wfd_assoc_req_ie_len);
@@ -2552,7 +2558,7 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 
 exit:
 	if (buf)
-		rtw_mfree(buf, ielen);
+		kfree(buf);
 	if (ret)
 		_clr_fwstate_(&padapter->mlmepriv, WIFI_UNDER_WPS);
 	return ret;
@@ -2804,7 +2810,8 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep =(NDIS_802_11_WEP	 *) rtw_malloc(wep_total_len);
+			pwep =(NDIS_802_11_WEP	 *)kmalloc(wep_total_len,
+							   GFP_KERNEL);
 			if(pwep == NULL){
 				DBG_8723A(" wpa_set_encryption: pwep allocate fail !!!\n");
 				ret = -ENOMEM;
@@ -2838,7 +2845,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		}
 
 		if (pwep) {
-			rtw_mfree((u8 *)pwep,wep_total_len);
+			kfree(pwep);
 		}
 
 		if(ret < 0)
@@ -3454,7 +3461,8 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 	pnpi->sizeof_priv = sizeof(_adapter);
 
 	/*  wdev */
-	mon_wdev = (struct wireless_dev *)rtw_zmalloc(sizeof(struct wireless_dev));
+	mon_wdev = (struct wireless_dev *)
+		kzalloc(sizeof(struct wireless_dev), GFP_KERNEL);
 	if (!mon_wdev) {
 		DBG_8723A(FUNC_ADPT_FMT" allocate mon_wdev fail\n", FUNC_ADPT_ARG(padapter));
 		ret = -ENOMEM;
@@ -3476,7 +3484,7 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 
 out:
 	if (ret && mon_wdev) {
-		rtw_mfree((u8*)mon_wdev, sizeof(struct wireless_dev));
+		kfree(mon_wdev);
 		mon_wdev = NULL;
 	}
 
@@ -3603,7 +3611,7 @@ static int rtw_add_beacon(_adapter *adapter, const u8 *head, size_t head_len, co
 		return -EINVAL;
 
 
-	pbuf = rtw_zmalloc(head_len+tail_len);
+	pbuf = kzalloc(head_len+tail_len, GFP_KERNEL);
 	if(!pbuf)
 		return -ENOMEM;
 
@@ -3677,7 +3685,7 @@ static int rtw_add_beacon(_adapter *adapter, const u8 *head, size_t head_len, co
 	}
 
 
-	rtw_mfree(pbuf, head_len+tail_len);
+	kfree(pbuf);
 
 	return ret;
 }
@@ -4798,13 +4806,14 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 			{
 				u32 free_len = pmlmepriv->wps_beacon_ie_len;
 				pmlmepriv->wps_beacon_ie_len = 0;
-				rtw_mfree(pmlmepriv->wps_beacon_ie, free_len);
+				kfree(pmlmepriv->wps_beacon_ie);
 				pmlmepriv->wps_beacon_ie = NULL;
 			}
 
-			pmlmepriv->wps_beacon_ie = rtw_malloc(wps_ielen);
+			pmlmepriv->wps_beacon_ie =
+				kmalloc(wps_ielen, GFP_KERNEL);
 			if ( pmlmepriv->wps_beacon_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -4830,13 +4839,14 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 			{
 				u32 free_len = pmlmepriv->p2p_beacon_ie_len;
 				pmlmepriv->p2p_beacon_ie_len = 0;
-				rtw_mfree(pmlmepriv->p2p_beacon_ie, free_len);
+				kfree(pmlmepriv->p2p_beacon_ie);
 				pmlmepriv->p2p_beacon_ie = NULL;
 			}
 
-			pmlmepriv->p2p_beacon_ie = rtw_malloc(p2p_ielen);
+			pmlmepriv->p2p_beacon_ie =
+				kmalloc(p2p_ielen, GFP_KERNEL);
 			if ( pmlmepriv->p2p_beacon_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -4861,13 +4871,13 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 			{
 				u32 free_len = pmlmepriv->wfd_beacon_ie_len;
 				pmlmepriv->wfd_beacon_ie_len = 0;
-				rtw_mfree(pmlmepriv->wfd_beacon_ie, free_len);
+				kfree(pmlmepriv->wfd_beacon_ie);
 				pmlmepriv->wfd_beacon_ie = NULL;
 			}
 
-			pmlmepriv->wfd_beacon_ie = rtw_malloc(wfd_ielen);
+			pmlmepriv->wfd_beacon_ie = kmalloc(wfd_ielen);
 			if ( pmlmepriv->wfd_beacon_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -4914,13 +4924,13 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 			{
 				u32 free_len = pmlmepriv->wps_probe_resp_ie_len;
 				pmlmepriv->wps_probe_resp_ie_len = 0;
-				rtw_mfree(pmlmepriv->wps_probe_resp_ie, free_len);
+				kfree(pmlmepriv->wps_probe_resp_ie);
 				pmlmepriv->wps_probe_resp_ie = NULL;
 			}
 
-			pmlmepriv->wps_probe_resp_ie = rtw_malloc(wps_ielen);
+			pmlmepriv->wps_probe_resp_ie = kmalloc(wps_ielen);
 			if ( pmlmepriv->wps_probe_resp_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -4978,13 +4988,13 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 				{
 					u32 free_len = pmlmepriv->p2p_probe_resp_ie_len;
 					pmlmepriv->p2p_probe_resp_ie_len = 0;
-					rtw_mfree(pmlmepriv->p2p_probe_resp_ie, free_len);
+					kfree(pmlmepriv->p2p_probe_resp_ie);
 					pmlmepriv->p2p_probe_resp_ie = NULL;
 				}
 
-				pmlmepriv->p2p_probe_resp_ie = rtw_malloc(p2p_ielen);
+				pmlmepriv->p2p_probe_resp_ie = kmalloc(p2p_ielen);
 				if ( pmlmepriv->p2p_probe_resp_ie == NULL) {
-					DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+					DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 					return -EINVAL;
 
 				}
@@ -4997,13 +5007,13 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 				{
 					u32 free_len = pmlmepriv->p2p_go_probe_resp_ie_len;
 					pmlmepriv->p2p_go_probe_resp_ie_len = 0;
-					rtw_mfree(pmlmepriv->p2p_go_probe_resp_ie, free_len);
+					kfree(pmlmepriv->p2p_go_probe_resp_ie);
 					pmlmepriv->p2p_go_probe_resp_ie = NULL;
 				}
 
-				pmlmepriv->p2p_go_probe_resp_ie = rtw_malloc(p2p_ielen);
+				pmlmepriv->p2p_go_probe_resp_ie = kmalloc(p2p_ielen);
 				if ( pmlmepriv->p2p_go_probe_resp_ie == NULL) {
-					DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+					DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 					return -EINVAL;
 
 				}
@@ -5028,13 +5038,13 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 			{
 				u32 free_len = pmlmepriv->wfd_probe_resp_ie_len;
 				pmlmepriv->wfd_probe_resp_ie_len = 0;
-				rtw_mfree(pmlmepriv->wfd_probe_resp_ie, free_len);
+				kfree(pmlmepriv->wfd_probe_resp_ie);
 				pmlmepriv->wfd_probe_resp_ie = NULL;
 			}
 
-			pmlmepriv->wfd_probe_resp_ie = rtw_malloc(wfd_ielen);
+			pmlmepriv->wfd_probe_resp_ie = kmalloc(wfd_ielen);
 			if ( pmlmepriv->wfd_probe_resp_ie == NULL) {
-				DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
@@ -5062,13 +5072,13 @@ static int rtw_cfg80211_set_assoc_resp_wpsp2pie(struct net_device *net, char *bu
 		{
 			u32 free_len = pmlmepriv->wps_assoc_resp_ie_len;
 			pmlmepriv->wps_assoc_resp_ie_len = 0;
-			rtw_mfree(pmlmepriv->wps_assoc_resp_ie, free_len);
+			kfree(pmlmepriv->wps_assoc_resp_ie);
 			pmlmepriv->wps_assoc_resp_ie = NULL;
 		}
 
-		pmlmepriv->wps_assoc_resp_ie = rtw_malloc(len);
+		pmlmepriv->wps_assoc_resp_ie = kmalloc(len);
 		if ( pmlmepriv->wps_assoc_resp_ie == NULL) {
-			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __FUNCTION__, __LINE__);
+			DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 			return -EINVAL;
 
 		}
@@ -5372,7 +5382,7 @@ int rtw_wdev_alloc(_adapter *padapter, struct device *dev)
 	}
 
 	/*  wdev */
-	wdev = (struct wireless_dev *)rtw_zmalloc(sizeof(struct wireless_dev));
+	wdev = (struct wireless_dev *)kzalloc(sizeof(struct wireless_dev));
 	if (!wdev) {
 		DBG_8723A("Couldn't allocate wireless device\n");
 		ret = -ENOMEM;
@@ -5412,7 +5422,7 @@ int rtw_wdev_alloc(_adapter *padapter, struct device *dev)
 
 	return ret;
 
-	rtw_mfree((u8*)wdev, sizeof(struct wireless_dev));
+	kfree(wdev);
 unregister_wiphy:
 	wiphy_unregister(wiphy);
  free_wiphy:
@@ -5438,7 +5448,7 @@ void rtw_wdev_free(struct wireless_dev *wdev)
 
 	wiphy_free(wdev->wiphy);
 
-	rtw_mfree((u8*)wdev, sizeof(struct wireless_dev));
+	kfree(wdev);
 }
 
 void rtw_wdev_unregister(struct wireless_dev *wdev)
