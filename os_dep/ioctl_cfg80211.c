@@ -1697,7 +1697,7 @@ void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool abor
 {
 	_irqL	irqL;
 
-	_enter_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
+	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	if(pwdev_priv->scan_request != NULL)
 	{
 		//struct cfg80211_scan_request *scan_request = pwdev_priv->scan_request;
@@ -1724,7 +1724,7 @@ void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool abor
 		DBG_8723A("%s without scan req\n", __FUNCTION__);
 		#endif
 	}
-	_exit_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
+	spin_unlock_bh(&pwdev_priv->scan_req_lock);
 }
 
 void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
@@ -1747,7 +1747,7 @@ void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
 	DBG_8723A("%s\n", __func__);
 #endif
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -1774,7 +1774,7 @@ void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	//call this after other things have been done
 	rtw_cfg80211_indicate_scan_done(wdev_to_priv(padapter->rtw_wdev), _FALSE);
@@ -1929,9 +1929,9 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	}
 #endif //CONFIG_CONCURRENT_MODE
 
-	_enter_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
+	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	pwdev_priv->scan_request = request;
-	_exit_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
+	spin_unlock_bh(&pwdev_priv->scan_req_lock);
 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
 	{
@@ -2064,7 +2064,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 		ch[i].flags = request->channels[i]->flags;
 	}
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	if (request->n_channels == 1) {
 		memcpy(&ch[1], &ch[0], sizeof(struct rtw_ieee80211_channel));
 		memcpy(&ch[2], &ch[0], sizeof(struct rtw_ieee80211_channel));
@@ -2072,7 +2072,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	} else {
 		_status = rtw_sitesurvey_cmd(padapter, ssid, RTW_SSID_SCAN_AMOUNT, NULL, 0);
 	}
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 
 
 	if(_status == _FALSE)
@@ -2636,7 +2636,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		rtw_scan_abort(padapter);
 	}
 
-	_enter_critical_bh(&queue->lock, &irqL);
+	spin_lock_bh(&queue->lock);
 
 	phead = get_list_head(queue);
 	pmlmepriv->pscanned = get_next(phead);
@@ -2699,7 +2699,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 
 	}
 
-	_exit_critical_bh(&queue->lock, &irqL);
+	spin_unlock_bh(&queue->lock);
 
 	if((matched == _FALSE) || (pnetwork== NULL))
 	{
@@ -3806,7 +3806,7 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 	}
 
 
-	_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+	spin_lock_bh(&pstapriv->asoc_list_lock);
 
 	phead = &pstapriv->asoc_list;
 	plist = get_next(phead);
@@ -3831,9 +3831,9 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 				rtw_list_delete(&psta->asoc_list);
 				pstapriv->asoc_list_cnt--;
 
-				//_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+				//spin_unlock_bh(&pstapriv->asoc_list_lock);
 				updated = ap_free_sta(padapter, psta, _TRUE, WLAN_REASON_DEAUTH_LEAVING);
-				//_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+				//spin_lock_bh(&pstapriv->asoc_list_lock);
 
 				psta = NULL;
 
@@ -3844,7 +3844,7 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 
 	}
 
-	_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+	spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 	associated_clients_update(padapter, updated);
 
@@ -5374,7 +5374,7 @@ int rtw_wdev_alloc(_adapter *padapter, struct device *dev)
 	pwdev_priv->ifname_mon[0] = '\0';
 	pwdev_priv->padapter = padapter;
 	pwdev_priv->scan_request = NULL;
-	_rtw_spinlock_init(&pwdev_priv->scan_req_lock);
+	spin_lock_init(&pwdev_priv->scan_req_lock);
 
 	pwdev_priv->p2p_enabled = _FALSE;
 	pwdev_priv->provdisc_req_issued = _FALSE;

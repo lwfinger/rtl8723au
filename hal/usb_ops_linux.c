@@ -1434,10 +1434,10 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 
 	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete!!!\n"));
 
-	//_enter_critical(&precvpriv->lock, &irqL);
+	//spin_lock_irqsave(&precvpriv->lock, irqL);
 	//precvbuf->irp_pending=_FALSE;
 	//precvpriv->rx_pending_cnt --;
-	//_exit_critical(&precvpriv->lock, &irqL);
+	//spin_unlock_irqrestore(&precvpriv->lock, irqL);
 
 	precvpriv->rx_pending_cnt --;
 

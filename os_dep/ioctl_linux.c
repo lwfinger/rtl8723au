@@ -1734,7 +1734,7 @@ static int rtw_wx_set_wap(struct net_device *dev,
 	}
 
 	authmode = padapter->securitypriv.ndisauthtype;
-	_enter_critical_bh(&queue->lock, &irqL);
+	spin_lock_bh(&queue->lock);
        phead = get_list_head(queue);
        pmlmepriv->pscanned = get_next(phead);
 
@@ -1775,7 +1775,7 @@ static int rtw_wx_set_wap(struct net_device *dev,
 			if(!rtw_set_802_11_infrastructure_mode(padapter, pnetwork->network.InfrastructureMode))
 			{
 				ret = -1;
-				_exit_critical_bh(&queue->lock, &irqL);
+				spin_unlock_bh(&queue->lock);
 				goto exit;
 			}
 
@@ -1783,7 +1783,7 @@ static int rtw_wx_set_wap(struct net_device *dev,
 		}
 
 	}
-	_exit_critical_bh(&queue->lock, &irqL);
+	spin_unlock_bh(&queue->lock);
 
 	rtw_set_802_11_authentication_mode(padapter, authmode);
 	//set_802_11_encryption_mode(padapter, padapter->securitypriv.ndisencryptstatus);
@@ -2035,11 +2035,11 @@ _func_enter_;
 
 			DBG_8723A("IW_SCAN_THIS_ESSID, ssid=%s, len=%d\n", req->essid, req->essid_len);
 
-			_enter_critical_bh(&pmlmepriv->lock, &irqL);
+			spin_lock_bh(&pmlmepriv->lock);
 
 			_status = rtw_sitesurvey_cmd(padapter, ssid, 1, NULL, 0);
 
-			_exit_critical_bh(&pmlmepriv->lock, &irqL);
+			spin_unlock_bh(&pmlmepriv->lock);
 
 		}
 		else if (req->scan_type == IW_SCAN_TYPE_PASSIVE)
@@ -2247,7 +2247,7 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 			break;
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -2278,7 +2278,7 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
        wrqu->data.length = ev-extra;
 	wrqu->data.flags = 0;
@@ -2408,7 +2408,7 @@ static int rtw_wx_set_essid(struct net_device *dev,
 		src_ssid = ndis_ssid.Ssid;
 
 		RT_TRACE(_module_rtl871x_ioctl_os_c, _drv_info_, ("rtw_wx_set_essid: ssid=[%s]\n", src_ssid));
-		_enter_critical_bh(&queue->lock, &irqL);
+		spin_lock_bh(&queue->lock);
 	       phead = get_list_head(queue);
               pmlmepriv->pscanned = get_next(phead);
 
@@ -2461,14 +2461,14 @@ static int rtw_wx_set_essid(struct net_device *dev,
 				if (rtw_set_802_11_infrastructure_mode(padapter, pnetwork->network.InfrastructureMode) == _FALSE)
 				{
 					ret = -1;
-					_exit_critical_bh(&queue->lock, &irqL);
+					spin_unlock_bh(&queue->lock);
 					goto exit;
 				}
 
 				break;
 			}
 		}
-		_exit_critical_bh(&queue->lock, &irqL);
+		spin_unlock_bh(&queue->lock);
 		RT_TRACE(_module_rtl871x_ioctl_os_c, _drv_info_,
 			 ("set ssid: set_802_11_auth. mode=%d\n", authmode));
 		rtw_set_802_11_authentication_mode(padapter, authmode);
@@ -3711,7 +3711,7 @@ static int rtw_get_ap_info(struct net_device *dev,
 		goto exit;
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -3728,7 +3728,7 @@ static int rtw_get_ap_info(struct net_device *dev,
 		if(hwaddr_aton_i(data, bssid))
 		{
 			DBG_8723A("Invalid BSSID '%s'.\n", (u8*)data);
-			_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 			return -EINVAL;
 		}
 
@@ -3757,7 +3757,7 @@ static int rtw_get_ap_info(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if(pdata->length>=34)
 	{
@@ -4385,7 +4385,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 
 	macstr2num(peerMAC, subcmd);
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4420,7 +4420,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if (!blnMatch)
 	{
@@ -4522,7 +4522,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 
 	macstr2num(peerMAC, subcmd);
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4569,7 +4569,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if (!blnMatch)
 	{
@@ -4614,7 +4614,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 
 	macstr2num(peerMAC, subcmd);
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4651,7 +4651,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if (!blnMatch)
 	{
@@ -4692,7 +4692,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 
 	macstr2num(peerMAC, subcmd);
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4725,7 +4725,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if (!blnMatch)
 	{
@@ -4766,7 +4766,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 
 	macstr2num(peerMAC, subcmd);
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4798,7 +4798,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 		plist = get_next(plist);
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if (!blnMatch) {
 		sprintf(inv_proc_str, "\nIP=-1");
@@ -4863,7 +4863,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 		peerMAC[ jj ] = key_2char2num( extra[kk], extra[kk+ 1] );
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -4884,7 +4884,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	if ( uintPeerChannel )
 	{
@@ -5015,7 +5015,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 		pinvite_req_info->peer_macaddr[ jj ] = key_2char2num( extra[kk], extra[kk+ 1] );
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -5061,7 +5061,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 #ifdef CONFIG_WFD
 	if ( uintPeerChannel )
@@ -5280,7 +5280,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 		peerMAC[ jj ] = key_2char2num( extra[kk], extra[kk+ 1] );
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -5328,7 +5328,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 	printk( "[%s] channel = %d\n", __func__, uintPeerChannel );
 
 	if ( uintPeerChannel )
@@ -5574,7 +5574,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		return( ret );
 	}
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -5629,7 +5629,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 	}
 
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 #ifdef CONFIG_WFD
 	{
@@ -6553,7 +6553,7 @@ static int rtw_dbg_port(struct net_device *dev,
 #ifdef CONFIG_AP_MODE
 						DBG_8723A("sta_dz_bitmap=0x%x, tim_bitmap=0x%x\n", pstapriv->sta_dz_bitmap, pstapriv->tim_bitmap);
 #endif
-						_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+						spin_lock_bh(&pstapriv->sta_hash_lock);
 
 						for(i=0; i< NUM_STA; i++)
 						{
@@ -6604,7 +6604,7 @@ static int rtw_dbg_port(struct net_device *dev,
 							}
 						}
 
-						_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+						spin_unlock_bh(&pstapriv->sta_hash_lock);
 
 					}
 					break;
@@ -7591,9 +7591,9 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 	if(psta)
 	{
 		DBG_8723A("rtw_add_sta(), free has been added psta=%p\n", psta);
-		_enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+		spin_lock_bh(&(pstapriv->sta_hash_lock));
 		rtw_free_stainfo(padapter,  psta);
-		_exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+		spin_unlock_bh(&(pstapriv->sta_hash_lock));
 
 		psta = NULL;
 	}
@@ -7682,7 +7682,7 @@ static int rtw_del_sta(struct net_device *dev, struct ieee_param *param)
 
 		//DBG_8723A("free psta=%p, aid=%d\n", psta, psta->aid);
 
-		_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+		spin_lock_bh(&pstapriv->asoc_list_lock);
 		if(rtw_is_list_empty(&psta->asoc_list)==_FALSE)
 		{
 			rtw_list_delete(&psta->asoc_list);
@@ -7690,7 +7690,7 @@ static int rtw_del_sta(struct net_device *dev, struct ieee_param *param)
 			updated = ap_free_sta(padapter, psta, _TRUE, WLAN_REASON_DEAUTH_LEAVING);
 
 		}
-		_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+		spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 		associated_clients_update(padapter, updated);
 
@@ -8518,7 +8518,7 @@ static int rtw_tdls_enable(struct net_device *dev,
 		if(pstapriv->asoc_sta_count==1)
 			return ret;
 
-		_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+		spin_lock_bh(&pstapriv->sta_hash_lock);
 		for(index=0; index< NUM_STA; index++)
 		{
 			phead = &(pstapriv->sta_hash[index]);
@@ -8536,7 +8536,7 @@ static int rtw_tdls_enable(struct net_device *dev,
 				}
 			}
 		}
-		_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+		spin_unlock_bh(&pstapriv->sta_hash_lock);
 
 		for (index=0; index< NUM_STA; index++)
 		{
@@ -9196,9 +9196,9 @@ static s32 createpseudoadhoc(PADAPTER padapter)
 	rtw_update_registrypriv_dev_network(padapter);
 	rtw_generate_random_ibss(pibss);
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->fw_state = WIFI_ADHOC_MASTER_STATE;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 
 #if 0
 	err = rtw_createbss_cmd(padapter);
@@ -9266,9 +9266,9 @@ static struct xmit_frame* createloopbackpkt(PADAPTER padapter, u32 size)
 	pframe->padapter = padapter;
 
 	//2 2. allocate xmit buffer
-	_enter_critical_bh(&pxmitpriv->lock, &irqL);
+	spin_lock_bh(&pxmitpriv->lock);
 	pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
-	_exit_critical_bh(&pxmitpriv->lock, &irqL);
+	spin_unlock_bh(&pxmitpriv->lock);
 	if (pxmitbuf == NULL) {
 		rtw_free_xmitframe(pxmitpriv, pframe);
 		return NULL;

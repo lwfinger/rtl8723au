@@ -104,7 +104,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	{
 		_rtw_init_listhead(&precvbuf->list);
 
-		_rtw_spinlock_init(&precvbuf->recvbuf_lock);
+		spin_lock_init(&precvbuf->recvbuf_lock);
 
 		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
 
@@ -327,9 +327,9 @@ void update_recvframe_phyinfo(
 	#endif
 
 	//rtl8192c_query_rx_phy_status(precvframe, pphy_status);
-	//_enter_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
+	//spin_lock_bh(&pHalData->odm_stainfo_lock);
 	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
-	//_exit_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
+	//spin_unlock_bh(&pHalData->odm_stainfo_lock);
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))

@@ -1440,7 +1440,7 @@ _func_enter_;
 #endif
 
 #ifdef CONFIG_BR_EXT
-	_rtw_spinlock_init(&padapter->br_ext_lock);
+	spin_lock_init(&padapter->br_ext_lock);
 #endif	// CONFIG_BR_EXT
 
 exit:
@@ -1536,10 +1536,6 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 	}
 	#endif
 
-
-#ifdef CONFIG_BR_EXT
-	_rtw_spinlock_free(&padapter->br_ext_lock);
-#endif	// CONFIG_BR_EXT
 
 #ifdef CONFIG_INTEL_WIDI
 	rtw_free_intel_widi(padapter);

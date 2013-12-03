@@ -340,7 +340,7 @@ _func_enter_;
 
 
 /*
-	_enter_critical(&pxmitpriv->lock, &irqL);
+	spin_lock_irqsave(&pxmitpriv->lock, irqL);
 
 	pxmitpriv->txirp_cnt--;
 
@@ -370,7 +370,7 @@ _func_enter_;
 
 	}
 
-	_exit_critical(&pxmitpriv->lock, &irqL);
+	spin_unlock_irqrestore(&pxmitpriv->lock, irqL);
 
 
 	if(pxmitpriv->txirp_cnt==0)
@@ -439,10 +439,10 @@ _func_enter_;
 	#endif
 
 check_completion:
-	_enter_critical(&pxmitpriv->lock_sctx, &irqL);
+	spin_lock_irqsave(&pxmitpriv->lock_sctx, irqL);
 	rtw_sctx_done_err(&pxmitbuf->sctx,
 		purb->status ? RTW_SCTX_DONE_WRITE_PORT_ERR : RTW_SCTX_DONE_SUCCESS);
-	_exit_critical(&pxmitpriv->lock_sctx, &irqL);
+	spin_unlock_irqrestore(&pxmitpriv->lock_sctx, irqL);
 
 	rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 
@@ -484,7 +484,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_enter_critical(&pxmitpriv->lock, &irqL);
+	spin_lock_irqsave(&pxmitpriv->lock, irqL);
 
 	switch(addr)
 	{
@@ -512,7 +512,7 @@ _func_enter_;
 			break;
 	}
 
-	_exit_critical(&pxmitpriv->lock, &irqL);
+	spin_unlock_irqrestore(&pxmitpriv->lock, irqL);
 
 	purb	= pxmitbuf->pxmit_urb[0];
 

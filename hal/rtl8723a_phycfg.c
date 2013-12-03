@@ -469,7 +469,7 @@ rtl8192c_PHY_QueryRFReg(
 #ifdef CONFIG_USB_HCI
 	//PlatformAcquireMutex(&pHalData->mxRFOperate);
 #else
-	//_enter_critical(&pHalData->rf_lock, &irqL);
+	//spin_lock_irqsave(&pHalData->rf_lock, irqL);
 #endif
 
 
@@ -481,7 +481,7 @@ rtl8192c_PHY_QueryRFReg(
 #ifdef CONFIG_USB_HCI
 	//PlatformReleaseMutex(&pHalData->mxRFOperate);
 #else
-	//_exit_critical(&pHalData->rf_lock, &irqL);
+	//spin_unlock_irqrestore(&pHalData->rf_lock, irqL);
 #endif
 
 
@@ -538,7 +538,7 @@ rtl8192c_PHY_SetRFReg(
 #ifdef CONFIG_USB_HCI
 	//PlatformAcquireMutex(&pHalData->mxRFOperate);
 #else
-	//_enter_critical(&pHalData->rf_lock, &irqL);
+	//spin_lock_irqsave(&pHalData->rf_lock, irqL);
 #endif
 
 
@@ -556,7 +556,7 @@ rtl8192c_PHY_SetRFReg(
 #ifdef CONFIG_USB_HCI
 	//PlatformReleaseMutex(&pHalData->mxRFOperate);
 #else
-	//_exit_critical(&pHalData->rf_lock, &irqL);
+	//spin_unlock_irqrestore(&pHalData->rf_lock, irqL);
 #endif
 
 	//PHY_QueryRFReg(Adapter,eRFPath,RegAddr,BitMask);

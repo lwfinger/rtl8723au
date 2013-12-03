@@ -458,7 +458,7 @@ typedef struct hal_data_8723a
 
 	struct dm_priv	dmpriv;
 	DM_ODM_T		odmpriv;
-	//_lock			odm_stainfo_lock;
+	//spinlock_t			odm_stainfo_lock;
 #ifdef DBG_CONFIG_ERROR_DETECT
 	struct sreset_priv srestpriv;
 #endif
@@ -571,7 +571,7 @@ typedef struct hal_data_8723a
 	//
 	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
 	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-	_lock		SdioTxFIFOFreePageLock;
+	spinlock_t	SdioTxFIFOFreePageLock;
 	_thread_hdl_	SdioXmitThread;
 	_sema		SdioXmitSema;
 	_sema		SdioXmitTerminateSema;

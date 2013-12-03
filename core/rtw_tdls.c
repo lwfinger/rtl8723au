@@ -59,17 +59,14 @@ int rtw_init_tdls_info(_adapter* padapter)
 	ptdlsinfo->enable = 1;
 	rtw_reset_tdls_info(padapter);
 
-	_rtw_spinlock_init(&ptdlsinfo->cmd_lock);
-	_rtw_spinlock_init(&ptdlsinfo->hdl_lock);
+	spin_lock_init(&ptdlsinfo->cmd_lock);
+	spin_lock_init(&ptdlsinfo->hdl_lock);
 
 	return res;
 }
 
 void rtw_free_tdls_info(struct tdls_info *ptdlsinfo)
 {
-	_rtw_spinlock_free(&ptdlsinfo->cmd_lock);
-	_rtw_spinlock_free(&ptdlsinfo->hdl_lock);
-
 	memset(ptdlsinfo, 0, sizeof(struct tdls_info));
 }
 
@@ -243,10 +240,10 @@ void free_tdls_sta(_adapter *padapter, struct sta_info *ptdls_sta)
 	_irqL irqL;
 
 	/* free peer sta_info */
-	_enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+	spin_lock_bh(&(pstapriv->sta_hash_lock));
 	if(ptdlsinfo->sta_cnt != 0)
 		ptdlsinfo->sta_cnt--;
-	_exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+	spin_unlock_bh(&(pstapriv->sta_hash_lock));
 	if( ptdlsinfo->sta_cnt < (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 	{
 		ptdlsinfo->sta_maximum = _FALSE;
@@ -571,10 +568,10 @@ void issue_tdls_setup_req(_adapter *padapter, u8 *mac_addr)
 		ptdls_sta = rtw_alloc_stainfo(pstapriv, mac_addr);
 		if(ptdls_sta)
 		{
-			_enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+			spin_lock_bh(&(pstapriv->sta_hash_lock));
 			if(!(ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE))
 				ptdlsinfo->sta_cnt++;
-			_exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+			spin_unlock_bh(&(pstapriv->sta_hash_lock));
 			if( ptdlsinfo->sta_cnt == (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 			{
 				ptdlsinfo->sta_maximum  = _TRUE;
@@ -661,9 +658,9 @@ void issue_tdls_teardown(_adapter *padapter, u8 *mac_addr)
 
 	if( ptdls_sta->timer_flag == 1 )
 	{
-		_enter_critical_bh(&(padapter->tdlsinfo.hdl_lock), &irqL);
+		spin_lock_bh(&(padapter->tdlsinfo.hdl_lock));
 		ptdls_sta->timer_flag = 2;
-		_exit_critical_bh(&(padapter->tdlsinfo.hdl_lock), &irqL);
+		spin_unlock_bh(&(padapter->tdlsinfo.hdl_lock));
 	}
 	else
 		rtw_tdls_cmd(padapter, mac_addr, TDLS_FREE_STA );
@@ -979,9 +976,9 @@ void issue_tdls_ch_switch_rsp(_adapter *padapter, u8 *mac_addr)
 
 	pattrib->qsel=pattrib->priority;
 /*
-	_enter_critical_bh(&pxmitpriv->lock, &irqL);
+	spin_lock_bh(&pxmitpriv->lock);
 	if(xmitframe_enqueue_for_tdls_sleeping_sta(padapter, pmgntframe)==_TRUE){
-		_exit_critical_bh(&pxmitpriv->lock, &irqL);
+		spin_unlock_bh(&pxmitpriv->lock);
 		return _FALSE;
 	}
 */
@@ -1257,10 +1254,10 @@ sint On_TDLS_Setup_Req(_adapter *adapter, union recv_frame *precv_frame)
 			memcpy(ptdls_sta->SNonce, SNonce, 32);
 			memcpy(&(ptdls_sta->TDLS_PeerKey_Lifetime), timeout_interval, 4);
 		}
-		_enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+		spin_lock_bh(&(pstapriv->sta_hash_lock));
 		if(!(ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE))
 			ptdlsinfo->sta_cnt++;
-		_exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+		spin_unlock_bh(&(pstapriv->sta_hash_lock));
 		if( ptdlsinfo->sta_cnt == (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 		{
 			ptdlsinfo->sta_maximum = _TRUE;
@@ -1696,7 +1693,7 @@ sint On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 			_list	*xmitframe_plist, *xmitframe_phead;
 			struct xmit_frame *pxmitframe=NULL;
 
-			_enter_critical_bh(&ptdls_sta->sleep_q.lock, &irqL);
+			spin_lock_bh(&ptdls_sta->sleep_q.lock);
 
 			xmitframe_phead = get_list_head(&ptdls_sta->sleep_q);
 			xmitframe_plist = get_next(xmitframe_phead);
@@ -1742,7 +1739,7 @@ sint On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 				ptdls_sta->sleepq_len=0;
 			}
 
-			_exit_critical_bh(&ptdls_sta->sleep_q.lock, &irqL);
+			spin_unlock_bh(&ptdls_sta->sleep_q.lock);
 
 		}
 
@@ -2760,9 +2757,9 @@ void _tdls_alive_timer_phase1_hdl(void *FunctionContext)
 	_adapter *padapter = ptdls_sta->padapter;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
-	_enter_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+	spin_lock_bh(&ptdlsinfo->hdl_lock);
 	ptdls_sta->timer_flag = 1;
-	_exit_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+	spin_unlock_bh(&ptdlsinfo->hdl_lock);
 
 	ptdls_sta->tdls_sta_state &= (~TDLS_ALIVE_STATE);
 
@@ -2775,9 +2772,9 @@ void _tdls_alive_timer_phase1_hdl(void *FunctionContext)
 		rtw_tdls_cmd(padapter, ptdls_sta->hwaddr, TDLS_FREE_STA);
 	else
 	{
-		_enter_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+		spin_lock_bh(&ptdlsinfo->hdl_lock);
 		ptdls_sta->timer_flag = 0;
-		_exit_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+		spin_unlock_bh(&ptdlsinfo->hdl_lock);
 	}
 }
 
@@ -2788,9 +2785,9 @@ void _tdls_alive_timer_phase2_hdl(void *FunctionContext)
 	_adapter *padapter = ptdls_sta->padapter;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
-	_enter_critical_bh(&(ptdlsinfo->hdl_lock), &irqL);
+	spin_lock_bh(&(ptdlsinfo->hdl_lock));
 	ptdls_sta->timer_flag = 1;
-	_exit_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+	spin_unlock_bh(&ptdlsinfo->hdl_lock);
 
 	if( (ptdls_sta->tdls_sta_state & TDLS_ALIVE_STATE) &&
 		(sta_last_rx_pkts(ptdls_sta) + 3 <= sta_rx_pkts(ptdls_sta)) )
@@ -2825,9 +2822,9 @@ void _tdls_alive_timer_phase2_hdl(void *FunctionContext)
 		rtw_tdls_cmd(padapter, ptdls_sta->hwaddr, TDLS_FREE_STA);
 	else
 	{
-		_enter_critical_bh(&(ptdlsinfo->hdl_lock), &irqL);
+		spin_lock_bh(&(ptdlsinfo->hdl_lock));
 		ptdls_sta->timer_flag = 0;
-		_exit_critical_bh(&ptdlsinfo->hdl_lock, &irqL);
+		spin_unlock_bh(&ptdlsinfo->hdl_lock);
 }
 }
 

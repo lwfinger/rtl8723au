@@ -1187,7 +1187,7 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 	}
 	else
 	{
-		_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+		spin_lock_bh(&pstapriv->asoc_list_lock);
 		if(rtw_is_list_empty(&pstat->asoc_list)==_FALSE)
 		{
 			rtw_list_delete(&pstat->asoc_list);
@@ -1197,20 +1197,20 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 				/* TODO: STA re_auth within expire_to */
 			}
 		}
-		_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+		spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 		if (seq==1) {
 			/* TODO: STA re_auth and auth timeout */
 		}
 	}
 
-	_enter_critical_bh(&pstapriv->auth_list_lock, &irqL);
+	spin_lock_bh(&pstapriv->auth_list_lock);
 	if (rtw_is_list_empty(&pstat->auth_list))
 	{
 		rtw_list_insert_tail(&pstat->auth_list, &pstapriv->auth_list);
 		pstapriv->auth_list_cnt++;
 	}
-	_exit_critical_bh(&pstapriv->auth_list_lock, &irqL);
+	spin_unlock_bh(&pstapriv->auth_list_lock);
 
 	if (pstat->auth_seq == 0)
 		pstat->expire_to = pstapriv->auth_to;
@@ -1892,22 +1892,22 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 	pstat->state &= (~WIFI_FW_ASSOC_STATE);
 	pstat->state |= WIFI_FW_ASSOC_SUCCESS;
 
-	_enter_critical_bh(&pstapriv->auth_list_lock, &irqL);
+	spin_lock_bh(&pstapriv->auth_list_lock);
 	if (!rtw_is_list_empty(&pstat->auth_list))
 	{
 		rtw_list_delete(&pstat->auth_list);
 		pstapriv->auth_list_cnt--;
 	}
-	_exit_critical_bh(&pstapriv->auth_list_lock, &irqL);
+	spin_unlock_bh(&pstapriv->auth_list_lock);
 
-	_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+	spin_lock_bh(&pstapriv->asoc_list_lock);
 	if (rtw_is_list_empty(&pstat->asoc_list))
 	{
 		pstat->expire_to = pstapriv->expire_to;
 		rtw_list_insert_tail(&pstat->asoc_list, &pstapriv->asoc_list);
 		pstapriv->asoc_list_cnt++;
 	}
-	_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+	spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 	/*  now the station is qualified to join our BSS... */
 	if(pstat && (pstat->state & WIFI_FW_ASSOC_SUCCESS) && (_STATS_SUCCESSFUL_==status))
@@ -1932,7 +1932,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) && !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
 			rtw_cfg80211_indicate_sta_assoc(padapter, pframe, pkt_len);
 			#else /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) && !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
-			_enter_critical_bh(&pstat->lock, &irqL);
+			spin_lock_bh(&pstat->lock);
 			if(pstat->passoc_req)
 			{
 				rtw_mfree(pstat->passoc_req, pstat->assoc_req_len);
@@ -1946,7 +1946,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 				memcpy(pstat->passoc_req, pframe, pkt_len);
 				pstat->assoc_req_len = pkt_len;
 			}
-			_exit_critical_bh(&pstat->lock, &irqL);
+			spin_unlock_bh(&pstat->lock);
 			#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) && !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 		}
 		else
@@ -2135,9 +2135,9 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
-		/* _enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL); */
+		/* spin_lock_bh(&(pstapriv->sta_hash_lock)); */
 		/* rtw_free_stainfo(padapter, psta); */
-		/* _exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL); */
+		/* spin_unlock_bh(&(pstapriv->sta_hash_lock)); */
 
 		DBG_8723A_LEVEL(_drv_always_, "ap recv deauth reason code(%d) sta:%pM\n",
 				reason, GetAddr2Ptr(pframe));
@@ -2147,7 +2147,7 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 		{
 			u8 updated;
 
-			_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			spin_lock_bh(&pstapriv->asoc_list_lock);
 			if(rtw_is_list_empty(&psta->asoc_list)==_FALSE)
 			{
 				rtw_list_delete(&psta->asoc_list);
@@ -2155,7 +2155,7 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 				updated = ap_free_sta(padapter, psta, _FALSE, reason);
 
 			}
-			_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 			associated_clients_update(padapter, updated);
 		}
@@ -2208,9 +2208,9 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
-		/* _enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL); */
+		/* spin_lock_bh(&(pstapriv->sta_hash_lock)); */
 		/* rtw_free_stainfo(padapter, psta); */
-		/* _exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL); */
+		/* spin_unlock_bh(&(pstapriv->sta_hash_lock)); */
 
 		DBG_8723A_LEVEL(_drv_always_, "ap recv disassoc reason code(%d) sta:%pM\n",
 				reason, GetAddr2Ptr(pframe));
@@ -2220,7 +2220,7 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 		{
 			u8 updated;
 
-			_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			spin_lock_bh(&pstapriv->asoc_list_lock);
 			if(rtw_is_list_empty(&psta->asoc_list)==_FALSE)
 			{
 				rtw_list_delete(&psta->asoc_list);
@@ -2228,7 +2228,7 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 				updated = ap_free_sta(padapter, psta, _FALSE, reason);
 
 			}
-			_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 			associated_clients_update(padapter, updated);
 		}
@@ -5852,9 +5852,9 @@ s32 dump_mgntframe_and_wait(_adapter *padapter, struct xmit_frame *pmgntframe, i
 	if (ret == _SUCCESS)
 		ret = rtw_sctx_wait(&sctx);
 
-	_enter_critical(&pxmitpriv->lock_sctx, &irqL);
+	spin_lock_irqsave(&pxmitpriv->lock_sctx, irqL);
 	pxmitbuf->sctx = NULL;
-	_exit_critical(&pxmitpriv->lock_sctx, &irqL);
+	spin_unlock_irqrestore(&pxmitpriv->lock_sctx, irqL);
 
 	 return ret;
 }
@@ -5960,7 +5960,7 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 		return;
 	}
 #if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
-	_enter_critical_bh(&pmlmepriv->bcn_update_lock, &irqL);
+	spin_lock_bh(&pmlmepriv->bcn_update_lock);
 #endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 
 	/* update attribute */
@@ -6221,7 +6221,7 @@ _issue_bcn:
 #if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	pmlmepriv->update_bcn = _FALSE;
 
-	_exit_critical_bh(&pmlmepriv->bcn_update_lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->bcn_update_lock);
 #endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 
 	if ((pattrib->pktlen + TXDESC_SIZE) > 512)
@@ -8117,7 +8117,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 	{
 		int i;
 
-		_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 		phead = get_list_head(queue);
 		plist = get_next(phead);
@@ -8151,7 +8151,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 
 		}
 
-		_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
 		for(i= 0;i<8;i++)
 		{
@@ -11137,8 +11137,8 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 #ifndef CONFIG_PCI_HCI
 			rtw_msleep_os(10);/*  10ms, ATIM(HIQ) Windows */
 #endif
-			/* _enter_critical_bh(&psta_bmc->sleep_q.lock, &irqL); */
-			_enter_critical_bh(&pxmitpriv->lock, &irqL);
+			/* spin_lock_bh(&psta_bmc->sleep_q.lock); */
+			spin_lock_bh(&pxmitpriv->lock);
 
 			xmitframe_phead = get_list_head(&psta_bmc->sleep_q);
 			xmitframe_plist = get_next(xmitframe_phead);
@@ -11167,8 +11167,8 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 
 			}
 
-			/* _exit_critical_bh(&psta_bmc->sleep_q.lock, &irqL); */
-			_exit_critical_bh(&pxmitpriv->lock, &irqL);
+			/* spin_unlock_bh(&psta_bmc->sleep_q.lock); */
+			spin_unlock_bh(&pxmitpriv->lock);
 
 /* if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) */
 #if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
@@ -12250,7 +12250,7 @@ u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf)
 			return H2C_REJECTED;
 	}
 
-	/* _enter_critical_bh(&(ptdlsinfo->hdl_lock), &irqL); */
+	/* spin_lock_bh(&(ptdlsinfo->hdl_lock)); */
 	DBG_8723A("[%s] option:%d\n", __FUNCTION__, option);
 
 	switch(option){
@@ -12379,7 +12379,7 @@ u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf)
 
 	}
 
-	/* _exit_critical_bh(&(ptdlsinfo->hdl_lock), &irqL); */
+	/* spin_unlock_bh(&(ptdlsinfo->hdl_lock)); */
 
 	return H2C_SUCCESS;
 #else

@@ -368,8 +368,8 @@ struct tdls_info{
 	u8					cur_channel;
 	u8					candidate_ch;
 	u8					collect_pkt_num[MAX_CHANNEL_NUM];
-	_lock				cmd_lock;
-	_lock				hdl_lock;
+	spinlock_t				cmd_lock;
+	spinlock_t				hdl_lock;
 	u8					watchdog_count;
 	u8					dev_discovered;		//WFD_TDLS: for sigma test
 	u8					enable;
@@ -380,7 +380,7 @@ struct tdls_info{
 
 struct mlme_priv {
 
-	_lock	lock;
+	spinlock_t	lock;
 	sint	fw_state;	//shall we protect this variable? maybe not necessarily...
 	u8 bScanInProcess;
 	u8	to_join; //flag
@@ -517,7 +517,7 @@ struct mlme_priv {
 #endif
 */
 
-	_lock	bcn_update_lock;
+	spinlock_t	bcn_update_lock;
 	u8		update_bcn;
 
 
@@ -651,30 +651,24 @@ __inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, sint state)
  */
 __inline static void clr_fwstate(struct mlme_priv *pmlmepriv, sint state)
 {
-	_irqL irqL;
-
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	if (check_fwstate(pmlmepriv, state) == _TRUE)
 		pmlmepriv->fw_state ^= state;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 }
 
 __inline static void clr_fwstate_ex(struct mlme_priv *pmlmepriv, sint state)
 {
-	_irqL irqL;
-
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	_clr_fwstate_(pmlmepriv, state);
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 }
 
 __inline static void up_scanned_network(struct mlme_priv *pmlmepriv)
 {
-	_irqL irqL;
-
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned++;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -684,20 +678,16 @@ sint check_buddy_fwstate(_adapter *padapter, sint state);
 
 __inline static void down_scanned_network(struct mlme_priv *pmlmepriv)
 {
-	_irqL irqL;
-
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned--;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 }
 
 __inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, sint val)
 {
-	_irqL irqL;
-
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned = val;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	spin_unlock_bh(&pmlmepriv->lock);
 }
 
 extern u16 rtw_get_capability(WLAN_BSSID_EX *bss);

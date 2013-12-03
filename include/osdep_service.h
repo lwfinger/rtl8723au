@@ -104,7 +104,6 @@ typedef struct urb *  PURB;
 #endif
 
 typedef struct	semaphore _sema;
-typedef	spinlock_t	_lock;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
 typedef struct mutex		_mutex;
 #else
@@ -114,7 +113,7 @@ typedef struct timer_list _timer;
 
 struct	__queue	{
 	struct	list_head	queue;
-	_lock	lock;
+	spinlock_t		lock;
 };
 
 typedef	struct sk_buff	_pkt;
@@ -178,36 +177,6 @@ __inline static _list	*get_list_head(_queue	*queue)
 #define LIST_CONTAINOR(ptr, type, member) \
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
-
-__inline static void _enter_critical(_lock *plock, _irqL *pirqL)
-{
-	spin_lock_irqsave(plock, *pirqL);
-}
-
-__inline static void _exit_critical(_lock *plock, _irqL *pirqL)
-{
-	spin_unlock_irqrestore(plock, *pirqL);
-}
-
-__inline static void _enter_critical_ex(_lock *plock, _irqL *pirqL)
-{
-	spin_lock_irqsave(plock, *pirqL);
-}
-
-__inline static void _exit_critical_ex(_lock *plock, _irqL *pirqL)
-{
-	spin_unlock_irqrestore(plock, *pirqL);
-}
-
-__inline static void _enter_critical_bh(_lock *plock, _irqL *pirqL)
-{
-	spin_lock_bh(plock);
-}
-
-__inline static void _exit_critical_bh(_lock *plock, _irqL *pirqL)
-{
-	spin_unlock_bh(plock);
-}
 
 __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 {
@@ -419,12 +388,6 @@ extern void	_rtw_up_sema(_sema	*sema);
 extern u32	_rtw_down_sema(_sema *sema);
 extern void	_rtw_mutex_init(_mutex *pmutex);
 extern void	_rtw_mutex_free(_mutex *pmutex);
-extern void	_rtw_spinlock_init(_lock *plock);
-extern void	_rtw_spinlock_free(_lock *plock);
-extern void	_rtw_spinlock(_lock	*plock);
-extern void	_rtw_spinunlock(_lock	*plock);
-extern void	_rtw_spinlock_ex(_lock	*plock);
-extern void	_rtw_spinunlock_ex(_lock	*plock);
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);

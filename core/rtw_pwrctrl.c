@@ -523,7 +523,7 @@ _func_enter_;
 			DBG_8723A("rtw_set_ps_mode: Leave 802.11 power save\n");
 
 #ifdef CONFIG_TDLS
-			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			spin_lock_bh(&pstapriv->sta_hash_lock);
 
 			for(i=0; i< NUM_STA; i++)
 			{
@@ -540,7 +540,7 @@ _func_enter_;
 				}
 			}
 
-			_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			spin_unlock_bh(&pstapriv->sta_hash_lock);
 #endif /* CONFIG_TDLS */
 
 			pwrpriv->pwr_mode = ps_mode;
@@ -560,7 +560,7 @@ _func_enter_;
 			DBG_8723A("%s: Enter 802.11 power save\n", __FUNCTION__);
 
 #ifdef CONFIG_TDLS
-			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			spin_lock_bh(&pstapriv->sta_hash_lock);
 
 			for(i=0; i< NUM_STA; i++)
 			{
@@ -577,7 +577,7 @@ _func_enter_;
 				}
 			}
 
-			_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			spin_unlock_bh(&pstapriv->sta_hash_lock);
 #endif /* CONFIG_TDLS */
 
 			pwrpriv->bFwCurrentInPSMode = _TRUE;

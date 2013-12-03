@@ -215,7 +215,7 @@ struct rtw_tx_ring {
 #endif
 
 struct	hw_xmit	{
-	//_lock xmit_lock;
+	//spinlock_t xmit_lock;
 	//_list	pending;
 	_queue *sta_queue;
 	//struct hw_txqueue *phwtxqueue;
@@ -469,7 +469,7 @@ struct tx_servq {
 
 struct sta_xmit_priv
 {
-	_lock	lock;
+	spinlock_t	lock;
 	sint	option;
 	sint	apsd_setting;	//When bit mask is on, the associated edca queue supports APSD.
 
@@ -510,7 +510,7 @@ struct agg_pkt_info{
 
 struct	xmit_priv	{
 
-	_lock	lock;
+	spinlock_t	lock;
 
 	_sema	xmit_sema;
 	_sema	terminate_xmitthread_sema;
@@ -619,7 +619,7 @@ struct	xmit_priv	{
 	_mutex ack_tx_mutex;
 	struct submit_ctx ack_tx_ops;
 #endif
-	_lock lock_sctx;
+	spinlock_t lock_sctx;
 };
 
 extern struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv);
