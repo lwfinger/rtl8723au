@@ -6151,7 +6151,8 @@ u8 BTHCI_GetCurrentEntryNumByMAC(PADAPTER padapter, u8 *SA)
 	{
 		if (pBTInfo->BtAsocEntry[i].bUsed == _TRUE)
 		{
-			if (_rtw_memcmp(pBTInfo->BtAsocEntry[i].BTRemoteMACAddr, SA, 6) == _TRUE)
+			if (!memcmp(pBTInfo->BtAsocEntry[i].BTRemoteMACAddr,
+				    SA, 6))
 			{
 				return i;
 			}

@@ -1913,11 +1913,11 @@ u32 build_probe_resp_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pbuf)
 	/*	+ NumofSecondDevType (1byte) + WPS Device Name ID field (2bytes) + WPS Device Name Len field (2bytes) */
 	/* u16*) ( p2pie + p2pielen ) = cpu_to_le16( 21 + pwdinfo->device_name_len ); */
 #ifdef CONFIG_INTEL_WIDI
-	if( _rtw_memcmp( pwdinfo->padapter->mlmepriv.sa_ext, zero_array_check, L2SDTA_SERVICE_VE_LEN ) == _FALSE )
-	{
-		RTW_PUT_LE16(p2pie + p2pielen, 21 + 8 + pwdinfo->device_name_len);
-	}
-	else
+	if (memcmp(pwdinfo->padapter->mlmepriv.sa_ext, zero_array_check,
+		   L2SDTA_SERVICE_VE_LEN)) {
+		RTW_PUT_LE16(p2pie + p2pielen,
+			     21 + 8 + pwdinfo->device_name_len);
+	} else
 #endif /* CONFIG_INTEL_WIDI */
 	RTW_PUT_LE16(p2pie + p2pielen, 21 + pwdinfo->device_name_len);
 	p2pielen += 2;
@@ -1951,8 +1951,8 @@ u32 build_probe_resp_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 	/*	Number of Secondary Device Types */
 #ifdef CONFIG_INTEL_WIDI
-	if( _rtw_memcmp( pwdinfo->padapter->mlmepriv.sa_ext, zero_array_check, L2SDTA_SERVICE_VE_LEN ) == _FALSE )
-	{
+	if (memcmp(pwdinfo->padapter->mlmepriv.sa_ext, zero_array_check,
+		   L2SDTA_SERVICE_VE_LEN)) {
 		p2pie[ p2pielen++ ] = 0x01;
 
 		RTW_PUT_BE16(p2pie + p2pielen, WPS_PDT_CID_DISPLAYS);
@@ -1963,8 +1963,7 @@ u32 build_probe_resp_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 		RTW_PUT_BE16(p2pie + p2pielen, P2P_SCID_WIDI_CONSUMER_SINK);
 		p2pielen += 2;
-	}
-	else
+	} else
 #endif /* CONFIG_INTEL_WIDI */
 	p2pie[ p2pielen++ ] = 0x00;	/*	No Secondary Device Type List */
 
@@ -2219,7 +2218,7 @@ u32 process_probe_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	{
 		if((p2pie=rtw_get_p2p_ie( pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_ , len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_ , NULL, &p2pielen)))
 		{
-			if ( (p != NULL) && _rtw_memcmp( ( void * ) ( p+2 ), ( void * ) pwdinfo->p2p_wildcard_ssid , 7 ))
+			if ((p) && !memcmp((void *)(p+2), (void *)pwdinfo->p2p_wildcard_ssid, 7))
 			{
 				/* todo: */
 				/* Check Requested Device Type attributes in WSC IE. */
@@ -2387,9 +2386,9 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 
 		if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, groupid, &attr_contentlen))
 		{
-			if(_rtw_memcmp(pwdinfo->device_addr, groupid, ETH_ALEN) &&
-				_rtw_memcmp(pwdinfo->p2p_group_ssid, groupid+ETH_ALEN, pwdinfo->p2p_group_ssid_len))
-			{
+			if (!memcmp(pwdinfo->device_addr, groupid, ETH_ALEN) &&
+			    !memcmp(pwdinfo->p2p_group_ssid, groupid + ETH_ALEN,
+				    pwdinfo->p2p_group_ssid_len)) {
 				attr_contentlen=0;
 				if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_ID, dev_addr, &attr_contentlen))
 				{
@@ -2408,7 +2407,7 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 						plist = get_next(plist);
 
 						if(psta->is_p2p_device && (psta->dev_cap&P2P_DEVCAP_CLIENT_DISCOVERABILITY) &&
-							_rtw_memcmp(psta->dev_addr, dev_addr, ETH_ALEN))
+						   !memcmp(psta->dev_addr, dev_addr, ETH_ALEN))
 						{
 
 							/* _exit_critical_bh(&pstapriv->asoc_list_lock, &irqL); */
@@ -2596,7 +2595,7 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 		/*	Commented by Kurt 20120113 */
 		/*	If some device wants to do p2p handshake without sending prov_disc_req */
 		/*	We have to get peer_req_cm from here. */
-		if(_rtw_memcmp( pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "000", 3) )
+		if (!memcmp(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "000", 3))
 		{
 			rtw_get_wps_attr_content( wpsie, wps_ielen, WPS_ATTR_DEVICE_PWID, (u8*) &wps_devicepassword_id, &wps_devicepassword_id_len);
 			wps_devicepassword_id = be16_to_cpu( wps_devicepassword_id );
@@ -3538,10 +3537,8 @@ void rtw_append_wfd_ie(_adapter *padapter, u8 *buf, u32* len)
 	if(category == RTW_WLAN_CATEGORY_PUBLIC)
 	{
 		action = frame_body[1];
-		if (action == ACT_PUBLIC_VENDOR
-			&& _rtw_memcmp(frame_body+2, P2P_OUI, 4) == _TRUE
-		)
-		{
+		if (action == ACT_PUBLIC_VENDOR &&
+		    !memcmp(frame_body+2, P2P_OUI, 4)) {
 			OUI_Subtype = frame_body[6];
 			dialogToken = frame_body[7];
 			switch( OUI_Subtype )/* OUI Subtype */
@@ -3656,10 +3653,8 @@ int rtw_p2p_check_frames(_adapter *padapter, const u8 *buf, u32 len, u8 tx)
 	if(category == RTW_WLAN_CATEGORY_PUBLIC)
 	{
 		action = frame_body[1];
-		if (action == ACT_PUBLIC_VENDOR
-			&& _rtw_memcmp(frame_body+2, P2P_OUI, 4) == _TRUE
-		)
-		{
+		if (action == ACT_PUBLIC_VENDOR &&
+		    !memcmp(frame_body+2, P2P_OUI, 4)) {
 			OUI_Subtype = frame_body[6];
 			dialogToken = frame_body[7];
 			is_p2p_frame = OUI_Subtype;

@@ -94,12 +94,14 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 		TempCCk = PHY_QueryBBReg(Adapter, rCCK0_TxFilter2, bMaskDWord)&bMaskCCK;
 		for(i=0 ; i<CCK_TABLE_SIZE ; i++) {
 			if(pdmpriv->bCCKinCH14) {
-				if(_rtw_memcmp((void*)&TempCCk, (void*)&CCKSwingTable_Ch14[i][2], 4)==_TRUE) {
+				if (!memcmp(&TempCCk,
+					    &CCKSwingTable_Ch14[i][2], 4)) {
 					CCK_index_old =(u8)i;
 					break;
 				}
 			} else {
-				if(_rtw_memcmp((void*)&TempCCk, (void*)&CCKSwingTable_Ch1_Ch13[i][2], 4)==_TRUE) {
+				if (!memcmp(&TempCCk,
+					    &CCKSwingTable_Ch1_Ch13[i][2], 4)) {
 					CCK_index_old =(u8)i;
 					break;
 				}

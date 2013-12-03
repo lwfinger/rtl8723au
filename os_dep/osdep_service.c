@@ -96,16 +96,6 @@ void	_rtw_mfree(u8 *pbuf, u32 sz)
 	kfree(pbuf);
 }
 
-int	_rtw_memcmp(void *dst, void *src, u32 sz)
-{
-//under Linux/GNU/GLibc, the return value of memcmp for two same mem. chunk is 0
-
-	if (!(memcmp(dst, src, sz)))
-		return _TRUE;
-	else
-		return _FALSE;
-}
-
 void _rtw_init_listhead(_list *list)
 {
         INIT_LIST_HEAD(list);

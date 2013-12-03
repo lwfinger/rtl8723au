@@ -305,7 +305,7 @@ _func_enter_;
 
 		//DBG_8723A("bmcast=%d\n", bmcast);
 
-		if(_rtw_memcmp(pattrib->dst, myid(&padapter->eeprompriv), ETH_ALEN)==_FALSE)
+		if(memcmp(pattrib->dst, myid(&padapter->eeprompriv), ETH_ALEN))
 		{
 			//DBG_8723A("not ap psta=%p, addr=%pM\n", psta, pattrib->dst);
 

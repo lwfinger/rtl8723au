@@ -580,8 +580,9 @@ static void _mgt_dispatcher(_adapter *padapter, struct mlme_handler *ptable, uni
 	  if(ptable->func)
         {
 	 /* receive the frames that ra(a1) is my address or ra(a1) is bc address. */
-		if (!_rtw_memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN) &&
-			!_rtw_memcmp(GetAddr1Ptr(pframe), bc_addr, ETH_ALEN))
+		if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv),
+			   ETH_ALEN) &&
+		    memcmp(GetAddr1Ptr(pframe), bc_addr, ETH_ALEN))
 		{
 			return;
 		}
@@ -612,8 +613,9 @@ void mgt_dispatcher(_adapter *padapter, union recv_frame *precv_frame)
 	}
 
 	/* receive the frames that ra(a1) is my address or ra(a1) is bc address. */
-	if (!_rtw_memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN) &&
-		!_rtw_memcmp(GetAddr1Ptr(pframe), bc_addr, ETH_ALEN))
+	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv),
+		   ETH_ALEN) &&
+	    memcmp(GetAddr1Ptr(pframe), bc_addr, ETH_ALEN))
 	{
 		return;
 	}
@@ -849,9 +851,10 @@ _continue:
 			goto _issue_probersp;
 		}
 
-		if ( (ielen != 0 && _FALSE ==_rtw_memcmp((void *)(p+2), (void *)cur->Ssid.Ssid, cur->Ssid.SsidLength))
-			|| (ielen == 0 && pmlmeinfo->hidden_ssid_mode)
-		)
+		if ((ielen != 0 &&
+		      memcmp((void *)(p+2), cur->Ssid.Ssid,
+			     cur->Ssid.SsidLength)) ||
+		    (ielen == 0 && pmlmeinfo->hidden_ssid_mode))
 		{
 			return _SUCCESS;
 		}
@@ -886,7 +889,8 @@ unsigned int OnProbeRsp(_adapter *padapter, union recv_frame *precv_frame)
 	{
 		if ( _TRUE == pwdinfo->tx_prov_disc_info.benable )
 		{
-			if( _rtw_memcmp( pwdinfo->tx_prov_disc_info.peerIFAddr, GetAddr2Ptr(pframe), ETH_ALEN ) )
+			if (!memcmp(pwdinfo->tx_prov_disc_info.peerIFAddr,
+				    GetAddr2Ptr(pframe), ETH_ALEN))
 			{
 				if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT))
 				{
@@ -913,7 +917,8 @@ unsigned int OnProbeRsp(_adapter *padapter, union recv_frame *precv_frame)
 		if ( _TRUE == pwdinfo->nego_req_info.benable )
 		{
 			DBG_8723A( "[%s] P2P State is GONEGO ING!\n", __FUNCTION__ );
-			if( _rtw_memcmp( pwdinfo->nego_req_info.peerDevAddr, GetAddr2Ptr(pframe), ETH_ALEN ) )
+			if (!memcmp(pwdinfo->nego_req_info.peerDevAddr,
+				    GetAddr2Ptr(pframe), ETH_ALEN))
 			{
 				pwdinfo->nego_req_info.benable = _FALSE;
 				issue_p2p_GO_request( padapter, pwdinfo->nego_req_info.peerDevAddr);
@@ -925,7 +930,8 @@ unsigned int OnProbeRsp(_adapter *padapter, union recv_frame *precv_frame)
 		if ( _TRUE == pwdinfo->invitereq_info.benable )
 		{
 			DBG_8723A( "[%s] P2P_STATE_TX_INVITE_REQ!\n", __FUNCTION__ );
-			if( _rtw_memcmp( pwdinfo->invitereq_info.peer_macaddr, GetAddr2Ptr(pframe), ETH_ALEN ) )
+			if (!memcmp( pwdinfo->invitereq_info.peer_macaddr,
+				     GetAddr2Ptr(pframe), ETH_ALEN))
 			{
 				pwdinfo->invitereq_info.benable = _FALSE;
 				issue_p2p_invitation_request( padapter, pwdinfo->invitereq_info.peer_macaddr );
@@ -991,8 +997,8 @@ unsigned int OnBeacon(_adapter *padapter, union recv_frame *precv_frame)
 		return _SUCCESS;
 	}
 
-	if (_rtw_memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
-	{
+	if (!memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network),
+		    ETH_ALEN)) {
 		if (pmlmeinfo->state & WIFI_FW_AUTH_NULL)
 		{
 			/* we should update current network before auth, or some IE is wrong */
@@ -1259,7 +1265,7 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 				goto auth_fail;
 			}
 
-			if (_rtw_memcmp((void *)(p + 2), pstat->chg_txt, 128))
+			if (!memcmp((void *)(p + 2), pstat->chg_txt, 128))
 			{
 				pstat->state &= (~WIFI_FW_AUTH_STATE);
 				pstat->state |= WIFI_FW_AUTH_SUCCESS;
@@ -1325,7 +1331,7 @@ unsigned int OnAuthClient(_adapter *padapter, union recv_frame *precv_frame)
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	/* check A1 matches or not */
-	if (!_rtw_memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
+	if (memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
 		return _SUCCESS;
 
 	if (!(pmlmeinfo->state & WIFI_FW_AUTH_STATE))
@@ -1537,7 +1543,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 	else
 	{
 		/*  check if ssid match */
-		if (!_rtw_memcmp((void *)(p+2), cur->Ssid.Ssid, cur->Ssid.SsidLength))
+		if (memcmp((void *)(p+2), cur->Ssid.Ssid, cur->Ssid.SsidLength))
 			status = _STATS_FAILURE_;
 
 		if (ie_len != cur->Ssid.SsidLength)
@@ -1721,7 +1727,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 		{
 			p = rtw_get_ie(p, _VENDOR_SPECIFIC_IE_, &ie_len, pkt_len - WLAN_HDR_A3_LEN - ie_offset);
 			if (p != NULL) {
-				if (_rtw_memcmp(p+2, WMM_IE, 6)) {
+				if (!memcmp(p+2, WMM_IE, 6)) {
 
 					pstat->flags |= WLAN_STA_WME;
 
@@ -1996,7 +2002,7 @@ unsigned int OnAssocRsp(_adapter *padapter, union recv_frame *precv_frame)
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	/* check A1 matches or not */
-	if (!_rtw_memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
+	if (memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
 		return _SUCCESS;
 
 	if (!(pmlmeinfo->state & (WIFI_FW_AUTH_SUCCESS | WIFI_FW_ASSOC_STATE)))
@@ -2035,12 +2041,12 @@ unsigned int OnAssocRsp(_adapter *padapter, union recv_frame *precv_frame)
 		switch (pIE->ElementID)
 		{
 			case _VENDOR_SPECIFIC_IE_:
-				if (_rtw_memcmp(pIE->data, WMM_PARA_OUI, 6))	/* WMM */
+				if (!memcmp(pIE->data, WMM_PARA_OUI, 6))/* WMM */
 				{
 					WMM_param_handler(padapter, pIE);
 				}
 #if defined(CONFIG_P2P) && defined(CONFIG_WFD)
-				else if ( _rtw_memcmp(pIE->data, WFD_OUI, 4))		/* WFD */
+				else if (!memcmp(pIE->data, WFD_OUI, 4))/* WFD */
 				{
 					DBG_8723A( "[%s] Found WFD IE\n", __FUNCTION__ );
 					WFD_info_handler( padapter, pIE );
@@ -2106,7 +2112,8 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 #endif /* CONFIG_P2P */
 
 	/* check A3 */
-	if (!(_rtw_memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN)))
+	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network),
+		   ETH_ALEN))
 		return _SUCCESS;
 
 #ifdef CONFIG_P2P
@@ -2179,7 +2186,7 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 #endif /* CONFIG_P2P */
 
 	/* check A3 */
-	if (!(_rtw_memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN)))
+	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
 		return _SUCCESS;
 
 #ifdef CONFIG_P2P
@@ -2371,7 +2378,7 @@ unsigned int OnAction_back(_adapter *padapter, union recv_frame *precv_frame)
 	struct sta_priv *pstapriv = &padapter->stapriv;
 #ifdef CONFIG_80211N_HT
 	/* check RA matches or not */
-	if (!_rtw_memcmp(myid(&(padapter->eeprompriv)), GetAddr1Ptr(pframe), ETH_ALEN))/* for if1, sta/ap mode */
+	if (memcmp(myid(&(padapter->eeprompriv)), GetAddr1Ptr(pframe), ETH_ALEN))/* for if1, sta/ap mode */
 		return _SUCCESS;
 
 	DBG_8723A("%s\n", __FUNCTION__);
@@ -3048,7 +3055,7 @@ void issue_p2p_GO_response(_adapter *padapter, u8* raddr, u8* frame_body,uint le
 	/*	Commented by Kurt 20120113 */
 	/*	If some device wants to do p2p handshake without sending prov_disc_req */
 	/*	We have to get peer_req_cm from here. */
-	if(_rtw_memcmp( pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "000", 3) )
+	if (!memcmp( pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "000", 3) )
 	{
 		if ( wps_devicepassword_id == WPS_DPID_USER_SPEC )
 		{
@@ -3754,7 +3761,8 @@ void issue_p2p_invitation_request(_adapter *padapter, u8* raddr )
 	/*	Channel Number */
 	p2pie[ p2pielen++ ] = pwdinfo->invitereq_info.operating_ch;	/*	operating channel number */
 
-	if ( _rtw_memcmp( myid( &padapter->eeprompriv ), pwdinfo->invitereq_info.go_bssid, ETH_ALEN ) )
+	if (!memcmp(myid(&padapter->eeprompriv),
+		    pwdinfo->invitereq_info.go_bssid, ETH_ALEN))
 	{
 		/*	P2P Group BSSID */
 		/*	Type: */
@@ -4349,7 +4357,7 @@ u8 is_matched_in_profilelist( u8* peermacaddr, struct profile_info* profileinfo 
 	{
 	       DBG_8723A( "[%s] profileinfo_mac = %.2X %.2X %.2X %.2X %.2X %.2X\n", __FUNCTION__,
 			    profileinfo->peermac[0], profileinfo->peermac[1],profileinfo->peermac[2],profileinfo->peermac[3],profileinfo->peermac[4],profileinfo->peermac[5]);
-		if ( _rtw_memcmp( peermacaddr, profileinfo->peermac, ETH_ALEN ) )
+		if (!memcmp(peermacaddr, profileinfo->peermac, ETH_ALEN))
 		{
 			match_result = 1;
 			DBG_8723A( "[%s] Match!\n", __FUNCTION__ );
@@ -4505,7 +4513,8 @@ void issue_probersp_p2p(_adapter *padapter, unsigned char *da)
 #ifdef CONFIG_INTEL_WIDI
 		/*	Commented by Kurt */
 		/*	Appended WiDi info. only if we did issued_probereq_widi(), and then we saved ven. ext. in pmlmepriv->sa_ext. */
-		if(  _rtw_memcmp(pmlmepriv->sa_ext, zero_array_check, L2SDTA_SERVICE_VE_LEN) == _FALSE )
+		if (memcmp(pmlmepriv->sa_ext, zero_array_check,
+			   L2SDTA_SERVICE_VE_LEN))
 		{
 			/* Sec dev type */
 			*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_SEC_DEV_TYPE_LIST );
@@ -5324,7 +5333,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 							rtw_get_p2p_attr_content( p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, ( u8* ) &group_id, &attr_contentlen);
 							if ( attr_contentlen )
 							{
-								if ( _rtw_memcmp( group_id.go_device_addr, myid( &padapter->eeprompriv ), ETH_ALEN ) )
+								if (!memcmp(group_id.go_device_addr, myid( &padapter->eeprompriv), ETH_ALEN))
 								{
 									/*	The p2p device sending this p2p invitation request wants this Wi-Fi device to be the persistent GO. */
 									rtw_p2p_set_state(pwdinfo, P2P_STATE_RECV_INVITE_REQ_GO );
@@ -5394,7 +5403,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 							rtw_get_p2p_attr_content( p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, ( u8* ) &group_id, &attr_contentlen);
 							if ( attr_contentlen )
 							{
-								if ( _rtw_memcmp( group_id.go_device_addr, myid( &padapter->eeprompriv ), ETH_ALEN ) )
+								if (!memcmp(group_id.go_device_addr, myid( &padapter->eeprompriv), ETH_ALEN))
 								{
 									/*	In this case, the GO can't be myself. */
 									rtw_p2p_set_state(pwdinfo, P2P_STATE_RECV_INVITE_REQ_DISMATCH );
@@ -5459,7 +5468,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 
 						if ( attr_content == P2P_STATUS_SUCCESS )
 						{
-							if ( _rtw_memcmp( pwdinfo->invitereq_info.go_bssid, myid( &padapter->eeprompriv ), ETH_ALEN ))
+							if (!memcmp(pwdinfo->invitereq_info.go_bssid, myid( &padapter->eeprompriv), ETH_ALEN))
 							{
 								rtw_p2p_set_role(pwdinfo, P2P_ROLE_GO );
 							}
@@ -5552,7 +5561,7 @@ unsigned int on_action_public_vendor(union recv_frame *precv_frame)
 	uint frame_len = precv_frame->u.hdr.len;
 	u8 *frame_body = pframe + sizeof(struct rtw_ieee80211_hdr_3addr);
 
-	if (_rtw_memcmp(frame_body + 2, P2P_OUI, 4) == _TRUE) {
+	if (!memcmp(frame_body + 2, P2P_OUI, 4)) {
 		ret = on_action_public_p2p(precv_frame);
 	}
 
@@ -5595,7 +5604,8 @@ unsigned int on_action_public(_adapter *padapter, union recv_frame *precv_frame)
 	u8 category, action;
 
 	/* check RA matches or not */
-	if (!_rtw_memcmp(myid(&(padapter->eeprompriv)), GetAddr1Ptr(pframe), ETH_ALEN))
+	if (memcmp(myid(&(padapter->eeprompriv)),
+		   GetAddr1Ptr(pframe), ETH_ALEN))
 		goto exit;
 
 	category = frame_body[0];
@@ -5638,7 +5648,8 @@ unsigned int OnAction_p2p(_adapter *padapter, union recv_frame *precv_frame)
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	/* check RA matches or not */
-	if (!_rtw_memcmp(myid(&(padapter->eeprompriv)), GetAddr1Ptr(pframe), ETH_ALEN))/* for if1, sta/ap mode */
+	if (memcmp(myid(&(padapter->eeprompriv)),
+		   GetAddr1Ptr(pframe), ETH_ALEN))/* for if1, sta/ap mode */
 		return _SUCCESS;
 
 	frame_body = (unsigned char *)(pframe + sizeof(struct rtw_ieee80211_hdr_3addr));
@@ -6881,7 +6892,7 @@ void issue_asocrsp(_adapter *padapter, unsigned short status, struct sta_info *p
 		for (pbuf = ie + _BEACON_IE_OFFSET_; ;pbuf+= (ie_len + 2))
 		{
 			pbuf = rtw_get_ie(pbuf, _VENDOR_SPECIFIC_IE_, &ie_len, (pnetwork->IELength - _BEACON_IE_OFFSET_ - (ie_len + 2)));
-			if(pbuf && _rtw_memcmp(pbuf+2, WMM_PARA_IE, 6))
+			if (pbuf && !memcmp(pbuf+2, WMM_PARA_IE, 6))
 			{
 				memcpy(pframe, pbuf, ie_len+2);
 				pframe += (ie_len+2);
@@ -7185,16 +7196,16 @@ void issue_assocreq(_adapter *padapter)
 		switch (pIE->ElementID)
 		{
 			case _VENDOR_SPECIFIC_IE_:
-				if ((_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4)) ||
-						(_rtw_memcmp(pIE->data, WMM_OUI, 4)) ||
-						(_rtw_memcmp(pIE->data, WPS_OUI, 4)))
-				{
-					if(!padapter->registrypriv.wifi_spec)
+				if (!memcmp(pIE->data, RTW_WPA_OUI, 4) ||
+				    !memcmp(pIE->data, WMM_OUI, 4) ||
+				    !memcmp(pIE->data, WPS_OUI, 4)) {
+					if (!padapter->registrypriv.wifi_spec)
 					{
 						/* Commented by Kurt 20110629 */
 						/* In some older APs, WPS handshake */
 						/* would be fail if we append vender extensions informations to AP */
-						if(_rtw_memcmp(pIE->data, WPS_OUI, 4)){
+						if (!memcmp(pIE->data,
+							    WPS_OUI, 4)){
 							pIE->Length=14;
 						}
 					}
@@ -7928,8 +7939,8 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 
 #ifdef CONFIG_BT_COEXIST
 				if ((BT_1Ant(padapter) == _TRUE) &&
-					((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
-					 (_rtw_memcmp(raddr, tendaAPMac, 3) == _FALSE)))
+				    ((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
+				     memcmp(raddr, tendaAPMac, 3)))
 				{
 					/*  A-MSDU NOT Supported */
 					BA_para_set = 0;
@@ -7989,8 +8000,8 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 
 #ifdef CONFIG_BT_COEXIST
 				if ((BT_1Ant(padapter) == _TRUE) &&
-					((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
-					 (_rtw_memcmp(raddr, tendaAPMac, 3) == _FALSE)))
+						((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
+						memcmp(raddr, tendaAPMac, 3)))
 				{
 					/*  max buffer size is 8 MSDU */
 					BA_para_set &= ~RTW_IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
@@ -9111,7 +9122,7 @@ unsigned int receive_disconnect(_adapter *padapter, unsigned char *MacAddr, unsi
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	/* check A3 */
-	if (!(_rtw_memcmp(MacAddr, get_my_bssid(&pmlmeinfo->network), ETH_ALEN)))
+	if (memcmp(MacAddr, get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
 		return _SUCCESS;
 
 	DBG_8723A("%s\n", __FUNCTION__);
@@ -10452,7 +10463,7 @@ u8 join_cmd_hdl(_adapter *padapter, u8 *pbuf)
 		switch (pIE->ElementID)
 		{
 			case _VENDOR_SPECIFIC_IE_:/* Get WMM IE. */
-				if ( _rtw_memcmp(pIE->data, WMM_OUI, 4) )
+				if (!memcmp(pIE->data, WMM_OUI, 4))
 				{
 					pmlmeinfo->WMM_enable = 1;
 				}

@@ -345,7 +345,7 @@ struct wlan_network *_rtw_find_network(_queue *scanned_queue, u8 *addr)
 
 _func_enter_;
 
-	if(_rtw_memcmp(zero_addr, addr, ETH_ALEN)){
+	if (!memcmp(zero_addr, addr, ETH_ALEN)){
 		pnetwork=NULL;
 		goto exit;
 	}
@@ -359,7 +359,7 @@ _func_enter_;
        {
                 pnetwork = LIST_CONTAINOR(plist, struct wlan_network ,list);
 
-		if (_rtw_memcmp(addr, pnetwork->network.MacAddress, ETH_ALEN) == _TRUE)
+		if (!memcmp(addr, pnetwork->network.MacAddress, ETH_ALEN))
                         break;
 
 		plist = get_next(plist);
@@ -577,8 +577,8 @@ inline int is_same_ess(WLAN_BSSID_EX *a, WLAN_BSSID_EX *b)
 {
 	/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("(%s,%d)(%s,%d)\n", */
 	/*		a->Ssid.Ssid,a->Ssid.SsidLength,b->Ssid.Ssid,b->Ssid.SsidLength)); */
-	return (a->Ssid.SsidLength == b->Ssid.SsidLength)
-		&&  _rtw_memcmp(a->Ssid.Ssid, b->Ssid.Ssid, a->Ssid.SsidLength)==_TRUE;
+	return (a->Ssid.SsidLength == b->Ssid.SsidLength) &&
+		!memcmp(a->Ssid.Ssid, b->Ssid.Ssid, a->Ssid.SsidLength);
 }
 
 int is_same_network(WLAN_BSSID_EX *src, WLAN_BSSID_EX *dst)
@@ -597,12 +597,12 @@ _func_exit_;
 
 	return ((src->Ssid.SsidLength == dst->Ssid.SsidLength) &&
 		/*	(src->Configuration.DSConfig == dst->Configuration.DSConfig) && */
-			( (_rtw_memcmp(src->MacAddress, dst->MacAddress, ETH_ALEN)) == _TRUE) &&
-			( (_rtw_memcmp(src->Ssid.Ssid, dst->Ssid.Ssid, src->Ssid.SsidLength)) == _TRUE) &&
-			((s_cap & WLAN_CAPABILITY_IBSS) ==
-			(d_cap & WLAN_CAPABILITY_IBSS)) &&
-			((s_cap & WLAN_CAPABILITY_BSS) ==
-			(d_cap & WLAN_CAPABILITY_BSS)));
+		((!memcmp(src->MacAddress, dst->MacAddress, ETH_ALEN))) &&
+		((!memcmp(src->Ssid.Ssid, dst->Ssid.Ssid, src->Ssid.SsidLength))) &&
+		((s_cap & WLAN_CAPABILITY_IBSS) ==
+		 (d_cap & WLAN_CAPABILITY_IBSS)) &&
+		((s_cap & WLAN_CAPABILITY_BSS) ==
+		 (d_cap & WLAN_CAPABILITY_BSS)));
 }
 
 struct	wlan_network	* rtw_get_oldest_wlan_network(_queue *scanned_queue)
@@ -979,7 +979,8 @@ _func_enter_;
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) == _TRUE)
 	{
 		/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,"rtw_survey_event_callback : WIFI_ADHOC_MASTER_STATE \n\n"); */
-		if(_rtw_memcmp(&(pmlmepriv->cur_network.network.MacAddress), pnetwork->MacAddress, ETH_ALEN))
+		if (!memcmp(&(pmlmepriv->cur_network.network.MacAddress),
+			    pnetwork->MacAddress, ETH_ALEN))
 		{
 			struct wlan_network* ibss_wlan = NULL;
 			_irqL	irqL;
@@ -1683,7 +1684,10 @@ _func_enter_;
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("@@@@@   rtw_joinbss_event_callback for SSid:%s\n", pmlmepriv->assoc_ssid.Ssid));
 	}
 
-	the_same_macaddr = _rtw_memcmp(pnetwork->network.MacAddress, cur_network->network.MacAddress, ETH_ALEN);
+	if (!memcmp(pnetwork->network.MacAddress, cur_network->network.MacAddress, ETH_ALEN))
+		the_same_macaddr = _TRUE;
+	else
+		the_same_macaddr = _FALSE;
 
 	pnetwork->network.Length = get_WLAN_BSSID_EX_sz(&pnetwork->network);
 	if(pnetwork->network.Length > sizeof(WLAN_BSSID_EX))
@@ -2498,16 +2502,19 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 	_adapter *adapter = container_of(pmlmepriv, _adapter, mlmepriv);
 
 	/* check bssid, if needed */
-	if(pmlmepriv->assoc_by_bssid==_TRUE) {
-		if(_rtw_memcmp(competitor->network.MacAddress, pmlmepriv->assoc_bssid, ETH_ALEN) ==_FALSE)
+	if (pmlmepriv->assoc_by_bssid==_TRUE) {
+		if (memcmp(competitor->network.MacAddress,
+			   pmlmepriv->assoc_bssid, ETH_ALEN))
 			goto exit;
 	}
 
 	/* check ssid, if needed */
-	if(pmlmepriv->assoc_ssid.Ssid && pmlmepriv->assoc_ssid.SsidLength) {
-		if(	competitor->network.Ssid.SsidLength != pmlmepriv->assoc_ssid.SsidLength
-			|| _rtw_memcmp(competitor->network.Ssid.Ssid, pmlmepriv->assoc_ssid.Ssid, pmlmepriv->assoc_ssid.SsidLength) == _FALSE
-		)
+	if (pmlmepriv->assoc_ssid.Ssid && pmlmepriv->assoc_ssid.SsidLength) {
+		if (competitor->network.Ssid.SsidLength !=
+		    pmlmepriv->assoc_ssid.SsidLength ||
+		    memcmp(competitor->network.Ssid.Ssid,
+			   pmlmepriv->assoc_ssid.Ssid,
+			   pmlmepriv->assoc_ssid.SsidLength))
 			goto exit;
 	}
 
@@ -2830,13 +2837,11 @@ static int SecIsInPMKIDList(_adapter *Adapter, u8 *bssid)
 
 	do
 	{
-		if( ( psecuritypriv->PMKIDList[i].bUsed ) &&
-                    (  _rtw_memcmp( psecuritypriv->PMKIDList[i].Bssid, bssid, ETH_ALEN ) == _TRUE ) )
+		if (psecuritypriv->PMKIDList[i].bUsed &&
+                    !memcmp(psecuritypriv->PMKIDList[i].Bssid, bssid, ETH_ALEN))
 		{
 			break;
-		}
-		else
-		{
+		} else {
 			i++;
 			/* continue; */
 		}

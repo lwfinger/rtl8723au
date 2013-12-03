@@ -946,7 +946,7 @@ _func_enter_;
 
 			if(bmcst)
 			{
-				if(_rtw_memcmp(psecuritypriv->dot118021XGrptxmickey[psecuritypriv->dot118021XGrpKeyid].skey, null_key, 16)==_TRUE){
+				if (!memcmp(psecuritypriv->dot118021XGrptxmickey[psecuritypriv->dot118021XGrpKeyid].skey, null_key, 16)){
 					/* DbgPrint("\nxmitframe_addmic:stainfo->dot11tkiptxmickey==0\n"); */
 					/* rtw_msleep_os(10); */
 					return _FAIL;
@@ -956,7 +956,7 @@ _func_enter_;
 			}
 			else
 			{
-				if(_rtw_memcmp(&stainfo->dot11tkiptxmickey.skey[0],null_key, 16)==_TRUE){
+				if(!memcmp(&stainfo->dot11tkiptxmickey.skey[0],null_key, 16)){
 					/* DbgPrint("\nxmitframe_addmic:stainfo->dot11tkiptxmickey==0\n"); */
 					/* rtw_msleep_os(10); */
 					return _FAIL;
@@ -1455,15 +1455,13 @@ _func_enter_;
 			tdls_seq=1;
 			break;
 		case TDLS_DISCOVERY_REQUEST:	/* unicast: directly to peer sta, Bcast: via AP */
-			if(_rtw_memcmp(pattrib->dst, baddr, ETH_ALEN) )
+			if (!memcmp(pattrib->dst, baddr, ETH_ALEN))
 			{
 				SetToDs(fctrl);
 				memcpy(pwlanhdr->addr1, get_bssid(pmlmepriv), ETH_ALEN);
 				memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 				memcpy(pwlanhdr->addr3, pattrib->dst, ETH_ALEN);
-			}
-			else
-			{
+			} else {
 				memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
 				memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
 				memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv), ETH_ALEN);
@@ -2786,17 +2784,15 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 		rcu_read_unlock();
 #endif  /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 		_enter_critical_bh(&padapter->br_ext_lock, &irqL);
-		if (	!(skb->data[0] & 1) &&
-				br_port &&
-				memcmp(skb->data+MACADDRLEN, padapter->br_mac, MACADDRLEN) &&
-				*((unsigned short *)(skb->data+MACADDRLEN*2)) != __constant_htons(ETH_P_8021Q) &&
-				*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP) &&
-				!memcmp(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN) && padapter->scdb_entry) {
+		if (!(skb->data[0] & 1) && br_port &&
+		    memcmp(skb->data+MACADDRLEN, padapter->br_mac, MACADDRLEN) &&
+		    *((unsigned short *)(skb->data+MACADDRLEN*2)) != __constant_htons(ETH_P_8021Q) &&
+		    *((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP) &&
+		    !memcmp(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN) && padapter->scdb_entry) {
 			memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
 			padapter->scdb_entry->ageing_timer = jiffies;
 			_exit_critical_bh(&padapter->br_ext_lock, &irqL);
-		}
-		else
+		} else
 		/* if (!priv->pmib->ethBrExtInfo.nat25_disable) */
 		{
 /*			if (priv->dev->br_port && */

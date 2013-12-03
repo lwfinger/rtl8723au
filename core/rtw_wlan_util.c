@@ -1307,7 +1307,7 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 		return _FAIL;
 	}
 
-	if (_rtw_memcmp(cur_network->network.MacAddress, pbssid, 6) == _FALSE) {
+	if (memcmp(cur_network->network.MacAddress, pbssid, 6)) {
 		DBG_8723A("Oops: rtw_check_network_encrypt linked but recv other bssid bcn\n" MAC_FMT MAC_FMT,
 				MAC_ARG(pbssid), MAC_ARG(cur_network->network.MacAddress));
 		return _TRUE;
@@ -1399,9 +1399,10 @@ int rtw_check_bcn_info(ADAPTER *Adapter, u8 *pframe, u32 packet_len)
 				bssid->Ssid.SsidLength, cur_network->network.Ssid.Ssid,
 				cur_network->network.Ssid.SsidLength));
 
-	if (_rtw_memcmp(bssid->Ssid.Ssid, cur_network->network.Ssid.Ssid, 32) == _FALSE ||
-			bssid->Ssid.SsidLength != cur_network->network.Ssid.SsidLength) {
-		if (bssid->Ssid.Ssid[0] != '\0' && bssid->Ssid.SsidLength != 0) { /* not hidden ssid */
+	if (memcmp(bssid->Ssid.Ssid, cur_network->network.Ssid.Ssid, 32) ||
+	    bssid->Ssid.SsidLength != cur_network->network.Ssid.SsidLength) {
+		if (bssid->Ssid.Ssid[0] != '\0' &&
+		    bssid->Ssid.SsidLength != 0) { /* not hidden ssid */
 			DBG_8723A("%s(), SSID is not match return FAIL\n", __func__);
 			goto _mismatch;
 		}
@@ -1574,14 +1575,14 @@ unsigned int is_ap_in_tkip(_adapter *padapter)
 			switch (pIE->ElementID)
 			{
 				case _VENDOR_SPECIFIC_IE_:
-					if ((_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4)) && (_rtw_memcmp((pIE->data + 12), WPA_TKIP_CIPHER, 4)))
+					if ((!memcmp(pIE->data, RTW_WPA_OUI, 4)) && (!memcmp((pIE->data + 12), WPA_TKIP_CIPHER, 4)))
 					{
 						return _TRUE;
 					}
 					break;
 
 				case _RSN_IE_2_:
-					if (_rtw_memcmp((pIE->data + 8), RSN_TKIP_CIPHER, 4))
+					if (!memcmp((pIE->data + 8), RSN_TKIP_CIPHER, 4))
 					{
 						return _TRUE;
 					}
@@ -1617,15 +1618,15 @@ unsigned int should_forbid_n_rate(_adapter * padapter)
 			switch (pIE->ElementID)
 			{
 				case _VENDOR_SPECIFIC_IE_:
-					if (_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4) &&
-						((_rtw_memcmp((pIE->data + 12), WPA_CIPHER_SUITE_CCMP, 4)) ||
-						  (_rtw_memcmp((pIE->data + 16), WPA_CIPHER_SUITE_CCMP, 4))))
+					if (!memcmp(pIE->data, RTW_WPA_OUI, 4) &&
+						((!memcmp((pIE->data + 12), WPA_CIPHER_SUITE_CCMP, 4)) ||
+						  (!memcmp((pIE->data + 16), WPA_CIPHER_SUITE_CCMP, 4))))
 						return _FALSE;
 					break;
 
 				case _RSN_IE_2_:
-					if  ((_rtw_memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
-					       (_rtw_memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
+					if  ((!memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
+					       (!memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
 					return _FALSE;
 
 				default:
@@ -1660,7 +1661,7 @@ unsigned int is_ap_in_wep(_adapter *padapter)
 			switch (pIE->ElementID)
 			{
 				case _VENDOR_SPECIFIC_IE_:
-					if (_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4))
+					if (!memcmp(pIE->data, RTW_WPA_OUI, 4))
 						return _FALSE;
 					break;
 
@@ -1910,24 +1911,25 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 		switch (pIE->ElementID)
 		{
 			case _VENDOR_SPECIFIC_IE_:
-				if ((_rtw_memcmp(pIE->data, ARTHEROS_OUI1, 3)) || (_rtw_memcmp(pIE->data, ARTHEROS_OUI2, 3)))
+				if ((!memcmp(pIE->data, ARTHEROS_OUI1, 3)) ||
+				    (!memcmp(pIE->data, ARTHEROS_OUI2, 3)))
 				{
 					DBG_8723A("link to Artheros AP\n");
 					return HT_IOT_PEER_ATHEROS;
 				}
-				else if ((_rtw_memcmp(pIE->data, BROADCOM_OUI1, 3))
-							|| (_rtw_memcmp(pIE->data, BROADCOM_OUI2, 3))
-							|| (_rtw_memcmp(pIE->data, BROADCOM_OUI2, 3)))
+				else if ((!memcmp(pIE->data, BROADCOM_OUI1, 3)) ||
+					 !memcmp(pIE->data, BROADCOM_OUI2, 3) ||
+					 !memcmp(pIE->data, BROADCOM_OUI2, 3))
 				{
 					DBG_8723A("link to Broadcom AP\n");
 					return HT_IOT_PEER_BROADCOM;
 				}
-				else if (_rtw_memcmp(pIE->data, MARVELL_OUI, 3))
+				else if (!memcmp(pIE->data, MARVELL_OUI, 3))
 				{
 					DBG_8723A("link to Marvell AP\n");
 					return HT_IOT_PEER_MARVELL;
 				}
-				else if (_rtw_memcmp(pIE->data, RALINK_OUI, 3))
+				else if (!memcmp(pIE->data, RALINK_OUI, 3))
 				{
 					if (!ralink_vendor_flag) {
 						ralink_vendor_flag = 1;
@@ -1936,27 +1938,27 @@ unsigned char check_assoc_AP(u8 *pframe, uint len)
 						return HT_IOT_PEER_RALINK;
 					}
 				}
-				else if (_rtw_memcmp(pIE->data, CISCO_OUI, 3))
+				else if (!memcmp(pIE->data, CISCO_OUI, 3))
 				{
 					DBG_8723A("link to Cisco AP\n");
 					return HT_IOT_PEER_CISCO;
 				}
-				else if (_rtw_memcmp(pIE->data, REALTEK_OUI, 3))
+				else if (!memcmp(pIE->data, REALTEK_OUI, 3))
 				{
 					DBG_8723A("link to Realtek 96B\n");
 					return HT_IOT_PEER_REALTEK;
 				}
-				else if (_rtw_memcmp(pIE->data, AIRGOCAP_OUI,3))
+				else if (!memcmp(pIE->data, AIRGOCAP_OUI,3))
 				{
 					DBG_8723A("link to Airgo Cap\n");
 					return HT_IOT_PEER_AIRGO;
 				}
-				else if (_rtw_memcmp(pIE->data, EPIGRAM_OUI, 3))
+				else if (!memcmp(pIE->data, EPIGRAM_OUI, 3))
 				{
-					 epigram_vendor_flag = 1;
+					epigram_vendor_flag = 1;
 					if(ralink_vendor_flag) {
 						DBG_8723A("link to Tenda W311R AP\n");
-						 return HT_IOT_PEER_TENDA;
+						return HT_IOT_PEER_TENDA;
 					} else {
 						DBG_8723A("Capture EPIGRAM_OUI\n");
 					}

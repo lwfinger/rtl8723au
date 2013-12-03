@@ -348,10 +348,9 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 			continue;
 
 		/* avoid come from STA1 and send back STA1 */
-		if (_rtw_memcmp(psta->hwaddr, &skb->data[6], 6) == _TRUE
-			|| _rtw_memcmp(psta->hwaddr, null_addr, 6) == _TRUE
-			|| _rtw_memcmp(psta->hwaddr, bc_addr, 6) == _TRUE
-		)
+		if (!memcmp(psta->hwaddr, &skb->data[6], 6) ||
+		    !memcmp(psta->hwaddr, null_addr, 6) ||
+		    !memcmp(psta->hwaddr, bc_addr, 6))
 			continue;
 
 		newskb = skb_copy(skb, GFP_ATOMIC);

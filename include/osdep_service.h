@@ -405,8 +405,6 @@ extern void	_rtw_mfree(u8 *pbuf, u32 sz);
 #define rtw_zmalloc(sz)			_rtw_zmalloc((sz))
 #define rtw_mfree(pbuf, sz)		_rtw_mfree((pbuf), (sz))
 
-extern int	_rtw_memcmp(void *dst, void *src, u32 sz);
-
 extern void	_rtw_init_listhead(_list *list);
 extern u32	rtw_is_list_empty(_list *phead);
 extern void	rtw_list_insert_head(_list *plist, _list *phead);

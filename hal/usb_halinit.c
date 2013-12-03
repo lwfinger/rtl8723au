@@ -3292,8 +3292,8 @@ Hal_ReadMACAddrFromFile_8723AU(
 		filp_close(fp, NULL);
 	}
 
-	if ( (_rtw_memcmp(pEEPROM->mac_addr, null_mac_addr, ETH_ALEN)) ||
-		(_rtw_memcmp(pEEPROM->mac_addr, multi_mac_addr, ETH_ALEN)) ) {
+	if ((!memcmp(pEEPROM->mac_addr, null_mac_addr, ETH_ALEN)) ||
+	    (!memcmp(pEEPROM->mac_addr, multi_mac_addr, ETH_ALEN)) ) {
 		pEEPROM->mac_addr[0] = 0x00;
 		pEEPROM->mac_addr[1] = 0xe0;
 		pEEPROM->mac_addr[2] = 0x4c;

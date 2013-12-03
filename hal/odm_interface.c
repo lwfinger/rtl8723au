@@ -290,22 +290,6 @@ ODM_FreeMemory(
 	PlatformFreeMemory(pPtr, length);
 #endif
 }
-s4Byte ODM_CompareMemory(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	PVOID           pBuf1,
-      IN	PVOID           pBuf2,
-      IN	u4Byte          length
-       )
-{
-#if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-	return memcmp(pBuf1,pBuf2,length);
-#elif (DM_ODM_SUPPORT_TYPE & ODM_CE )
-	return _rtw_memcmp(pBuf1,pBuf2,length);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
-	return PlatformCompareMemory(pBuf1,pBuf2,length);
-#endif
-}
-
 
 
 //
