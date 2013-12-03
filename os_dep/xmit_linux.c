@@ -33,7 +33,7 @@
 
 uint rtw_remainder_len(struct pkt_file *pfile)
 {
-	return (pfile->buf_len - ((SIZE_PTR)(pfile->cur_addr) - (SIZE_PTR)(pfile->buf_start)));
+	return (pfile->buf_len - ((unsigned long)(pfile->cur_addr) - (unsigned long)(pfile->buf_start)));
 }
 
 void _rtw_open_pktfile (_pkt *pktptr, struct pkt_file *pfile)
@@ -141,7 +141,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		return _FAIL;
 	}
 
-	pxmitbuf->pbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitbuf->pallocated_buf), XMITBUF_ALIGN_SZ);
+	pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, XMITBUF_ALIGN_SZ);
 	pxmitbuf->dma_transfer_addr = 0;
 
 #endif // CONFIG_USE_USB_BUFFER_ALLOC_TX
@@ -163,7 +163,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		return _FAIL;
 	}
 
-	pxmitbuf->pbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitbuf->pallocated_buf), XMITBUF_ALIGN_SZ);
+	pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, XMITBUF_ALIGN_SZ);
 #endif
 
 	return _SUCCESS;

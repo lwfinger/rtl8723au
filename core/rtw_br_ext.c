@@ -1564,13 +1564,13 @@ void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb)
 
 			if(iph->protocol == IPPROTO_UDP) /*  UDP */
 			{
-				struct udphdr *udph = (struct udphdr *)((SIZE_PTR)iph + (iph->ihl << 2));
+				struct udphdr *udph = (struct udphdr *)((unsigned long)iph + (iph->ihl << 2));
 
 				if((udph->source == __constant_htons(CLIENT_PORT))
 					&& (udph->dest == __constant_htons(SERVER_PORT))) /*  DHCP request */
 				{
 					struct dhcpMessage *dhcph =
-						(struct dhcpMessage *)((SIZE_PTR)udph + sizeof(struct udphdr));
+						(struct dhcpMessage *)((unsigned long)udph + sizeof(struct udphdr));
 
 					if(dhcph->cookie == __constant_htonl(DHCP_MAGIC)) /*  match magic word */
 					{

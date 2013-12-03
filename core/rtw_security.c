@@ -222,7 +222,7 @@ _func_enter_;
 				arcfour_encrypt(&mycontext, payload+length, crc, 4);
 
 			pframe+=pxmitpriv->frag_len;
-			pframe=(u8 *)RND4((SIZE_PTR)(pframe));
+			pframe=(u8 *)RND4((unsigned long)(pframe));
 
 			}
 
@@ -731,7 +731,7 @@ _func_enter_;
 					arcfour_encrypt(&mycontext, payload+length, crc, 4);
 
 				pframe+=pxmitpriv->frag_len;
-				pframe=(u8 *)RND4((SIZE_PTR)(pframe));
+				pframe=(u8 *)RND4((unsigned long)(pframe));
 
 				}
 			}
@@ -1561,7 +1561,7 @@ _func_enter_;
 
 					aes_cipher(prwskey,pattrib->hdrlen,pframe, length);
 				pframe+=pxmitpriv->frag_len;
-				pframe=(u8*)RND4((SIZE_PTR)(pframe));
+				pframe=(u8*)RND4((unsigned long)(pframe));
 
 				}
 			}

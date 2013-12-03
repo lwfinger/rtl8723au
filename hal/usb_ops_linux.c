@@ -92,7 +92,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 	// Added by Albert 2010/02/09
 	// For mstar platform, mstar suggests the address for USB IO should be 16 bytes alignment.
 	// Trying to fix it here.
-	pIo_buf = (tmp_buf==NULL)?NULL:tmp_buf + ALIGNMENT_UNIT -((SIZE_PTR)(tmp_buf) & 0x0f );
+	pIo_buf = (tmp_buf==NULL)?NULL:tmp_buf + ALIGNMENT_UNIT -((unsigned long)(tmp_buf) & 0x0f );
 #endif
 
 	if ( pIo_buf== NULL) {
@@ -760,7 +760,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
 			precvframe->u.hdr.pkt = pkt_copy;
 			precvframe->u.hdr.rx_head = pkt_copy->data;
 			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
-			skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
+			skb_reserve(pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
 			skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
 			precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pkt_copy->data;
@@ -1164,7 +1164,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 					precvframe_if2->u.hdr.pkt = pkt_copy;
 					precvframe_if2->u.hdr.rx_head = pkt_copy->data;
 					precvframe_if2->u.hdr.rx_end = pkt_copy->data + alloc_sz;
-					skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
+					skb_reserve( pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
 					skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
 					memcpy(pkt_copy->data, pbuf, skb_len);
 					precvframe_if2->u.hdr.rx_data = precvframe_if2->u.hdr.rx_tail = pkt_copy->data;
@@ -1307,7 +1307,7 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 			precvframe->u.hdr.pkt = pkt_copy;
 			precvframe->u.hdr.rx_head = pkt_copy->data;
 			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
-			skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
+			skb_reserve( pkt_copy, 8 - ((unsigned long)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
 			skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
 			precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pkt_copy->data;
@@ -1543,8 +1543,8 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 	_irqL irqL;
 	int err;
 	unsigned int pipe;
-	SIZE_PTR tmpaddr=0;
-	SIZE_PTR alignment=0;
+	unsigned long tmpaddr = 0;
+	unsigned long alignment = 0;
 	u32 ret = _SUCCESS;
 	PURB purb = NULL;
 	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
@@ -1590,7 +1590,7 @@ _func_enter_;
 			return _FAIL;
 		}
 
-		tmpaddr = (SIZE_PTR)precvbuf->pskb->data;
+		tmpaddr = (unsigned long)precvbuf->pskb->data;
 		alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
 		skb_reserve(precvbuf->pskb, (RECVBUFF_ALIGN_SZ - alignment));
 

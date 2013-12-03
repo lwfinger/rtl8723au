@@ -93,10 +93,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 		goto exit;
 	}
 
-	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
-	//precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
-	//						((uint) (precvpriv->pallocated_recv_buf) &(4-1));
-
+	precvpriv->precv_buf = PTR_ALIGN(precvpriv->pallocated_recv_buf, 4);
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
@@ -129,9 +126,9 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 #ifdef CONFIG_PREALLOC_RECV_SKB
 	{
 		int i;
-		SIZE_PTR tmpaddr=0;
-		SIZE_PTR alignment=0;
-		struct sk_buff *pskb=NULL;
+		unsigned long tmpaddr = 0;
+		unsigned long alignment = 0;
+		struct sk_buff *pskb = NULL;
 
 		skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 
@@ -148,7 +145,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 			{
 				pskb->dev = padapter->pnetdev;
 
-				tmpaddr = (SIZE_PTR)pskb->data;
+				tmpaddr = (unsigned long)pskb->data;
 				alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
 				skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
 

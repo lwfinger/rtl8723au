@@ -54,9 +54,6 @@ typedef	__kernel_ssize_t	SSIZE_T;
 #define MEM_ALIGNMENT_OFFSET	(sizeof (SIZE_T))
 #define MEM_ALIGNMENT_PADDING	(sizeof(SIZE_T) - 1)
 
-#define SIZE_PTR SIZE_T
-#define SSIZE_PTR SSIZE_T
-
 //port from fw by thomas
 // TODO: Belows are Sync from SD7-Driver. It is necessary to check correctness
 

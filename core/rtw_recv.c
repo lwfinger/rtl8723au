@@ -88,9 +88,7 @@ _func_enter_;
 	}
 	/* memset(precvpriv->pallocated_frame_buf, 0, NR_RECVFRAME * sizeof(union recv_frame) + RXFRAME_ALIGN_SZ); */
 
-	precvpriv->precv_frame_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_frame_buf), RXFRAME_ALIGN_SZ);
-	/* precvpriv->precv_frame_buf = precvpriv->pallocated_frame_buf + RXFRAME_ALIGN_SZ - */
-	/*						((SIZE_PTR) (precvpriv->pallocated_frame_buf) &(RXFRAME_ALIGN_SZ-1)); */
+	precvpriv->precv_frame_buf = PTR_ALIGN(precvpriv->pallocated_frame_buf, RXFRAME_ALIGN_SZ);
 
 	precvframe = (union recv_frame*) precvpriv->precv_frame_buf;
 
@@ -2158,7 +2156,7 @@ static void recvframe_expand_pkt(
 
 	/* 3 2. Prepare new skb to replace & release old skb */
 	/*  force ppkt->data at 8-byte alignment address */
-	skb_reserve(ppkt, 8 - ((SIZE_PTR)ppkt->data & 7));
+	skb_reserve(ppkt, 8 - ((unsigned long)ppkt->data & 7));
 	/*  force ip_hdr at 8-byte alignment address according to shift_sz */
 	skb_reserve(ppkt, shift_sz);
 
