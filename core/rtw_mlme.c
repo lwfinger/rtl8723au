@@ -53,7 +53,7 @@ sint	_rtw_init_mlme_priv (_adapter* padapter)
 _func_enter_;
 
 	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc(). */
-	/* _rtw_memset((u8 *)pmlmepriv, 0, sizeof(struct mlme_priv)); */
+	/* memset((u8 *)pmlmepriv, 0, sizeof(struct mlme_priv)); */
 
 	pmlmepriv->nic_hdl = (u8 *)padapter;
 
@@ -68,7 +68,7 @@ _func_enter_;
 
 	set_scanned_network_val(pmlmepriv, 0);
 
-	_rtw_memset(&pmlmepriv->assoc_ssid,0,sizeof(NDIS_802_11_SSID));
+	memset(&pmlmepriv->assoc_ssid,0,sizeof(NDIS_802_11_SSID));
 
 	pbuf = rtw_zvmalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
 
@@ -1079,7 +1079,7 @@ _func_enter_;
 
 					RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("switching to adhoc master\n"));
 
-					_rtw_memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
+					memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
 					memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(NDIS_802_11_SSID));
 
 					rtw_update_registrypriv_dev_network(adapter);
@@ -1122,7 +1122,7 @@ _func_enter_;
 #ifdef CONFIG_INTEL_WIDI
 						if(adapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
 						{
-							_rtw_memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
+							memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
 							intel_widi_wk_cmd(adapter, INTEL_WIDI_LISTEN_WK, NULL);
 							DBG_8723A("change to widi listen\n");
 						}
@@ -1345,7 +1345,7 @@ _func_enter_;
 #ifdef CONFIG_INTEL_WIDI
 	if(padapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
 	{
-		_rtw_memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
+		memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
 		intel_widi_wk_cmd(padapter, INTEL_WIDI_LISTEN_WK, NULL);
 		DBG_8723A("change to widi listen\n");
 	}
@@ -1497,13 +1497,13 @@ static struct sta_info *rtw_joinbss_update_stainfo(_adapter *padapter, struct wl
 			psta->ieee8021x_blocked=_TRUE;
 			psta->dot118021XPrivacy=padapter->securitypriv.dot11PrivacyAlgrthm;
 
-			_rtw_memset((u8 *)&psta->dot118021x_UncstKey, 0, sizeof (union Keytype));
+			memset((u8 *)&psta->dot118021x_UncstKey, 0, sizeof (union Keytype));
 
-			_rtw_memset((u8 *)&psta->dot11tkiprxmickey, 0, sizeof (union Keytype));
-			_rtw_memset((u8 *)&psta->dot11tkiptxmickey, 0, sizeof (union Keytype));
+			memset((u8 *)&psta->dot11tkiprxmickey, 0, sizeof (union Keytype));
+			memset((u8 *)&psta->dot11tkiptxmickey, 0, sizeof (union Keytype));
 
-			_rtw_memset((u8 *)&psta->dot11txpn, 0, sizeof (union pn48));
-			_rtw_memset((u8 *)&psta->dot11rxpn, 0, sizeof (union pn48));
+			memset((u8 *)&psta->dot11txpn, 0, sizeof (union pn48));
+			memset((u8 *)&psta->dot11rxpn, 0, sizeof (union pn48));
 		}
 
 		/*	Commented by Albert 2012/07/21 */
@@ -2157,7 +2157,7 @@ _func_enter_;
 
 			memcpy(pdev_network, &tgt_network->network, get_WLAN_BSSID_EX_sz(&tgt_network->network));
 
-			_rtw_memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
+			memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
 			memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(NDIS_802_11_SSID));
 
 			rtw_update_registrypriv_dev_network(adapter);
@@ -2240,7 +2240,7 @@ _func_enter_;
 #ifdef CONFIG_INTEL_WIDI
 				if(adapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
 				{
-					_rtw_memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
+					memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
 					intel_widi_wk_cmd(adapter, INTEL_WIDI_LISTEN_WK, NULL);
 					DBG_8723A("change to widi listen\n");
 				}
@@ -2665,7 +2665,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_memset(psetauthparm, 0, sizeof(struct setauth_parm));
+	memset(psetauthparm, 0, sizeof(struct setauth_parm));
 	psetauthparm->mode=(unsigned char)psecuritypriv->dot11AuthAlgrthm;
 
 	pcmd->cmdcode = _SetAuth_CMD_;
@@ -2710,7 +2710,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_memset(psetkeyparm, 0, sizeof(struct setkey_parm));
+	memset(psetkeyparm, 0, sizeof(struct setkey_parm));
 
 	if(psecuritypriv->dot11AuthAlgrthm ==dot11AuthAlgrthm_8021X){
 		psetkeyparm->algorithm=(unsigned char)psecuritypriv->dot118021XGrpPrivacy;
@@ -3111,7 +3111,7 @@ unsigned int rtw_restructure_ht_ie(_adapter *padapter, u8 *in_ie, u8 *out_ie, ui
 
 		out_len = *pout_len;
 
-		_rtw_memset(&ht_capie, 0, sizeof(struct rtw_ieee80211_ht_cap));
+		memset(&ht_capie, 0, sizeof(struct rtw_ieee80211_ht_cap));
 
 		ht_capie.cap_info = IEEE80211_HT_CAP_SUP_WIDTH |IEEE80211_HT_CAP_SGI_20 |
 							IEEE80211_HT_CAP_SGI_40 | IEEE80211_HT_CAP_TX_STBC |

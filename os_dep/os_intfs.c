@@ -1397,7 +1397,7 @@ _func_enter_;
 	}
 
 	// We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc().
-	//_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
+	//memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
 
 	//_init_timer(&(padapter->securitypriv.tkip_timer), padapter->pifp, rtw_use_tkipkey_handler, padapter);
 
@@ -1414,7 +1414,7 @@ _func_enter_;
 
 	rtw_init_pwrctrl_priv(padapter);
 
-	//_rtw_memset((u8 *)&padapter->qospriv, 0, sizeof (struct qos_priv));//move to mlme_priv
+	//memset((u8 *)&padapter->qospriv, 0, sizeof (struct qos_priv));//move to mlme_priv
 
 	ret8 = rtw_init_default_value(padapter);
 

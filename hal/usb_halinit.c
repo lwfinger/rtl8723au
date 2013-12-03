@@ -3255,8 +3255,8 @@ Hal_ReadMACAddrFromFile_8723AU(
 	u8 null_mac_addr[ETH_ALEN] = {0, 0, 0,0, 0, 0};
 	u8 multi_mac_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-	_rtw_memset(source_addr, 0, 18);
-	_rtw_memset(pEEPROM->mac_addr, 0, ETH_ALEN);
+	memset(source_addr, 0, 18);
+	memset(pEEPROM->mac_addr, 0, ETH_ALEN);
 
 	fp = filp_open("/data/wifimac.txt", O_RDWR,  0644);
 	if (IS_ERR(fp)) {
@@ -3943,7 +3943,7 @@ _func_enter_;
 	if(padapter->HalData == NULL){
 		DBG_8723A("cant not alloc memory for HAL DATA \n");
 	}
-	//_rtw_memset(padapter->HalData, 0, sizeof(HAL_DATA_TYPE));
+	//memset(padapter->HalData, 0, sizeof(HAL_DATA_TYPE));
 	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
 
 	pHalFunc->hal_init = &rtl8723au_hal_init;

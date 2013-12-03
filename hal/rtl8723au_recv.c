@@ -92,7 +92,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
 		goto exit;
 	}
-	_rtw_memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
+	memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
 	//precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
@@ -231,7 +231,7 @@ void update_recvframe_attrib(
 	prxreport = (PRXREPORT)&report;
 
 	pattrib = &precvframe->u.hdr.attrib;
-	_rtw_memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
+	memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
 
 	// update rx report to recv_frame attribute
 	pattrib->pkt_len = (u16)prxreport->pktlen;

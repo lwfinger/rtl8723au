@@ -406,7 +406,6 @@ extern void	_rtw_mfree(u8 *pbuf, u32 sz);
 #define rtw_mfree(pbuf, sz)		_rtw_mfree((pbuf), (sz))
 
 extern int	_rtw_memcmp(void *dst, void *src, u32 sz);
-extern void	_rtw_memset(void *pbuf, int c, u32 sz);
 
 extern void	_rtw_init_listhead(_list *list);
 extern u32	rtw_is_list_empty(_list *phead);

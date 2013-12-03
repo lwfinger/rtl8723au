@@ -76,7 +76,7 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 		u32 __i;						\
 		u8 buffer[MAX_STR_LEN];					\
 		u32	length = (_Len<MAX_STR_LEN)? _Len : (MAX_STR_LEN-1) ;	\
-		_rtw_memset(buffer, 0, MAX_STR_LEN);			\
+		memset(buffer, 0, MAX_STR_LEN);			\
 		memcpy(buffer, (u8*)_Ptr, length);		\
 		for (__i=0; __i<length; __i++)					\
 		{								\
@@ -106,7 +106,7 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 
 #define GetDefaultAdapter(padapter)	padapter
 
-#define PlatformZeroMemory(ptr, sz)	_rtw_memset(ptr, 0, sz)
+#define PlatformZeroMemory(ptr, sz)	memset(ptr, 0, sz)
 
 #define PlatformProcessHCICommands(...)
 #define PlatformTxBTQueuedPackets(...)
@@ -1194,13 +1194,13 @@ static void bthci_ResetEntry(PADAPTER padapter, u8 EntryNum)
 	pBTinfo->BtAsocEntry[EntryNum].AmpAsocCmdData.BtPhyLinkhandle = 0;
 	if (pBTinfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocfragment != NULL)
 	{
-		_rtw_memset(pBTinfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocfragment, 0, TOTAL_ALLOCIATE_ASSOC_LEN);
+		memset(pBTinfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocfragment, 0, TOTAL_ALLOCIATE_ASSOC_LEN);
 	}
 	pBTinfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar=0;
 
 	pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyType = 0;
 	pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle = 0;
-	_rtw_memset(pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey, 0, pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyLen);
+	memset(pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey, 0, pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyLen);
 	pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyLen=0;
 
 	pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.LinkSuperversionTimeout=0x3e80;//0x640; //0.625ms*1600=1000ms, 0.625ms*16000=10000ms

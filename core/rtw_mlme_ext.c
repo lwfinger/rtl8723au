@@ -315,7 +315,7 @@ static void init_mlme_ext_priv_value(_adapter* padapter)
 	pmlmeinfo->enc_algo = _NO_PRIVACY_;
 	pmlmeinfo->authModeToggle = 0;
 
-	_rtw_memset(pmlmeinfo->chg_txt, 0, 128);
+	memset(pmlmeinfo->chg_txt, 0, 128);
 
 	pmlmeinfo->slotTime = SHORT_SLOT_TIME;
 	pmlmeinfo->preamble_mode = PREAMBLE_AUTO;
@@ -397,7 +397,7 @@ static u8 init_channel_set(_adapter* padapter, u8 ChannelPlan, RT_CHANNEL_INFO *
 	u8	b5GBand = _FALSE, b2_4GBand = _FALSE;
 	u8	Index2G = 0, Index5G=0;
 
-	_rtw_memset(channel_set, 0, sizeof(RT_CHANNEL_INFO)*MAX_CHANNEL_NUM);
+	memset(channel_set, 0, sizeof(RT_CHANNEL_INFO)*MAX_CHANNEL_NUM);
 
 	if(ChannelPlan >= RT_CHANNEL_DOMAIN_MAX && ChannelPlan != RT_CHANNEL_DOMAIN_REALTEK_DEFINE)
 	{
@@ -501,7 +501,7 @@ int	init_mlme_ext_priv(_adapter* padapter)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc(). */
-	/* _rtw_memset((u8 *)pmlmeext, 0, sizeof(struct mlme_ext_priv)); */
+	/* memset((u8 *)pmlmeext, 0, sizeof(struct mlme_ext_priv)); */
 
 	pmlmeext->padapter = padapter;
 
@@ -1300,7 +1300,7 @@ auth_fail:
 		rtw_free_stainfo(padapter , pstat);
 
 	pstat = &stat;
-	_rtw_memset((char *)pstat, '\0', sizeof(stat));
+	memset((char *)pstat, '\0', sizeof(stat));
 	pstat->auth_seq = 2;
 	memcpy(pstat->hwaddr, sa, 6);
 
@@ -1589,7 +1589,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 	pstat->wpa2_group_cipher = 0;
 	pstat->wpa_pairwise_cipher = 0;
 	pstat->wpa2_pairwise_cipher = 0;
-	_rtw_memset(pstat->wpa_ie, 0, sizeof(pstat->wpa_ie));
+	memset(pstat->wpa_ie, 0, sizeof(pstat->wpa_ie));
 	if((psecuritypriv->wpa_psk & BIT(1)) && elems.rsn_ie) {
 
 		int group_cipher=0, pairwise_cipher=0;
@@ -1771,7 +1771,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 
 #ifdef CONFIG_80211N_HT
 	/* save HT capabilities in the sta object */
-	_rtw_memset(&pstat->htpriv.ht_cap, 0, sizeof(struct rtw_ieee80211_ht_cap));
+	memset(&pstat->htpriv.ht_cap, 0, sizeof(struct rtw_ieee80211_ht_cap));
 	if (elems.ht_capabilities && elems.ht_capabilities_len >= sizeof(struct rtw_ieee80211_ht_cap))
 	{
 		pstat->flags |= WLAN_STA_HT;
@@ -2531,7 +2531,7 @@ void issue_p2p_GO_request(_adapter *padapter, u8* raddr)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -2967,7 +2967,7 @@ void issue_p2p_GO_response(_adapter *padapter, u8* raddr, u8* frame_body,uint le
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -3000,7 +3000,7 @@ void issue_p2p_GO_response(_adapter *padapter, u8* raddr, u8* frame_body,uint le
 	rtw_get_wps_attr_content( wpsie, wpsielen, WPS_ATTR_DEVICE_PWID, (u8*) &wps_devicepassword_id, &wps_devicepassword_id_len);
 	wps_devicepassword_id = be16_to_cpu( wps_devicepassword_id );
 
-	_rtw_memset( wpsie, 0x00, 255 );
+	memset( wpsie, 0x00, 255 );
 	wpsielen = 0;
 
 	/*	WPS Section */
@@ -3437,7 +3437,7 @@ void issue_p2p_GO_confirm(_adapter *padapter, u8* raddr, u8 result)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -3659,7 +3659,7 @@ void issue_p2p_invitation_request(_adapter *padapter, u8* raddr )
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -3993,7 +3993,7 @@ void issue_p2p_invitation_response(_adapter *padapter, u8* raddr, u8 dialogToken
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -4263,7 +4263,7 @@ void issue_p2p_provision_request(_adapter *padapter, u8* pssid, u8 ussidlen, u8*
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -4401,7 +4401,7 @@ void issue_probersp_p2p(_adapter *padapter, unsigned char *da)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -4739,7 +4739,7 @@ int _issue_probereq_p2p(_adapter *padapter, u8 *da, int wait_ack)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -5177,7 +5177,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 			case P2P_GO_NEGO_REQ:
 			{
 				DBG_8723A( "[%s] Got GO Nego Req Frame\n", __FUNCTION__);
-				_rtw_memset( &pwdinfo->groupid_info, 0x00, sizeof( struct group_id_info ) );
+				memset( &pwdinfo->groupid_info, 0x00, sizeof( struct group_id_info ) );
 
 				if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_REQ))
 				{
@@ -5320,7 +5320,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 						{
 							/*	Re-invoke the persistent group. */
 
-							_rtw_memset( &group_id, 0x00, sizeof( struct group_id_info ) );
+							memset( &group_id, 0x00, sizeof( struct group_id_info ) );
 							rtw_get_p2p_attr_content( p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, ( u8* ) &group_id, &attr_contentlen);
 							if ( attr_contentlen )
 							{
@@ -5390,7 +5390,7 @@ unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 						{
 							/*	Received the invitation to join a P2P group. */
 
-							_rtw_memset( &group_id, 0x00, sizeof( struct group_id_info ) );
+							memset( &group_id, 0x00, sizeof( struct group_id_info ) );
 							rtw_get_p2p_attr_content( p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, ( u8* ) &group_id, &attr_contentlen);
 							if ( attr_contentlen )
 							{
@@ -5783,7 +5783,7 @@ void update_mgntframe_attrib(_adapter *padapter, struct pkt_attrib *pattrib)
 {
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 
-	_rtw_memset((u8 *)(pattrib), 0, sizeof(struct pkt_attrib));
+	memset((u8 *)(pattrib), 0, sizeof(struct pkt_attrib));
 
 	pattrib->hdrlen = 24;
 	pattrib->nr_frags = 1;
@@ -5910,7 +5910,7 @@ int update_hidden_ssid(u8 *ies, u32 ies_len, u8 hidden_ssid_mode)
 				break;
 			}
 			case 2:
-				_rtw_memset(&ssid_ie[2], 0, ssid_len_ori);
+				memset(&ssid_ie[2], 0, ssid_len_ori);
 				break;
 			default:
 				break;
@@ -5957,7 +5957,7 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 	update_mgntframe_attrib(padapter, pattrib);
 	pattrib->qsel = 0x10;
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -6265,7 +6265,7 @@ void issue_probersp(_adapter *padapter, unsigned char *da, u8 is_valid_p2p_probe
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -6505,7 +6505,7 @@ int _issue_probereq(_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da, int wai
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -6648,7 +6648,7 @@ void issue_auth(_adapter *padapter, struct sta_info *psta, unsigned short status
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -6800,7 +6800,7 @@ void issue_asocrsp(_adapter *padapter, unsigned short status, struct sta_info *p
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -6983,7 +6983,7 @@ void issue_assocreq(_adapter *padapter)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -7440,7 +7440,7 @@ static int _issue_nulldata(_adapter *padapter, unsigned char *da, unsigned int p
 	update_mgntframe_attrib(padapter, pattrib);
 	pattrib->retry_ctrl = _FALSE;
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -7568,7 +7568,7 @@ static int _issue_qos_nulldata(_adapter *padapter, unsigned char *da, u16 tid, i
 	pattrib->ack_policy = 0;
 	pattrib->mdata = 0;
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -7707,7 +7707,7 @@ static int _issue_deauth(_adapter *padapter, unsigned char *da, unsigned short r
 	update_mgntframe_attrib(padapter, pattrib);
 	pattrib->retry_ctrl = _FALSE;
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -7817,7 +7817,7 @@ void issue_action_spct_ch_switch(_adapter *padapter, u8 *ra, u8 new_ch, u8 ch_of
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -7891,7 +7891,7 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -8067,7 +8067,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 	pattrib = &pmgntframe->attrib;
 	update_mgntframe_attrib(padapter, pattrib);
 
-	_rtw_memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
+	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
@@ -8101,7 +8101,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 	}
 
 	/*  */
-	_rtw_memset(ICS, 0, sizeof(ICS));
+	memset(ICS, 0, sizeof(ICS));
 	if(pmlmepriv->num_sta_no_ht>0)
 	{
 		int i;
@@ -8710,7 +8710,7 @@ u8 collect_bss_info(_adapter *padapter, union recv_frame *precv_frame, WLAN_BSSI
 		return _FAIL;
 	}
 
-	_rtw_memset(bssid, 0, sizeof(WLAN_BSSID_EX));
+	memset(bssid, 0, sizeof(WLAN_BSSID_EX));
 
 	subtype = GetFrameSubType(pframe);
 
@@ -8768,7 +8768,7 @@ u8 collect_bss_info(_adapter *padapter, union recv_frame *precv_frame, WLAN_BSSI
 		bssid->Ssid.SsidLength = 0;
 	}
 
-	_rtw_memset(bssid->SupportedRates, 0, NDIS_802_11_LENGTH_RATES_EX);
+	memset(bssid->SupportedRates, 0, NDIS_802_11_LENGTH_RATES_EX);
 
 	/* checking rate info... */
 	i = 0;
@@ -9167,7 +9167,7 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		p = ie;
 		ie += len;
 
-		_rtw_memset(country, 0, 4);
+		memset(country, 0, 4);
 		memcpy(country, p, 3);
 		p += 3;
 		RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_,
@@ -9213,7 +9213,7 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		DBG_8723A("}\n");
 #endif
 
-		_rtw_memset(pmlmeext->channel_set, 0, sizeof(pmlmeext->channel_set));
+		memset(pmlmeext->channel_set, 0, sizeof(pmlmeext->channel_set));
 		chplan_new = pmlmeext->channel_set;
 
 		i = j = k = 0;
@@ -10593,7 +10593,7 @@ int rtw_scan_ch_decision(_adapter *padapter, struct rtw_ieee80211_channel *out,
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 
 	/* clear out first */
-	_rtw_memset(out, 0, sizeof(struct rtw_ieee80211_channel)*out_num);
+	memset(out, 0, sizeof(struct rtw_ieee80211_channel)*out_num);
 
 	/* acquire channels from in */
 	j = 0;
@@ -10630,7 +10630,7 @@ int rtw_scan_ch_decision(_adapter *padapter, struct rtw_ieee80211_channel *out,
 	if (padapter->setband == GHZ_24) {				/*  2.4G */
 		for (i=0; i < j ; i++) {
 			if (out[i].hw_value > 35)
-				_rtw_memset(&out[i], 0 , sizeof(struct rtw_ieee80211_channel));
+				memset(&out[i], 0 , sizeof(struct rtw_ieee80211_channel));
 			else
 				scan_ch_num++;
 		}

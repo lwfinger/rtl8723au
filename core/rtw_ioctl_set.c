@@ -151,7 +151,7 @@ _func_enter_;
 
 				pibss = padapter->registrypriv.dev_network.MacAddress;
 
-				_rtw_memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
+				memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
 				memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(NDIS_802_11_SSID));
 
 				rtw_update_registrypriv_dev_network(padapter);
@@ -715,7 +715,7 @@ _func_enter_;
 		struct security_priv* psecuritypriv=&(padapter->securitypriv);
 		if( keyindex < 4 ){
 
-			_rtw_memset(&psecuritypriv->dot11DefKey[keyindex], 0, 16);
+			memset(&psecuritypriv->dot11DefKey[keyindex], 0, 16);
 
 			res=rtw_set_key(padapter,psecuritypriv,keyindex, 0);
 
@@ -989,9 +989,9 @@ _func_enter_;
 			goto exit;
 		}
 
-		_rtw_memset(&padapter->securitypriv.dot118021XGrpKey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
-		_rtw_memset(&padapter->securitypriv.dot118021XGrptxmickey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
-		_rtw_memset(&padapter->securitypriv.dot118021XGrprxmickey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
+		memset(&padapter->securitypriv.dot118021XGrpKey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
+		memset(&padapter->securitypriv.dot118021XGrptxmickey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
+		memset(&padapter->securitypriv.dot118021XGrprxmickey[(u8)((key->KeyIndex) & 0x03)], 0, 16);
 
 		if((key->KeyIndex & 0x10000000))
 		{
@@ -1048,7 +1048,7 @@ _func_enter_;
 
 		if(stainfo!=NULL)
 		{
-			_rtw_memset( &stainfo->dot118021x_UncstKey, 0, 16);/*  clear keybuffer */
+			memset( &stainfo->dot118021x_UncstKey, 0, 16);/*  clear keybuffer */
 
 			memcpy(&stainfo->dot118021x_UncstKey, key->KeyMaterial, 16);
 
@@ -1124,7 +1124,7 @@ _func_enter_;
 		/* NdisZeroMemory(Adapter->MgntInfo.SecurityInfo.KeyBuf[keyIndex], MAX_WEP_KEY_LEN); */
 		/* Adapter->MgntInfo.SecurityInfo.KeyLen[keyIndex] = 0; */
 
-		_rtw_memset(&padapter->securitypriv.dot118021XGrpKey[keyIndex], 0, 16);
+		memset(&padapter->securitypriv.dot118021XGrpKey[keyIndex], 0, 16);
 
 		/*  \todo Send a H2C Command to Firmware for removing this Key in CAM Entry. */
 
@@ -1136,7 +1136,7 @@ _func_enter_;
 			encryptionalgo=stainfo->dot118021XPrivacy;
 
 		/*  clear key by BSSID */
-		_rtw_memset(&stainfo->dot118021x_UncstKey, 0, 16);
+		memset(&stainfo->dot118021x_UncstKey, 0, 16);
 
 		/*  \todo Send a H2C Command to Firmware for disable this Key in CAM Entry. */
 

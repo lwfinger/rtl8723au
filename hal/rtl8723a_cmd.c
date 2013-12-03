@@ -196,7 +196,7 @@ u8 rtl8192c_set_raid_cmd(_adapter*padapter, u32 mask, u8 arg)
 
 _func_enter_;
 
-	_rtw_memset(buf, 0, 5);
+	memset(buf, 0, 5);
 	mask = cpu_to_le32( mask );
 	memcpy(buf, &mask, 4);
 	buf[4]  = arg;
@@ -959,7 +959,7 @@ _func_enter_;
 	{
 		case P2P_PS_DISABLE:
 			DBG_8723A("P2P_PS_DISABLE \n");
-			_rtw_memset(p2p_ps_offload, 0 ,1);
+			memset(p2p_ps_offload, 0 ,1);
 			break;
 		case P2P_PS_ENABLE:
 			DBG_8723A("P2P_PS_ENABLE \n");

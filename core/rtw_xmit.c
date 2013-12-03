@@ -48,7 +48,7 @@ void	_rtw_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv)
 
 _func_enter_;
 
-	_rtw_memset((unsigned char *)psta_xmitpriv, 0, sizeof (struct sta_xmit_priv));
+	memset((unsigned char *)psta_xmitpriv, 0, sizeof (struct sta_xmit_priv));
 
 	_rtw_spinlock_init(&psta_xmitpriv->lock);
 
@@ -77,7 +77,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 _func_enter_;
 
 	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc(). */
-	/* _rtw_memset((unsigned char *)pxmitpriv, 0, sizeof(struct xmit_priv)); */
+	/* memset((unsigned char *)pxmitpriv, 0, sizeof(struct xmit_priv)); */
 
 	_rtw_spinlock_init(&pxmitpriv->lock);
 	_rtw_spinlock_init(&pxmitpriv->lock_sctx);
@@ -1123,7 +1123,7 @@ _func_enter_;
 		return _FAIL;
 	}
 
-	_rtw_memset(hdr, 0, WLANHDR_OFFSET);
+	memset(hdr, 0, WLANHDR_OFFSET);
 
 	SetFrameSubType(fctrl, pattrib->subtype);
 
@@ -1427,7 +1427,7 @@ s32 rtw_make_tdls_wlanhdr (_adapter *padapter , u8 *hdr, struct pkt_attrib *patt
 
 _func_enter_;
 
-	_rtw_memset(hdr, 0, WLANHDR_OFFSET);
+	memset(hdr, 0, WLANHDR_OFFSET);
 
 	SetFrameSubType(fctrl, pattrib->subtype);
 
@@ -2178,7 +2178,7 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 		pxframe->buf_addr = NULL;
 		pxframe->pxmitbuf = NULL;
 
-		_rtw_memset(&pxframe->attrib, 0, sizeof(struct pkt_attrib));
+		memset(&pxframe->attrib, 0, sizeof(struct pkt_attrib));
 		/* pxframe->attrib.psta = NULL; */
 
 		pxframe->frame_tag = DATA_FRAMETAG;

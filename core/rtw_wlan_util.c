@@ -298,7 +298,7 @@ void get_rate_set(_adapter *padapter, unsigned char *pbssrate, int *bssrate_len)
 {
 	unsigned char supportedrates[NumRates];
 
-	_rtw_memset(supportedrates, 0, NumRates);
+	memset(supportedrates, 0, NumRates);
 	*bssrate_len = ratetbl2rateset(padapter, supportedrates);
 	memcpy(pbssrate, supportedrates, *bssrate_len);
 }
@@ -782,7 +782,7 @@ void flush_all_cam_entry(_adapter *padapter)
 
 #endif /* CONFIG_CONCURRENT_MODE */
 
-	_rtw_memset((u8 *)(pmlmeinfo->FW_sta_info), 0, sizeof(pmlmeinfo->FW_sta_info));
+	memset((u8 *)(pmlmeinfo->FW_sta_info), 0, sizeof(pmlmeinfo->FW_sta_info));
 }
 
 #if defined(CONFIG_P2P) && defined(CONFIG_WFD)
@@ -1876,7 +1876,7 @@ void update_tx_basic_rate(_adapter *padapter, u8 wirelessmode)
 		return;
 #endif /* CONFIG_INTEL_WIDI */
 
-	_rtw_memset(supported_rates, 0, NDIS_802_11_LENGTH_RATES_EX);
+	memset(supported_rates, 0, NDIS_802_11_LENGTH_RATES_EX);
 
 	if ((wirelessmode & WIRELESS_11B) && (wirelessmode == WIRELESS_11B)) {
 		memcpy(supported_rates, rtw_basic_rate_cck, 4);

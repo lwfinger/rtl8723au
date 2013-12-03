@@ -213,7 +213,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	}
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-	_rtw_memset(ptxdesc, 0, sizeof(struct tx_desc));
+	memset(ptxdesc, 0, sizeof(struct tx_desc));
 
 	if((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 	{
@@ -1142,7 +1142,7 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 
 	// ----- fill tx desc -----
 	ptxdesc = (struct tx_desc *)pxmitbuf;
-	_rtw_memset(ptxdesc, 0, sizeof(*ptxdesc));
+	memset(ptxdesc, 0, sizeof(*ptxdesc));
 
 	//offset 0
 	ptxdesc->txdw0 |= cpu_to_le32(len&0x0000ffff);

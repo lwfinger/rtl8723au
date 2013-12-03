@@ -103,7 +103,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 	while(++vendorreq_times<= MAX_USBCTRL_VENDORREQ_TIMES)
 	{
-		_rtw_memset(pIo_buf, 0, len);
+		memset(pIo_buf, 0, len);
 
 		if (requesttype == 0x01)
 		{
@@ -1664,7 +1664,7 @@ void rtl8723au_set_intf_ops(struct _io_ops	*pops)
 {
 	_func_enter_;
 
-	_rtw_memset((u8 *)pops, 0, sizeof(struct _io_ops));
+	memset((u8 *)pops, 0, sizeof(struct _io_ops));
 
 	pops->_read8 = &usb_read8;
 	pops->_read16 = &usb_read16;
