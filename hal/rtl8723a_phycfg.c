@@ -1412,91 +1412,44 @@ PHY_BBConfig8723A(
 
 	phy_InitBBRFRegisterDefinition(Adapter);
 
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-	{
-		// Suggested by Scott. tynli_test. 2010.12.30.
-		//1. 0x28[1] = 1
-		TmpU1B = rtw_read8(Adapter, REG_AFE_PLL_CTRL);
-		rtw_udelay_os(2);
-		rtw_write8(Adapter, REG_AFE_PLL_CTRL, (TmpU1B|BIT1));
-		rtw_udelay_os(2);
+	// Suggested by Scott. tynli_test. 2010.12.30.
+	//1. 0x28[1] = 1
+	TmpU1B = rtw_read8(Adapter, REG_AFE_PLL_CTRL);
+	rtw_udelay_os(2);
+	rtw_write8(Adapter, REG_AFE_PLL_CTRL, (TmpU1B|BIT1));
+	rtw_udelay_os(2);
 
-		//2. 0x29[7:0] = 0xFF
-		rtw_write8(Adapter, REG_AFE_PLL_CTRL+1, 0xff);
-		rtw_udelay_os(2);
+	//2. 0x29[7:0] = 0xFF
+	rtw_write8(Adapter, REG_AFE_PLL_CTRL+1, 0xff);
+	rtw_udelay_os(2);
 
-		//3. 0x02[1:0] = 2b'11
-		TmpU1B = rtw_read8(Adapter, REG_SYS_FUNC_EN);
-		rtw_write8(Adapter, REG_SYS_FUNC_EN, (TmpU1B|FEN_BB_GLB_RSTn|FEN_BBRSTB));
+	//3. 0x02[1:0] = 2b'11
+	TmpU1B = rtw_read8(Adapter, REG_SYS_FUNC_EN);
+	rtw_write8(Adapter, REG_SYS_FUNC_EN, (TmpU1B|FEN_BB_GLB_RSTn|FEN_BBRSTB));
 
-		//4. 0x25[6] = 0
-		TmpU1B = rtw_read8(Adapter, REG_AFE_XTAL_CTRL+1);
-		rtw_write8(Adapter, REG_AFE_XTAL_CTRL+1, (TmpU1B&(~BIT6)));
+	//4. 0x25[6] = 0
+	TmpU1B = rtw_read8(Adapter, REG_AFE_XTAL_CTRL+1);
+	rtw_write8(Adapter, REG_AFE_XTAL_CTRL+1, (TmpU1B&(~BIT6)));
 
-		//5. 0x24[20] = 0	//Advised by SD3 Alex Wang. 2011.02.09.
-		TmpU1B = rtw_read8(Adapter, REG_AFE_XTAL_CTRL+2);
-		rtw_write8(Adapter, REG_AFE_XTAL_CTRL+2, (TmpU1B&(~BIT4)));
+	//5. 0x24[20] = 0	//Advised by SD3 Alex Wang. 2011.02.09.
+	TmpU1B = rtw_read8(Adapter, REG_AFE_XTAL_CTRL+2);
+	rtw_write8(Adapter, REG_AFE_XTAL_CTRL+2, (TmpU1B&(~BIT4)));
 
-		//6. 0x1f[7:0] = 0x07
-		rtw_write8(Adapter, REG_RF_CTRL, 0x07);
-	}
-	else
-	{
-		// Enable BB and RF
-		RegVal = rtw_read16(Adapter, REG_SYS_FUNC_EN);
-		rtw_write16(Adapter, REG_SYS_FUNC_EN, (u16)(RegVal|BIT13|BIT0|BIT1));
-
-		// 20090923 Joseph: Advised by Steven and Jenyu. Power sequence before init RF.
-		rtw_write8(Adapter, REG_AFE_PLL_CTRL, 0x83);
-		rtw_write8(Adapter, REG_AFE_PLL_CTRL+1, 0xdb);
-
-		rtw_write8(Adapter, REG_RF_CTRL, RF_EN|RF_RSTB|RF_SDMRSTB);
-
-#ifdef CONFIG_USB_HCI
-		rtw_write8(Adapter, REG_SYS_FUNC_EN, FEN_USBA | FEN_USBD | FEN_BB_GLB_RSTn | FEN_BBRSTB);
-#else
-		rtw_write8(Adapter, REG_SYS_FUNC_EN, FEN_PPLL|FEN_PCIEA|FEN_DIO_PCIE|FEN_BB_GLB_RSTn|FEN_BBRSTB);
-#endif
-
-		// 2009/10/21 by SD1 Jong. Modified by tynli. Not in Documented in V8.1.
-#ifdef CONFIG_USB_HCI
-		//To Fix MAC loopback mode fail. Suggested by SD4 Johnny. 2010.03.23.
-		rtw_write8(Adapter, REG_LDOHCI12_CTRL, 0x0f);
-		rtw_write8(Adapter, 0x15, 0xe9);
-#endif
-
-		rtw_write8(Adapter, REG_AFE_XTAL_CTRL+1, 0x80);
-
-#ifdef CONFIG_PCI_HCI
-		// Force use left antenna by default for 88C.
-	//	if(!IS_92C_SERIAL(pHalData->VersionID) || IS_92C_1T2R(pHalData->VersionID))
-		if(Adapter->ledpriv.LedStrategy != SW_LED_MODE10)
-		{
-			RegVal = rtw_read32(Adapter, REG_LEDCFG0);
-			rtw_write32(Adapter, REG_LEDCFG0, RegVal|BIT23);
-		}
-#endif
-	}
+	//6. 0x1f[7:0] = 0x07
+	rtw_write8(Adapter, REG_RF_CTRL, 0x07);
 
 	//
 	// Config BB and AGC
 	//
 	rtStatus = phy_BB8723a_Config_ParaFile(Adapter);
 
-#ifdef CONFIG_USB_HCI
-	if(IS_HARDWARE_TYPE_8192CU(Adapter)&&IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID)
-		&&(pHalData->BoardType == BOARD_USB_High_PA))
-			rtw_write8(Adapter, 0xc72, 0x50);
-#endif
 //only for B-cut
-	if(IS_HARDWARE_TYPE_8723A(Adapter) && pHalData->EEPROMVersion >= 0x01)
-	{
+	if(pHalData->EEPROMVersion >= 0x01) {
 		CrystalCap = pHalData->CrystalCap & 0x3F;
 		PHY_SetBBReg(Adapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
 	}
 
-	if(IS_HARDWARE_TYPE_8723AE(Adapter))
-		PHY_SetBBReg(Adapter, REG_LDOA15_CTRL, bMaskDWord, 0x01572505);
+	PHY_SetBBReg(Adapter, REG_LDOA15_CTRL, bMaskDWord, 0x01572505);
 	return rtStatus;
 }
 
@@ -1746,19 +1699,11 @@ rtl8723a_PHY_ConfigRFWithHeaderFile(
 			{
 				if(Rtl819XRadioB_Array_Table[i] == 0xfe)
 				{ // Deay specific ms. Only RF configuration require delay.
-#if 0//#ifdef CONFIG_USB_HCI
-					#ifdef CONFIG_LONG_DELAY_ISSUE
-					rtw_msleep_os(1000);
-					#else
-					rtw_mdelay_os(1000);
-					#endif
-#else
 					#ifdef CONFIG_LONG_DELAY_ISSUE
 					rtw_msleep_os(50);
 					#else
 					rtw_mdelay_os(50);
 					#endif
-#endif
 				}
 				else if (Rtl819XRadioB_Array_Table[i] == 0xfd)
 					rtw_mdelay_os(5);
@@ -2645,12 +2590,7 @@ PHY_SwChnl8192C(	// Call after initialization
 
 	if((!Adapter->bDriverStopped) && (!Adapter->bSurpriseRemoved))
 	{
-
-		#if 0
-		//PlatformSetTimer(Adapter, &(pHalData->SwChnlTimer), 0);
-		#else
 		_PHY_SwChnl8192C(Adapter, channel);
-		#endif
 
 		if(bResult)
 		{
@@ -2658,23 +2598,11 @@ PHY_SwChnl8192C(	// Call after initialization
 		}
 		else
 		{
-			//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SwChnl8192C SwChnlInProgress FALSE schdule workitem error\n"));
-			//if(IS_HARDWARE_TYPE_8192SU(Adapter))
-			//{
-			//	pHalData->SwChnlInProgress = FALSE;
-				pHalData->CurrentChannel = tmpchannel;
-			//}
+			pHalData->CurrentChannel = tmpchannel;
 		}
 
-	}
-	else
-	{
-		//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SwChnl8192C SwChnlInProgress FALSE driver sleep or unload\n"));
-		//if(IS_HARDWARE_TYPE_8192SU(Adapter))
-		//{
-		//	pHalData->SwChnlInProgress = FALSE;
-			pHalData->CurrentChannel = tmpchannel;
-		//}
+	} else {
+		pHalData->CurrentChannel = tmpchannel;
 	}
 }
 
@@ -2688,152 +2616,6 @@ phy_SwChnlStepByStep(
 	OUT u32		*delay
 	)
 {
-#if 0
-	HAL_DATA_TYPE			*pHalData = GET_HAL_DATA(Adapter);
-	PCHANNEL_ACCESS_SETTING	pChnlAccessSetting;
-	SwChnlCmd				PreCommonCmd[MAX_PRECMD_CNT];
-	u4Byte					PreCommonCmdCnt;
-	SwChnlCmd				PostCommonCmd[MAX_POSTCMD_CNT];
-	u4Byte					PostCommonCmdCnt;
-	SwChnlCmd				RfDependCmd[MAX_RFDEPENDCMD_CNT];
-	u4Byte					RfDependCmdCnt;
-	SwChnlCmd				*CurrentCmd;
-	u1Byte					eRFPath;
-	u4Byte					RfTXPowerCtrl;
-	bool					bAdjRfTXPowerCtrl = _FALSE;
-
-
-	RT_ASSERT((Adapter != NULL), ("Adapter should not be NULL\n"));
-	RT_ASSERT(IsLegalChannel(Adapter, channel), ("illegal channel: %d\n", channel));
-	RT_ASSERT((pHalData != NULL), ("pHalData should not be NULL\n"));
-
-	pChnlAccessSetting = &Adapter->MgntInfo.Info8185.ChannelAccessSetting;
-	RT_ASSERT((pChnlAccessSetting != NULL), ("pChnlAccessSetting should not be NULL\n"));
-
-	//for(eRFPath = RF_PATH_A; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
-	//for(eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
-	//{
-		// <1> Fill up pre common command.
-	PreCommonCmdCnt = 0;
-	phy_SetSwChnlCmdArray(PreCommonCmd, PreCommonCmdCnt++, MAX_PRECMD_CNT,
-				CmdID_SetTxPowerLevel, 0, 0, 0);
-	phy_SetSwChnlCmdArray(PreCommonCmd, PreCommonCmdCnt++, MAX_PRECMD_CNT,
-				CmdID_End, 0, 0, 0);
-
-		// <2> Fill up post common command.
-	PostCommonCmdCnt = 0;
-
-	phy_SetSwChnlCmdArray(PostCommonCmd, PostCommonCmdCnt++, MAX_POSTCMD_CNT,
-				CmdID_End, 0, 0, 0);
-
-		// <3> Fill up RF dependent command.
-	RfDependCmdCnt = 0;
-	switch( pHalData->RFChipID )
-	{
-		case RF_8225:
-		RT_ASSERT((channel >= 1 && channel <= 14), ("illegal channel for Zebra: %d\n", channel));
-		// 2008/09/04 MH Change channel.
-		if(channel==14) channel++;
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-			CmdID_RF_WriteReg, rZebra1_Channel, (0x10+channel-1), 10);
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-		CmdID_End, 0, 0, 0);
-		break;
-
-	case RF_8256:
-		// TEST!! This is not the table for 8256!!
-		RT_ASSERT((channel >= 1 && channel <= 14), ("illegal channel for Zebra: %d\n", channel));
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-			CmdID_RF_WriteReg, rRfChannel, channel, 10);
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-		CmdID_End, 0, 0, 0);
-		break;
-
-	case RF_6052:
-		RT_ASSERT((channel >= 1 && channel <= 14), ("illegal channel for Zebra: %d\n", channel));
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-			CmdID_RF_WriteReg, RF_CHNLBW, channel, 10);
-		phy_SetSwChnlCmdArray(RfDependCmd, RfDependCmdCnt++, MAX_RFDEPENDCMD_CNT,
-		CmdID_End, 0, 0, 0);
-
-		break;
-
-	case RF_8258:
-		break;
-
-	// For FPGA two MAC verification
-	case RF_PSEUDO_11N:
-		return TRUE;
-	default:
-		RT_ASSERT(FALSE, ("Unknown RFChipID: %d\n", pHalData->RFChipID));
-		return FALSE;
-		break;
-	}
-
-
-	do{
-		switch(*stage)
-		{
-		case 0:
-			CurrentCmd=&PreCommonCmd[*step];
-			break;
-		case 1:
-			CurrentCmd=&RfDependCmd[*step];
-			break;
-		case 2:
-			CurrentCmd=&PostCommonCmd[*step];
-			break;
-		}
-
-		if(CurrentCmd->CmdID==CmdID_End)
-		{
-			if((*stage)==2)
-			{
-				return TRUE;
-			}
-			else
-			{
-				(*stage)++;
-				(*step)=0;
-				continue;
-			}
-		}
-
-		switch(CurrentCmd->CmdID)
-		{
-		case CmdID_SetTxPowerLevel:
-			PHY_SetTxPowerLevel8192C(Adapter,channel);
-			break;
-		case CmdID_WritePortUlong:
-			PlatformEFIOWrite4Byte(Adapter, CurrentCmd->Para1, CurrentCmd->Para2);
-			break;
-		case CmdID_WritePortUshort:
-			PlatformEFIOWrite2Byte(Adapter, CurrentCmd->Para1, (u2Byte)CurrentCmd->Para2);
-			break;
-		case CmdID_WritePortUchar:
-			PlatformEFIOWrite1Byte(Adapter, CurrentCmd->Para1, (u1Byte)CurrentCmd->Para2);
-			break;
-		case CmdID_RF_WriteReg:	// Only modify channel for the register now !!!!!
-			for(eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
-			{
-#if 1
-				pHalData->RfRegChnlVal[eRFPath] = ((pHalData->RfRegChnlVal[eRFPath] & 0xfffffc00) | CurrentCmd->Para2);
-				PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, CurrentCmd->Para1, bRFRegOffsetMask, pHalData->RfRegChnlVal[eRFPath]);
-#else
-				PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, CurrentCmd->Para1, bRFRegOffsetMask, (CurrentCmd->Para2));
-#endif
-			}
-			break;
-		}
-
-		break;
-	}while(TRUE);
-	//cosa }/*for(Number of RF paths)*/
-
-	(*delay)=CurrentCmd->msDelay;
-	(*step)++;
-	return FALSE;
-#endif
 	return _TRUE;
 }
 

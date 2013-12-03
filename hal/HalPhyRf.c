@@ -76,18 +76,12 @@ phy_PathA_IQK_8192C(
 		PHY_SetBBReg(pAdapter, rTx_IQK_Tone_B, bMaskDWord, 0x10008c22);
 		PHY_SetBBReg(pAdapter, rRx_IQK_Tone_B, bMaskDWord, 0x10008c22);
 		PHY_SetBBReg(pAdapter, rTx_IQK_PI_B, bMaskDWord, 0x82140102);
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			PHY_SetBBReg(pAdapter, rRx_IQK_PI_B, bMaskDWord, 0x28160206);
-		else
-			PHY_SetBBReg(pAdapter, rRx_IQK_PI_B, bMaskDWord, 0x28160202);
+		PHY_SetBBReg(pAdapter, rRx_IQK_PI_B, bMaskDWord, 0x28160202);
 	}
 
 	//LO calibration setting
 	RTPRINT(FINIT, INIT_IQK, ("LO calibration setting!\n"));
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-		PHY_SetBBReg(pAdapter, rIQK_AGC_Rsp, bMaskDWord, 0x00462911);
-	else
-		PHY_SetBBReg(pAdapter, rIQK_AGC_Rsp, bMaskDWord, 0x001028d1);
+	PHY_SetBBReg(pAdapter, rIQK_AGC_Rsp, bMaskDWord, 0x001028d1);
 
 	//One shot, path A LOK & IQK
 	RTPRINT(FINIT, INIT_IQK, ("One shot, path A LOK & IQK!\n"));
@@ -204,10 +198,7 @@ phy_PathAFillIQKMatrix(
 		TX0_A = (X * Oldval_0) >> 8;
 		RTPRINT(FINIT, INIT_IQK, ("X = 0x%x, TX0_A = 0x%x, Oldval_0 0x%x\n", X, TX0_A, Oldval_0));
 		PHY_SetBBReg(pAdapter, rOFDM0_XATxIQImbalance, 0x3FF, TX0_A);
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT24, ((X* Oldval_0>>7) & 0x1));
-		else
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(31), ((X* Oldval_0>>7) & 0x1));
+		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(31), ((X* Oldval_0>>7) & 0x1));
 
 		Y = result[final_candidate][1];
 		if ((Y & 0x00000200) != 0)
@@ -221,10 +212,7 @@ phy_PathAFillIQKMatrix(
 		RTPRINT(FINIT, INIT_IQK, ("Y = 0x%x, TX = 0x%x\n", Y, TX0_C));
 		PHY_SetBBReg(pAdapter, rOFDM0_XCTxAFE, 0xF0000000, ((TX0_C&0x3C0)>>6));
 		PHY_SetBBReg(pAdapter, rOFDM0_XATxIQImbalance, 0x003F0000, (TX0_C&0x3F));
-		if(IS_HARDWARE_TYPE_8192D(pAdapter)/*&&is2T*/)
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT26, ((Y* Oldval_0>>7) & 0x1));
-		else
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(29), ((Y* Oldval_0>>7) & 0x1));
+		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(29), ((Y* Oldval_0>>7) & 0x1));
 
 		if(bTxOnly)
 		{
@@ -271,10 +259,7 @@ phy_PathBFillIQKMatrix(
 		TX1_A = (X * Oldval_1) >> 8;
 		RTPRINT(FINIT, INIT_IQK, ("X = 0x%x, TX1_A = 0x%x\n", X, TX1_A));
 		PHY_SetBBReg(pAdapter, rOFDM0_XBTxIQImbalance, 0x3FF, TX1_A);
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT28, ((X* Oldval_1>>7) & 0x1));
-		else
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(27), ((X* Oldval_1>>7) & 0x1));
+		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(27), ((X* Oldval_1>>7) & 0x1));
 
 		Y = result[final_candidate][5];
 		if ((Y & 0x00000200) != 0)
@@ -285,10 +270,7 @@ phy_PathBFillIQKMatrix(
 		RTPRINT(FINIT, INIT_IQK, ("Y = 0x%x, TX1_C = 0x%x\n", Y, TX1_C));
 		PHY_SetBBReg(pAdapter, rOFDM0_XDTxAFE, 0xF0000000, ((TX1_C&0x3C0)>>6));
 		PHY_SetBBReg(pAdapter, rOFDM0_XBTxIQImbalance, 0x003F0000, (TX1_C&0x3F));
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT30, ((Y* Oldval_1>>7) & 0x1));
-		else
-			PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(25), ((Y* Oldval_1>>7) & 0x1));
+		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(25), ((Y* Oldval_1>>7) & 0x1));
 
 		if(bTxOnly)
 			return;
@@ -385,11 +367,7 @@ phy_SimularityCompare(
 	IN	u1Byte		 c2
 	)
 {
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-		return phy_SimularityCompare_92D(pAdapter, result, c1, c2);
-	else
-		return phy_SimularityCompare_92C(pAdapter, result, c1, c2);
-
+	return phy_SimularityCompare_92C(pAdapter, result, c1, c2);
 }
 
 VOID
@@ -454,43 +432,13 @@ phy_IQCalibrate_8192C(
 		// Save ADDA parameters, turn Path A ADDA on
 		phy_SaveADDARegisters(pAdapter, ADDA_REG, pHalData->ADDA_backup, IQK_ADDA_REG_NUM);
 		phy_SaveMACRegisters(pAdapter, IQK_MAC_REG, pHalData->IQK_MAC_backup);
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			phy_SaveADDARegisters(pAdapter, IQK_BB_REG_92D, pHalData->IQK_BB_backup, IQK_BB_REG_NUM_92D);
-		else
-			phy_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup, IQK_BB_REG_NUM);
+		phy_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup, IQK_BB_REG_NUM);
 	}
 
 	phy_PathADDAOn(pAdapter, ADDA_REG, TRUE, is2T);
 
-
-
-	if(IS_HARDWARE_TYPE_8192D(pAdapter)){
-		//==============================
-		//3 Path Diversity
-		////Neil Chen--2011--05--20
-	       rfPathSwitch =(u1Byte) (PHY_QueryBBReg(pAdapter, 0xB30, bMaskDWord)>>27);
-		//rfPathSwitch = (u1Byte) DataB30;
-		rfPathSwitch = rfPathSwitch&(0x01);
-
-		if(rfPathSwitch)   // Path Div On
-		{
-		    phy_PathADDAOn(pAdapter, ADDA_REG, TRUE, is2T);
-		    //DbgPrint("=STEP= change ADDA Path from B to A Path\n");
-		}
-		else
-		{
-		    phy_PathADDAOn(pAdapter, ADDA_REG, FALSE, is2T);
-		}
-		//3 end
-		//=====================================
-
-		PHY_SetBBReg(pAdapter, rPdp_AntA, bMaskDWord, 0x01017038);
-	}
-
 	if(t==0)
-	{
 		pHalData->bRfPiEnable = (u1Byte)PHY_QueryBBReg(pAdapter, rFPGA0_XA_HSSIParameter1, BIT(8));
-	}
 
 	if(!pHalData->bRfPiEnable){
 		// Switch BB to PI mode to do IQ Calibration.
@@ -501,18 +449,12 @@ phy_IQCalibrate_8192C(
 	PHY_SetBBReg(pAdapter, rOFDM0_TRxPathEnable, bMaskDWord, 0x03a05600);
 	PHY_SetBBReg(pAdapter, rOFDM0_TRMuxPar, bMaskDWord, 0x000800e4);
 	PHY_SetBBReg(pAdapter, rFPGA0_XCD_RFInterfaceSW, bMaskDWord, 0x22204000);
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-		PHY_SetBBReg(pAdapter, rFPGA0_AnalogParameter4, 0xf00000, 0x0f);
-	else
-	{
-		PHY_SetBBReg(pAdapter, rFPGA0_XAB_RFInterfaceSW, BIT10, 0x01);
-		PHY_SetBBReg(pAdapter, rFPGA0_XAB_RFInterfaceSW, BIT26, 0x01);
-		PHY_SetBBReg(pAdapter, rFPGA0_XA_RFInterfaceOE, BIT10, 0x00);
-		PHY_SetBBReg(pAdapter, rFPGA0_XB_RFInterfaceOE, BIT10, 0x00);
-	}
+	PHY_SetBBReg(pAdapter, rFPGA0_XAB_RFInterfaceSW, BIT10, 0x01);
+	PHY_SetBBReg(pAdapter, rFPGA0_XAB_RFInterfaceSW, BIT26, 0x01);
+	PHY_SetBBReg(pAdapter, rFPGA0_XA_RFInterfaceOE, BIT10, 0x00);
+	PHY_SetBBReg(pAdapter, rFPGA0_XB_RFInterfaceOE, BIT10, 0x00);
 
-	if(is2T)
-	{
+	if(is2T) {
 		PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00010000);
 		PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00010000);
 	}
@@ -520,25 +462,11 @@ phy_IQCalibrate_8192C(
 	//MAC settings
 	phy_MACSettingCalibration(pAdapter, IQK_MAC_REG, pHalData->IQK_MAC_backup);
 
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-	{
-		PHY_SetBBReg(pAdapter, rConfig_AntA, bMaskDWord, 0x0f600000);
+	//Page B init
+	PHY_SetBBReg(pAdapter, rConfig_AntA, bMaskDWord, 0x00080000);
 
-		if(is2T)
-		{
-			PHY_SetBBReg(pAdapter, rConfig_AntB, bMaskDWord, 0x0f600000);
-		}
-	}
-	else
-	{
-		//Page B init
-		PHY_SetBBReg(pAdapter, rConfig_AntA, bMaskDWord, 0x00080000);
-
-		if(is2T)
-		{
-			PHY_SetBBReg(pAdapter, rConfig_AntB, bMaskDWord, 0x00080000);
-		}
-	}
+	if(is2T)
+		PHY_SetBBReg(pAdapter, rConfig_AntB, bMaskDWord, 0x00080000);
 	// IQ calibration setting
 	RTPRINT(FINIT, INIT_IQK, ("IQK setting!\n"));
 	PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x80800000);
@@ -713,18 +641,7 @@ phy_LCCalibrate(
 	IN	bool		is2T
 	)
 {
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-	{
-#if SWLCK == 1
-		phy_LCCalibrate92DSW(pAdapter, is2T);
-#else
-		phy_LCCalibrate92D(pAdapter, is2T);
-#endif
-	}
-	else
-	{
-		phy_LCCalibrate92C(pAdapter, is2T);
-	}
+	phy_LCCalibrate92C(pAdapter, is2T);
 }
 
 
@@ -1038,21 +955,7 @@ PHY_IQCalibrate_8192C(
 		}
 	}
 
-	if(IS_HARDWARE_TYPE_8192D(pAdapter) && final_candidate != 0xFF)
-	{
-		Indexforchannel = GetRightChnlPlaceforIQK(pHalData->CurrentChannel);
-
-		for(i = 0; i < IQK_Matrix_REG_NUM; i++)
-			pHalData->IQKMatrixRegSetting[Indexforchannel].Value[0][i] =
-				result[final_candidate][i];
-
-		pHalData->IQKMatrixRegSetting[Indexforchannel].bIQKDone = TRUE;
-
-		RTPRINT(FINIT, INIT_IQK, ("\nIQK OK Indexforchannel %d.\n", Indexforchannel));
-	}
-
-	if(!IS_HARDWARE_TYPE_8192D(pAdapter))
-		phy_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup_recover, 9);
+	phy_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup_recover, 9);
 
 }
 
@@ -1126,26 +1029,6 @@ PHY_APCalibrate_8192C(
 
 	//default disable APK, because Tx NG issue, suggest by Jenyu, 2011.11.25
 	return;
-
-#if DISABLE_BB_RF
-	return;
-#endif
-
-	if(IS_HARDWARE_TYPE_8192D(pAdapter) || IS_HARDWARE_TYPE_8723A(pAdapter))
-		return;
-
-#if FOR_BRAZIL_PRETEST != 1
-	if(pHalData->bAPKdone)
-#endif
-		return;
-
-	if(IS_92C_SERIAL( pHalData->VersionID)){
-		phy_APCalibrate_8192C(pAdapter, delta, TRUE);
-	}
-	else{
-		// For 88C 1T1R
-		phy_APCalibrate_8192C(pAdapter, delta, FALSE);
-	}
 }
 
 

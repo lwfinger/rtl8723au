@@ -1523,42 +1523,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 				 ("%s: MAC has already power on\n", __FUNCTION__));
 	}
 
-#if 0
-	if(bSupportRemoteWakeUp && Adapter->bWakeFromPnpSleep && pHalData->bMACFuncEnable)
-	{
-		if(IS_HARDWARE_TYPE_8723AU(Adapter))
-		{
-			FW_CTRL_PS_MODE FwPwrMode = FW_PS_ACTIVE_MODE;
-
-			pHalData->H2CStopInsertQueue = FALSE;
-
-			if(pMgntInfo->mAssoc &&
-				pMgntInfo->OpMode == RT_OP_MODE_INFRASTRUCTURE &&
-				(pMgntInfo->PowerSaveControl.WoWLANLPSLevel > 0))
-			{
-				RT_TRACE(COMP_POWER, DBG_LOUD, ("FwLPS: Active!!\n"));
-				rtw_hal_set_hwreg(Adapter, HW_VAR_H2C_FW_PWRMODE, (pu1Byte)(&FwPwrMode));
-			}
-
-			HalSetFWWoWlanMode92C(Adapter, FALSE);
-
-			// Clear WoWLAN event FTISR[WWLAN_INT_EN].
-			if(IS_FW_8723A(Adapter) && Adapter->MgntInfo.FirmwareVersion < 10)
-			{
-				// Fw revises the bug after version 10.
-				value8 = rtw_read8(Adapter, REG_FTISR+3);
-				rtw_write8(Adapter, REG_FTISR+3, value8|BIT2);
-			}
-
-			SimpleInitializeAdapter8192CUsb(Adapter);
-
-			pMgntInfo->init_adpt_in_progress = FALSE;
-			return RT_STATUS_SUCCESS;
-		}
-	}
-#endif
-
-
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 	status = _InitPowerOn(Adapter);
 	if(status == _FAIL){
@@ -3382,12 +3346,7 @@ static void _ReadPROMContent(
 	DBG_8723A("Boot from %s, Autoload %s !\n", (pEEPROM->EepromOrEfuse ? "EEPROM" : "EFUSE"),
 				(pEEPROM->bautoload_fail_flag ? "Fail" : "OK") );
 
-	//pHalData->EEType = IS_BOOT_FROM_EEPROM(Adapter) ? EEPROM_93C46 : EEPROM_BOOT_EFUSE;
-
-	//if(IS_HARDWARE_TYPE_8723A(Adapter))
-	//	readAdapterInfo_8723U(Adapter);
-	//else
-		readAdapterInfo(Adapter);
+	readAdapterInfo(Adapter);
 }
 
 
@@ -3428,40 +3387,6 @@ void _ReadSilmComboMode(PADAPTER Adapter)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
 	pHalData->SlimComboDbg = _FALSE;	// Default is not debug mode.
-
-	// 2010/11/22 MH We need to enter debug mode for TSMA and UMC A cut
-	//if ((Adapter->chip_type == RTL8188C_8192C) &&
-/*
-	if (IS_HARDWARE_TYPE_8192CU(Adapter) &&
-		(pHalData->BoardType == BOARD_USB_COMBO))
-	{
-		switch (pHalData->VersionID)
-		{
-			case	VERSION_NORMAL_TSMC_CHIP_88C:
-			case	VERSION_NORMAL_TSMC_CHIP_92C:
-			case	VERSION_NORMAL_TSMC_CHIP_92C_1T2R:
-			case	VERSION_NORMAL_UMC_CHIP_88C_A_CUT:
-			case	VERSION_NORMAL_UMC_CHIP_92C_A_CUT:
-			case	VERSION_NORMAL_UMC_CHIP_92C_1T2R_A_CUT:
-				if ((rtw_read8(Adapter, REG_SYS_CFG+3) &0xF0) == 0x20)
-					pHalData->SlimComboDbg = _TRUE;
-
-				break;
-
-			case	VERSION_NORMAL_UMC_CHIP_88C_B_CUT:
-			case	VERSION_NORMAL_UMC_CHIP_92C_B_CUT:
-			case	VERSION_NORMAL_UMC_CHIP_92C_1T2R_B_CUT:
-				// 2011/02/15 MH UNC-B cut ECO fail, we need to support slim combo debug mode.
-				if ((rtw_read8(Adapter, REG_SYS_CFG+3) &0xF0) == 0x20)
-					pHalData->SlimComboDbg = _TRUE;
-				break;
-
-			default:
-				break;
-		}
-
-	}
-*/
 }
 
 //
