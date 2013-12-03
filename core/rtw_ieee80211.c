@@ -1617,7 +1617,7 @@ int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 	{
 		eid = in_ie[cnt];
 
-		if ((eid == _VENDOR_SPECIFIC_IE_) && 
+		if ((eid == _VENDOR_SPECIFIC_IE_) &&
 		    !memcmp( &in_ie[cnt+2], wfd_oui, 4))
 		{
 			if ( wfd_ie != NULL )

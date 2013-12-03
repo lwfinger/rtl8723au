@@ -48,7 +48,7 @@ inline int RTW_STATUS_CODE(int error_code){
 
 inline u8* _rtw_vmalloc(u32 sz)
 {
-	u8 	*pbuf;
+	u8	*pbuf;
 	pbuf = vmalloc(sz);
 
 	return pbuf;
@@ -56,7 +56,7 @@ inline u8* _rtw_vmalloc(u32 sz)
 
 inline u8* _rtw_zvmalloc(u32 sz)
 {
-	u8 	*pbuf;
+	u8	*pbuf;
 	pbuf = _rtw_vmalloc(sz);
 	if (pbuf != NULL)
 		memset(pbuf, 0, sz);
@@ -82,13 +82,13 @@ u8* _rtw_malloc(u32 sz)
 
 u8* _rtw_zmalloc(u32 sz)
 {
-	u8 	*pbuf = _rtw_malloc(sz);
+	u8	*pbuf = _rtw_malloc(sz);
 
 	if (pbuf != NULL) {
 		memset(pbuf, 0, sz);
 	}
 
-	return pbuf;	
+	return pbuf;
 }
 
 void	_rtw_mfree(u8 *pbuf, u32 sz)
@@ -218,7 +218,7 @@ void rtw_sleep_schedulable(int ms)
 
 void rtw_msleep_os(int ms)
 {
-  	msleep((unsigned int)ms);
+	msleep((unsigned int)ms);
 }
 
 void rtw_usleep_os(int us)
@@ -244,7 +244,7 @@ void _rtw_mdelay_os(int ms, const char *func, const int line)
 
 	DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, ms);
 
-   	mdelay((unsigned long)ms); 
+	mdelay((unsigned long)ms);
 }
 void _rtw_udelay_os(int us, const char *func, const int line)
 {
@@ -259,17 +259,17 @@ void _rtw_udelay_os(int us, const char *func, const int line)
 
 
 	DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, us);
-	
-      udelay((unsigned long)us); 
+
+      udelay((unsigned long)us);
 }
 #else
 void rtw_mdelay_os(int ms)
 {
-   	mdelay((unsigned long)ms); 
+	mdelay((unsigned long)ms);
 }
 void rtw_udelay_os(int us)
 {
-      udelay((unsigned long)us); 
+      udelay((unsigned long)us);
 }
 #endif
 
