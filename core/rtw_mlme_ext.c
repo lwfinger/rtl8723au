@@ -5896,7 +5896,7 @@ s32 dump_mgntframe_and_wait_ack(_adapter *padapter, struct xmit_frame *pmgntfram
 int update_hidden_ssid(u8 *ies, u32 ies_len, u8 hidden_ssid_mode)
 {
 	u8 *ssid_ie;
-	sint ssid_len_ori;
+	int ssid_len_ori;
 	int len_diff = 0;
 
 	ssid_ie = rtw_get_ie(ies,  WLAN_EID_SSID, &ssid_len_ori, ies_len);
@@ -6347,8 +6347,8 @@ void issue_probersp(_adapter *padapter, unsigned char *da, u8 is_valid_p2p_probe
 		/* retrieve SSID IE from cur_network->Ssid */
 		{
 			u8 *ssid_ie;
-			sint ssid_ielen;
-			sint ssid_ielen_diff;
+			int ssid_ielen;
+			int ssid_ielen_diff;
 			u8 buf[MAX_IE_SZ];
 			u8 *ies = pmgntframe->buf_addr+TXDESC_OFFSET+sizeof(struct rtw_ieee80211_hdr_3addr);
 
@@ -11508,7 +11508,7 @@ void dc_handle_join_done(_adapter *padapter, u8 join_res)
 	}
 }
 
-sint	dc_check_fwstate(_adapter *padapter, sint fw_state)
+int	dc_check_fwstate(_adapter *padapter, int fw_state)
 {
 	PADAPTER pbuddy_adapter = padapter->pbuddy_adapter;
 	struct mlme_priv *pbuddy_mlmepriv = NULL;
@@ -11789,7 +11789,7 @@ u8	dc_check_xmit(_adapter *padapter)
 #endif
 
 #ifdef CONFIG_CONCURRENT_MODE
-sint check_buddy_mlmeinfo_state(_adapter *padapter, u32 state)
+int check_buddy_mlmeinfo_state(_adapter *padapter, u32 state)
 {
 	PADAPTER pbuddy_adapter;
 	struct mlme_ext_priv *pbuddy_mlmeext;

@@ -55,13 +55,13 @@ _func_enter_;
 _func_exit_;
 }
 
-sint _rtw_init_recv_priv(struct recv_priv *precvpriv, _adapter *padapter)
+int _rtw_init_recv_priv(struct recv_priv *precvpriv, _adapter *padapter)
 {
-	sint i;
+	int i;
 
 	union recv_frame *precvframe;
 
-	sint	res=_SUCCESS;
+	int	res=_SUCCESS;
 
 _func_enter_;
 
@@ -258,7 +258,7 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-sint _rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
+int _rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
 {
 
 	_adapter *padapter=precvframe->u.hdr.adapter;
@@ -281,9 +281,9 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-sint rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
+int rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
 {
-	sint ret;
+	int ret;
 	_irqL irqL;
 
 	/* _spinlock(&pfree_recv_queue->lock); */
@@ -296,7 +296,7 @@ sint rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
 }
 
 /*
-sint	rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
+int	rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
 {
 	return rtw_free_recvframe(precvframe, queue);
 }
@@ -345,7 +345,7 @@ u32 rtw_free_uc_swdec_pending_queue(_adapter *adapter)
 	return cnt;
 }
 
-sint rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
+int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 {
 	_irqL irqL;
 
@@ -359,7 +359,7 @@ sint rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 	return _SUCCESS;
 }
 
-sint rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
+int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 {
 	_irqL irqL;
 #ifdef CONFIG_SDIO_HCI
@@ -416,10 +416,10 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 	return precvbuf;
 }
 
-sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe);
-sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe){
+int recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe);
+int recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe){
 
-	sint	i,res=_SUCCESS;
+	int	i,res=_SUCCESS;
 	u32	datalen;
 	u8	miccode[8];
 	u8	bmic_err=_FALSE,brpt_micerror = _TRUE;
@@ -743,10 +743,10 @@ _func_exit_;
 		return prtnframe;
 }
 
-sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache);
-sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache)
+int recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache);
+int recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache)
 {
-	sint tid = precv_frame->u.hdr.attrib.priority;
+	int tid = precv_frame->u.hdr.attrib.priority;
 
 	u16 seq_ctrl = ( (precv_frame->u.hdr.attrib.seq_num&0xffff) << 4) |
 		(precv_frame->u.hdr.attrib.frag_num & 0xf);
@@ -895,10 +895,10 @@ void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame)
 }
 
 #ifdef CONFIG_TDLS
-sint OnTDLS(_adapter *adapter, union recv_frame *precv_frame)
+int OnTDLS(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct rx_pkt_attrib	*pattrib = & precv_frame->u.hdr.attrib;
-	sint ret = _SUCCESS;
+	int ret = _SUCCESS;
 	u8 *paction = get_recvframe_data(precv_frame);
 	u8 category_field = 1;
 #ifdef CONFIG_WFD
@@ -1018,26 +1018,26 @@ void count_rx_stats(_adapter *padapter, union recv_frame *prframe, struct sta_in
 	}
 }
 
-sint sta2sta_data_frame(
+int sta2sta_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta
 );
-sint sta2sta_data_frame(
+int sta2sta_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta
 )
 {
 	u8 *ptr = precv_frame->u.hdr.rx_data;
-	sint ret = _SUCCESS;
+	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = & precv_frame->u.hdr.attrib;
 	struct	sta_priv		*pstapriv = &adapter->stapriv;
 	struct	mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 	u8 *mybssid  = get_bssid(pmlmepriv);
 	u8 *myhwaddr = myid(&adapter->eeprompriv);
 	u8 * sta_addr = NULL;
-	sint bmcast = IS_MCAST(pattrib->dst);
+	int bmcast = IS_MCAST(pattrib->dst);
 
 #ifdef CONFIG_TDLS
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
@@ -1230,23 +1230,23 @@ _func_exit_;
 	return ret;
 }
 
-sint ap2sta_data_frame(
+int ap2sta_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta );
-sint ap2sta_data_frame(
+int ap2sta_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta )
 {
 	u8 *ptr = precv_frame->u.hdr.rx_data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->u.hdr.attrib;
-	sint ret = _SUCCESS;
+	int ret = _SUCCESS;
 	struct	sta_priv		*pstapriv = &adapter->stapriv;
 	struct	mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 	u8 *mybssid  = get_bssid(pmlmepriv);
 	u8 *myhwaddr = myid(&adapter->eeprompriv);
-	sint bmcast = IS_MCAST(pattrib->dst);
+	int bmcast = IS_MCAST(pattrib->dst);
 
 _func_enter_;
 
@@ -1382,11 +1382,11 @@ _func_exit_;
 	return ret;
 }
 
-sint sta2ap_data_frame(
+int sta2ap_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta );
-sint sta2ap_data_frame(
+int sta2ap_data_frame(
 	_adapter *adapter,
 	union recv_frame *precv_frame,
 	struct sta_info**psta )
@@ -1396,7 +1396,7 @@ sint sta2ap_data_frame(
 	struct	sta_priv		*pstapriv = &adapter->stapriv;
 	struct	mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 	unsigned char *mybssid  = get_bssid(pmlmepriv);
-	sint ret=_SUCCESS;
+	int ret=_SUCCESS;
 
 _func_enter_;
 
@@ -1453,8 +1453,8 @@ _func_exit_;
 	return ret;
 }
 
-sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame);
-sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
+int validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame);
+int validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 {
 #ifdef CONFIG_AP_MODE
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
@@ -1613,8 +1613,8 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 }
 
 union recv_frame* recvframe_chk_defrag(PADAPTER padapter, union recv_frame *precv_frame);
-sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame);
-sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
+int validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame);
+int validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
 {
 	/* struct mlme_priv *pmlmepriv = &adapter->mlmepriv; */
 
@@ -1701,8 +1701,8 @@ sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame);
-sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
+int validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame);
+int validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
 {
 	u8 bretry;
 	u8 *psa, *pda, *pbssid;
@@ -1711,7 +1711,7 @@ sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
 	struct rx_pkt_attrib	*pattrib = & precv_frame->u.hdr.attrib;
 	struct sta_priv		*pstapriv = &adapter->stapriv;
 	struct security_priv	*psecuritypriv = &adapter->securitypriv;
-	sint ret = _SUCCESS;
+	int ret = _SUCCESS;
 #ifdef CONFIG_TDLS
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 #endif /* CONFIG_TDLS */
@@ -1861,8 +1861,8 @@ _func_exit_;
 	return ret;
 }
 
-sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame);
-sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
+int validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame);
+int validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 {
 	/* shall check frame subtype, to / from ds, da, bssid */
 
@@ -1870,7 +1870,7 @@ sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 
 	u8 type;
 	u8 subtype;
-	sint retval = _SUCCESS;
+	int retval = _SUCCESS;
 
 	struct rx_pkt_attrib *pattrib = & precv_frame->u.hdr.attrib;
 
@@ -2047,15 +2047,15 @@ _func_exit_;
 
 /* remove the wlanhdr and add the eth_hdr */
 
-sint wlanhdr_to_ethhdr ( union recv_frame *precvframe)
+int wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 {
-	sint	rmv_len;
+	int	rmv_len;
 	u16	eth_type, len;
 	u8	bsnaphdr;
 	u8	*psnap_type;
 	struct ieee80211_snap_hdr	*psnap;
 
-	sint ret=_SUCCESS;
+	int ret=_SUCCESS;
 	_adapter			*adapter =precvframe->u.hdr.adapter;
 	struct mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 

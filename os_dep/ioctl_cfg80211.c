@@ -1735,7 +1735,7 @@ void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
 	struct	wlan_network	*pnetwork = NULL;
 	u32 cnt=0;
 	u32 wait_for_surveydone;
-	sint wait_status;
+	int wait_status;
 #ifdef CONFIG_P2P
 	struct	wifidirect_info*	pwdinfo = &padapter->wdinfo;
 #endif //CONFIG_P2P

@@ -759,7 +759,7 @@ extern void correct_TSF(_adapter *padapter, struct mlme_ext_priv *pmlmeext);
 
 
 #ifdef CONFIG_CONCURRENT_MODE
- sint check_buddy_mlmeinfo_state(_adapter *padapter, u32 state);
+int check_buddy_mlmeinfo_state(_adapter *padapter, u32 state);
 int concurrent_chk_start_clnt_join(_adapter *padapter);
 void concurrent_chk_joinbss_done(_adapter *padapter, int join_res);
 #endif //CONFIG_CONCURRENT_MODE
@@ -770,7 +770,7 @@ void	dc_SetBWMode(_adapter *padapter, unsigned short bwmode, unsigned char chann
 void	dc_set_channel_bwmode_disconnect(_adapter *padapter);
 u8	dc_handle_join_request(_adapter *padapter);
 void	dc_handle_join_done(_adapter *padapter, u8 join_res);
-sint	dc_check_fwstate(_adapter *padapter, sint fw_state);
+int	dc_check_fwstate(_adapter *padapter, int fw_state);
 u8	dc_handle_site_survey(_adapter *padapter);
 void	dc_report_survey_event(_adapter *padapter, union recv_frame *precv_frame);
 void	dc_set_channel_bwmode_survey_done(_adapter *padapter);

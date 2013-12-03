@@ -152,7 +152,7 @@ SHALL not lock up more than one locks at a time!
 struct sitesurvey_ctrl {
 	u64	last_tx_pkts;
 	uint	last_rx_pkts;
-	sint	traffic_busy;
+	int	traffic_busy;
 	_timer	sitesurvey_ctrl_timer;
 };
 
@@ -381,7 +381,7 @@ struct tdls_info{
 struct mlme_priv {
 
 	spinlock_t	lock;
-	sint	fw_state;	//shall we protect this variable? maybe not necessarily...
+	int	fw_state;	//shall we protect this variable? maybe not necessarily...
 	u8 bScanInProcess;
 	u8	to_join; //flag
 	#ifdef CONFIG_LAYER2_ROAMING
@@ -597,9 +597,9 @@ extern int rtw_init_mlme_priv(_adapter *adapter);// (struct mlme_priv *pmlmepriv
 extern void rtw_free_mlme_priv (struct mlme_priv *pmlmepriv);
 
 
-extern sint rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv);
-extern sint rtw_set_key(_adapter *adapter,struct security_priv *psecuritypriv,sint keyid, u8 set_tx);
-extern sint rtw_set_auth(_adapter *adapter,struct security_priv *psecuritypriv);
+extern int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv);
+extern int rtw_set_key(_adapter *adapter,struct security_priv *psecuritypriv,int keyid, u8 set_tx);
+extern int rtw_set_auth(_adapter *adapter,struct security_priv *psecuritypriv);
 
 __inline static u8 *get_bssid(struct mlme_priv *pmlmepriv)
 {	//if sta_mode:pmlmepriv->cur_network.network.MacAddress=> bssid
@@ -607,7 +607,7 @@ __inline static u8 *get_bssid(struct mlme_priv *pmlmepriv)
 	return pmlmepriv->cur_network.network.MacAddress;
 }
 
-__inline static sint check_fwstate(struct mlme_priv *pmlmepriv, sint state)
+__inline static int check_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	if (pmlmepriv->fw_state & state)
 		return _TRUE;
@@ -615,7 +615,7 @@ __inline static sint check_fwstate(struct mlme_priv *pmlmepriv, sint state)
 	return _FALSE;
 }
 
-__inline static sint get_fwstate(struct mlme_priv *pmlmepriv)
+__inline static int get_fwstate(struct mlme_priv *pmlmepriv)
 {
 	return pmlmepriv->fw_state;
 }
@@ -627,7 +627,7 @@ __inline static sint get_fwstate(struct mlme_priv *pmlmepriv)
  * ### NOTE:#### (!!!!)
  * MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
  */
-__inline static void set_fwstate(struct mlme_priv *pmlmepriv, sint state)
+__inline static void set_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	pmlmepriv->fw_state |= state;
 	//FOR HW integration
@@ -636,7 +636,7 @@ __inline static void set_fwstate(struct mlme_priv *pmlmepriv, sint state)
 	}
 }
 
-__inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, sint state)
+__inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, int state)
 {
 	pmlmepriv->fw_state &= ~state;
 	//FOR HW integration
@@ -649,7 +649,7 @@ __inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, sint state)
  * No Limit on the calling context,
  * therefore set it to be the critical section...
  */
-__inline static void clr_fwstate(struct mlme_priv *pmlmepriv, sint state)
+__inline static void clr_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	if (check_fwstate(pmlmepriv, state) == _TRUE)
@@ -657,7 +657,7 @@ __inline static void clr_fwstate(struct mlme_priv *pmlmepriv, sint state)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-__inline static void clr_fwstate_ex(struct mlme_priv *pmlmepriv, sint state)
+__inline static void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	_clr_fwstate_(pmlmepriv, state);
@@ -672,8 +672,8 @@ __inline static void up_scanned_network(struct mlme_priv *pmlmepriv)
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
-sint rtw_buddy_adapter_up(_adapter *padapter);
-sint check_buddy_fwstate(_adapter *padapter, sint state);
+int rtw_buddy_adapter_up(_adapter *padapter);
+int check_buddy_fwstate(_adapter *padapter, int state);
 #endif //CONFIG_CONCURRENT_MODE
 
 __inline static void down_scanned_network(struct mlme_priv *pmlmepriv)
@@ -683,7 +683,7 @@ __inline static void down_scanned_network(struct mlme_priv *pmlmepriv)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-__inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, sint val)
+__inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, int val)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned = val;
@@ -749,9 +749,9 @@ extern struct wlan_network* _rtw_find_network(_queue *scanned_queue, u8 *addr);
 
 extern void _rtw_free_network_queue(_adapter* padapter, u8 isfreeall);
 
-extern sint rtw_if_up(_adapter *padapter);
+extern int rtw_if_up(_adapter *padapter);
 
-sint rtw_linked_check(_adapter *padapter);
+int rtw_linked_check(_adapter *padapter);
 
 u8 *rtw_get_capability_from_ie(u8 *ie);
 u8 *rtw_get_timestampe_from_ie(u8 *ie);

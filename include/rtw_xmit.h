@@ -219,7 +219,7 @@ struct	hw_xmit	{
 	//_list	pending;
 	_queue *sta_queue;
 	//struct hw_txqueue *phwtxqueue;
-	//sint	txcmdcnt;
+	//int	txcmdcnt;
 	int	accnt;
 };
 
@@ -398,7 +398,7 @@ struct xmit_buf
 
 	u8 bpending[8];
 
-	sint last[8];
+	int last[8];
 
 #endif
 
@@ -470,8 +470,8 @@ struct tx_servq {
 struct sta_xmit_priv
 {
 	spinlock_t	lock;
-	sint	option;
-	sint	apsd_setting;	//When bit mask is on, the associated edca queue supports APSD.
+	int	option;
+	int	apsd_setting;	//When bit mask is on, the associated edca queue supports APSD.
 
 
 	//struct tx_servq blk_q[MAX_NUMBLKS];
@@ -493,14 +493,14 @@ struct sta_xmit_priv
 
 
 struct	hw_txqueue	{
-	volatile sint	head;
-	volatile sint	tail;
-	volatile sint	free_sz;	//in units of 64 bytes
-	volatile sint      free_cmdsz;
-	volatile sint	 txsz[8];
+	volatile int	head;
+	volatile int	tail;
+	volatile int	free_sz;	//in units of 64 bytes
+	volatile int      free_cmdsz;
+	volatile int	 txsz[8];
 	uint	ff_hwaddr;
 	uint	cmd_hwaddr;
-	sint	ac_tag;
+	int	ac_tag;
 };
 
 struct agg_pkt_info{
@@ -638,9 +638,9 @@ struct xmit_frame *rtw_alloc_xmitframe_ext(struct xmit_priv *pxmitpriv);
 struct xmit_frame *rtw_alloc_xmitframe_once(struct xmit_priv *pxmitpriv);
 extern s32 rtw_free_xmitframe(struct xmit_priv *pxmitpriv, struct xmit_frame *pxmitframe);
 extern void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, _queue *pframequeue);
-struct tx_servq *rtw_get_sta_pending(_adapter *padapter, struct sta_info *psta, sint up, u8 *ac);
+struct tx_servq *rtw_get_sta_pending(_adapter *padapter, struct sta_info *psta, int up, u8 *ac);
 extern s32 rtw_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
-extern struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit_i, sint entry);
+extern struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit_i, int entry);
 
 extern s32 rtw_xmit_classifier(_adapter *padapter, struct xmit_frame *pxmitframe);
 extern u32 rtw_calculate_wlan_pkt_size_by_attribue(struct pkt_attrib *pattrib);
@@ -655,7 +655,7 @@ void _rtw_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv);
 
 s32 rtw_txframes_pending(_adapter *padapter);
 s32 rtw_txframes_sta_ac_pending(_adapter *padapter, struct pkt_attrib *pattrib);
-void rtw_init_hwxmits(struct hw_xmit *phwxmit, sint entry);
+void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
 
 
 s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter);
@@ -669,7 +669,7 @@ void rtw_free_hwxmits(_adapter *padapter);
 s32 rtw_xmit(_adapter *padapter, _pkt **pkt);
 
 #if defined(CONFIG_AP_MODE) || defined(CONFIG_TDLS)
-sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *pxmitframe);
+int xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *pxmitframe);
 void stop_sta_xmit(_adapter *padapter, struct sta_info *psta);
 void wakeup_sta_to_xmit(_adapter *padapter, struct sta_info *psta);
 void xmit_delivery_enabled_frames(_adapter *padapter, struct sta_info *psta);
@@ -681,7 +681,7 @@ u8	qos_acm(u8 acm_mask, u8 priority);
 void	enqueue_pending_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
 struct xmit_buf*	dequeue_pending_xmitbuf(struct xmit_priv *pxmitpriv);
 struct xmit_buf*	dequeue_pending_xmitbuf_under_survey(struct xmit_priv *pxmitpriv);
-sint	check_pending_xmitbuf(struct xmit_priv *pxmitpriv);
+int	check_pending_xmitbuf(struct xmit_priv *pxmitpriv);
 thread_return	rtw_xmit_thread(thread_context context);
 #endif
 

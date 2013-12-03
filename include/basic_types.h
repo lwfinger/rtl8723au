@@ -45,8 +45,6 @@
 #define NDIS_OID uint
 #define NDIS_STATUS uint
 
-typedef	signed int sint;
-
 typedef void (*proc_t)(void*);
 
 typedef		__kernel_size_t	SIZE_T;

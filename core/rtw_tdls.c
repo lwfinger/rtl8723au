@@ -133,7 +133,7 @@ s32 update_tdls_attrib(_adapter *padapter, struct pkt_attrib *pattrib)
 	struct qos_priv		*pqospriv= &pmlmepriv->qospriv;
 
 	s32 res=_SUCCESS;
-	sint bmcast;
+	int bmcast;
 
 	bmcast = IS_MCAST(pattrib->ra);
 
@@ -994,7 +994,7 @@ exit:
 	return;
 }
 
-sint On_TDLS_Dis_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Dis_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta = NULL, *psta = rtw_get_stainfo(&(adapter->stapriv), get_bssid(&(adapter->mlmepriv)));
 	struct recv_priv *precvpriv = &(adapter->recvpriv);
@@ -1070,7 +1070,7 @@ sint On_TDLS_Dis_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-sint On_TDLS_Setup_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Req(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	u8 *psa, *pmyid;
@@ -1087,7 +1087,7 @@ sint On_TDLS_Setup_Req(_adapter *adapter, union recv_frame *precv_frame)
 	u16 j;
 	u8 SNonce[32];
 	u32 *timeout_interval;
-	sint parsing_length;	/* frame body length, without icv_len */
+	int parsing_length;	/* frame body length, without icv_len */
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE = 5;
 	unsigned char		supportRate[16];
@@ -1289,7 +1289,7 @@ exit:
 	return _FAIL;
 }
 
-sint On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct sta_info *ptdls_sta= NULL;
@@ -1299,7 +1299,7 @@ sint On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	u8 *psa;
 	u16 stat_code;
-	sint parsing_length;	/* frame body length, without icv_len */
+	int parsing_length;	/* frame body length, without icv_len */
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE =7;
 	u8  *pftie, *ptimeout_ie, *plinkid_ie, *prsnie, *pftie_mic, *ppairwise_cipher;
@@ -1464,7 +1464,7 @@ sint On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-sint On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct sta_info *ptdls_sta= NULL;
@@ -1474,7 +1474,7 @@ sint On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	u8 *psa;
 	u16 stat_code;
-	sint parsing_length;
+	int parsing_length;
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE =5;
 	u8  *pftie, *ptimeout_ie, *plinkid_ie, *prsnie, *pftie_mic, *ppairwise_cipher;
@@ -1558,13 +1558,13 @@ sint On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-sint On_TDLS_Dis_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Dis_Req(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	struct sta_info *psta_ap;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
-	sint parsing_length;	/* frame body length, without icv_len */
+	int parsing_length;	/* frame body length, without icv_len */
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE = 3, *dst, *pdialog = NULL;
 	u16 j;
@@ -1618,7 +1618,7 @@ exit:
 	return _FAIL;
 }
 
-sint On_TDLS_Teardown(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Teardown(_adapter *adapter, union recv_frame *precv_frame)
 {
 	u8 *psa;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
@@ -1656,7 +1656,7 @@ u8 TDLS_check_ch_state(uint state){
 }
 
 /* we process buffered data for 1. U-APSD, 2. ch. switch, 3. U-APSD + ch. switch here */
-sint On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
@@ -1748,14 +1748,14 @@ sint On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-sint On_TDLS_Ch_Switch_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Ch_Switch_Req(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta= NULL;
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	u8 *psa;
-	sint parsing_length;
+	int parsing_length;
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE =3;
 	u16 j;
@@ -1821,14 +1821,14 @@ sint On_TDLS_Ch_Switch_Req(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-sint On_TDLS_Ch_Switch_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Ch_Switch_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta= NULL;
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	u8 *psa;
-	sint parsing_length;
+	int parsing_length;
 	PNDIS_802_11_VARIABLE_IEs	pIE;
 	u8 FIXED_IE =4;
 	u16 stat_code, j, switch_time, switch_timeout;
