@@ -436,11 +436,6 @@ __inline static void flush_signals_thread(void)
 		flush_signals(current);
 }
 
-__inline static _OS_STATUS res_to_status(sint res)
-{
-	return res;
-}
-
 #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
 #define RND4(x)	(((x >> 2) + (((x & 3) == 0) ?  0: 1)) << 2)
 
