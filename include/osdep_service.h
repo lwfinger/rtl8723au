@@ -377,9 +377,7 @@ extern void	_rtw_init_listhead(_list *list);
 extern u32	rtw_is_list_empty(_list *phead);
 extern void	rtw_list_insert_head(_list *plist, _list *phead);
 extern void	rtw_list_insert_tail(_list *plist, _list *phead);
-#ifndef PLATFORM_FREEBSD
 extern void	rtw_list_delete(_list *plist);
-#endif //PLATFORM_FREEBSD
 
 extern void	_rtw_mutex_init(_mutex *pmutex);
 extern void	_rtw_mutex_free(_mutex *pmutex);

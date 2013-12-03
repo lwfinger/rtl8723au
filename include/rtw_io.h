@@ -25,7 +25,6 @@
 #include <osdep_service.h>
 #include <osdep_intf.h>
 
-#ifdef PLATFORM_LINUX
 #include <asm/byteorder.h>
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
 #include <asm/semaphore.h>
@@ -56,17 +55,10 @@
 
 #endif //CONFIG_USB_HCI
 
-#endif //PLATFORM_LINUX
-
 
 #define NUM_IOREQ		8
 
-#ifdef PLATFORM_WINDOWS
-#define MAX_PROT_SZ	64
-#endif
-#ifdef PLATFORM_LINUX
 #define MAX_PROT_SZ	(64-16)
-#endif
 
 #define _IOREADY			0
 #define _IO_WAIT_COMPLETE   1
@@ -173,27 +165,8 @@ struct io_req {
 	u8	*pbuf;
 	struct semaphore	sema;
 
-#ifdef PLATFORM_OS_CE
-#ifdef CONFIG_USB_HCI
-	// URB handler for rtw_write_mem
-	USB_TRANSFER usb_transfer_write_mem;
-#endif
-#endif
-
 	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt);
 	u8 *cnxt;
-
-#ifdef PLATFORM_OS_XP
-	PMDL pmdl;
-	PIRP  pirp;
-
-#ifdef CONFIG_SDIO_HCI
-	PSDBUS_REQUEST_PACKET sdrp;
-#endif
-
-#endif
-
-
 };
 
 struct	intf_hdl {

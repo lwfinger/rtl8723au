@@ -29,7 +29,6 @@
 #include <rtw_mlme_ext.h>
 #include <rtw_ioctl.h>
 #include <rtw_ioctl_set.h>
-#include <rtw_ioctl_query.h>
 
 #ifdef CONFIG_USB_HCI
 #include <usb_ops.h>

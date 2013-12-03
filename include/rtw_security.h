@@ -168,9 +168,6 @@ struct security_priv
 	WLAN_BSSID_EX sec_bss;  //for joinbss (h2c buffer) usage
 
 	NDIS_802_11_WEP ndiswep;
-#ifdef PLATFORM_WINDOWS
-	u8 KeyMaterial[16];// variable length depending on above field.
-#endif
 
 	u8 assoc_info[600];
 	u8 szofcapability[256]; //for wpa2 usage
@@ -430,19 +427,5 @@ int tdls_verify_mic(u8 *kck, u8 trans_seq,
 						u8 *lnkid, u8 *rsnie, u8 *timeoutie, u8 *ftie);
 #endif //CONFIG_TDLS
 
-#ifdef PLATFORM_WINDOWS
-void rtw_use_tkipkey_handler (
-	IN	PVOID					SystemSpecific1,
-	IN	PVOID					FunctionContext,
-	IN	PVOID					SystemSpecific2,
-	IN	PVOID					SystemSpecific3
-	);
-#endif
-#ifdef PLATFORM_LINUX
 void rtw_use_tkipkey_handler(void* FunctionContext);
-#endif
-
-#ifdef PLATFORM_FREEBSD
-void rtw_use_tkipkey_handler(void* FunctionContext);
-#endif //PLATFORM_FREEBSD
 #endif	//__RTL871X_SECURITY_H_

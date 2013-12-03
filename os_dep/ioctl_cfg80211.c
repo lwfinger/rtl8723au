@@ -24,7 +24,6 @@
 #include <drv_types.h>
 #include <rtw_ioctl.h>
 #include <rtw_ioctl_set.h>
-#include <rtw_ioctl_query.h>
 #include <xmit_osdep.h>
 
 #ifdef CONFIG_IOCTL_CFG80211
