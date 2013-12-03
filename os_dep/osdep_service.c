@@ -29,12 +29,6 @@
 
 #define RT_TAG	'1178'
 
-#ifdef DBG_MEMORY_LEAK
-#include <asm/atomic.h>
-atomic_t _malloc_cnt = ATOMIC_INIT(0);
-atomic_t _malloc_size = ATOMIC_INIT(0);
-#endif /* DBG_MEMORY_LEAK */
-
 
 /*
 * Translate the OS dependent @param error_code to OS independent RTW_STATUS_CODE
@@ -78,13 +72,6 @@ inline u8* _rtw_vmalloc(u32 sz)
 {
 	u8 	*pbuf;
 	pbuf = vmalloc(sz);
-	
-#ifdef DBG_MEMORY_LEAK
-	if ( pbuf != NULL) {
-		atomic_inc(&_malloc_cnt);
-		atomic_add(sz, &_malloc_size);
-	}
-#endif /* DBG_MEMORY_LEAK */
 
 	return pbuf;
 }
@@ -102,11 +89,6 @@ inline u8* _rtw_zvmalloc(u32 sz)
 inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 {
 	vfree(pbuf);
-
-#ifdef DBG_MEMORY_LEAK
-	atomic_dec(&_malloc_cnt);
-	atomic_sub(sz, &_malloc_size);
-#endif /* DBG_MEMORY_LEAK */
 }
 
 u8* _rtw_malloc(u32 sz)
@@ -116,15 +98,7 @@ u8* _rtw_malloc(u32 sz)
 
 	pbuf = kmalloc(sz,in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
 
-#ifdef DBG_MEMORY_LEAK
-	if ( pbuf != NULL) {
-		atomic_inc(&_malloc_cnt);
-		atomic_add(sz, &_malloc_size);
-	}
-#endif /* DBG_MEMORY_LEAK */
-
 	return pbuf;
-
 }
 
 
@@ -141,245 +115,8 @@ u8* _rtw_zmalloc(u32 sz)
 
 void	_rtw_mfree(u8 *pbuf, u32 sz)
 {
-
 	kfree(pbuf);
-	
-#ifdef DBG_MEMORY_LEAK
-	atomic_dec(&_malloc_cnt);
-	atomic_sub(sz, &_malloc_size);
-#endif /* DBG_MEMORY_LEAK */
-
 }
-
-#ifdef DBG_MEM_ALLOC
-
-struct rtw_dbg_mem_stat {
-	ATOMIC_T vir_alloc; // the memory bytes we allocate now
-	ATOMIC_T vir_peak; // the peak memory bytes we allocate
-	ATOMIC_T vir_alloc_err; // the error times we fail to allocate memory
-
-	ATOMIC_T phy_alloc;
-	ATOMIC_T phy_peak;
-	ATOMIC_T phy_alloc_err;
-
-	ATOMIC_T tx_alloc;
-	ATOMIC_T tx_peak;
-	ATOMIC_T tx_alloc_err;
-
-	ATOMIC_T rx_alloc;
-	ATOMIC_T rx_peak;
-	ATOMIC_T rx_alloc_err;
-} rtw_dbg_mem_stat;
-
-void rtw_dump_mem_stat (void)
-{
-	int vir_alloc, vir_peak, vir_alloc_err, phy_alloc, phy_peak, phy_alloc_err;
-	int tx_alloc, tx_peak, tx_alloc_err, rx_alloc, rx_peak, rx_alloc_err;
-
-	vir_alloc=ATOMIC_READ(&rtw_dbg_mem_stat.vir_alloc);
-	vir_peak=ATOMIC_READ(&rtw_dbg_mem_stat.vir_peak);
-	vir_alloc_err=ATOMIC_READ(&rtw_dbg_mem_stat.vir_alloc_err);
-
-	phy_alloc=ATOMIC_READ(&rtw_dbg_mem_stat.phy_alloc);
-	phy_peak=ATOMIC_READ(&rtw_dbg_mem_stat.phy_peak);
-	phy_alloc_err=ATOMIC_READ(&rtw_dbg_mem_stat.phy_alloc_err);
-
-	tx_alloc=ATOMIC_READ(&rtw_dbg_mem_stat.tx_alloc);
-	tx_peak=ATOMIC_READ(&rtw_dbg_mem_stat.tx_peak);
-	tx_alloc_err=ATOMIC_READ(&rtw_dbg_mem_stat.tx_alloc_err);
-
-	rx_alloc=ATOMIC_READ(&rtw_dbg_mem_stat.rx_alloc);
-	rx_peak=ATOMIC_READ(&rtw_dbg_mem_stat.rx_peak);
-	rx_alloc_err=ATOMIC_READ(&rtw_dbg_mem_stat.rx_alloc_err);
-
-	DBG_8723A(	"vir_alloc:%d, vir_peak:%d, vir_alloc_err:%d\n"
-				"phy_alloc:%d, phy_peak:%d, phy_alloc_err:%d\n"
-				"tx_alloc:%d, tx_peak:%d, tx_alloc_err:%d\n"
-				"rx_alloc:%d, rx_peak:%d, rx_alloc_err:%d\n"
-		, vir_alloc, vir_peak, vir_alloc_err
-		, phy_alloc, phy_peak, phy_alloc_err
-		, tx_alloc, tx_peak, tx_alloc_err
-		, rx_alloc, rx_peak, rx_alloc_err
-	);
-}
-
-void rtw_update_mem_stat(u8 flag, u32 sz)
-{
-	static u32 update_time = 0;
-	int peak, alloc;
-
-	if(!update_time) {
-		ATOMIC_SET(&rtw_dbg_mem_stat.vir_alloc,0);
-		ATOMIC_SET(&rtw_dbg_mem_stat.vir_peak,0);
-		ATOMIC_SET(&rtw_dbg_mem_stat.vir_alloc_err,0);
-		ATOMIC_SET(&rtw_dbg_mem_stat.phy_alloc,0);
-		ATOMIC_SET(&rtw_dbg_mem_stat.phy_peak,0);
-		ATOMIC_SET(&rtw_dbg_mem_stat.phy_alloc_err,0);
-	}
-
-	switch(flag) {
-		case MEM_STAT_VIR_ALLOC_SUCCESS:
-			alloc = ATOMIC_ADD_RETURN(&rtw_dbg_mem_stat.vir_alloc, sz);
-			peak=ATOMIC_READ(&rtw_dbg_mem_stat.vir_peak);
-			if (peak<alloc)
-				ATOMIC_SET(&rtw_dbg_mem_stat.vir_peak, alloc);
-			break;
-
-		case MEM_STAT_VIR_ALLOC_FAIL:
-			ATOMIC_INC(&rtw_dbg_mem_stat.vir_alloc_err);
-			break;
-
-		case MEM_STAT_VIR_FREE:
-			alloc = ATOMIC_SUB_RETURN(&rtw_dbg_mem_stat.vir_alloc, sz);
-			break;
-
-		case MEM_STAT_PHY_ALLOC_SUCCESS:
-			alloc = ATOMIC_ADD_RETURN(&rtw_dbg_mem_stat.phy_alloc, sz);
-			peak=ATOMIC_READ(&rtw_dbg_mem_stat.phy_peak);
-			if (peak<alloc)
-				ATOMIC_SET(&rtw_dbg_mem_stat.phy_peak, alloc);
-			break;
-
-		case MEM_STAT_PHY_ALLOC_FAIL:
-			ATOMIC_INC(&rtw_dbg_mem_stat.phy_alloc_err);
-			break;
-
-		case MEM_STAT_PHY_FREE:
-			alloc = ATOMIC_SUB_RETURN(&rtw_dbg_mem_stat.phy_alloc, sz);
-			break;
-
-		case MEM_STAT_TX_ALLOC_SUCCESS:
-			alloc = ATOMIC_ADD_RETURN(&rtw_dbg_mem_stat.tx_alloc, sz);
-			peak=ATOMIC_READ(&rtw_dbg_mem_stat.tx_peak);
-			if (peak<alloc)
-				ATOMIC_SET(&rtw_dbg_mem_stat.tx_peak, alloc);
-			break;
-
-		case MEM_STAT_TX_ALLOC_FAIL:
-			ATOMIC_INC(&rtw_dbg_mem_stat.tx_alloc_err);
-			break;
-
-		case MEM_STAT_TX_FREE:
-			alloc = ATOMIC_SUB_RETURN(&rtw_dbg_mem_stat.tx_alloc, sz);
-			break;
-
-		case MEM_STAT_RX_ALLOC_SUCCESS:
-			alloc = ATOMIC_ADD_RETURN(&rtw_dbg_mem_stat.rx_alloc, sz);
-			peak=ATOMIC_READ(&rtw_dbg_mem_stat.rx_peak);
-			if (peak<alloc)
-				ATOMIC_SET(&rtw_dbg_mem_stat.rx_peak, alloc);
-			break;
-
-		case MEM_STAT_RX_ALLOC_FAIL:
-			ATOMIC_INC(&rtw_dbg_mem_stat.rx_alloc_err);
-			break;
-
-		case MEM_STAT_RX_FREE:
-			alloc = ATOMIC_SUB_RETURN(&rtw_dbg_mem_stat.rx_alloc, sz);
-			break;
-
-	};
-
-	if (rtw_get_passing_time_ms(update_time) > 5000) {
-		rtw_dump_mem_stat();
-		update_time=rtw_get_current_time();
-	}
-
-
-}
-
-
-inline u8* dbg_rtw_vmalloc(u32 sz, const char *func, int line)
-{
-	u8  *p;
-	//DBG_8723A("DBG_MEM_ALLOC %s:%d %s(%d)\n", func,  line, __FUNCTION__, (sz));
-
-	p=_rtw_vmalloc((sz));
-
-	rtw_update_mem_stat(
-		p ? MEM_STAT_VIR_ALLOC_SUCCESS : MEM_STAT_VIR_ALLOC_FAIL
-		, sz
-	);
-
-	return p;
-}
-
-inline u8* dbg_rtw_zvmalloc(u32 sz, const char *func, int line)
-{
-	u8 *p;
-	//DBG_8723A("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
-
-	p=_rtw_zvmalloc((sz));
-
-	rtw_update_mem_stat(
-		p ? MEM_STAT_VIR_ALLOC_SUCCESS : MEM_STAT_VIR_ALLOC_FAIL
-		, sz
-	);
-
-	return p;
-}
-
-inline void dbg_rtw_vmfree(u8 *pbuf, u32 sz, const char *func, int line)
-{
-	//DBG_8723A("DBG_MEM_ALLOC %s:%d %s(%p,%d)\n",  func, line, __FUNCTION__, (pbuf), (sz));
-
-	_rtw_vmfree((pbuf), (sz));
-
-	rtw_update_mem_stat(
-		MEM_STAT_VIR_FREE
-		, sz
-	);
-
-}
-
-inline u8* dbg_rtw_malloc(u32 sz, const char *func, int line)
-{
-	u8 *p;
-
-	if((sz)>4096)
-		DBG_8723A("DBG_MEM_ALLOC !!!!!!!!!!!!!! %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
-
-	p=_rtw_malloc((sz));
-
-	rtw_update_mem_stat(
-		p ? MEM_STAT_PHY_ALLOC_SUCCESS : MEM_STAT_PHY_ALLOC_FAIL
-		, sz
-	);
-
-	return p;
-}
-
-inline u8* dbg_rtw_zmalloc(u32 sz, const char *func, int line)
-{
-	u8 *p;
-
-	if((sz)>4096)
-		DBG_8723A("DBG_MEM_ALLOC !!!!!!!!!!!!!! %s:%d %s(%d)\n", func, line, __FUNCTION__, (sz));
-
-	p = _rtw_zmalloc((sz));
-
-	rtw_update_mem_stat(
-		p ? MEM_STAT_PHY_ALLOC_SUCCESS : MEM_STAT_PHY_ALLOC_FAIL
-		, sz
-	);
-
-	return p;
-
-}
-
-inline void dbg_rtw_mfree(u8 *pbuf, u32 sz, const char *func, int line)
-{
-	if((sz)>4096)
-		DBG_8723A("DBG_MEM_ALLOC !!!!!!!!!!!!!! %s:%d %s(%p,%d)\n", func, line, __FUNCTION__, (pbuf), (sz));
-
-	_rtw_mfree((pbuf), (sz));
-
-	rtw_update_mem_stat(
-		MEM_STAT_PHY_FREE
-		, sz
-	);
-}
-#endif
 
 void _rtw_memcpy(void* dst, void* src, u32 sz)
 {

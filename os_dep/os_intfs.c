@@ -560,15 +560,6 @@ void rtw_proc_init_one(struct net_device *dev)
 	}
 #endif
 
-#ifdef DBG_MEMORY_LEAK
-	entry = create_proc_read_entry("_malloc_cnt", S_IFREG | S_IRUGO,
-				   dir_dev, proc_get_malloc_cnt, dev);
-	if (!entry) {
-		DBG_8723A("Unable to create_proc_read_entry!\n");
-		return;
-	}
-#endif
-
 #ifdef CONFIG_FIND_BEST_CHANNEL
 	entry = create_proc_read_entry("best_channel", S_IFREG | S_IRUGO,
 				   dir_dev, proc_get_best_channel, dev);
@@ -690,10 +681,6 @@ void rtw_proc_remove_one(struct net_device *dev)
 		}
 #ifdef CONFIG_AP_MODE
 		remove_proc_entry("all_sta_info", dir_dev);
-#endif
-
-#ifdef DBG_MEMORY_LEAK
-		remove_proc_entry("_malloc_cnt", dir_dev);
 #endif
 
 #ifdef CONFIG_FIND_BEST_CHANNEL
