@@ -114,7 +114,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 		{
 			pipe = usb_sndctrlpipe(udev, 0);//write_out
 			reqtype =  REALTEK_USB_VENQT_WRITE;
-			_rtw_memcpy( pIo_buf, pdata, len);
+			memcpy(pIo_buf, pdata, len);
 		}
 
 		#if 0
@@ -131,7 +131,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 			rtw_reset_continual_urb_error(pdvobjpriv);
 			if ( requesttype == 0x01 )
 			{   // For Control read transfer, we have to copy the read data from pIo_buf to pdata.
-				_rtw_memcpy( pdata, pIo_buf,  len );
+				memcpy(pdata, pIo_buf,  len );
 			}
 		}
 		else { // error cases
@@ -156,7 +156,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 				if(status > 0) {
 					if ( requesttype == 0x01 )
 					{   // For Control read transfer, we have to copy the read data from pIo_buf to pdata.
-						_rtw_memcpy( pdata, pIo_buf,  len );
+						memcpy(pdata, pIo_buf,  len );
 					}
 				}
 			}
@@ -371,7 +371,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = length;
-	 _rtw_memcpy(buf, pdata, len );
+	 memcpy(buf, pdata, len );
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
 
@@ -499,13 +499,13 @@ InterruptRecognized8723AU(
 	u8 *			buffer = (u8 *)pContent;
 //	RT_PRINT_DATA(COMP_RECV, DBG_LOUD, ("InterruptRecognized8723AU Interrupt buffer \n"), buffer, MAX_RECEIVE_INTERRUPT_BUFFER_SIZE(Adapter));
 
-	_rtw_memcpy(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), 4);
+	memcpy(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), 4);
 //	PlatformMoveMemory(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), sizeof(u4Byte));
 //	DBG_8723A("InterruptRecognized8723AU HISR = 0x%x HIMR = 0x%x\n", pHalData->IntArray[0],pHalData->IntrMask[0]);
 	pHalData->IntArray[0] &= pHalData->IntrMask[0];
 
 	//For HISR extension. Added by tynli. 2009.10.07.
-	_rtw_memcpy(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
+	memcpy(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
 //	PlatformMoveMemory(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), sizeof(u4Byte));
 //	DBG_8723A("InterruptRecognized8192CUsb HISRE = 0x%x HIMRE = 0x%x\n", pHalData->IntArray[1], pHalData->IntrMask[1]);
 	pHalData->IntArray[1] &= pHalData->IntrMask[1];
@@ -516,7 +516,7 @@ InterruptRecognized8723AU(
 
 	{
 		struct reportpwrstate_parm report;
-		_rtw_memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
+		memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
 #ifdef CONFIG_LPS_LCLK
 		if( ((pHalData->IntArray[0])&UHIMR_CPWM)){
 //			DBG_8723A("%s HIMR=0x%x\n",__func__,pHalData->IntArray[0]);
@@ -568,7 +568,7 @@ static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
 				_set_workitem(&padapter->evtpriv.c2h_wk);
 			} else if ((c2h_evt = (struct c2h_evt_hdr *)rtw_malloc(16)) != NULL) {
-				_rtw_memcpy(c2h_evt, purb->transfer_buffer, 16);
+				memcpy(c2h_evt, purb->transfer_buffer, 16);
 				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)c2h_evt) != _SUCCESS)
 					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
 				_set_workitem(&padapter->evtpriv.c2h_wk);
@@ -762,7 +762,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
 			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
 			skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
 			skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
-			_rtw_memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
+			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
 			precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pkt_copy->data;
 		}
 		else
@@ -1120,7 +1120,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 				precvframe_if2->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
 				precvframe_if2->u.hdr.len=0;
 
-				_rtw_memcpy(&precvframe_if2->u.hdr.attrib, &precvframe->u.hdr.attrib, sizeof(struct rx_pkt_attrib));
+				memcpy(&precvframe_if2->u.hdr.attrib, &precvframe->u.hdr.attrib, sizeof(struct rx_pkt_attrib));
 
 				pattrib = &precvframe_if2->u.hdr.attrib;
 
@@ -1166,7 +1166,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 					precvframe_if2->u.hdr.rx_end = pkt_copy->data + alloc_sz;
 					skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
 					skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
-					_rtw_memcpy(pkt_copy->data, pbuf, skb_len);
+					memcpy(pkt_copy->data, pbuf, skb_len);
 					precvframe_if2->u.hdr.rx_data = precvframe_if2->u.hdr.rx_tail = pkt_copy->data;
 
 
@@ -1309,7 +1309,7 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
 			skb_reserve( pkt_copy, 8 - ((SIZE_PTR)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
 			skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
-			_rtw_memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
+			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
 			precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pkt_copy->data;
 		}
 		else

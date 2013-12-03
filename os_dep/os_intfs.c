@@ -323,23 +323,23 @@ void rtw_proc_init_one(struct net_device *dev)
 	{
 		if(padapter->chip_type == RTL8188C_8192C)
 		{
-			_rtw_memcpy(rtw_proc_name, RTL8192C_PROC_NAME, sizeof(RTL8192C_PROC_NAME));
+			memcpy(rtw_proc_name, RTL8192C_PROC_NAME, sizeof(RTL8192C_PROC_NAME));
 		}
 		else if(padapter->chip_type == RTL8192D)
 		{
-			_rtw_memcpy(rtw_proc_name, RTL8192D_PROC_NAME, sizeof(RTL8192D_PROC_NAME));
+			memcpy(rtw_proc_name, RTL8192D_PROC_NAME, sizeof(RTL8192D_PROC_NAME));
 		}
 		else if(padapter->chip_type == RTL8723A)
 		{
-			_rtw_memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
+			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
 		}
 		else if(padapter->chip_type == RTL8188E)
 		{
-			_rtw_memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
+			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
 		}
 		else
 		{
-			_rtw_memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
+			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
 		}
 
 #if(LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
@@ -751,7 +751,7 @@ _func_enter_;
 	//registry_par->hci = (u8)hci;
 	registry_par->network_mode  = (u8)rtw_network_mode;
 
-	_rtw_memcpy(registry_par->ssid.Ssid, "ANY", 3);
+	memcpy(registry_par->ssid.Ssid, "ANY", 3);
 	registry_par->ssid.SsidLength = 3;
 
 	registry_par->channel = (u8)rtw_channel;
@@ -878,8 +878,8 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 	{
 		//DBG_8723A("r8711_net_set_mac_address(), MAC=%x:%x:%x:%x:%x:%x\n", addr->sa_data[0], addr->sa_data[1], addr->sa_data[2], addr->sa_data[3],
 		//addr->sa_data[4], addr->sa_data[5]);
-		_rtw_memcpy(padapter->eeprompriv.mac_addr, addr->sa_data, ETH_ALEN);
-		//_rtw_memcpy(pnetdev->dev_addr, addr->sa_data, ETH_ALEN);
+		memcpy(padapter->eeprompriv.mac_addr, addr->sa_data, ETH_ALEN);
+		//memcpy(pnetdev->dev_addr, addr->sa_data, ETH_ALEN);
 		//padapter->bset_hwaddr = _TRUE;
 	}
 
@@ -960,7 +960,7 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 	u32 priority;
 	u8 *pdata = skb->data;
 
-	_rtw_memcpy(&eth_type, pdata+(ETH_ALEN<<1), 2);
+	memcpy(&eth_type, pdata+(ETH_ALEN<<1), 2);
 
 	switch (eth_type) {
 		case htons(ETH_P_IP):
@@ -1619,7 +1619,7 @@ int _netdev_if2_open(struct net_device *pnetdev)
 		padapter->bSurpriseRemoved = _FALSE;
 		padapter->bCardDisableWOHSM = _FALSE;
 
-//		_rtw_memcpy(padapter->HalData, primary_padapter->HalData, padapter->hal_data_sz);
+//		memcpy(padapter->HalData, primary_padapter->HalData, padapter->hal_data_sz);
 		rtw_hal_clone_data(padapter, primary_padapter);
 
 		padapter->bFWReady = primary_padapter->bFWReady;
@@ -1757,7 +1757,7 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(stru
 
 	/****** init adapter ******/
 	padapter = rtw_netdev_priv(pnetdev);
-	_rtw_memcpy(padapter, primary_padapter, sizeof(_adapter));
+	memcpy(padapter, primary_padapter, sizeof(_adapter));
 
 	//
 	padapter->bup = _FALSE;
@@ -1820,7 +1820,7 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(stru
 		goto error_rtw_drv_if2_init;
 
 	//get mac address from primary_padapter
-	_rtw_memcpy(mac, primary_padapter->eeprompriv.mac_addr, ETH_ALEN);
+	memcpy(mac, primary_padapter->eeprompriv.mac_addr, ETH_ALEN);
 
 	if (((mac[0]==0xff) &&(mac[1]==0xff) && (mac[2]==0xff) &&
 	     (mac[3]==0xff) && (mac[4]==0xff) &&(mac[5]==0xff)) ||
@@ -1842,7 +1842,7 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(stru
 
 	}
 
-	_rtw_memcpy(padapter->eeprompriv.mac_addr, mac, ETH_ALEN);
+	memcpy(padapter->eeprompriv.mac_addr, mac, ETH_ALEN);
 	rtw_init_wifidirect_addrs(padapter, padapter->eeprompriv.mac_addr, padapter->eeprompriv.mac_addr);
 
 	primary_padapter->pbuddy_adapter = padapter;
@@ -1985,7 +1985,7 @@ static int _rtw_drv_register_netdev(_adapter *padapter, char *name)
 	/* alloc netdev name */
 	rtw_init_netdev_name(pnetdev, name);
 
-	_rtw_memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
+	memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0) {

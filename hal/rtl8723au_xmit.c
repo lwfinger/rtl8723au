@@ -1183,7 +1183,7 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	//
 	skb_put(pxmit_skb, len + TXDESC_SIZE);
 	pxmitbuf = pxmitbuf + TXDESC_SIZE;
-	_rtw_memcpy(pxmitbuf, skb->data, len);
+	memcpy(pxmitbuf, skb->data, len);
 
 	//DBG_8723A("mgnt_xmit, len=%x\n", pxmit_skb->len);
 

@@ -2922,13 +2922,13 @@ _ReadMACAddress(
 
 	if(_FALSE == AutoloadFail){
 		//Read Permanent MAC address and set value to hardware
-		_rtw_memcpy(pEEPROM->mac_addr, &PROMContent[EEPROM_MAC_ADDR], ETH_ALEN);
+		memcpy(pEEPROM->mac_addr, &PROMContent[EEPROM_MAC_ADDR], ETH_ALEN);
 	}
 	else{
 		//Random assigh MAC address
 		u8 sMacAddr[MAC_ADDR_LEN] = {0x00, 0xE0, 0x4C, 0x81, 0x92, 0x00};
 		//sMacAddr[5] = (u8)GetRandomNumber(1, 254);
-		_rtw_memcpy(pEEPROM->mac_addr, sMacAddr, ETH_ALEN);
+		memcpy(pEEPROM->mac_addr, sMacAddr, ETH_ALEN);
 	}
 	DBG_8723A("%s MAC Address from EFUSE = "MAC_FMT"\n",__FUNCTION__, MAC_ARG(pEEPROM->mac_addr));
 	//NicIFSetMacAddress(Adapter, Adapter->PermanentAddress);
@@ -3177,7 +3177,7 @@ Hal_EfuseParseMACAddr_8723AU(
 	{
 		//Read Permanent MAC address
 #if 1
-		_rtw_memcpy(pEEPROM->mac_addr, &hwinfo[EEPROM_MAC_ADDR_8723AU], ETH_ALEN);
+		memcpy(pEEPROM->mac_addr, &hwinfo[EEPROM_MAC_ADDR_8723AU], ETH_ALEN);
 #else
 		for(i=0; i<6; i+=2)
 		{

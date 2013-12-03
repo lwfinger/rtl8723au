@@ -458,7 +458,7 @@ _next:
 
 		pcmd->cmdsz = _RND4((pcmd->cmdsz));/* _RND4 */
 
-		_rtw_memcpy(pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
+		memcpy(pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
 
 		if(pcmd->cmdcode < (sizeof(wlancmds) /sizeof(struct cmd_hdl)))
 		{
@@ -697,7 +697,7 @@ _func_enter_;
 		int i;
 		for (i=0; i<ssid_num && i< RTW_SSID_SCAN_AMOUNT; i++) {
 			if (ssid[i].SsidLength) {
-				_rtw_memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(NDIS_802_11_SSID));
+				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(NDIS_802_11_SSID));
 				psurveyPara->ssid_num++;
 				if (0)
 				DBG_8723A(FUNC_ADPT_FMT" ssid:(%s, %d)\n", FUNC_ADPT_ARG(padapter),
@@ -711,7 +711,7 @@ _func_enter_;
 		int i;
 		for (i=0; i<ch_num && i< RTW_CHANNEL_SCAN_AMOUNT; i++) {
 			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
-				_rtw_memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
+				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
 				psurveyPara->ch_num++;
 				if (0)
 				DBG_8723A(FUNC_ADPT_FMT" ch:%u\n", FUNC_ADPT_ARG(padapter),
@@ -774,7 +774,7 @@ _func_enter_;
 	pbsetdataratepara->curr_rateidx = *(u32*)rateset;
 #else
 	pbsetdataratepara->mac_id = 5;
-	_rtw_memcpy(pbsetdataratepara->datarates, rateset, NumRates);
+	memcpy(pbsetdataratepara->datarates, rateset, NumRates);
 #endif
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 exit:
@@ -808,7 +808,7 @@ _func_enter_;
 
 	init_h2fwcmd_w_parm_no_rsp(ph2c, pssetbasicratepara, _SetBasicRate_CMD_);
 
-	_rtw_memcpy(pssetbasicratepara->basicrates, rateset, NumRates);
+	memcpy(pssetbasicratepara->basicrates, rateset, NumRates);
 
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 exit:
@@ -1169,15 +1169,15 @@ _func_enter_;
 
 	_rtw_memset(psecnetwork, 0, t_len);
 
-	_rtw_memcpy(psecnetwork, &pnetwork->network, get_WLAN_BSSID_EX_sz(&pnetwork->network));
+	memcpy(psecnetwork, &pnetwork->network, get_WLAN_BSSID_EX_sz(&pnetwork->network));
 
 	auth=&psecuritypriv->authenticator_ie[0];
 	psecuritypriv->authenticator_ie[0]=(unsigned char)psecnetwork->IELength;
 
 	if((psecnetwork->IELength-12) < (256-1)) {
-		_rtw_memcpy(&psecuritypriv->authenticator_ie[1], &psecnetwork->IEs[12], psecnetwork->IELength-12);
+		memcpy(&psecuritypriv->authenticator_ie[1], &psecnetwork->IEs[12], psecnetwork->IELength-12);
 	} else {
-		_rtw_memcpy(&psecuritypriv->authenticator_ie[1], &psecnetwork->IEs[12], (256-1));
+		memcpy(&psecuritypriv->authenticator_ie[1], &psecnetwork->IEs[12], (256-1));
 	}
 
 	psecnetwork->IELength = 0;
@@ -1188,7 +1188,7 @@ _func_enter_;
 
 	if ( pmlmepriv->assoc_by_bssid == _FALSE )
 	{
-		_rtw_memcpy( &pmlmepriv->assoc_bssid[ 0 ], &pnetwork->network.MacAddress[ 0 ], ETH_ALEN );
+		memcpy(&pmlmepriv->assoc_bssid[ 0 ], &pnetwork->network.MacAddress[ 0 ], ETH_ALEN );
 	}
 
 	psecnetwork->IELength = rtw_restruct_sec_ie(padapter, &pnetwork->network.IEs[0], &psecnetwork->IEs[0], pnetwork->network.IELength);
@@ -1245,11 +1245,11 @@ _func_enter_;
 
 	if(psecnetwork->IELength < (256-1))
 	{
-		_rtw_memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], psecnetwork->IELength);
+		memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], psecnetwork->IELength);
 	}
 	else
 	{
-		_rtw_memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], (256-1));
+		memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], (256-1));
 	}
 	#endif
 
@@ -1406,7 +1406,7 @@ _func_enter_;
 	ph2c->rsp = (u8 *) psetstakey_rsp;
 	ph2c->rspsz = sizeof(struct set_stakey_rsp);
 
-	_rtw_memcpy(psetstakey_para->addr, sta->hwaddr,ETH_ALEN);
+	memcpy(psetstakey_para->addr, sta->hwaddr,ETH_ALEN);
 
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE)){
 #ifdef CONFIG_TDLS
@@ -1422,12 +1422,12 @@ _func_enter_;
 	if (unicast_key == _TRUE) {
 #ifdef CONFIG_TDLS
 		if((sta->tdls_sta_state&TDLS_LINKED_STATE)==TDLS_LINKED_STATE)
-			_rtw_memcpy(&psetstakey_para->key, sta->tpk.tk, 16);
+			memcpy(&psetstakey_para->key, sta->tpk.tk, 16);
 		else
 #endif /* CONFIG_TDLS */
-			_rtw_memcpy(&psetstakey_para->key, &sta->dot118021x_UncstKey, 16);
+			memcpy(&psetstakey_para->key, &sta->dot118021x_UncstKey, 16);
         } else {
-		_rtw_memcpy(&psetstakey_para->key, &psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey, 16);
+		memcpy(&psetstakey_para->key, &psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey, 16);
         }
 
 	/* jeff: set this becasue at least sw key is ready */
@@ -1486,7 +1486,7 @@ _func_enter_;
 		ph2c->rsp = (u8 *) psetstakey_rsp;
 		ph2c->rspsz = sizeof(struct set_stakey_rsp);
 
-		_rtw_memcpy(psetstakey_para->addr, sta->hwaddr, ETH_ALEN);
+		memcpy(psetstakey_para->addr, sta->hwaddr, ETH_ALEN);
 
 		psetstakey_para->algorithm = _NO_PRIVACY_;
 
@@ -1526,7 +1526,7 @@ _func_enter_;
 
 	init_h2fwcmd_w_parm_no_rsp(ph2c, psetrttblparm, GEN_CMD_CODE(_SetRaTable));
 
-	_rtw_memcpy(psetrttblparm,prate_table,sizeof(struct setratable_parm));
+	memcpy(psetrttblparm,prate_table,sizeof(struct setratable_parm));
 
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 exit:
@@ -1607,7 +1607,7 @@ _func_enter_;
 	ph2c->rsp = (u8 *) psetassocsta_rsp;
 	ph2c->rspsz = sizeof(struct set_assocsta_rsp);
 
-	_rtw_memcpy(psetassocsta_para->addr, mac_addr,ETH_ALEN);
+	memcpy(psetassocsta_para->addr, mac_addr,ETH_ALEN);
 
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 
@@ -1642,7 +1642,7 @@ _func_enter_;
 	}
 
 	paddbareq_parm->tid = tid;
-	_rtw_memcpy(paddbareq_parm->addr, addr, ETH_ALEN);
+	memcpy(paddbareq_parm->addr, addr, ETH_ALEN);
 
 	init_h2fwcmd_w_parm_no_rsp(ph2c, paddbareq_parm, GEN_CMD_CODE(_AddBAReq));
 
@@ -1915,7 +1915,7 @@ _func_enter_;
 	}
 
 	_rtw_spinlock(&(padapter->tdlsinfo.cmd_lock));
-	_rtw_memcpy(TDLSoption->addr, addr, 6);
+	memcpy(TDLSoption->addr, addr, 6);
 	TDLSoption->option = option;
 	_rtw_spinunlock(&(padapter->tdlsinfo.cmd_lock));
 	init_h2fwcmd_w_parm_no_rsp(pcmdobj, TDLSoption, GEN_CMD_CODE(_TDLS));
@@ -2803,13 +2803,13 @@ _func_enter_;
 		}
 
 		pnetwork->Length = get_WLAN_BSSID_EX_sz(pnetwork);
-		_rtw_memcpy(&(pwlan->network), pnetwork, pnetwork->Length);
+		memcpy(&(pwlan->network), pnetwork, pnetwork->Length);
 		/* pwlan->fixed = _TRUE; */
 
 		/* rtw_list_insert_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue); */
 
 		/*  copy pdev_network information to	pmlmepriv->cur_network */
-		_rtw_memcpy(&tgt_network->network, pnetwork, (get_WLAN_BSSID_EX_sz(pnetwork)));
+		memcpy(&tgt_network->network, pnetwork, (get_WLAN_BSSID_EX_sz(pnetwork)));
 
 		/*  reset DSConfig */
 		/* tgt_network->network.Configuration.DSConfig = (u32)rtw_ch2freq(pnetwork->Configuration.DSConfig); */

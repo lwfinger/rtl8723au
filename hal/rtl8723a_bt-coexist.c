@@ -77,7 +77,7 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 		u8 buffer[MAX_STR_LEN];					\
 		u32	length = (_Len<MAX_STR_LEN)? _Len : (MAX_STR_LEN-1) ;	\
 		_rtw_memset(buffer, 0, MAX_STR_LEN);			\
-		_rtw_memcpy(buffer, (u8*)_Ptr, length);		\
+		memcpy(buffer, (u8*)_Ptr, length);		\
 		for (__i=0; __i<length; __i++)					\
 		{								\
 			if (!PRINTABLE(buffer[__i]))	buffer[__i] = '?';	\
@@ -483,7 +483,7 @@ static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 
 	while ((pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.LenSoFar >= BaseMemoryShift) || TotalLen > BaseMemoryShift) {
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD_DETAIL, ("GetAssocInfo, TotalLen=%d, BaseMemoryShift=%d\n",TotalLen,BaseMemoryShift));
-		_rtw_memcpy(tempBuf,
+		memcpy(tempBuf,
 			(u8*)pBTInfo->BtAsocEntry[EntryNum].AmpAsocCmdData.AMPAssocfragment+BaseMemoryShift,
 			TotalLen-BaseMemoryShift);
 		RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD_DETAIL, "GetAssocInfo :\n",
@@ -500,13 +500,13 @@ static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_MAC_ADDR\n"));
 			if (pAmpAsoc->Length > 6)
 				return _FALSE;
-			_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr, pAmpAsoc->Data,6);
+			memcpy(pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr, pAmpAsoc->Data,6);
 			RTPRINT_ADDR(FIOCTL, IOCTL_BT_HCICMD, ("Remote Mac address \n"), pBTInfo->BtAsocEntry[EntryNum].BTRemoteMACAddr);
 			break;
 		case AMP_PREFERRED_CHANNEL_LIST:
 			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_PREFERRED_CHANNEL_LIST\n"));
 			pBtHciInfo->BtPreChnlListLen=pAmpAsoc->Length;
-			_rtw_memcpy(pBtHciInfo->BTPreChnllist,
+			memcpy(pBtHciInfo->BTPreChnllist,
 				pAmpAsoc->Data,
 				pBtHciInfo->BtPreChnlListLen);
 			RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, "Preferred channel list : \n", pBtHciInfo->BTPreChnllist, pBtHciInfo->BtPreChnlListLen);
@@ -515,7 +515,7 @@ static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 		case AMP_CONNECTED_CHANNEL:
 			RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("==> AMP_CONNECTED_CHANNEL\n"));
 			pBtHciInfo->BTConnectChnlListLen=pAmpAsoc->Length;
-			_rtw_memcpy(pBtHciInfo->BTConnectChnllist,
+			memcpy(pBtHciInfo->BTConnectChnllist,
 				pAmpAsoc->Data,
 				pBtHciInfo->BTConnectChnlListLen);
 			break;
@@ -882,9 +882,9 @@ bthci_AssocMACAddr(
 */
 	pAssoStrc->TypeID = AMP_MAC_ADDR;
 	pAssoStrc->Length = 0x06;
-	//	_rtw_memcpy(&pAssoStrc->Data[0], Adapter->CurrentAddress, 6);
-	_rtw_memcpy(&pAssoStrc->Data[0], padapter->eeprompriv.mac_addr, 6);
-	//_rtw_memcpy(&pAssoStrc->Data[0], FakeAddress, 6);
+	//	memcpy(&pAssoStrc->Data[0], Adapter->CurrentAddress, 6);
+	memcpy(&pAssoStrc->Data[0], padapter->eeprompriv.mac_addr, 6);
+	//memcpy(&pAssoStrc->Data[0], FakeAddress, 6);
 	RTPRINT_DATA(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_HCICMD_DETAIL|IOCTL_BT_LOGO), ("AssocMACAddr : \n"), pAssoStrc, pAssoStrc->Length+3);
 
 	return (pAssoStrc->Length+3);
@@ -939,7 +939,7 @@ bthci_AssocPreferredChannelList(
 	pAssoStrc->TypeID = AMP_PREFERRED_CHANNEL_LIST;
 	{
 		// locale unknown
-		_rtw_memcpy(&pAssoStrc->Data[0], &ctrString[0], 3);
+		memcpy(&pAssoStrc->Data[0], &ctrString[0], 3);
 		pReg->reXId = 201;
 		pReg->regulatoryClass = 254;
 		pReg->coverageClass = 0;
@@ -1846,12 +1846,12 @@ bthci_BuildPhysicalLink(
 	// Record Key and the info
 	pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyLen=(*((u8*)pHciCmd->Data+1));
 	pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyType=(*((u8*)pHciCmd->Data+2));
-	_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey,
+	memcpy(pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey,
 		(((u8*)pHciCmd->Data+3)), pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKeyLen);
 #if (LOCAL_PMK == 1)
-	_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].PMK, testPMK, PMK_LEN);
+	memcpy(pBTInfo->BtAsocEntry[EntryNum].PMK, testPMK, PMK_LEN);
 #else
-	_rtw_memcpy(pBTInfo->BtAsocEntry[EntryNum].PMK, pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey, PMK_LEN);
+	memcpy(pBTInfo->BtAsocEntry[EntryNum].PMK, pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtAMPKey, PMK_LEN);
 #endif
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("BuildPhysicalLink, EntryNum = %d, PLH = 0x%x  KeyLen = 0x%x, KeyType =0x%x\n",
 		EntryNum, pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle,
@@ -1896,9 +1896,9 @@ bthci_BuildLogicalLink(
 
 	EntryNum = bthci_GetCurrentEntryNum(padapter, PhyLinkHandle);
 
-	_rtw_memcpy(&TxFlowSpec,
+	memcpy(&TxFlowSpec,
 		&pHciCmd->Data[1], sizeof(HCI_FLOW_SPEC));
-	_rtw_memcpy(&RxFlowSpec,
+	memcpy(&RxFlowSpec,
 		&pHciCmd->Data[17], sizeof(HCI_FLOW_SPEC));
 
 #if 0	//for logo special test case only
@@ -2018,9 +2018,9 @@ bthci_BuildLogicalLink(
 					RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("BuildLogicalLink, EntryNum = %d, physical link handle = 0x%x, logical link handle = 0x%x\n",
 						EntryNum, pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle,
 								  pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].BtLogLinkhandle));
-					_rtw_memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Tx_Flow_Spec,
+					memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Tx_Flow_Spec,
 						&TxFlowSpec, sizeof(HCI_FLOW_SPEC));
-					_rtw_memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Rx_Flow_Spec,
+					memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Rx_Flow_Spec,
 						&RxFlowSpec, sizeof(HCI_FLOW_SPEC));
 
 					pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].bLLCompleteEventIsSet=_FALSE;
@@ -2363,13 +2363,13 @@ bthci_CmdWriteRemoteAMPAssoc(
 	RTPRINT_DATA(FIOCTL, (IOCTL_BT_HCICMD_DETAIL|IOCTL_BT_LOGO), ("WriteRemoteAMPAssoc fragment \n"), pHciCmd->Data,pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocRemLen+5);
 	if ((pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocRemLen) > MAX_AMP_ASSOC_FRAG_LEN)
 	{
-		_rtw_memcpy(((u8*)pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocfragment+(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.LenSoFar*(sizeof(u8)))),
+		memcpy(((u8*)pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocfragment+(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.LenSoFar*(sizeof(u8)))),
 			(u8*)pHciCmd->Data+5,
 			MAX_AMP_ASSOC_FRAG_LEN);
 	}
 	else
 	{
-		_rtw_memcpy((u8*)(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocfragment)+(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.LenSoFar*(sizeof(u8))),
+		memcpy((u8*)(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocfragment)+(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.LenSoFar*(sizeof(u8))),
 			((u8*)pHciCmd->Data+5),
 			(pBTInfo->BtAsocEntry[CurrentAssocNum].AmpAsocCmdData.AMPAssocRemLen));
 
@@ -3973,9 +3973,9 @@ bthci_CmdFlowSpecModify(
 		{
 			if (pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].BtLogLinkhandle == logicHandle)
 			{
-				_rtw_memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Tx_Flow_Spec,
+				memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Tx_Flow_Spec,
 					&pHciCmd->Data[2], sizeof(HCI_FLOW_SPEC));
-				_rtw_memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Rx_Flow_Spec,
+				memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Rx_Flow_Spec,
 					&pHciCmd->Data[18], sizeof(HCI_FLOW_SPEC));
 
 				bthci_CheckLogLinkBehavior(padapter, pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Tx_Flow_Spec);
