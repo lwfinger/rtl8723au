@@ -47,11 +47,6 @@
 
 typedef	signed int sint;
 
-#ifndef	PVOID
-typedef void * PVOID;
-//#define PVOID	(void *)
-#endif
-
 typedef void (*proc_t)(void*);
 
 typedef		__kernel_size_t	SIZE_T;

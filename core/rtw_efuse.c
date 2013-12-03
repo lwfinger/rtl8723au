@@ -301,7 +301,7 @@ EFUSE_Read1Byte(
 	u32	k=0;
 	u16	contentLen=0;
 
-	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI , TYPE_EFUSE_REAL_CONTENT_LEN, (PVOID)&contentLen, _FALSE);
+	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI , TYPE_EFUSE_REAL_CONTENT_LEN, (void *)&contentLen, _FALSE);
 
 	if (Address < contentLen)	/* E-fuse 512Byte */
 	{
@@ -371,7 +371,7 @@ EFUSE_Write1Byte(
 	u16	contentLen=0;
 
 	/* RT_TRACE(COMP_EFUSE, DBG_LOUD, ("Addr=%x Data =%x\n", Address, Value)); */
-	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI , TYPE_EFUSE_REAL_CONTENT_LEN, (PVOID)&contentLen, _FALSE);
+	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI , TYPE_EFUSE_REAL_CONTENT_LEN, (void *)&contentLen, _FALSE);
 
 	if( Address < contentLen)	/* E-fuse 512Byte */
 	{
@@ -611,8 +611,8 @@ u8 rtw_efuse_access(PADAPTER padapter, u8 bWrite, u16 start_addr, u16 cnts, u8 *
 	u8 res = _FAIL ;
 	u8 (*rw8)(PADAPTER, u16, u8*);
 
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_REAL_CONTENT_LEN, (PVOID)&real_content_len, _FALSE);
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_available_size, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_REAL_CONTENT_LEN, (void *)&real_content_len, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (void *)&max_available_size, _FALSE);
 
 	if (start_addr > real_content_len)
 		return _FAIL;
@@ -645,7 +645,7 @@ u8 rtw_efuse_access(PADAPTER padapter, u8 bWrite, u16 start_addr, u16 cnts, u8 *
 u16 efuse_GetMaxSize(PADAPTER padapter)
 {
 	u16	max_size;
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI , TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_size, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI , TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (void *)&max_size, _FALSE);
 	return max_size;
 }
 /*  */
@@ -662,7 +662,7 @@ u8 rtw_efuse_map_read(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 {
 	u16	mapLen=0;
 
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, _FALSE);
 
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
@@ -680,7 +680,7 @@ u8 rtw_BT_efuse_map_read(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 {
 	u16	mapLen=0;
 
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, _FALSE);
 
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
@@ -703,7 +703,7 @@ u8 rtw_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 	u8	ret = _SUCCESS;
 	u16	mapLen=0;
 
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, _FALSE);
 
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
@@ -800,7 +800,7 @@ u8 rtw_BT_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 	u8	ret = _SUCCESS;
 	u16	mapLen=0;
 
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, _FALSE);
+	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, _FALSE);
 
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
@@ -923,7 +923,7 @@ Efuse_ReadAllMap(
 
 	Efuse_PowerSwitch(pAdapter,_FALSE, _TRUE);
 
-	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, bPseudoTest);
+	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, bPseudoTest);
 
 	efuse_ReadEFuse(pAdapter, efuseType, 0, mapLen, Efuse, bPseudoTest);
 
@@ -1075,7 +1075,7 @@ void EFUSE_ShadowMapUpdate(
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 	u16	mapLen=0;
 
-	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, bPseudoTest);
+	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, bPseudoTest);
 
 	if (pEEPROM->bautoload_fail_flag == _TRUE)
 	{
@@ -1095,8 +1095,8 @@ void EFUSE_ShadowMapUpdate(
 		#endif
 	}
 
-	/* PlatformMoveMemory((PVOID)&pHalData->EfuseMap[EFUSE_MODIFY_MAP][0], */
-	/* PVOID)&pHalData->EfuseMap[EFUSE_INIT_MAP][0], mapLen); */
+	/* PlatformMoveMemory((void *)&pHalData->EfuseMap[EFUSE_MODIFY_MAP][0], */
+	/* void *)&pHalData->EfuseMap[EFUSE_INIT_MAP][0], mapLen); */
 }/*  EFUSE_ShadowMapUpdate */
 
 /*-----------------------------------------------------------------------------
@@ -1173,23 +1173,23 @@ Efuse_InitSomeVar(
 {
 	u8 i;
 
-	memset((PVOID)&fakeEfuseContent[0], 0xff, EFUSE_MAX_HW_SIZE);
-	memset((PVOID)&fakeEfuseInitMap[0], 0xff, EFUSE_MAX_MAP_LEN);
-	memset((PVOID)&fakeEfuseModifiedMap[0], 0xff, EFUSE_MAX_MAP_LEN);
+	memset(&fakeEfuseContent[0], 0xff, EFUSE_MAX_HW_SIZE);
+	memset(&fakeEfuseInitMap[0], 0xff, EFUSE_MAX_MAP_LEN);
+	memset(&fakeEfuseModifiedMap[0], 0xff, EFUSE_MAX_MAP_LEN);
 
 	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
 	{
-		memset((PVOID)&BTEfuseContent[i][0], EFUSE_MAX_HW_SIZE, 0xff);
+		memset(&BTEfuseContent[i][0], EFUSE_MAX_HW_SIZE, 0xff);
 	}
-	memset((PVOID)&BTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
-	memset((PVOID)&BTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
+	memset(&BTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
+	memset(&BTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
 
 	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
 	{
-		memset((PVOID)&fakeBTEfuseContent[i][0], 0xff, EFUSE_MAX_HW_SIZE);
+		memset(&fakeBTEfuseContent[i][0], 0xff, EFUSE_MAX_HW_SIZE);
 	}
-	memset((PVOID)&fakeBTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
-	memset((PVOID)&fakeBTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
+	memset(&fakeBTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
+	memset(&fakeBTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
 }
 
 #ifdef CONFIG_ADAPTOR_INFO_CACHING_FILE

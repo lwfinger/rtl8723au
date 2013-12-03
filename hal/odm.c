@@ -372,7 +372,7 @@ odm_CCKTXPathDiversityCallback(
 
 VOID
 odm_CCKTXPathDiversityWorkItemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     );
 
 VOID
@@ -382,7 +382,7 @@ odm_PathDivChkAntSwitchCallback(
 
 VOID
 odm_PathDivChkAntSwitchWorkitemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     );
 
 VOID	odm_SetRespPath_92C(		IN	PADAPTER	Adapter,	IN	u1Byte	DefaultRespPath);
@@ -397,7 +397,7 @@ VOID	odm_Write_RXHP(	IN	PDM_ODM_T	pDM_Odm);
 
 VOID	odm_PSD_RXHP(		IN	PDM_ODM_T	pDM_Odm);
 VOID	odm_PSD_RXHPCallback(	PRT_TIMER		pTimer);
-VOID	odm_PSD_RXHPWorkitemCallback(	IN PVOID            pContext);
+VOID	odm_PSD_RXHPWorkitemCallback(	IN void *            pContext);
 //End--------------------- RX High Power -----------------------//
 
 VOID
@@ -531,7 +531,7 @@ odm_SwAntDivChkAntSwitchCallback(
 );
 VOID
 odm_SwAntDivChkAntSwitchWorkitemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     );
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 VOID odm_SwAntDivChkAntSwitchCallback(void *FunctionContext);
@@ -1007,7 +1007,7 @@ VOID
 ODM_CmnInfoHook(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		ODM_CMNINFO_E	CmnInfo,
-	IN		PVOID			pValue
+	IN		void *			pValue
 	)
 {
 	//
@@ -1127,7 +1127,7 @@ ODM_CmnInfoPtrArrayHook(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		ODM_CMNINFO_E	CmnInfo,
 	IN		u2Byte			Index,
-	IN		PVOID			pValue
+	IN		void *			pValue
 	)
 {
 	//
@@ -1386,7 +1386,7 @@ ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm )
 	ODM_InitializeWorkItem(	pDM_Odm,
 							&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchWorkitem,
 							(RT_WORKITEM_CALL_BACK)odm_SwAntDivChkAntSwitchWorkitemCallback,
-							(PVOID)pAdapter,
+							(void *)pAdapter,
 							"AntennaSwitchWorkitem"
 	);
 
@@ -1394,14 +1394,14 @@ ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm )
 		pDM_Odm,
 		&(pDM_Odm->PathDivSwitchWorkitem),
 		(RT_WORKITEM_CALL_BACK)odm_PathDivChkAntSwitchWorkitemCallback,
-		(PVOID)pAdapter,
+		(void *)pAdapter,
 		"SWAS_WorkItem");
 
 	ODM_InitializeWorkItem(
 		pDM_Odm,
 		&(pDM_Odm->CCKPathDiversityWorkitem),
 		(RT_WORKITEM_CALL_BACK)odm_CCKTXPathDiversityWorkItemCallback,
-		(PVOID)pAdapter,
+		(void *)pAdapter,
 		"CCKTXPathDiversityWorkItem");
 #if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 #if (RTL8188E_SUPPORT == 1)
@@ -1409,7 +1409,7 @@ ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm )
 		pDM_Odm,
 		&(pDM_Odm->FastAntTrainingWorkitem),
 		(RT_WORKITEM_CALL_BACK)odm_FastAntTrainingWorkItemCallback,
-		(PVOID)pAdapter,
+		(void *)pAdapter,
 		"FastAntTrainingWorkitem");
 #endif
 #endif
@@ -1417,7 +1417,7 @@ ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm )
 		pDM_Odm,
 		&(pDM_Odm->DM_RXHP_Table.PSDTimeWorkitem),
 		(RT_WORKITEM_CALL_BACK)odm_PSD_RXHPWorkitemCallback,
-		(PVOID)pAdapter,
+		(void *)pAdapter,
 		"PSDRXHP_WorkItem");
 #endif
 }
@@ -5531,7 +5531,7 @@ odm_SwAntDivChkAntSwitchCallback(
 }
 VOID
 odm_SwAntDivChkAntSwitchWorkitemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     )
 {
 
@@ -5582,7 +5582,7 @@ odm_SwAntDivConsructChkScanChnl(
 #endif
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 VOID odm_SwAntDivChkAntSwitchCallback(	PRT_TIMER		pTimer){}
-VOID odm_SwAntDivChkAntSwitchWorkitemCallback(    IN PVOID            pContext    ){}
+VOID odm_SwAntDivChkAntSwitchWorkitemCallback(    IN void *            pContext    ){}
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 VOID odm_SwAntDivChkAntSwitchCallback(void *FunctionContext){}
 #elif (DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -5677,7 +5677,7 @@ return FALSE;
 
 		// Copy Current Scan list.
 		Adapter->MgntInfo.tmpNumBssDesc = pMgntInfo->NumBssDesc;
-		PlatformMoveMemory((PVOID)Adapter->MgntInfo.tmpbssDesc, (PVOID)pMgntInfo->bssDesc, sizeof(RT_WLAN_BSS)*MAX_BSS_DESC);
+		PlatformMoveMemory((void *)Adapter->MgntInfo.tmpbssDesc, (void *)pMgntInfo->bssDesc, sizeof(RT_WLAN_BSS)*MAX_BSS_DESC);
 
 		if(pDM_Odm->SupportICType == ODM_RTL8188E)
 		{
@@ -8995,7 +8995,7 @@ odm_PSDMonitorCallback(
 
 VOID
 odm_PSDMonitorWorkItemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     )
 {
 	PADAPTER	Adapter = (PADAPTER)pContext;
@@ -9765,7 +9765,7 @@ odm_PSD_RXHPCallback(
 
 VOID
 odm_PSD_RXHPWorkitemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     )
 {
 	PADAPTER	pAdapter = (PADAPTER)pContext;
@@ -10250,7 +10250,7 @@ odm_CCKTXPathDiversityCallback(
 
 VOID
 odm_CCKTXPathDiversityWorkItemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     )
 {
 	PADAPTER	Adapter = (PADAPTER)pContext;
@@ -10392,7 +10392,7 @@ ODM_PathDiversityBeforeLink92C(
 
 		// Copy Current Scan list.
 		Adapter->MgntInfo.tmpNumBssDesc = pMgntInfo->NumBssDesc;
-		PlatformMoveMemory((PVOID)Adapter->MgntInfo.tmpbssDesc, (PVOID)pMgntInfo->bssDesc, sizeof(RT_WLAN_BSS)*MAX_BSS_DESC);
+		PlatformMoveMemory((void *)Adapter->MgntInfo.tmpbssDesc, (void *)pMgntInfo->bssDesc, sizeof(RT_WLAN_BSS)*MAX_BSS_DESC);
 
 		// Switch Antenna to another one.
 		if(pDM_PDTable->DefaultRespPath == 0)
@@ -10639,7 +10639,7 @@ odm_PathDivChkAntSwitchCallback(
 
 VOID
 odm_PathDivChkAntSwitchWorkitemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     )
 {
 	PADAPTER	pAdapter = (PADAPTER)pContext;

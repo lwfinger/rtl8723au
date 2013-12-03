@@ -1742,7 +1742,7 @@ VOID	odm_PSDMonitorCallback(PRT_TIMER		pTimer);
 
 VOID
 odm_PSDMonitorWorkItemCallback(
-    IN PVOID            pContext
+    IN void *            pContext
     );
 
 
@@ -1788,7 +1788,7 @@ VOID
 ODM_CmnInfoHook(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		ODM_CMNINFO_E	CmnInfo,
-	IN		PVOID			pValue
+	IN		void *			pValue
 	);
 
 VOID
@@ -1796,7 +1796,7 @@ ODM_CmnInfoPtrArrayHook(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		ODM_CMNINFO_E	CmnInfo,
 	IN		u2Byte			Index,
-	IN		PVOID			pValue
+	IN		void *			pValue
 	);
 
 VOID

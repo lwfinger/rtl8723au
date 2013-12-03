@@ -1174,7 +1174,7 @@ typedef struct _BT30Info
 	RT_TIMER				BTAuthTimeoutTimer;
 	RT_TIMER				BTAsocTimeoutTimer;
 
-	PVOID				pBtChnlList;
+	void *				pBtChnlList;
 }BT30Info, *PBT30Info;
 
 typedef struct _PACKET_IRP_ACL_DATA

@@ -3604,7 +3604,7 @@ u8
 GetHalDefVar8192CUsb(
 	IN	PADAPTER				Adapter,
 	IN	HAL_DEF_VARIABLE		eVariable,
-	IN	PVOID					pValue
+	IN	void *					pValue
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -3670,7 +3670,7 @@ u8
 SetHalDefVar8192CUsb(
 	IN	PADAPTER				Adapter,
 	IN	HAL_DEF_VARIABLE		eVariable,
-	IN	PVOID					pValue
+	IN	void *					pValue
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);

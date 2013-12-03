@@ -491,7 +491,7 @@ LogInterruptHistory8723AU(
 bool
 InterruptRecognized8723AU(
 	IN	PADAPTER			Adapter,
-	IN	PVOID				pContent,
+	IN	void *				pContent,
 	IN	u32				ContentLen
 )
 {
