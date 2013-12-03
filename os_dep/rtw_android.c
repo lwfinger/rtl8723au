@@ -305,9 +305,10 @@ static int rtw_android_set_block(struct net_device *net, char *command, int tota
 	return 0;
 }
 
-static int get_int_from_command(char *pcmd )
+static int get_int_from_command(char *pcmd)
 {
 	int i = 0;
+	int val;
 
 	for( i = 0; i < strlen( pcmd ); i++ )
 	{
@@ -318,7 +319,9 @@ static int get_int_from_command(char *pcmd )
 			break;
 		}
 	}
-	return ( rtw_atoi( pcmd + i ) );
+	if (sscanf(pcmd + i, "%d", &val) != 1)
+		val = -EINVAL;
+	return val;
 }
 
 int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
@@ -536,9 +539,14 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 
 		struct wifi_display_info		*pwfd_info;
 		_adapter*	padapter = ( _adapter * ) rtw_netdev_priv(net);
+		int val = get_int_from_command(priv_cmd.buf);
 
-		pwfd_info = &padapter->wfd_info;
-		pwfd_info->rtsp_ctrlport = ( u16 ) get_int_from_command( priv_cmd.buf );
+		if ((val > 0xffff) || (val < 0)) {
+			ret = -EINVAL;
+		} else {
+			pwfd_info = &padapter->wfd_info;
+			pwfd_info->rtsp_ctrlport = ( u16 ) val;
+		}
 		break;
 	}
 	case ANDROID_WIFI_CMD_WFD_SET_MAX_TPUT:
@@ -554,11 +562,16 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 
 		struct wifi_display_info		*pwfd_info;
 		_adapter*	padapter = ( _adapter * ) rtw_netdev_priv(net);
+		int val = get_int_from_command(priv_cmd.buf);
 
-		pwfd_info = &padapter->wfd_info;
-		pwfd_info->wfd_device_type = ( u8 ) get_int_from_command( priv_cmd.buf );
+		if ((val < 0) || (val > 255)) {
+			ret = -EINVAL;
+		} else {
+			pwfd_info = &padapter->wfd_info;
+			pwfd_info->wfd_device_type = (u8)val;
 
-		pwfd_info->wfd_device_type &= WFD_DEVINFO_DUAL;
+			pwfd_info->wfd_device_type &= WFD_DEVINFO_DUAL;
+		}
 		break;
 	}
 #endif

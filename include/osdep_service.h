@@ -445,8 +445,6 @@ extern void	rtw_sleep_schedulable(int ms);
 extern void	rtw_msleep_os(int ms);
 extern void	rtw_usleep_os(int us);
 
-extern u32	rtw_atoi(u8* s);
-
 #ifdef DBG_DELAY_OS
 #define rtw_mdelay_os(ms) _rtw_mdelay_os((ms), __FUNCTION__, __LINE__)
 #define rtw_udelay_os(ms) _rtw_udelay_os((ms), __FUNCTION__, __LINE__)
