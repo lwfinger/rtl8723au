@@ -125,8 +125,7 @@ _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/xmit_linux.o \
 			os_dep/mlme_linux.o \
 			os_dep/recv_linux.o \
-			os_dep/ioctl_cfg80211.o \
-			os_dep/rtw_android.o
+			os_dep/ioctl_cfg80211.o
 
 _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_com.o \
