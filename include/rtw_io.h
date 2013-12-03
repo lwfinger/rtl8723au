@@ -171,7 +171,7 @@ struct io_req {
 	u32	command;
 	u32	status;
 	u8	*pbuf;
-	_sema	sema;
+	struct semaphore	sema;
 
 #ifdef PLATFORM_OS_CE
 #ifdef CONFIG_USB_HCI

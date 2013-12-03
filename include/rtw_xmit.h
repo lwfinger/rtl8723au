@@ -512,8 +512,8 @@ struct	xmit_priv	{
 
 	spinlock_t	lock;
 
-	_sema	xmit_sema;
-	_sema	terminate_xmitthread_sema;
+	struct semaphore	xmit_sema;
+	struct semaphore	terminate_xmitthread_sema;
 
 	//_queue	blk_strms[MAX_NUMBLKS];
 	_queue	be_pending;
@@ -565,7 +565,7 @@ struct	xmit_priv	{
 	u8	wmm_para_seq[4];//sequence for wmm ac parameter strength from large to small. it's value is 0->vo, 1->vi, 2->be, 3->bk.
 
 #ifdef CONFIG_USB_HCI
-	_sema	tx_retevt;//all tx return event;
+	struct semaphore	tx_retevt;//all tx return event;
 	u8		txirp_cnt;//
 
 	struct tasklet_struct xmit_tasklet;

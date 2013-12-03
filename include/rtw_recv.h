@@ -235,8 +235,8 @@ struct recv_priv
 	spinlock_t	lock;
 
 #ifdef CONFIG_RECV_THREAD_MODE
-	_sema	recv_sema;
-	_sema	terminate_recvthread_sema;
+	struct semaphore	recv_sema;
+	struct semaphore	terminate_recvthread_sema;
 #endif
 
 	//_queue	blk_strms[MAX_RX_NUMBLKS];    // keeping the block ack frame until return ack
@@ -276,7 +276,7 @@ struct recv_priv
 
 #ifdef CONFIG_USB_HCI
 	//u8 *pallocated_urb_buf;
-	_sema allrxreturnevt;
+	struct semaphore allrxreturnevt;
 	uint	ff_hwaddr;
 	u8	rx_pending_cnt;
 

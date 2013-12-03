@@ -1444,7 +1444,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	//if(precvpriv->rx_pending_cnt== 0)
 	//{
 	//	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete: rx_pending_cnt== 0, set allrxreturnevt!\n"));
-	//	_rtw_up_sema(&precvpriv->allrxreturnevt);
+	//	up(&precvpriv->allrxreturnevt);
 	//}
 
 	if(padapter->bSurpriseRemoved || padapter->bDriverStopped||padapter->bReadPortCancel)

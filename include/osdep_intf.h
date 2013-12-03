@@ -58,7 +58,7 @@ The protection mechanism is through the pending queue.
 	PURB	piorw_urb;
 	u8 io_irp_cnt;
 	u8 bio_irp_pending;
-	_sema io_retevt;
+	struct semaphore io_retevt;
 	_timer	io_timer;
 	u8 bio_irp_timeout;
 	u8 bio_timer_cancel;
@@ -81,7 +81,7 @@ The protection mechanism is through the pending queue.
 		PIRP		piorw_irp;
 		u8 io_irp_cnt;
 		u8 bio_irp_pending;
-		_sema io_retevt;
+		struct semaphore io_retevt;
 	#endif
 #endif
 

@@ -5111,8 +5111,8 @@ void rtl8723a_stop_thread(_adapter *padapter)
 
 	// stop xmit_buf_thread
 	if (pHalData->SdioXmitThread ) {
-		_rtw_up_sema(&pHalData->SdioXmitSema);
-		_rtw_down_sema(&pHalData->SdioXmitTerminateSema);
+		up(&pHalData->SdioXmitSema);
+		down(&pHalData->SdioXmitTerminateSema);
 		pHalData->SdioXmitThread = 0;
 	}
 #endif

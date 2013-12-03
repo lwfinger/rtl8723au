@@ -113,7 +113,7 @@ _func_enter_;
 
 	precvpriv->rx_pending_cnt=1;
 
-	_rtw_init_sema(&precvpriv->allrxreturnevt, 0);
+	sema_init(&precvpriv->allrxreturnevt, 0);
 
 #endif
 
@@ -134,15 +134,6 @@ _func_exit_;
 	return res;
 }
 
-void rtw_mfree_recv_priv_lock(struct recv_priv *precvpriv);
-void rtw_mfree_recv_priv_lock(struct recv_priv *precvpriv)
-{
-#ifdef CONFIG_RECV_THREAD_MODE
-	_rtw_free_sema(&precvpriv->recv_sema);
-	_rtw_free_sema(&precvpriv->terminate_recvthread_sema);
-#endif
-}
-
 void _rtw_free_recv_priv (struct recv_priv *precvpriv)
 {
 	_adapter	*padapter = precvpriv->adapter;
@@ -150,8 +141,6 @@ void _rtw_free_recv_priv (struct recv_priv *precvpriv)
 _func_enter_;
 
 	rtw_free_uc_swdec_pending_queue(padapter);
-
-	rtw_mfree_recv_priv_lock(precvpriv);
 
 	rtw_os_recv_resource_free(precvpriv);
 

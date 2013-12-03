@@ -9129,7 +9129,7 @@ static s32 initLoopback(PADAPTER padapter)
 		if (ploopback == NULL)
 			return -ENOMEM;
 
-		_rtw_init_sema(&ploopback->sema, 0);
+		sema_init(&ploopback->sema, 0);
 		ploopback->bstop = _TRUE;
 		ploopback->cnt = 0;
 		ploopback->size = 300;
@@ -9530,7 +9530,7 @@ thread_return lbk_thread(thread_context context)
 		rtw_write_port(padapter, ff_hwaddr, ploopback->txsize, (u8 *)pxmitframe->pxmitbuf);
 
 		// wait for rx pkt
-		_rtw_down_sema(&ploopback->sema);
+		down(&ploopback->sema)
 
 		err = pktcmp(padapter, ploopback->txbuf, ploopback->txsize, ploopback->rxbuf, ploopback->rxsize);
 		if (err == _TRUE)
@@ -9582,7 +9582,7 @@ static void loopbackTest(PADAPTER padapter, u32 cnt, u32 size, u8* pmsg)
 	{
 		if (ploopback->bstop == _FALSE) {
 			ploopback->bstop = _TRUE;
-			_rtw_up_sema(&ploopback->sema);
+			up(&ploopback->sema);
 		}
 		len = 0;
 		do {

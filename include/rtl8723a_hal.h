@@ -573,8 +573,8 @@ typedef struct hal_data_8723a
 	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
 	spinlock_t	SdioTxFIFOFreePageLock;
 	_thread_hdl_	SdioXmitThread;
-	_sema		SdioXmitSema;
-	_sema		SdioXmitTerminateSema;
+	struct semaphore		SdioXmitSema;
+	struct semaphore		SdioXmitTerminateSema;
 
 	//
 	// SDIO Rx FIFO related.

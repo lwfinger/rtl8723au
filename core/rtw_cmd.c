@@ -44,8 +44,8 @@ sint	_rtw_init_cmd_priv (struct	cmd_priv *pcmdpriv)
 
 _func_enter_;
 
-	_rtw_init_sema(&(pcmdpriv->cmd_queue_sema), 0);
-	_rtw_init_sema(&(pcmdpriv->terminate_cmdthread_sema), 0);
+	sema_init(&(pcmdpriv->cmd_queue_sema), 0);
+	sema_init(&(pcmdpriv->terminate_cmdthread_sema), 0);
 
 	_rtw_init_queue(&(pcmdpriv->cmd_queue));
 
@@ -90,7 +90,7 @@ sint _rtw_init_evt_priv(struct evt_priv *pevtpriv)
 _func_enter_;
 
 #ifdef CONFIG_H2CLBK
-	_rtw_init_sema(&(pevtpriv->lbkevt_done), 0);
+	sema_init(&(pevtpriv->lbkevt_done), 0);
 	pevtpriv->lbkevt_limit = 0;
 	pevtpriv->lbkevt_num = 0;
 	pevtpriv->cmdevt_parm = NULL;
@@ -102,8 +102,8 @@ _func_enter_;
 
 #ifdef CONFIG_EVENT_THREAD_MODE
 
-	_rtw_init_sema(&(pevtpriv->evt_notify), 0);
-	_rtw_init_sema(&(pevtpriv->terminate_evtthread_sema), 0);
+	sema_init(&(pevtpriv->evt_notify), 0);
+	sema_init(&(pevtpriv->terminate_evtthread_sema), 0);
 
 	pevtpriv->evt_allocated_buf = rtw_zmalloc(MAX_EVTSZ + 4);
 	if (pevtpriv->evt_allocated_buf == NULL){
@@ -148,9 +148,6 @@ _func_enter_;
 	RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,("+_rtw_free_evt_priv \n"));
 
 #ifdef CONFIG_EVENT_THREAD_MODE
-	_rtw_free_sema(&(pevtpriv->evt_notify));
-	_rtw_free_sema(&(pevtpriv->terminate_evtthread_sema));
-
 	if (pevtpriv->evt_allocated_buf)
 		rtw_mfree(pevtpriv->evt_allocated_buf, MAX_EVTSZ + 4);
 #endif
@@ -179,9 +176,6 @@ void _rtw_free_cmd_priv (struct	cmd_priv *pcmdpriv)
 _func_enter_;
 
 	if(pcmdpriv){
-		_rtw_free_sema(&(pcmdpriv->cmd_queue_sema));
-		_rtw_free_sema(&(pcmdpriv->terminate_cmdthread_sema));
-
 		if (pcmdpriv->cmd_allocated_buf)
 			rtw_mfree(pcmdpriv->cmd_allocated_buf, MAX_CMDSZ + CMDBUFF_ALIGN_SZ);
 
@@ -336,7 +330,7 @@ _func_enter_;
 	res = _rtw_enqueue_cmd(&pcmdpriv->cmd_queue, cmd_obj);
 
 	if(res == _SUCCESS)
-		_rtw_up_sema(&pcmdpriv->cmd_queue_sema);
+		up(&pcmdpriv->cmd_queue_sema);
 
 exit:
 
@@ -407,13 +401,13 @@ _func_enter_;
 	prspbuf = pcmdpriv->rsp_buf;
 
 	pcmdpriv->cmdthd_running=_TRUE;
-	_rtw_up_sema(&pcmdpriv->terminate_cmdthread_sema);
+	up(&pcmdpriv->terminate_cmdthread_sema);
 
 	RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,("start r871x rtw_cmd_thread !!!!\n"));
 
 	while(1)
 	{
-		if (_rtw_down_sema(&pcmdpriv->cmd_queue_sema) == _FAIL)
+		if (down_interruptible(&pcmdpriv->cmd_queue_sema))
 			break;
 
 		if ((padapter->bDriverStopped == _TRUE)||(padapter->bSurpriseRemoved == _TRUE))
@@ -521,7 +515,7 @@ post_process:
 		rtw_free_cmd_obj(pcmd);
 	}while(1);
 
-	_rtw_up_sema(&pcmdpriv->terminate_cmdthread_sema);
+	up(&pcmdpriv->terminate_cmdthread_sema);
 
 _func_exit_;
 
@@ -597,7 +591,7 @@ void rtw_evt_notify_isr(struct evt_priv *pevtpriv)
 {
 _func_enter_;
 	pevtpriv->evt_done_cnt++;
-	_rtw_up_sema(&(pevtpriv->evt_notify));
+	up(&(pevtpriv->evt_notify));
 _func_exit_;
 }
 #endif

@@ -376,7 +376,7 @@ _func_enter_;
 	if(pxmitpriv->txirp_cnt==0)
 	{
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete: txirp_cnt== 0, set allrxreturnevt!\n"));
-		_rtw_up_sema(&(pxmitpriv->tx_retevt));
+		up(&(pxmitpriv->tx_retevt));
 	}
 */
         //rtw_free_xmitframe(pxmitpriv, pxmitframe);

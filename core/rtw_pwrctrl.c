@@ -33,7 +33,7 @@ void ips_enter(_adapter * padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 
-	_enter_pwrlock(&pwrpriv->lock);
+	down(&pwrpriv->lock);
 
 	pwrpriv->bips_processing = _TRUE;
 
@@ -58,7 +58,7 @@ void ips_enter(_adapter * padapter)
 	}
 	pwrpriv->bips_processing = _FALSE;
 
-	_exit_pwrlock(&pwrpriv->lock);
+	up(&pwrpriv->lock);
 }
 
 int ips_leave(_adapter * padapter)
@@ -69,7 +69,7 @@ int ips_leave(_adapter * padapter)
 	int result = _SUCCESS;
 	sint keyid;
 
-	_enter_pwrlock(&pwrpriv->lock);
+	down(&pwrpriv->lock);
 
 	if((pwrpriv->rf_pwrstate == rf_off) &&(!pwrpriv->bips_processing))
 	{
@@ -104,7 +104,7 @@ int ips_leave(_adapter * padapter)
 		pwrpriv->bpower_saving = _FALSE;
 	}
 
-	_exit_pwrlock(&pwrpriv->lock);
+	up(&pwrpriv->lock);
 
 	return result;
 }
@@ -510,7 +510,7 @@ _func_enter_;
 	}
 
 #ifdef CONFIG_LPS_LCLK
-	_enter_pwrlock(&pwrpriv->lock);
+	down(&pwrpriv->lock);
 #endif
 
 	/* if(pwrpriv->pwr_mode == PS_MODE_ACTIVE) */
@@ -602,7 +602,7 @@ _func_enter_;
 	}
 
 #ifdef CONFIG_LPS_LCLK
-	_exit_pwrlock(&pwrpriv->lock);
+	up(&pwrpriv->lock);
 #endif
 
 _func_exit_;
@@ -890,10 +890,10 @@ _func_enter_;
 	if (pwrpriv->cpwm >= PS_STATE_S2)
 	{
 		if (pwrpriv->alives & CMD_ALIVE)
-			_rtw_up_sema(&padapter->cmdpriv.cmd_queue_sema);
+			up(&padapter->cmdpriv.cmd_queue_sema);
 
 		if (pwrpriv->alives & XMIT_ALIVE)
-			_rtw_up_sema(&padapter->xmitpriv.xmit_sema);
+			up(&padapter->xmitpriv.xmit_sema);
 	}
 
 	_exit_pwrlock(&pwrpriv->lock);
@@ -1305,7 +1305,7 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 
 _func_enter_;
 
-	_init_pwrlock(&pwrctrlpriv->lock);
+	sema_init(&pwrctrlpriv->lock, 1);
 	pwrctrlpriv->rf_pwrstate = rf_on;
 	pwrctrlpriv->ips_enter_cnts=0;
 	pwrctrlpriv->ips_leave_cnts=0;
@@ -1388,8 +1388,6 @@ _func_enter_;
 	#if defined(CONFIG_HAS_EARLYSUSPEND) || defined(CONFIG_ANDROID_POWER)
 	rtw_unregister_early_suspend(pwrctrlpriv);
 	#endif /* CONFIG_HAS_EARLYSUSPEND || CONFIG_ANDROID_POWER */
-
-	_free_pwrlock(&pwrctrlpriv->lock);
 
 _func_exit_;
 }

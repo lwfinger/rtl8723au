@@ -81,8 +81,8 @@ _func_enter_;
 
 	spin_lock_init(&pxmitpriv->lock);
 	spin_lock_init(&pxmitpriv->lock_sctx);
-	_rtw_init_sema(&pxmitpriv->xmit_sema, 0);
-	_rtw_init_sema(&pxmitpriv->terminate_xmitthread_sema, 0);
+	sema_init(&pxmitpriv->xmit_sema, 0);
+	sema_init(&pxmitpriv->terminate_xmitthread_sema, 0);
 
 	/*
 	Please insert all the queue initializaiton using _rtw_init_queue below
@@ -294,7 +294,7 @@ _func_enter_;
 #ifdef CONFIG_USB_HCI
 	pxmitpriv->txirp_cnt=1;
 
-	_rtw_init_sema(&(pxmitpriv->tx_retevt), 0);
+	sema_init(&(pxmitpriv->tx_retevt), 0);
 
 	/* per AC pending irp */
 	pxmitpriv->beq_cnt = 0;
@@ -318,13 +318,6 @@ _func_exit_;
 	return res;
 }
 
-void  rtw_mfree_xmit_priv_lock (struct xmit_priv *pxmitpriv);
-void  rtw_mfree_xmit_priv_lock (struct xmit_priv *pxmitpriv)
-{
-	_rtw_free_sema(&pxmitpriv->xmit_sema);
-	_rtw_free_sema(&pxmitpriv->terminate_xmitthread_sema);
-}
-
 void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 {
        int i;
@@ -337,8 +330,6 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
  _func_enter_;
 
 	rtw_hal_free_xmit_priv(padapter);
-
-	rtw_mfree_xmit_priv_lock(pxmitpriv);
 
 	if(pxmitpriv->pxmit_frame_buf==NULL)
 		goto out;
@@ -3684,7 +3675,7 @@ void enqueue_pending_xmitbuf(
 	if (pri_adapter->adapter_type > PRIMARY_ADAPTER)
 		pri_adapter = pri_adapter->pbuddy_adapter;
 #endif  /* SDIO_HCI + CONCURRENT */
-	_rtw_up_sema(&(pri_adapter->xmitpriv.xmit_sema));
+	up(&(pri_adapter->xmitpriv.xmit_sema));
 }
 
 struct xmit_buf* dequeue_pending_xmitbuf(
@@ -3800,7 +3791,7 @@ thread_return rtw_xmit_thread(thread_context context)
 		flush_signals_thread();
 	} while (_SUCCESS == err);
 
-	_rtw_up_sema(&padapter->xmitpriv.terminate_xmitthread_sema);
+	up(&padapter->xmitpriv.terminate_xmitthread_sema);
 
 	thread_exit();
 }

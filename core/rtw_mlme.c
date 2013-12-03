@@ -2767,7 +2767,7 @@ _func_enter_;
 
 	_rtw_init_listhead(&pcmd->list);
 
-	/* _rtw_init_sema(&(pcmd->cmd_sem), 0); */
+	/* sema_init(&(pcmd->cmd_sem), 0); */
 
 	res = rtw_enqueue_cmd(pcmdpriv, pcmd);
 

@@ -53,14 +53,14 @@
 		u32	cmdsz;
 		u8	*rsp;
 		u32	rspsz;
-		//_sema		cmd_sem;
+		//struct semaphore		cmd_sem;
 		_list	list;
 	};
 
 	struct cmd_priv {
-		_sema	cmd_queue_sema;
-		//_sema	cmd_done_sema;
-		_sema	terminate_cmdthread_sema;
+		struct semaphore	cmd_queue_sema;
+		//struct semaphore	cmd_done_sema;
+		struct semaphore	terminate_cmdthread_sema;
 		_queue	cmd_queue;
 		u8	cmd_seq;
 		u8	*cmd_buf;	//shall be non-paged, and 4 bytes aligned
@@ -86,8 +86,8 @@
 
 	struct	evt_priv {
 #ifdef CONFIG_EVENT_THREAD_MODE
-		_sema	evt_notify;
-		_sema	terminate_evtthread_sema;
+		struct semaphore	evt_notify;
+		struct semaphore	terminate_evtthread_sema;
 		_queue	evt_queue;
 #endif
 
@@ -100,7 +100,7 @@
 #endif
 
 #ifdef CONFIG_H2CLBK
-		_sema	lbkevt_done;
+		struct semaphore	lbkevt_done;
 		u8	lbkevt_limit;
 		u8	lbkevt_num;
 		u8	*cmdevt_parm;
