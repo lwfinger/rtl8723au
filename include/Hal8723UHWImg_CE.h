@@ -66,9 +66,4 @@ extern u32 Rtl8723UPHY_REG_Array_PG[Rtl8723UPHY_REG_Array_PGLength];
 #define Rtl8723UMACPHY_Array_PGLength 1
 extern u32 Rtl8723UMACPHY_Array_PG[Rtl8723UMACPHY_Array_PGLength];
 
-#if MP_DRIVER == 1
-#define Rtl8723UPHY_REG_Array_MPLength 4
-extern u32 Rtl8723UPHY_REG_Array_MP[Rtl8723UPHY_REG_Array_MPLength];
-#endif //#if MP_DRIVER == 1
-
 #endif //#ifndef __INC_HAL8723U_FW_IMG_H

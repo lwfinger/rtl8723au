@@ -8000,12 +8000,3 @@ u32 Rtl8723UPHY_REG_Array_PG[Rtl8723UPHY_REG_Array_PGLength] = {
 
 u32 Rtl8723UMACPHY_Array_PG[Rtl8723UMACPHY_Array_PGLength] = {
 0x0, };
-
-#if MP_DRIVER == 1
-
-u32 Rtl8723UPHY_REG_Array_MP[Rtl8723UPHY_REG_Array_MPLength] = {
-0xc30, 0x69e9ac4a,
-0xc3c, 0x0a979718,
-};
-
-#endif/* if MP_DRIVER == 1 */

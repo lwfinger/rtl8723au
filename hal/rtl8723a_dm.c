@@ -358,14 +358,6 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 		pdmpriv->InitODMFlag |= ODM_BB_ANT_DIV;
 #endif
 
-#if (MP_DRIVER==1)
-			if (Adapter->registrypriv.mp_mode == 1)
-			{
-			pdmpriv->InitODMFlag =	ODM_RF_CALIBRATION	|
-									ODM_RF_TX_PWR_TRACK;
-			}
-#endif//(MP_DRIVER==1)
-
 	ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_ABILITY,pdmpriv->InitODMFlag);
 
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_TX_UNI,&(Adapter->xmitpriv.tx_bytes));
@@ -376,7 +368,6 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BW,&(pHalData->CurrentChannelBW ));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_CHNL,&( pHalData->CurrentChannel));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_NET_CLOSED,&( Adapter->net_closed));
-	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_MP_MODE,&(Adapter->registrypriv.mp_mode));
 
 	//================= only for 8192D   =================
 	/*

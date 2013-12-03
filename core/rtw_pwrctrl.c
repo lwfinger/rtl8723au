@@ -175,11 +175,6 @@ static bool rtw_pwr_unassociated_idle(_adapter *adapter)
 		}
 	}
 
-#if (MP_DRIVER == 1)
-	if (adapter->registrypriv.mp_mode == 1)
-		goto exit;
-#endif
-
 #ifdef CONFIG_INTEL_PROXIM
 	if(adapter->proximity.proxim_on==_TRUE){
 		return;
@@ -1346,10 +1341,7 @@ _func_enter_;
 #endif
 
 	pwrctrlpriv->LpsIdleCount = 0;
-	if (padapter->registrypriv.mp_mode == 1)
-		pwrctrlpriv->power_mgnt =PS_MODE_ACTIVE ;
-	else
-		pwrctrlpriv->power_mgnt =padapter->registrypriv.power_mgnt;/*  PS_MODE_MIN; */
+	pwrctrlpriv->power_mgnt =padapter->registrypriv.power_mgnt;/*  PS_MODE_MIN; */
 	pwrctrlpriv->bLeisurePs = (PS_MODE_ACTIVE != pwrctrlpriv->power_mgnt)?_TRUE:_FALSE;
 
 	pwrctrlpriv->bFwCurrentInPSMode = _FALSE;

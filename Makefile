@@ -30,7 +30,6 @@ CONFIG_PCI_HCI = n
 CONFIG_SDIO_HCI = n
 CONFIG_GSPI_HCI = n
 
-CONFIG_MP_INCLUDED = y
 CONFIG_POWER_SAVING = y
 CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n
@@ -86,7 +85,7 @@ OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_HWConfig.o\
 		hal/odm.o\
 		hal/HalPhyRf.o
-										
+
 ifeq ($(CONFIG_RTL8723A), y)
 
 RTL871X = rtl8723a
@@ -145,10 +144,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 _HAL_INTFS_FILES += hal/$(HCI_NAME)_ops_linux.o
 endif
 
-ifeq ($(CONFIG_MP_INCLUDED), y)
-_HAL_INTFS_FILES += hal/$(RTL871X)_mp.o
-endif
-
 _HAL_INTFS_FILES += $(CHIP_FILES)
 
 
@@ -156,10 +151,6 @@ ifeq ($(CONFIG_USB_HCI), y)
 ifeq ($(CONFIG_USB_AUTOSUSPEND), y)
 EXTRA_CFLAGS += -DCONFIG_USB_AUTOSUSPEND
 endif
-endif
-
-ifeq ($(CONFIG_MP_INCLUDED), y)
-EXTRA_CFLAGS += -DCONFIG_MP_INCLUDED
 endif
 
 ifeq ($(CONFIG_POWER_SAVING), y)
@@ -521,13 +512,6 @@ $(MODULE_NAME)-y += core/rtw_efuse.o
 $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 
 $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
-
-$(MODULE_NAME)-$(CONFIG_MP_INCLUDED) += core/rtw_mp.o \
-					core/rtw_mp_ioctl.o
-ifeq ($(CONFIG_RTL8723A), y)
-
-$(MODULE_NAME)-$(CONFIG_MP_INCLUDED)+= core/rtw_bt_mp.o
-endif
 
 CONFIG_RTL8723AS-VAU := m
 obj-$(CONFIG_RTL8723AS-VAU) := $(MODULE_NAME).o

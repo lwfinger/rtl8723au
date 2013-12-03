@@ -90,10 +90,6 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <drvext_api.h>
 #endif
 
-#ifdef CONFIG_MP_INCLUDED
-#include <rtw_mp.h>
-#endif
-
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
 #endif	// CONFIG_BR_EXT
@@ -144,7 +140,6 @@ struct registry_priv
 	u8	short_retry_lmt;
 	u16	busy_thresh;
 	u8	ack_policy;
-	u8	mp_mode;
 	u8	software_encrypt;
 	u8	software_decrypt;
 	#ifdef CONFIG_TX_EARLY_MODE
@@ -487,9 +482,6 @@ struct _ADAPTER{
 	//Check BT status for BT Hung.
 	struct workqueue_struct *priv_checkbt_wq;
 	struct delayed_work checkbt_work;
-#endif
-#ifdef CONFIG_MP_INCLUDED
-       struct	mp_priv	mppriv;
 #endif
 
 #ifdef CONFIG_DRVEXT_MODULE

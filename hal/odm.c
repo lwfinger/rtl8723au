@@ -1097,9 +1097,6 @@ ODM_CmnInfoHook(
 		case	ODM_CMNINFO_NET_CLOSED:
 			pDM_Odm->pbNet_closed = (bool *)pValue;
 			break;
-		case    ODM_CMNINFO_MP_MODE:
-			pDM_Odm->mp_mode = (u1Byte *)pValue;
-			break;
 
 		//case	ODM_CMNINFO_BT_COEXIST:
 		//	pDM_Odm->BTCoexist = (bool *)pValue;
@@ -4535,9 +4532,7 @@ odm_TXPowerTrackingThermalMeterInit(
 	pMgntInfo->bTXPowerTracking = TRUE;
 	pHalData->TXPowercount       = 0;
 	pHalData->bTXPowerTrackingInit = FALSE;
-	#if	MP_DRIVER != 1					//for mp driver, turn off txpwrtracking as default
 	pHalData->TxPowerTrackControl = TRUE;
-	#endif//#if	(MP_DRIVER != 1)
 	ODM_RT_TRACE(pDM_Odm,COMP_POWER_TRACKING, DBG_LOUD, ("pMgntInfo->bTXPowerTracking = %d\n", pMgntInfo->bTXPowerTracking));
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	#ifdef CONFIG_RTL8188E
@@ -4545,10 +4540,7 @@ odm_TXPowerTrackingThermalMeterInit(
 		pDM_Odm->RFCalibrateInfo.bTXPowerTracking = _TRUE;
 		pDM_Odm->RFCalibrateInfo.TXPowercount = 0;
 		pDM_Odm->RFCalibrateInfo.bTXPowerTrackingInit = _FALSE;
-		//#if	(MP_DRIVER != 1)		//for mp driver, turn off txpwrtracking as default
-		if ( *(pDM_Odm->mp_mode) != 1)
-			pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = _TRUE;
-		//#endif//#if	(MP_DRIVER != 1)
+		pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = _TRUE;
 		MSG_8723A("pDM_Odm TxPowerTrackControl = %d\n", pDM_Odm->RFCalibrateInfo.TxPowerTrackControl);
 	}
 	#else
@@ -4562,11 +4554,7 @@ odm_TXPowerTrackingThermalMeterInit(
 			pdmpriv->bTXPowerTracking = _TRUE;
 			pdmpriv->TXPowercount = 0;
 			pdmpriv->bTXPowerTrackingInit = _FALSE;
-			//#if	(MP_DRIVER != 1)		//for mp driver, turn off txpwrtracking as default
-
-			if (*(pDM_Odm->mp_mode) != 1)
-				pdmpriv->TxPowerTrackControl = _TRUE;
-			//#endif//#if	(MP_DRIVER != 1)
+			pdmpriv->TxPowerTrackControl = _TRUE;
 		}
 		MSG_8723A("pdmpriv->TxPowerTrackControl = %d\n", pdmpriv->TxPowerTrackControl);
 

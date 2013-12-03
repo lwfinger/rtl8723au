@@ -128,20 +128,8 @@
  * Auto Config Section
  */
 
-#ifdef CONFIG_MP_INCLUDED
-	#define MP_DRIVER		1
-	#define CONFIG_MP_IWPRIV_SUPPORT 1
-	#define CONFIG_USB_INTERRUPT_IN_PIPE 1
-	// disable unnecessary functions for MP
-	//#undef CONFIG_POWER_SAVING
-	//#undef CONFIG_BT_COEXIST
-	//#undef CONFIG_ANTENNA_DIVERSITY
-	//#undef SUPPORT_HW_RFOFF_DETECTED
-#else // #ifdef CONFIG_MP_INCLUDED
-	#define MP_DRIVER		0
-	#undef CONFIG_MP_IWPRIV_SUPPORT
-	#define CONFIG_LPS		1
-#endif // #ifdef CONFIG_MP_INCLUDED
+#undef CONFIG_MP_IWPRIV_SUPPORT
+#define CONFIG_LPS		1
 
 
 
@@ -155,7 +143,6 @@
 #ifdef CONFIG_POWER_SAVING
 
 #define CONFIG_IPS
-#define CONFIG_LPS
 //#define CONFIG_LPS_LCLK
 #endif // #ifdef CONFIG_POWER_SAVING
 
@@ -235,13 +222,7 @@
 
 #define RTL8191C_FPGA_NETWORKTYPE_ADHOC 0
 
-#ifdef CONFIG_MP_INCLUDED
-	#define MP_DRIVER 1
-	#undef CONFIG_USB_TX_AGGREGATION
-	#undef CONFIG_USB_RX_AGGREGATION
-#else
-	#define MP_DRIVER 0
-#endif
+#define MP_DRIVER 0
 
 
 /*

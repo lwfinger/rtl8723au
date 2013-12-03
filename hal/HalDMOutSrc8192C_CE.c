@@ -39,11 +39,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	s8			OFDM_index[2], CCK_index = 0, OFDM_index_old[2], CCK_index_old = 0;
 	int			i = 0;
 	bool		is2T = IS_92C_SERIAL(pHalData->VersionID);
-
-#if MP_DRIVER == 1
-	PMPT_CONTEXT	pMptCtx = &(Adapter->mppriv.MptCtx);
-	u8			*TxPwrLevel = pMptCtx->TxPwrLevel;
-#endif
 	u8			OFDM_min_index = 6, rf; /* OFDM BB Swing should be less than +3.0dB, which is required by Arthur */
 	u8			ThermalValue_HP_count = 0;
 	u32			ThermalValue_HP = 0;
@@ -243,65 +238,6 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 						OFDM_index[i] = pdmpriv->OFDM_index[i];
 					CCK_index = pdmpriv->CCK_index;
 				}
-
-#if MP_DRIVER == 1
-				for(i = 0; i < rf; i++)
-				{
-					if(TxPwrLevel[i] >=0 && TxPwrLevel[i] <=26)
-					{
-						if(ThermalValue > pHalData->EEPROMThermalMeter)
-						{
-							if (delta < 5)
-								OFDM_index[i] -= 1;
-							else
-								OFDM_index[i] -= 2;
-						}
-						else if(delta > 5 && ThermalValue < pHalData->EEPROMThermalMeter)
-						{
-							OFDM_index[i] += 1;
-						}
-					}
-					else if (TxPwrLevel[i] >= 27 && TxPwrLevel[i] <= 32 && ThermalValue > pHalData->EEPROMThermalMeter)
-					{
-						if (delta < 5)
-							OFDM_index[i] -= 1;
-						else
-							OFDM_index[i] -= 2;
-					}
-					else if (TxPwrLevel[i] >= 32 && TxPwrLevel[i] <= 38 && ThermalValue > pHalData->EEPROMThermalMeter && delta > 5)
-					{
-						OFDM_index[i] -= 1;
-					}
-				}
-
-				{
-					if(TxPwrLevel[i] >=0 && TxPwrLevel[i] <=26)
-					{
-						if(ThermalValue > pHalData->EEPROMThermalMeter)
-						{
-							if (delta < 5)
-								CCK_index -= 1;
-							else
-								CCK_index -= 2;
-						}
-						else if(delta > 5 && ThermalValue < pHalData->EEPROMThermalMeter)
-						{
-							CCK_index += 1;
-						}
-					}
-					else if (TxPwrLevel[i] >= 27 && TxPwrLevel[i] <= 32 && ThermalValue > pHalData->EEPROMThermalMeter)
-					{
-						if (delta < 5)
-							CCK_index -= 1;
-						else
-							CCK_index -= 2;
-					}
-					else if (TxPwrLevel[i] >= 32 && TxPwrLevel[i] <= 38 && ThermalValue > pHalData->EEPROMThermalMeter && delta > 5)
-					{
-						CCK_index -= 1;
-					}
-				}
-#endif
 			}
 
 			for(i = 0; i < rf; i++)
@@ -438,11 +374,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			*/
 		}
 
-#if MP_DRIVER == 1
-		if(delta_IQK > 1)
-#else
 		if(delta_IQK > 3)
-#endif
 		{
 			pdmpriv->ThermalValue_IQK = ThermalValue;
 			rtl8192c_PHY_IQCalibrate(Adapter,_FALSE);
@@ -1016,11 +948,7 @@ _PHY_IQCalibrate(
 							rFPGA0_XB_RFInterfaceOE,	rFPGA0_RFMOD
 							};
 
-#if MP_DRIVER
-	const u32	retryCount = 9;
-#else
 	const u32	retryCount = 2;
-#endif
 
 	/*  Note: IQ calibration must be performed after loading  */
 	/*		PHY_REG.txt , and radio_a, radio_b.txt	 */
@@ -1336,13 +1264,6 @@ _PHY_APCalibrate(
 
 	int			BB_offset, delta_V, delta_offset;
 
-#if (MP_DRIVER == 1)
-	PMPT_CONTEXT	pMptCtx = &pAdapter->mppriv.MptCtx;
-
-	pMptCtx->APK_bound[0] = 45;
-	pMptCtx->APK_bound[1] = 52;
-#endif
-
 	if(!is2T)
 		pathbound = 1;
 
@@ -1352,278 +1273,7 @@ _PHY_APCalibrate(
 /*  and value will cause RF internal PA to be unpredictably disabled by HW, such that RF Tx signal */
 /*  will disappear after disable/enable card many times on 88CU. RF SD and DD have not find the */
 /*  root cause, so we remove these actions temporarily. Added by tynli and SD3 Allen. 2010.05.31. */
-#if (MP_DRIVER != 1)
 	return;
-#endif
-
-	/* settings adjust for normal chip */
-	for(index = 0; index < PATH_NUM; index ++)
-	{
-		APK_offset[index] = APK_normal_offset[index];
-		APK_value[index] = APK_normal_value[index];
-		AFE_on_off[index] = 0x6fdb25a4;
-	}
-
-	for(index = 0; index < APK_BB_REG_NUM; index ++)
-	{
-		for(path = 0; path < pathbound; path++)
-		{
-			APK_RF_init_value[path][index] = APK_normal_RF_init_value[path][index];
-			APK_RF_value_0[path][index] = APK_normal_RF_value_0[path][index];
-		}
-		BB_AP_MODE[index] = BB_normal_AP_MODE[index];
-	}
-
-	apkbound = 6;
-
-	/* save BB default value	 */
-	for(index = 0; index < APK_BB_REG_NUM ; index++)
-	{
-		if(index == 0)		/* skip  */
-			continue;
-		BB_backup[index] = PHY_QueryBBReg(pAdapter, BB_REG[index], bMaskDWord);
-	}
-
-	/* save MAC default value													 */
-	_PHY_SaveMACRegisters(pAdapter, MAC_REG, MAC_backup);
-
-	/* save AFE default value */
-	_PHY_SaveADDARegisters(pAdapter, AFE_REG, AFE_backup, IQK_ADDA_REG_NUM);
-
-	for(path = 0; path < pathbound; path++)
-	{
-		if(path == RF_PATH_A)
-		{
-			/* path A APK */
-			/* load APK setting */
-			/* path-A		 */
-			offset = rPdp_AntA;
-			for(index = 0; index < 11; index ++)
-			{
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_1[index]);
-
-				offset += 0x04;
-			}
-
-			PHY_SetBBReg(pAdapter, rConfig_Pmpd_AntB, bMaskDWord, 0x12680000);
-
-			offset = rConfig_AntA;
-			for(; index < 13; index ++)
-			{
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_1[index]);
-				offset += 0x04;
-			}
-
-			/* page-B1 */
-			PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x40000000);
-
-			/* path A */
-			offset = rPdp_AntA;
-			for(index = 0; index < 16; index++) {
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_2[index]);
-				offset += 0x04;
-			}
-			PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x00000000);
-		} else if(path == RF_PATH_B) {
-			/* path B APK */
-			/* load APK setting */
-			/* path-B		 */
-			offset = rPdp_AntB;
-			for(index = 0; index < 10; index ++)
-			{
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_1[index]);
-				offset += 0x04;
-			}
-			PHY_SetBBReg(pAdapter, rConfig_Pmpd_AntA, bMaskDWord, 0x12680000);
-
-			PHY_SetBBReg(pAdapter, rConfig_Pmpd_AntB, bMaskDWord, 0x12680000);
-
-			offset = rConfig_AntA;
-			index = 11;
-			for(; index < 13; index ++) /* offset 0xb68, 0xb6c		 */
-			{
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_1[index]);
-				offset += 0x04;
-			}
-
-			/* page-B1 */
-			PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x40000000);
-
-			/* path B */
-			offset = 0xb60;
-			for(index = 0; index < 16; index++)
-			{
-				PHY_SetBBReg(pAdapter, offset, bMaskDWord, APK_normal_setting_value_2[index]);
-				offset += 0x04;
-			}
-			PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x00000000);
-		}
-
-		/* save RF default value */
-		regD[path] = PHY_QueryRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_TXBIAS_A, bRFRegOffsetMask);
-
-		/* Path A AFE all on, path B AFE All off or vise versa */
-		for(index = 0; index < IQK_ADDA_REG_NUM ; index++)
-			PHY_SetBBReg(pAdapter, AFE_REG[index], bMaskDWord, AFE_on_off[path]);
-		/* BB to AP mode */
-		if(path == 0)
-		{
-			for(index = 0; index < APK_BB_REG_NUM ; index++) {
-				if(index == 0)		/* skip  */
-					continue;
-				else if (index < 5)
-					PHY_SetBBReg(pAdapter, BB_REG[index], bMaskDWord, BB_AP_MODE[index]);
-				else if (BB_REG[index] == 0x870)
-					PHY_SetBBReg(pAdapter, BB_REG[index], bMaskDWord, BB_backup[index]|BIT10|BIT26);
-				else
-					PHY_SetBBReg(pAdapter, BB_REG[index], BIT10, 0x0);
-			}
-			PHY_SetBBReg(pAdapter, rTx_IQK_Tone_A, bMaskDWord, 0x01008c00);
-			PHY_SetBBReg(pAdapter, rRx_IQK_Tone_A, bMaskDWord, 0x01008c00);
-		} else {		/* path B */
-			PHY_SetBBReg(pAdapter, rTx_IQK_Tone_B, bMaskDWord, 0x01008c00);
-			PHY_SetBBReg(pAdapter, rRx_IQK_Tone_B, bMaskDWord, 0x01008c00);
-		}
-
-		/* MAC settings */
-		_PHY_MACSettingCalibration(pAdapter, MAC_REG, MAC_backup);
-
-		if(path == RF_PATH_A)	/* Path B to standby mode */
-		{
-			PHY_SetRFReg(pAdapter, RF_PATH_B, RF_AC, bRFRegOffsetMask, 0x10000);
-		}
-		else			/* Path A to standby mode */
-		{
-			PHY_SetRFReg(pAdapter, RF_PATH_A, RF_AC, bRFRegOffsetMask, 0x10000);
-			PHY_SetRFReg(pAdapter, RF_PATH_A, RF_MODE1, bRFRegOffsetMask, 0x1000f);
-			PHY_SetRFReg(pAdapter, RF_PATH_A, RF_MODE2, bRFRegOffsetMask, 0x20103);
-		}
-
-		delta_offset = ((delta+14)/2);
-		if(delta_offset < 0)
-			delta_offset = 0;
-		else if (delta_offset > 12)
-			delta_offset = 12;
-
-		/* AP calibration */
-		for(index = 0; index < APK_BB_REG_NUM; index++)
-		{
-			if(index != 1)		/* only DO PA11+PAD01001, AP RF setting */
-				continue;
-
-			tmpReg = APK_RF_init_value[path][index];
-#if 1
-			if(!pdmpriv->bAPKThermalMeterIgnore)
-			{
-				BB_offset = (tmpReg & 0xF0000) >> 16;
-
-				if(!(tmpReg & BIT15)) /* sign bit 0 */
-				{
-					BB_offset = -BB_offset;
-				}
-
-				delta_V = APK_delta_mapping[index][delta_offset];
-
-				BB_offset += delta_V;
-
-				if(BB_offset < 0)
-				{
-					tmpReg = tmpReg & (~BIT15);
-					BB_offset = -BB_offset;
-				}
-				else
-				{
-					tmpReg = tmpReg | BIT15;
-				}
-				tmpReg = (tmpReg & 0xFFF0FFFF) | (BB_offset << 16);
-			}
-#endif
-
-#ifdef CONFIG_PCI_HCI
-			if(IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID))
-				PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_IPA_A, bRFRegOffsetMask, 0x894ae);
-			else
-#endif
-				PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_IPA_A, bRFRegOffsetMask, 0x8992e);
-			PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_AC, bRFRegOffsetMask, APK_RF_value_0[path][index]);
-			PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_TXBIAS_A, bRFRegOffsetMask, tmpReg);
-
-			/*  PA11+PAD01111, one shot	 */
-			i = 0;
-			do
-			{
-				PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x80000000);
-				{
-					PHY_SetBBReg(pAdapter, APK_offset[path], bMaskDWord, APK_value[0]);
-					rtw_mdelay_os(3);
-					PHY_SetBBReg(pAdapter, APK_offset[path], bMaskDWord, APK_value[1]);
-					#ifdef CONFIG_LONG_DELAY_ISSUE
-					rtw_msleep_os(20);
-					#else
-					rtw_mdelay_os(20);
-					#endif
-				}
-				PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x00000000);
-
-				if(path == RF_PATH_A)
-					tmpReg = PHY_QueryBBReg(pAdapter, rAPK, 0x03E00000);
-				else
-					tmpReg = PHY_QueryBBReg(pAdapter, rAPK, 0xF8000000);
-
-				i++;
-			}
-			while(tmpReg > apkbound && i < 4);
-
-			APK_result[path][index] = tmpReg;
-		}
-	}
-
-	/* reload MAC default value	 */
-	_PHY_ReloadMACRegisters(pAdapter, MAC_REG, MAC_backup);
-
-	/* reload BB default value	 */
-	for(index = 0; index < APK_BB_REG_NUM ; index++)
-	{
-		if(index == 0)		/* skip  */
-			continue;
-		PHY_SetBBReg(pAdapter, BB_REG[index], bMaskDWord, BB_backup[index]);
-	}
-
-	/* reload AFE default value */
-	_PHY_ReloadADDARegisters(pAdapter, AFE_REG, AFE_backup, IQK_ADDA_REG_NUM);
-
-	/* reload RF path default value */
-	for(path = 0; path < pathbound; path++)
-	{
-		PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_TXBIAS_A, bRFRegOffsetMask, regD[path]);
-		if(path == RF_PATH_B)
-		{
-			PHY_SetRFReg(pAdapter, RF_PATH_A, RF_MODE1, bRFRegOffsetMask, 0x1000f);
-			PHY_SetRFReg(pAdapter, RF_PATH_A, RF_MODE2, bRFRegOffsetMask, 0x20101);
-		}
-
-		/* note no index == 0 */
-		if (APK_result[path][1] > 6)
-			APK_result[path][1] = 6;
-	}
-
-
-
-	for(path = 0; path < pathbound; path++)
-	{
-		PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G1_G4, bRFRegOffsetMask,
-		((APK_result[path][1] << 15) | (APK_result[path][1] << 10) | (APK_result[path][1] << 5) | APK_result[path][1]));
-		if(path == RF_PATH_A)
-			PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G5_G8, bRFRegOffsetMask,
-			((APK_result[path][1] << 15) | (APK_result[path][1] << 10) | (0x00 << 5) | 0x05));
-		else
-			PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G5_G8, bRFRegOffsetMask,
-			((APK_result[path][1] << 15) | (APK_result[path][1] << 10) | (0x02 << 5) | 0x05));
-		PHY_SetRFReg(pAdapter, (RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G9_G11, bRFRegOffsetMask,
-		((0x08 << 15) | (0x08 << 10) | (0x08 << 5) | 0x08));
-	}
-
-	pdmpriv->bAPKdone = _TRUE;
 }
 
 VOID
@@ -1646,12 +1296,6 @@ rtl8192c_PHY_IQCalibrate(
 					rOFDM0_XATxIQImbalance,		rOFDM0_XBTxIQImbalance,
 					rOFDM0_XCTxAFE,				rOFDM0_XDTxAFE,
 					rOFDM0_RxIQExtAnta};
-
-#if MP_DRIVER == 1
-	bStartContTx = pAdapter->mppriv.MptCtx.bStartContTx;
-	bSingleTone = pAdapter->mppriv.MptCtx.bSingleTone;
-	bCarrierSuppression = pAdapter->mppriv.MptCtx.bCarrierSuppression;
-#endif
 
 	/* ignore IQK when continuous Tx */
 	if(bStartContTx || bSingleTone || bCarrierSuppression)
@@ -1778,12 +1422,6 @@ rtl8192c_PHY_LCCalibrate(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	struct mlme_ext_priv	*pmlmeext = &pAdapter->mlmeextpriv;
 	bool	bStartContTx = _FALSE, bSingleTone = _FALSE, bCarrierSuppression = _FALSE;
-
-#if MP_DRIVER == 1
-	bStartContTx = pAdapter->mppriv.MptCtx.bStartContTx;
-	bSingleTone = pAdapter->mppriv.MptCtx.bSingleTone;
-	bCarrierSuppression = pAdapter->mppriv.MptCtx.bCarrierSuppression;
-#endif
 
 #if DISABLE_BB_RF
 	return;

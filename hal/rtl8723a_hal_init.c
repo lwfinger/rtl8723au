@@ -23,7 +23,6 @@
 #include <rtw_efuse.h>
 
 #include <rtl8723a_hal.h>
-#include "rtw_bt_mp.h"
 
 
 static VOID
@@ -303,403 +302,6 @@ void rtl8723a_FirmwareSelfReset(PADAPTER padapter)
 	}
 }
 
-//
-#ifdef CONFIG_MP_INCLUDED
-
-int _WriteBTFWtoTxPktBuf8723A(
-	IN		PADAPTER		Adapter,
-	IN		PVOID			buffer,
-	IN		u4Byte			FwBufLen,
-	IN		u1Byte			times
-	)
-{
-	int			rtStatus = _SUCCESS;
-	//u4Byte				value32;
-	//u1Byte				numHQ, numLQ, numPubQ;//, txpktbuf_bndy;
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
-	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
-	u1Byte				BcnValidReg;
-	u1Byte				count=0, DLBcnCount=0;
-	pu1Byte				FwbufferPtr = (pu1Byte)buffer;
-	//PRT_TCB			pTcb, ptempTcb;
-	//PRT_TX_LOCAL_BUFFER pBuf;
-	bool				bRecover=_FALSE;
-	pu1Byte				ReservedPagePacket = NULL;
-	pu1Byte				pGenBufReservedPagePacket = NULL;
-	u4Byte				TotalPktLen;
-	//u1Byte				tmpReg422;
-	//u1Byte				u1bTmp;
-	u8			*pframe;
-	struct xmit_priv	*pxmitpriv = &(Adapter->xmitpriv);
-	struct xmit_frame	*pmgntframe;
-	struct pkt_attrib	*pattrib;
-
-#if 1//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	TotalPktLen = FwBufLen;
-#else
-	TotalPktLen = FwBufLen+pHalData->HWDescHeadLength;
-#endif
-#if 0
-	pGenBufReservedPagePacket = rtw_zmalloc(TotalPktLen);//GetGenTempBuffer (Adapter, TotalPktLen);
-	if (!pGenBufReservedPagePacket)
-		return _FAIL;
-
-	ReservedPagePacket = (u1Byte *)pGenBufReservedPagePacket;
-
-	_rtw_memset(ReservedPagePacket, 0, TotalPktLen);
-
-	_rtw_memcpy(ReservedPagePacket, FwbufferPtr, FwBufLen);
-
-#else
-	//PlatformMoveMemory(ReservedPagePacket+Adapter->HWDescHeadLength , FwbufferPtr, FwBufLen);
-#endif
-
-	//---------------------------------------------------------
-	// 1. Pause BCN
-	//---------------------------------------------------------
-	//Set REG_CR bit 8. DMA beacon by SW.
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	u1bTmp = PlatformEFIORead1Byte(Adapter, REG_CR+1);
-	PlatformEFIOWrite1Byte(Adapter,  REG_CR+1, (u1bTmp|BIT0));
-#else
-	// Remove for temparaily because of the code on v2002 is not sync to MERGE_TMEP for USB/SDIO.
-	// De not remove this part on MERGE_TEMP. by tynli.
-	//pHalData->RegCR_1 |= (BIT0);
-	//PlatformEFIOWrite1Byte(Adapter,  REG_CR+1, pHalData->RegCR_1);
-#endif
-
-	// Disable Hw protection for a time which revserd for Hw sending beacon.
-	// Fix download reserved page packet fail that access collision with the protection time.
-	// 2010.05.11. Added by tynli.
-	SetBcnCtrlReg(Adapter, 0, BIT(3));
-	SetBcnCtrlReg(Adapter, BIT(4), 0);
-
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	tmpReg422 = PlatformEFIORead1Byte(Adapter, REG_FWHW_TXQ_CTRL+2);
-	if( tmpReg422&BIT6)
-		bRecover = TRUE;
-	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2,  tmpReg422&(~BIT6));
-#else
-	// Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame.
-	if(pHalData->RegFwHwTxQCtrl & BIT(6))
-		bRecover=_TRUE;
-	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (pHalData->RegFwHwTxQCtrl&( ~BIT(6))));
-	pHalData->RegFwHwTxQCtrl &= (~BIT(6));
-#endif
-
-	//---------------------------------------------------------
-	// 2. Adjust LLT table to an even boundary.
-	//---------------------------------------------------------
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	if(LLT_table_init(Adapter, TRUE, 10) == RT_STATUS_FAILURE)
-	{
-		DbgPrint("Init self define for BT Fw patch LLT table fail.\n");
-		return RT_STATUS_FAILURE;
-	}
-#endif
-
-	//---------------------------------------------------------
-	// 3. Write Fw to Tx packet buffer by reseverd page.
-	//---------------------------------------------------------
-	do
-	{
-		// download rsvd page.
-		// Clear beacon valid check bit.
-		BcnValidReg = PlatformEFIORead1Byte(Adapter, REG_TDECTRL+2);
-		PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+2, BcnValidReg&(~BIT(0)));
-
-		//BT patch is big, we should set 0x209 < 0x40 suggested from Gimmy
-		RT_TRACE(_module_mp_, _drv_info_,("0x209:%x\n",
-					PlatformEFIORead1Byte(Adapter, REG_TDECTRL+1)));//209 < 0x40
-#if 0
-		PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+1, 0x30);
-		RT_TRACE(_module_mp_, _drv_info_,("0x209:%x\n",
-					PlatformEFIORead1Byte(Adapter, REG_TDECTRL+1)));
-#else
-		if(times == 1)
-			PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+1, 0x90); //0x70);
-		else if(times ==2)
-			PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+1, 0x70); //0x70);
-		else if(times ==3)
-			PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+1, 0x50); //0x70);
-		else
-			PlatformEFIOWrite1Byte(Adapter, REG_TDECTRL+1, 0x30); //0x70);
-
-		RT_TRACE(_module_mp_, _drv_info_,("0x209:%x\n",
-					PlatformEFIORead1Byte(Adapter, REG_TDECTRL+1)));
-#endif
-
-#if 0
-		// Acquice TX spin lock before GetFwBuf and send the packet to prevent system deadlock.
-		// Advertised by Roger. Added by tynli. 2010.02.22.
-		PlatformAcquireSpinLock(Adapter, RT_TX_SPINLOCK);
-		if(MgntGetFWBuffer(Adapter, &pTcb, &pBuf))
-		{
-			PlatformMoveMemory(pBuf->Buffer.VirtualAddress, ReservedPagePacket, TotalPktLen);
-			CmdSendPacket(Adapter, pTcb, pBuf, TotalPktLen, DESC_PACKET_TYPE_NORMAL, FALSE);
-		}
-		else
-			dbgdump("SetFwRsvdPagePkt(): MgntGetFWBuffer FAIL!!!!!!!!.\n");
-		PlatformReleaseSpinLock(Adapter, RT_TX_SPINLOCK);
-#else
-		/*---------------------------------------------------------
-		tx reserved_page_packet
-		----------------------------------------------------------*/
-			if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL) {
-						rtStatus = _FAIL;
-						goto exit;
-			}
-			//update attribute
-			pattrib = &pmgntframe->attrib;
-			update_mgntframe_attrib(Adapter, pattrib);
-
-			pattrib->qsel = QSLT_BEACON;
-			pattrib->pktlen = pattrib->last_txcmdsz = FwBufLen ;
-
-			//_rtw_memset(pmgntframe->buf_addr, 0, TotalPktLen+TXDESC_SIZE);
-			//pmgntframe->buf_addr = ReservedPagePacket ;
-
-			//_rtw_memcpy( (u8*) (pmgntframe->buf_addr + TXDESC_OFFSET), ReservedPagePacket, FwBufLen);
-			_rtw_memcpy( (u8*) (pmgntframe->buf_addr + TXDESC_OFFSET), FwbufferPtr, FwBufLen);
-			DBG_8723A("===>TotalPktLen + TXDESC_OFFSET TotalPacketLen:%d ", (FwBufLen + TXDESC_OFFSET));
-
-			dump_mgntframe(Adapter, pmgntframe);
-
-#endif
-		// check rsvd page download OK.
-		BcnValidReg = PlatformEFIORead1Byte(Adapter, REG_TDECTRL+2);
-		while(!(BcnValidReg & BIT(0)) && count <200)
-		{
-			count++;
-			//PlatformSleepUs(10);
-			rtw_msleep_os(1);
-			BcnValidReg = PlatformEFIORead1Byte(Adapter, REG_TDECTRL+2);
-			RT_TRACE(_module_mp_, _drv_info_,("Poll 0x20A = %x\n", BcnValidReg));
-		}
-		DLBcnCount++;
-		DBG_8723A("##0x208:%08x,0x210=%08x\n",PlatformEFIORead4Byte(Adapter, REG_TDECTRL),PlatformEFIORead4Byte(Adapter, 0x210));
-	}while((!(BcnValidReg&BIT(0))) && DLBcnCount<5);
-
-
-	if(DLBcnCount >=5){
-		DBG_8723A(" check rsvd page download OK DLBcnCount =%d  \n",DLBcnCount);
-		rtStatus = _FAIL;
-		goto exit;
-	}
-
-	if(!(BcnValidReg&BIT(0)))
-	{
-		DBG_8723A("_WriteFWtoTxPktBuf(): 1 Download RSVD page failed!\n");
-		rtStatus = _FAIL;
-		goto exit;
-	}
-
-	//---------------------------------------------------------
-	// 4. Set Tx boundary to the initial value
-	//---------------------------------------------------------
-
-
-	//---------------------------------------------------------
-	// 5. Reset beacon setting to the initial value.
-	//	 After _CheckWLANFwPatchBTFwReady().
-	//---------------------------------------------------------
-
-exit:
-
-	if(pGenBufReservedPagePacket)
-	{
-		DBG_8723A("_WriteBTFWtoTxPktBuf8723A => rtw_mfree pGenBufReservedPagePacket!\n");
-		rtw_mfree((u8*)pGenBufReservedPagePacket, TotalPktLen);
-		}
-	return rtStatus;
-}
-
-
-extern s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
-
-//
-// Description: Determine the contents of H2C BT_FW_PATCH Command sent to FW.
-// 2011.10.20 by tynli
-//
-void
-SetFwBTFwPatchCmd(
-	IN PADAPTER	Adapter,
-	IN u2Byte		FwSize
-	)
-{
-	u1Byte		u1BTFwPatchParm[H2C_BT_FW_PATCH_LEN]={0};
-
-	RT_TRACE(_module_mp_, _drv_notice_,("SetFwBTFwPatchCmd(): FwSize = %d\n", FwSize));
-
-	//bit1: 1---24k, 0----16k
-	//SET_H2CCMD_BT_FW_PATCH_ENABLE(u1BTFwPatchParm, 0x03);
-
-	SET_H2CCMD_BT_FW_PATCH_ENABLE(u1BTFwPatchParm, 1);
-
-	SET_H2CCMD_BT_FW_PATCH_SIZE(u1BTFwPatchParm, FwSize);
-
-	u1BTFwPatchParm[0]  |= BIT1;
-
-	FillH2CCmd(Adapter, H2C_BT_FW_PATCH, H2C_BT_FW_PATCH_LEN, u1BTFwPatchParm);
-
-	RT_TRACE(_module_mp_, _drv_notice_,("<----SetFwBTFwPatchCmd(): FwSize = %d \n", FwSize));
-}
-
-void
-SetFwBTPwrCmd(
-	IN PADAPTER	Adapter,
-	IN u1Byte	PwrIdx
-	)
-{
-	u1Byte		u1BTPwrIdxParm[H2C_BT_PWR_FORCE_LEN]={0};
-
-	RT_TRACE(_module_mp_, _drv_info_,("SetFwBTPwrCmd(): idx = %d\n", PwrIdx));
-	SET_H2CCMD_BT_PWR_IDX(u1BTPwrIdxParm, PwrIdx);
-
-	RT_TRACE(_module_mp_, _drv_info_,("SetFwBTPwrCmd(): %x %x %x\n",
-		u1BTPwrIdxParm[0],u1BTPwrIdxParm[1],u1BTPwrIdxParm[2]));
-
-	FillH2CCmd(Adapter, FORCE_BT_TX_PWR_EID, H2C_BT_PWR_FORCE_LEN, u1BTPwrIdxParm);
-}
-
-//
-// Description: WLAN Fw will write BT Fw to BT XRAM and signal driver.
-//
-// 2011.10.20. by tynli.
-//
-void
-_CheckWLANFwPatchBTFwReady(
-	IN	PADAPTER			Adapter
-)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	u4Byte	count=0;
-	u1Byte	u1bTmp;
-
-	//---------------------------------------------------------
-	// Check if BT FW patch procedure is ready.
-	//---------------------------------------------------------
-	do{
-		u1bTmp = PlatformEFIORead1Byte(Adapter, REG_MCUFWDL+1);
-		if(u1bTmp&BIT(7))
-			break;
-
-		count++;
-		RT_TRACE(_module_mp_, _drv_info_,("0x81=%x, wait for 50 ms (%d) times.\n",
-					u1bTmp, count));
-		rtw_msleep_os(50); // 50ms
-	}while(!(u1bTmp&BIT(7)) && count < 50);
-
-	RT_TRACE(_module_mp_, _drv_notice_,("_CheckWLANFwPatchBTFwReady():"
-				" Polling ready bit 0x81[7] for %d times.\n", count));
-
-	if(count >= 50)
-	{
-		RT_TRACE(_module_mp_, _drv_notice_,("_CheckWLANFwPatchBTFwReady():"
-				" Polling ready bit 0x81[7] FAIL!!\n"));
-				Adapter->bBTFWReady = _FALSE;
-	}else{
-				Adapter->bBTFWReady = _TRUE;
-	}
-
-	//---------------------------------------------------------
-	// Reset beacon setting to the initial value.
-	//---------------------------------------------------------
-	SetBcnCtrlReg(Adapter, BIT(3), 0);
-	SetBcnCtrlReg(Adapter, 0, BIT(4));
-
-	// To make sure that if there exists an adapter which would like to send beacon.
-	// If exists, the origianl value of 0x422[6] will be 1, we should check this to
-	// prevent from setting 0x422[6] to 0 after download reserved page, or it will cause
-	// the beacon cannot be sent by HW.
-	// 2010.06.23. Added by tynli.
-	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (pHalData->RegFwHwTxQCtrl|BIT(6)));
-	pHalData->RegFwHwTxQCtrl |= BIT(6);
-}
-
-
-int
-FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware)
-{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
-	int rtStatus = _SUCCESS;
-
-	// BT pacth
-	u1Byte		*BTFwImage;
-	u4Byte		BTFwImageLen;
-
-	u1Byte		*pBTFirmwareBuf;
-	u4Byte		BTFirmwareLen;
-	//
-	// Patch BT Fw. Download BT RAM code to Tx packet buffer. Added by tynli. 2011.10.
-	// Only for 8723AE for Toshiba. Suggested by SD1 Jackie.
-	//
-	if( !(IS_HARDWARE_TYPE_8723A(Adapter)) && IS_8723A_B_CUT(pHalData->VersionID))
-			return _FAIL ; //&& (Adapter->registrypriv.bBtFwSupport)))
-	BTFwImage = (pu1Byte)Rtl8723EFwBTImgArray;
-	BTFwImageLen = Rtl8723EBTImgArrayLength;
-		DBG_8723A("BT Firmware is size= %zu!!\n",sizeof(Rtl8723EFwBTImgArray));
-
-	// Download BT patch Fw.
-	RT_TRACE(_module_mp_, _drv_info_,("Download BT Fw (patch version) from header.\n"));
-	DBG_8723A("Download BT Fw (patch version) from header.\n");
-
-#ifdef CONFIG_EMBEDDED_FWIMG
-		pFirmware->szBTFwBuffer = BTFwImage;
-		DBG_8723A("CONFIG_EMBEDDED_FWIMG pFirmware->szBTFwBuffer = BTFwImage;\n");
-#else
-		DBG_8723A("_rtw_memcpy BTFwImage to pFirmware->szBTFwBuffer.\n");
-		_rtw_memcpy(pFirmware->szBTFwBuffer, (PVOID)BTFwImage, BTFwImageLen);
-#endif
-	pFirmware->ulBTFwLength = BTFwImageLen;
-		RT_TRACE(_module_mp_, _drv_notice_,("Download BT Fw (patch version) from header "
-			"pFirmware->ulBTFwLength:%d.\n", pFirmware->ulBTFwLength));
-
-	// BT FW
-	pBTFirmwareBuf = pFirmware->szBTFwBuffer;
-	BTFirmwareLen = pFirmware->ulBTFwLength;
-
-	//for h2c cam here should be set to  true
-	Adapter->bFWReady = _TRUE;
-	DBG_8723A("FirmwareDownloadBT to _WriteBTFWtoTxPktBuf8723A !\n");
-	rtStatus = _WriteBTFWtoTxPktBuf8723A(Adapter, pBTFirmwareBuf+(4096*3), (BTFirmwareLen-(4096*3)), 1);
-	if(rtStatus != _SUCCESS)
-	{
-			DBG_8723A("BT Firmware download to Tx packet buffer first fail!\n");
-			return rtStatus;
-	}
-	rtStatus = _WriteBTFWtoTxPktBuf8723A(Adapter, pBTFirmwareBuf+(4096*2), 4096, 2);
-	if(rtStatus != _SUCCESS)
-	{
-			DBG_8723A("BT Firmware download to Tx packet buffer second fail!\n");
-			return rtStatus;
-	}
-	rtStatus = _WriteBTFWtoTxPktBuf8723A(Adapter, pBTFirmwareBuf+(4096), 4096, 3);
-	if(rtStatus != _SUCCESS)
-	{
-			DBG_8723A("BT Firmware download to Tx packet buffer third fail!\n");
-			return rtStatus;
-	}
-	rtStatus = _WriteBTFWtoTxPktBuf8723A(Adapter, pBTFirmwareBuf, 4096, 4);
-
-
-	if(rtStatus != _SUCCESS)
-	{
-		RT_TRACE(_module_mp_, _drv_info_,("BT Firmware download to Tx packet buffer fail!\n"));
-		DBG_8723A("BT Firmware download to Tx packet buffer fail!\n");
-	}
-	else
-	{
-
-		SetFwBTFwPatchCmd(Adapter, (u2Byte)BTFirmwareLen);
-		_CheckWLANFwPatchBTFwReady(Adapter);
-	}
-	DBG_8723A("<===FirmwareDownloadBT(),return %s!\n",rtStatus?"SUCCESS":"FAIL");
-	return rtStatus;
-
-}
-
-#endif
 
 #ifdef CONFIG_FILE_FWIMG
 extern char *rtw_fw_file_path;
@@ -750,33 +352,21 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		}
 		else if (IS_8723A_B_CUT(pHalData->VersionID))
 		{
-		 if(padapter->registrypriv.mp_mode == 1)
-		 {
-				FwImage = (u8*)Rtl8723_FwUMCBCutMPImageArray;
-				FwImageLen = Rtl8723_UMCBCutMPImgArrayLength;
-				DBG_8723A(" Rtl8723_FwUMCBCutMPImageArray for RTL8723A B CUT  length:%d\n",FwImageLen);
-			}
-			else
-			{
-			// WLAN Fw.
-				if (padapter->registrypriv.wifi_spec == 1)
-				{
-					FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-					FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
-					DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
-				}
-				else
-				{
+		  // WLAN Fw.
+			if (padapter->registrypriv.wifi_spec == 1) {
+				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
+				FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
+			} else {
 #ifdef CONFIG_BT_COEXIST
-					FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithBT;
-					FwImageLen = Rtl8723_UMCBCutImgArrayWithBTLength;
-					DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
+				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithBT;
+				FwImageLen = Rtl8723_UMCBCutImgArrayWithBTLength;
+				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
 #else
-					FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-					FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
-					DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
+				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
+				FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
 #endif
-				}
 			}
 			pFwImageFileName = R8723FwImageFileName_UMC_B;
 		}
@@ -903,14 +493,6 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		goto Exit;
 	}
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("Firmware is ready to run!\n"));
-
-#ifdef CONFIG_MP_INCLUDED//BT_MP
-	if (padapter->registrypriv.mp_mode == 1)
-	{
-		DBG_8723A("rtl8723a_FirmwareDownload go to FirmwareDownloadBT !\n");
-		FirmwareDownloadBT(padapter, pBTFirmware);
-	}
-#endif
 
 Exit:
 	DBG_8723A("rtl8723a_FirmwareDownload Exit rtw_mfree pFirmware !\n");
@@ -2647,12 +2229,6 @@ static s32 c2h_handler_8723a(_adapter *padapter, struct c2h_evt_hdr *c2h_evt)
 		break;
 #endif
 
-#ifdef CONFIG_MP_INCLUDED
-	case C2H_BT_MP_INFO:
-		DBG_8723A("%s ,  Got  C2H_BT_MP_INFO \n",__FUNCTION__);
-		MPTBT_FwC2hBtMpCtrl(padapter, c2h_evt->payload, c2h_evt->plen);
-		break;
-#endif
 	default:
 		ret = _FAIL;
 		break;
@@ -4113,35 +3689,6 @@ void rtl8723a_fill_default_txdesc(
 	{
 		RT_TRACE(_module_hal_xmit_c_, _drv_warning_, ("%s: TXAGG_FRAMETAG\n", __FUNCTION__));
 	}
-#ifdef CONFIG_MP_INCLUDED
-	else if (pxmitframe->frame_tag == MP_FRAMETAG)
-	{
-		struct tx_desc *pdesc;
-
-		pdesc = (struct tx_desc*)ptxdesc;
-		RT_TRACE(_module_hal_xmit_c_, _drv_notice_, ("%s: MP_FRAMETAG\n", __FUNCTION__));
-		fill_txdesc_for_mp(padapter, pdesc);
-
-		pdesc->txdw0 = le32_to_cpu(pdesc->txdw0);
-		pdesc->txdw1 = le32_to_cpu(pdesc->txdw1);
-		pdesc->txdw2 = le32_to_cpu(pdesc->txdw2);
-		pdesc->txdw3 = le32_to_cpu(pdesc->txdw3);
-		pdesc->txdw4 = le32_to_cpu(pdesc->txdw4);
-		pdesc->txdw5 = le32_to_cpu(pdesc->txdw5);
-		pdesc->txdw6 = le32_to_cpu(pdesc->txdw6);
-		pdesc->txdw7 = le32_to_cpu(pdesc->txdw7);
-#ifdef CONFIG_PCI_HCI
-		pdesc->txdw8 = le32_to_cpu(pdesc->txdw8);
-		pdesc->txdw9 = le32_to_cpu(pdesc->txdw9);
-		pdesc->txdw10 = le32_to_cpu(pdesc->txdw10);
-		pdesc->txdw11 = le32_to_cpu(pdesc->txdw11);
-		pdesc->txdw12 = le32_to_cpu(pdesc->txdw12);
-		pdesc->txdw13 = le32_to_cpu(pdesc->txdw13);
-		pdesc->txdw14 = le32_to_cpu(pdesc->txdw14);
-		pdesc->txdw15 = le32_to_cpu(pdesc->txdw15);
-#endif
-	}
-#endif
 	else
 	{
 		RT_TRACE(_module_hal_xmit_c_, _drv_warning_, ("%s: frame_tag=0x%x\n", __FUNCTION__, pxmitframe->frame_tag));

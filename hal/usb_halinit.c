@@ -1626,15 +1626,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
-#if (1 == MP_DRIVER)
-if (Adapter->registrypriv.mp_mode == 1)
-{
-	_InitRxSetting(Adapter);
-	// Don't Download Firmware
-	Adapter->bFWReady = _FALSE;
-}
-//else
-#endif
 {
 	status = rtl8723a_FirmwareDownload(Adapter);
 	if(status != _SUCCESS)
@@ -1841,15 +1832,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	// Move by Neo for USB SS from above setp
 	_RfPowerSave(Adapter);
 
-#if (MP_DRIVER == 1)
-	if (Adapter->registrypriv.mp_mode == 1)
-	{
-	Adapter->mppriv.channel = pHalData->CurrentChannel;
-	MPT_InitializeAdapter(Adapter, Adapter->mppriv.channel);
-	}
-	else
-#endif
-	{
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_IQK);
 		// 2010/08/26 MH Merge from 8192CE.
 		//sherry masked that it has been done in _RfPowerSave
@@ -1874,7 +1856,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 			rtl8723a_SingleDualAntennaDetection(Adapter);
 #endif
 		}
-	}
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
@@ -2745,10 +2726,6 @@ u32 rtl8723au_hal_deinit(PADAPTER padapter)
 
 #ifdef CONFIG_BT_COEXIST
 	BT_HaltProcess(padapter);
-#endif
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		MPT_DeInitAdapter(padapter);
 #endif
 	// 2011/02/18 To Fix RU LNA  power leakage problem. We need to execute below below in
 	// Adapter init and halt sequence. Accordingto EEchou's opinion, we can enable the ability for all

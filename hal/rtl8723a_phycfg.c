@@ -1254,197 +1254,6 @@ phy_ConfigBBWithPgHeaderFile(
 
 }	/* phy_ConfigBBWithPgHeaderFile */
 
-#if (MP_DRIVER == 1)
-
-/*-----------------------------------------------------------------------------
- * Function:    phy_ConfigBBWithMpParaFile()
- *
- * Overview:    This function read BB parameters from general file format, and do register
- *			  Read/Write
- *
- * Input:	PADAPTER		Adapter
- *			ps1Byte				pFileName
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *	2008/11/06	MH	For 92S we do not support silent reset now. Disable
- *					parameter file compare!!!!!!??
- *
- *---------------------------------------------------------------------------*/
-static	int
-phy_ConfigBBWithMpParaFile(
-	IN	PADAPTER		Adapter,
-	IN	u8*			pFileName
-)
-{
-#if 1
-	int		rtStatus = _SUCCESS;
-#else
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	s4Byte			nLinesRead, ithLine;
-	RT_STATUS		rtStatus = RT_STATUS_SUCCESS;
-	ps1Byte			szLine;
-	u4Byte			u4bRegOffset, u4bRegMask, u4bRegValue;
-	u4Byte			u4bMove;
-
-	if(ADAPTER_TEST_STATUS_FLAG(Adapter, ADAPTER_STATUS_FIRST_INIT))
-	{
-		rtStatus = PlatformReadFile(
-					Adapter,
-					pFileName,
-					(pu1Byte)(pHalData->BufOfLines),
-					MAX_LINES_HWCONFIG_TXT,
-					MAX_BYTES_LINE_HWCONFIG_TXT,
-					&nLinesRead
-					);
-		if(rtStatus == RT_STATUS_SUCCESS)
-		{
-			PlatformMoveMemory(pHalData->BufOfLines6, pHalData->BufOfLines, nLinesRead*MAX_BYTES_LINE_HWCONFIG_TXT);
-			pHalData->nLinesRead6 = nLinesRead;
-		}
-		else
-		{
-			// Temporarily skip PHY_REG_MP.txt if file does not exist.
-			pHalData->nLinesRead6 = 0;
-			RT_TRACE(COMP_INIT, DBG_LOUD, ("No matched file \r\n"));
-			return RT_STATUS_SUCCESS;
-		}
-	}
-	else
-	{
-		PlatformMoveMemory(pHalData->BufOfLines, pHalData->BufOfLines6, MAX_LINES_HWCONFIG_TXT*MAX_BYTES_LINE_HWCONFIG_TXT);
-		nLinesRead = pHalData->nLinesRead6;
-		rtStatus = RT_STATUS_SUCCESS;
-	}
-
-
-	if(rtStatus == RT_STATUS_SUCCESS)
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, ("phy_ConfigBBWithMpParaFile(): read %s ok\n", pFileName));
-
-		for(ithLine = 0; ithLine < nLinesRead; ithLine++)
-		{
-			szLine = pHalData->BufOfLines[ithLine];
-
-			if(!IsCommentString(szLine))
-			{
-				// Get 1st hex value as register offset.
-				if(GetHexValueFromString(szLine, &u4bRegOffset, &u4bMove))
-				{
-					if(u4bRegOffset == 0xff)
-					{ // Ending.
-						break;
-					}
-					else if (u4bRegOffset == 0xfe)
-						delay_ms(50);
-					else if (u4bRegOffset == 0xfd)
-						delay_ms(5);
-					else if (u4bRegOffset == 0xfc)
-						delay_ms(1);
-					else if (u4bRegOffset == 0xfb)
-						PlatformStallExecution(50);
-					else if (u4bRegOffset == 0xfa)
-						PlatformStallExecution(5);
-					else if (u4bRegOffset == 0xf9)
-						PlatformStallExecution(1);
-
-					// Get 2nd hex value as register value.
-					szLine += u4bMove;
-					if(GetHexValueFromString(szLine, &u4bRegValue, &u4bMove))
-					{
-						RT_TRACE(COMP_FPGA, DBG_TRACE, ("[ADDR]%03lX=%08lX\n", u4bRegOffset, u4bRegValue));
-						PHY_SetBBReg(Adapter, u4bRegOffset, bMaskDWord, u4bRegValue);
-
-						// Add 1us delay between BB/RF register setting.
-						PlatformStallExecution(1);
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, ("phy_ConfigBBWithMpParaFile(): Failed%s\n", pFileName));
-	}
-#endif
-
-	return rtStatus;
-}
-
-/*-----------------------------------------------------------------------------
- * Function:	phy_ConfigBBWithMpHeaderFile
- *
- * Overview:	Config PHY_REG_MP array
- *
- * Input:       NONE
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- * When			Who		Remark
- * 02/04/2010	chiyokolin		Modify to new files.
- *---------------------------------------------------------------------------*/
-static int
-phy_ConfigBBWithMpHeaderFile(
-	IN	PADAPTER		Adapter,
-	IN	u1Byte			ConfigType)
-{
-	int i;
-	u32*	Rtl8192CPHY_REGArray_Table_MP;
-	u16	PHY_REGArrayMPLen;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
-
-	PHY_REGArrayMPLen = Rtl8723_PHY_REG_Array_MPLength;
-	Rtl8192CPHY_REGArray_Table_MP = (u32*)Rtl8723_PHY_REG_Array_MP;
-
-	if(ConfigType == BaseBand_Config_PHY_REG)
-	{
-		for(i=0;i<PHY_REGArrayMPLen;i=i+2)
-		{
-			if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xfe) {
-				#ifdef CONFIG_LONG_DELAY_ISSUE
-				rtw_msleep_os(50);
-				#else
-				rtw_mdelay_os(50);
-				#endif
-			}
-			else if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xfd)
-				rtw_mdelay_os(5);
-			else if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xfc)
-				rtw_mdelay_os(1);
-			else if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xfb) {
-				#ifdef CONFIG_LONG_DELAY_ISSUE
-				rtw_msleep_os(50);
-				#else
-				rtw_mdelay_os(50);
-				#endif
-			}
-			else if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xfa)
-				rtw_mdelay_os(5);
-			else if (Rtl8192CPHY_REGArray_Table_MP[i] == 0xf9)
-				rtw_mdelay_os(1);
-			PHY_SetBBReg(Adapter, Rtl8192CPHY_REGArray_Table_MP[i], bMaskDWord, Rtl8192CPHY_REGArray_Table_MP[i+1]);
-
-			// Add 1us delay between BB/RF register setting.
-			rtw_mdelay_os(1);
-
-//			RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl8192CPHY_REGArray_Table_MP[%d] is %lx Rtl8192CPHY_REGArray_Table_MP[%d] is %lx \n", i, i+1, Rtl8192CPHY_REGArray_Table_MP[i], Rtl8192CPHY_REGArray_Table_MP[i+1]));
-		}
-	}
-	else
-	{
-//		RT_TRACE(COMP_SEND, DBG_LOUD, ("phy_ConfigBBWithMpHeaderFile(): ConfigType != BaseBand_Config_PHY_REG\n"));
-	}
-
-	return _SUCCESS;
-}	/* phy_ConfigBBWithMpHeaderFile */
-
-#endif	// #if (MP_DRIVER == 1)
-
 static VOID
 phy_BB8192C_Config_1T(
 	IN PADAPTER Adapter
@@ -1535,28 +1344,6 @@ phy_BB8723a_Config_ParaFile(
 		//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():Write BB Reg Fail!!"));
 		goto phy_BB8190_Config_ParaFile_Fail;
 	}
-
-#if MP_DRIVER == 1
-	if (Adapter->registrypriv.mp_mode == 1)
-	{
-	//
-	// 1.1 Read PHY_REG_MP.TXT BB INIT!!
-	// We will seperate as 88C / 92C according to chip version
-	//
-#ifdef CONFIG_EMBEDDED_FWIMG
-	rtStatus = phy_ConfigBBWithMpHeaderFile(Adapter, BaseBand_Config_PHY_REG);
-#else
-	// No matter what kind of CHIP we always read PHY_REG.txt. We must copy different
-	// type of parameter files to phy_reg.txt at first.
-	rtStatus = phy_ConfigBBWithMpParaFile(Adapter, pszBBRegMpFile);
-#endif
-
-	if(rtStatus != _SUCCESS){
-//		RT_TRACE(COMP_INIT, DBG_SERIOUS, ("phy_BB8192S_Config_ParaFile():Write BB Reg MP Fail!!"));
-		goto phy_BB8190_Config_ParaFile_Fail;
-	}
-	}
-#endif	// #if (MP_DRIVER == 1)
 
 	//
 	// 20100318 Joseph: Config 2T2R to 1T2R if necessary.
@@ -2391,12 +2178,7 @@ PHY_SetTxPowerLevel8192C(
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	u8	cckPowerLevel[2], ofdmPowerLevel[2];	// [0]:RF-A, [1]:RF-B
-/*
-#if(MP_DRIVER == 1)
-	if (Adapter->registrypriv.mp_mode == 1)
-	return;
-#endif
-*/
+
 	if(pHalData->bTXPowerDataReadFromEEPORM == _FALSE)
 		return;
 
@@ -2922,9 +2704,7 @@ phy_SwChnlStepByStep(
 
 
 	RT_ASSERT((Adapter != NULL), ("Adapter should not be NULL\n"));
-#if(MP_DRIVER != 1)
 	RT_ASSERT(IsLegalChannel(Adapter, channel), ("illegal channel: %d\n", channel));
-#endif
 	RT_ASSERT((pHalData != NULL), ("pHalData should not be NULL\n"));
 
 	pChnlAccessSetting = &Adapter->MgntInfo.Info8185.ChannelAccessSetting;

@@ -71,12 +71,14 @@
 #define Rtl8723_PHY_REG_Array_PG			Rtl8723UPHY_REG_Array_PG
 #define Rtl8723_PHY_REG_Array_PGLength		Rtl8723UPHY_REG_Array_PGLength
 
-#ifdef CONFIG_MP_INCLUDED
+#define Rtl8723_FwUMCBCutMPImageArray		Rtl8723SFwUMCBCutMPImgAr
+#define Rtl8723_UMCBCutMPImgArrayLength		Rtl8723SUMCBCutMPImgArrayLength
+
+#if 0 /* CONFIG_MP_INCLUDED */
 	#define Rtl8723E_FwBTImgArray				Rtl8723EFwBTImgArray
 	#define Rtl8723E_FwBTImgArrayLength			Rtl8723EBTImgArrayLength
 
-	#define Rtl8723_FwUMCBCutMPImageArray		Rtl8723SFwUMCBCutMPImgArray
-	#define Rtl8723_UMCBCutMPImgArrayLength	    Rtl8723SUMCBCutMPImgArrayLength
+ray
 
 	#define Rtl8723_PHY_REG_Array_MP			Rtl8723UPHY_REG_Array_MP
 	#define Rtl8723_PHY_REG_Array_MPLength		Rtl8723UPHY_REG_Array_MPLength
