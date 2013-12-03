@@ -3385,7 +3385,7 @@ bthci_CmdReadLocalAMPAssoc(
 		totalLen += typeLen;
 		remainLen += typeLen;
 #endif
-		PPacketIrpEvent->Length = (UCHAR)totalLen;
+		PPacketIrpEvent->Length = (u8)totalLen;
 		*pRemainLen = remainLen;	// AMP_ASSOC_Remaining_Length
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("ReadLocalAMPAssoc, Remaining_Len=%d  \n", remainLen));
 		RTPRINT_DATA(FIOCTL, (IOCTL_BT_HCICMD_DETAIL|IOCTL_BT_LOGO), ("AMP_ASSOC_fragment : \n"), PPacketIrpEvent->Data, totalLen);
