@@ -332,8 +332,10 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 
 
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("+%s\n", __FUNCTION__));
-	pFirmware = (PRT_FIRMWARE_8723A)rtw_zmalloc(sizeof(RT_FIRMWARE_8723A));
-	pBTFirmware = (PRT_FIRMWARE_8723A)rtw_zmalloc(sizeof(RT_FIRMWARE_8723A));
+	pFirmware = (PRT_FIRMWARE_8723A)kzalloc(sizeof(RT_FIRMWARE_8723A),
+						GFP_KERNEL);
+	pBTFirmware = (PRT_FIRMWARE_8723A)kzalloc(sizeof(RT_FIRMWARE_8723A),
+						  GFP_KERNEL);
 
 	if(!pFirmware||!pBTFirmware)
 	{
@@ -388,14 +390,14 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 
 //	RT_TRACE(_module_hal_init_c_, _drv_err_, ("rtl8723a_FirmwareDownload: %s\n", pFwImageFileName));
 
-	#ifdef CONFIG_FILE_FWIMG
+#ifdef CONFIG_FILE_FWIMG
 	if(rtw_is_file_readable(rtw_fw_file_path) == _TRUE)
 	{
 		DBG_8723A("%s accquire FW from file:%s\n", __FUNCTION__, rtw_fw_file_path);
 		pFirmware->eFWSource = FW_SOURCE_IMG_FILE; // We should decided by Reg.
 	}
 	else
-	#endif //CONFIG_FILE_FWIMG
+#endif //CONFIG_FILE_FWIMG
 	{
 		DBG_8723A("%s accquire FW from embedded image\n", __FUNCTION__);
 		pFirmware->eFWSource = FW_SOURCE_HEADER_FILE;
@@ -404,11 +406,11 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 	switch(pFirmware->eFWSource)
 	{
 		case FW_SOURCE_IMG_FILE:
-			#ifdef CONFIG_FILE_FWIMG
+#ifdef CONFIG_FILE_FWIMG
 			rtStatus = rtw_retrive_from_file(rtw_fw_file_path, fw_buffer_8723a, FW_8723A_SIZE);
 			pFirmware->ulFwLength = rtStatus>=0?rtStatus:0;
 			pFirmware->szFwBuffer = fw_buffer_8723a;
-			#endif //CONFIG_FILE_FWIMG
+#endif //CONFIG_FILE_FWIMG
 
 			if(pFirmware->ulFwLength <= 0)
 			{
@@ -428,12 +430,12 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 			break;
 	}
 
-	#ifdef DBG_FW_STORE_FILE_PATH //used to store firmware to file...
+#ifdef DBG_FW_STORE_FILE_PATH //used to store firmware to file...
 	if(pFirmware->ulFwLength > 0)
 	{
 		rtw_store_to_file(DBG_FW_STORE_FILE_PATH, pFirmware->szFwBuffer, pFirmware->ulFwLength);
 	}
-	#endif
+#endif
 
 	pFirmwareBuf = pFirmware->szFwBuffer;
 	FirmwareLen = pFirmware->ulFwLength;
@@ -495,12 +497,12 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("Firmware is ready to run!\n"));
 
 Exit:
-	DBG_8723A("rtl8723a_FirmwareDownload Exit rtw_mfree pFirmware !\n");
+	DBG_8723A("rtl8723a_FirmwareDownload Exit kfree pFirmware !\n");
 	if (pFirmware)
-		rtw_mfree((u8*)pFirmware, sizeof(RT_FIRMWARE_8723A));
-	DBG_8723A("rtl8723a_FirmwareDownload Exit rtw_mfree pBTFirmware !\n");
+		kfree(pFirmware);
+	DBG_8723A("rtl8723a_FirmwareDownload Exit kmfree pBTFirmware !\n");
 	if (pBTFirmware)
-		rtw_mfree((u8*)pBTFirmware, sizeof(RT_FIRMWARE_8723A));
+		kfree(pBTFirmware);
 	//RT_TRACE(COMP_INIT, DBG_LOUD, (" <=== FirmwareDownload91C()\n"));
 	return rtStatus;
 }
@@ -523,7 +525,7 @@ static void rtl8723a_free_hal_data(PADAPTER padapter)
 {
 _func_enter_;
 	if (padapter->HalData) {
-		rtw_mfree(padapter->HalData, sizeof(HAL_DATA_TYPE));
+		kfree(padapter->HalData);
 		padapter->HalData = NULL;
 	}
 _func_exit_;
@@ -775,7 +777,7 @@ hal_ReadEFuse_WiFi(
 		return;
 	}
 
-	efuseTbl = (u8*)rtw_malloc(EFUSE_MAP_LEN_8723A);
+	efuseTbl = (u8*)kmalloc(EFUSE_MAP_LEN_8723A, GFP_KERNEL);
 	if (efuseTbl == NULL)
 	{
 		DBG_8723A("%s: alloc efuseTbl fail!\n", __FUNCTION__);
@@ -872,7 +874,7 @@ hal_ReadEFuse_WiFi(
 	}
 
 	if (efuseTbl)
-		rtw_mfree(efuseTbl, EFUSE_MAP_LEN_8723A);
+		kfree(efuseTbl);
 }
 
 static VOID
@@ -906,7 +908,7 @@ hal_ReadEFuse_BT(
 		return;
 	}
 
-	efuseTbl = rtw_malloc(EFUSE_BT_MAP_LEN);
+	efuseTbl = kmalloc(EFUSE_BT_MAP_LEN, GFP_KERNEL);
 	if (efuseTbl == NULL) {
 		DBG_8723A("%s: efuseTbl malloc fail!\n", __FUNCTION__);
 		return;
@@ -1021,7 +1023,7 @@ hal_ReadEFuse_BT(
 
 exit:
 	if (efuseTbl)
-		rtw_mfree(efuseTbl, EFUSE_BT_MAP_LEN);
+		kfree(efuseTbl);
 }
 
 static void

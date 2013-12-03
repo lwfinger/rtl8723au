@@ -3939,7 +3939,7 @@ void rtl8723au_set_hal_ops(_adapter * padapter)
 
 _func_enter_;
 
-	padapter->HalData = rtw_zmalloc(sizeof(HAL_DATA_TYPE));
+	padapter->HalData = kzalloc(sizeof(HAL_DATA_TYPE), GFP_KERNEL);
 	if(padapter->HalData == NULL){
 		DBG_8723A("cant not alloc memory for HAL DATA \n");
 	}

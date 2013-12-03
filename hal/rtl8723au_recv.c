@@ -73,7 +73,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	if(precvpriv->int_in_urb == NULL){
 		DBG_8723A("alloc_urb for interrupt in endpoint fail !!!!\n");
 	}
-	precvpriv->int_in_buf = rtw_zmalloc(USB_INTR_CONTENT_LENGTH);
+	precvpriv->int_in_buf = kzalloc(USB_INTR_CONTENT_LENGTH, GFP_KERNEL);
 	if(precvpriv->int_in_buf == NULL){
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
 	}
@@ -86,13 +86,12 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 
-	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
+	precvpriv->pallocated_recv_buf = kzalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4, GFP_KERNEL);
 	if(precvpriv->pallocated_recv_buf==NULL){
 		res= _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
 		goto exit;
 	}
-	memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
 	//precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
@@ -183,7 +182,7 @@ void rtl8192cu_free_recv_priv (_adapter *padapter)
 	}
 
 	if(precvpriv->pallocated_recv_buf)
-		rtw_mfree(precvpriv->pallocated_recv_buf, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
+		kfree(precvpriv->pallocated_recv_buf);
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	if(precvpriv->int_in_urb)
@@ -191,7 +190,7 @@ void rtl8192cu_free_recv_priv (_adapter *padapter)
 		usb_free_urb(precvpriv->int_in_urb);
 	}
 	if(precvpriv->int_in_buf)
-		rtw_mfree(precvpriv->int_in_buf, USB_INTR_CONTENT_LENGTH);
+		kfree(precvpriv->int_in_buf);
 #endif
 
 	if (skb_queue_len(&precvpriv->rx_skb_queue)) {

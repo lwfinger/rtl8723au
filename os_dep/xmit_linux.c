@@ -192,13 +192,13 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	pxmitbuf->dma_transfer_addr = 0;
 #else	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 	if(pxmitbuf->pallocated_buf)
-		rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
+		kfree(pxmitbuf->pallocated_buf);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
 #endif
 #if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	if(pxmitbuf->pallocated_buf)
-		rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
+		kfree(pxmitbuf->pallocated_buf);
 #endif
 }
 

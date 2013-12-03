@@ -571,7 +571,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
-	ReservedPagePacket = (u8*)rtw_zmalloc(1000);
+	ReservedPagePacket = (u8*)kzalloc(1000, GFP_KERNEL);
 	if (ReservedPagePacket == NULL) {
 		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
 		return;
@@ -684,7 +684,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8*)&RsvdPageLoc);
 
 exit:
-	rtw_mfree(ReservedPagePacket, 1000);
+	kfree(ReservedPagePacket);
 }
 
 void rtl8723a_set_FwJoinBssReport_cmd(PADAPTER padapter, u8 mstatus)
@@ -784,7 +784,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 
 	DBG_8723A("+%s\n", __FUNCTION__);
 
-	ReservedPagePacket = (u8*)rtw_zmalloc(1024);
+	ReservedPagePacket = (u8*)kzalloc(1024, GFP_KERNEL);
 	if (ReservedPagePacket == NULL) {
 		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
 		return;
@@ -909,7 +909,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8*)&RsvdPageLoc);
 
 exit:
-	rtw_mfree(ReservedPagePacket, 1024);
+	kfree(ReservedPagePacket);
 }
 
 void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(PADAPTER padapter)

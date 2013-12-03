@@ -306,14 +306,14 @@ static u8 rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 {
 	u8 rst = _SUCCESS;
 
-	#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
+#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
 	if(dvobj->usb_vendor_req_buf)
-		rtw_mfree(dvobj->usb_alloc_vendor_req_buf, MAX_USB_IO_CTL_SIZE);
-	#endif
+		kfree(dvobj->usb_alloc_vendor_req_buf);
+#endif
 
-	#ifdef CONFIG_USB_VENDOR_REQ_MUTEX
+#ifdef CONFIG_USB_VENDOR_REQ_MUTEX
 	_rtw_mutex_free(&dvobj->usb_vendor_req_mutex);
-	#endif
+#endif
 
 	return rst;
 }
@@ -454,7 +454,7 @@ _func_enter_;
 		_rtw_mutex_free(&dvobj->h2c_fwcmd_mutex);
 		_rtw_mutex_free(&dvobj->setch_mutex);
 		_rtw_mutex_free(&dvobj->setbw_mutex);
-		rtw_mfree((u8*)dvobj, sizeof(*dvobj));
+		kfree(dvobj);
 	}
 
 	usb_put_dev(interface_to_usbdev(usb_intf));
@@ -1254,7 +1254,7 @@ static _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 
 free_hal_data:
 	if(status != _SUCCESS && padapter->HalData)
-		rtw_mfree(padapter->HalData, sizeof(*(padapter->HalData)));
+		kfree(padapter->HalData);
 free_wdev:
 	if(status != _SUCCESS) {
 		#ifdef CONFIG_IOCTL_CFG80211
