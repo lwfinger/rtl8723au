@@ -31,12 +31,6 @@
 #include <usb_ops.h>
 #endif
 
-#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
-
-#error "Shall be Linux or Windows, but not both!\n"
-
-#endif
-
 #include <wifi.h>
 #include <circ_buf.h>
 
@@ -126,11 +120,7 @@ _func_enter_;
 	res = rtw_hal_init_recv_priv(padapter);
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-	#ifdef PLATFORM_LINUX
 	_init_timer(&precvpriv->signal_stat_timer, padapter->pnetdev, RTW_TIMER_HDL_NAME(signal_stat), padapter);
-	#elif defined(PLATFORM_OS_CE) || defined(PLATFORM_WINDOWS)
-	_init_timer(&precvpriv->signal_stat_timer, padapter->hndis_adapter, RTW_TIMER_HDL_NAME(signal_stat), padapter);
-	#endif
 
 	precvpriv->signal_stat_sampling_interval = 1000; /* ms */
 
@@ -259,12 +249,6 @@ _func_enter_;
 	}
 #endif
 
-#ifdef PLATFORM_WINDOWS
-	rtw_os_read_port(padapter, precvframe->u.hdr.precvbuf);
-#endif
-
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
-
 	if(precvframe->u.hdr.pkt)
 	{
 #ifdef CONFIG_BSD_RX_USE_MBUF
@@ -274,8 +258,6 @@ _func_enter_;
 #endif	/*  CONFIG_BSD_RX_USE_MBUF */
 		precvframe->u.hdr.pkt = NULL;
 	}
-
-#endif /* defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD) */
 
 	_enter_critical_bh(&pfree_recv_queue->lock, &irqL);
 
@@ -1948,21 +1930,6 @@ _func_enter_;
 	}
 #endif /* CONFIG_TDLS */
 
-#ifdef RTK_DMP_PLATFORM
-	if ( 0 )
-	{
-		DBG_8723A("++\n");
-		{
-			int i;
-			for(i=0; i<64;i=i+8)
-				DBG_8723A("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr+i),
-				*(ptr+i+1), *(ptr+i+2) ,*(ptr+i+3) ,*(ptr+i+4),*(ptr+i+5), *(ptr+i+6), *(ptr+i+7));
-
-		}
-		DBG_8723A("--\n");
-	}
-#endif /* RTK_DMP_PLATFORM */
-
 	/* add version chk */
 	if(ver!=0){
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("validate_recv_data_frame fail! (ver!=0)\n"));
@@ -2179,7 +2146,6 @@ _func_exit_;
 }
 
 #if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-#ifdef PLATFORM_LINUX
 static void recvframe_expand_pkt(
 	PADAPTER padapter,
 	union recv_frame *prframe)
@@ -2231,9 +2197,6 @@ static void recvframe_expand_pkt(
 	pfhdr->rx_tail = skb_tail_pointer(ppkt);
 	pfhdr->rx_end = skb_end_pointer(ppkt);
 }
-#else
-#warning "recvframe_expand_pkt not implement, defrag may crash system"
-#endif
 #endif
 
 /* perform defrag */
@@ -2460,23 +2423,16 @@ _func_exit_;
 int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe);
 int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 {
-#if defined (PLATFORM_LINUX) || defined (PLATFORM_FREEBSD)  /* for amsdu TP improvement,Creator: Thomas */
 	int	a_len, padding_len;
 	u16	eth_type, nSubframe_Length;
 	u8	nr_subframes, i;
 	unsigned char *pdata;
 	struct rx_pkt_attrib *pattrib;
-#ifndef PLATFORM_FREEBSD
 	unsigned char *data_ptr;
 	_pkt *sub_skb,*subframes[MAX_SUBFRAME_COUNT];
-#endif /* PLATFORM_FREEBSD */
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	_queue *pfree_recv_queue = &(precvpriv->free_recv_queue);
 	int	ret = _SUCCESS;
-#ifdef PLATFORM_FREEBSD
-	struct mbuf *sub_m=NULL, *subframes[MAX_SUBFRAME_COUNT];
-	u8 *ptr,offset;
-#endif /* PLATFORM_FREEBSD */
 	nr_subframes = 0;
 
 	pattrib = &prframe->u.hdr.attrib;
@@ -2510,7 +2466,6 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 			goto exit;
 		}
 
-#ifndef PLATFORM_FREEBSD
 		/* move the data point to data content */
 		pdata += ETH_HLEN;
 		a_len -= ETH_HLEN;
@@ -2541,24 +2496,9 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 			}
 		}
 
-#else   /*  PLATFORM_FREEBSD */
 
-		/* PLATFORM_FREEBSD */
-		/* Allocate a mbuff, */
-		/* sub_m =m_devget(pdata, nSubframe_Length+12, 12, padapter->pifp,NULL); */
-		sub_m =m_devget(pdata, nSubframe_Length+ETH_HLEN, ETHER_ALIGN, padapter->pifp,NULL);
-
-		pdata += ETH_HLEN;
-		a_len -= ETH_HLEN;
-#endif	/*  PLATFORM_FREEBSD */
-
-#ifndef PLATFORM_FREEBSD
 		/* sub_skb->dev = padapter->pnetdev; */
 		subframes[nr_subframes++] = sub_skb;
-#else  /* PLATFORM_FREEBSD */
-		/* PLATFORM_FREEBSD */
-		subframes[nr_subframes++] = sub_m;
-#endif  /* PLATFORM_FREEBSD */
 
 		if(nr_subframes >= MAX_SUBFRAME_COUNT) {
 			DBG_8723A("ParseSubframe(): Too many Subframes! Packets dropped!\n");
@@ -2582,7 +2522,6 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 	}
 
 	for(i=0; i<nr_subframes; i++){
-#ifndef PLATFORM_FREEBSD
 		sub_skb = subframes[i];
 		/* convert hdr + possible LLC headers into Ethernet header */
 #ifdef ENDIAN_FREE
@@ -2646,58 +2585,6 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 
 			netif_rx(sub_skb);
 		}
-#else /* PLATFORM_FREEBSD */
-
-		/* PLATFORM_FREEBSD */
-		sub_m = subframes[i];
-		ptr=mtod(sub_m, u8 *);
-		offset=ETH_HLEN;
-		/* convert hdr + possible LLC headers into Ethernet header */
-#ifdef ENDIAN_FREE
-		eth_type = ntohs(*(u16*)&ptr[offset+6]);
-#else /*  ENDIAN_FREE */
-		eth_type = (  ptr[offset+6] << 8) | ptr[offset+7];
-#endif /*  ENDIAN_FREE */
-		if (sub_m->m_pkthdr.len >= ETH_HLEN+8 &&
-			((_rtw_memcmp(ptr+ETH_HLEN, rtw_rfc1042_header, SNAP_SIZE) &&
-			  eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
-			 _rtw_memcmp(ptr+ETH_HLEN, rtw_bridge_tunnel_header, SNAP_SIZE) )) {
-			/* remove RFC1042 or Bridge-Tunnel encapsulation and replace EtherType */
-			offset+=SNAP_SIZE;
-			_rtw_memcpy(&ptr[offset-ETH_ALEN], pattrib->src, ETH_ALEN);
-			offset-=ETH_ALEN;
-			_rtw_memcpy(&ptr[offset-ETH_ALEN], pattrib->dst, ETH_ALEN);
-			offset-=ETH_ALEN;
-		} else {
-			u16 len;
-			/* Leave Ethernet header part of hdr and full payload */
-			len = htons(sub_m->m_pkthdr.len-offset);
-			_rtw_memcpy(&ptr[offset- 2], &len, 2);
-			offset-=2;
-			_rtw_memcpy(&ptr[offset-ETH_ALEN], pattrib->src, ETH_ALEN);
-			offset-=ETH_ALEN;
-			_rtw_memcpy(&ptr[offset-ETH_ALEN], pattrib->dst, ETH_ALEN);
-			offset-=ETH_ALEN;
-		}
-
-		m_adj(sub_m,offset);
-
-		/* Indicat the packets to upper layer */
-		if (sub_m) {
-
-			if ( ((u32)(mtod(sub_m, caddr_t) + 14) % 4) != 0)
-				printf("%s()-%d: mtod(sub_m) = %p\n", __FUNCTION__, __LINE__, mtod(sub_m, caddr_t));
-#ifdef CONFIG_RX_INDICATE_QUEUE
-			IF_ENQUEUE(&precvpriv->rx_indicate_queue, sub_m);
-			if (_IF_QLEN(&precvpriv->rx_indicate_queue) <= 1) {
-				taskqueue_enqueue(taskqueue_thread, &precvpriv->rx_indicate_tasklet);
-			}
-#else	/*  CONFIG_RX_INDICATE_QUEUE */
-			(*padapter->pifp->if_input)(padapter->pifp, sub_m);
-#endif	/*  CONFIG_RX_INDICATE_QUEUE */
-		}
-
-#endif /* PLATFORM_FREEBSD */
 	}
 
 exit:
@@ -2706,223 +2593,6 @@ exit:
 	rtw_free_recvframe(prframe, pfree_recv_queue);/* free this recv_frame */
 
 	return ret;
-#else  /*  || defined (PLATFORM_LINUX) || defined (PLATFORM_FREEBSD) */
-#ifdef PLATFORM_WINDOWS
-	_irqL irql;
-#endif /* PLATFORM_WINDOWS */
-	unsigned char *ptr, *pdata, *pbuf, *psnap_type;
-	union recv_frame *pnrframe, *pnrframe_new;
-	int a_len, mv_len, padding_len;
-	u16 eth_type, type_len;
-	u8 bsnaphdr;
-	struct ieee80211_snap_hdr	*psnap;
-	struct _vlan *pvlan;
-	struct recv_priv *precvpriv = &padapter->recvpriv;
-	_queue *pfree_recv_queue = &(precvpriv->free_recv_queue);
-	int ret = _SUCCESS;
-#ifdef PLATFORM_WINDOWS
-	struct recv_buf *precvbuf = prframe->u.hdr.precvbuf;
-#endif /* PLATFORM_WINDOWS */
-	a_len = prframe->u.hdr.len - prframe->u.hdr.attrib.hdrlen;
-
-	recvframe_pull(prframe, prframe->u.hdr.attrib.hdrlen);
-
-	if(prframe->u.hdr.attrib.iv_len >0)
-	{
-		recvframe_pull(prframe, prframe->u.hdr.attrib.iv_len);
-	}
-
-	pdata = prframe->u.hdr.rx_data;
-
-	prframe->u.hdr.len=0;
-
-	pnrframe = prframe;
-
-	do{
-
-		mv_len=0;
-		pnrframe->u.hdr.rx_data = pnrframe->u.hdr.rx_tail = pdata;
-		ptr = pdata;
-
-		_rtw_memcpy(pnrframe->u.hdr.attrib.dst, ptr, ETH_ALEN);
-		ptr+=ETH_ALEN;
-		_rtw_memcpy(pnrframe->u.hdr.attrib.src, ptr, ETH_ALEN);
-		ptr+=ETH_ALEN;
-
-		_rtw_memcpy(&type_len, ptr, 2);
-		type_len= ntohs((unsigned short )type_len);
-		ptr +=2;
-		mv_len += ETH_HLEN;
-
-		recvframe_put(pnrframe, type_len+ETH_HLEN);/* update tail; */
-
-		if(pnrframe->u.hdr.rx_data >= pnrframe->u.hdr.rx_tail || type_len<8)
-		{
-			/* panic("pnrframe->u.hdr.rx_data >= pnrframe->u.hdr.rx_tail || type_len<8\n"); */
-
-			rtw_free_recvframe(pnrframe, pfree_recv_queue);
-
-			goto exit;
-		}
-
-		psnap=(struct ieee80211_snap_hdr *)(ptr);
-		psnap_type=ptr+SNAP_SIZE;
-		if (psnap->dsap==0xaa && psnap->ssap==0xaa && psnap->ctrl==0x03)
-		{
-			if ( _rtw_memcmp(psnap->oui, oui_rfc1042, WLAN_IEEE_OUI_LEN))
-			{
-				bsnaphdr=_TRUE;/* wlan_pkt_format = WLAN_PKT_FORMAT_SNAP_RFC1042; */
-			}
-			else if (_rtw_memcmp(psnap->oui, SNAP_HDR_APPLETALK_DDP, WLAN_IEEE_OUI_LEN) &&
-					_rtw_memcmp(psnap_type, SNAP_ETH_TYPE_APPLETALK_DDP, 2) )
-			{
-				bsnaphdr=_TRUE;	/* wlan_pkt_format = WLAN_PKT_FORMAT_APPLETALK; */
-			}
-			else if (_rtw_memcmp( psnap->oui, oui_8021h, WLAN_IEEE_OUI_LEN))
-			{
-				bsnaphdr=_TRUE;	/* wlan_pkt_format = WLAN_PKT_FORMAT_SNAP_TUNNEL; */
-			}
-			else
-			{
-				RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("drop pkt due to invalid frame format!\n"));
-
-				/* KeBugCheckEx(0x87123333, 0xe0, 0x4c, 0x87, 0xdd); */
-
-				/* panic("0x87123333, 0xe0, 0x4c, 0x87, 0xdd\n"); */
-
-				rtw_free_recvframe(pnrframe, pfree_recv_queue);
-
-				goto exit;
-			}
-
-		}
-		else
-		{
-			bsnaphdr=_FALSE;/* wlan_pkt_format = WLAN_PKT_FORMAT_OTHERS; */
-		}
-
-		ptr += (bsnaphdr?SNAP_SIZE:0);
-		_rtw_memcpy(&eth_type, ptr, 2);
-		eth_type= ntohs((unsigned short )eth_type); /* pattrib->ether_type */
-
-		mv_len+= 2+(bsnaphdr?SNAP_SIZE:0);
-		ptr += 2;/* now move to iphdr; */
-
-		pvlan = NULL;
-		if(eth_type == 0x8100) /* vlan */
-		{
-			pvlan = (struct _vlan *)ptr;
-			ptr+=4;
-			mv_len+=4;
-		}
-
-		if(eth_type==0x0800)/* ip */
-		{
-			struct iphdr*  piphdr = (struct iphdr*)ptr;
-
-			if (piphdr->protocol == 0x06)
-			{
-				RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("@@@===recv tcp len:%d @@@===\n", pnrframe->u.hdr.len));
-			}
-		}
-#ifdef PLATFORM_OS_XP
-		else
-		{
-			NDIS_PACKET_8021Q_INFO VlanPriInfo;
-			UINT32 UserPriority = pnrframe->u.hdr.attrib.priority;
-			UINT32 VlanID = (pvlan!=NULL ? get_vlan_id(pvlan) : 0 );
-
-			VlanPriInfo.Value =          /*  Get current value. */
-					NDIS_PER_PACKET_INFO_FROM_PACKET(pnrframe->u.hdr.pkt, Ieee8021QInfo);
-
-			VlanPriInfo.TagHeader.UserPriority = UserPriority;
-			VlanPriInfo.TagHeader.VlanId =  VlanID;
-
-			VlanPriInfo.TagHeader.CanonicalFormatId = 0; /*  Should be zero. */
-			VlanPriInfo.TagHeader.Reserved = 0; /*  Should be zero. */
-			NDIS_PER_PACKET_INFO_FROM_PACKET(pnrframe->u.hdr.pkt, Ieee8021QInfo) = VlanPriInfo.Value;
-
-		}
-#endif /* PLATFORM_OS_XP */
-
-		pbuf = recvframe_pull(pnrframe, (mv_len-sizeof(struct ethhdr)));
-
-		_rtw_memcpy(pbuf, pnrframe->u.hdr.attrib.dst, ETH_ALEN);
-		_rtw_memcpy(pbuf+ETH_ALEN, pnrframe->u.hdr.attrib.src, ETH_ALEN);
-
-		eth_type = htons((unsigned short)eth_type) ;
-		_rtw_memcpy(pbuf+12, &eth_type, 2);
-
-		padding_len = (4) - ((type_len + ETH_HLEN)&(4-1));
-
-		a_len -= (type_len + ETH_HLEN + padding_len) ;
-
-		pnrframe_new = NULL;
-
-		if(a_len > ETH_HLEN)
-		{
-			pnrframe_new = rtw_alloc_recvframe(pfree_recv_queue);
-
-			if(pnrframe_new)
-			{
-
-				/* rtw_init_recvframe(pnrframe_new, precvpriv); */
-				{
-#ifdef PLATFORM_LINUX
-						_pkt *pskb = pnrframe->u.hdr.pkt;
-#endif /* PLATFORM_LINUX */
-						_rtw_init_listhead(&pnrframe_new->u.hdr.list);
-
-						pnrframe_new->u.hdr.len=0;
-
-#ifdef PLATFORM_LINUX
-						if(pskb)
-						{
-							pnrframe_new->u.hdr.pkt = skb_clone(pskb, GFP_ATOMIC);
-						}
-#endif /* PLATFORM_LINUX */
-
-				}
-
-				pdata += (type_len + ETH_HLEN + padding_len);
-				pnrframe_new->u.hdr.rx_head = pnrframe_new->u.hdr.rx_data = pnrframe_new->u.hdr.rx_tail = pdata;
-				pnrframe_new->u.hdr.rx_end = pdata + a_len + padding_len;/*  */
-
-#ifdef PLATFORM_WINDOWS
-				pnrframe_new->u.hdr.precvbuf=precvbuf;
-				_enter_critical_bh(&precvbuf->recvbuf_lock, &irql);
-				precvbuf->ref_cnt++;
-				_exit_critical_bh(&precvbuf->recvbuf_lock, &irql);
-#endif /* PLATFORM_WINDOWS */
-
-			}
-			else
-			{
-				/* panic("pnrframe_new=%x\n", pnrframe_new); */
-			}
-		}
-
-		if ((padapter->bDriverStopped ==_FALSE)&&( padapter->bSurpriseRemoved==_FALSE) )
-		{
-			rtw_recv_indicatepkt(padapter, pnrframe);/* indicate this recv_frame */
-		}
-		else
-		{
-			rtw_free_recvframe(pnrframe, pfree_recv_queue);/* free this recv_frame */
-		}
-
-		pnrframe = NULL;
-		if(pnrframe_new)
-		{
-			pnrframe = pnrframe_new;
-		}
-
-	}while(pnrframe);
-
-exit:
-
-	return ret;
-#endif
 }
 
 int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num);

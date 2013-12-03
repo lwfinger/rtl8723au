@@ -33,7 +33,6 @@
 //#define BTCOEX_CMCC_TEST
 
 #ifdef CONFIG_BT_COEXIST
-#ifdef PLATFORM_LINUX
 
 u32 BTCoexDbgLevel = _bt_dbg_off_;
 
@@ -89,7 +88,6 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 		printk(": %d, <%s>\n", _Len, buffer);				\
 	}\
 }
-#endif // PLATFORM_LINUX
 
 #else // !BT_DEBUG
 
@@ -103,23 +101,16 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define DCMD_Printf(...)
 #define RT_ASSERT(...)
 
-#ifdef PLATFORM_LINUX
 #define rsprintf snprintf
-#elif defined(PLATFORM_WINDOWS)
-#define rsprintf sprintf_s
-#endif
-
 
 
 #define GetDefaultAdapter(padapter)	padapter
 
 #define PlatformZeroMemory(ptr, sz)	_rtw_memset(ptr, 0, sz)
 
-#ifdef PLATFORM_LINUX
 #define PlatformProcessHCICommands(...)
 #define PlatformTxBTQueuedPackets(...)
 #define PlatformIndicateBTACLData(...)	(RT_STATUS_SUCCESS)
-#endif
 #define PlatformAcquireSpinLock(padapter, type)
 #define PlatformReleaseSpinLock(padapter, type)
 
@@ -305,11 +296,6 @@ static RT_STATUS PlatformIndicateBTEvent(
 	)
 {
 	RT_STATUS	rt_status = RT_STATUS_FAILURE;
-#ifdef PLATFORM_WINDOWS
-	NTSTATUS	nt_status = STATUS_SUCCESS;
-	PIRP		pIrp = NULL;
-	u32			BytesTransferred = 0;
-#endif
 
 	RTPRINT(FIOCTL, IOCTL_BT_EVENT_DETAIL, ("BT event start, %d bytes data to Transferred!!\n", dataLen));
 	RTPRINT_DATA(FIOCTL, IOCTL_BT_EVENT_DETAIL, "To transfer Hex Data :\n",
@@ -320,49 +306,7 @@ static RT_STATUS PlatformIndicateBTEvent(
 
 	BT_EventParse(padapter, pEvntData, dataLen);
 
-#ifdef PLATFORM_LINUX
-
 	printk(KERN_WARNING "%s: Linux has no way to report BT event!!\n", __FUNCTION__);
-
-#elif defined(PLATFORM_WINDOWS)
-
-	pIrp = IOCTL_BtIrpDequeue(pGBTDeviceExtension, IRP_HCI_EVENT_Q);
-
-	if(pIrp)
-	{
-		PVOID	outbuf;
-		ULONG	outlen;
-		ULONG	offset;
-
-		outbuf = MmGetSystemAddressForMdlSafe(pIrp->MdlAddress, HighPagePriority);
-		if(outbuf == NULL)
-		{
-			RTPRINT(FIOCTL, IOCTL_IRP, ("PlatformIndicateBTEvent(), error!! MdlAddress = NULL!!\n"));
-			BytesTransferred = 0;
-			nt_status = STATUS_UNSUCCESSFUL;
-		}
-		else
-		{
-			outlen = MmGetMdlByteCount(pIrp->MdlAddress);
-			offset = MmGetMdlByteOffset(pIrp->MdlAddress);
-
-			if(dataLen <= outlen)
-				BytesTransferred = dataLen;
-			else
-				BytesTransferred = outlen;
-			_rtw_memcpy(outbuf, pEvntData, BytesTransferred);
-			nt_status = STATUS_SUCCESS;
-		}
-		RTPRINT(FIOCTL, IOCTL_BT_EVENT_DETAIL, ("BT event, %d bytes data Transferred!!\n", BytesTransferred));
-		RTPRINT_DATA(FIOCTL, (IOCTL_BT_EVENT_DETAIL|IOCTL_BT_LOGO), "BT EVENT Hex Data :\n",
-			outbuf, BytesTransferred);
-
-		IOCTL_CompleteSingleIRP(pIrp, nt_status, BytesTransferred);
-		if (nt_status == STATUS_SUCCESS)
-			rt_status = RT_STATUS_SUCCESS;
-	}
-
-#endif // PLATFORM_WINDOWS
 
 	RTPRINT(FIOCTL, IOCTL_BT_EVENT_DETAIL, ("BT event end, %s\n",
 		(rt_status == RT_STATUS_SUCCESS)? "SUCCESS":"FAIL"));

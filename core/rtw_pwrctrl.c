@@ -195,7 +195,6 @@ exit:
 	return ret;
 }
 
-#if defined (PLATFORM_LINUX)||defined (PLATFORM_FREEBSD)
 void rtw_ps_processor(_adapter*padapter)
 {
 #ifdef CONFIG_P2P
@@ -333,7 +332,6 @@ void pwr_state_check_handler(void *FunctionContext)
 	_adapter *padapter = (_adapter *)FunctionContext;
 	rtw_ps_cmd(padapter);
 }
-#endif
 
 #ifdef CONFIG_LPS
 /*
@@ -803,14 +801,6 @@ _func_enter_;
 			else
 			#endif
 			{
-#if defined(CONFIG_PLATFORM_SPRD) && defined(CONFIG_RTL8188E)
-				#ifdef CONFIG_IPS
-				if(_FALSE == ips_leave(Adapter))
-				{
-					DBG_8723A("======> ips_leave fail.............\n");
-				}
-				#endif
-#endif /* CONFIG_PLATFORM_SPRD && CONFIG_RTL8188E */
 			}
 		}
 	}
@@ -1315,10 +1305,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 
 _func_enter_;
 
-#ifdef PLATFORM_WINDOWS
-	pwrctrlpriv->pnp_current_pwr_state=NdisDeviceStateD0;
-#endif
-
 	_init_pwrlock(&pwrctrlpriv->lock);
 	pwrctrlpriv->rf_pwrstate = rf_on;
 	pwrctrlpriv->ips_enter_cnts=0;
@@ -1369,9 +1355,7 @@ _func_enter_;
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 #endif /*  CONFIG_LPS_LCLK */
 
-#ifdef PLATFORM_LINUX
 	_init_timer(&(pwrctrlpriv->pwr_state_check_timer), padapter->pnetdev, pwr_state_check_handler, (u8 *)padapter);
-#endif
 
 	#ifdef CONFIG_RESUME_IN_WORKQUEUE
 	_init_workitem(&pwrctrlpriv->resume_work, resume_workitem_callback, NULL);

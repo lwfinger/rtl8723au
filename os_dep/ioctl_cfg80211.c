@@ -2584,22 +2584,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		goto exit;
 	}
 
-#ifdef CONFIG_PLATFORM_MSTAR_TITANIA12
-	printk("MStar Android!\n");
-	if((wdev_to_priv(padapter->rtw_wdev))->bandroid_scan == _FALSE)
-	{
-#ifdef CONFIG_P2P
-		struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-#endif //CONFIG_P2P
-		{
-			ret = -EBUSY;
-			printk("Android hasn't attached yet!\n");
-			goto exit;
-		}
-	}
-#endif
-
 	if(_FAIL == rtw_pwr_wakeup(padapter)) {
 		ret= -EPERM;
 		goto exit;
@@ -3127,9 +3111,7 @@ void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint f
 	#else //COMPAT_KERNEL_RELEASE
 	{
 		//to avoid WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION)  when calling cfg80211_send_rx_assoc()
-		#ifndef CONFIG_PLATFORM_MSTAR_TITANIA12
 		pwdev->iftype = NL80211_IFTYPE_STATION;
-		#endif //CONFIG_PLATFORM_MSTAR_TITANIA12
 		DBG_8723A("iftype=%d before call cfg80211_send_rx_assoc()\n", pwdev->iftype);
 		rtw_cfg80211_send_rx_assoc(padapter, NULL, pmgmt_frame, frame_len);
 		DBG_8723A("iftype=%d after call cfg80211_send_rx_assoc()\n", pwdev->iftype);

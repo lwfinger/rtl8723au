@@ -9080,11 +9080,9 @@ void start_clnt_auth(_adapter* padapter)
 	/*  Because of AP's not receiving deauth before */
 	/*  AP may: 1)not response auth or 2)deauth us after link is complete */
 	/*  issue deauth before issuing auth to deal with the situation */
-#ifndef CONFIG_PLATFORM_RTK_DMP
 	/*	Commented by Albert 2012/07/21 */
 	/*	For the Win8 P2P connection, it will be hard to have a successful connection if this Wi-Fi doesn't connect to it. */
 	issue_deauth(padapter, (&(pmlmeinfo->network))->MacAddress, WLAN_REASON_DEAUTH_LEAVING);
-#endif
 
 	DBG_8723A_LEVEL(_drv_always_, "start auth\n");
 	issue_auth(padapter, NULL, 0);
@@ -9193,7 +9191,6 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		chplan_ap.Len = i;
 
 #ifdef CONFIG_DEBUG_RTL871X
-#ifdef PLATFORM_LINUX
 		i = 0;
 		DBG_8723A("%s: AP[%s] channel plan {", __func__, bssid->Ssid.Ssid);
 		while ((i < chplan_ap.Len) && (chplan_ap.Channel[i] != 0))
@@ -9203,11 +9200,9 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		}
 		DBG_8723A("}\n");
 #endif
-#endif
 
 		_rtw_memcpy(chplan_sta, pmlmeext->channel_set, sizeof(chplan_sta));
 #ifdef CONFIG_DEBUG_RTL871X
-#ifdef PLATFORM_LINUX
 		i = 0;
 		DBG_8723A("%s: STA channel plan {", __func__);
 		while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0))
@@ -9216,7 +9211,6 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			i++;
 		}
 		DBG_8723A("}\n");
-#endif
 #endif
 
 		_rtw_memset(pmlmeext->channel_set, 0, sizeof(pmlmeext->channel_set));
@@ -9348,7 +9342,6 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 		pmlmeext->update_channel_plan_by_ap_done = 1;
 
 #ifdef CONFIG_DEBUG_RTL871X
-#ifdef PLATFORM_LINUX
 		k = 0;
 		DBG_8723A("%s: new STA channel plan {", __func__);
 		while ((k < MAX_CHANNEL_NUM) && (chplan_new[k].ChannelNum != 0)) {
@@ -9356,7 +9349,6 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			k++;
 		}
 		DBG_8723A("}\n");
-#endif
 #endif
 	}
 
@@ -10149,24 +10141,6 @@ void survey_timer_hdl(_adapter *padapter)
 #endif
 
 	/* DBG_8723A("marc: survey timer\n"); */
-#ifdef PLATFORM_FREEBSD
-	rtw_mtx_lock(NULL);
-	 if (callout_pending(&padapter->mlmeextpriv.survey_timer.callout)) {
-		 /* callout was reset */
-		 /* mtx_unlock(&sc->sc_mtx); */
-		 rtw_mtx_unlock(NULL);
-		 return;
-	 }
-	 if (!callout_active(&padapter->mlmeextpriv.survey_timer.callout)) {
-		 /* callout was stopped */
-		 /* mtx_unlock(&sc->sc_mtx); */
-		 rtw_mtx_unlock(NULL);
-		 return;
-	 }
-	 callout_deactivate(&padapter->mlmeextpriv.survey_timer.callout);
-
-#endif
-
 	/* issue rtw_sitesurvey_cmd */
 	if (pmlmeext->sitesurvey_res.state > SCAN_START)
 	{
@@ -10218,10 +10192,6 @@ void survey_timer_hdl(_adapter *padapter)
 	}
 
 exit_survey_timer_hdl:
-#ifdef PLATFORM_FREEBSD
-		rtw_mtx_unlock(NULL);
-#endif
-
 	return;
 }
 
@@ -10233,24 +10203,6 @@ void link_timer_hdl(_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	/* struct sta_priv		*pstapriv = &padapter->stapriv; */
-
-#ifdef PLATFORM_FREEBSD
-	rtw_mtx_lock(NULL);
-	 if (callout_pending(&padapter->mlmeextpriv.survey_timer.callout)) {
-		 /* callout was reset */
-		 /* mtx_unlock(&sc->sc_mtx); */
-		 rtw_mtx_unlock(NULL);
-		 return;
-	 }
-	 if (!callout_active(&padapter->mlmeextpriv.survey_timer.callout)) {
-		 /* callout was stopped */
-		 /* mtx_unlock(&sc->sc_mtx); */
-		 rtw_mtx_unlock(NULL);
-		 return;
-	 }
-	 callout_deactivate(&padapter->mlmeextpriv.survey_timer.callout);
-
-#endif
 
 	if (pmlmeinfo->state & WIFI_FW_AUTH_NULL)
 	{
@@ -10295,10 +10247,6 @@ void link_timer_hdl(_adapter *padapter)
 		issue_assocreq(padapter);
 		set_link_timer(pmlmeext, REASSOC_TO);
 	}
-
-#ifdef PLATFORM_FREEBSD
-	rtw_mtx_unlock(NULL);
-#endif
 
 	return;
 }

@@ -27,14 +27,6 @@
 #include <circ_buf.h>
 #include <ip.h>
 
-#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
-#error "Shall be Linux or Windows, but not both!\n"
-#endif
-
-#ifdef PLATFORM_WINDOWS
-#include <if_ether.h>
-#endif
-
 #ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
 #endif
@@ -2236,9 +2228,7 @@ struct xmit_frame *rtw_alloc_xmitframe(struct xmit_priv *pxmitpriv)/* _queue *pf
 	struct xmit_frame *pxframe = NULL;
 	_list *plist, *phead;
 	_queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
-#ifdef PLATFORM_LINUX
 	_adapter *padapter = pxmitpriv->adapter;
-#endif /* PLATFORM_LINUX */
 
 _func_enter_;
 
@@ -3841,9 +3831,7 @@ void rtw_sctx_init(struct submit_ctx *sctx, int timeout_ms)
 {
 	sctx->timeout_ms = timeout_ms;
 	sctx->submit_time= rtw_get_current_time();
-#ifdef PLATFORM_LINUX /* TODO: add condition wating interface for other os */
 	init_completion(&sctx->done);
-#endif
 	sctx->status = RTW_SCTX_SUBMITTED;
 }
 
@@ -3853,7 +3841,6 @@ int rtw_sctx_wait(struct submit_ctx *sctx)
 	unsigned long expire;
 	int status = 0;
 
-#ifdef PLATFORM_LINUX
 	expire= sctx->timeout_ms ? msecs_to_jiffies(sctx->timeout_ms) : MAX_SCHEDULE_TIMEOUT;
 	if (!wait_for_completion_timeout(&sctx->done, expire)) {
 		/* timeout, do something?? */
@@ -3862,7 +3849,6 @@ int rtw_sctx_wait(struct submit_ctx *sctx)
 	} else {
 		status = sctx->status;
 	}
-#endif
 
 	if (status == RTW_SCTX_DONE_SUCCESS) {
 		ret = _SUCCESS;
@@ -3892,9 +3878,7 @@ void rtw_sctx_done_err(struct submit_ctx **sctx, int status)
 		if (rtw_sctx_chk_waring_status(status))
 			DBG_8723A("%s status:%d\n", __func__, status);
 		(*sctx)->status = status;
-		#ifdef PLATFORM_LINUX
 		complete(&((*sctx)->done));
-		#endif
 		*sctx = NULL;
 	}
 }

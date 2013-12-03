@@ -36,15 +36,6 @@
 #include <usb_ops.h>
 #include <usb_osintf.h>
 #include <usb_hal.h>
-#ifdef CONFIG_PLATFORM_RTK_DMP
-#include <asm/io.h>
-#endif
-
-#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
-
-#error "Shall be Linux or Windows, but not both!\n"
-
-#endif
 
 #ifdef CONFIG_80211N_HT
 extern int rtw_ht_enable;
@@ -142,10 +133,6 @@ static struct specific_device_id specific_device_id_tbl[] = {
 	{.idVendor=0x0b05, .idProduct=0x1791, .flags=SPEC_DEV_ID_DISABLE_HT},
 	{.idVendor=0x13D3, .idProduct=0x3311, .flags=SPEC_DEV_ID_DISABLE_HT},
 	{.idVendor=0x13D3, .idProduct=0x3359, .flags=SPEC_DEV_ID_DISABLE_HT},//Russian customer -Azwave (8188CE-VAU  g mode)
-#ifdef RTK_DMP_PLATFORM
-	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x8111, .flags=SPEC_DEV_ID_ASSIGN_IFNAME}, // Realtek 5G dongle for WiFi Display
-	{.idVendor=0x2019, .idProduct=0xAB2D, .flags=SPEC_DEV_ID_ASSIGN_IFNAME}, // PCI-Abocom 5G dongle for WiFi Display
-#endif /* RTK_DMP_PLATFORM */
 	{}
 };
 
@@ -596,18 +583,6 @@ static void process_spec_devid(const struct usb_device_id *pdid)
 			 rtw_ampdu_enable = 0;
 		}
 #endif
-
-#ifdef RTK_DMP_PLATFORM
-		// Change the ifname to wlan10 when PC side WFD dongle plugin on DMP platform.
-		// It is used to distinguish between normal and PC-side wifi dongle/module.
-		if((pdid->idVendor==vid) && (pdid->idProduct==pid) && (flags&SPEC_DEV_ID_ASSIGN_IFNAME))
-		{
-			extern char* ifname;
-			strncpy(ifname, "wlan10", 6);
-			//DBG_8723A("%s()-%d: ifname=%s, vid=%04X, pid=%04X\n", __FUNCTION__, __LINE__, ifname, vid, pid);
-		}
-#endif /* RTK_DMP_PLATFORM */
-
 	}
 }
 
@@ -1129,25 +1104,6 @@ error_exit:
 }
 #endif
 
-#ifdef CONFIG_PLATFORM_RTD2880B
-extern void rtd2885_wlan_netlink_sendMsg(char *action_string, char *name);
-#endif
-
-#ifdef CONFIG_PLATFORM_ARM_SUNxI
-#include <mach/sys_config.h>
-extern int sw_usb_disable_hcd(__u32 usbc_no);
-extern int sw_usb_enable_hcd(__u32 usbc_no);
-static int usb_wifi_host = 2;
-#endif
-
-#ifdef CONFIG_PLATFORM_ARM_SUN6I
-#include <mach/sys_config.h>
-extern int sw_usb_disable_hcd(__u32 usbc_no);
-extern int sw_usb_enable_hcd(__u32 usbc_no);
-extern void wifi_pm_power(int on);
-static script_item_u item;
-#endif
-
 /*
  * drv_init() - a device potentially for us
  *
@@ -1381,12 +1337,6 @@ static void rtw_usb_if1_deinit(_adapter *if1)
 
 	if(pnetdev)
 		rtw_free_netdev(pnetdev);
-
-#ifdef CONFIG_PLATFORM_RTD2880B
-	DBG_8723A("wlan link down\n");
-	rtd2885_wlan_netlink_sendMsg("linkdown", "8712");
-#endif
-
 }
 
 static void dump_usb_interface(struct usb_interface *usb_intf)
@@ -1561,15 +1511,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 	hostapd_mode_init(if1);
 #endif
 
-#ifdef CONFIG_PLATFORM_RTD2880B
-	DBG_8723A("wlan link up\n");
-	rtd2885_wlan_netlink_sendMsg("linkup", "8712");
-#endif
-
-#ifdef RTK_DMP_PLATFORM
-	rtw_proc_init_one(if1->pnetdev);
-#endif
-
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("-871x_drv - drv_init, success!\n"));
 
 	status = _SUCCESS;
@@ -1661,52 +1602,10 @@ extern int console_suspend_enabled;
 
 static int __init rtw_drv_entry(void)
 {
-#ifdef CONFIG_PLATFORM_RTK_DMP
-	u32 tmp;
-	tmp=readl((volatile unsigned int*)0xb801a608);
-	tmp &= 0xffffff00;
-	tmp |= 0x55;
-	writel(tmp,(volatile unsigned int*)0xb801a608);//write dummy register for 1055
-#endif
-#ifdef CONFIG_PLATFORM_ARM_SUNxI
-#ifndef CONFIG_RTL8723A
-	int ret = 0;
-	/* ----------get usb_wifi_usbc_num------------- */
-	ret = script_parser_fetch("usb_wifi_para", "usb_wifi_usbc_num", (int *)&usb_wifi_host, 64);
-	if(ret != 0){
-		DBG_8723A("ERR: script_parser_fetch usb_wifi_usbc_num failed\n");
-		ret = -ENOMEM;
-		return ret;
-	}
-	DBG_8723A("sw_usb_enable_hcd: usbc_num = %d\n", usb_wifi_host);
-	sw_usb_enable_hcd(usb_wifi_host);
-#endif //CONFIG_RTL8723A
-#endif //CONFIG_PLATFORM_ARM_SUNxI
-
-#ifdef CONFIG_PLATFORM_ARM_SUN6I
-	script_item_value_type_e type;
-
-	type = script_get_item("wifi_para", "wifi_usbc_id", &item);
-	if(SCIRPT_ITEM_VALUE_TYPE_INT != type){
-		printk("ERR: script_get_item wifi_usbc_id failed\n");
-		return -ENOMEM;
-	}
-
-	printk("sw_usb_enable_hcd: usbc_num = %d\n", item.val);
-	wifi_pm_power(1);
-	mdelay(10);
-	sw_usb_enable_hcd(item.val);
-#endif //CONFIG_PLATFORM_ARM_SUN6I
-
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+rtw_drv_entry\n"));
 
 	DBG_8723A(DRV_NAME " driver version=%s\n", DRIVERVERSION);
 	DBG_8723A("build time: %s %s\n", __DATE__, __TIME__);
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24))
-	//console_suspend_enabled=0;
-#endif
-
 	rtw_suspend_lock_init();
 
 	usb_drv->drv_registered = _TRUE;
@@ -1722,18 +1621,6 @@ static void __exit rtw_drv_halt(void)
 
 	usb_drv->drv_registered = _FALSE;
 	usb_deregister(&usb_drv->usbdrv);
-
-#ifdef CONFIG_PLATFORM_ARM_SUNxI
-#ifndef CONFIG_RTL8723A
-	DBG_8723A("sw_usb_disable_hcd: usbc_num = %d\n", usb_wifi_host);
-	sw_usb_disable_hcd(usb_wifi_host);
-#endif //ifndef CONFIG_RTL8723A
-#endif	//CONFIG_PLATFORM_ARM_SUNxI
-
-#ifdef CONFIG_PLATFORM_ARM_SUN6I
-	sw_usb_disable_hcd(item.val);
-	wifi_pm_power(0);
-#endif
 
 	DBG_8723A("-rtw_drv_halt\n");
 }

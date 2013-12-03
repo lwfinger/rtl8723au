@@ -4887,9 +4887,7 @@ _func_enter_;
 
 		case HW_VAR_APFM_ON_MAC:
 			pHalData->bMacPwrCtrlOn = *val;
-#ifdef PLATFORM_LINUX
 			DBG_8723A("%s: bMacPwrCtrlOn=%d\n", __func__, pHalData->bMacPwrCtrlOn);
-#endif
 			break;
 
 		case HW_VAR_NAV_UPPER:
