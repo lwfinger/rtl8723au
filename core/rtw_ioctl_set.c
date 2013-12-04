@@ -143,7 +143,6 @@ _func_enter_;
 
 				pibss = padapter->registrypriv.dev_network.MacAddress;
 
-				memset(&pdev_network->Ssid, 0, sizeof(NDIS_802_11_SSID));
 				memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(NDIS_802_11_SSID));
 
 				rtw_update_registrypriv_dev_network(padapter);
@@ -1041,8 +1040,6 @@ _func_enter_;
 
 		if(stainfo!=NULL)
 		{
-			memset( &stainfo->dot118021x_UncstKey, 0, 16);/*  clear keybuffer */
-
 			memcpy(&stainfo->dot118021x_UncstKey, key->KeyMaterial, 16);
 
 			if(encryptionalgo== _TKIP_)
