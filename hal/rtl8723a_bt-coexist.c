@@ -13946,53 +13946,6 @@ u8 btdm_PANA2DPAction1Ant(PADAPTER padapter)
 
 void BTDM_SetAntenna(PADAPTER padapter, u8 who)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
-	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
-
-	if (!IS_HARDWARE_TYPE_8192C(padapter))
-		return;
-	if (!pHalData->bt_coexist.BluetoothCoexist)
-		return;
-	if (pBtMgnt->ExtConfig.bManualControl)
-		return;
-	if (pHalData->bt_coexist.BT_CoexistType != BT_CSR_BC8)
-		return;
-	if (pHalData->bt_coexist.BT_Ant_Num != Ant_x1)
-		return;
-//	if (pHalData->bt_coexist.AntennaState == who)
-//		return;
-
-	switch (who)
-	{
-		case BTDM_ANT_BT_IDLE:
-			RTPRINT(FBT, BT_TRACE, ("BTDM_SetAntenna(), BTDM_ANT_BT_IDLE\n"));
-			BTDM_Balance(padapter, _FALSE, 0, 0);
-			BTDM_SingleAnt(padapter, _TRUE, _TRUE, _FALSE);
-			pHalData->bt_coexist.AntennaState = BTDM_ANT_BT_IDLE;
-			break;
-
-		case BTDM_ANT_WIFI:
-			RTPRINT(FBT, BT_TRACE, ("BTDM_SetAntenna(), BTDM_ANT_WIFI\n"));
-			BTDM_Balance(padapter, _FALSE, 0, 0);
-			BTDM_SingleAnt(padapter, _FALSE, _FALSE, _FALSE);
-			rtw_mdelay_os(3);	// 1 will fail, 2 ok
-			btdm_WriteReg860(padapter, 0x130);
-			pHalData->bt_coexist.AntennaState = BTDM_ANT_WIFI;
-			break;
-
-		case BTDM_ANT_BT:
-			RTPRINT(FBT, BT_TRACE, ("BTDM_SetAntenna(), BTDM_ANT_BT\n"));
-			BTDM_Balance(padapter, _FALSE, 0, 0);
-			BTDM_SingleAnt(padapter, _FALSE, _FALSE, _FALSE);
-			//btdm_WriteReg860(padapter, 0x230);
-			pHalData->bt_coexist.AntennaState = BTDM_ANT_BT;
-			break;
-
-		default:
-			RT_ASSERT(_FALSE, ("BTDM_SetAntenna(), error case\n"));
-			break;
-	}
 }
 
 void
@@ -14037,15 +13990,6 @@ BTDM_SingleAnt(
 	RTPRINT(FBT, BT_TRACE, ("[DM][BT], SingleAntenna=[%s:%s:%s], write 0xe = 0x%x\n",
 		bSingleAntOn?"ON":"OFF", bInterruptOn?"ON":"OFF", bMultiNAVOn?"ON":"OFF",
 		H2C_Parameter[0]<<16|H2C_Parameter[1]<<8|H2C_Parameter[2]));
-
-	if (IS_HARDWARE_TYPE_8192C(padapter))
-	{
-		FillH2CCmd(padapter, 0xe, 3, H2C_Parameter);
-	}
-	else if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		FillH2CCmd(padapter, 0x12, 3, H2C_Parameter);
-	}
 }
 
 void BTDM_CheckBTIdleChange1Ant(PADAPTER padapter)
@@ -14334,38 +14278,6 @@ btdm_BtEnableDisableCheck(
 	u32		BT_Active
 	)
 {
-	// This function check if 92D bt is disabled
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-
-	if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		if (BT_Active)
-		{
-			pHalData->bt_coexist.btActiveZeroCnt = 0;
-			pHalData->bt_coexist.bCurBtDisabled = _FALSE;
-			RTPRINT(FBT, BT_TRACE, ("92D Bt is enabled !!\n"));
-		}
-		else
-		{
-			pHalData->bt_coexist.btActiveZeroCnt++;
-			RTPRINT(FBT, BT_TRACE, ("92D BT_Active = 0, cnt = %d!!\n",
-					pHalData->bt_coexist.btActiveZeroCnt));
-			if (pHalData->bt_coexist.btActiveZeroCnt >= 2)
-			{
-				pHalData->bt_coexist.bCurBtDisabled = _TRUE;
-				RTPRINT(FBT, BT_TRACE, ("92D Bt is disabled !!\n"));
-			}
-		}
-		if (pHalData->bt_coexist.bPreBtDisabled !=
-			pHalData->bt_coexist.bCurBtDisabled )
-		{
-			RTPRINT(FBT, BT_TRACE, ("92D Bt is from %s to %s!!\n",
-				(pHalData->bt_coexist.bPreBtDisabled ? "disabled":"enabled"),
-				(pHalData->bt_coexist.bCurBtDisabled ? "disabled":"enabled")));
-			pHalData->bt_coexist.bNeedToRoamForBtDisableEnable = _TRUE;
-			pHalData->bt_coexist.bPreBtDisabled = pHalData->bt_coexist.bCurBtDisabled;
-		}
-	}
 }
 
 void btdm_CheckBTState2Ant(PADAPTER padapter)
@@ -14384,39 +14296,7 @@ void btdm_CheckBTState2Ant(PADAPTER padapter)
 	RTPRINT(FBT, BT_TRACE, ("FirmwareVersion = 0x%x(%d)\n",
 	pHalData->FirmwareVersion, pHalData->FirmwareVersion));
 
-	if (IS_HARDWARE_TYPE_8192C(padapter))
-	{
-		if (pHalData->FirmwareVersion < FW_VER_BT_REG)
-		{
-			regBTActive = REG_BT_ACTIVE_OLD;
-			regBTState = REG_BT_STATE_OLD;
-			regBTPolling = REG_BT_POLLING_OLD;
-		}
-		else
-		{
-			regBTActive = REG_BT_ACTIVE;
-			regBTState = REG_BT_STATE;
-			if (pHalData->FirmwareVersion >= FW_VER_BT_REG1)
-				regBTPolling = REG_BT_POLLING1;
-			else
-				regBTPolling = REG_BT_POLLING;
-		}
-	}
-	else if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		regBTActive = REG_BT_ACTIVE;
-		regBTState = REG_BT_STATE;
-		regBTPolling = REG_BT_POLLING1;
-	}
-
-	if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		btBusyThresh = 40;
-	}
-	else
-	{
-		btBusyThresh = 60;
-	}
+	btBusyThresh = 60;
 
 	BT_Active = rtw_read32(padapter, regBTActive);
 	RTPRINT(FBT, BT_TRACE, ("BT_Active(0x%x)=%x\n", regBTActive, BT_Active));
@@ -14577,14 +14457,7 @@ void btdm_CheckBTState2Ant(PADAPTER padapter)
 			rtw_write8(padapter, 0x4fd, tempu1Byte);
 
 			//Resume RF Rx LPF corner
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-			{
-				PHY_SetRFReg(padapter, PathA, 0x1e, bRFRegOffsetMask, pHalData->bt_coexist.BtRfRegOrigin1E);
-			}
-			else
-			{
-				PHY_SetRFReg(padapter, PathA, 0x1e, 0xf0, pHalData->bt_coexist.BtRfRegOrigin1E);
-			}
+			PHY_SetRFReg(padapter, PathA, 0x1e, 0xf0, pHalData->bt_coexist.BtRfRegOrigin1E);
 			BTDM_CoexAllOff(padapter);
 
 			RTPRINT(FBT, BT_TRACE, ("BT_Turn OFF Coexist bt is off \n"));
@@ -14600,16 +14473,8 @@ void btdm_CheckBTState2Ant(PADAPTER padapter)
 			tempu1Byte &=~ BIT(2);
 			rtw_write8(padapter, 0x4fd, tempu1Byte);
 
-			//Shrink RF Rx LPF corner
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-			{
-				PHY_SetRFReg(padapter, PathA, 0x1e, bRFRegOffsetMask, 0xf2ff7);
-			}
-			else
-			{
-				//Shrink RF Rx LPF corner, 0x1e[7:4]=1111
-				PHY_SetRFReg(padapter, PathA, 0x1e, 0xf0, 0xf);
-			}
+			//Shrink RF Rx LPF corner, 0x1e[7:4]=1111
+			PHY_SetRFReg(padapter, PathA, 0x1e, 0xf0, 0xf);
 		}
 	}
 
@@ -14979,10 +14844,7 @@ u8 btdm_A2DPAction2Ant(PADAPTER padapter)
 		else if (pHalData->bt_coexist.BT_CoexistType == BT_CSR_BC8)
 		{
 			RTPRINT(FBT, BT_TRACE, ("[BC8]\n"));
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-				btdm_A2DPActionBC82Ant92d(padapter);
-			else
-				btdm_A2DPActionBC82Ant(padapter);
+			btdm_A2DPActionBC82Ant(padapter);
 		}
 		return _TRUE;
 	}
@@ -15400,9 +15262,6 @@ u8 btdm_PANAction2Ant(PADAPTER padapter)
 		else if (pHalData->bt_coexist.BT_CoexistType == BT_CSR_BC8)
 		{
 			RTPRINT(FBT, BT_TRACE, ("[BC8]\n"));
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-				btdm_PANActionBC82Ant92d(padapter);
-			else
 			btdm_PANActionBC82Ant(padapter);
 		}
 		return _TRUE;
@@ -15605,9 +15464,6 @@ u8 btdm_HIDAction2Ant(PADAPTER padapter)
 		else if (pHalData->bt_coexist.BT_CoexistType == BT_CSR_BC8)
 		{
 			RTPRINT(FBT, BT_TRACE, ("[BC8]\n"));
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-				btdm_HIDActionBC82Ant92d(padapter);
-			else
 			btdm_HIDActionBC42Ant(padapter);
 		}
 		return _TRUE;
@@ -15762,9 +15618,6 @@ u8 btdm_SCOAction2Ant(PADAPTER padapter)
 		else if (pHalData->bt_coexist.BT_CoexistType == BT_CSR_BC8)
 		{
 			RTPRINT(FBT, BT_TRACE, ("[BC8]\n"));
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-				btdm_SCOActionBC82Ant92d(padapter);
-			else
 			btdm_SCOActionBC82Ant(padapter);
 		}
 		return _TRUE;
@@ -16014,9 +15867,6 @@ u8 btdm_HIDA2DPAction2Ant(PADAPTER padapter)
 		else if (pHalData->bt_coexist.BT_CoexistType == BT_CSR_BC8)
 		{
 			RTPRINT(FBT, BT_TRACE, ("[BC8]\n"));
-			if (IS_HARDWARE_TYPE_8192D(padapter))
-				btdm_HIDA2DPActionBC82Ant92d(padapter);
-			else
 			btdm_HIDA2DPActionBC82Ant(padapter);
 		}
 		return _TRUE;
@@ -16456,15 +16306,6 @@ BTDM_DiminishWiFi(
 		H2C_Parameter[0]<<16|H2C_Parameter[1]<<8|H2C_Parameter[2]));
 	RTPRINT(FBT, BT_TRACE, ("[DM][BT], bNAVOn = %s\n",
 		bNAVOn?"ON":"OFF"));
-
-	if (IS_HARDWARE_TYPE_8192C(padapter))
-	{
-		FillH2CCmd(padapter, 0xe, 3, H2C_Parameter);
-	}
-	else if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		FillH2CCmd(padapter, 0x12, 3, H2C_Parameter);
-	}
 }
 
 void BTDM_BTCoexistWithProfile2Ant(PADAPTER padapter)
@@ -16608,18 +16449,7 @@ void btdm_InitBtCoexistDM(PADAPTER padapter)
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
 	// 20100415 Joseph: Restore RF register 0x1E and 0x1F value for further usage.
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		pHalData->bt_coexist.BtRfRegOrigin1E = PHY_QueryRFReg(padapter, PathA, RF_RCK1, bRFRegOffsetMask);
-	}
-	else if (IS_HARDWARE_TYPE_8192D(padapter))
-	{
-		pHalData->bt_coexist.BtRfRegOrigin1E = PHY_QueryRFReg(padapter, PathA, RF_RCK1, bRFRegOffsetMask);
-	}
-	else
-	{
-		pHalData->bt_coexist.BtRfRegOrigin1E = PHY_QueryRFReg(padapter, PathA, RF_RCK1, 0xf0);
-	}
+	pHalData->bt_coexist.BtRfRegOrigin1E = PHY_QueryRFReg(padapter, PathA, RF_RCK1, bRFRegOffsetMask);
 	pHalData->bt_coexist.BtRfRegOrigin1F = PHY_QueryRFReg(padapter, PathA, RF_RCK2, 0xf0);
 
 	pHalData->bt_coexist.CurrentState = 0;
@@ -16643,20 +16473,17 @@ u8 BTDM_NeedToRoamForBtEnableDisable(PADAPTER padapter)
 
 void BTDM_FwC2hBtRssi(PADAPTER padapter, u8 *tmpBuf)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_FwC2hBtRssi8723A(padapter, tmpBuf);
+	BTDM_FwC2hBtRssi8723A(padapter, tmpBuf);
 }
 
 void BTDM_FwC2hBtInfo(PADAPTER padapter, u8 *tmpBuf, u8 length)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_FwC2hBtInfo8723A(padapter, tmpBuf, length);
+	BTDM_FwC2hBtInfo8723A(padapter, tmpBuf, length);
 }
 
 void BTDM_DisplayBtCoexInfo(PADAPTER padapter)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_Display8723ABtCoexInfo(padapter);
+	BTDM_Display8723ABtCoexInfo(padapter);
 }
 
 void BTDM_RejectAPAggregatedPacket(PADAPTER padapter, u8 bReject)
@@ -17257,29 +17084,6 @@ u8 BTDM_DisableEDCATurbo(PADAPTER padapter)
 		pHalData->bt_coexist.lastBtEdca = 0;
 		bRet = _FALSE;
 	}
-
-#ifdef CONFIG_PCI_HCI
-	if (IS_HARDWARE_TYPE_8192C(padapter))
-	{
-		// When BT is non idle
-		if (!(pHalData->bt_coexist.CurrentState & BT_COEX_STATE_BT_IDLE))
-		{
-			aggr_num = 0x0909;
-		}
-		else
-		{
-			aggr_num = 0x0A0A;
-		}
-
-		if ((pHalData->bt_coexist.last_aggr_num != aggr_num) || !pHalData->bt_coexist.bEDCAInitialized)
-		{
-			RTPRINT(FBT, BT_TRACE, ("BT write AGGR NUM = 0x%x\n", aggr_num));
-			rtw_write16(padapter, REG_MAX_AGGR_NUM, aggr_num);
-			pHalData->bt_coexist.last_aggr_num = aggr_num;
-		}
-	}
-#endif
-
 	return bRet;
 }
 
@@ -17332,13 +17136,9 @@ void BTDM_AGCTable(PADAPTER padapter, u8 type)
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0x71000);
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0xb0000);
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0xfc000);
-		if (IS_HARDWARE_TYPE_8723A(padapter))
-			PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x30355);
-		else
-			PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x10255);
+		PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x30355);
 
-		if (IS_HARDWARE_TYPE_8723A(padapter))
-			pHalData->bt_coexist.b8723aAgcTableOn = _FALSE;
+		pHalData->bt_coexist.b8723aAgcTableOn = _FALSE;
 	}
 	else if (type == BT_AGCTABLE_ON)
 	{
@@ -17353,13 +17153,9 @@ void BTDM_AGCTable(PADAPTER padapter, u8 type)
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0x90000);
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0x51000);
 		PHY_SetRFReg(padapter, PathA, RF_RX_AGC_HP, bRFRegOffsetMask, 0x12000);
-		if (IS_HARDWARE_TYPE_8723A(padapter))
-			PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x00355);
-		else
-			PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x00255);
+		PHY_SetRFReg(padapter, PathA, RF_RX_G1, bRFRegOffsetMask, 0x00355);
 
-		if (IS_HARDWARE_TYPE_8723A(padapter))
-			pHalData->bt_coexist.b8723aAgcTableOn = _TRUE;
+		pHalData->bt_coexist.b8723aAgcTableOn = _TRUE;
 
 		pHalData->bt_coexist.bSWCoexistAllOff = _FALSE;
 	}
@@ -17427,10 +17223,7 @@ void BTDM_HWCoexAllOff(PADAPTER padapter)
 		return;
 	RTPRINT(FBT, BT_TRACE, ("BTDM_HWCoexAllOff(), real Do\n"));
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		BTDM_HWCoexAllOff8723A(padapter);
-	}
+	BTDM_HWCoexAllOff8723A(padapter);
 
 	pHalData->bt_coexist.bHWCoexistAllOff = _TRUE;
 }
@@ -17458,26 +17251,20 @@ void BTDM_TurnOffBtCoexistBeforeEnterLPS(PADAPTER padapter)
 	if (BTDM_1Ant8723A(padapter))
 		return;
 
-	if (IS_HARDWARE_TYPE_8192C(padapter) ||
-		IS_HARDWARE_TYPE_8192D(padapter) ||
-		IS_HARDWARE_TYPE_8723A(padapter))
+	//
+	// Before enter LPS, turn off FW BT Co-exist mechanism
+	//
+	if (ppwrctrl->bLeisurePs)
 	{
-		//
-		// Before enter LPS, turn off FW BT Co-exist mechanism
-		//
-		if (ppwrctrl->bLeisurePs)
-		{
-			RTPRINT(FBT, BT_TRACE, ("[BT][DM], Before enter LPS, turn off all Coexist DM\n"));
-			btdm_ResetFWCoexState(padapter);
-			BTDM_CoexAllOff(padapter);
-			BTDM_SetAntenna(padapter, BTDM_ANT_BT);
-		}
+		RTPRINT(FBT, BT_TRACE, ("[BT][DM], Before enter LPS, turn off all Coexist DM\n"));
+		btdm_ResetFWCoexState(padapter);
+		BTDM_CoexAllOff(padapter);
+		BTDM_SetAntenna(padapter, BTDM_ANT_BT);
 	}
 }
 
 void BTDM_TurnOffBtCoexistBeforeEnterIPS(PADAPTER padapter)
 {
-//	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -17491,30 +17278,20 @@ void BTDM_TurnOffBtCoexistBeforeEnterIPS(PADAPTER padapter)
 	if (BTDM_1Ant8723A(padapter))
 		return;
 
-	if (IS_HARDWARE_TYPE_8192C(padapter) ||
-		IS_HARDWARE_TYPE_8192D(padapter) ||
-		IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		//
-		// Before enter IPS, turn off FW BT Co-exist mechanism
-		//
-//		if (pPSC->bInactivePs)
-		if (ppwrctrl->reg_rfoff == rf_on)
-		{
-			RTPRINT(FBT, BT_TRACE, ("[BT][DM], Before enter IPS, turn off all Coexist DM\n"));
-			btdm_ResetFWCoexState(padapter);
-			BTDM_CoexAllOff(padapter);
-			BTDM_SetAntenna(padapter, BTDM_ANT_BT);
-		}
+	//
+	// Before enter IPS, turn off FW BT Co-exist mechanism
+	//
+	if (ppwrctrl->reg_rfoff == rf_on) {
+		RTPRINT(FBT, BT_TRACE, ("[BT][DM], Before enter IPS, turn off all Coexist DM\n"));
+		btdm_ResetFWCoexState(padapter);
+		BTDM_CoexAllOff(padapter);
+		BTDM_SetAntenna(padapter, BTDM_ANT_BT);
 	}
 }
 
 void BTDM_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		BTDM_8723ASignalCompensation(padapter, rssi_wifi, rssi_bt);
-	}
+	BTDM_8723ASignalCompensation(padapter, rssi_wifi, rssi_bt);
 }
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
 /*
@@ -17637,11 +17414,8 @@ void BTDM_Coexist(PADAPTER padapter)
 
 	BTDM_PWDBMonitor(padapter);
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		RTPRINT(FBT, BT_TRACE, ("[DM][BT], HW type is 8723\n"));
-		BTDM_BTCoexist8723A(padapter);
-	}
+	RTPRINT(FBT, BT_TRACE, ("[DM][BT], HW type is 8723\n"));
+	BTDM_BTCoexist8723A(padapter);
 	RTPRINT(FBT, BT_TRACE, ("[DM][BT], BTDM end!!\n\n"));
 }
 
@@ -17746,22 +17520,15 @@ u8 BTDM_DigByBtRssi(PADAPTER padapter)
 	//
 	if (pBtMgnt->BtOperationOn)
 	{
-		if (pBtMgnt->bBTConnectInProgress)
-		{
-			if (IS_HARDWARE_TYPE_8723A(padapter))
-				digForBtHs = 0x28;
-			else
-				digForBtHs = 0x22;
-		}
-		else
-		{
+		if (pBtMgnt->bBTConnectInProgress) {
+			digForBtHs = 0x28;
+		} else {
 			//
 			// Decide DIG value by BT RSSI.
 			//
 			digForBtHs = (u8)pHalData->dmpriv.BT_EntryMinUndecoratedSmoothedPWDB;
 
-			if (IS_HARDWARE_TYPE_8723A(padapter))
-				digForBtHs += 0x04;
+			digForBtHs += 0x04;
 
 			if (digForBtHs > DM_DIG_MAX_NIC)
 				digForBtHs = DM_DIG_MAX_NIC;
@@ -17899,19 +17666,12 @@ u8 BTDM_IsBTDownlink(PADAPTER padapter)
 void BTDM_AdjustForBtOperation(PADAPTER padapter)
 {
 	RTPRINT(FBT, BT_TRACE, ("[BT][DM], BTDM_AdjustForBtOperation()\n"));
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		BTDM_AdjustForBtOperation8723A(padapter);
-	}
+	BTDM_AdjustForBtOperation8723A(padapter);
 }
 
 u8 BTDM_AdjustRssiForAgcTableOn(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-
-	if (!IS_HARDWARE_TYPE_8192D(padapter) &&
-		!IS_HARDWARE_TYPE_8723A(padapter))
-		return 0;
 
 	if (pHalData->bt_coexist.b92DAgcTableOn)
 		return 12;
@@ -17924,8 +17684,7 @@ u8 BTDM_AdjustRssiForAgcTableOn(PADAPTER padapter)
 
 void BTDM_SetBtCoexCurrAntNum(PADAPTER padapter, u8 antNum)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_Set8723ABtCoexCurrAntNum(padapter, antNum);
+	BTDM_Set8723ABtCoexCurrAntNum(padapter, antNum);
 }
 
 void BTDM_ForHalt(PADAPTER padapter)
@@ -17937,11 +17696,8 @@ void BTDM_ForHalt(PADAPTER padapter)
 		return;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		BTDM_ForHalt8723A(padapter);
-		GET_HAL_DATA(padapter)->bt_coexist.bInitlized = _FALSE;
-	}
+	BTDM_ForHalt8723A(padapter);
+	GET_HAL_DATA(padapter)->bt_coexist.bInitlized = _FALSE;
 }
 
 void BTDM_WifiScanNotify(PADAPTER padapter, u8 scanType)
@@ -17953,8 +17709,7 @@ void BTDM_WifiScanNotify(PADAPTER padapter, u8 scanType)
 		return;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_WifiScanNotify8723A(padapter, scanType);
+	BTDM_WifiScanNotify8723A(padapter, scanType);
 }
 
 void BTDM_WifiAssociateNotify(PADAPTER padapter, u8 action)
@@ -17966,8 +17721,7 @@ void BTDM_WifiAssociateNotify(PADAPTER padapter, u8 action)
 		return;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_WifiAssociateNotify8723A(padapter, action);
+	BTDM_WifiAssociateNotify8723A(padapter, action);
 }
 
 void BTDM_MediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
@@ -17979,8 +17733,7 @@ void BTDM_MediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
 		return;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_MediaStatusNotify8723A(padapter, mstatus);
+	BTDM_MediaStatusNotify8723A(padapter, mstatus);
 }
 
 void BTDM_ForDhcp(PADAPTER padapter)
@@ -17992,8 +17745,7 @@ void BTDM_ForDhcp(PADAPTER padapter)
 		return;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-		BTDM_ForDhcp8723A(padapter);
+	BTDM_ForDhcp8723A(padapter);
 }
 
 void BTDM_ResetActionProfileState(PADAPTER padapter)
@@ -18258,29 +18010,6 @@ u8 BTDM_IsBtDisabled(PADAPTER padapter)
 //============================================
 void WA_BTDM_EnableBTFwCounterPolling(PADAPTER padapter)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-
-	// Currently, only 88cu and 92de need to enter the function
-	if (!IS_HARDWARE_TYPE_8192CU(padapter) &&
-		!IS_HARDWARE_TYPE_8192DE(padapter))
-		return;
-
-	if (!pHalData->bt_coexist.BluetoothCoexist)
-	{
-		return;
-	}
-	else
-	{
-		//
-		// Enable BT firmware counter statistics.
-		// We have to set 0x550[3]=1 to enable it.
-		// Advised by Scott.
-		//
-		u8	u1val = 0;
-		u1val = rtw_read8(padapter, REG_BCN_CTRL);
-		u1val |= BIT3;
-		rtw_write8(padapter, REG_BCN_CTRL, u1val);
-	}
 }
 
 // ===== End of sync from SD7 driver HAL/BTCoexist/HalBtCoexist.c =====
@@ -18411,16 +18140,10 @@ void HALBT_IPSRFOffCheck(PADAPTER padapter)
 	pBtMgnt = &pBTinfo->BtMgnt;
 	pHalData = GET_HAL_DATA(padapter);
 
-	if (IS_HARDWARE_TYPE_8192C(padapter) ||
-		IS_HARDWARE_TYPE_8192D(padapter) ||
-		IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		if ((pHalData->bt_coexist.BluetoothCoexist) &&
-			(pBtMgnt->bSupportProfile))
-		{
-			RTPRINT(FBT, BT_TRACE, ("[BT][DM], HALBT_IPSRFOffCheck(), turn off all Coexist DM\n"));
-			BTDM_CoexAllOff(padapter);
-		}
+	if ((pHalData->bt_coexist.BluetoothCoexist) &&
+		(pBtMgnt->bSupportProfile)) {
+		RTPRINT(FBT, BT_TRACE, ("[BT][DM], HALBT_IPSRFOffCheck(), turn off all Coexist DM\n"));
+		BTDM_CoexAllOff(padapter);
 	}
 }
 
@@ -18435,16 +18158,10 @@ void HALBT_LPSRFOffCheck(PADAPTER padapter)
 	pBtMgnt = &pBTinfo->BtMgnt;
 	pHalData = GET_HAL_DATA(padapter);
 
-	if (IS_HARDWARE_TYPE_8192C(padapter) ||
-		IS_HARDWARE_TYPE_8192D(padapter) ||
-		IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		if ((pHalData->bt_coexist.BluetoothCoexist) &&
-			(pBtMgnt->bSupportProfile))
-		{
-			RTPRINT(FBT, BT_TRACE, ("[BT][DM], HALBT_LPSRFOffCheck(), turn off all Coexist DM\n"));
-			BTDM_CoexAllOff(padapter);
-		}
+	if ((pHalData->bt_coexist.BluetoothCoexist) &&
+		(pBtMgnt->bSupportProfile)) {
+		RTPRINT(FBT, BT_TRACE, ("[BT][DM], HALBT_LPSRFOffCheck(), turn off all Coexist DM\n"));
+		BTDM_CoexAllOff(padapter);
 	}
 }
 
@@ -18470,19 +18187,7 @@ HALBT_BtRegAccess(
 	u32			*pRetVal
 	)
 {
-	u8	H2C_Parameter[5] = {0};
-
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		*pRetVal = 0x223;
-		//FillH2CCmd(padapter, 0xaf, 5, H2C_Parameter);
-	}
-	else
-	{
-		*pRetVal = 0xffffffff;
-		return _FALSE;
-	}
-
+	*pRetVal = 0x223;
 	return _TRUE;
 }
 
