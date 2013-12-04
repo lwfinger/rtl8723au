@@ -21,8 +21,6 @@
 #define __IEEE80211_H
 
 
-#ifndef CONFIG_RTL8711FW
-
 #include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
@@ -30,9 +28,6 @@
 #include "wifi.h"
 
 #include <linux/wireless.h>
-#else
-#include <list.h>
-#endif
 
 #define MGMT_QUEUE_NUM 5
 
@@ -306,7 +301,7 @@ struct ieee_ibss_seq {
 	u16 seq_num;
 	u16 frag_num;
 	unsigned long packet_time;
-	_list	list;
+	struct list_head list;
 };
 
 struct rtw_ieee80211_hdr {

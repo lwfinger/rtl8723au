@@ -110,7 +110,6 @@ typedef	struct sk_buff	_pkt;
 typedef unsigned char	_buffer;
 
 typedef struct	__queue	_queue;
-typedef struct	list_head	_list;
 typedef	int	_OS_STATUS;
 //typedef u32	_irqL;
 typedef unsigned long _irqL;
@@ -153,12 +152,12 @@ static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
 }
 #endif
 
-__inline static _list *get_next(_list	*list)
+__inline static struct list_head *get_next(struct list_head	*list)
 {
 	return list->next;
 }
 
-__inline static _list	*get_list_head(_queue	*queue)
+__inline static struct list_head	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));
 }
@@ -188,11 +187,6 @@ __inline static void _exit_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 #else
 	up(pmutex);
 #endif
-}
-
-__inline static void rtw_list_delete(_list *plist)
-{
-	list_del_init(plist);
 }
 
 __inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
@@ -364,18 +358,12 @@ extern void	_rtw_mfree(u8 *pbuf, u32 sz);
 #define rtw_zmalloc(sz)			_rtw_zmalloc((sz))
 #define rtw_mfree(pbuf, sz)		_rtw_mfree((pbuf), (sz))
 
-extern void	_rtw_init_listhead(_list *list);
-extern u32	rtw_is_list_empty(_list *phead);
-extern void	rtw_list_insert_head(_list *plist, _list *phead);
-extern void	rtw_list_insert_tail(_list *plist, _list *phead);
-extern void	rtw_list_delete(_list *plist);
-
 extern void	_rtw_mutex_init(_mutex *pmutex);
 extern void	_rtw_mutex_free(_mutex *pmutex);
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);
-extern u32	rtw_end_of_queue_search(_list *queue, _list *pelement);
+extern u32	rtw_end_of_queue_search(struct list_head *queue, struct list_head *pelement);
 
 extern u32	rtw_get_current_time(void);
 extern u32	rtw_systime_to_ms(u32 systime);

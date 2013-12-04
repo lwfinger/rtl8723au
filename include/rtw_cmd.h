@@ -50,7 +50,7 @@
 		u8	*rsp;
 		u32	rspsz;
 		//struct semaphore		cmd_sem;
-		_list	list;
+		struct list_head	list;
 	};
 
 	struct cmd_priv {
@@ -76,7 +76,7 @@
 		u8	res;
 		u8	*parmbuf;
 		u32	evtsz;
-		_list	list;
+		struct list_head	list;
 	};
 #endif
 
@@ -109,7 +109,7 @@
 
 #define init_h2fwcmd_w_parm_no_rsp(pcmd, pparm, code) \
 do {\
-	_rtw_init_listhead(&pcmd->list);\
+	INIT_LIST_HEAD(&pcmd->list);\
 	pcmd->cmdcode = code;\
 	pcmd->parmbuf = (u8 *)(pparm);\
 	pcmd->cmdsz = sizeof (*pparm);\

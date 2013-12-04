@@ -83,9 +83,9 @@ _func_enter_;
 
 	for(i = 0; i < MAX_BSS_CNT; i++)
 	{
-		_rtw_init_listhead(&(pnetwork->list));
+		INIT_LIST_HEAD(&(pnetwork->list));
 
-		rtw_list_insert_tail(&(pnetwork->list), &(pmlmepriv->free_bss_pool.queue));
+		list_add_tail(&(pnetwork->list), &(pmlmepriv->free_bss_pool.queue));
 
 		pnetwork++;
 	}
@@ -168,7 +168,7 @@ _func_enter_;
 
 	spin_lock_bh(&queue->lock);
 
-	rtw_list_insert_tail(&pnetwork->list, &queue->queue);
+	list_add_tail(&pnetwork->list, &queue->queue);
 
 	spin_unlock_bh(&queue->lock);
 
@@ -197,7 +197,7 @@ _func_enter_;
 	{
 		pnetwork = LIST_CONTAINOR(get_next(&queue->queue), struct wlan_network, list);
 
-		rtw_list_delete(&(pnetwork->list));
+		list_del_init(&(pnetwork->list));
 	}
 
 	spin_unlock_bh(&queue->lock);
@@ -212,7 +212,7 @@ struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv )/* _queue *
 	_irqL	irqL;
 	struct	wlan_network	*pnetwork;
 	_queue *free_queue = &pmlmepriv->free_bss_pool;
-	_list* plist = NULL;
+	struct list_head* plist = NULL;
 
 _func_enter_;
 
@@ -226,7 +226,7 @@ _func_enter_;
 
 	pnetwork = LIST_CONTAINOR(plist , struct wlan_network, list);
 
-	rtw_list_delete(&pnetwork->list);
+	list_del_init(&pnetwork->list);
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("_rtw_alloc_network: ptr=%p\n", plist));
 	pnetwork->network_type = 0;
@@ -278,9 +278,9 @@ _func_enter_;
 
 	spin_lock_bh(&free_queue->lock);
 
-	rtw_list_delete(&(pnetwork->list));
+	list_del_init(&(pnetwork->list));
 
-	rtw_list_insert_tail(&(pnetwork->list),&(free_queue->queue));
+	list_add_tail(&(pnetwork->list),&(free_queue->queue));
 
 	pmlmepriv->num_of_scanned --;
 
@@ -308,9 +308,9 @@ _func_enter_;
 
 	/* spin_lock_irqsave(&free_queue->lock); */
 
-	rtw_list_delete(&(pnetwork->list));
+	list_del_init(&(pnetwork->list));
 
-	rtw_list_insert_tail(&(pnetwork->list), get_list_head(free_queue));
+	list_add_tail(&(pnetwork->list), get_list_head(free_queue));
 
 	pmlmepriv->num_of_scanned --;
 
@@ -330,7 +330,7 @@ struct wlan_network *_rtw_find_network(_queue *scanned_queue, u8 *addr)
 {
 
 	/* _irqL irqL; */
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	struct	wlan_network *pnetwork = NULL;
 	u8 zero_addr[ETH_ALEN] = {0,0,0,0,0,0};
 
@@ -371,7 +371,7 @@ _func_exit_;
 void _rtw_free_network_queue(_adapter *padapter, u8 isfreeall)
 {
 	_irqL irqL;
-	_list *phead, *plist;
+	struct list_head *phead, *plist;
 	struct wlan_network *pnetwork;
 	struct mlme_priv* pmlmepriv = &padapter->mlmepriv;
 	_queue *scanned_queue = &pmlmepriv->scanned_queue;
@@ -598,7 +598,7 @@ _func_exit_;
 
 struct	wlan_network	* rtw_get_oldest_wlan_network(_queue *scanned_queue)
 {
-	_list	*plist, *phead;
+	struct list_head	*plist, *phead;
 
 	struct	wlan_network	*pwlan = NULL;
 	struct	wlan_network	*oldest = NULL;
@@ -731,7 +731,7 @@ Caller must hold pmlmepriv->lock first.
 void rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 {
 	_irqL irqL;
-	_list	*plist, *phead;
+	struct list_head	*plist, *phead;
 	u32	bssid_ex_sz;
 	struct mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
@@ -812,7 +812,7 @@ _func_enter_;
 			if (pnetwork->network.PhyInfo.SignalQuality == 101)
 				pnetwork->network.PhyInfo.SignalQuality = 0;
 
-			rtw_list_insert_tail(&(pnetwork->list),&(queue->queue));
+			list_add_tail(&(pnetwork->list),&(queue->queue));
 
 		}
 	}
@@ -1183,7 +1183,7 @@ static void free_scanqueue(struct	mlme_priv *pmlmepriv)
 	_irqL irqL, irqL0;
 	_queue *free_queue = &pmlmepriv->free_bss_pool;
 	_queue *scan_queue = &pmlmepriv->scanned_queue;
-	_list	*plist, *phead, *ptemp;
+	struct list_head	*plist, *phead, *ptemp;
 
 _func_enter_;
 
@@ -1197,8 +1197,8 @@ _func_enter_;
 	while (plist != phead)
        {
 		ptemp = get_next(plist);
-		rtw_list_delete(plist);
-		rtw_list_insert_tail(plist, &free_queue->queue);
+		list_del_init(plist);
+		list_add_tail(plist, &free_queue->queue);
 		plist =ptemp;
 		pmlmepriv->num_of_scanned --;
         }
@@ -2565,7 +2565,7 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 {
 	_irqL	irqL;
 	int ret;
-	_list	*phead;
+	struct list_head	*phead;
 	_adapter *adapter;
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct	wlan_network	*pnetwork = NULL;
@@ -2672,7 +2672,7 @@ _func_enter_;
 	pcmd->rsp = NULL;
 	pcmd->rspsz = 0;
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("after enqueue set_auth_cmd, auth_mode=%x\n", psecuritypriv->dot11AuthAlgrthm));
 
@@ -2766,7 +2766,7 @@ _func_enter_;
 	pcmd->rsp = NULL;
 	pcmd->rspsz = 0;
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 
 	/* sema_init(&(pcmd->cmd_sem), 0); */
 

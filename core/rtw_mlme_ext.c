@@ -1189,9 +1189,8 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 	else
 	{
 		spin_lock_bh(&pstapriv->asoc_list_lock);
-		if(rtw_is_list_empty(&pstat->asoc_list)==_FALSE)
-		{
-			rtw_list_delete(&pstat->asoc_list);
+		if (!list_empty(&pstat->asoc_list)) {
+			list_del_init(&pstat->asoc_list);
 			pstapriv->asoc_list_cnt--;
 			if (pstat->expire_to > 0)
 			{
@@ -1206,9 +1205,8 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 	}
 
 	spin_lock_bh(&pstapriv->auth_list_lock);
-	if (rtw_is_list_empty(&pstat->auth_list))
-	{
-		rtw_list_insert_tail(&pstat->auth_list, &pstapriv->auth_list);
+	if (list_empty(&pstat->auth_list)) {
+		list_add_tail(&pstat->auth_list, &pstapriv->auth_list);
 		pstapriv->auth_list_cnt++;
 	}
 	spin_unlock_bh(&pstapriv->auth_list_lock);
@@ -1894,18 +1892,16 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 	pstat->state |= WIFI_FW_ASSOC_SUCCESS;
 
 	spin_lock_bh(&pstapriv->auth_list_lock);
-	if (!rtw_is_list_empty(&pstat->auth_list))
-	{
-		rtw_list_delete(&pstat->auth_list);
+	if (!list_empty(&pstat->auth_list)) {
+		list_del_init(&pstat->auth_list);
 		pstapriv->auth_list_cnt--;
 	}
 	spin_unlock_bh(&pstapriv->auth_list_lock);
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
-	if (rtw_is_list_empty(&pstat->asoc_list))
-	{
+	if (list_empty(&pstat->asoc_list)) {
 		pstat->expire_to = pstapriv->expire_to;
-		rtw_list_insert_tail(&pstat->asoc_list, &pstapriv->asoc_list);
+		list_add_tail(&pstat->asoc_list, &pstapriv->asoc_list);
 		pstapriv->asoc_list_cnt++;
 	}
 	spin_unlock_bh(&pstapriv->asoc_list_lock);
@@ -2149,12 +2145,11 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 			u8 updated;
 
 			spin_lock_bh(&pstapriv->asoc_list_lock);
-			if(rtw_is_list_empty(&psta->asoc_list)==_FALSE)
-			{
-				rtw_list_delete(&psta->asoc_list);
+			if (!list_empty(&psta->asoc_list)) {
+				list_del_init(&psta->asoc_list);
 				pstapriv->asoc_list_cnt--;
-				updated = ap_free_sta(padapter, psta, _FALSE, reason);
-
+				updated = ap_free_sta(padapter, psta,
+						      _FALSE, reason);
 			}
 			spin_unlock_bh(&pstapriv->asoc_list_lock);
 
@@ -2222,12 +2217,11 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 			u8 updated;
 
 			spin_lock_bh(&pstapriv->asoc_list_lock);
-			if(rtw_is_list_empty(&psta->asoc_list)==_FALSE)
-			{
-				rtw_list_delete(&psta->asoc_list);
+			if (!list_empty(&psta->asoc_list)) {
+				list_del_init(&psta->asoc_list);
 				pstapriv->asoc_list_cnt--;
-				updated = ap_free_sta(padapter, psta, _FALSE, reason);
-
+				updated = ap_free_sta(padapter, psta,
+						      _FALSE, reason);
 			}
 			spin_unlock_bh(&pstapriv->asoc_list_lock);
 
@@ -7808,7 +7802,7 @@ exit:
 void issue_action_spct_ch_switch(_adapter *padapter, u8 *ra, u8 new_ch, u8 ch_offset)
 {
 	_irqL	irqL;
-	_list		*plist, *phead;
+	struct list_head		*plist, *phead;
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
 	unsigned char				*pframe;
@@ -8039,7 +8033,7 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 static void issue_action_BSSCoexistPacket(_adapter *padapter)
 {
 	_irqL	irqL;
-	_list		*plist, *phead;
+	struct list_head		*plist, *phead;
 	unsigned char category, action;
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -9402,7 +9396,7 @@ void report_survey_event(_adapter *padapter, union recv_frame *precv_frame)
 		return;
 	}
 
-	_rtw_init_listhead(&pcmd_obj->list);
+	INIT_LIST_HEAD(&pcmd_obj->list);
 
 	pcmd_obj->cmdcode = GEN_CMD_CODE(_Set_MLME_EVT);
 	pcmd_obj->cmdsz = cmdsz;
@@ -9457,7 +9451,7 @@ void report_surveydone_event(_adapter *padapter)
 		return;
 	}
 
-	_rtw_init_listhead(&pcmd_obj->list);
+	INIT_LIST_HEAD(&pcmd_obj->list);
 
 	pcmd_obj->cmdcode = GEN_CMD_CODE(_Set_MLME_EVT);
 	pcmd_obj->cmdsz = cmdsz;
@@ -9504,7 +9498,7 @@ void report_join_res(_adapter *padapter, int res)
 		return;
 	}
 
-	_rtw_init_listhead(&pcmd_obj->list);
+	INIT_LIST_HEAD(&pcmd_obj->list);
 
 	pcmd_obj->cmdcode = GEN_CMD_CODE(_Set_MLME_EVT);
 	pcmd_obj->cmdsz = cmdsz;
@@ -9555,7 +9549,7 @@ void report_del_sta_event(_adapter *padapter, unsigned char* MacAddr, unsigned s
 		return;
 	}
 
-	_rtw_init_listhead(&pcmd_obj->list);
+	INIT_LIST_HEAD(&pcmd_obj->list);
 
 	pcmd_obj->cmdcode = GEN_CMD_CODE(_Set_MLME_EVT);
 	pcmd_obj->cmdsz = cmdsz;
@@ -9610,7 +9604,7 @@ void report_add_sta_event(_adapter *padapter, unsigned char* MacAddr, int cam_id
 		return;
 	}
 
-	_rtw_init_listhead(&pcmd_obj->list);
+	INIT_LIST_HEAD(&pcmd_obj->list);
 
 	pcmd_obj->cmdcode = GEN_CMD_CODE(_Set_MLME_EVT);
 	pcmd_obj->cmdsz = cmdsz;
@@ -11106,7 +11100,7 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 	{
 		_irqL irqL;
 		struct sta_info *psta_bmc;
-		_list	*xmitframe_plist, *xmitframe_phead;
+		struct list_head	*xmitframe_plist, *xmitframe_phead;
 		struct xmit_frame *pxmitframe=NULL;
 		struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 		struct sta_priv  *pstapriv = &padapter->stapriv;
@@ -11131,7 +11125,7 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 
 				xmitframe_plist = get_next(xmitframe_plist);
 
-				rtw_list_delete(&pxmitframe->list);
+				list_del_init(&pxmitframe->list);
 
 				psta_bmc->sleepq_len--;
 				if(psta_bmc->sleepq_len>0)

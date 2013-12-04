@@ -1229,10 +1229,9 @@ typedef enum _HCI_EXT_BT_OPERATION
 //======================================
 //	Function proto type
 //======================================
-#define RT_LIST_ENTRY _list
 typedef struct _BTData_ENTRY
 {
-	RT_LIST_ENTRY	List;
+	struct list_head	List;
 	void			*pDataBlock;
 } BTData_ENTRY, *PBTData_ENTRY;
 

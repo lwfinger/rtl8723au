@@ -695,7 +695,7 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
 	pcmd->rspsz = 0;
 
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 
 	res = rtw_enqueue_cmd(pcmdpriv, pcmd);
 
@@ -3827,7 +3827,7 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 			{
 				DBG_8723A("free psta=%p, aid=%d\n", psta, psta->aid);
 
-				rtw_list_delete(&psta->asoc_list);
+				list_del_init(&psta->asoc_list);
 				pstapriv->asoc_list_cnt--;
 
 				//spin_unlock_bh(&pstapriv->asoc_list_lock);

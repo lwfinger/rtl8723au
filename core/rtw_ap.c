@@ -306,7 +306,7 @@ u8 chk_sta_is_alive(struct sta_info *psta)
 void	expire_timeout_chk(_adapter *padapter)
 {
 	_irqL irqL;
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	u8 updated;
 	struct sta_info *psta=NULL;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -336,7 +336,7 @@ void	expire_timeout_chk(_adapter *padapter)
 			psta->expire_to--;
 			if (psta->expire_to == 0)
 			{
-				rtw_list_delete(&psta->auth_list);
+				list_del_init(&psta->auth_list);
 				pstapriv->auth_list_cnt--;
 
 				DBG_8723A("auth expire %02X%02X%02X%02X%02X%02X\n",
@@ -446,7 +446,7 @@ void	expire_timeout_chk(_adapter *padapter)
 			}
 			#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
 
-			rtw_list_delete(&psta->asoc_list);
+			list_del_init(&psta->asoc_list);
 			pstapriv->asoc_list_cnt--;
 
 			DBG_8723A("asoc expire "MAC_FMT", state=0x%x\n", MAC_ARG(psta->hwaddr), psta->state);
@@ -512,8 +512,8 @@ if (chk_alive_num) {
 
 		DBG_8723A("asoc expire "MAC_FMT", state=0x%x\n", MAC_ARG(psta->hwaddr), psta->state);
 		spin_lock_bh(&pstapriv->asoc_list_lock);
-		if (rtw_is_list_empty(&psta->asoc_list)==_FALSE) {
-			rtw_list_delete(&psta->asoc_list);
+		if (!list_empty(&psta->asoc_list)) {
+			list_del_init(&psta->asoc_list);
 			pstapriv->asoc_list_cnt--;
 			updated = ap_free_sta(padapter, psta, _FALSE, WLAN_REASON_DEAUTH_LEAVING);
 		}
@@ -1538,7 +1538,7 @@ void rtw_set_macaddr_acl(_adapter *padapter, int mode)
 int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 {
 	_irqL irqL;
-	_list	*plist, *phead;
+	struct list_head	*plist, *phead;
 	u8 added = _FALSE;
 	int i, ret=0;
 	struct rtw_wlan_acl_node *paclnode;
@@ -1585,13 +1585,13 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 
 		if(paclnode->valid == _FALSE)
 		{
-			_rtw_init_listhead(&paclnode->list);
+			INIT_LIST_HEAD(&paclnode->list);
 
 			memcpy(paclnode->addr, addr, ETH_ALEN);
 
 			paclnode->valid = _TRUE;
 
-			rtw_list_insert_tail(&paclnode->list, get_list_head(pacl_node_q));
+			list_add_tail(&paclnode->list, get_list_head(pacl_node_q));
 
 			pacl_list->num++;
 
@@ -1609,7 +1609,7 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 {
 	_irqL irqL;
-	_list	*plist, *phead;
+	struct list_head	*plist, *phead;
 	int i, ret=0;
 	struct rtw_wlan_acl_node *paclnode;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -1634,7 +1634,7 @@ int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 			{
 				paclnode->valid = _FALSE;
 
-				rtw_list_delete(&paclnode->list);
+				list_del_init(&paclnode->list);
 
 				pacl_list->num--;
 			}
@@ -1967,7 +1967,7 @@ void associated_clients_update(_adapter *padapter, u8 updated)
 	if(updated == _TRUE)
 	{
 		_irqL irqL;
-		_list	*phead, *plist;
+		struct list_head	*phead, *plist;
 		struct sta_info *psta=NULL;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
@@ -2336,7 +2336,7 @@ u8 ap_free_sta(_adapter *padapter, struct sta_info *psta, bool active, u16 reaso
 int rtw_ap_inform_ch_switch(_adapter *padapter, u8 new_ch, u8 ch_offset)
 {
 	_irqL irqL;
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	int ret=0;
 	struct sta_info *psta = NULL;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -2373,7 +2373,7 @@ int rtw_ap_inform_ch_switch(_adapter *padapter, u8 new_ch, u8 ch_offset)
 int rtw_sta_flush(_adapter *padapter)
 {
 	_irqL irqL;
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	int ret=0;
 	struct sta_info *psta = NULL;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -2400,7 +2400,7 @@ int rtw_sta_flush(_adapter *padapter)
 		plist = get_next(plist);
 
 		/* Remove sta from asoc_list */
-		rtw_list_delete(&psta->asoc_list);
+		list_del_init(&psta->asoc_list);
 		pstapriv->asoc_list_cnt--;
 
 		/* Keep sta for ap_free_sta() beyond this asoc_list loop */
@@ -2478,7 +2478,7 @@ void rtw_ap_restore_network(_adapter *padapter)
 	struct sta_info *psta;
 	struct security_priv* psecuritypriv=&(padapter->securitypriv);
 	_irqL irqL;
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	u8 chk_alive_num = 0;
 	char chk_alive_list[NUM_STA];
 	int i;
@@ -2580,11 +2580,11 @@ void start_ap_mode(_adapter *padapter)
 	pmlmepriv->p2p_probe_resp_ie = NULL;
 
 	/* for ACL */
-	_rtw_init_listhead(&(pacl_list->acl_node_q.queue));
+	INIT_LIST_HEAD(&(pacl_list->acl_node_q.queue));
 	pacl_list->num = 0;
 	pacl_list->mode = 0;
 	for(i = 0; i < NUM_ACL; i++) {
-		_rtw_init_listhead(&pacl_list->aclnode[i].list);
+		INIT_LIST_HEAD(&pacl_list->aclnode[i].list);
 		pacl_list->aclnode[i].valid = _FALSE;
 	}
 }
@@ -2592,7 +2592,7 @@ void start_ap_mode(_adapter *padapter)
 void stop_ap_mode(_adapter *padapter)
 {
 	_irqL irqL;
-	_list	*phead, *plist;
+	struct list_head	*phead, *plist;
 	struct rtw_wlan_acl_node *paclnode;
 	struct sta_info *psta=NULL;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -2622,7 +2622,7 @@ void stop_ap_mode(_adapter *padapter)
 		{
 			paclnode->valid = _FALSE;
 
-			rtw_list_delete(&paclnode->list);
+			list_del_init(&paclnode->list);
 
 			pacl_list->num--;
 		}

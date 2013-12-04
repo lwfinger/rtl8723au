@@ -194,7 +194,7 @@ _func_enter_;
 
 	spin_lock_irqsave(&queue->lock, irqL);
 
-	rtw_list_insert_tail(&obj->list, &queue->queue);
+	list_add_tail(&obj->list, &queue->queue);
 
 	spin_unlock_irqrestore(&queue->lock, irqL);
 
@@ -213,12 +213,11 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 _func_enter_;
 
 	spin_lock_irqsave(&queue->lock, irqL);
-	if (rtw_is_list_empty(&(queue->queue)))
+	if (list_empty(&(queue->queue)))
 		obj = NULL;
-	else
-	{
+	else {
 		obj = LIST_CONTAINOR(get_next(&(queue->queue)), struct cmd_obj, list);
-		rtw_list_delete(&obj->list);
+		list_del_init(&obj->list);
 	}
 
 	spin_unlock_irqrestore(&queue->lock, irqL);
@@ -528,7 +527,7 @@ _func_enter_;
 
 	spin_lock_bh(&queue->lock);
 
-	rtw_list_insert_tail(&obj->list, &queue->queue);
+	list_add_tail(&obj->list, &queue->queue);
 
 	spin_unlock_bh(&queue->lock);
 
@@ -553,7 +552,7 @@ _func_enter_;
 	else
 	{
 		pevtobj = LIST_CONTAINOR(get_next(&(queue->queue)), struct evt_obj, list);
-		rtw_list_delete(&pevtobj->list);
+		list_del_init(&pevtobj->list);
 	}
 
 	spin_unlock_bh(&queue->lock);
@@ -892,7 +891,7 @@ _func_enter_;
 		return _FAIL;
 	}
 
-	_rtw_init_listhead(&ph2c->list);
+	INIT_LIST_HEAD(&ph2c->list);
 	ph2c->cmdcode =GEN_CMD_CODE(_GetBBReg);
 	ph2c->parmbuf = (unsigned char *)prdbbparm;
 	ph2c->cmdsz =  sizeof(struct readBB_parm);
@@ -960,7 +959,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_init_listhead(&ph2c->list);
+	INIT_LIST_HEAD(&ph2c->list);
 	ph2c->cmdcode =GEN_CMD_CODE(_GetRFReg);
 	ph2c->parmbuf = (unsigned char *)prdrfparm;
 	ph2c->cmdsz =  sizeof(struct readRF_parm);
@@ -1022,7 +1021,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 	pcmd->cmdcode = _CreateBss_CMD_;
 	pcmd->parmbuf = (unsigned char *)pdev_network;
 	pcmd->cmdsz = get_WLAN_BSSID_EX_sz((WLAN_BSSID_EX*)pdev_network);
@@ -1061,7 +1060,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 	pcmd->cmdcode = GEN_CMD_CODE(_CreateBss);
 	pcmd->parmbuf = pbss;
 	pcmd->cmdsz =  sz;
@@ -1255,7 +1254,7 @@ _func_enter_;
 	psecnetwork->IELength = cpu_to_le32(psecnetwork->IELength);
 #endif
 
-	_rtw_init_listhead(&pcmd->list);
+	INIT_LIST_HEAD(&pcmd->list);
 	pcmd->cmdcode = _JoinBss_CMD_;/* GEN_CMD_CODE(_JoinBss) */
 	pcmd->parmbuf = (unsigned char *)psecnetwork;
 	pcmd->rsp = NULL;
@@ -1538,7 +1537,7 @@ _func_enter_;
 
 /*	init_h2fwcmd_w_parm_no_rsp(ph2c, psetrttblparm, GEN_CMD_CODE(_SetRaTable)); */
 
-	_rtw_init_listhead(&ph2c->list);
+	INIT_LIST_HEAD(&ph2c->list);
 	ph2c->cmdcode =GEN_CMD_CODE(_GetRaTable);
 	ph2c->parmbuf = (unsigned char *)pgetrttblparm;
 	ph2c->cmdsz =  sizeof(struct getratable_parm);
@@ -2780,14 +2779,14 @@ _func_enter_;
 		}
 		else
 		{
-			rtw_list_insert_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue);
+			list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue);
 		}
 
 		pnetwork->Length = get_WLAN_BSSID_EX_sz(pnetwork);
 		memcpy(&(pwlan->network), pnetwork, pnetwork->Length);
 		/* pwlan->fixed = _TRUE; */
 
-		/* rtw_list_insert_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue); */
+		/* list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue); */
 
 		/*  copy pdev_network information to	pmlmepriv->cur_network */
 		memcpy(&tgt_network->network, pnetwork, (get_WLAN_BSSID_EX_sz(pnetwork)));

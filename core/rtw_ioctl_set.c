@@ -72,7 +72,7 @@ u8 rtw_do_join(_adapter * padapter);
 u8 rtw_do_join(_adapter * padapter)
 {
 	_irqL	irqL;
-	_list	*plist, *phead;
+	struct list_head	*plist, *phead;
 	u8* pibss = NULL;
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	_queue	*queue	= &(pmlmepriv->scanned_queue);

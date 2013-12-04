@@ -96,42 +96,6 @@ void	_rtw_mfree(u8 *pbuf, u32 sz)
 	kfree(pbuf);
 }
 
-void _rtw_init_listhead(_list *list)
-{
-        INIT_LIST_HEAD(list);
-}
-
-
-/*
-For the following list_xxx operations,
-caller must guarantee the atomic context.
-Otherwise, there will be racing condition.
-*/
-u32	rtw_is_list_empty(_list *phead)
-{
-	if (list_empty(phead))
-		return _TRUE;
-	else
-		return _FALSE;
-}
-
-void rtw_list_insert_head(_list *plist, _list *phead)
-{
-	list_add(plist, phead);
-}
-
-void rtw_list_insert_tail(_list *plist, _list *phead)
-{
-	list_add_tail(plist, phead);
-}
-
-
-/*
-
-Caller must check if the list is empty before calling rtw_list_delete
-
-*/
-
 
 void	_rtw_mutex_init(_mutex *pmutex)
 {
@@ -154,17 +118,20 @@ void	_rtw_mutex_free(_mutex *pmutex)
 
 void	_rtw_init_queue(_queue	*pqueue)
 {
-	_rtw_init_listhead(&(pqueue->queue));
+	INIT_LIST_HEAD(&(pqueue->queue));
 	spin_lock_init(&(pqueue->lock));
 }
 
-u32	  _rtw_queue_empty(_queue	*pqueue)
+u32	  _rtw_queue_empty(_queue *pqueue)
 {
-	return (rtw_is_list_empty(&(pqueue->queue)));
+	if (list_empty(&(pqueue->queue)))
+		return _TRUE;
+	else
+		return _FALSE;
 }
 
 
-u32 rtw_end_of_queue_search(_list *head, _list *plist)
+u32 rtw_end_of_queue_search(struct list_head *head, struct list_head *plist)
 {
 	if (head == plist)
 		return _TRUE;

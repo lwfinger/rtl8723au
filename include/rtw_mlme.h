@@ -391,7 +391,7 @@ struct mlme_priv {
 	u8	*nic_hdl;
 
 	u8	not_indic_disco;
-	_list		*pscanned;
+	struct list_head	*pscanned;
 	_queue	free_bss_pool;
 	_queue	scanned_queue;
 	u8		*free_bss_buf;

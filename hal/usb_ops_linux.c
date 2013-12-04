@@ -695,7 +695,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		_rtw_init_listhead(&precvframe->u.hdr.list);
+		INIT_LIST_HEAD(&precvframe->u.hdr.list);
 		precvframe->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
 		precvframe->u.hdr.len=0;
 
@@ -1116,7 +1116,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 			{
 				precvframe_if2->u.hdr.adapter = secondary_padapter;
 
-				_rtw_init_listhead(&precvframe_if2->u.hdr.list);
+				INIT_LIST_HEAD(&precvframe_if2->u.hdr.list);
 				precvframe_if2->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
 				precvframe_if2->u.hdr.len=0;
 
@@ -1242,7 +1242,7 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		_rtw_init_listhead(&precvframe->u.hdr.list);
+		INIT_LIST_HEAD(&precvframe->u.hdr.list);
 		precvframe->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
 		precvframe->u.hdr.len=0;
 

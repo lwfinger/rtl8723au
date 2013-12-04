@@ -99,7 +99,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 
 	for(i=0; i < NR_RECVBUFF ; i++)
 	{
-		_rtw_init_listhead(&precvbuf->list);
+		INIT_LIST_HEAD(&precvbuf->list);
 
 		spin_lock_init(&precvbuf->recvbuf_lock);
 
@@ -113,7 +113,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 		precvbuf->adapter =padapter;
 
 
-		//rtw_list_insert_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue));
+		//list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue));
 
 		precvbuf++;
 
