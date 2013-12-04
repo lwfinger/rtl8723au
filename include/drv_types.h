@@ -269,8 +269,6 @@ struct dvobj_priv
 
 /*-------- below is for USB INTERFACE --------*/
 
-#ifdef CONFIG_USB_HCI
-
 	u8	nr_endpoint;
 	u8	ishighspeed;
 	u8	RtNumInPipes;
@@ -293,7 +291,6 @@ struct dvobj_priv
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
 	ATOMIC_T continual_urb_error;
-#endif//CONFIG_USB_HCI
 
 /*-------- below is for PCIE INTERFACE --------*/
 
@@ -302,12 +299,7 @@ struct dvobj_priv
 static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
-#ifdef RTW_DVOBJ_CHIP_HW_TYPE
-#endif
-
-#ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
 }
 
 enum _IFACE_TYPE {

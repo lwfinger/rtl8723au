@@ -30,9 +30,7 @@
 #include <rtw_ioctl.h>
 #include <rtw_ioctl_set.h>
 
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif //CONFIG_USB_HCI
 #include <rtw_version.h>
 
 #ifdef CONFIG_RTL8192C
@@ -6535,9 +6533,7 @@ static int rtw_dbg_port(struct net_device *dev,
 							pxmitpriv->free_xmitbuf_cnt, pxmitpriv->free_xmitframe_cnt,
 							pxmitpriv->free_xmit_extbuf_cnt, pxmitpriv->free_xframe_ext_cnt,
 							precvpriv->free_recvframe_cnt);
-						#ifdef CONFIG_USB_HCI
 						DBG_8723A("rx_urb_pending_cn=%d\n", precvpriv->rx_pending_cnt);
-						#endif
 					}
 					break;
 				case 0x09:

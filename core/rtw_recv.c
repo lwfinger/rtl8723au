@@ -26,11 +26,7 @@
 #include <ip.h>
 #include <if_ether.h>
 #include <ethernet.h>
-
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif
-
 #include <wifi.h>
 #include <circ_buf.h>
 
@@ -107,13 +103,9 @@ _func_enter_;
 
 	}
 
-#ifdef CONFIG_USB_HCI
-
 	precvpriv->rx_pending_cnt=1;
 
 	sema_init(&precvpriv->allrxreturnevt, 0);
-
-#endif
 
 	res = rtw_hal_init_recv_priv(padapter);
 

@@ -29,11 +29,8 @@ c. provides the software interface between caller and the hardware interface
 
 Compiler Flag Option:
 
-2. CONFIG_USB_HCI:
+1. For USB:
    a. USE_ASYNC_IRP: Both sync/async operations are provided.
-
-3. CONFIG_CFIO_HCI:
-   b. USE_SYNC_IRP: Only sync operations are provided.
 
 Only sync read/rtw_write_mem operations are provided.
 
@@ -48,9 +45,7 @@ jackson@realtek.com.tw
 #include <rtw_io.h>
 #include <osdep_intf.h>
 
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif
 
 #define rtw_le16_to_cpu(val)		le16_to_cpu(val)
 #define rtw_le32_to_cpu(val)		le32_to_cpu(val)

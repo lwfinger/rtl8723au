@@ -29,9 +29,7 @@
 #include <rtw_ioctl.h>
 #include <rtw_version.h>
 
-#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
-#endif
 
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
@@ -153,11 +151,7 @@ int rtw_hwpwrp_detect = 1;
 int rtw_hwpwrp_detect = 0; //HW power  ping detect 0:disable , 1:enable
 #endif
 
-#ifdef CONFIG_USB_HCI
 int rtw_hw_wps_pbc = 1;
-#else
-int rtw_hw_wps_pbc = 0;
-#endif
 
 #ifdef CONFIG_TX_MCAST2UNI
 int rtw_mc2u_disable = 0;
@@ -1706,9 +1700,7 @@ static const struct net_device_ops rtw_netdev_if2_ops = {
 #endif
 
 
-#ifdef CONFIG_USB_HCI
 	#include <usb_hal.h>
-#endif
 _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(struct _io_ops *pops))
 {
 	int res = _FAIL;

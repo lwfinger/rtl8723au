@@ -15313,7 +15313,6 @@ void btdm_HIDActionBC82Ant(PADAPTER padapter)
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8			btRssiState;
 
-#ifdef CONFIG_USB_HCI
 	if (pHalData->CustomerID == RT_CID_PLANEX)
 	{
 		if (pHalData->bt_coexist.PreviousState == pHalData->bt_coexist.CurrentState)
@@ -15321,7 +15320,6 @@ void btdm_HIDActionBC82Ant(PADAPTER padapter)
 		btdm_HIDActionBC42Ant(padapter);
 		return;
 	}
-#endif
 
 	if (pmlmepriv->LinkDetectInfo.bTxBusyTraffic)
 	{
@@ -15989,7 +15987,6 @@ void btdm_HIDPANActionBC82Ant(PADAPTER padapter)
 	else
 	{
 		RTPRINT(FBT, BT_TRACE, ("[BT 3.0]\n"));
-#ifdef CONFIG_USB_HCI
 		if (BTDM_IsWifiUplink(padapter))
 		{
 			RTPRINT(FBT, BT_TRACE, ("Wifi Uplink\n"));
@@ -16007,7 +16004,6 @@ void btdm_HIDPANActionBC82Ant(PADAPTER padapter)
 			else
 				btdm_DacSwing(padapter, BT_DACSWING_M7);
 		}
-#endif
 	}
 }
 

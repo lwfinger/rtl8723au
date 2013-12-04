@@ -1036,9 +1036,7 @@ _func_exit_;
 
 #ifdef CONFIG_IOL
 #include <rtw_iol.h>
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif
 int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt)
 {
 	IO_OFFLOAD_LOC	IoOffloadLoc;
@@ -1049,7 +1047,6 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 
 	if (rtw_IOL_append_END_cmd(xmit_frame) != _SUCCESS)
 		goto exit;
-#ifdef CONFIG_USB_HCI
 	{
 		struct pkt_attrib	*pattrib = &xmit_frame->attrib;
 		if(rtw_usb_bulk_size_boundary(adapter,TXDESC_SIZE+pattrib->last_txcmdsz))
@@ -1058,7 +1055,6 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 				goto exit;
 		}
 	}
-#endif //CONFIG_USB_HCI
 
 
 	dump_mgntframe_and_wait(adapter, xmit_frame, max_wating_ms);

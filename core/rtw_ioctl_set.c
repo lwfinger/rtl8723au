@@ -25,10 +25,8 @@
 #include <rtw_ioctl_set.h>
 #include <hal_intf.h>
 
-#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
 #include <usb_ops.h>
-#endif
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
 

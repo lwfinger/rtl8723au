@@ -24,8 +24,6 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#if defined (CONFIG_USB_HCI)
-
 #ifdef CONFIG_USB_TX_AGGREGATION
 #define MAX_XMITBUF_SZ	(20480)	// 20k
 #else
@@ -36,7 +34,6 @@
 #else
 #define NR_XMITBUFF	(4)
 #endif //CONFIG_SINGLE_XMIT_BUF
-#endif
 
 #define XMITBUF_ALIGN_SZ 512
 
@@ -109,10 +106,8 @@ do{\
 #endif
 
 
-#ifdef CONFIG_USB_HCI
 #define PACKET_OFFSET_SZ (8)
 #define TXDESC_OFFSET (TXDESC_SIZE + PACKET_OFFSET_SZ)
-#endif
 
 struct tx_desc{
 
@@ -256,31 +251,17 @@ struct xmit_buf
 	u16 ext_tag; // 0: Normal xmitbuf, 1: extension xmitbuf.
 	u16 flags;
 	u32 alloc_sz;
-
 	u32  len;
-
 	struct submit_ctx *sctx;
-
-#ifdef CONFIG_USB_HCI
-
-	//u32 sz[8];
 	u32	ff_hwaddr;
-
 	PURB	pxmit_urb[8];
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
-
 	u8 bpending[8];
-
 	int last[8];
-
-#endif
-
 #if defined(DBG_XMIT_BUF )|| defined(DBG_XMIT_BUF_EXT)
 	u8 no;
 #endif
-
 };
-
 
 struct xmit_frame
 {
@@ -298,7 +279,6 @@ struct xmit_frame
 
 	struct xmit_buf *pxmitbuf;
 
-#ifdef CONFIG_USB_HCI
 #ifdef CONFIG_USB_TX_AGGREGATION
 	u8	agg_num;
 #endif
@@ -306,7 +286,6 @@ struct xmit_frame
 #ifdef CONFIG_RTL8192D
 	u8	EMPktNum;
 	u16	EMPktLen[5];//The max value by HW
-#endif
 #endif
 
 #ifdef CONFIG_XMIT_ACK
@@ -422,7 +401,6 @@ struct	xmit_priv	{
 
 	u8	wmm_para_seq[4];//sequence for wmm ac parameter strength from large to small. it's value is 0->vo, 1->vi, 2->be, 3->bk.
 
-#ifdef CONFIG_USB_HCI
 	struct semaphore	tx_retevt;//all tx return event;
 	u8		txirp_cnt;//
 
@@ -432,8 +410,6 @@ struct	xmit_priv	{
 	int bkq_cnt;
 	int viq_cnt;
 	int voq_cnt;
-
-#endif
 
 	_queue free_xmitbuf_queue;
 	_queue pending_xmitbuf_queue;

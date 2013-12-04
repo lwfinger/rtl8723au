@@ -74,9 +74,7 @@ _BlockWrite(
 	u8			*bufferPtr	= (u8*)buffer;
 	u32			i=0, offset=0;
 
-#ifdef CONFIG_USB_HCI
 	blockSize_p1 = 254;
-#endif
 
 	//3 Phase #1
 	blockCount_p1 = buffSize / blockSize_p1;
@@ -90,11 +88,7 @@ _BlockWrite(
 
 	for (i = 0; i < blockCount_p1; i++)
 	{
-#ifdef CONFIG_USB_HCI
 		ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + i * blockSize_p1), blockSize_p1, (bufferPtr + i * blockSize_p1));
-#else
-		ret = rtw_write32(padapter, (FW_8723A_START_ADDRESS + i * blockSize_p1), le32_to_cpu(*((u32*)(bufferPtr + i * blockSize_p1))));
-#endif
 		if(ret == _FAIL)
 			goto exit;
 	}
@@ -113,14 +107,12 @@ _BlockWrite(
 						(buffSize-offset), blockSize_p2 ,blockCount_p2, remainSize_p2));
 		}
 
-#ifdef CONFIG_USB_HCI
 		for (i = 0; i < blockCount_p2; i++) {
 			ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + offset + i*blockSize_p2), blockSize_p2, (bufferPtr + offset + i*blockSize_p2));
 
 			if(ret == _FAIL)
 				goto exit;
 		}
-#endif
 	}
 
 	//3 Phase #3
@@ -2377,7 +2369,6 @@ u8 GetEEPROMSize8723A(PADAPTER padapter)
 	return size;
 }
 
-#if defined(CONFIG_USB_HCI)
 //-------------------------------------------------------------------------
 //
 // LLT R/W/Init function
@@ -2474,9 +2465,7 @@ s32 InitLLTTable(PADAPTER padapter, u32 boundary)
 
 	return status;
 }
-#endif
 
-#if defined(CONFIG_USB_HCI)
 void _DisableGPIO(PADAPTER	padapter)
 {
 /***************************************
@@ -2793,8 +2782,6 @@ s32 CardDisableWithoutHWSM(PADAPTER padapter)
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("<====== Card Disable Without HWSM .\n"));
 	return rtStatus;
 }
-
-#endif
 
 void
 Hal_InitPGData(
@@ -3694,11 +3681,9 @@ void rtl8723a_fill_fake_txdesc(
 	//offset 16
 	ptxdesc->txdw4 |= cpu_to_le32(BIT(8));//driver uses rate
 
-#if defined(CONFIG_USB_HCI)
 	// USB interface drop packet if the checksum of descriptor isn't correct.
 	// Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.).
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
-#endif
 }
 
 #ifdef CONFIG_CONCURRENT_MODE

@@ -26,10 +26,7 @@
 #include <osdep_intf.h>
 #include <circ_buf.h>
 #include <ip.h>
-
-#ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
-#endif
 
 static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
 static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
@@ -269,11 +266,8 @@ _func_enter_;
 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
 
 	for (i = 0; i < 4; i ++)
-	{
 		pxmitpriv->wmm_para_seq[i] = i;
-	}
 
-#ifdef CONFIG_USB_HCI
 	pxmitpriv->txirp_cnt=1;
 
 	sema_init(&(pxmitpriv->tx_retevt), 0);
@@ -283,7 +277,6 @@ _func_enter_;
 	pxmitpriv->bkq_cnt = 0;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
-#endif
 
 #ifdef CONFIG_XMIT_ACK
 	pxmitpriv->ack_tx = _FALSE;
@@ -2118,7 +2111,6 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 
 		pxframe->frame_tag = DATA_FRAMETAG;
 
-#ifdef CONFIG_USB_HCI
 		pxframe->pkt = NULL;
 		pxframe->pkt_offset = 1;/* default use pkt_offset to fill tx desc */
 
@@ -2126,12 +2118,9 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 		pxframe->agg_num = 1;
 #endif
 
-#endif /* ifdef CONFIG_USB_HCI */
-
 #ifdef CONFIG_XMIT_ACK
 		pxframe->ack_report = 0;
 #endif
-
 	}
 }
 
@@ -2377,9 +2366,6 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	_adapter *padapter = pxmitpriv->adapter;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	int i, inx[4];
-#ifdef CONFIG_USB_HCI
-/*	int j, tmp, acirp_cnt[4]; */
-#endif
 
 _func_enter_;
 
@@ -2387,10 +2373,8 @@ _func_enter_;
 
 	if(pregpriv->wifi_spec==1) {
 		int j, tmp, acirp_cnt[4];
-#if defined(CONFIG_USB_HCI)
 		for(j=0; j<4; j++)
 			inx[j] = pxmitpriv->wmm_para_seq[j];
-#endif
 	}
 
 	spin_lock_bh(&pxmitpriv->lock);
@@ -3664,9 +3648,7 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 {
 	_irqL irql;
 	struct xmit_buf *pxmitbuf;
-#ifdef CONFIG_USB_HCI
 	struct xmit_frame *pxmitframe;
-#endif
 	_queue *pqueue;
 
 	pxmitbuf = NULL;
@@ -3687,7 +3669,6 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 
 			pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
-#ifdef CONFIG_USB_HCI
 			pxmitframe = (struct xmit_frame*)pxmitbuf->priv_data;
 			if(pxmitframe)
 			{
@@ -3697,9 +3678,6 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 			{
 				DBG_8723A("%s, !!!ERROR!!! For USB, TODO ITEM \n", __FUNCTION__);
 			}
-#else
-			type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_OFFSET);
-#endif
 
 			if ((type == WIFI_PROBEREQ) ||
 				(type == WIFI_DATA_NULL) ||

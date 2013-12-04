@@ -540,14 +540,11 @@ typedef struct hal_data_8723a
 	//
 	// For USB Interface HAL related
 	//
-#ifdef CONFIG_USB_HCI
 	u32	UsbBulkOutSize;
 
-	// Interrupt relatd register information.
+	// Interrupt related register information.
 	u32	IntArray[2];
 	u32	IntrMask[2];
-#endif
-
 
 	//
 	// For SDIO Interface HAL related

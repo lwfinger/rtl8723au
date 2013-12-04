@@ -114,18 +114,11 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			pdmpriv->ThermalValue_IQK = ThermalValue;
 			pdmpriv->ThermalValue_DPK = pHalData->EEPROMThermalMeter;
 
-#ifdef CONFIG_USB_HCI
 			for(i = 0; i < rf; i++)
 				pdmpriv->OFDM_index_HP[i] = pdmpriv->OFDM_index[i] = OFDM_index_old[i];
 			pdmpriv->CCK_index_HP = pdmpriv->CCK_index = CCK_index_old;
-#else
-			for(i = 0; i < rf; i++)
-				pdmpriv->OFDM_index[i] = OFDM_index_old[i];
-			pdmpriv->CCK_index = CCK_index_old;
-#endif
 		}
 
-#ifdef CONFIG_USB_HCI
 		if(pHalData->BoardType == BOARD_USB_High_PA) {
 			pdmpriv->ThermalValue_HP[pdmpriv->ThermalValue_HP_index] = ThermalValue;
 			pdmpriv->ThermalValue_HP_index++;
@@ -142,35 +135,26 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			if(ThermalValue_HP_count)
 				ThermalValue = (u8)(ThermalValue_HP / ThermalValue_HP_count);
 		}
-#endif
 
 		delta = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
-#ifdef CONFIG_USB_HCI
 		if(pHalData->BoardType == BOARD_USB_High_PA) {
 			if(pdmpriv->bDoneTxpower)
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 			else
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
-		}
-		else
-#endif
-		{
+		} else {
 			delta_HP = 0;
 		}
 		delta_LCK = (ThermalValue > pdmpriv->ThermalValue_LCK)?(ThermalValue - pdmpriv->ThermalValue_LCK):(pdmpriv->ThermalValue_LCK - ThermalValue);
 		delta_IQK = (ThermalValue > pdmpriv->ThermalValue_IQK)?(ThermalValue - pdmpriv->ThermalValue_IQK):(pdmpriv->ThermalValue_IQK - ThermalValue);
 
-		if(delta_LCK > 1)
-		{
+		if(delta_LCK > 1) {
 			pdmpriv->ThermalValue_LCK = ThermalValue;
 			rtl8192c_PHY_LCCalibrate(Adapter);
 		}
 
-		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl)
-		{
-#ifdef CONFIG_USB_HCI
-			if(pHalData->BoardType == BOARD_USB_High_PA)
-			{
+		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl) {
+			if(pHalData->BoardType == BOARD_USB_High_PA) {
 				pdmpriv->bDoneTxpower = _TRUE;
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
 
@@ -184,9 +168,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] - index_HP;
 					CCK_index = pdmpriv->CCK_index_HP -index_HP;
-				}
-				else
-				{
+				} else {
 					for(i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] + index_HP;
 					CCK_index = pdmpriv->CCK_index_HP + index_HP;
@@ -194,10 +176,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 
-			}
-			else
-#endif
-			{
+			} else {
 				if(ThermalValue > pdmpriv->ThermalValue)
 				{
 					for(i = 0; i < rf; i++)
@@ -224,10 +203,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			}*/
 
 			/* no adjust */
-#ifdef CONFIG_USB_HCI
-			if(pHalData->BoardType != BOARD_USB_High_PA)
-#endif
-			{
+			if(pHalData->BoardType != BOARD_USB_High_PA) {
 				if(ThermalValue > pHalData->EEPROMThermalMeter)
 				{
 					for(i = 0; i < rf; i++)

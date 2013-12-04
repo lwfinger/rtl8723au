@@ -218,9 +218,8 @@ void handle_txrpt_ccx_8723a(_adapter *adapter, void *buf);
 void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem);
 void rtl8723a_fill_fake_txdesc(PADAPTER padapter, u8 *pDesc, u32 BufferLen, u8 IsPsPoll, u8 IsBTQosNull);
 
-#ifdef CONFIG_USB_HCI
 s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
 s32 rtl8723au_xmit_buf_handler(PADAPTER padapter);
 #define hal_xmit_handler rtl8723au_xmit_buf_handler
-#endif
+
 #endif

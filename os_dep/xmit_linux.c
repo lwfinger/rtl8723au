@@ -124,7 +124,6 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 
 int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz)
 {
-#ifdef CONFIG_USB_HCI
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
@@ -156,17 +155,14 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		}
 
 	}
-#endif
 	return _SUCCESS;
 }
 
 void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz)
 {
-#ifdef CONFIG_USB_HCI
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
-
 
 	for(i=0; i<8; i++)
 	{
@@ -186,7 +182,6 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		kfree(pxmitbuf->pallocated_buf);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-#endif
 }
 
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)

@@ -218,12 +218,7 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 
 	// 2010/10/18 MH Accorsing to SD3 eechou's suggestion, we need to disable turbo scan for RU.
 	// Otherwise, external PA will be broken if power index > 0x20.
-#ifdef CONFIG_USB_HCI
-	if (pHalData->EEPROMRegulatory != 0 || pHalData->ExternalPA)
-#else
-	if (pHalData->EEPROMRegulatory != 0)
-#endif
-	{
+	if (pHalData->EEPROMRegulatory != 0 || pHalData->ExternalPA) {
 		//DbgPrint("TurboScanOff=1 EEPROMRegulatory=%d ExternalPA=%d\n", pHalData->EEPROMRegulatory, pHalData->ExternalPA);
 		TurboScanOff = _TRUE;
 	}
@@ -235,23 +230,17 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 
 		TurboScanOff = _TRUE;//disable turbo scan
 
-		if(TurboScanOff)
-		{
-			for(idx1=RF_PATH_A; idx1<=RF_PATH_B; idx1++)
-			{
+		if(TurboScanOff) {
+			for(idx1=RF_PATH_A; idx1<=RF_PATH_B; idx1++) {
 				TxAGC[idx1] =
 					pPowerlevel[idx1] | (pPowerlevel[idx1]<<8) |
 					(pPowerlevel[idx1]<<16) | (pPowerlevel[idx1]<<24);
-#ifdef CONFIG_USB_HCI
 				// 2010/10/18 MH For external PA module. We need to limit power index to be less than 0x20.
 				if (TxAGC[idx1] > 0x20 && pHalData->ExternalPA)
 					TxAGC[idx1] = 0x20;
-#endif
 			}
 		}
-	}
-	else
-	{
+	} else {
 // 20100427 Joseph: Driver dynamic Tx power shall not affect Tx power. It shall be determined by power training mechanism.
 // Currently, we cannot fully disable driver dynamic tx power mechanism because it is referenced by BT coexist mechanism.
 // In the future, two mechanism shall be separated from each other and maintained independantly. Thanks for Lanhsin's reminder.
