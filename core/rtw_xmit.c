@@ -25,7 +25,7 @@
 #include <wifi.h>
 #include <osdep_intf.h>
 #include <circ_buf.h>
-#include <ip.h>
+#include <linux/ip.h>
 #include <usb_ops.h>
 
 static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };

@@ -24,7 +24,7 @@
 #include <drv_types.h>
 
 #include <linux/if_ether.h>
-#include <ip.h>
+#include <linux/ip.h>
 #include <wifi.h>
 #include <mlme_osdep.h>
 #include <xmit_osdep.h>
