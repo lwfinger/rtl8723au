@@ -12557,9 +12557,6 @@ void BTDM_SetFwChnlInfo(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
 	u8		chnl;
 
 
-	if (!IS_HARDWARE_TYPE_8723A(padapter))
-		return;
-
 	// opMode
 	if (RT_MEDIA_CONNECT == mstatus)
 	{
@@ -13116,13 +13113,10 @@ void BTDM_8723ASignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 
 void BTDM_8723AInit(PADAPTER padapter)
 {
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		if (btdm_BtWifiAntNum(padapter) == Ant_x2)
-			BTDM_2AntParaInit(padapter);
-		else
-			BTDM_1AntParaInit(padapter);
-	}
+	if (btdm_BtWifiAntNum(padapter) == Ant_x2)
+		BTDM_2AntParaInit(padapter);
+	else
+		BTDM_1AntParaInit(padapter);
 }
 
 void BTDM_HWCoexAllOff8723A(PADAPTER padapter)

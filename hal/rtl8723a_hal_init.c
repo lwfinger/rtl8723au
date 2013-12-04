@@ -293,8 +293,7 @@ void rtl8723a_FirmwareSelfReset(PADAPTER padapter)
 		}
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("-%s: 8051 reset success (%d)\n", __FUNCTION__, Delay));
 
-		if ((Delay == 0) && IS_HARDWARE_TYPE_8723AU(padapter))
-		{
+		if ((Delay == 0)) {
 			//force firmware reset
 			u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
 			rtw_write8(padapter, REG_SYS_FUNC_EN+1, u1bTmp&(~BIT2));
@@ -343,52 +342,36 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		goto Exit;
 	}
 
-	if (IS_HARDWARE_TYPE_8723A(padapter))
-	{
-		if (IS_8723A_A_CUT(pHalData->VersionID))
-		{
-			pFwImageFileName = R8723FwImageFileName_UMC;
-			FwImage = (u8*)Rtl8723_FwImageArray;
-			FwImageLen = Rtl8723_ImgArrayLength;
-			RT_TRACE(_module_hal_init_c_, _drv_info_, ("rtl8723a_FirmwareDownload: R8723FwImageArray_UMC for RTL8723A A CUT\n"));
-		}
-		else if (IS_8723A_B_CUT(pHalData->VersionID))
-		{
-		  // WLAN Fw.
-			if (padapter->registrypriv.wifi_spec == 1) {
-				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-				FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
-				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
-			} else {
+	if (IS_8723A_A_CUT(pHalData->VersionID)) {
+		pFwImageFileName = R8723FwImageFileName_UMC;
+		FwImage = (u8*)Rtl8723_FwImageArray;
+		FwImageLen = Rtl8723_ImgArrayLength;
+		RT_TRACE(_module_hal_init_c_, _drv_info_, ("rtl8723a_FirmwareDownload: R8723FwImageArray_UMC for RTL8723A A CUT\n"));
+	} else if (IS_8723A_B_CUT(pHalData->VersionID)) {
+	  // WLAN Fw.
+		if (padapter->registrypriv.wifi_spec == 1) {
+			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
+			FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
+		} else {
 #ifdef CONFIG_BT_COEXIST
-				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithBT;
-				FwImageLen = Rtl8723_UMCBCutImgArrayWithBTLength;
-				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
+			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithBT;
+			FwImageLen = Rtl8723_UMCBCutImgArrayWithBTLength;
+			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
 #else
-				FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-				FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
-				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
+			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
+			FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
 #endif
-			}
-			pFwImageFileName = R8723FwImageFileName_UMC_B;
 		}
-		else
-		{
-			// <Roger_TODO> We should download proper RAM Code here  to match the ROM code.
-			RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: unknow version!\n", __FUNCTION__));
-//			return RT_STATUS_FAILURE;
-			rtStatus = _FAIL;
-			goto Exit;
-		}
-	}
-	else
-	{
-		RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: unknow chip!\n", __FUNCTION__));
+		pFwImageFileName = R8723FwImageFileName_UMC_B;
+	} else {
+		// <Roger_TODO> We should download proper RAM Code here  to match the ROM code.
+		RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: unknow version!\n", __FUNCTION__));
 		rtStatus = _FAIL;
 		goto Exit;
 	}
 
-//	RT_TRACE(_module_hal_init_c_, _drv_err_, ("rtl8723a_FirmwareDownload: %s\n", pFwImageFileName));
 
 #ifdef CONFIG_FILE_FWIMG
 	if(rtw_is_file_readable(rtw_fw_file_path) == _TRUE)
@@ -2483,21 +2466,6 @@ s32 InitLLTTable(PADAPTER padapter, u32 boundary)
 	u32	Last_Entry_Of_TxPktBuf = LAST_ENTRY_OF_TX_PKT_BUFFER;
 	HAL_DATA_TYPE *pHalData	= GET_HAL_DATA(padapter);
 
-#if 0
-	if (IS_HARDWARE_TYPE_8192DU(padapter))
-	{
-		if (pHalData->MacPhyMode92D != SINGLEMAC_SINGLEPHY) {
-			// for 92du two mac: The page size is different from 92c and 92s
-			txpktbuf_bndy = TX_PAGE_BOUNDARY_DUAL_MAC;
-			Last_Entry_Of_TxPktBuf = LAST_ENTRY_OF_TX_PKT_BUFFER_DUAL_MAC;
-		} else {
-			txpktbuf_bndy = boundary;
-			Last_Entry_Of_TxPktBuf = LAST_ENTRY_OF_TX_PKT_BUFFER;
-			//txpktbuf_bndy =253;
-			//Last_Entry_Of_TxPktBuf=255;
-		}
-	}
-#endif
 	for (i = 0; i < (txpktbuf_bndy - 1); i++) {
 		status = _LLTWrite(padapter, i, i + 1);
 		if (_SUCCESS != status) {
@@ -2554,44 +2522,20 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	value32 |= ((u4bTmp<<8) | 0x00FF0000);
 	rtw_write32(padapter, REG_GPIO_PIN_CTRL, value32);
 
-	if (IS_HARDWARE_TYPE_8723AU(padapter) ||
-		IS_HARDWARE_TYPE_8723AS(padapter))
-	{
-		//
-		// <Roger_Notes> For RTL8723u multi-function configuration which was autoload from Efuse offset 0x0a and 0x0b,
-		// WLAN HW GPIO[9], GPS HW GPIO[10] and BT HW GPIO[11].
-		// Added by Roger, 2010.10.07.
-		//
-		//2. Disable GPIO[8] and GPIO[12]
-		rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
-		value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
-		u4bTmp = value32 & 0x0000001F;
-//		if( IS_MULTI_FUNC_CHIP(padapter) )
-//			value32 |= ((u4bTmp<<8) | 0x00110000); // Set pin 8 and pin 12 to output mode.
-//		else
-			value32 |= ((u4bTmp<<8) | 0x001D0000); // Set pin 8, 10, 11 and pin 12 to output mode.
-		rtw_write32(padapter, REG_GPIO_PIN_CTRL_2, value32);
-	}
-	else
-	{
-		//2. Disable GPIO[10:8]
-		rtw_write8(padapter, REG_MAC_PINMUX_CFG, 0x00);
-		value16 = rtw_read16(padapter, REG_GPIO_IO_SEL) & 0xFF0F;
-		value8 = (u8) (value16&0x000F);
-		value16 |= ((value8<<4) | 0x0780);
-		rtw_write16(padapter, REG_GPIO_IO_SEL, value16);
-	}
+	//
+	// <Roger_Notes> For RTL8723u multi-function configuration which was autoload from Efuse offset 0x0a and 0x0b,
+	// WLAN HW GPIO[9], GPS HW GPIO[10] and BT HW GPIO[11].
+	// Added by Roger, 2010.10.07.
+	//
+	//2. Disable GPIO[8] and GPIO[12]
+	rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
+	value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
+	u4bTmp = value32 & 0x0000001F;
+	value32 |= ((u4bTmp<<8) | 0x001D0000); // Set pin 8, 10, 11 and pin 12 to output mode.
+	rtw_write32(padapter, REG_GPIO_PIN_CTRL_2, value32);
 
 	//3. Disable LED0 & 1
-	if(IS_HARDWARE_TYPE_8192DU(padapter))
-	{
-		rtw_write16(padapter, REG_LEDCFG0, 0x8888);
-	}
-	else
-	{
-		rtw_write16(padapter, REG_LEDCFG0, 0x8080);
-	}
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable GPIO and LED.\n"));
+	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
 } //end of _DisableGPIO()
 
 void _DisableRFAFEAndResetBB8192C(PADAPTER padapter)
@@ -2628,50 +2572,32 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 
 void _DisableRFAFEAndResetBB(PADAPTER padapter)
 {
-#if 0
-	if (IS_HARDWARE_TYPE_8192D(padapter))
-		_DisableRFAFEAndResetBB8192D(padapter);
-	else
-#endif
-		_DisableRFAFEAndResetBB8192C(padapter);
+	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
 void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
-	if (IS_FW_81xxC(padapter) && (pHalData->FirmwareVersion <= 0x20))
-	{
-		#if 0
-/*****************************
-		f.	SYS_FUNC_EN 0x03[7:0]=0x54		// reset MAC register, DCORE
-		g.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-******************************/
-	u32	value32 = 0;
-		rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x54);
-		rtw_write8(padapter, REG_MCUFWDL, 0);
-		#else
+	if (IS_FW_81xxC(padapter) && (pHalData->FirmwareVersion <= 0x20)) {
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
 		h.	SYS_FUNC_EN 0x02[15-12]= 5		// reset MAC register, DCORE
 		i.     SYS_FUNC_EN 0x02[10]= 1			// enable MCU register, (8051 enable)
 		******************************/
-			u16 valu16 = 0;
-			rtw_write8(padapter, REG_MCUFWDL, 0);
+		u16 valu16 = 0;
+		rtw_write8(padapter, REG_MCUFWDL, 0);
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN)&0x0FFF;
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN)&0x0FFF;
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
-		#endif
-	}
-	else
-	{
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
+	} else {
 		u8 retry_cnts = 0;
 
 		// 2010/08/12 MH For USB SS, we can not stop 8051 when we are trying to
@@ -2761,28 +2687,17 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 
 void _ResetDigitalProcedure1(PADAPTER padapter, bool bWithoutHWSM)
 {
-#if 0
-	if(IS_HARDWARE_TYPE_8192D(padapter))
-		_ResetDigitalProcedure1_92D(padapter, bWithoutHWSM);
-	else
-#endif
-		_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
+	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
 void _ResetDigitalProcedure2(PADAPTER padapter)
 {
-	//HAL_DATA_TYPE		*pHalData	= GET_HAL_DATA(padapter);
 /*****************************
 k.	SYS_FUNC_EN 0x03[7:0] = 0x44			// disable ELDR runction
 l.	SYS_CLKR 0x08[15:0] = 0x3083			// disable ELDR clock
 m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 ******************************/
-	//rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x44); //marked by Scott.
-	// 2011/01/26 MH SD4 Scott suggest to fix UNC-B cut bug.
-	//if (IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID))
-		//rtw_write16(padapter, REG_SYS_CLKR, 0x70a3|BIT6);
-	//else
-		rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); //modify to 0x70a3 by Scott.
+	rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); //modify to 0x70a3 by Scott.
 	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
@@ -5033,8 +4948,7 @@ void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter)
 	// We should take power tracking, IQK, LCK, RCK RF read/write operation into consideration.
 	// 2011.12.15.
 	//
-	if (IS_HARDWARE_TYPE_8723A(padapter) && !pHalData->bAntennaDetected)
-	{
+	if (!pHalData->bAntennaDetected) {
 		u8 btAntNum = BT_GetPGAntNum(padapter);
 
 		// Set default antenna B status

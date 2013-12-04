@@ -3231,10 +3231,7 @@ odm_DynamicTxPowerInit(
 	else
 	#else
 	//so 92c pci do not need dynamic tx power? vivi check it later
-	if(IS_HARDWARE_TYPE_8192D(Adapter))
-		pMgntInfo->bDynamicTxPowerEnable = TRUE;
-	else
-		pMgntInfo->bDynamicTxPowerEnable = FALSE;
+	pMgntInfo->bDynamicTxPowerEnable = FALSE;
 	#endif
 
 
@@ -3733,13 +3730,10 @@ odm_DynamicTxPower_92D(
 
 	if(pMgntInfo->bMediaConnect)	// Default port
 	{
-		if(ACTING_AS_AP(Adapter) || pMgntInfo->mIbss)
-		{
+		if(ACTING_AS_AP(Adapter) || pMgntInfo->mIbss) {
 			UndecoratedSmoothedPWDB = pHalData->EntryMinUndecoratedSmoothedPWDB;
 			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Client PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-		else
-		{
+		} else {
 			UndecoratedSmoothedPWDB = pHalData->UndecoratedSmoothedPWDB;
 			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 		}
@@ -3750,50 +3744,21 @@ odm_DynamicTxPower_92D(
 		ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 	}
 
-	if(IS_HARDWARE_TYPE_8192D(Adapter) && GET_HAL_DATA(Adapter)->CurrentBandType92D == 1){
-		if(UndecoratedSmoothedPWDB >= 0x33)
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("5G:TxHighPwrLevel_Level2 (TxPwr=0x0)\n"));
-		}
-		else if((UndecoratedSmoothedPWDB <0x33) &&
-			(UndecoratedSmoothedPWDB >= 0x2b) )
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("5G:TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
-		}
-		else if(UndecoratedSmoothedPWDB < 0x2b)
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("5G:TxHighPwrLevel_Normal\n"));
-		}
-
+	if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2) {
+		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
+		ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x0)\n"));
+	} else if((UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL2-3)) &&
+		(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL1) ) {
+		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
+		ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
+	} else if(UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL1-5)) {
+		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
+		ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Normal\n"));
 	}
-	else
 
-	{
-		if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2)
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x0)\n"));
-		}
-		else if((UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL2-3)) &&
-			(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL1) )
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
-		}
-		else if(UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL1-5))
-		{
-			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-			ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Normal\n"));
-		}
-
-	}
 
 //sherry  delete flag 20110517
-	if(bGetValueFromBuddyAdapter)
-	{
+	if(bGetValueFromBuddyAdapter) {
 		ODM_RT_TRACE(pDM_Odm,COMP_MLME,DBG_LOUD,("dm_DynamicTxPower() mac 0 for mac 1 \n"));
 		if(Adapter->DualMacDMSPControl.bChangeTxHighPowerLvlForAnotherMacOfDMSP)
 		{
@@ -4549,13 +4514,10 @@ odm_TXPowerTrackingThermalMeterInit(
 		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 		struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
-		//if(IS_HARDWARE_TYPE_8192C(pHalData))
-		{
-			pdmpriv->bTXPowerTracking = _TRUE;
-			pdmpriv->TXPowercount = 0;
-			pdmpriv->bTXPowerTrackingInit = _FALSE;
-			pdmpriv->TxPowerTrackControl = _TRUE;
-		}
+		pdmpriv->bTXPowerTracking = _TRUE;
+		pdmpriv->TXPowercount = 0;
+		pdmpriv->bTXPowerTrackingInit = _FALSE;
+		pdmpriv->TxPowerTrackControl = _TRUE;
 		MSG_8723A("pdmpriv->TxPowerTrackControl = %d\n", pdmpriv->TxPowerTrackControl);
 
 	}
@@ -4668,21 +4630,7 @@ odm_TXPowerTrackingCheckMP(
 	IN		PDM_ODM_T		pDM_Odm
 	)
 {
-#if (DM_ODM_SUPPORT_TYPE == ODM_MP)
-	PADAPTER	Adapter = pDM_Odm->Adapter;
-
-	if (ODM_CheckPowerStatus(Adapter) == FALSE)
-		return;
-
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-		return;
-
-	if(!Adapter->bSlaveOfDMSP || Adapter->DualMacSmartConcurrent == FALSE)
-		odm_TXPowerTrackingThermalMeterCheck(Adapter);
-#endif
-
 }
-
 
 VOID
 odm_TXPowerTrackingCheckAP(
@@ -4739,12 +4687,7 @@ odm_TXPowerTrackingThermalMeterCheck(
 
 	if(!TM_Trigger)		//at least delay 1 sec
 	{
-		if(IS_HARDWARE_TYPE_8192D(Adapter))
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER_92D, BIT17 | BIT16, 0x03);
-		else if(IS_HARDWARE_TYPE_8188E(Adapter))
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER_88E, BIT17 | BIT16, 0x03);
-		else
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
+		PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
 		RT_TRACE(COMP_POWER_TRACKING, DBG_LOUD,("Trigger 92C Thermal Meter!!\n"));
 
 		TM_Trigger = 1;
@@ -4790,19 +4733,15 @@ odm_SwAntDivInit_NIC_8723A(
 	u1Byte			btAntNum=BT_GetPGAntNum(Adapter);
 
 
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-	{
-		pDM_SWAT_Table->ANTA_ON =TRUE;
+	pDM_SWAT_Table->ANTA_ON =TRUE;
 
-		// Set default antenna B status by PG
-		if(btAntNum == Ant_x2)
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-		else if(btAntNum ==Ant_x1)
-			pDM_SWAT_Table->ANTB_ON = FALSE;
-		else
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-	}
-
+	// Set default antenna B status by PG
+	if(btAntNum == Ant_x2)
+		pDM_SWAT_Table->ANTB_ON = TRUE;
+	else if(btAntNum ==Ant_x1)
+		pDM_SWAT_Table->ANTB_ON = FALSE;
+	else
+		pDM_SWAT_Table->ANTB_ON = TRUE;
 }
 #endif
 VOID
@@ -8567,11 +8506,6 @@ odm_PSD_Monitor(
 
 	ODM_SetBBReg(pDM_Odm, 0x818, BIT28, 0x0);
 	//1 Fix initial gain
-	//if (IS_HARDWARE_TYPE_8723AE(Adapter))
-	//RSSI_BT = pHalData->RSSI_BT;
-       //else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))      // Add by Gary
-       //    RSSI_BT = RSSI_BT_new;
-
 	if((pDM_Odm->SupportICType==ODM_RTL8723A)&(pDM_Odm->SupportInterface==ODM_ITRF_PCIE))
 		RSSI_BT=pDM_Odm->RSSI_BT;		//need to check C2H to pDM_Odm RSSI BT
 
@@ -8643,18 +8577,8 @@ odm_PSD_Monitor(
 		SSBT = RSSI_BT;
 	}
 
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
-	//	SSBT = RSSI_BT  * 2 +0x3E;
-	//else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))   // Add by Gary
-	//{
-	//	RSSI_BT = initial_gain_psd;
-	//	SSBT = RSSI_BT;
-	//}
 	ODM_RT_TRACE(pDM_Odm,COMP_PSD, DBG_LOUD,("PSD: SSBT= %d\n", SSBT));
 	ODM_RT_TRACE(	pDM_Odm,COMP_PSD, DBG_LOUD,("PSD: initial gain= 0x%x\n", initial_gain_psd));
-	//DbgPrint("PSD: SSBT= %d", SSBT);
-	//need to do
-	//pMgntInfo->bDMInitialGainEnable = FALSE;
 	pDM_Odm->bDMInitialGainEnable = FALSE;
 	initial_gain = ODM_GetBBReg(pDM_Odm, 0xc50, bMaskDWord) & 0x7F;
 	ODM_SetBBReg(pDM_Odm, 0xc50, 0x7F, initial_gain_psd);
@@ -8950,10 +8874,6 @@ ODM_PSDMonitor(
 	IN	PDM_ODM_T	pDM_Odm
 	)
 {
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
-
 	if(pDM_Odm->SupportICType == ODM_RTL8723A)   //may need to add other IC type
 	{
 		if(pDM_Odm->SupportInterface==ODM_ITRF_PCIE)
@@ -10273,11 +10193,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 	bool			bCount = FALSE;
 	pPD_T	pDM_PDTable = &Adapter->DM_PDTable;
 	//bool	isCCKrate = RX_HAL_IS_CCK_RATE_92C(pDesc);
-#if DEV_BUS_TYPE != RT_SDIO_INTERFACE
 	bool	isCCKrate = RX_HAL_IS_CCK_RATE(Adapter, pDesc);
-#else  //below code would be removed if we have verified SDIO
-	bool	isCCKrate = IS_HARDWARE_TYPE_8188E(Adapter) ? RX_HAL_IS_CCK_RATE_88E(pDesc) : RX_HAL_IS_CCK_RATE_92C(pDesc);
-#endif
 
 	if((pHalData->PathDivCfg != 1) || (pHalData->RSSI_test == FALSE))
 		return;
