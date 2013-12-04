@@ -1109,7 +1109,6 @@ _END_ONBEACON_:
 unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 {
 #ifdef CONFIG_AP_MODE
-	_irqL irqL;
 	unsigned int	auth_mode, seq, ie_len;
 	unsigned char	*sa, *p;
 	u16	algorithm;
@@ -1420,7 +1419,6 @@ authclnt_fail:
 unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 {
 #ifdef CONFIG_AP_MODE
-	_irqL irqL;
 	u16 capab_info, listen_interval;
 	struct rtw_ieee802_11_elems elems;
 	struct sta_info	*pstat;
@@ -2128,7 +2126,6 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 #ifdef CONFIG_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
 	{
-		_irqL irqL;
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
@@ -2200,7 +2197,6 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 #ifdef CONFIG_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
 	{
-		_irqL irqL;
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
@@ -5830,7 +5826,7 @@ void dump_mgntframe(_adapter *padapter, struct xmit_frame *pmgntframe)
 s32 dump_mgntframe_and_wait(_adapter *padapter, struct xmit_frame *pmgntframe, int timeout_ms)
 {
 	s32 ret = _FAIL;
-	_irqL irqL;
+	unsigned long irqL;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct xmit_buf *pxmitbuf = pmgntframe->pxmitbuf;
 	struct submit_ctx sctx;
@@ -5936,7 +5932,6 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 	unsigned int	rate_len;
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 #if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
-	_irqL irqL;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 #endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
@@ -7801,7 +7796,6 @@ exit:
 
 void issue_action_spct_ch_switch(_adapter *padapter, u8 *ra, u8 new_ch, u8 ch_offset)
 {
-	_irqL	irqL;
 	struct list_head		*plist, *phead;
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -8032,7 +8026,6 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 
 static void issue_action_BSSCoexistPacket(_adapter *padapter)
 {
-	_irqL	irqL;
 	struct list_head		*plist, *phead;
 	unsigned char category, action;
 	struct xmit_frame			*pmgntframe;
@@ -11098,7 +11091,6 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 #ifdef CONFIG_AP_MODE
 	else /* tx bc/mc frames after update TIM */
 	{
-		_irqL irqL;
 		struct sta_info *psta_bmc;
 		struct list_head	*xmitframe_plist, *xmitframe_phead;
 		struct xmit_frame *pxmitframe=NULL;
@@ -12198,7 +12190,6 @@ u8 set_csa_hdl(_adapter *padapter, unsigned char *pbuf)
 u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf)
 {
 #ifdef CONFIG_TDLS
-	_irqL irqL;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 	struct TDLSoption_param *TDLSoption;
 	struct sta_info *ptdls_sta;

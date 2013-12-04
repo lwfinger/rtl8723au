@@ -181,7 +181,6 @@ _func_exit_;
 
 union recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue)
 {
-	_irqL irqL;
 	union recv_frame  *precvframe;
 
 	spin_lock_bh(&pfree_recv_queue->lock);
@@ -203,7 +202,6 @@ void rtw_init_recvframe(union recv_frame *precvframe, struct recv_priv *precvpri
 
 int rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_queue)
 {
-	_irqL irqL;
 	_adapter *padapter=precvframe->u.hdr.adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
@@ -275,7 +273,6 @@ _func_exit_;
 int rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue)
 {
 	int ret;
-	_irqL irqL;
 
 	/* _spinlock(&pfree_recv_queue->lock); */
 	spin_lock_bh(&queue->lock);
@@ -338,8 +335,6 @@ u32 rtw_free_uc_swdec_pending_queue(_adapter *adapter)
 
 int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 {
-	_irqL irqL;
-
 	spin_lock_bh(&queue->lock);
 
 	list_del_init(&precvbuf->list);
@@ -352,7 +347,7 @@ int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 
 int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 {
-	_irqL irqL;
+	unsigned long irqL;
 	spin_lock_irqsave(&queue->lock, irqL);
 
 	list_del_init(&precvbuf->list);
@@ -364,7 +359,7 @@ int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 
 struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 {
-	_irqL irqL;
+	unsigned long irqL;
 	struct recv_buf *precvbuf;
 	struct list_head	*plist, *phead;
 
@@ -1501,7 +1496,6 @@ int validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 
 		if((psta->state&WIFI_SLEEP_STATE) && (pstapriv->sta_dz_bitmap&BIT(psta->aid)))
 		{
-			_irqL irqL;
 			struct list_head	*xmitframe_plist, *xmitframe_phead;
 			struct xmit_frame *pxmitframe=NULL;
 			struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -2617,7 +2611,6 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *preorder_ctrl, int bforced);
 int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *preorder_ctrl, int bforced)
 {
-	/* _irqL irql; */
 	/* u8 bcancelled; */
 	struct list_head	*phead, *plist;
 	union recv_frame *prframe;
@@ -2723,7 +2716,6 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe);
 int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 {
-	_irqL irql;
 	int retval = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
 	struct recv_reorder_ctrl *preorder_ctrl = prframe->u.hdr.preorder_ctrl;
@@ -2882,7 +2874,6 @@ _err_exit:
 
 void rtw_reordering_ctrl_timeout_handler(void *pcontext)
 {
-	_irqL irql;
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)pcontext;
 	_adapter *padapter = preorder_ctrl->padapter;
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
@@ -3163,7 +3154,6 @@ int recv_func(_adapter *padapter, union recv_frame *rframe)
 	if (check_fwstate(mlmepriv, WIFI_STATION_STATE) && psecuritypriv->busetkipkey)
 	{
 		union recv_frame *pending_frame;
-		_irqL irqL;
 
 		while((pending_frame=rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
 			if (recv_func_posthandle(padapter, pending_frame) == _SUCCESS)

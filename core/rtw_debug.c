@@ -940,7 +940,6 @@ int proc_get_all_sta_info(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data)
 {
-	_irqL irqL;
 	struct sta_info *psta;
 	struct net_device *dev = data;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);

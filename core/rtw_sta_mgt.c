@@ -172,7 +172,6 @@ inline struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int 
 void rtw_mfree_all_stainfo(struct sta_priv *pstapriv );
 void rtw_mfree_all_stainfo(struct sta_priv *pstapriv )
 {
-	_irqL	 irqL;
 	struct list_head	*plist, *phead;
 	struct sta_info *psta = NULL;
 
@@ -206,7 +205,6 @@ void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv)
 
 u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
 {
-	_irqL	irqL;
 	struct list_head	*phead, *plist;
 	struct sta_info *psta = NULL;
 	struct recv_reorder_ctrl *preorder_ctrl;
@@ -252,7 +250,6 @@ _func_exit_;
 /* struct	sta_info *rtw_alloc_stainfo(_queue *pfree_sta_queue, unsigned char *hwaddr) */
 struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 {
-	_irqL irqL, irqL2;
 	uint tmp_aid;
 	s32	index;
 	struct list_head	*phash_list;
@@ -379,7 +376,6 @@ _func_exit_;
 u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
 {
 	int i;
-	_irqL irqL0;
 	_queue *pfree_sta_queue;
 	struct recv_reorder_ctrl *preorder_ctrl;
 	struct	sta_xmit_priv	*pstaxmitpriv;
@@ -469,7 +465,6 @@ _func_enter_;
 	/* for A-MPDU Rx reordering buffer control, cancel reordering_ctrl_timer */
 	for(i=0; i < 16 ; i++)
 	{
-		_irqL irqL;
 		struct list_head	*phead, *plist;
 		union recv_frame *prframe;
 		_queue *ppending_recvframe_queue;
@@ -565,7 +560,6 @@ _func_exit_;
 /*  free all stainfo which in sta_hash[all] */
 void rtw_free_all_stainfo(_adapter *padapter)
 {
-	_irqL	 irqL;
 	struct list_head	*plist, *phead;
 	s32	index;
 	struct sta_info *psta = NULL;
@@ -606,9 +600,6 @@ _func_exit_;
 /* any station allocated can be searched by hash list */
 struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
-
-	_irqL	 irqL;
-
 	struct list_head	*plist, *phead;
 
 	struct sta_info *psta = NULL;
@@ -713,7 +704,6 @@ u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr)
 {
 	u8 res = _TRUE;
 #ifdef  CONFIG_AP_MODE
-	_irqL irqL;
 	struct list_head	*plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
 	u8 match = _FALSE;

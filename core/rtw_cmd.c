@@ -185,7 +185,7 @@ ISR/Call-Back functions can't call this sub-function.
 
 int	_rtw_enqueue_cmd(_queue *queue, struct cmd_obj *obj)
 {
-	_irqL irqL;
+	unsigned long irqL;
 
 _func_enter_;
 
@@ -207,7 +207,7 @@ _func_exit_;
 
 struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 {
-	_irqL irqL;
+	unsigned long irqL;
 	struct cmd_obj *obj;
 
 _func_enter_;
@@ -512,7 +512,6 @@ _func_exit_;
 #ifdef CONFIG_EVENT_THREAD_MODE
 u32 rtw_enqueue_evt(struct evt_priv *pevtpriv, struct evt_obj *obj)
 {
-	_irqL irqL;
 	int	res;
 	_queue *queue = &pevtpriv->evt_queue;
 
@@ -540,7 +539,6 @@ _func_exit_;
 
 struct evt_obj *rtw_dequeue_evt(_queue *queue)
 {
-	_irqL irqL;
 	struct	evt_obj	*pevtobj;
 
 _func_enter_;
@@ -2653,7 +2651,6 @@ _func_exit_;
 }
 void rtw_disassoc_cmd_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 {
-	_irqL	irqL;
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 _func_enter_;
@@ -2706,7 +2703,6 @@ _func_exit_;
 
 void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 {
-	_irqL irqL;
 	u8 timer_cancelled;
 	struct sta_info *psta = NULL;
 	struct wlan_network *pwlan = NULL;
@@ -2762,7 +2758,6 @@ _func_enter_;
 	}
 	else
 	{
-		_irqL	irqL;
 
 		pwlan = _rtw_alloc_network(pmlmepriv);
 		spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -2833,7 +2828,6 @@ _func_exit_;
 }
 void rtw_setassocsta_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 {
-	_irqL	irqL;
 	struct sta_priv * pstapriv = &padapter->stapriv;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct set_assocsta_parm* passocsta_parm = (struct set_assocsta_parm*)(pcmd->parmbuf);

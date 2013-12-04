@@ -228,7 +228,6 @@ void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
 void rtw_os_xmit_schedule(_adapter *padapter)
 {
 	_adapter *pri_adapter = padapter;
-	_irqL  irqL;
 	struct xmit_priv *pxmitpriv;
 
 	if(!padapter)
@@ -279,7 +278,6 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 {
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	_irqL	irqL;
 	_list	*phead, *plist;
 	struct sk_buff *newskb;
 	struct sta_info *psta = NULL;

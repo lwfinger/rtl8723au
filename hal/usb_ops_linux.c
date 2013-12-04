@@ -1426,18 +1426,12 @@ void rtl8192cu_recv_tasklet(void *priv)
 
 static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 {
-	_irqL irqL;
 	uint isevt, *pbuf;
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
 	_adapter			*padapter =(_adapter *)precvbuf->adapter;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete!!!\n"));
-
-	//spin_lock_irqsave(&precvpriv->lock, irqL);
-	//precvbuf->irp_pending=_FALSE;
-	//precvpriv->rx_pending_cnt --;
-	//spin_unlock_irqrestore(&precvpriv->lock, irqL);
 
 	precvpriv->rx_pending_cnt --;
 
@@ -1540,7 +1534,6 @@ _func_exit_;
 
 static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 {
-	_irqL irqL;
 	int err;
 	unsigned int pipe;
 	unsigned long tmpaddr = 0;

@@ -111,8 +111,6 @@ typedef unsigned char	_buffer;
 
 typedef struct	__queue	_queue;
 typedef	int	_OS_STATUS;
-//typedef u32	_irqL;
-typedef unsigned long _irqL;
 typedef	struct	net_device * _nic_hdl;
 
 typedef void*		_thread_hdl_;
@@ -167,7 +165,7 @@ __inline static struct list_head	*get_list_head(_queue	*queue)
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
 
-__inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
+__inline static int _enter_critical_mutex(_mutex *pmutex, unsigned long *pirqL)
 {
 	int ret = 0;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
@@ -180,7 +178,7 @@ __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 }
 
 
-__inline static void _exit_critical_mutex(_mutex *pmutex, _irqL *pirqL)
+__inline static void _exit_critical_mutex(_mutex *pmutex, unsigned long *pirqL)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
 	mutex_unlock(pmutex);

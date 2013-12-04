@@ -47,7 +47,6 @@ int is_any_client_associated(_adapter *padapter)
 
 static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 {
-	_irqL irqL;
 	struct list_head	*phead, *plist;
 	u32 len=0;
 	u16 attr_len = 0;
@@ -2392,7 +2391,6 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 				attr_contentlen=0;
 				if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_ID, dev_addr, &attr_contentlen))
 				{
-					_irqL irqL;
 					struct list_head	*phead, *plist;
 
 					spin_lock_bh(&pstapriv->asoc_list_lock);
@@ -3180,7 +3178,6 @@ void find_phase_handler( _adapter*	padapter )
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	NDIS_802_11_SSID	ssid;
-	_irqL				irqL;
 	u8					_status = 0;
 
 _func_enter_;
@@ -4237,7 +4234,6 @@ static void pre_tx_scan_timer_process (void *FunctionContext)
 {
 	_adapter							*adapter = (_adapter *) FunctionContext;
 	struct	wifidirect_info				*pwdinfo = &adapter->wdinfo;
-	_irqL							irqL;
 	struct mlme_priv					*pmlmepriv = &adapter->mlmepriv;
 	u8								_status = 0;
 
