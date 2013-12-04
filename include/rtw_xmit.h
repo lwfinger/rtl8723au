@@ -24,17 +24,13 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-//#define MAX_XMITBUF_SZ (30720)//	(2048)
+#if defined(CONFIG_GSPI_HCI)
 #ifdef CONFIG_TX_AGGREGATION
 #define MAX_XMITBUF_SZ	(20480)	// 20k
 #else
 #define MAX_XMITBUF_SZ (12288)  //12k 1536*8
 #endif
 
-#if defined CONFIG_SDIO_HCI
-#define NR_XMITBUFF	(16)
-#endif
 #if defined(CONFIG_GSPI_HCI)
 #define NR_XMITBUFF	(128)
 #endif
@@ -124,7 +120,7 @@ do{\
 #endif
 
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 #define TXDESC_OFFSET TXDESC_SIZE
 
 #endif
@@ -295,7 +291,7 @@ struct xmit_buf
 
 #endif
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 	u8 *phead;
 	u8 *pdata;
 	u8 *ptail;
@@ -328,7 +324,7 @@ struct xmit_frame
 
 	struct xmit_buf *pxmitbuf;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 	u8	pg_num;
 	u8	agg_num;
 #endif
@@ -470,12 +466,6 @@ struct	xmit_priv	{
 
 #endif
 
-#ifdef CONFIG_SDIO_HCI
-#ifdef CONFIG_SDIO_TX_TASKLET
-	struct tasklet_struct xmit_tasklet;
-#endif
-#endif
-
 	_queue free_xmitbuf_queue;
 	_queue pending_xmitbuf_queue;
 	u8 *pallocated_xmitbuf;
@@ -490,11 +480,7 @@ struct	xmit_priv	{
 	u16	nqos_ssn;
 	#ifdef CONFIG_TX_EARLY_MODE
 
-	#ifdef CONFIG_SDIO_HCI
-	#define MAX_AGG_PKT_NUM 20
-	#else
 	#define MAX_AGG_PKT_NUM 256 //Max tx ampdu coounts
-	#endif
 
 	struct agg_pkt_info agg_pkt[MAX_AGG_PKT_NUM];
 	#endif

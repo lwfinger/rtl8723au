@@ -119,7 +119,7 @@ typedef struct _LED_871x{
 
 	_timer				BlinkTimer; // Timer object for led blinking.
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 	u8					bSWLedCtrl;
 
 	// ALPHA, added by chiyoko, 20090106
@@ -129,11 +129,11 @@ typedef struct _LED_871x{
 	u8					bLedScanBlinkInProgress;
 
 	_workitem			BlinkWorkItem; // Workitem used by BlinkTimer to manipulate H/W to blink LED.
-#endif //defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#endif //defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 
 } LED_871x, *PLED_871x;
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 
 #define IS_LED_WPS_BLINKING(_LED_871x)	(((PLED_871x)_LED_871x)->CurrLedState==LED_BLINK_WPS \
 					|| ((PLED_871x)_LED_871x)->CurrLedState==LED_BLINK_WPS_STOP \
@@ -163,7 +163,7 @@ LedControl871x(
 	_adapter				*padapter,
 	LED_CTL_MODE		LedAction
 	);
-#endif //defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#endif //defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 
 struct led_priv{
 	/* add for led controll */

@@ -1942,12 +1942,6 @@ void SetBcnCtrlReg(PADAPTER padapter, u8 SetBits, u8 ClearBits)
 	*pRegBcnCtrlVal |= SetBits;
 	*pRegBcnCtrlVal &= ~ClearBits;
 
-#if 0
-//#ifdef CONFIG_SDIO_HCI
-	if (pHalData->sdio_himr & (SDIO_HIMR_TXBCNOK_MSK | SDIO_HIMR_TXBCNERR_MSK))
-		*pRegBcnCtrlVal |= EN_TXBCN_RPT;
-#endif
-
 	rtw_write8(padapter, addr, *pRegBcnCtrlVal);
 }
 
@@ -2383,7 +2377,7 @@ u8 GetEEPROMSize8723A(PADAPTER padapter)
 	return size;
 }
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 //-------------------------------------------------------------------------
 //
 // LLT R/W/Init function
@@ -2482,7 +2476,7 @@ s32 InitLLTTable(PADAPTER padapter, u32 boundary)
 }
 #endif
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
 void _DisableGPIO(PADAPTER	padapter)
 {
 /***************************************
@@ -3545,7 +3539,7 @@ void rtl8723a_fill_default_txdesc(
 				ptxdesc->data_short = 1;// DATA_SHORT
 			ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 		}
-#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_GSPI_HCI)
 		ptxdesc->usb_txagg_num = pxmitframe->agg_num;
 #endif
 	}
@@ -3700,7 +3694,7 @@ void rtl8723a_fill_fake_txdesc(
 	//offset 16
 	ptxdesc->txdw4 |= cpu_to_le32(BIT(8));//driver uses rate
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
+#if defined(CONFIG_USB_HCI)
 	// USB interface drop packet if the checksum of descriptor isn't correct.
 	// Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.).
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
@@ -4950,33 +4944,12 @@ void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter)
 
 void rtl8723a_clone_haldata(_adapter* dst_adapter, _adapter* src_adapter)
 {
-#ifdef CONFIG_SDIO_HCI
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(dst_adapter);
-	//_thread_hdl_  SdioXmitThread;
-	_sema             temp_SdioXmitSema;
-	_sema             temp_SdioXmitTerminateSema;
-	//u8                    SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-	_lock                temp_SdioTxFIFOFreePageLock;
-
-	memcpy(&temp_SdioXmitSema, &(pHalData->SdioXmitSema), sizeof(_sema));
-	memcpy(&temp_SdioXmitTerminateSema, &(pHalData->SdioXmitTerminateSema), sizeof(_sema));
-	memcpy(&temp_SdioTxFIFOFreePageLock, &(pHalData->SdioTxFIFOFreePageLock), sizeof(_lock));
-
 	memcpy(dst_adapter->HalData, src_adapter->HalData, dst_adapter->hal_data_sz);
-
-	memcpy(&(pHalData->SdioXmitSema), &temp_SdioXmitSema, sizeof(_sema));
-	memcpy(&(pHalData->SdioXmitTerminateSema), &temp_SdioXmitTerminateSema, sizeof(_sema));
-	memcpy(&(pHalData->SdioTxFIFOFreePageLock), &temp_SdioTxFIFOFreePageLock, sizeof(_lock));
-
-#else
-	memcpy(dst_adapter->HalData, src_adapter->HalData, dst_adapter->hal_data_sz);
-#endif
-
 }
 
 void rtl8723a_start_thread(_adapter *padapter)
 {
-#if (defined CONFIG_SDIO_HCI) || (defined CONFIG_GSPI_HCI)
+#if (defined CONFIG_GSPI_HCI)
 #ifndef CONFIG_SDIO_TX_TASKLET
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
@@ -4991,7 +4964,7 @@ void rtl8723a_start_thread(_adapter *padapter)
 
 void rtl8723a_stop_thread(_adapter *padapter)
 {
-#if (defined CONFIG_SDIO_HCI) || (defined CONFIG_GSPI_HCI)
+#if (defined CONFIG_GSPI_HCI)
 #ifndef CONFIG_SDIO_TX_TASKLET
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 

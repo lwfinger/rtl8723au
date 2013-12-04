@@ -29,10 +29,6 @@ c. provides the software interface between caller and the hardware interface
 
 Compiler Flag Option:
 
-1. CONFIG_SDIO_HCI:
-    a. USE_SYNC_IRP:  Only sync operations are provided.
-    b. USE_ASYNC_IRP:Both sync/async operations are provided.
-
 2. CONFIG_USB_HCI:
    a. USE_ASYNC_IRP: Both sync/async operations are provided.
 
@@ -52,10 +48,6 @@ jackson@realtek.com.tw
 #include <rtw_io.h>
 #include <osdep_intf.h>
 
-#ifdef CONFIG_SDIO_HCI
-#include <sdio_ops.h>
-#endif
-
 #ifdef CONFIG_GSPI_HCI
 #include <gspi_ops.h>
 #endif
@@ -64,18 +56,10 @@ jackson@realtek.com.tw
 #include <usb_ops.h>
 #endif
 
-#ifdef CONFIG_SDIO_HCI
-#define rtw_le16_to_cpu(val)		val
-#define rtw_le32_to_cpu(val)		val
-#define rtw_cpu_to_le16(val)		val
-#define rtw_cpu_to_le32(val)		val
-#else
 #define rtw_le16_to_cpu(val)		le16_to_cpu(val)
 #define rtw_le32_to_cpu(val)		le32_to_cpu(val)
 #define rtw_cpu_to_le16(val)		cpu_to_le16(val)
 #define rtw_cpu_to_le32(val)		cpu_to_le32(val)
-#endif
-
 u8 _rtw_read8(_adapter *adapter, u32 addr)
 {
 	u8 r_val;

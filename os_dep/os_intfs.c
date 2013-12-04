@@ -1113,15 +1113,9 @@ u32 rtw_start_drv_threads(_adapter *padapter)
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+rtw_start_drv_threads\n"));
 #ifdef CONFIG_XMIT_THREAD_MODE
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	if(padapter->adapter_type == PRIMARY_ADAPTER){
-#endif
 	padapter->xmitThread = kthread_run(rtw_xmit_thread, padapter, "RTW_XMIT_THREAD");
 	if(IS_ERR(padapter->xmitThread))
 		_status = _FAIL;
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	}
-#endif		// CONFIG_SDIO_HCI+CONFIG_CONCURRENT_MODE
 #endif
 
 #ifdef CONFIG_RECV_THREAD_MODE
@@ -1179,10 +1173,6 @@ void rtw_stop_drv_threads (_adapter *padapter)
 
 #ifdef CONFIG_XMIT_THREAD_MODE
 	// Below is to termindate tx_thread...
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	// Only wake-up primary adapter
-	if(padapter->adapter_type == PRIMARY_ADAPTER)
-#endif  //SDIO_HCI + CONCURRENT
 	{
 		up(&padapter->xmitpriv.xmit_sema);
 		down(&padapter->xmitpriv.terminate_xmitthread_sema);
@@ -1718,9 +1708,6 @@ static const struct net_device_ops rtw_netdev_if2_ops = {
 
 #ifdef CONFIG_USB_HCI
 	#include <usb_hal.h>
-#endif
-#ifdef CONFIG_SDIO_HCI
-	#include <sdio_hal.h>
 #endif
 _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(struct _io_ops *pops))
 {

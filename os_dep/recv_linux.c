@@ -434,7 +434,7 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 
 
 #endif
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 		precvbuf->pskb = NULL;
 #endif
 

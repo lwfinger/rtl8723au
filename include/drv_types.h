@@ -219,10 +219,7 @@ struct registry_priv
 
 #define MAX_CONTINUAL_URB_ERR 4
 
-#ifdef CONFIG_SDIO_HCI
-#include <drv_types_sdio.h>
-#define INTF_DATA SDIO_DATA
-#elif defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 #include <drv_types_gspi.h>
 #define INTF_DATA GSPI_DATA
 #endif
@@ -315,9 +312,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_SDIO_HCI
-	return &dvobj->intf_data.func->dev;
 #endif
 #ifdef CONFIG_GSPI_HCI
 	return &dvobj->intf_data.func->dev;

@@ -556,7 +556,7 @@ typedef struct hal_data_8723a
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8			bMacPwrCtrlOn;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 	//
 	// SDIO ISR Related
 	//

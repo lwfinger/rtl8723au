@@ -360,20 +360,12 @@ int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 {
 	_irqL irqL;
-#ifdef CONFIG_SDIO_HCI
-	spin_lock_bh(&queue->lock);
-#else
 	spin_lock_irqsave(&queue->lock, irqL);
-#endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	rtw_list_delete(&precvbuf->list);
 
 	rtw_list_insert_tail(&precvbuf->list, get_list_head(queue));
-#ifdef CONFIG_SDIO_HCI
-	spin_unlock_bh(&queue->lock);
-#else
 	spin_unlock_irqrestore(&queue->lock, irqL);
-#endif/*#ifdef  CONFIG_SDIO_HCI*/
 	return _SUCCESS;
 }
 
@@ -383,11 +375,7 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 	struct recv_buf *precvbuf;
 	_list	*plist, *phead;
 
-#ifdef CONFIG_SDIO_HCI
-	spin_lock_bh(&queue->lock);
-#else
 	spin_lock_irqsave(&queue->lock, irqL);
-#endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	if(_rtw_queue_empty(queue) == _TRUE)
 	{
@@ -405,11 +393,7 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 
 	}
 
-#ifdef CONFIG_SDIO_HCI
-	spin_unlock_bh(&queue->lock);
-#else
 	spin_unlock_irqrestore(&queue->lock, irqL);
-#endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	return precvbuf;
 }
@@ -2120,7 +2104,7 @@ _func_exit_;
 	return ret;
 }
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 static void recvframe_expand_pkt(
 	PADAPTER padapter,
 	union recv_frame *prframe)
@@ -2206,7 +2190,7 @@ _func_enter_;
 		return NULL;
 	}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 #ifndef CONFIG_SDIO_RX_COPY
 	recvframe_expand_pkt(adapter, prframe);
 #endif

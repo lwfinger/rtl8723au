@@ -34,9 +34,7 @@ Major Change History:
 
 --*/
 #include <HalPwrSeqCmd.h>
-#ifdef CONFIG_SDIO_HCI
-#include <sdio_ops.h>
-#elif defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_GSPI_HCI)
 #include <gspi_ops.h>
 #endif
 
@@ -93,24 +91,6 @@ u8 HalPwrSeqCmdParsing(
 					RT_TRACE(_module_hal_init_c_ , _drv_info_, ("HalPwrSeqCmdParsing: PWR_CMD_WRITE\n"));
 					offset = GET_PWR_CFG_OFFSET(PwrCfgCmd);
 
-#ifdef CONFIG_SDIO_HCI
-					//
-					// <Roger_Notes> We should deal with interface specific address mapping for some interfaces, e.g., SDIO interface
-					// 2011.07.07.
-					//
-					if (GET_PWR_CFG_BASE(PwrCfgCmd) == PWR_BASEADDR_SDIO)
-					{
-						// Read Back SDIO Local value
-						value = SdioLocalCmd52Read1Byte(padapter, offset);
-
-						value &= ~(GET_PWR_CFG_MASK(PwrCfgCmd));
-						value |= (GET_PWR_CFG_VALUE(PwrCfgCmd) & GET_PWR_CFG_MASK(PwrCfgCmd));
-
-						// Write Back SDIO Local value
-						SdioLocalCmd52Write1Byte(padapter, offset, value);
-					}
-					else
-#endif
 					{
 #ifdef CONFIG_GSPI_HCI
 						if (GET_PWR_CFG_BASE(PwrCfgCmd) == PWR_BASEADDR_SDIO)
@@ -137,12 +117,7 @@ u8 HalPwrSeqCmdParsing(
 						offset = SPI_LOCAL_OFFSET | offset;
 #endif
 					do {
-#ifdef CONFIG_SDIO_HCI
-						if (GET_PWR_CFG_BASE(PwrCfgCmd) == PWR_BASEADDR_SDIO)
-							value = SdioLocalCmd52Read1Byte(padapter, offset);
-						else
-#endif
-							value = rtw_read8(padapter, offset);
+						value = rtw_read8(padapter, offset);
 
 						value &= GET_PWR_CFG_MASK(PwrCfgCmd);
 						if (value == (GET_PWR_CFG_VALUE(PwrCfgCmd) & GET_PWR_CFG_MASK(PwrCfgCmd)))

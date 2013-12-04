@@ -27,8 +27,6 @@
 
 #if defined(CONFIG_GSPI_HCI)
 #define NR_RECVBUFF (32)
-#elif defined(CONFIG_SDIO_HCI)
-#define NR_RECVBUFF (8)
 #else
 #ifdef CONFIG_SINGLE_RECV_BUF
 #define NR_RECVBUFF (1)
@@ -55,10 +53,6 @@
 #else
 #define MAX_RECVBUF_SZ (4000) // about 4K
 #endif
-
-#elif defined(CONFIG_SDIO_HCI)
-
-#define MAX_RECVBUF_SZ (10240)
 
 #endif
 
