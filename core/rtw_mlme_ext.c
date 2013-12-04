@@ -1778,14 +1778,14 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 
 #ifdef CONFIG_80211N_HT
 	/* save HT capabilities in the sta object */
-	memset(&pstat->htpriv.ht_cap, 0, sizeof(struct rtw_ieee80211_ht_cap));
-	if (elems.ht_capabilities && elems.ht_capabilities_len >= sizeof(struct rtw_ieee80211_ht_cap))
+	memset(&pstat->htpriv.ht_cap, 0, sizeof(struct ieee80211_ht_cap));
+	if (elems.ht_capabilities && elems.ht_capabilities_len >= sizeof(struct ieee80211_ht_cap))
 	{
 		pstat->flags |= WLAN_STA_HT;
 
 		pstat->flags |= WLAN_STA_WME;
 
-		memcpy(&pstat->htpriv.ht_cap, elems.ht_capabilities, sizeof(struct rtw_ieee80211_ht_cap));
+		memcpy(&pstat->htpriv.ht_cap, elems.ht_capabilities, sizeof(struct ieee80211_ht_cap));
 
 	} else
 		pstat->flags &= ~WLAN_STA_HT;
@@ -7178,7 +7178,7 @@ void issue_assocreq(_adapter *padapter)
 			if (BT_1Ant(padapter) == _TRUE)
 			{
 				/*  set to 8K */
-				pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para &= (u8)~IEEE80211_HT_CAP_AMPDU_FACTOR;
+				pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para &= (u8)~IEEE80211_HT_AMPDU_PARM_FACTOR;
 /*				pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para |= MAX_AMPDU_FACTOR_8K */
 			}
 #endif
@@ -7875,7 +7875,7 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 	u16	reason_code;
 	u16	BA_timeout_value;
 	u16	BA_starting_seqctrl;
-	HT_CAP_AMPDU_FACTOR max_rx_ampdu_factor;
+	int	max_rx_ampdu_factor;
 	struct xmit_frame		*pmgntframe;
 	struct pkt_attrib		*pattrib;
 	u8					*pframe;
@@ -7950,7 +7950,7 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 					/*  TID */
 					BA_para_set |= (status << 2) & IEEE80211_ADDBA_PARAM_TID_MASK;
 					/*  max buffer size is 8 MSDU */
-					BA_para_set |= (8 << 6) & RTW_IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
+					BA_para_set |= (8 << 6) & IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
 				}
 				else
 #endif
@@ -7984,13 +7984,13 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 				pframe = rtw_set_fixed_ie(pframe, 1, &(pmlmeinfo->ADDBA_req.dialog_token), &(pattrib->pktlen));
 				pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)(&status), &(pattrib->pktlen));
 				rtw_hal_get_def_var(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR, &max_rx_ampdu_factor);
-				if(MAX_AMPDU_FACTOR_64K == max_rx_ampdu_factor)
+				if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_64K)
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
-				else if(MAX_AMPDU_FACTOR_32K == max_rx_ampdu_factor)
+				else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_32K)
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0800); /* 32 buffer size */
-				else if(MAX_AMPDU_FACTOR_16K == max_rx_ampdu_factor)
+				else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_16K)
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0400); /* 16 buffer size */
-				else if(MAX_AMPDU_FACTOR_8K == max_rx_ampdu_factor)
+				else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_8K)
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x0200); /* 8 buffer size */
 				else
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
@@ -8001,8 +8001,8 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 						memcmp(raddr, tendaAPMac, 3)))
 				{
 					/*  max buffer size is 8 MSDU */
-					BA_para_set &= ~RTW_IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
-					BA_para_set |= (8 << 6) & RTW_IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
+					BA_para_set &= ~IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
+					BA_para_set |= (8 << 6) & IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK;
 				}
 #endif
 

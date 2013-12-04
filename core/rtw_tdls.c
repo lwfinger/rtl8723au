@@ -328,7 +328,8 @@ void rtw_tdls_process_ht_cap(_adapter *adapter, struct sta_info *ptdls_sta, u8 *
 		}
 
 		/*  bwmode would still followed AP's setting */
-		if(ptdls_sta->htpriv.ht_cap.cap_info & cpu_to_le16(IEEE80211_HT_CAP_SUP_WIDTH))
+		if(ptdls_sta->htpriv.ht_cap.cap_info &
+		   cpu_to_le16(IEEE80211_HT_CAP_SUP_WIDTH_20_40))
 		{
 			ptdls_sta->htpriv.bwmode = adapter->mlmeextpriv.cur_bwmode;
 			ptdls_sta->htpriv.ch_offset = adapter->mlmeextpriv.cur_ch_offset;
@@ -344,8 +345,10 @@ u8 *rtw_tdls_set_ht_cap(_adapter *padapter, u8 *pframe, struct pkt_attrib *pattr
 	/* HT capabilities */
 	memset(&ht_capie, 0, sizeof(struct rtw_ieee80211_ht_cap));
 
-	ht_capie.cap_info = IEEE80211_HT_CAP_SUP_WIDTH |IEEE80211_HT_CAP_SGI_20 |IEEE80211_HT_CAP_SM_PS |
-						IEEE80211_HT_CAP_SGI_40 | IEEE80211_HT_CAP_TX_STBC |IEEE80211_HT_CAP_DSSSCCK40;
+	ht_capie.cap_info = IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
+		IEEE80211_HT_CAP_SGI_20 |IEEE80211_HT_CAP_SM_PS |
+		IEEE80211_HT_CAP_SGI_40 | IEEE80211_HT_CAP_TX_STBC |
+		IEEE80211_HT_CAP_DSSSCCK40;
 
 	{
 		u32 rx_packet_offset, max_recvbuf_sz;

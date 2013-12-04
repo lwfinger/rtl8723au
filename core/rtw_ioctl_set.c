@@ -27,6 +27,7 @@
 
 #include <usb_osintf.h>
 #include <usb_ops.h>
+#include <linux/ieee80211.h>
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
 
@@ -1163,7 +1164,7 @@ u16 rtw_get_cur_max_rate(_adapter *adapter)
 	struct mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 	WLAN_BSSID_EX  *pcur_bss = &pmlmepriv->cur_network.network;
 #ifdef CONFIG_80211N_HT
-	struct rtw_ieee80211_ht_cap *pht_capie;
+	struct ieee80211_ht_cap *pht_capie;
 	u8	rf_type = 0;
 	u8	bw_40MHz=0, short_GI_20=0, short_GI_40=0;
 	u16	mcs_rate=0;
@@ -1179,11 +1180,11 @@ u16 rtw_get_cur_max_rate(_adapter *adapter)
 		p = rtw_get_ie(&pcur_bss->IEs[12], _HT_CAPABILITY_IE_, &ht_ielen, pcur_bss->IELength-12);
 		if(p && ht_ielen>0)
 		{
-			pht_capie = (struct rtw_ieee80211_ht_cap *)(p+2);
+			pht_capie = (struct ieee80211_ht_cap *)(p+2);
 
-			memcpy(&mcs_rate , pht_capie->supp_mcs_set, 2);
+			memcpy(&mcs_rate , &pht_capie->mcs, 2);
 
-			/* bw_40MHz = (pht_capie->cap_info&IEEE80211_HT_CAP_SUP_WIDTH) ? 1:0; */
+			/* bw_40MHz = (pht_capie->cap_info&IEEE80211_HT_CAP_SUP_WIDTH_20_40) ? 1:0; */
 			/* cur_bwmod is updated by beacon, pmlmeinfo is updated by association response */
 			bw_40MHz = (pmlmeext->cur_bwmode && (HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH & pmlmeinfo->HT_info.infos[0])) ? 1:0;
 

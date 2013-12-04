@@ -29,6 +29,7 @@
 #include <Hal8723PwrSeq.h>
 #include <rtl8723a_hal.h>
 #include <rtl8723a_led.h>
+#include <linux/ieee80211.h>
 
 #ifdef CONFIG_IOL
 #include <rtw_iol.h>
@@ -3555,7 +3556,7 @@ GetHalDefVar8192CUsb(
 			*(( u32*)pValue) =pHalData->odmpriv.SupportAbility;
 			break;
 		case HW_VAR_MAX_RX_AMPDU_FACTOR:
-			*(( u32*)pValue) = MAX_AMPDU_FACTOR_64K;
+			*(( u32*)pValue) = IEEE80211_HT_MAX_AMPDU_64K;
 			break;
 		case HW_DEF_ODM_DBG_FLAG:
 			{
