@@ -64,10 +64,6 @@ jackson@realtek.com.tw
 #include <usb_ops.h>
 #endif
 
-#ifdef CONFIG_PCI_HCI
-#include <pci_ops.h>
-#endif
-
 #ifdef CONFIG_SDIO_HCI
 #define rtw_le16_to_cpu(val)		val
 #define rtw_le32_to_cpu(val)		val

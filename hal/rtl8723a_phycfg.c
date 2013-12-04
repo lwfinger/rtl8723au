@@ -698,14 +698,6 @@ s32 PHY_MACConfig8723A(PADAPTER Adapter)
 	rtStatus = phy_ConfigMACWithParaFile(Adapter, pszMACRegFile);
 #endif//CONFIG_EMBEDDED_FWIMG
 
-#ifdef CONFIG_PCI_HCI
-	//this switching setting cause some 8192cu hw have redownload fw fail issue
-	//improve 2-stream TX EVM by Jenyu
-	if(is92C)
-		rtw_write8(Adapter, REG_SPS0_CTRL+3,0x71);
-#endif
-
-
 	// 2010.07.13 AMPDU aggregation number 9
 	//rtw_write16(Adapter, REG_MAX_AGGR_NUM, MAX_AGGR_NUM);
 	rtw_write8(Adapter, REG_MAX_AGGR_NUM, 0x0A); //By tynli. 2010.11.18.

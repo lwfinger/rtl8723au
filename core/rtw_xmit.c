@@ -1983,10 +1983,6 @@ _func_enter_;
 		pxmitbuf->len = 0;
 		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
 #endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2072,10 +2068,6 @@ _func_enter_;
 		pxmitbuf->agg_num = 0;
 		pxmitbuf->pg_num = 0;
 #endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);

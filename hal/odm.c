@@ -6579,17 +6579,6 @@ odm_EdcaTurboCheckCE(
 				edca_param = EDCAParam[HT_IOT_PEER_UNKNOWN][trafficIndex];
 			}
 #endif
-
-#ifdef CONFIG_PCI_HCI
-			if(IS_92C_SERIAL(pHalData->VersionID))
-			{
-				edca_param = 0x60a42b;
-			}
-			else
-			{
-				edca_param = 0x6ea42b;
-			}
-#endif
 			rtw_write32(Adapter, REG_EDCA_BE_PARAM, edca_param);
 
 			pDM_Odm->DM_EDCA_Table.prv_traffic_idx = trafficIndex;

@@ -145,91 +145,6 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 	}
 }
 
-#ifdef CONFIG_PCI_HCI
-//
-//	Description:
-//		Perform interrupt migration dynamically to reduce CPU utilization.
-//
-//	Assumption:
-//		1. Do not enable migration under WIFI test.
-//
-//	Created by Roger, 2010.03.05.
-//
-VOID
-dm_InterruptMigration(
-	IN	PADAPTER	Adapter
-	)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
-	bool			bCurrentIntMt, bCurrentACIntDisable;
-	bool			IntMtToSet = _FALSE;
-	bool			ACIntToSet = _FALSE;
-
-
-	// Retrieve current interrupt migration and Tx four ACs IMR settings first.
-	bCurrentIntMt = pHalData->bInterruptMigration;
-	bCurrentACIntDisable = pHalData->bDisableTxInt;
-
-	//
-	// <Roger_Notes> Currently we use busy traffic for reference instead of RxIntOK counts to prevent non-linear Rx statistics
-	// when interrupt migration is set before. 2010.03.05.
-	//
-	if(!Adapter->registrypriv.wifi_spec &&
-		(check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE) &&
-		pmlmepriv->LinkDetectInfo.bHigherBusyTraffic)
-	{
-		IntMtToSet = _TRUE;
-
-		// To check whether we should disable Tx interrupt or not.
-		if(pmlmepriv->LinkDetectInfo.bHigherBusyRxTraffic )
-			ACIntToSet = _TRUE;
-	}
-
-	//Update current settings.
-	if( bCurrentIntMt != IntMtToSet ){
-		DBG_8723A("%s(): Update interrrupt migration(%d)\n",__FUNCTION__,IntMtToSet);
-		if(IntMtToSet)
-		{
-			//
-			// <Roger_Notes> Set interrrupt migration timer and corresponging Tx/Rx counter.
-			// timer 25ns*0xfa0=100us for 0xf packets.
-			// 2010.03.05.
-			//
-			rtw_write32(Adapter, REG_INT_MIG, 0xff000fa0);// 0x306:Rx, 0x307:Tx
-			pHalData->bInterruptMigration = IntMtToSet;
-		}
-		else
-		{
-			// Reset all interrupt migration settings.
-			rtw_write32(Adapter, REG_INT_MIG, 0);
-			pHalData->bInterruptMigration = IntMtToSet;
-		}
-	}
-
-	/*if( bCurrentACIntDisable != ACIntToSet ){
-		DBG_8723A("%s(): Update AC interrrupt(%d)\n",__FUNCTION__,ACIntToSet);
-		if(ACIntToSet) // Disable four ACs interrupts.
-		{
-			//
-			// <Roger_Notes> Disable VO, VI, BE and BK four AC interrupts to gain more efficient CPU utilization.
-			// When extremely highly Rx OK occurs, we will disable Tx interrupts.
-			// 2010.03.05.
-			//
-			UpdateInterruptMask8192CE( Adapter, 0, RT_AC_INT_MASKS );
-			pHalData->bDisableTxInt = ACIntToSet;
-		}
-		else// Enable four ACs interrupts.
-		{
-			UpdateInterruptMask8192CE( Adapter, RT_AC_INT_MASKS, 0 );
-			pHalData->bDisableTxInt = ACIntToSet;
-		}
-	}*/
-
-}
-
-#endif
-
 //
 // Initialize GPIO setting registers
 //
@@ -465,19 +380,6 @@ rtl8723a_HalDmWatchDog(
 			goto _record_initrate;
 #endif
 
-		//
-		// Dynamically switch RTS/CTS protection.
-		//
-		//dm_CheckProtection(Adapter);
-
-#ifdef CONFIG_PCI_HCI
-		// 20100630 Joseph: Disable Interrupt Migration mechanism temporarily because it degrades Rx throughput.
-		// Tx Migration settings.
-		//dm_InterruptMigration(Adapter);
-
-		//if(Adapter->HalFunc.TxCheckStuckHandler(Adapter))
-		//	PlatformScheduleWorkItem(&(GET_HAL_DATA(Adapter)->HalResetWorkItem));
-#endif
 _record_initrate:
 
 		// Read REG_INIDATA_RATE_SEL value for TXDESC.
@@ -522,12 +424,7 @@ skip_dm:
 
 	// Check GPIO to determine current RF on/off and Pbc status.
 	// Check Hardware Radio ON/OFF or not
-#ifdef CONFIG_PCI_HCI
-	if(pHalData->bGpioHwWpsPbc)
-#endif
-	{
-		dm_CheckPbcGPIO(Adapter);				// Add by hpfan 2008-03-11
-	}
+	dm_CheckPbcGPIO(Adapter);				// Add by hpfan 2008-03-11
 
 }
 

@@ -51,16 +51,9 @@
 #else
 #define NR_XMITBUFF	(4)
 #endif //CONFIG_SINGLE_XMIT_BUF
-#elif defined (CONFIG_PCI_HCI)
-#define MAX_XMITBUF_SZ	(1664)
-#define NR_XMITBUFF	(128)
 #endif
 
-#ifdef CONFIG_PCI_HCI
-#define XMITBUF_ALIGN_SZ 4
-#else
 #define XMITBUF_ALIGN_SZ 512
-#endif
 
 // xmit extension buff defination
 #define MAX_XMIT_EXTBUF_SZ	(1536)
@@ -83,12 +76,6 @@
 #define TXCMD_QUEUE_INX	7
 
 #define HW_QUEUE_ENTRY	8
-
-#ifdef CONFIG_PCI_HCI
-//#define TXDESC_NUM						64
-#define TXDESC_NUM						128
-#define TXDESC_NUM_BE_QUEUE			128
-#endif
 
 #define WEP_IV(pattrib_iv, dot11txpn, keyidx)\
 do{\
@@ -147,13 +134,6 @@ do{\
 #define TXDESC_OFFSET (TXDESC_SIZE + PACKET_OFFSET_SZ)
 #endif
 
-#ifdef CONFIG_PCI_HCI
-#define TXDESC_OFFSET 0
-#define TX_DESC_NEXT_DESC_OFFSET	40
-#endif
-
-
-
 struct tx_desc{
 
 	//DWORD 0
@@ -172,27 +152,6 @@ struct tx_desc{
 	unsigned int txdw6;
 
 	unsigned int txdw7;
-#ifdef CONFIG_PCI_HCI
-	unsigned int txdw8;
-
-	unsigned int txdw9;
-
-	unsigned int txdw10;
-
-	unsigned int txdw11;
-
-	// 2008/05/15 MH Because PCIE HW memory R/W 4K limit. And now,  our descriptor
-	// size is 40 bytes. If you use more than 102 descriptor( 103*40>4096), HW will execute
-	// memoryR/W CRC error. And then all DMA fetch will fail. We must decrease descriptor
-	// number or enlarge descriptor size as 64 bytes.
-	unsigned int txdw12;
-
-	unsigned int txdw13;
-
-	unsigned int txdw14;
-
-	unsigned int txdw15;
-#endif
 };
 
 
@@ -200,19 +159,6 @@ union txdesc {
 	struct tx_desc txdesc;
 	unsigned int value[TXDESC_SIZE>>2];
 };
-
-#ifdef CONFIG_PCI_HCI
-#define PCI_MAX_TX_QUEUE_COUNT	8
-
-struct rtw_tx_ring {
-	struct tx_desc	*desc;
-	dma_addr_t		dma;
-	unsigned int		idx;
-	unsigned int		entries;
-	_queue			queue;
-	u32				qlen;
-};
-#endif
 
 struct	hw_xmit	{
 	//spinlock_t xmit_lock;
@@ -223,58 +169,6 @@ struct	hw_xmit	{
 	int	accnt;
 };
 
-#if 0
-struct pkt_attrib
-{
-	u8	type;
-	u8	subtype;
-	u8	bswenc;
-	u8	dhcp_pkt;
-	u16	ether_type;
-	int	pktlen;		//the original 802.3 pkt raw_data len (not include ether_hdr data)
-	int	pkt_hdrlen;	//the original 802.3 pkt header len
-	int	hdrlen;		//the WLAN Header Len
-	int	nr_frags;
-	int	last_txcmdsz;
-	int	encrypt;	//when 0 indicate no encrypt. when non-zero, indicate the encrypt algorith
-	u8	iv[8];
-	int	iv_len;
-	u8	icv[8];
-	int	icv_len;
-	int	priority;
-	int	ack_policy;
-	int	mac_id;
-	int	vcs_mode;	//virtual carrier sense method
-
-	u8	dst[ETH_ALEN];
-	u8	src[ETH_ALEN];
-	u8	ta[ETH_ALEN];
-	u8	ra[ETH_ALEN];
-
-	u8	key_idx;
-
-	u8	qos_en;
-	u8	ht_en;
-	u8	raid;//rate adpative id
-	u8	bwmode;
-	u8	ch_offset;//PRIME_CHNL_OFFSET
-	u8	sgi;//short GI
-	u8	ampdu_en;//tx ampdu enable
-	u8	mdata;//more data bit
-	u8	eosp;
-
-	u8	pctrl;//per packet txdesc control enable
-	u8	triggered;//for ap mode handling Power Saving sta
-
-	u32	qsel;
-	u16	seqnum;
-
-	struct sta_info * psta;
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	u8	hw_tcp_csum;
-#endif
-};
-#else
 //reduce size
 struct pkt_attrib
 {
@@ -323,7 +217,6 @@ struct pkt_attrib
 	u8	hw_tcp_csum;
 #endif
 };
-#endif
 
 #define WLANHDR_OFFSET	64
 
@@ -575,14 +468,6 @@ struct	xmit_priv	{
 	int viq_cnt;
 	int voq_cnt;
 
-#endif
-
-#ifdef CONFIG_PCI_HCI
-	// Tx
-	struct rtw_tx_ring	tx_ring[PCI_MAX_TX_QUEUE_COUNT];
-	int	txringcount[PCI_MAX_TX_QUEUE_COUNT];
-	u8	beaconDMAing;		//flag of indicating beacon is transmiting to HW by DMA
-	struct tasklet_struct xmit_tasklet;
 #endif
 
 #ifdef CONFIG_SDIO_HCI

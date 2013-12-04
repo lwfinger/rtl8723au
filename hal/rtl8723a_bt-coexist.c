@@ -16007,20 +16007,6 @@ void btdm_HIDPANActionBC82Ant(PADAPTER padapter)
 			else
 				btdm_DacSwing(padapter, BT_DACSWING_M7);
 		}
-#elif defined(CONFIG_PCI_HCI)
-		if (pBtMgnt->ExtConfig.bBTBusy)
-		{
-			RTPRINT(FBT, BT_TRACE, ("BT is non-idle\n"));
-			BTDM_FWCoexAllOff(padapter);
-			BTDM_AGCTable(padapter, BT_AGCTABLE_OFF);
-			BTDM_BBBackOffLevel(padapter, BT_BB_BACKOFF_OFF);
-			btdm_DacSwing(padapter, BT_DACSWING_M4);
-		}
-		else
-		{
-			RTPRINT(FBT, BT_TRACE, ("BT is idle\n"));
-			btdm_DacSwing(padapter, BT_DACSWING_OFF);
-		}
 #endif
 	}
 }

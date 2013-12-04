@@ -44,8 +44,6 @@ void BlinkTimerCallback(void *data)
 	#else
 	_set_workitem(&(pLed->BlinkWorkItem));
 	#endif
-#elif defined(CONFIG_PCI_HCI)
-	BlinkHandler(pLed);
 #endif
 }
 

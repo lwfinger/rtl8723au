@@ -89,11 +89,6 @@
 #endif
 #endif
 
-#ifdef CONFIG_PCI_HCI
-#include <linux/pci.h>
-#endif
-
-
 #ifdef CONFIG_USB_HCI
 typedef struct urb *  PURB;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22))

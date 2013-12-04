@@ -157,15 +157,6 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 
 	}
 #endif
-#if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	pxmitbuf->pallocated_buf = kzalloc(alloc_sz);
-	if (pxmitbuf->pallocated_buf == NULL) {
-		return _FAIL;
-	}
-
-	pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, XMITBUF_ALIGN_SZ);
-#endif
-
 	return _SUCCESS;
 }
 
@@ -195,10 +186,6 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 		kfree(pxmitbuf->pallocated_buf);
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
-#endif
-#if defined(CONFIG_PCI_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	if(pxmitbuf->pallocated_buf)
-		kfree(pxmitbuf->pallocated_buf);
 #endif
 }
 
