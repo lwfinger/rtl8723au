@@ -23,7 +23,7 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#include <if_ether.h>
+#include <linux/if_ether.h>
 #include <ip.h>
 #include <wifi.h>
 #include <mlme_osdep.h>
