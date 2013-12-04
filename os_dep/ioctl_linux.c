@@ -24,6 +24,7 @@
 #include <drv_types.h>
 #include <wlan_bssdef.h>
 #include <rtw_debug.h>
+#include <linux/ieee80211.h>
 #include <wifi.h>
 #include <rtw_mlme.h>
 #include <rtw_mlme_ext.h>
@@ -466,8 +467,8 @@ static char *translate_scan(_adapter *padapter,
 
 	cap = le16_to_cpu(cap);
 
-	if(cap & (WLAN_CAPABILITY_IBSS |WLAN_CAPABILITY_BSS)){
-		if (cap & WLAN_CAPABILITY_BSS)
+	if(cap & (WLAN_CAPABILITY_IBSS |WLAN_CAPABILITY_ESS)){
+		if (cap & WLAN_CAPABILITY_ESS)
 			iwe.u.mode = IW_MODE_MASTER;
 		else
 			iwe.u.mode = IW_MODE_ADHOC;
@@ -7814,7 +7815,7 @@ static int rtw_get_sta_wpaie(struct net_device *dev, struct ieee_param *param)
 	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
 	if(psta)
 	{
-		if((psta->wpa_ie[0] == WLAN_EID_RSN) || (psta->wpa_ie[0] == WLAN_EID_GENERIC))
+		if((psta->wpa_ie[0] == WLAN_EID_RSN) || (psta->wpa_ie[0] == WLAN_EID_VENDOR_SPECIFIC))
 		{
 			int wpa_ie_len;
 			int copy_len;

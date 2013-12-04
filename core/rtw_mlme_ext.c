@@ -27,6 +27,7 @@
 #include <wlan_bssdef.h>
 #include <mlme_osdep.h>
 #include <recv_osdep.h>
+#include <linux/ieee80211.h>
 
 #ifdef CONFIG_BT_COEXIST
 #include <rtl8723a_hal.h>
@@ -1611,10 +1612,10 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			pstat->wpa2_pairwise_cipher = pairwise_cipher&psecuritypriv->wpa2_pairwise_cipher;
 
 			if(!pstat->wpa2_group_cipher)
-				status = WLAN_STATUS_GROUP_CIPHER_NOT_VALID;
+				status = WLAN_REASON_INVALID_GROUP_CIPHER;
 
 			if(!pstat->wpa2_pairwise_cipher)
-				status = WLAN_STATUS_PAIRWISE_CIPHER_NOT_VALID;
+				status = WLAN_REASON_INVALID_PAIRWISE_CIPHER;
 		} else {
 			status = WLAN_STATUS_INVALID_IE;
 		}
@@ -1634,10 +1635,10 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			pstat->wpa_pairwise_cipher = pairwise_cipher&psecuritypriv->wpa_pairwise_cipher;
 
 			if(!pstat->wpa_group_cipher)
-				status = WLAN_STATUS_GROUP_CIPHER_NOT_VALID;
+				status = WLAN_STATUS_INVALID_GROUP_CIPHER;
 
 			if(!pstat->wpa_pairwise_cipher)
-				status = WLAN_STATUS_PAIRWISE_CIPHER_NOT_VALID;
+				status = WLAN_STATUS_INVALID_PAIRWISE_CIPHER;
 
 		} else {
 			status = WLAN_STATUS_INVALID_IE;

@@ -27,6 +27,7 @@
 #include <hal_intf.h>
 #include <mlme_osdep.h>
 #include <sta_info.h>
+#include <linux/ieee80211.h>
 #include <wifi.h>
 #include <wlan_bssdef.h>
 #include <rtw_ioctl_set.h>
@@ -591,8 +592,8 @@ _func_exit_;
 		((!memcmp(src->Ssid.Ssid, dst->Ssid.Ssid, src->Ssid.SsidLength))) &&
 		((s_cap & WLAN_CAPABILITY_IBSS) ==
 		 (d_cap & WLAN_CAPABILITY_IBSS)) &&
-		((s_cap & WLAN_CAPABILITY_BSS) ==
-		 (d_cap & WLAN_CAPABILITY_BSS)));
+		((s_cap & WLAN_CAPABILITY_ESS) ==
+		 (d_cap & WLAN_CAPABILITY_ESS)));
 }
 
 struct	wlan_network	* rtw_get_oldest_wlan_network(_queue *scanned_queue)

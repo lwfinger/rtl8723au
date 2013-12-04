@@ -20,6 +20,7 @@
 #define _IEEE80211_C
 
 #include <drv_types.h>
+#include <linux/ieee80211.h>
 #include <ieee80211.h>
 #include <wifi.h>
 #include <osdep_service.h>
@@ -1196,7 +1197,7 @@ ParseRes rtw_ieee802_11_parse_elems(u8 *start, uint len,
 			elems->timeout_int = pos;
 			elems->timeout_int_len = elen;
 			break;
-		case WLAN_EID_HT_CAP:
+		case WLAN_EID_HT_CAPABILITY:
 			elems->ht_capabilities = pos;
 			elems->ht_capabilities_len = elen;
 			break;

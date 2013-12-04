@@ -22,6 +22,7 @@
 #include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
+#include <linux/ieee80211.h>
 #include <wifi.h>
 
 unsigned char ARTHEROS_OUI1[] = {0x00, 0x03, 0x7f};

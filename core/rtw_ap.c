@@ -22,6 +22,7 @@
 #include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
+#include <linux/ieee80211.h>
 #include <wifi.h>
 
 #ifdef CONFIG_AP_MODE
@@ -2086,7 +2087,7 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta)
 	}
 
 #if 0
-	if (!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT) &&
+	if (!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT_TIME) &&
 	    !psta->no_short_slot_time_set) {
 		psta->no_short_slot_time_set = 1;
 		pmlmepriv->num_sta_no_short_slot_time++;
@@ -2096,7 +2097,7 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta)
 	}
 #endif
 
-	if(!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT))
+	if(!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT_TIME))
 	{
 		if(!psta->no_short_slot_time_set)
 		{
