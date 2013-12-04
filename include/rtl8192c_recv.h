@@ -25,18 +25,13 @@
 #include <drv_types.h>
 
 
-#if defined(CONFIG_GSPI_HCI)
-#define NR_RECVBUFF (32)
-#else
 #ifdef CONFIG_SINGLE_RECV_BUF
 #define NR_RECVBUFF (1)
 #else
 #define NR_RECVBUFF (4)
 #endif //CONFIG_SINGLE_RECV_BUF
-#endif
 
 #define NR_PREALLOC_RECV_SKB (8)
-
 
 #define RECV_BLK_SZ 512
 #define RECV_BLK_CNT 16

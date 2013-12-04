@@ -233,21 +233,6 @@ void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
 void rtw_os_xmit_schedule(_adapter *padapter)
 {
 	_adapter *pri_adapter = padapter;
-
-#if defined(CONFIG_GSPI_HCI)
-	if(!padapter)
-		return;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = padapter->pbuddy_adapter;
-#endif
-
-	if (_rtw_queue_empty(&pri_adapter->xmitpriv.pending_xmitbuf_queue) == _FALSE)
-		up(&pri_adapter->xmitpriv.xmit_sema);
-
-
-#else
 	_irqL  irqL;
 	struct xmit_priv *pxmitpriv;
 
@@ -264,7 +249,6 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 	}
 
 	spin_unlock_bh(&pxmitpriv->lock);
-#endif
 }
 
 static void rtw_check_xmit_resource(_adapter *padapter, _pkt *pkt)

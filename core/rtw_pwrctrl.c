@@ -1393,7 +1393,7 @@ _func_exit_;
 }
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 extern int rtw_resume_process(_adapter *padapter);
 #endif
 static void resume_workitem_callback(struct work_struct *work)
@@ -1403,7 +1403,7 @@ static void resume_workitem_callback(struct work_struct *work)
 
 	DBG_8723A("%s\n",__FUNCTION__);
 
-	#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+	#if defined(CONFIG_USB_HCI)
 	rtw_resume_process(adapter);
 	#endif
 }
@@ -1439,7 +1439,7 @@ inline void rtw_set_do_late_resume(struct pwrctrl_priv *pwrpriv, bool enable)
 #endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 extern int rtw_resume_process(_adapter *padapter);
 #endif
 static void rtw_early_suspend(struct early_suspend *h)
@@ -1457,7 +1457,7 @@ static void rtw_late_resume(struct early_suspend *h)
 
 	DBG_8723A("%s\n",__FUNCTION__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+		#if defined(CONFIG_USB_HCI)
 		rtw_set_do_late_resume(pwrpriv, _FALSE);
 		rtw_resume_process(adapter);
 		#endif
@@ -1490,7 +1490,7 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 #endif /* CONFIG_HAS_EARLYSUSPEND */
 
 #ifdef CONFIG_ANDROID_POWER
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 extern int rtw_resume_process(PADAPTER padapter);
 #endif
 static void rtw_early_suspend(android_early_suspend_t *h)
@@ -1508,7 +1508,7 @@ static void rtw_late_resume(android_early_suspend_t *h)
 
 	DBG_8723A("%s\n",__FUNCTION__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+		#if defined(CONFIG_USB_HCI)
 		rtw_set_do_late_resume(pwrpriv, _FALSE);
 		rtw_resume_process(adapter);
 		#endif

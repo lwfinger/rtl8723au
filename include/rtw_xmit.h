@@ -24,18 +24,7 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#if defined(CONFIG_GSPI_HCI)
-#ifdef CONFIG_TX_AGGREGATION
-#define MAX_XMITBUF_SZ	(20480)	// 20k
-#else
-#define MAX_XMITBUF_SZ (12288)  //12k 1536*8
-#endif
-
-#if defined(CONFIG_GSPI_HCI)
-#define NR_XMITBUFF	(128)
-#endif
-
-#elif defined (CONFIG_USB_HCI)
+#if defined (CONFIG_USB_HCI)
 
 #ifdef CONFIG_USB_TX_AGGREGATION
 #define MAX_XMITBUF_SZ	(20480)	// 20k
@@ -119,11 +108,6 @@ do{\
 #define EARLY_MODE_INFO_SIZE	8
 #endif
 
-
-#if defined(CONFIG_GSPI_HCI)
-#define TXDESC_OFFSET TXDESC_SIZE
-
-#endif
 
 #ifdef CONFIG_USB_HCI
 #define PACKET_OFFSET_SZ (8)
@@ -291,16 +275,6 @@ struct xmit_buf
 
 #endif
 
-#if defined(CONFIG_GSPI_HCI)
-	u8 *phead;
-	u8 *pdata;
-	u8 *ptail;
-	u8 *pend;
-	u32 ff_hwaddr;
-	u8	pg_num;
-	u8	agg_num;
-#endif
-
 #if defined(DBG_XMIT_BUF )|| defined(DBG_XMIT_BUF_EXT)
 	u8 no;
 #endif
@@ -323,11 +297,6 @@ struct xmit_frame
 	u8	*buf_addr;
 
 	struct xmit_buf *pxmitbuf;
-
-#if defined(CONFIG_GSPI_HCI)
-	u8	pg_num;
-	u8	agg_num;
-#endif
 
 #ifdef CONFIG_USB_HCI
 #ifdef CONFIG_USB_TX_AGGREGATION

@@ -29,9 +29,6 @@
 #include <usb_osintf.h>
 #include <usb_ops.h>
 #endif
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_osintf.h>
-#endif
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
 

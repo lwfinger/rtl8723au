@@ -48,10 +48,6 @@ jackson@realtek.com.tw
 #include <rtw_io.h>
 #include <osdep_intf.h>
 
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_ops.h>
-#endif
-
 #ifdef CONFIG_USB_HCI
 #include <usb_ops.h>
 #endif

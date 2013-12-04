@@ -115,7 +115,7 @@ DeInitLed871x(
 	PLED_871x			pLed
 	)
 {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 	_cancel_workitem_sync(&(pLed->BlinkWorkItem));
 #endif
 	_cancel_timer_ex(&(pLed->BlinkTimer));
@@ -127,7 +127,7 @@ DeInitLed871x(
 /*		Implementation of LED blinking behavior. */
 /*		It toggle off LED and schedule corresponding timer if necessary. */
 /*  */
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 
 void SwLedOn(_adapter *padapter, PLED_871x pLed);
 void SwLedOff(_adapter	*padapter, PLED_871x	pLed);

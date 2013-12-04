@@ -219,11 +219,6 @@ struct registry_priv
 
 #define MAX_CONTINUAL_URB_ERR 4
 
-#if defined(CONFIG_GSPI_HCI)
-#include <drv_types_gspi.h>
-#define INTF_DATA GSPI_DATA
-#endif
-
 #define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->if1)
 
 #define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
@@ -312,9 +307,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_GSPI_HCI
-	return &dvobj->intf_data.func->dev;
 #endif
 }
 

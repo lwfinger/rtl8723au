@@ -22,15 +22,6 @@
 
 #include <rtl8192c_recv.h>
 
-
-#if defined(CONFIG_GSPI_HCI)
-#ifdef CONFIG_DIRECT_RECV
-void rtl8723as_recv(PADAPTER padapter, struct recv_buf *precvbuf);
-#endif
-s32 rtl8723as_init_recv_priv(PADAPTER padapter);
-void rtl8723as_free_recv_priv(PADAPTER padapter);
-#endif
-
 void rtl8192c_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
 void rtl8192c_process_phy_info(PADAPTER padapter, void *prframe);
 #ifdef CONFIG_USB_HCI

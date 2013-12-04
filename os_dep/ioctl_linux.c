@@ -48,9 +48,6 @@
 #ifdef CONFIG_RTL8188E
 #include <rtl8188e_hal.h>
 #endif
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_ops.h>
-#endif
 
 #ifdef CONFIG_RTL8723A
 //extern u8 _InitPowerOn(PADAPTER padapter);

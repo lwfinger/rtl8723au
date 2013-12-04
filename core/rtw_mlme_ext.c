@@ -8255,7 +8255,7 @@ unsigned int send_beacon(_adapter *padapter)
 	/* struct mlme_priv *pbuddy_mlmepriv = &(pbuddy_adapter->mlmepriv); */
 /* endif */
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 	u32 start = rtw_get_current_time();
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_BCN_VALID, NULL);
@@ -11153,11 +11153,6 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 
 			/* spin_unlock_bh(&psta_bmc->sleep_q.lock); */
 			spin_unlock_bh(&pxmitpriv->lock);
-
-#if defined(CONFIG_GSPI_HCI)
-			rtw_chk_hi_queue_cmd(padapter);
-#endif
-
 		}
 
 	}

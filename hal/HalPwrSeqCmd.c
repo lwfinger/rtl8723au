@@ -34,9 +34,6 @@ Major Change History:
 
 --*/
 #include <HalPwrSeqCmd.h>
-#if defined(CONFIG_GSPI_HCI)
-#include <gspi_ops.h>
-#endif
 
 //
 //	Description:
@@ -92,10 +89,6 @@ u8 HalPwrSeqCmdParsing(
 					offset = GET_PWR_CFG_OFFSET(PwrCfgCmd);
 
 					{
-#ifdef CONFIG_GSPI_HCI
-						if (GET_PWR_CFG_BASE(PwrCfgCmd) == PWR_BASEADDR_SDIO)
-							offset = SPI_LOCAL_OFFSET | offset;
-#endif
 						// Read the value from system register
 						value = rtw_read8(padapter, offset);
 
@@ -112,10 +105,6 @@ u8 HalPwrSeqCmdParsing(
 
 					bPollingBit = _FALSE;
 					offset = GET_PWR_CFG_OFFSET(PwrCfgCmd);
-#ifdef CONFIG_GSPI_HCI
-					if (GET_PWR_CFG_BASE(PwrCfgCmd) == PWR_BASEADDR_SDIO)
-						offset = SPI_LOCAL_OFFSET | offset;
-#endif
 					do {
 						value = rtw_read8(padapter, offset);
 

@@ -2377,7 +2377,7 @@ u8 GetEEPROMSize8723A(PADAPTER padapter)
 	return size;
 }
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 //-------------------------------------------------------------------------
 //
 // LLT R/W/Init function
@@ -2476,7 +2476,7 @@ s32 InitLLTTable(PADAPTER padapter, u32 boundary)
 }
 #endif
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_HCI)
 void _DisableGPIO(PADAPTER	padapter)
 {
 /***************************************
@@ -3539,7 +3539,7 @@ void rtl8723a_fill_default_txdesc(
 				ptxdesc->data_short = 1;// DATA_SHORT
 			ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 		}
-#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_TX_AGGREGATION)
 		ptxdesc->usb_txagg_num = pxmitframe->agg_num;
 #endif
 	}
@@ -4949,31 +4949,8 @@ void rtl8723a_clone_haldata(_adapter* dst_adapter, _adapter* src_adapter)
 
 void rtl8723a_start_thread(_adapter *padapter)
 {
-#if (defined CONFIG_GSPI_HCI)
-#ifndef CONFIG_SDIO_TX_TASKLET
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
-	pHalData->SdioXmitThread = kthread_run(rtl8723as_xmit_thread, padapter, "RTWHALXT");
-	if (IS_ERR(pHalData->SdioXmitThread))
-	{
-		RT_TRACE(_module_hal_xmit_c_, _drv_err_, ("%s: start rtl8723as_xmit_thread FAIL!!\n", __FUNCTION__));
-	}
-#endif
-#endif
 }
 
 void rtl8723a_stop_thread(_adapter *padapter)
 {
-#if (defined CONFIG_GSPI_HCI)
-#ifndef CONFIG_SDIO_TX_TASKLET
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
-	// stop xmit_buf_thread
-	if (pHalData->SdioXmitThread ) {
-		up(&pHalData->SdioXmitSema);
-		down(&pHalData->SdioXmitTerminateSema);
-		pHalData->SdioXmitThread = 0;
-	}
-#endif
-#endif
 }
