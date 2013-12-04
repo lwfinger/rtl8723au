@@ -110,7 +110,6 @@ typedef	struct sk_buff	_pkt;
 typedef unsigned char	_buffer;
 
 typedef struct	__queue	_queue;
-typedef	int	_OS_STATUS;
 typedef	struct	net_device * _nic_hdl;
 
 typedef void*		_thread_hdl_;
