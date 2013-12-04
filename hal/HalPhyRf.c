@@ -543,33 +543,19 @@ phy_IQCalibrate_8192C(
 		phy_ReloadMACRegisters(pAdapter, IQK_MAC_REG, pHalData->IQK_MAC_backup);
 
 		// Reload BB parameters
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
-		{
-			if(is2T)
-				phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92D, pHalData->IQK_BB_backup, IQK_BB_REG_NUM_92D);
-			else
-				phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92D, pHalData->IQK_BB_backup, IQK_BB_REG_NUM_92D -1);
-		}
-		else
-			phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup, IQK_BB_REG_NUM);
+		phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup, IQK_BB_REG_NUM);
 
-		if(!IS_HARDWARE_TYPE_8192D(pAdapter))
-		{
-			// Restore RX initial gain
-			PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00032ed3);
-			if(is2T){
-				PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00032ed3);
-			}
-		}
+		// Restore RX initial gain
+		PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00032ed3);
+		if(is2T)
+			PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00032ed3);
 		//load 0xe30 IQC default value
 		PHY_SetBBReg(pAdapter, rTx_IQK_Tone_A, bMaskDWord, 0x01008c00);
 		PHY_SetBBReg(pAdapter, rRx_IQK_Tone_A, bMaskDWord, 0x01008c00);
 
 	}
 	RTPRINT(FINIT, INIT_IQK, ("phy_IQCalibrate_8192C() <==\n"));
-
 }
-
 
 VOID
 phy_LCCalibrate92C(
@@ -806,14 +792,9 @@ PHY_IQCalibrate_8192C(
 	if(pAdapter->bSlaveOfDMSP)
 		return;
 
-	if(!IS_HARDWARE_TYPE_8192D(pAdapter))
-	{
-		if(bReCovery)
-		{
-			phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup_recover, 9);
-			return;
-
-		}
+	if(bReCovery) {
+		phy_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pHalData->IQK_BB_backup_recover, 9);
+		return;
 	}
 	RTPRINT(FINIT, INIT_IQK, ("IQK:Start!!!\n"));
 
@@ -832,54 +813,29 @@ PHY_IQCalibrate_8192C(
 	is13simular = FALSE;
 
 
-	RTPRINT(FINIT, INIT_IQK, ("IQK !!!interface %d currentband %d ishardwareD %d \n", pAdapter->interfaceIndex, pHalData->CurrentBandType92D, IS_HARDWARE_TYPE_8192D(pAdapter)));
+	RTPRINT(FINIT, INIT_IQK, ("IQK !!!interface %d currentband %d\n", pAdapter->interfaceIndex, pHalData->CurrentBandType92D));
 	AcquireCCKAndRWPageAControl(pAdapter);
 //	RT_TRACE(COMP_INIT,DBG_LOUD,("Acquire Mutex in IQCalibrate \n"));
 	for (i=0; i<3; i++)
 	{
-//		if(IS_HARDWARE_TYPE_8192C(pAdapter) || IS_HARDWARE_TYPE_8723A(pAdapter))
-		if(!IS_HARDWARE_TYPE_8192D(pAdapter))
-		{
-			if(IS_92C_SERIAL( pHalData->VersionID))
-			{
-				phy_IQCalibrate_8192C(pAdapter, result, i, TRUE);
-			}
-			else
-			{
-				// For 88C 1T1R
-				phy_IQCalibrate_8192C(pAdapter, result, i, FALSE);
-			}
-		}
-		else/* if(IS_HARDWARE_TYPE_8192D(pAdapter))*/
-		{
-			if(pHalData->CurrentBandType92D == BAND_ON_5G)
-			{
-				phy_IQCalibrate_5G_Normal(pAdapter, result, i);
-			}
-			else if(pHalData->CurrentBandType92D == BAND_ON_2_4G)
-			{
-				if(IS_92D_SINGLEPHY(pHalData->VersionID))
-					phy_IQCalibrate_8192C(pAdapter, result, i, TRUE);
-				else
-					phy_IQCalibrate_8192C(pAdapter, result, i, FALSE);
-			}
+		if(IS_92C_SERIAL( pHalData->VersionID)) {
+			phy_IQCalibrate_8192C(pAdapter, result, i, TRUE);
+		} else {
+			// For 88C 1T1R
+			phy_IQCalibrate_8192C(pAdapter, result, i, FALSE);
 		}
 
-		if(i == 1)
-		{
+		if(i == 1) {
 			is12simular = phy_SimularityCompare(pAdapter, result, 0, 1);
-			if(is12simular)
-			{
+			if(is12simular) {
 				final_candidate = 0;
 				break;
 			}
 		}
 
-		if(i == 2)
-		{
+		if(i == 2) {
 			is13simular = phy_SimularityCompare(pAdapter, result, 0, 2);
-			if(is13simular)
-			{
+			if(is13simular) {
 				final_candidate = 0;
 				break;
 			}
@@ -899,7 +855,6 @@ PHY_IQCalibrate_8192C(
 			}
 		}
 	}
-//	RT_TRACE(COMP_INIT,DBG_LOUD,("Release Mutex in IQCalibrate \n"));
 	ReleaseCCKAndRWPageAControl(pAdapter);
 
 	for (i=0; i<4; i++)
@@ -1048,8 +1003,7 @@ ODM_ResetIQKResult(
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP || DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 
-	if (!IS_HARDWARE_TYPE_8192D(Adapter))
-		return;
+	return;
 #endif
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,("PHY_ResetIQKResult:: settings regs %d default regs %d\n", (u32)(sizeof(pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting)/sizeof(IQK_MATRIX_REGS_SETTING)), IQK_Matrix_Settings_NUM));
 	//0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc

@@ -1941,10 +1941,7 @@ ODM_FillTXPathInTXDESC(
 // For new definition in MP temporarily fro power tracking,
 //
 #define odm_TXPowerTrackingDirectCall(_Adapter)	\
-	IS_HARDWARE_TYPE_8192D(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_92D(_Adapter) : \
-	IS_HARDWARE_TYPE_8192C(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_92C(_Adapter) : \
-	IS_HARDWARE_TYPE_8723A(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_8723A(_Adapter) :\
-	odm_TXPowerTrackingCallback_ThermalMeter_8188E(_Adapter)
+	odm_TXPowerTrackingCallback_ThermalMeter_8723A(_Adapter)
 
 VOID
 ODM_SetTxAntByTxInfo_88C_92D(
