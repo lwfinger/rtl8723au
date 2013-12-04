@@ -792,11 +792,11 @@ _func_enter_;
 			#ifdef CONFIG_AUTOSUSPEND
 			if(Adapter->registrypriv.usbss_enable)
 			{
-				#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
+#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 				usb_disable_autosuspend(adapter_to_dvobj(Adapter)->pusbdev);
-				#elif (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22) && LINUX_VERSION_CODE<=KERNEL_VERSION(2,6,34))
+#else
 				adapter_to_dvobj(Adapter)->pusbdev->autosuspend_disabled = Adapter->bDisableAutosuspend;/* autosuspend disabled by the user */
-				#endif
+#endif
 			}
 			else
 			#endif
@@ -1627,10 +1627,8 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 				{
 					DBG_8723A( "can't get autopm: \n");
 				}
-			#elif (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,20))
-				usb_autopm_disable(adapter_to_dvobj(padapter)->pusbintf);
 			#else
-				usb_autoresume_device(adapter_to_dvobj(padapter)->pusbdev, 1);
+				usb_autopm_disable(adapter_to_dvobj(padapter)->pusbintf);
 			#endif
 			pwrpriv->autopm_cnt++;
 			}

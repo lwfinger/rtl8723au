@@ -2781,11 +2781,7 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 				if (skb_is_nonlinear(skb))
 					DEBUG_ERR("%s(): skb_is_nonlinear!!\n", __FUNCTION__);
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18))
-				res = skb_linearize(skb, GFP_ATOMIC);
-#else	/*  (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18)) */
 				res = skb_linearize(skb);
-#endif	/*  (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 18)) */
 				if (res < 0) {
 						DEBUG_ERR("TX DROP: skb_linearize fail!\n");
 						/* goto free_and_stop; */

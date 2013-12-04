@@ -749,11 +749,7 @@ static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
 			alloc_sz += 14;
 		}
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-		pkt_copy = dev_alloc_skb(alloc_sz);
-#else
 		pkt_copy = netdev_alloc_skb(padapter->pnetdev, alloc_sz);
-#endif
 		if(pkt_copy)
 		{
 			pkt_copy->dev = padapter->pnetdev;
@@ -1153,11 +1149,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 					alloc_sz += 14;
 				}
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-				pkt_copy = dev_alloc_skb(alloc_sz);
-#else
 				pkt_copy = netdev_alloc_skb(secondary_padapter->pnetdev, alloc_sz);
-#endif
 				if(pkt_copy)
 				{
 					pkt_copy->dev = secondary_padapter->pnetdev;
@@ -1296,12 +1288,8 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 			alloc_sz += 14;
 		}
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-		pkt_copy = dev_alloc_skb(alloc_sz);
-#else
 		pkt_copy = netdev_alloc_skb(padapter->pnetdev, alloc_sz);
-#endif
-		if(pkt_copy)
+		if (pkt_copy)
 		{
 			pkt_copy->dev = padapter->pnetdev;
 			precvframe->u.hdr.pkt = pkt_copy;
@@ -1573,12 +1561,8 @@ _func_enter_;
 	//re-assign for linux based on skb
 	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
 		//precvbuf->pskb = alloc_skb(MAX_RECVBUF_SZ, GFP_ATOMIC);//don't use this after v2.6.25
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-		precvbuf->pskb = dev_alloc_skb(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
-#else
 		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
-#endif
-		if(precvbuf->pskb == NULL) {
+		if (precvbuf->pskb == NULL) {
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("init_recvbuf(): alloc_skb fail!\n"));
 			return _FAIL;
 		}

@@ -50,11 +50,7 @@
 #include <asm/byteorder.h>
 #include <asm/atomic.h>
 #include <asm/io.h>
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
-	#include <asm/semaphore.h>
-#else
-	#include <linux/semaphore.h>
-#endif
+#include <linux/semaphore.h>
 #include <linux/sem.h>
 #include <linux/sched.h>
 #include <linux/etherdevice.h>
@@ -81,17 +77,11 @@
 #endif
 
 #include <linux/usb.h>
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,21))
-#include <linux/usb_ch9.h>
-#else
 #include <linux/usb/ch9.h>
-#endif
 
 typedef struct urb *  PURB;
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22))
 #ifdef CONFIG_USB_SUSPEND
 #define CONFIG_AUTOSUSPEND	1
-#endif
 #endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
@@ -122,32 +112,6 @@ typedef void timer_hdl_return;
 typedef void* timer_hdl_context;
 typedef struct work_struct _workitem;
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-#define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-#endif
-
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,22))
-// Porting from linux kernel, for compatible with old kernel.
-static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
-{
-	return skb->tail;
-}
-
-static inline void skb_reset_tail_pointer(struct sk_buff *skb)
-{
-	skb->tail = skb->data;
-}
-
-static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
-{
-	skb->tail = skb->data + offset;
-}
-
-static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
-{
-	return skb->end;
-}
-#endif
 
 __inline static struct list_head *get_next(struct list_head	*list)
 {
@@ -213,11 +177,7 @@ __inline static void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 
 __inline static void _init_workitem(_workitem *pwork, void *pfunc, void *cntx)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20))
 	INIT_WORK(pwork, pfunc);
-#else
-	INIT_WORK(pwork, pfunc,pwork);
-#endif
 }
 
 __inline static void _set_workitem(_workitem *pwork)
@@ -227,11 +187,7 @@ __inline static void _set_workitem(_workitem *pwork)
 
 __inline static void _cancel_workitem_sync(_workitem *pwork)
 {
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22))
 	cancel_work_sync(pwork);
-#else
-	flush_scheduled_work();
-#endif
 }
 //
 // Global Mutex: can only be used at PASSIVE level.
@@ -549,11 +505,7 @@ extern void rtw_free_netdev(struct net_device * netdev);
 #define FUNC_ADPT_FMT "%s(%s)"
 #define FUNC_ADPT_ARG(adapter) __func__, adapter->pnetdev->name
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27))
 #define rtw_signal_process(pid, sig) kill_pid(find_vpid((pid)),(sig), 1)
-#else //(LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27))
-#define rtw_signal_process(pid, sig) kill_proc((pid), (sig), 1)
-#endif //(LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27))
 
 extern u64 rtw_modular64(u64 x, u64 y);
 extern u64 rtw_division64(u64 x, u64 y);

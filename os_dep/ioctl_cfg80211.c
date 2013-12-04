@@ -3373,7 +3373,6 @@ static int rtw_cfg80211_monitor_if_set_mac_address(struct net_device *ndev, void
 	return ret;
 }
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 static const struct net_device_ops rtw_cfg80211_monitor_if_ops = {
 	.ndo_open = rtw_cfg80211_monitor_if_open,
        .ndo_stop = rtw_cfg80211_monitor_if_close,
@@ -3383,7 +3382,6 @@ static const struct net_device_ops rtw_cfg80211_monitor_if_ops = {
        #endif
        .ndo_set_mac_address = rtw_cfg80211_monitor_if_set_mac_address,
 };
-#endif
 
 static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct net_device **ndev)
 {
@@ -3418,14 +3416,7 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 	mon_ndev->name[IFNAMSIZ - 1] = 0;
 	mon_ndev->destructor = rtw_ndev_destructor;
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 	mon_ndev->netdev_ops = &rtw_cfg80211_monitor_if_ops;
-#else
-	mon_ndev->open = rtw_cfg80211_monitor_if_open;
-	mon_ndev->stop = rtw_cfg80211_monitor_if_close;
-	mon_ndev->hard_start_xmit = rtw_cfg80211_monitor_if_xmit_entry;
-	mon_ndev->set_mac_address = rtw_cfg80211_monitor_if_set_mac_address;
-#endif
 
 	pnpi = netdev_priv(mon_ndev);
 	pnpi->priv = padapter;

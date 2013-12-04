@@ -24,11 +24,7 @@
 
 #ifndef CONFIG_RTL8711FW
 #include <wlan_bssdef.h>
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
-#include <asm/semaphore.h>
-#else
 #include <linux/semaphore.h>
-#endif
 #include <linux/sem.h>
 #else
 #include <wlan_bssdef.h>

@@ -332,11 +332,7 @@ void rtw_proc_init_one(struct net_device *dev)
 			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
 		}
 
-#if(LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-		rtw_proc=create_proc_entry(rtw_proc_name, S_IFDIR, proc_net);
-#else
 		rtw_proc=create_proc_entry(rtw_proc_name, S_IFDIR, init_net.proc_net);
-#endif
 		if (rtw_proc == NULL) {
 			DBG_8723A(KERN_ERR "Unable to create rtw_proc directory\n");
 			return;
@@ -364,11 +360,8 @@ void rtw_proc_init_one(struct net_device *dev)
 			if(rtw_proc_cnt == 0)
 			{
 				if(rtw_proc){
-#if(LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-					remove_proc_entry(rtw_proc_name, proc_net);
-#else
-					remove_proc_entry(rtw_proc_name, init_net.proc_net);
-#endif
+					remove_proc_entry(rtw_proc_name,
+							  init_net.proc_net);
 					rtw_proc = NULL;
 				}
 			}
@@ -714,11 +707,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 		if(rtw_proc){
 			remove_proc_entry("ver_info", rtw_proc);
 
-#if(LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-			remove_proc_entry(rtw_proc_name, proc_net);
-#else
 			remove_proc_entry(rtw_proc_name, init_net.proc_net);
-#endif
 			rtw_proc = NULL;
 		}
 	}
@@ -972,7 +961,6 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 
 #endif
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 static const struct net_device_ops rtw_netdev_ops = {
 	.ndo_open = netdev_open,
 	.ndo_stop = netdev_close,
@@ -984,7 +972,6 @@ static const struct net_device_ops rtw_netdev_ops = {
 	.ndo_get_stats = rtw_net_get_stats,
 	.ndo_do_ioctl = rtw_ioctl,
 };
-#endif
 
 int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 {
@@ -997,16 +984,8 @@ int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 
 	if(padapter->bDongle == 1)
 	{
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-		TargetNetdev = dev_get_by_name("wlan0");
-#else
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
-		devnet = pnetdev->nd_net;
-	#else
 		devnet = dev_net(pnetdev);
-	#endif
 		TargetNetdev = dev_get_by_name(devnet, "wlan0");
-#endif
 		if(TargetNetdev) {
 			DBG_8723A("Force onboard module driver disappear !!!\n");
 			TargetAdapter = rtw_netdev_priv(TargetNetdev);
@@ -1061,24 +1040,10 @@ struct net_device *rtw_init_netdev(_adapter *old_padapter)
 	padapter = rtw_netdev_priv(pnetdev);
 	padapter->pnetdev = pnetdev;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-	SET_MODULE_OWNER(pnetdev);
-#endif
-
 	//pnetdev->init = NULL;
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 	DBG_8723A("register rtw_netdev_ops to netdev_ops\n");
 	pnetdev->netdev_ops = &rtw_netdev_ops;
-#else
-	pnetdev->open = netdev_open;
-	pnetdev->stop = netdev_close;
-	pnetdev->hard_start_xmit = rtw_xmit_entry;
-	pnetdev->set_mac_address = rtw_net_set_mac_address;
-	pnetdev->get_stats = rtw_net_get_stats;
-	pnetdev->do_ioctl = rtw_ioctl;
-#endif
-
 
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
 	pnetdev->features |= NETIF_F_IP_CSUM;
@@ -1685,7 +1650,6 @@ static int netdev_if2_close(struct net_device *pnetdev)
 	return 0;
 }
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 static const struct net_device_ops rtw_netdev_if2_ops = {
 	.ndo_open = netdev_if2_open,
         .ndo_stop = netdev_if2_close,
@@ -1697,7 +1661,6 @@ static const struct net_device_ops rtw_netdev_if2_ops = {
 	.ndo_select_queue	= rtw_select_queue,
 #endif
 };
-#endif
 
 
 	#include <usb_hal.h>
@@ -1714,13 +1677,8 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(stru
 	if (!pnetdev)
 		goto error_rtw_drv_if2_init;
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 	DBG_8723A("register rtw_netdev_if2_ops to netdev_ops\n");
 	pnetdev->netdev_ops = &rtw_netdev_if2_ops;
-#else
-	pnetdev->open = netdev_if2_open;
-	pnetdev->stop = netdev_if2_close;
-#endif
 
 #ifdef CONFIG_NO_WIRELESS_HANDLERS
 	pnetdev->wireless_handlers = NULL;
@@ -1918,19 +1876,11 @@ void netdev_br_init(struct net_device *netdev)
 #endif  // (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
 		{
 			struct net_device *br_netdev;
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
-			br_netdev = dev_get_by_name(CONFIG_BR_EXT_BRNAME);
-#else	// (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
 			struct net *devnet = NULL;
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
-			devnet = netdev->nd_net;
-#else	// (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
 			devnet = dev_net(netdev);
-#endif	// (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26))
 
 			br_netdev = dev_get_by_name(devnet, CONFIG_BR_EXT_BRNAME);
-#endif	// (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24))
 
 			if (br_netdev) {
 				memcpy(adapter->br_mac, br_netdev->dev_addr, ETH_ALEN);
