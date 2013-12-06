@@ -165,7 +165,6 @@ enum rtw_drvextra_cmd_id
 	P2P_PS_WK_CID,
 	P2P_PROTO_WK_CID,
 	CHECK_HIQ_WK_CID,//for softap mode, check hi queue if empty
-	INTEl_WIDI_WK_CID,
 	C2H_WK_CID,
 	RTP_TIMER_CFG_WK_CID,
 	MAX_WK_CID

@@ -1097,14 +1097,6 @@ _func_enter_;
 						|| _SUCCESS != rtw_sitesurvey_cmd(adapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)
 					) {
 						rtw_set_roaming(adapter, 0);
-#ifdef CONFIG_INTEL_WIDI
-						if(adapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
-						{
-							memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
-							intel_widi_wk_cmd(adapter, INTEL_WIDI_LISTEN_WK, NULL);
-							DBG_8723A("change to widi listen\n");
-						}
-#endif /*  CONFIG_INTEL_WIDI */
 						rtw_free_assoc_resources(adapter, 1);
 						rtw_indicate_disconnect(adapter);
 					} else {
@@ -1318,14 +1310,6 @@ _func_enter_;
 	}
 
 	rtw_set_roaming(padapter, 0);
-#ifdef CONFIG_INTEL_WIDI
-	if(padapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
-	{
-		memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
-		intel_widi_wk_cmd(padapter, INTEL_WIDI_LISTEN_WK, NULL);
-		DBG_8723A("change to widi listen\n");
-	}
-#endif /*  CONFIG_INTEL_WIDI */
 
 	rtw_set_scan_deny(padapter, 3000);
 
@@ -2077,9 +2061,6 @@ _func_enter_;
 			pmlmepriv->to_roaming--; /* this stadel_event is caused by roaming, decrease to_roaming */
 		else if (rtw_to_roaming(adapter) == 0)
 			rtw_set_roaming(adapter, adapter->registrypriv.max_roaming_times);
-#ifdef CONFIG_INTEL_WIDI
-		if(adapter->mlmepriv.widi_state != INTEL_WIDI_STATE_CONNECTED)
-#endif /*  CONFIG_INTEL_WIDI */
 		if(*((unsigned short *)(pstadel->rsvd)) != WLAN_REASON_EXPIRATION_CHK)
 			rtw_set_roaming(adapter, 0); /* don't roam */
 		#endif
@@ -2099,10 +2080,6 @@ _func_enter_;
 
 		#ifdef CONFIG_LAYER2_ROAMING
 		_rtw_roaming(adapter, tgt_network);
-		#else
-#ifdef CONFIG_INTEL_WIDI
-		process_intel_widi_disconnect(adapter, 1);
-#endif /*  CONFIG_INTEL_WIDI */
 		#endif /* CONFIG_LAYER2_ROAMING */
 
 	}
@@ -2212,14 +2189,6 @@ _func_enter_;
 				}
 				break;
 			} else {
-#ifdef CONFIG_INTEL_WIDI
-				if(adapter->mlmepriv.widi_state == INTEL_WIDI_STATE_ROAMING)
-				{
-					memset(pmlmepriv->sa_ext, 0x00, L2SDTA_SERVICE_VE_LEN);
-					intel_widi_wk_cmd(adapter, INTEL_WIDI_LISTEN_WK, NULL);
-					DBG_8723A("change to widi listen\n");
-				}
-#endif /*  CONFIG_INTEL_WIDI */
 				DBG_8723A("%s We've try roaming but fail\n", __FUNCTION__);
 				rtw_indicate_disconnect(adapter);
 				break;
