@@ -1416,15 +1416,6 @@ odm_DIG(
 	u1Byte						CurrentIGI = pDM_DigTable->CurIGValue;
 
 
-#ifdef CONFIG_SPECIAL_SETTING_FOR_FUNAI_TV
-	if((pDM_Odm->bLinked) && (pDM_Odm->Adapter->registrypriv.force_igi !=0))
-	{
-		printk("pDM_Odm->RSSI_Min=%d \n",pDM_Odm->RSSI_Min);
-		ODM_Write_DIG(pDM_Odm,pDM_Odm->Adapter->registrypriv.force_igi);
-		return;
-	}
-#endif
-
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG()==>\n"));
 	//if(!(pDM_Odm->SupportAbility & (ODM_BB_DIG|ODM_BB_FA_CNT)))
 	if((!(pDM_Odm->SupportAbility&ODM_BB_DIG)) ||(!(pDM_Odm->SupportAbility&ODM_BB_FA_CNT)))
