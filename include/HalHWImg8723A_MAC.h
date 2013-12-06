@@ -28,7 +28,7 @@
 
 void
 ODM_ReadAndConfig_MAC_REG_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+	PDM_ODM_T  pDM_Odm
 );
 
 #endif

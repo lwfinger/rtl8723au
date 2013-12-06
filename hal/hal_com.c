@@ -69,11 +69,11 @@ void dump_chip_info(HAL_VERSION	ChipVersion)
 
 u8	/* return the final channel plan decision */
 hal_com_get_channel_plan(
-	IN	PADAPTER	padapter,
-	IN	u8			hw_channel_plan,	/* channel plan from HW (efuse/eeprom) */
-	IN	u8			sw_channel_plan,	/* channel plan from SW (registry/module param) */
-	IN	u8			def_channel_plan,	/* channel plan used when the former two is invalid */
-	IN	bool		AutoLoadFail
+	PADAPTER	padapter,
+	u8			hw_channel_plan,	/* channel plan from HW (efuse/eeprom) */
+	u8			sw_channel_plan,	/* channel plan from SW (registry/module param) */
+	u8			def_channel_plan,	/* channel plan used when the former two is invalid */
+	bool		AutoLoadFail
 	)
 {
 	u8 swConfig;
@@ -136,9 +136,9 @@ u8	MRateToHwRate(u8 rate)
 }
 
 void	HalSetBrateCfg(
-	IN PADAPTER		Adapter,
-	IN u8			*mBratesOS,
-	OUT u16			*pBrateCfg)
+ PADAPTER		Adapter,
+ u8			*mBratesOS,
+ u16			*pBrateCfg)
 {
 	u8	i, is_brate, brate;
 
@@ -170,7 +170,7 @@ void	HalSetBrateCfg(
 
 static VOID
 _OneOutPipeMapping(
-	IN	PADAPTER	pAdapter
+	PADAPTER	pAdapter
 	)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
@@ -188,8 +188,8 @@ _OneOutPipeMapping(
 
 static VOID
 _TwoOutPipeMapping(
-	IN	PADAPTER	pAdapter,
-	IN	bool		bWIFICfg
+	PADAPTER	pAdapter,
+	bool		bWIFICfg
 	)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
@@ -231,8 +231,8 @@ _TwoOutPipeMapping(
 }
 
 static VOID _ThreeOutPipeMapping(
-	IN	PADAPTER	pAdapter,
-	IN	bool		bWIFICfg
+	PADAPTER	pAdapter,
+	bool		bWIFICfg
 	)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
@@ -273,8 +273,8 @@ static VOID _ThreeOutPipeMapping(
 
 bool
 Hal_MappingOutPipe(
-	IN	PADAPTER	pAdapter,
-	IN	u8		NumOutPipe
+	PADAPTER	pAdapter,
+	u8		NumOutPipe
 	)
 {
 	struct registry_priv *pregistrypriv = &pAdapter->registrypriv;

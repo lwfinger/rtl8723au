@@ -28,7 +28,7 @@
 
 void
 ODM_ReadAndConfig_AGC_TAB_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 );
 
 /******************************************************************************
@@ -37,7 +37,7 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 
 void
 ODM_ReadAndConfig_PHY_REG_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 );
 
 /******************************************************************************
@@ -46,7 +46,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 
 void
 ODM_ReadAndConfig_PHY_REG_MP_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 );
 
 /******************************************************************************
@@ -55,7 +55,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 
 void
 ODM_ReadAndConfig_PHY_REG_PG_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 );
 
 #endif

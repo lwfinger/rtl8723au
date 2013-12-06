@@ -490,9 +490,9 @@ LogInterruptHistory8723AU(
 //
 bool
 InterruptRecognized8723AU(
-	IN	PADAPTER			Adapter,
-	IN	void *				pContent,
-	IN	u32				ContentLen
+	PADAPTER			Adapter,
+	void *				pContent,
+	u32				ContentLen
 )
 {
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);

@@ -682,7 +682,7 @@ typedef struct phystatus_8723a
 
 
 // rtl8723a_hal_init.c
-int FirmwareDownloadBT(IN PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware);
+int FirmwareDownloadBT(PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware);
 s32 rtl8723a_FirmwareDownload(PADAPTER padapter);
 void rtl8723a_FirmwareSelfReset(PADAPTER padapter);
 void rtl8723a_InitializeFirmwareVars(PADAPTER padapter);

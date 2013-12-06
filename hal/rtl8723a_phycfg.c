@@ -99,9 +99,9 @@ phy_CalculateBitShift(
 */
 u32
 rtl8192c_PHY_QueryBBReg(
-	IN	PADAPTER	Adapter,
-	IN	u32		RegAddr,
-	IN	u32		BitMask
+	PADAPTER	Adapter,
+	u32		RegAddr,
+	u32		BitMask
 	)
 {
 	u32	ReturnValue = 0, OriginalValue, BitShift;
@@ -145,10 +145,10 @@ rtl8192c_PHY_QueryBBReg(
 
 VOID
 rtl8192c_PHY_SetBBReg(
-	IN	PADAPTER	Adapter,
-	IN	u32		RegAddr,
-	IN	u32		BitMask,
-	IN	u32		Data
+	PADAPTER	Adapter,
+	u32		RegAddr,
+	u32		BitMask,
+	u32		Data
 	)
 {
 	HAL_DATA_TYPE	*pHalData		= GET_HAL_DATA(Adapter);
@@ -197,9 +197,9 @@ rtl8192c_PHY_SetBBReg(
  *---------------------------------------------------------------------------*/
 static	u32
 phy_FwRFSerialRead(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				Offset	)
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				Offset	)
 {
 	u32		retValue = 0;
 	//RT_ASSERT(FALSE,("deprecate!\n"));
@@ -226,10 +226,10 @@ phy_FwRFSerialRead(
  *---------------------------------------------------------------------------*/
 static	VOID
 phy_FwRFSerialWrite(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				Offset,
-	IN	u32				Data	)
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				Offset,
+	u32				Data	)
 {
 	//RT_ASSERT(FALSE,("deprecate!\n"));
 }
@@ -256,9 +256,9 @@ phy_FwRFSerialWrite(
 */
 static	u32
 phy_RFSerialRead(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				Offset
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				Offset
 	)
 {
 	u32						retValue = 0;
@@ -378,10 +378,10 @@ phy_RFSerialRead(
 */
 static	VOID
 phy_RFSerialWrite(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				Offset,
-	IN	u32				Data
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				Offset,
+	u32				Data
 	)
 {
 	u32						DataAndAddr = 0;
@@ -449,10 +449,10 @@ phy_RFSerialWrite(
 */
 u32
 rtl8192c_PHY_QueryRFReg(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				RegAddr,
-	IN	u32				BitMask
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				RegAddr,
+	u32				BitMask
 	)
 {
 	u32 Original_Value, Readback_Value, BitShift;
@@ -491,11 +491,11 @@ rtl8192c_PHY_QueryRFReg(
 */
 VOID
 rtl8192c_PHY_SetRFReg(
-	IN	PADAPTER			Adapter,
-	IN	RF_RADIO_PATH_E	eRFPath,
-	IN	u32				RegAddr,
-	IN	u32				BitMask,
-	IN	u32				Data
+	PADAPTER			Adapter,
+	RF_RADIO_PATH_E	eRFPath,
+	u32				RegAddr,
+	u32				BitMask,
+	u32				Data
 	)
 {
 
@@ -541,8 +541,8 @@ rtl8192c_PHY_SetRFReg(
  *---------------------------------------------------------------------------*/
 static	int
 phy_ConfigMACWithParaFile(
-	IN	PADAPTER		Adapter,
-	IN	u8*			pFileName
+	PADAPTER		Adapter,
+	u8*			pFileName
 )
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -571,7 +571,7 @@ phy_ConfigMACWithParaFile(
 #ifndef CONFIG_PHY_SETTING_WITH_ODM
 static	int
 phy_ConfigMACWithHeaderFile(
-	IN	PADAPTER		Adapter
+	PADAPTER		Adapter
 )
 {
 	u32					i = 0;
@@ -676,7 +676,7 @@ s32 PHY_MACConfig8723A(PADAPTER Adapter)
 */
 static	VOID
 phy_InitBBRFRegisterDefinition(
-	IN	PADAPTER		Adapter
+	PADAPTER		Adapter
 )
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
@@ -800,8 +800,8 @@ phy_InitBBRFRegisterDefinition(
  *---------------------------------------------------------------------------*/
 static	int
 phy_ConfigBBWithParaFile(
-	IN	PADAPTER		Adapter,
-	IN	u8*			pFileName
+	PADAPTER		Adapter,
+	u8*			pFileName
 )
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -818,7 +818,7 @@ phy_ConfigBBWithParaFile(
 //****************************************
 VOID
 phy_ConfigBBExternalPA(
-	IN	PADAPTER			Adapter
+	PADAPTER			Adapter
 )
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -852,8 +852,8 @@ phy_ConfigBBExternalPA(
 #ifndef CONFIG_PHY_SETTING_WITH_ODM
 static	int
 phy_ConfigBBWithHeaderFile(
-	IN	PADAPTER		Adapter,
-	IN	u8			ConfigType
+	PADAPTER		Adapter,
+	u8			ConfigType
 )
 {
 	int i;
@@ -977,10 +977,10 @@ exit:
 #endif
 VOID
 storePwrIndexDiffRateOffset(
-	IN	PADAPTER	Adapter,
-	IN	u32		RegAddr,
-	IN	u32		BitMask,
-	IN	u32		Data
+	PADAPTER	Adapter,
+	u32		RegAddr,
+	u32		BitMask,
+	u32		Data
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1101,8 +1101,8 @@ storePwrIndexDiffRateOffset(
  *---------------------------------------------------------------------------*/
 static	int
 phy_ConfigBBWithPgParaFile(
-	IN	PADAPTER		Adapter,
-	IN	u8*			pFileName)
+	PADAPTER		Adapter,
+	u8*			pFileName)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
@@ -1132,8 +1132,8 @@ phy_ConfigBBWithPgParaFile(
  *---------------------------------------------------------------------------*/
 static	int
 phy_ConfigBBWithPgHeaderFile(
-	IN	PADAPTER		Adapter,
-	IN	u8			ConfigType)
+	PADAPTER		Adapter,
+	u8			ConfigType)
 {
 	int i;
 	u32*	Rtl819XPHY_REGArray_Table_PG;
@@ -1187,7 +1187,7 @@ phy_ConfigBBWithPgHeaderFile(
 
 static VOID
 phy_BB8192C_Config_1T(
-	IN PADAPTER Adapter
+ PADAPTER Adapter
 	)
 {
 #if 0
@@ -1223,7 +1223,7 @@ phy_BB8192C_Config_1T(
 // Now it is just for 8256.
 static	int
 phy_BB8190_Config_HardCode(
-	IN	PADAPTER	Adapter
+	PADAPTER	Adapter
 	)
 {
 	//RT_ASSERT(FALSE, ("This function is not implement yet!! \n"));
@@ -1232,7 +1232,7 @@ phy_BB8190_Config_HardCode(
 
 static	int
 phy_BB8723a_Config_ParaFile(
-	IN	PADAPTER	Adapter
+	PADAPTER	Adapter
 	)
 {
 	EEPROM_EFUSE_PRIV	*pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
@@ -1332,7 +1332,7 @@ phy_BB8190_Config_ParaFile_Fail:
 
 int
 PHY_BBConfig8723A(
-	IN	PADAPTER	Adapter
+	PADAPTER	Adapter
 	)
 {
 	int	rtStatus = _SUCCESS;
@@ -1387,7 +1387,7 @@ PHY_BBConfig8723A(
 
 int
 PHY_RFConfig8723A(
-	IN	PADAPTER	Adapter
+	PADAPTER	Adapter
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1418,8 +1418,8 @@ PHY_RFConfig8723A(
  *---------------------------------------------------------------------------*/
 int
 rtl8192c_PHY_ConfigRFWithParaFile(
-	IN	PADAPTER			Adapter,
-	IN	u8*				pFileName,
+	PADAPTER			Adapter,
+	u8*				pFileName,
 	RF_RADIO_PATH_E		eRFPath
 )
 {
@@ -1453,7 +1453,7 @@ u32 Rtl8192S_HighPower_RadioA_Array[HighPowerRadioAArrayLen] = {
 
 int
 PHY_ConfigRFExternalPA(
-	IN	PADAPTER			Adapter,
+	PADAPTER			Adapter,
 	RF_RADIO_PATH_E		eRFPath
 )
 {
@@ -1489,7 +1489,7 @@ PHY_ConfigRFExternalPA(
 #ifndef CONFIG_PHY_SETTING_WITH_ODM
 int
 rtl8723a_PHY_ConfigRFWithHeaderFile(
-	IN	PADAPTER			Adapter,
+	PADAPTER			Adapter,
 	RF_RADIO_PATH_E		eRFPath
 )
 {
@@ -1674,9 +1674,9 @@ exit:
  *---------------------------------------------------------------------------*/
 int
 PHY_CheckBBAndRFOK(
-	IN	PADAPTER			Adapter,
-	IN	HW90_BLOCK_E		CheckBlock,
-	IN	RF_RADIO_PATH_E	eRFPath
+	PADAPTER			Adapter,
+	HW90_BLOCK_E		CheckBlock,
+	RF_RADIO_PATH_E	eRFPath
 	)
 {
 	int			rtStatus = _SUCCESS;
@@ -1749,7 +1749,7 @@ PHY_CheckBBAndRFOK(
 
 VOID
 rtl8192c_PHY_GetHWRegOriginalValue(
-	IN	PADAPTER		Adapter
+	PADAPTER		Adapter
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1781,9 +1781,9 @@ rtl8192c_PHY_GetHWRegOriginalValue(
 //
 static	u8
 phy_DbmToTxPwrIdx(
-	IN	PADAPTER		Adapter,
-	IN	WIRELESS_MODE	WirelessMode,
-	IN	int			PowerInDbm
+	PADAPTER		Adapter,
+	WIRELESS_MODE	WirelessMode,
+	int			PowerInDbm
 	)
 {
 	u8				TxPwrIdx = 0;
@@ -1837,9 +1837,9 @@ phy_DbmToTxPwrIdx(
 //
 int
 phy_TxPwrIdxToDbm(
-	IN	PADAPTER		Adapter,
-	IN	WIRELESS_MODE	WirelessMode,
-	IN	u8			TxPwrIdx
+	PADAPTER		Adapter,
+	WIRELESS_MODE	WirelessMode,
+	u8			TxPwrIdx
 	)
 {
 	int				Offset = 0;
@@ -1885,8 +1885,8 @@ phy_TxPwrIdxToDbm(
  *---------------------------------------------------------------------------*/
 VOID
 PHY_GetTxPowerLevel8192C(
-	IN	PADAPTER		Adapter,
-	OUT u32*		powerlevel
+	PADAPTER		Adapter,
+ u32*		powerlevel
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1921,10 +1921,10 @@ PHY_GetTxPowerLevel8192C(
 
 
 static void getTxPowerIndex(
-	IN	PADAPTER		Adapter,
-	IN	u8			channel,
-	IN OUT u8*		cckPowerLevel,
-	IN OUT u8*		ofdmPowerLevel
+	PADAPTER		Adapter,
+	u8			channel,
+	u8*		cckPowerLevel,
+	u8*		ofdmPowerLevel
 	)
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
@@ -1950,10 +1950,10 @@ static void getTxPowerIndex(
 }
 
 static void ccxPowerIndexCheck(
-	IN	PADAPTER		Adapter,
-	IN	u8			channel,
-	IN OUT u8*		cckPowerLevel,
-	IN OUT u8*		ofdmPowerLevel
+	PADAPTER		Adapter,
+	u8			channel,
+	u8*		cckPowerLevel,
+	u8*		ofdmPowerLevel
 	)
 {
 #if 0
@@ -2037,8 +2037,8 @@ static void ccxPowerIndexCheck(
  *---------------------------------------------------------------------------*/
 VOID
 PHY_SetTxPowerLevel8192C(
-	IN	PADAPTER		Adapter,
-	IN	u8			channel
+	PADAPTER		Adapter,
+	u8			channel
 	)
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
@@ -2092,8 +2092,8 @@ PHY_SetTxPowerLevel8192C(
 //
 bool
 PHY_UpdateTxPowerDbm8192C(
-	IN	PADAPTER	Adapter,
-	IN	int		powerInDbm
+	PADAPTER	Adapter,
+	int		powerInDbm
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -2138,8 +2138,8 @@ PHY_UpdateTxPowerDbm8192C(
 
 void
 rtl8192c_PHY_SetBeaconHwReg(
-	IN	PADAPTER		Adapter,
-	IN	u16			BeaconInterval
+	PADAPTER		Adapter,
+	u16			BeaconInterval
 	)
 {
 
@@ -2148,8 +2148,8 @@ rtl8192c_PHY_SetBeaconHwReg(
 
 VOID
 PHY_ScanOperationBackup8192C(
-	IN	PADAPTER	Adapter,
-	IN	u8		Operation
+	PADAPTER	Adapter,
+	u8		Operation
 	)
 {
 #if 0
@@ -2195,7 +2195,7 @@ PHY_ScanOperationBackup8192C(
  *---------------------------------------------------------------------------*/
 static VOID
 _PHY_SetBWMode92C(
-	IN	PADAPTER	Adapter
+	PADAPTER	Adapter
 )
 {
 //	PADAPTER			Adapter = (PADAPTER)pTimer->Adapter;
@@ -2358,9 +2358,9 @@ _PHY_SetBWMode92C(
  *---------------------------------------------------------------------------*/
 VOID
 PHY_SetBWMode8192C(
-	IN	PADAPTER					Adapter,
-	IN	HT_CHANNEL_WIDTH	Bandwidth,	// 20M or 40M
-	IN	unsigned char	Offset		// Upper, Lower, or Don't care
+	PADAPTER					Adapter,
+	HT_CHANNEL_WIDTH	Bandwidth,	// 20M or 40M
+	unsigned char	Offset		// Upper, Lower, or Don't care
 )
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -2455,8 +2455,8 @@ static void _PHY_SwChnl8192C(PADAPTER Adapter, u8 channel)
 
 VOID
 PHY_SwChnl8192C(	// Call after initialization
-	IN	PADAPTER	Adapter,
-	IN	u8		channel
+	PADAPTER	Adapter,
+	u8		channel
 	)
 {
 	//PADAPTER Adapter =  ADJUST_TO_ADAPTIVE_ADAPTER(pAdapter, _TRUE);
@@ -2529,11 +2529,11 @@ PHY_SwChnl8192C(	// Call after initialization
 
 static	bool
 phy_SwChnlStepByStep(
-	IN	PADAPTER	Adapter,
-	IN	u8		channel,
-	IN	u8		*stage,
-	IN	u8		*step,
-	OUT u32		*delay
+	PADAPTER	Adapter,
+	u8		channel,
+	u8		*stage,
+	u8		*step,
+ u32		*delay
 	)
 {
 	return _TRUE;
@@ -2578,8 +2578,8 @@ phy_SetSwChnlCmdArray(
 
 static	void
 phy_FinishSwChnlNow(	// We should not call this function directly
-		IN	PADAPTER	Adapter,
-		IN	u8		channel
+		PADAPTER	Adapter,
+		u8		channel
 		)
 {
 #if 0
@@ -2607,8 +2607,8 @@ phy_FinishSwChnlNow(	// We should not call this function directly
 //
 VOID
 PHY_SwChnlPhy8192C(	// Only called during initialize
-	IN	PADAPTER	Adapter,
-	IN	u8		channel
+	PADAPTER	Adapter,
+	u8		channel
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -2653,8 +2653,8 @@ PHY_SwChnlPhy8192C(	// Only called during initialize
 //
 VOID
 PHY_SetMonitorMode8192C(
-	IN	PADAPTER			pAdapter,
-	IN	bool				bEnableMonitorMode
+	PADAPTER			pAdapter,
+	bool				bEnableMonitorMode
 	)
 {
 #if 0
@@ -2703,8 +2703,8 @@ PHY_SetMonitorMode8192C(
  *---------------------------------------------------------------------------*/
 bool
 PHY_CheckIsLegalRfPath8192C(
-	IN	PADAPTER	pAdapter,
-	IN	u32	eRFPath)
+	PADAPTER	pAdapter,
+	u32	eRFPath)
 {
 //	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	bool				rtValue = _TRUE;
@@ -2725,9 +2725,9 @@ PHY_CheckIsLegalRfPath8192C(
 }	/* PHY_CheckIsLegalRfPath8192C */
 
 static VOID _PHY_SetRFPathSwitch(
-	IN	PADAPTER	pAdapter,
-	IN	bool		bMain,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	bool		bMain,
+	bool		is2T
 	)
 {
 	u8	u1bTmp;
@@ -2761,8 +2761,8 @@ static VOID _PHY_SetRFPathSwitch(
 //return value TRUE => Main; FALSE => Aux
 
 static bool _PHY_QueryRFPathSwitch(
-	IN	PADAPTER	pAdapter,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	bool		is2T
 	)
 {
 //	if(is2T)
@@ -2792,7 +2792,7 @@ static bool _PHY_QueryRFPathSwitch(
 
 
 static VOID
-_PHY_DumpRFReg(IN	PADAPTER	pAdapter)
+_PHY_DumpRFReg(PADAPTER	pAdapter)
 {
 	u32 rfRegValue,rfRegOffset;
 
@@ -2807,8 +2807,8 @@ _PHY_DumpRFReg(IN	PADAPTER	pAdapter)
 
 
 VOID rtl8192c_PHY_SetRFPathSwitch(
-	IN	PADAPTER	pAdapter,
-	IN	bool		bMain
+	PADAPTER	pAdapter,
+	bool		bMain
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -2838,7 +2838,7 @@ VOID rtl8192c_PHY_SetRFPathSwitch(
 //
 VOID
 DumpBBDbgPort_92CU(
-	IN	PADAPTER			Adapter
+	PADAPTER			Adapter
 	)
 {
 	PHY_SetBBReg(Adapter, 0x0908, 0xffff, 0x0000);

@@ -28,7 +28,7 @@
 
 void
 ODM_ReadAndConfig_RadioA_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+	PDM_ODM_T  pDM_Odm
 );
 
 

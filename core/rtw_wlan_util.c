@@ -305,8 +305,8 @@ void get_rate_set(_adapter *padapter, unsigned char *pbssrate, int *bssrate_len)
 }
 
 void UpdateBrateTbl(
-	IN PADAPTER		Adapter,
-	IN u8			*mBratesOS
+	PADAPTER		Adapter,
+	u8			*mBratesOS
 )
 {
 	u8	i;

@@ -222,7 +222,7 @@ u4Byte Array_AGC_TAB_1T_8723A[] = {
 
 void
 ODM_ReadAndConfig_AGC_TAB_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
@@ -493,7 +493,7 @@ u4Byte Array_PHY_REG_1T_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
@@ -572,7 +572,7 @@ u4Byte Array_PHY_REG_MP_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_MP_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+   PDM_ODM_T  pDM_Odm
 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
@@ -761,7 +761,7 @@ u4Byte Array_PHY_REG_PG_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_PG_8723A(
-	IN   PDM_ODM_T  pDM_Odm
+	PDM_ODM_T  pDM_Odm
 	)
 {
 	u4Byte     hex = 0;

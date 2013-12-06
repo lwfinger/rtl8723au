@@ -1602,34 +1602,34 @@ extern	u1Byte CCKSwingTable_Ch14 [CCK_TABLE_SIZE][8];
 #define SWAW_STEP_PEAK		0
 #define SWAW_STEP_DETERMINE	1
 
-VOID ODM_Write_DIG(IN	PDM_ODM_T	pDM_Odm,	IN	u1Byte	CurrentIGI);
-VOID ODM_Write_CCK_CCA_Thres(IN	PDM_ODM_T	pDM_Odm, IN	u1Byte	CurCCK_CCAThres);
+VOID ODM_Write_DIG(PDM_ODM_T	pDM_Odm,	u1Byte	CurrentIGI);
+VOID ODM_Write_CCK_CCA_Thres(PDM_ODM_T	pDM_Odm, u1Byte	CurCCK_CCAThres);
 
 VOID
 ODM_SetAntenna(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	u1Byte		Antenna);
+	PDM_ODM_T	pDM_Odm,
+	u1Byte		Antenna);
 
 
 #define dm_RF_Saving	ODM_RF_Saving
-void ODM_RF_Saving(	IN	PDM_ODM_T	pDM_Odm,
-							IN	u1Byte		bForceInNormal );
+void ODM_RF_Saving(	PDM_ODM_T	pDM_Odm,
+							u1Byte		bForceInNormal );
 
 #define SwAntDivRestAfterLink	ODM_SwAntDivRestAfterLink
-VOID ODM_SwAntDivRestAfterLink(	IN	PDM_ODM_T	pDM_Odm);
+VOID ODM_SwAntDivRestAfterLink(	PDM_ODM_T	pDM_Odm);
 
 #define dm_CheckTXPowerTracking		ODM_TXPowerTrackingCheck
 VOID
 ODM_TXPowerTrackingCheck(
-	IN		PDM_ODM_T		pDM_Odm
+		PDM_ODM_T		pDM_Odm
 	);
 
 bool
 ODM_RAStateCheck(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		s4Byte			RSSI,
-	IN		bool			bForceUpdate,
-	OUT		pu1Byte			pRATRState
+		PDM_ODM_T		pDM_Odm,
+		s4Byte			RSSI,
+		bool			bForceUpdate,
+		pu1Byte			pRATRState
 	);
 
 #if(DM_ODM_SUPPORT_TYPE & (ODM_MP|ODM_AP|ODM_ADSL))
@@ -1637,27 +1637,27 @@ ODM_RAStateCheck(
 // function prototype
 //============================================================
 //#define DM_ChangeDynamicInitGainThresh		ODM_ChangeDynamicInitGainThresh
-//void	ODM_ChangeDynamicInitGainThresh(IN	PADAPTER	pAdapter,
-//											IN	INT32		DM_Type,
-//											IN	INT32		DM_Value);
+//void	ODM_ChangeDynamicInitGainThresh(PADAPTER	pAdapter,
+//											INT32		DM_Type,
+//											INT32		DM_Value);
 VOID
 ODM_ChangeDynamicInitGainThresh(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	u4Byte  DM_Type,
-	IN	u4Byte DM_Value
+	PDM_ODM_T	pDM_Odm,
+	u4Byte  DM_Type,
+	u4Byte DM_Value
 	);
 
 bool
 ODM_CheckPowerStatus(
-	IN	PADAPTER		Adapter
+	PADAPTER		Adapter
 	);
 
 
 #if (DM_ODM_SUPPORT_TYPE != ODM_ADSL)
 VOID
 ODM_RateAdaptiveStateApInit(
-	IN	PADAPTER	Adapter	,
-	IN	PRT_WLAN_STA  pEntry
+	PADAPTER	Adapter	,
+	PRT_WLAN_STA  pEntry
 	);
 #endif
 #define AP_InitRateAdaptiveState	ODM_RateAdaptiveStateApInit
@@ -1667,15 +1667,15 @@ ODM_RateAdaptiveStateApInit(
 #ifdef WIFI_WMM
 VOID
 ODM_IotEdcaSwitch(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	unsigned char		enable
+	PDM_ODM_T	pDM_Odm,
+	unsigned char		enable
 	);
 #endif
 
 bool
 ODM_ChooseIotMainSTA(
-	IN	PDM_ODM_T		pDM_Odm,
-	IN	PSTA_INFO_T		pstat
+	PDM_ODM_T		pDM_Odm,
+	PSTA_INFO_T		pstat
 	);
 #endif
 
@@ -1683,20 +1683,20 @@ ODM_ChooseIotMainSTA(
 #ifdef HW_ANT_SWITCH
 u1Byte
 ODM_Diversity_AntennaSelect(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	u1Byte	*data
+	PDM_ODM_T	pDM_Odm,
+	u1Byte	*data
 );
 #endif
 #endif
 
 #define SwAntDivResetBeforeLink		ODM_SwAntDivResetBeforeLink
-VOID ODM_SwAntDivResetBeforeLink(IN	PDM_ODM_T	pDM_Odm);
+VOID ODM_SwAntDivResetBeforeLink(PDM_ODM_T	pDM_Odm);
 
 //#define SwAntDivCheckBeforeLink8192C	ODM_SwAntDivCheckBeforeLink8192C
 #define SwAntDivCheckBeforeLink	ODM_SwAntDivCheckBeforeLink8192C
 bool
 ODM_SwAntDivCheckBeforeLink8192C(
-	IN		PDM_ODM_T		pDM_Odm
+		PDM_ODM_T		pDM_Odm
 	);
 
 
@@ -1704,9 +1704,9 @@ ODM_SwAntDivCheckBeforeLink8192C(
 
 #define dm_SWAW_RSSI_Check	ODM_SwAntDivChkPerPktRssi
 VOID ODM_SwAntDivChkPerPktRssi(
-	IN PDM_ODM_T		pDM_Odm,
-	IN u1Byte			StationID,
-	IN PODM_PHY_INFO_T pPhyInfo
+ PDM_ODM_T		pDM_Odm,
+ u1Byte			StationID,
+ PODM_PHY_INFO_T pPhyInfo
 	);
 
 #if((DM_ODM_SUPPORT_TYPE==ODM_MP)||(DM_ODM_SUPPORT_TYPE==ODM_CE))
@@ -1725,14 +1725,14 @@ GetPSDData(
 
 VOID
 odm_DIGbyRSSI_LPS(
-	IN		PDM_ODM_T		pDM_Odm
+		PDM_ODM_T		pDM_Odm
 	);
 
 u4Byte ODM_Get_Rate_Bitmap(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	u4Byte		macid,
-	IN	u4Byte		ra_mask,
-	IN	u1Byte		rssi_level);
+	PDM_ODM_T	pDM_Odm,
+	u4Byte		macid,
+	u4Byte		ra_mask,
+	u1Byte		rssi_level);
 #endif
 
 
@@ -1742,98 +1742,98 @@ VOID	odm_PSDMonitorCallback(PRT_TIMER		pTimer);
 
 VOID
 odm_PSDMonitorWorkItemCallback(
-    IN void *            pContext
+	void *            pContext
     );
 
 
 VOID
 PatchDCTone(
-	IN	PDM_ODM_T	pDM_Odm,
+	PDM_ODM_T	pDM_Odm,
 	pu4Byte		PSD_report,
 	u1Byte		initial_gain_psd
 );
 VOID
 ODM_PSDMonitor(
-	IN	PDM_ODM_T	pDM_Odm
+	PDM_ODM_T	pDM_Odm
 	);
 VOID	odm_PSD_Monitor(PDM_ODM_T	pDM_Odm);
 VOID	odm_PSDMonitorInit(PDM_ODM_T	pDM_Odm);
 
 VOID
 ODM_PSDDbgControl(
-	IN	PADAPTER	Adapter,
-	IN	u4Byte		mode,
-	IN	u4Byte		btRssi
+	PADAPTER	Adapter,
+	u4Byte		mode,
+	u4Byte		btRssi
 	);
 
 #endif	// DM_ODM_SUPPORT_TYPE
 
 
 
-VOID ODM_DMInit( IN	PDM_ODM_T	pDM_Odm);
+VOID ODM_DMInit(PDM_ODM_T	pDM_Odm);
 
 VOID
 ODM_DMWatchdog(
-	IN		PDM_ODM_T			pDM_Odm			// For common use in the future
+		PDM_ODM_T			pDM_Odm			// For common use in the future
 	);
 
 VOID
 ODM_CmnInfoInit(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		ODM_CMNINFO_E	CmnInfo,
-	IN		u4Byte			Value
+		PDM_ODM_T		pDM_Odm,
+		ODM_CMNINFO_E	CmnInfo,
+		u4Byte			Value
 	);
 
 VOID
 ODM_CmnInfoHook(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		ODM_CMNINFO_E	CmnInfo,
-	IN		void *			pValue
+		PDM_ODM_T		pDM_Odm,
+		ODM_CMNINFO_E	CmnInfo,
+		void *			pValue
 	);
 
 VOID
 ODM_CmnInfoPtrArrayHook(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		ODM_CMNINFO_E	CmnInfo,
-	IN		u2Byte			Index,
-	IN		void *			pValue
+		PDM_ODM_T		pDM_Odm,
+		ODM_CMNINFO_E	CmnInfo,
+		u2Byte			Index,
+		void *			pValue
 	);
 
 VOID
 ODM_CmnInfoUpdate(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u4Byte			CmnInfo,
-	IN		u8Byte			Value
+		PDM_ODM_T		pDM_Odm,
+		u4Byte			CmnInfo,
+		u8Byte			Value
 	);
 
 VOID
 ODM_InitAllTimers(
-    IN PDM_ODM_T	pDM_Odm
+	PDM_ODM_T	pDM_Odm
     );
 
 VOID
 ODM_CancelAllTimers(
-    IN PDM_ODM_T    pDM_Odm
+	PDM_ODM_T    pDM_Odm
     );
 
 VOID
 ODM_ReleaseAllTimers(
-    IN PDM_ODM_T	pDM_Odm
+	PDM_ODM_T	pDM_Odm
     );
 
 VOID
 ODM_ResetIQKResult(
-    IN PDM_ODM_T pDM_Odm
+	PDM_ODM_T pDM_Odm
     );
 
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
-VOID ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm );
-VOID ODM_FreeAllWorkItems(IN PDM_ODM_T	pDM_Odm );
+VOID ODM_InitAllWorkItems(PDM_ODM_T	pDM_Odm );
+VOID ODM_FreeAllWorkItems(PDM_ODM_T	pDM_Odm );
 
 VOID odm_PathDivChkAntSwitch(PDM_ODM_T pDM_Odm);
 VOID ODM_PathDivRestAfterLink(
-	IN	PDM_ODM_T		pDM_Odm
+	PDM_ODM_T		pDM_Odm
 	);
 
 
@@ -1852,7 +1852,7 @@ VOID ODM_PathDivRestAfterLink(
 
 //VOID odm_PathDivChkAntSwitch(PADAPTER	Adapter,u1Byte	Step);
 VOID ODM_PathDivRestAfterLink(
-	IN	PDM_ODM_T	pDM_Odm
+	PDM_ODM_T	pDM_Odm
 	);
 
 #define dm_PathDiv_RSSI_Check	ODM_PathDivChkPerPktRssi
@@ -1864,8 +1864,8 @@ VOID ODM_PathDivChkPerPktRssi(PADAPTER		Adapter,
 
 u8Byte
 PlatformDivision64(
-	IN u8Byte	x,
-	IN u8Byte	y
+ u8Byte	x,
+ u8Byte	y
 );
 
 
@@ -1884,14 +1884,14 @@ PlatformDivision64(
 #define PathDivCheckBeforeLink8192C	ODM_PathDiversityBeforeLink92C
 bool
 ODM_PathDiversityBeforeLink92C(
-	//IN	PADAPTER	Adapter
-	IN		PDM_ODM_T		pDM_Odm
+	//	PADAPTER	Adapter
+		PDM_ODM_T		pDM_Odm
 	);
 
 #define DM_ChangeDynamicInitGainThresh		ODM_ChangeDynamicInitGainThresh
-//void	ODM_ChangeDynamicInitGainThresh(IN	PADAPTER	pAdapter,
-//											IN	INT32		DM_Type,
-//											IN	INT32		DM_Value);
+//void	ODM_ChangeDynamicInitGainThresh(PADAPTER	pAdapter,
+//											INT32		DM_Type,
+//											INT32		DM_Value);
 //
 
 
@@ -1919,9 +1919,9 @@ typedef enum tag_DIG_Connect_Definition
 
 VOID
 ODM_FillTXPathInTXDESC(
-		IN	PADAPTER	Adapter,
-		IN	PRT_TCB		pTcb,
-		IN	pu1Byte		pDesc
+		PADAPTER	Adapter,
+		PRT_TCB		pTcb,
+		pu1Byte		pDesc
 );
 
 
@@ -1945,30 +1945,30 @@ ODM_FillTXPathInTXDESC(
 
 VOID
 ODM_SetTxAntByTxInfo_88C_92D(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		pu1Byte			pDesc,
-	IN		u1Byte			macId
+		PDM_ODM_T		pDM_Odm,
+		pu1Byte			pDesc,
+		u1Byte			macId
 	);
 #endif	// #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 VOID
 ODM_AntselStatistics_88C(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u1Byte			MacId,
-	IN		u4Byte			PWDBAll,
-	IN		bool			isCCKrate
+		PDM_ODM_T		pDM_Odm,
+		u1Byte			MacId,
+		u4Byte			PWDBAll,
+		bool			isCCKrate
 );
 
 #if( DM_ODM_SUPPORT_TYPE & (ODM_MP |ODM_CE))
 
 VOID
 ODM_SingleDualAntennaDefaultSetting(
-	IN		PDM_ODM_T		pDM_Odm
+		PDM_ODM_T		pDM_Odm
 	);
 
 bool
 ODM_SingleDualAntennaDetection(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u1Byte			mode
+		PDM_ODM_T		pDM_Odm,
+		u1Byte			mode
 	);
 
 #endif	// #if((DM_ODM_SUPPORT_TYPE==ODM_MP)||(DM_ODM_SUPPORT_TYPE==ODM_CE))

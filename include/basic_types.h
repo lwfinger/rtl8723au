@@ -39,8 +39,6 @@
 #endif
 
 #include <linux/types.h>
-#define IN
-#define OUT
 #define VOID void
 #define NDIS_OID uint
 #define NDIS_STATUS uint

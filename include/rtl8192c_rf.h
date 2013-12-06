@@ -71,19 +71,14 @@
 //
 // RF RL6052 Series API
 //
-void		rtl8192c_RF_ChangeTxPath(	IN	PADAPTER	Adapter,
-										IN	u16		DataRate);
-void		rtl8192c_PHY_RF6052SetBandwidth(
-										IN	PADAPTER				Adapter,
-										IN	HT_CHANNEL_WIDTH		Bandwidth);
-VOID	rtl8192c_PHY_RF6052SetCckTxPower(
-										IN	PADAPTER	Adapter,
-										IN	u8*		pPowerlevel);
-VOID	rtl8192c_PHY_RF6052SetOFDMTxPower(
-										IN	PADAPTER	Adapter,
-										IN	u8*		pPowerLevel,
-										IN	u8		Channel);
-int	PHY_RF6052_Config8192C(	IN	PADAPTER		Adapter	);
+void		rtl8192c_RF_ChangeTxPath(PADAPTER Adapter,
+										u16		DataRate);
+void		rtl8192c_PHY_RF6052SetBandwidth(PADAPTER Adapter,
+						HT_CHANNEL_WIDTH Bandwidth);
+VOID	rtl8192c_PHY_RF6052SetCckTxPower(PADAPTER Adapter, u8* pPowerlevel);
+VOID	rtl8192c_PHY_RF6052SetOFDMTxPower(PADAPTER Adapter, u8* pPowerLevel,
+					  u8 Channel);
+int	PHY_RF6052_Config8192C(PADAPTER Adapter);
 
 /*--------------------------Exported Function prototype---------------------*/
 

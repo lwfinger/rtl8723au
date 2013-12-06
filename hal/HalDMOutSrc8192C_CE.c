@@ -29,7 +29,7 @@
 /* 091212 chiyokolin */
 static	VOID
 odm_TXPowerTrackingCallback_ThermalMeter_92C(
-            IN PADAPTER	Adapter)
+	PADAPTER Adapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -380,15 +380,14 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 /*	Added by Roger, 2009.06.18. */
 /*  */
 static VOID
-ODM_TXPowerTracking92CDirectCall(
-            IN	PADAPTER		Adapter)
+ODM_TXPowerTracking92CDirectCall(PADAPTER Adapter)
 {
 	odm_TXPowerTrackingCallback_ThermalMeter_92C(Adapter);
 }
 
 static VOID
 odm_CheckTXPowerTracking_ThermalMeter(
-	IN	PADAPTER		Adapter)
+	PADAPTER		Adapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -414,7 +413,7 @@ odm_CheckTXPowerTracking_ThermalMeter(
 
 VOID
 rtl8192c_odm_CheckTXPowerTracking(
-	IN	PADAPTER		Adapter)
+	PADAPTER		Adapter)
 {
 	odm_CheckTXPowerTracking_ThermalMeter(Adapter);
 }
@@ -422,7 +421,7 @@ rtl8192c_odm_CheckTXPowerTracking(
 #ifdef CONFIG_ANTENNA_DIVERSITY
 /*  Add new function to reset the state of antenna diversity before link. */
 /*  */
-void odm_SwAntDivResetBeforeLink8192C(IN PDM_ODM_T pDM_Odm)
+void odm_SwAntDivResetBeforeLink8192C(PDM_ODM_T pDM_Odm)
 {
 	SWAT_T *pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 
@@ -495,8 +494,8 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter )
 
 static u8			/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
 _PHY_PathA_IQK(
-	IN	PADAPTER	pAdapter,
-	IN	bool		configPathB
+	PADAPTER	pAdapter,
+	bool		configPathB
 	)
 {
 	u32 regEAC, regE94, regE9C, regEA4;
@@ -555,7 +554,7 @@ _PHY_PathA_IQK(
 
 static u8				/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
 _PHY_PathB_IQK(
-	IN	PADAPTER	pAdapter
+	PADAPTER	pAdapter
 	)
 {
 	u32 regEAC, regEB4, regEBC, regEC4, regECC;
@@ -596,11 +595,11 @@ _PHY_PathB_IQK(
 
 static VOID
 _PHY_PathAFillIQKMatrix(
-	IN	PADAPTER	pAdapter,
-	IN	bool		bIQKOK,
-	IN	int			result[][8],
-	IN	u8			final_candidate,
-	IN	bool		bTxOnly
+	PADAPTER	pAdapter,
+	bool		bIQKOK,
+	int			result[][8],
+	u8			final_candidate,
+	bool		bTxOnly
 	)
 {
 	u32	Oldval_0, X, TX0_A, reg;
@@ -648,11 +647,11 @@ _PHY_PathAFillIQKMatrix(
 
 static VOID
 _PHY_PathBFillIQKMatrix(
-	IN	PADAPTER	pAdapter,
-	IN	bool	bIQKOK,
-	IN	int			result[][8],
-	IN	u8			final_candidate,
-	IN	bool		bTxOnly			/* do Tx only */
+	PADAPTER	pAdapter,
+	bool	bIQKOK,
+	int			result[][8],
+	u8			final_candidate,
+	bool		bTxOnly			/* do Tx only */
 	)
 {
 	u32	Oldval_1, X, TX1_A, reg;
@@ -697,10 +696,10 @@ _PHY_PathBFillIQKMatrix(
 
 static VOID
 _PHY_SaveADDARegisters(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		ADDAReg,
-	IN	u32*		ADDABackup,
-	IN	u32			RegisterNum
+	PADAPTER	pAdapter,
+	u32*		ADDAReg,
+	u32*		ADDABackup,
+	u32			RegisterNum
 	)
 {
 	u32	i;
@@ -712,9 +711,9 @@ _PHY_SaveADDARegisters(
 
 static VOID
 _PHY_SaveMACRegisters(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		MACReg,
-	IN	u32*		MACBackup
+	PADAPTER	pAdapter,
+	u32*		MACReg,
+	u32*		MACBackup
 	)
 {
 	u32	i;
@@ -727,10 +726,10 @@ _PHY_SaveMACRegisters(
 
 static VOID
 _PHY_ReloadADDARegisters(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		ADDAReg,
-	IN	u32*		ADDABackup,
-	IN	u32			RegiesterNum
+	PADAPTER	pAdapter,
+	u32*		ADDAReg,
+	u32*		ADDABackup,
+	u32			RegiesterNum
 	)
 {
 	u32	i;
@@ -742,9 +741,9 @@ _PHY_ReloadADDARegisters(
 
 static VOID
 _PHY_ReloadMACRegisters(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		MACReg,
-	IN	u32*		MACBackup
+	PADAPTER	pAdapter,
+	u32*		MACReg,
+	u32*		MACBackup
 	)
 {
 	u32	i;
@@ -757,10 +756,10 @@ _PHY_ReloadMACRegisters(
 
 static VOID
 _PHY_PathADDAOn(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		ADDAReg,
-	IN	bool		isPathAOn,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	u32*		ADDAReg,
+	bool		isPathAOn,
+	bool		is2T
 	)
 {
 	u32	pathOn;
@@ -783,9 +782,9 @@ _PHY_PathADDAOn(
 
 static VOID
 _PHY_MACSettingCalibration(
-	IN	PADAPTER	pAdapter,
-	IN	u32*		MACReg,
-	IN	u32*		MACBackup
+	PADAPTER	pAdapter,
+	u32*		MACReg,
+	u32*		MACBackup
 	)
 {
 	u32	i = 0;
@@ -800,7 +799,7 @@ _PHY_MACSettingCalibration(
 
 static VOID
 _PHY_PathAStandBy(
-	IN	PADAPTER	pAdapter
+	PADAPTER	pAdapter
 	)
 {
 	PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x0);
@@ -810,8 +809,8 @@ _PHY_PathAStandBy(
 
 static VOID
 _PHY_PIModeSwitch(
-	IN	PADAPTER	pAdapter,
-	IN	bool		PIMode
+	PADAPTER	pAdapter,
+	bool		PIMode
 	)
 {
 	u32	mode;
@@ -826,10 +825,10 @@ return _FALSE => do IQK again
 */
 static bool
 _PHY_SimularityCompare(
-	IN	PADAPTER	pAdapter,
-	IN	int		result[][8],
-	IN	u8		 c1,
-	IN	u8		 c2
+	PADAPTER	pAdapter,
+	int		result[][8],
+	u8		 c1,
+	u8		 c2
 	)
 {
 	u32		i, j, diff, SimularityBitMap, bound = 0;
@@ -895,10 +894,10 @@ _PHY_SimularityCompare(
 
 static VOID
 _PHY_IQCalibrate(
-	IN	PADAPTER	pAdapter,
-	IN	int		result[][8],
-	IN	u8		t,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	int		result[][8],
+	u8		t,
+	bool		is2T
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1071,8 +1070,8 @@ _PHY_IQCalibrate(
 
 static VOID
 _PHY_LCCalibrate(
-	IN	PADAPTER	pAdapter,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	bool		is2T
 	)
 {
 	u8	tmpReg;
@@ -1142,9 +1141,9 @@ _PHY_LCCalibrate(
 
 static VOID
 _PHY_APCalibrate(
-	IN	PADAPTER	pAdapter,
-	IN	char		delta,
-	IN	bool		is2T
+	PADAPTER	pAdapter,
+	char		delta,
+	bool		is2T
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1256,8 +1255,8 @@ _PHY_APCalibrate(
 
 VOID
 rtl8192c_PHY_IQCalibrate(
-	IN	PADAPTER	pAdapter,
-	IN	bool	bReCovery
+	PADAPTER	pAdapter,
+	bool	bReCovery
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1394,7 +1393,7 @@ rtl8192c_PHY_IQCalibrate(
 
 VOID
 rtl8192c_PHY_LCCalibrate(
-	IN	PADAPTER	pAdapter
+	PADAPTER	pAdapter
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1423,8 +1422,8 @@ rtl8192c_PHY_LCCalibrate(
 
 VOID
 rtl8192c_PHY_APCalibrate(
-	IN	PADAPTER	pAdapter,
-	IN	char		delta
+	PADAPTER	pAdapter,
+	char		delta
 	)
 {
 }

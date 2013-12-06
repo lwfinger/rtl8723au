@@ -27,8 +27,8 @@
 
 static VOID
 _FWDownloadEnable(
-	IN	PADAPTER		padapter,
-	IN	bool			enable
+	PADAPTER		padapter,
+	bool			enable
 	)
 {
 	u8	tmp;
@@ -60,9 +60,9 @@ _FWDownloadEnable(
 
 static int
 _BlockWrite(
-	IN		PADAPTER		padapter,
-	IN		void *		buffer,
-	IN		u32			buffSize
+		PADAPTER		padapter,
+		void *		buffer,
+		u32			buffSize
 	)
 {
 	int ret = _SUCCESS;
@@ -140,10 +140,10 @@ exit:
 
 static int
 _PageWrite(
-	IN		PADAPTER	padapter,
-	IN		u32			page,
-	IN		void *		buffer,
-	IN		u32			size
+		PADAPTER	padapter,
+		u32			page,
+		void *		buffer,
+		u32			size
 	)
 {
 	u8 value8;
@@ -177,9 +177,9 @@ _FillDummy(
 
 static int
 _WriteFW(
-	IN		PADAPTER		padapter,
-	IN		void *			buffer,
-	IN		u32			size
+		PADAPTER		padapter,
+		void *			buffer,
+		u32			size
 	)
 {
 	// Since we need dynamic decide method of dwonload fw, so we call this function to get chip version.
@@ -1845,7 +1845,7 @@ Hal_EfusePgPacketWrite_BT(
 
 static HAL_VERSION
 ReadChipVersion8723A(
-	IN	PADAPTER	padapter
+	PADAPTER	padapter
 	)
 {
 	u32				value32;
@@ -2825,8 +2825,8 @@ Hal_InitPGData(
 
 void
 Hal_EfuseParseIDCode(
-	IN	PADAPTER	padapter,
-	IN	u8			*hwinfo
+	PADAPTER	padapter,
+	u8			*hwinfo
 	)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
@@ -2851,9 +2851,9 @@ Hal_EfuseParseIDCode(
 
 static void
 Hal_EEValueCheck(
-	IN		u8		EEType,
-	IN		void *		pInValue,
-	OUT		void *		pOutValue
+		u8		EEType,
+		void *		pInValue,
+		void *		pOutValue
 	)
 {
 	switch(EEType)
@@ -2882,9 +2882,9 @@ Hal_EEValueCheck(
 
 static void
 Hal_ReadPowerValueFromPROM_8723A(
-	IN	PTxPowerInfo	pwrInfo,
-	IN	u8*			PROMContent,
-	IN	bool			AutoLoadFail
+	PTxPowerInfo	pwrInfo,
+	u8*			PROMContent,
+	bool			AutoLoadFail
 	)
 {
 	u32 rfPath, eeAddr, group, rfPathMax=1;
@@ -2949,7 +2949,7 @@ Hal_ReadPowerValueFromPROM_8723A(
 
 static u8
 Hal_GetChnlGroup(
-	IN	u8 chnl
+	u8 chnl
 	)
 {
 	u8	group=0;
@@ -2966,9 +2966,9 @@ Hal_GetChnlGroup(
 
 void
 Hal_EfuseParseTxPowerInfo_8723A(
-	IN	PADAPTER		padapter,
-	IN	u8*			PROMContent,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			PROMContent,
+	bool			AutoLoadFail
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -3054,9 +3054,9 @@ Hal_EfuseParseTxPowerInfo_8723A(
 
 VOID
 Hal_EfuseParseBTCoexistInfo_8723A(
-	IN PADAPTER			padapter,
-	IN u8*			hwinfo,
-	IN bool			AutoLoadFail
+ PADAPTER			padapter,
+ u8*			hwinfo,
+ bool			AutoLoadFail
 	)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -3094,9 +3094,9 @@ Hal_EfuseParseBTCoexistInfo_8723A(
 
 VOID
 Hal_EfuseParseEEPROMVer(
-	IN	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			hwinfo,
+	bool			AutoLoadFail
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -3111,9 +3111,9 @@ Hal_EfuseParseEEPROMVer(
 
 VOID
 rtl8723a_EfuseParseChnlPlan(
-	IN	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			hwinfo,
+	bool			AutoLoadFail
 	)
 {
 	padapter->mlmepriv.ChannelPlan = hal_com_get_channel_plan(
@@ -3129,9 +3129,9 @@ rtl8723a_EfuseParseChnlPlan(
 
 VOID
 Hal_EfuseParseCustomerID(
-	IN	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			hwinfo,
+	bool			AutoLoadFail
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -3152,9 +3152,9 @@ Hal_EfuseParseCustomerID(
 
 VOID
 Hal_EfuseParseAntennaDiversity(
-	IN	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			hwinfo,
+	bool			AutoLoadFail
 	)
 {
 #ifdef CONFIG_ANTENNA_DIVERSITY
@@ -3187,9 +3187,9 @@ Hal_EfuseParseAntennaDiversity(
 
 VOID
 Hal_EfuseParseRateIndicationOption(
-	IN	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	bool			AutoLoadFail
+	PADAPTER		padapter,
+	u8*			hwinfo,
+	bool			AutoLoadFail
 	)
 {
 #if 0
@@ -3283,7 +3283,7 @@ Hal_EfuseParseThermalMeter_8723A(
 
 VOID
 Hal_InitChannelPlan(
-	IN		PADAPTER	padapter
+		PADAPTER	padapter
 	)
 {
 #if 0
