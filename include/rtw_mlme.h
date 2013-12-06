@@ -411,7 +411,7 @@ struct mlme_priv {
 
 	#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	_timer set_scan_deny_timer;
-	ATOMIC_T set_scan_deny; //0: allowed, 1: deny
+	atomic_t set_scan_deny; //0: allowed, 1: deny
 	#endif
 
 	struct qos_priv qospriv;

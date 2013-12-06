@@ -257,12 +257,6 @@ struct dvobj_priv
 
 	u8	irq_alloc;
 
-/*-------- below is for SDIO INTERFACE --------*/
-
-#ifdef INTF_DATA
-	INTF_DATA intf_data;
-#endif
-
 /*-------- below is for USB INTERFACE --------*/
 
 	u8	nr_endpoint;
@@ -286,7 +280,7 @@ struct dvobj_priv
 
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
-	ATOMIC_T continual_urb_error;
+	atomic_t continual_urb_error;
 
 /*-------- below is for PCIE INTERFACE --------*/
 

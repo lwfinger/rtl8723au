@@ -3434,7 +3434,7 @@ static void ro_ch_timer_process (void *FunctionContext)
 	/* printk("%s \n", __FUNCTION__); */
 
 #ifdef	CONFIG_CONCURRENT_MODE
-	ATOMIC_SET(&pwdev_priv->ro_ch_to, 1);
+	atomic_set(&pwdev_priv->ro_ch_to, 1);
 #endif
 
 	p2p_protocol_wk_cmd( adapter, P2P_RO_CH_WK);
@@ -4274,7 +4274,7 @@ void ap_p2p_switch_timer_process (void *FunctionContext)
 		return;
 
 #ifdef CONFIG_IOCTL_CFG80211
-	ATOMIC_SET(&pwdev_priv->switch_ch_to, 1);
+	atomic_set(&pwdev_priv->switch_ch_to, 1);
 #endif
 
 	p2p_protocol_wk_cmd( adapter, P2P_AP_P2P_CH_SWITCH_PROCESS_WK );

@@ -489,7 +489,7 @@ struct mlme_ext_priv
 {
 	_adapter	*padapter;
 	u8	mlmeext_init;
-	ATOMIC_T		event_seq;
+	atomic_t		event_seq;
 	u16	mgnt_seq;
 
 	//struct fw_priv	fwpriv;
