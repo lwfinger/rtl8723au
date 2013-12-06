@@ -8039,7 +8039,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 			if (rtw_end_of_queue_search(phead,plist)== _TRUE)
 				break;
 
-			pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
+			pnetwork = container_of(plist, struct wlan_network, list);
 
 			plist = plist->next;
 
@@ -11013,7 +11013,7 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 
 			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 			{
-				pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
+				pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
 
 				xmitframe_plist = xmitframe_plist->next;
 

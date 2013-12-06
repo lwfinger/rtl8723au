@@ -326,7 +326,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	#endif
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		psta = LIST_CONTAINOR(plist, struct sta_info, auth_list);
+		psta = container_of(plist, struct sta_info, auth_list);
 		plist = plist->next;
 
 		if(psta->expire_to>0)
@@ -370,7 +370,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	#endif
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
 
 		if (chk_sta_is_alive(psta) || !psta->expire_to) {
@@ -1553,7 +1553,7 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
+		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
 
 		if(!memcmp(paclnode->addr, addr, ETH_ALEN))
@@ -1619,7 +1619,7 @@ int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
+		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
 
 		if(!memcmp(paclnode->addr, addr, ETH_ALEN))
@@ -1971,7 +1971,7 @@ void associated_clients_update(_adapter *padapter, u8 updated)
 		/* check asoc_queue */
 		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 		{
-			psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+			psta = container_of(plist, struct sta_info, asoc_list);
 
 			plist = plist->next;
 
@@ -2347,7 +2347,7 @@ int rtw_ap_inform_ch_switch(_adapter *padapter, u8 new_ch, u8 ch_offset)
 	/* for each sta in asoc_queue */
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
 
 		issue_action_spct_ch_switch(padapter, psta->hwaddr, new_ch, ch_offset);
@@ -2385,7 +2385,7 @@ int rtw_sta_flush(_adapter *padapter)
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
 
-		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
 
 		/* Remove sta from asoc_list */
@@ -2498,7 +2498,7 @@ void rtw_ap_restore_network(_adapter *padapter)
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
 
-		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
 
 		stainfo_offset = rtw_stainfo_offset(pstapriv, psta);
@@ -2602,7 +2602,7 @@ void stop_ap_mode(_adapter *padapter)
 	plist = phead->next;
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
+		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
 
 		if(paclnode->valid == _TRUE)

@@ -296,7 +296,7 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 	//free sta asoc_queue
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
-		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
+		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
 
 		stainfo_offset = rtw_stainfo_offset(pstapriv, psta);

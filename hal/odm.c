@@ -3107,7 +3107,7 @@ odm_RSSIMonitorCheckCE(
 
 			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 			{
-				psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+				psta = container_of(plist, struct sta_info, hash_list);
 
 				plist = plist->next;
 

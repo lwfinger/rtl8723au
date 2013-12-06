@@ -532,7 +532,7 @@ _func_enter_;
 
 				while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 				{
-					ptdls_sta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+					ptdls_sta = container_of(plist, struct sta_info, hash_list);
 
 					if( ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE )
 						issue_nulldata_to_TDLS_peer_STA(padapter, ptdls_sta, 0);
@@ -569,7 +569,7 @@ _func_enter_;
 
 				while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 				{
-					ptdls_sta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+					ptdls_sta = container_of(plist, struct sta_info, hash_list);
 
 					if( ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE )
 						issue_nulldata_to_TDLS_peer_STA(padapter, ptdls_sta, 1);

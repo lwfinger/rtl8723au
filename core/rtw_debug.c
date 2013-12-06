@@ -960,7 +960,7 @@ int proc_get_all_sta_info(char *page, char **start,
 
 		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 		{
-			psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+			psta = container_of(plist, struct sta_info, hash_list);
 
 			plist = plist->next;
 			len += snprintf(page + len, count - len, "sta's macaddr:" MAC_FMT "\n", MAC_ARG(psta->hwaddr));

@@ -118,10 +118,6 @@ __inline static struct list_head	*get_list_head(_queue	*queue)
 }
 
 
-#define LIST_CONTAINOR(ptr, type, member) \
-        ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
-
-
 __inline static int _enter_critical_mutex(_mutex *pmutex, unsigned long *pirqL)
 {
 	int ret = 0;

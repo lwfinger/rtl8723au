@@ -216,7 +216,7 @@ _func_enter_;
 	if (list_empty(&(queue->queue)))
 		obj = NULL;
 	else {
-		obj = LIST_CONTAINOR((&(queue->queue))->next, struct cmd_obj, list);
+		obj = container_of((&(queue->queue))->next, struct cmd_obj, list);
 		list_del_init(&obj->list);
 	}
 
@@ -549,7 +549,7 @@ _func_enter_;
 		pevtobj = NULL;
 	else
 	{
-		pevtobj = LIST_CONTAINOR((&(queue->queue))->next, struct evt_obj, list);
+		pevtobj = container_of((&(queue->queue))->next, struct evt_obj, list);
 		list_del_init(&pevtobj->list);
 	}
 

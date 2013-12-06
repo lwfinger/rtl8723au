@@ -184,7 +184,7 @@ _func_enter_;
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		psta = LIST_CONTAINOR(plist, struct sta_info ,list);
+		psta = container_of(plist, struct sta_info ,list);
 		plist = plist->next;
 	}
 
@@ -223,7 +223,7 @@ _func_enter_;
 			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 			{
 				int i;
-				psta = LIST_CONTAINOR(plist, struct sta_info ,hash_list);
+				psta = container_of(plist, struct sta_info ,hash_list);
 				plist = plist->next;
 
 				for(i=0; i < 16 ; i++)
@@ -274,7 +274,7 @@ _func_enter_;
 	}
 	else
 	{
-		psta = LIST_CONTAINOR((&pfree_sta_queue->queue)->next, struct sta_info, list);
+		psta = container_of((&pfree_sta_queue->queue)->next, struct sta_info, list);
 
 		list_del_init(&(psta->list));
 
@@ -482,7 +482,7 @@ _func_enter_;
 		plist = phead->next;
 
 		while (!list_empty(phead)) {
-			prframe = LIST_CONTAINOR(plist, union recv_frame, u);
+			prframe = container_of(plist, union recv_frame, u);
 
 			plist = plist->next;
 
@@ -580,7 +580,7 @@ _func_enter_;
 
 		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 		{
-			psta = LIST_CONTAINOR(plist, struct sta_info ,hash_list);
+			psta = container_of(plist, struct sta_info ,hash_list);
 
 			plist = plist->next;
 
@@ -634,7 +634,7 @@ _func_enter_;
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 
-		psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
+		psta = container_of(plist, struct sta_info, hash_list);
 
 		if (!memcmp(psta->hwaddr, addr, ETH_ALEN))
 		{ /*  if found the matched address */
@@ -716,7 +716,7 @@ u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr)
 	plist = phead->next;
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
-		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
+		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
 
 		if (!memcmp(paclnode->addr, mac_addr, ETH_ALEN))
