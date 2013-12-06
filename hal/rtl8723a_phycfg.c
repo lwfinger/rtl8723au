@@ -911,7 +911,7 @@ phy_ConfigBBWithHeaderFile(
 		{
 			if (Rtl819XPHY_REGArray_Table[i] == 0xfe){
 				#ifdef CONFIG_LONG_DELAY_ISSUE
-				rtw_msleep_os(50);
+				msleep(50);
 				#else
 				rtw_mdelay_os(50);
 				#endif
@@ -1151,7 +1151,7 @@ phy_ConfigBBWithPgHeaderFile(
 			#if 0 //without IO, no delay is neeeded...
 			if (Rtl819XPHY_REGArray_Table_PG[i] == 0xfe){
 				#ifdef CONFIG_LONG_DELAY_ISSUE
-				rtw_msleep_os(50);
+				msleep(50);
 				#else
 				rtw_mdelay_os(50);
 				#endif
@@ -1552,7 +1552,7 @@ rtl8723a_PHY_ConfigRFWithHeaderFile(
 			{
 				if(Rtl819XRadioA_Array_Table[i] == 0xfe) {
 					#ifdef CONFIG_LONG_DELAY_ISSUE
-					rtw_msleep_os(50);
+					msleep(50);
 					#else
 					rtw_mdelay_os(50);
 					#endif
@@ -1620,7 +1620,7 @@ rtl8723a_PHY_ConfigRFWithHeaderFile(
 				if(Rtl819XRadioB_Array_Table[i] == 0xfe)
 				{ // Deay specific ms. Only RF configuration require delay.
 					#ifdef CONFIG_LONG_DELAY_ISSUE
-					rtw_msleep_os(50);
+					msleep(50);
 					#else
 					rtw_mdelay_os(50);
 					#endif

@@ -848,7 +848,7 @@ _func_enter_;
 			DBG_8723A("Wait for cpwm event  than 100 ms!!!\n");
 			break;
 		}
-		rtw_msleep_os(1);
+		msleep(1);
 	}
 
 _func_exit_;
@@ -1571,7 +1571,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	if (pwrpriv->ps_processing) {
 		DBG_8723A("%s wait ps_processing...\n", __func__);
 		while (pwrpriv->ps_processing && rtw_get_passing_time_ms(start) <= 3000)
-			rtw_msleep_os(10);
+			msleep(10);
 		if (pwrpriv->ps_processing)
 			DBG_8723A("%s wait ps_processing timeout\n", __func__);
 		else
@@ -1582,7 +1582,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	if (rtw_hal_sreset_inprogress(padapter)) {
 		DBG_8723A("%s wait sreset_inprogress...\n", __func__);
 		while (rtw_hal_sreset_inprogress(padapter) && rtw_get_passing_time_ms(start) <= 4000)
-			rtw_msleep_os(10);
+			msleep(10);
 		if (rtw_hal_sreset_inprogress(padapter))
 			DBG_8723A("%s wait sreset_inprogress timeout\n", __func__);
 		else
@@ -1596,7 +1596,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 			&& ((rtw_get_passing_time_ms(start) <= 3000 && !rtw_is_do_late_resume(pwrpriv))
 				|| (rtw_get_passing_time_ms(start) <= 500 && rtw_is_do_late_resume(pwrpriv)))
 		) {
-			rtw_msleep_os(10);
+			msleep(10);
 		}
 		if (pwrpriv->bInSuspend)
 			DBG_8723A("%s wait bInSuspend timeout\n", __func__);

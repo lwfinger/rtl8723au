@@ -472,7 +472,7 @@ ODM_sleep_ms(u4Byte	ms)
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
-	rtw_msleep_os(ms);
+	msleep(ms);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 #endif
 }

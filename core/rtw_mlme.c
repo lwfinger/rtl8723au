@@ -1393,7 +1393,7 @@ void rtw_scan_abort(_adapter *adapter)
 			break;
 
 		DBG_8723A(FUNC_NDEV_FMT"fw_state=_FW_UNDER_SURVEY!\n", FUNC_NDEV_ARG(adapter->pnetdev));
-		rtw_msleep_os(20);
+		msleep(20);
 	}
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {

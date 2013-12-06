@@ -1111,7 +1111,7 @@ _PHY_LCCalibrate(
 	PHY_SetRFReg(pAdapter, RF_PATH_A, RF_CHNLBW, bMask12Bits, LC_Cal|0x08000);
 
 	#ifdef CONFIG_LONG_DELAY_ISSUE
-	rtw_msleep_os(100);
+	msleep(100);
 	#else
 	rtw_mdelay_os(100);
 	#endif

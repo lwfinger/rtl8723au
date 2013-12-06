@@ -3693,7 +3693,7 @@ int reset_tsf(PADAPTER Adapter, u8 reset_port )
 	rtl8723c_reset_tsf(Adapter, reset_port);
 
 	while ((reset_cnt_after == reset_cnt_before ) && (loop_cnt < 10)) {
-		rtw_msleep_os(100);
+		msleep(100);
 		loop_cnt++;
 		reset_cnt_after = rtw_read8(Adapter, reg_reset_tsf_cnt);
 	}
@@ -4732,7 +4732,7 @@ _func_enter_;
 					if (rtw_read32(padapter, 0x200) != rtw_read32(padapter, 0x204))
 					{
 						//DBG_8723A("packet in tx packet buffer - 0x204=%x, 0x200=%x (%d)\n", rtw_read32(padapter, 0x204), rtw_read32(padapter, 0x200), i);
-						rtw_msleep_os(10);
+						msleep(10);
 					}
 					else
 					{

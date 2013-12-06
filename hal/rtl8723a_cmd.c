@@ -1072,7 +1072,7 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 		if(0x00 != (polling_ret=rtw_read8(adapter, 0x1c3)))
 			break;
 		#endif
-		rtw_msleep_os(5);
+		msleep(5);
 	}
 	#if 0 //debug
 	DBG_8723A("IOL %s, polling_ret:0x%02x, 0x1c0=0x%08x, 0x1c4=0x%08x, 0x1cc=0x%08x, 0x1e8=0x%08x, 0x130=0x%08x, 0x134=0x%08x\n"
@@ -1104,7 +1104,7 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 		);
 		#if 0 //debug
 		rtw_write16(adapter, 0x1c4, 0x0000);
-		rtw_msleep_os(10);
+		msleep(10);
 		DBG_8723A("after reset, 0x1c4=0x%08x\n", rtw_read32(adapter, 0x1c4));
 		#endif
 
