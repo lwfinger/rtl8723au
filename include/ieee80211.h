@@ -29,6 +29,11 @@
 
 #include <linux/wireless.h>
 
+#if (WIRELESS_EXT < 22)
+#error "Obsolete pre 2007 wireless extensions are not supported"
+#endif
+
+
 #define MGMT_QUEUE_NUM 5
 
 #define ETH_ALEN	6
@@ -269,15 +274,6 @@ struct sta_data{
 };
 #endif
 
-
-#if WIRELESS_EXT < 17
-#define IW_QUAL_QUAL_INVALID   0x10
-#define IW_QUAL_LEVEL_INVALID  0x20
-#define IW_QUAL_NOISE_INVALID  0x40
-#define IW_QUAL_QUAL_UPDATED   0x1
-#define IW_QUAL_LEVEL_UPDATED  0x2
-#define IW_QUAL_NOISE_UPDATED  0x4
-#endif
 
 #define IEEE80211_DATA_LEN		2304
 /* Maximum size for the MA-UNITDATA primitive, 802.11 standard section
