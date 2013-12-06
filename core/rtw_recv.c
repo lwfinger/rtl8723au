@@ -2297,7 +2297,7 @@ int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 		/* ntohs(nSubframe_Length); */
 #endif /*  ENDIAN_FREE */
 
-		if( a_len < (ETHERNET_HEADER_SIZE + nSubframe_Length) ) {
+		if (a_len < (ETH_HLEN + nSubframe_Length)) {
 			DBG_8723A("nRemain_Length is %d and nSubframe_Length is : %d\n",a_len,nSubframe_Length);
 			goto exit;
 		}
