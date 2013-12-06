@@ -1713,20 +1713,15 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter, void (*set_intf_ops)(stru
 	//get mac address from primary_padapter
 	memcpy(mac, primary_padapter->eeprompriv.mac_addr, ETH_ALEN);
 
-	if (((mac[0]==0xff) &&(mac[1]==0xff) && (mac[2]==0xff) &&
-	     (mac[3]==0xff) && (mac[4]==0xff) &&(mac[5]==0xff)) ||
-	    ((mac[0]==0x0) && (mac[1]==0x0) && (mac[2]==0x0) &&
-	     (mac[3]==0x0) && (mac[4]==0x0) &&(mac[5]==0x0)))
-	{
+	if (is_broadcast_ether_addr(mac) ||
+	    is_zero_ether_addr(mac)) {
 		mac[0] = 0x00;
 		mac[1] = 0xe0;
 		mac[2] = 0x4c;
 		mac[3] = 0x87;
 		mac[4] = 0x11;
 		mac[5] = 0x22;
-	}
-	else
-	{
+	} else {
 		//If the BIT1 is 0, the address is universally administered.
 		//If it is 1, the address is locally administered
 		mac[0] |= BIT(1); // locally administered

@@ -199,7 +199,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	int	bmcst = IS_MCAST(pattrib->ra);
+	int	bmcst = is_multicast_ether_addr(pattrib->ra);
 #ifdef CONFIG_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 #endif //CONFIG_P2P
@@ -1116,7 +1116,7 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
 	len = skb->len;
 	tx_hdr = (struct ieee80211_hdr *)(skb->data);
 	fc = le16_to_cpu(tx_hdr->frame_ctl);
-	bmcst = IS_MCAST(tx_hdr->addr1);
+	bmcst = is_multicast_ether_addr(tx_hdr->addr1);
 
 	if ((fc & IEEE80211_FCTL_FTYPE) != IEEE80211_FTYPE_MGMT)
 		goto _exit;

@@ -284,7 +284,7 @@ _func_enter_;
 		struct sta_info *psta = NULL;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 		struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
-		int bmcast = IS_MCAST(pattrib->dst);
+		int bmcast = is_multicast_ether_addr(pattrib->dst);
 
 		//DBG_8723A("bmcast=%d\n", bmcast);
 

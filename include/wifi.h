@@ -337,22 +337,6 @@ enum WIFI_REG_DOMAIN {
 
 #define GetAddr4Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 24))
 
-#define MacAddr_isBcst(addr) \
-( \
-	( (addr[0] == 0xff) && (addr[1] == 0xff) && \
-		(addr[2] == 0xff) && (addr[3] == 0xff) && \
-		(addr[4] == 0xff) && (addr[5] == 0xff) )  ? _TRUE : _FALSE \
-)
-
-__inline static int IS_MCAST(unsigned char *da)
-{
-	if ((*da) & 0x01)
-		return _TRUE;
-	else
-		return _FALSE;
-}
-
-
 __inline static unsigned char * get_da(unsigned char *pframe)
 {
 	unsigned char	*da;

@@ -710,10 +710,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr)) {
 		if (param->u.crypt.idx >= WEP_KEYS)
 		{
 			ret = -EINVAL;
@@ -7008,10 +7005,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		goto exit;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr)) {
 		if (param->u.crypt.idx >= WEP_KEYS)
 		{
 			ret = -EINVAL;
@@ -7371,12 +7365,8 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 		return -EINVAL;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr))
 		return -EINVAL;
-	}
 
 /*
 	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
@@ -7459,12 +7449,8 @@ static int rtw_del_sta(struct net_device *dev, struct ieee_param *param)
 		return -EINVAL;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr))
 		return -EINVAL;
-	}
 
 	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
 	if(psta)
@@ -7516,12 +7502,8 @@ static int rtw_ioctl_get_sta_data(struct net_device *dev, struct ieee_param *par
 		return -EINVAL;
 	}
 
-	if (param_ex->sta_addr[0] == 0xff && param_ex->sta_addr[1] == 0xff &&
-	    param_ex->sta_addr[2] == 0xff && param_ex->sta_addr[3] == 0xff &&
-	    param_ex->sta_addr[4] == 0xff && param_ex->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param_ex->sta_addr))
 		return -EINVAL;
-	}
 
 	psta = rtw_get_stainfo(pstapriv, param_ex->sta_addr);
 	if(psta)
@@ -7602,12 +7584,8 @@ static int rtw_get_sta_wpaie(struct net_device *dev, struct ieee_param *param)
 		return -EINVAL;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr))
 		return -EINVAL;
-	}
 
 	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
 	if(psta)
@@ -7821,17 +7799,12 @@ static int rtw_ioctl_acl_remove_sta(struct net_device *dev, struct ieee_param *p
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
 		return -EINVAL;
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr))
 		return -EINVAL;
-	}
 
 	ret = rtw_acl_remove_sta(padapter, param->sta_addr);
 
 	return ret;
-
 }
 
 static int rtw_ioctl_acl_add_sta(struct net_device *dev, struct ieee_param *param, int len)
@@ -7843,12 +7816,8 @@ static int rtw_ioctl_acl_add_sta(struct net_device *dev, struct ieee_param *para
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
 		return -EINVAL;
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr))
 		return -EINVAL;
-	}
 
 	ret = rtw_acl_add_sta(padapter, param->sta_addr);
 
@@ -9060,7 +9029,7 @@ static struct xmit_frame* createloopbackpkt(PADAPTER padapter, u32 size)
 	pattrib->bswenc = _FALSE;
 	pattrib->qos_en = _FALSE;
 
-	bmcast = IS_MCAST(pattrib->ra);
+	bmcast = is_multicast_ether_addr(pattrib->ra);
 	if (bmcast) {
 		pattrib->mac_id = 1;
 		pattrib->psta = rtw_get_bcmc_stainfo(padapter);

@@ -749,10 +749,7 @@ static int rtw_cfg80211_ap_set_encryption(struct net_device *dev, struct ieee_pa
 		goto exit;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr)) {
 		if (param->u.crypt.idx >= WEP_KEYS)
 		{
 			ret = -EINVAL;
@@ -1039,10 +1036,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	if (param->sta_addr[0] == 0xff && param->sta_addr[1] == 0xff &&
-	    param->sta_addr[2] == 0xff && param->sta_addr[3] == 0xff &&
-	    param->sta_addr[4] == 0xff && param->sta_addr[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(param->sta_addr)) {
 		if (param->u.crypt.idx >= WEP_KEYS)
 		{
 			ret = -EINVAL;
@@ -3644,13 +3638,8 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 
 	DBG_8723A("free sta macaddr =" MAC_FMT "\n", MAC_ARG(mac));
 
-	if (mac[0] == 0xff && mac[1] == 0xff &&
-	    mac[2] == 0xff && mac[3] == 0xff &&
-	    mac[4] == 0xff && mac[5] == 0xff)
-	{
+	if (is_broadcast_ether_addr(mac))
 		return -EINVAL;
-	}
-
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 

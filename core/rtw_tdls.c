@@ -135,7 +135,7 @@ s32 update_tdls_attrib(_adapter *padapter, struct pkt_attrib *pattrib)
 	s32 res=_SUCCESS;
 	int bmcast;
 
-	bmcast = IS_MCAST(pattrib->ra);
+	bmcast = is_multicast_ether_addr(pattrib->ra);
 
 	psta = rtw_get_stainfo(pstapriv, pattrib->ra);
 	if (psta == NULL)	{
@@ -1598,11 +1598,9 @@ int On_TDLS_Dis_Req(_adapter *adapter, union recv_frame *precv_frame)
 					goto exit;
 				}
 				dst = pIE->data + 12;
-				if ((MacAddr_isBcst(dst) == _FALSE) &&
+				if (!is_broadcast_ether_addr(dst) &&
 				    memcmp(myid(&(adapter->eeprompriv)), dst, 6))
-				{
 					goto exit;
-				}
 				break;
 			default:
 				break;

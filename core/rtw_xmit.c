@@ -647,7 +647,7 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 	}
 #endif
 
-	bmcast = IS_MCAST(pattrib->ra);
+	bmcast = is_multicast_ether_addr(pattrib->ra);
 
 	/*  get sta_info */
 	if (bmcast) {
@@ -828,7 +828,7 @@ static s32 xmitframe_addmic(_adapter *padapter, struct xmit_frame *pxmitframe){
 	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
 	u8 priority[4]={0x0,0x0,0x0,0x0};
 	u8 hw_hdr_offset = 0;
-	int bmcst = IS_MCAST(pattrib->ra);
+	int bmcst = is_multicast_ether_addr(pattrib->ra);
 
 	if(pattrib->psta)
 	{
@@ -1020,7 +1020,7 @@ s32 rtw_make_wlanhdr (_adapter *padapter , u8 *hdr, struct pkt_attrib *pattrib)
 
 	struct sta_info *psta;
 
-	int bmcst = IS_MCAST(pattrib->ra);
+	int bmcst = is_multicast_ether_addr(pattrib->ra);
 
 _func_enter_;
 
@@ -1451,7 +1451,7 @@ s32 rtw_xmit_tdls_coalesce(_adapter * padapter, struct xmit_frame * pxmitframe, 
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
 	u8 *pbuf_start;
-	s32 bmcst = IS_MCAST(pattrib->ra);
+	s32 bmcst = is_multicast_ether_addr(pattrib->ra);
 	s32 res = _SUCCESS;
 
 _func_enter_;
@@ -1598,7 +1598,7 @@ s32 rtw_xmitframe_coalesce(_adapter *padapter, _pkt *pkt, struct xmit_frame *pxm
 
 	u8 *pbuf_start;
 
-	s32 bmcst = IS_MCAST(pattrib->ra);
+	s32 bmcst = is_multicast_ether_addr(pattrib->ra);
 	s32 res = _SUCCESS;
 
 _func_enter_;
@@ -2444,7 +2444,7 @@ _func_enter_;
 
 #ifdef CONFIG_RTL8711
 
-	if(IS_MCAST(psta->hwaddr))
+	if(is_multicast_ether_addr(psta->hwaddr))
 	{
 		ptxservq = &(psta->sta_xmitpriv.be_q); /*  we will use be_q to queue bc/mc frames in BCMC_stainfo */
 		*ppstapending = &padapter->xmitpriv.bm_pending;
@@ -3021,7 +3021,7 @@ int xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *px
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	int bmcst = IS_MCAST(pattrib->ra);
+	int bmcst = is_multicast_ether_addr(pattrib->ra);
 #ifdef CONFIG_TDLS
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 

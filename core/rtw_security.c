@@ -689,14 +689,10 @@ _func_enter_;
 
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_tkip_encrypt: stainfo!=NULL!!!\n"));
 
-			if(IS_MCAST(pattrib->ra))
-			{
+			if(is_multicast_ether_addr(pattrib->ra))
 				prwskey=psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey;
-			}
 			else
-			{
 				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-			}
 
 			prwskeylen=16;
 
@@ -778,10 +774,8 @@ _func_enter_;
 		stainfo=rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0] );
 		if (stainfo!=NULL){
 
-			if(IS_MCAST(prxattrib->ra))
-			{
-				if(psecuritypriv->binstallGrpkey==_FALSE)
-				{
+			if(is_multicast_ether_addr(prxattrib->ra)) {
+				if(psecuritypriv->binstallGrpkey==_FALSE) {
 					res=_FAIL;
 					DBG_8723A("%s:rx bc/mc packets,but didn't install group key!!!!!!!!!!\n",__FUNCTION__);
 					goto exit;
@@ -790,9 +784,7 @@ _func_enter_;
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
 				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
 				prwskeylen=16;
-			}
-			else
-			{
+			} else {
 			        RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_tkip_decrypt: stainfo!=NULL!!!\n"));
 				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
 				prwskeylen=16;
@@ -1526,14 +1518,10 @@ _func_enter_;
 
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo!=NULL!!!\n"));
 
-			if(IS_MCAST(pattrib->ra))
-			{
+			if(is_multicast_ether_addr(pattrib->ra))
 				prwskey=psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey;
-			}
 			else
-			{
 				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-			}
 
 #ifdef CONFIG_TDLS	/* swencryption */
 			{
@@ -1863,8 +1851,7 @@ _func_enter_;
 		if (stainfo!=NULL){
 			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_decrypt: stainfo!=NULL!!!\n"));
 
-			if(IS_MCAST(prxattrib->ra))
-			{
+			if(is_multicast_ether_addr(prxattrib->ra)) {
 				/* in concurrent we should use sw descrypt in group key, so we remove this message */
 				/* DBG_8723A("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */

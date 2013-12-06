@@ -3464,7 +3464,7 @@ void rtl8723a_fill_default_txdesc(
 	pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	pattrib = &pxmitframe->attrib;
-	bmcst = IS_MCAST(pattrib->ra);
+	bmcst = is_multicast_ether_addr(pattrib->ra);
 
 	ptxdesc = (PTXDESC)pbuf;
 

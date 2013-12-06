@@ -616,14 +616,10 @@ _func_enter_;
 	if(hwaddr==NULL)
 		return NULL;
 
-	if(IS_MCAST(hwaddr))
-	{
+	if(is_multicast_ether_addr(hwaddr))
 		addr = bc_addr;
-	}
 	else
-	{
 		addr = hwaddr;
-	}
 
 	index = wifi_mac_hash(addr);
 

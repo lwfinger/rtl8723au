@@ -1007,7 +1007,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 
 	paddr1 = GetAddr1Ptr(precvframe->u.hdr.rx_data);
 
-	if(IS_MCAST(paddr1) == _FALSE)//unicast packets
+	if(!is_multicast_ether_addr(paddr1))//unicast packets
 	{
 		//primary_myid = myid(&primary_padapter->eeprompriv);
 		secondary_myid = myid(&secondary_padapter->eeprompriv);

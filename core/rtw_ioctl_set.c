@@ -31,13 +31,6 @@
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
 
-#define IS_MAC_ADDRESS_BROADCAST(addr) \
-( \
-	( (addr[0] == 0xff) && (addr[1] == 0xff) && \
-		(addr[2] == 0xff) && (addr[3] == 0xff) && \
-		(addr[4] == 0xff) && (addr[5] == 0xff) )  ? _TRUE : _FALSE \
-)
-
 u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid)
 {
 	u8	 i;
@@ -206,9 +199,8 @@ _func_enter_;
 
 	DBG_8723A_LEVEL(_drv_always_, "set bssid:%pM\n", bssid);
 
-	if ((bssid[0]==0x00 && bssid[1]==0x00 && bssid[2]==0x00 && bssid[3]==0x00 && bssid[4]==0x00 &&bssid[5]==0x00) ||
-	    (bssid[0]==0xFF && bssid[1]==0xFF && bssid[2]==0xFF && bssid[3]==0xFF && bssid[4]==0xFF &&bssid[5]==0xFF))
-	{
+	if (is_zero_ether_addr(bssid) ||
+	    is_broadcast_ether_addr(bssid)) {
 		status = _FAIL;
 		goto exit;
 	}
@@ -778,9 +770,9 @@ _func_enter_;
 		}
 
 		/*  check BSSID */
-		if (IS_MAC_ADDRESS_BROADCAST(key->BSSID) == _TRUE){
+		if (is_broadcast_ether_addr(key->BSSID)) {
 
-			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("MacAddr_isBcst(key->BSSID)\n"));
+			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("is_broadcast_ether_addr(key->BSSID)\n"));
 			ret= _FALSE;
 			goto exit;
 		}
@@ -861,7 +853,7 @@ _func_enter_;
 
 		}
 
-		if((check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE)==_TRUE) && (IS_MAC_ADDRESS_BROADCAST(key->BSSID) == _FALSE)) {
+		if((check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE)==_TRUE) && (!is_broadcast_ether_addr(key->BSSID))) {
 			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,(" IBSS but BSSID is not Broadcast Address.\n"));
 			ret= _FAIL;
 			goto exit;
