@@ -47,10 +47,6 @@ jackson@realtek.com.tw
 
 #include <usb_ops.h>
 
-#define rtw_le16_to_cpu(val)		le16_to_cpu(val)
-#define rtw_le32_to_cpu(val)		le32_to_cpu(val)
-#define rtw_cpu_to_le16(val)		cpu_to_le16(val)
-#define rtw_cpu_to_le32(val)		cpu_to_le32(val)
 u8 _rtw_read8(_adapter *adapter, u32 addr)
 {
 	u8 r_val;
@@ -76,7 +72,7 @@ u16 _rtw_read16(_adapter *adapter, u32 addr)
 
 	r_val = _read16(pintfhdl, addr);
 	_func_exit_;
-	return rtw_le16_to_cpu(r_val);
+	return le16_to_cpu(r_val);
 }
 
 u32 _rtw_read32(_adapter *adapter, u32 addr)
@@ -90,7 +86,7 @@ u32 _rtw_read32(_adapter *adapter, u32 addr)
 
 	r_val = _read32(pintfhdl, addr);
 	_func_exit_;
-	return rtw_le32_to_cpu(r_val);
+	return le32_to_cpu(r_val);
 }
 
 int _rtw_write8(_adapter *adapter, u32 addr, u8 val)
@@ -116,7 +112,7 @@ int _rtw_write16(_adapter *adapter, u32 addr, u16 val)
 	_func_enter_;
 	_write16 = pintfhdl->io_ops._write16;
 
-	val = rtw_cpu_to_le16(val);
+	val = cpu_to_le16(val);
 	ret = _write16(pintfhdl, addr, val);
 	_func_exit_;
 
@@ -131,7 +127,7 @@ int _rtw_write32(_adapter *adapter, u32 addr, u32 val)
 	_func_enter_;
 	_write32 = pintfhdl->io_ops._write32;
 
-	val = rtw_cpu_to_le32(val);
+	val = cpu_to_le32(val);
 	ret = _write32(pintfhdl, addr, val);
 	_func_exit_;
 
@@ -174,7 +170,7 @@ int _rtw_write16_async(_adapter *adapter, u32 addr, u16 val)
 	int ret;
 	_func_enter_;
 	_write16_async = pintfhdl->io_ops._write16_async;
-	val = rtw_cpu_to_le16(val);
+	val = cpu_to_le16(val);
 	ret = _write16_async(pintfhdl, addr, val);
 	_func_exit_;
 
@@ -188,7 +184,7 @@ int _rtw_write32_async(_adapter *adapter, u32 addr, u32 val)
 	int ret;
 	_func_enter_;
 	_write32_async = pintfhdl->io_ops._write32_async;
-	val = rtw_cpu_to_le32(val);
+	val = cpu_to_le32(val);
 	ret = _write32_async(pintfhdl, addr, val);
 	_func_exit_;
 
