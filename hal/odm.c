@@ -1294,13 +1294,6 @@ odm_DIGbyRSSI_LPS(
 	PADAPTER					pAdapter =pDM_Odm->Adapter;
 	pDIG_T						pDM_DigTable = &pDM_Odm->DM_DigTable;
 	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
-
-#if 0		//and 2.3.5 coding rule
-	struct mlme_priv	*pmlmepriv = &(pAdapter->mlmepriv);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-#endif
-
 	u1Byte	RSSI_Lower=DM_DIG_MIN_NIC;   //0x1E or 0x1C
 	u1Byte	bFwCurrentInPSMode = FALSE;
 	u1Byte	CurrentIGI=pDM_Odm->RSSI_Min;
@@ -2692,22 +2685,7 @@ odm_DynamicTxPower_92C(
 
 		if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 		{
-		#if 0
-			//todo: AP Mode
-			if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == _TRUE) ||
-			       (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == _TRUE))
-			{
-				UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-				//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Client PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-			}
-			else
-			{
-				UndecoratedSmoothedPWDB = pdmpriv->UndecoratedSmoothedPWDB;
-				//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-			}
-		#else
-		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-		#endif
+			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 		}
 		else // associated entry pwdb
 		{
@@ -2789,22 +2767,7 @@ odm_DynamicTxPower_92D(
 
 	if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 	{
-	#if 0
-		//todo: AP Mode
-		if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == _TRUE) ||
-	       (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == _TRUE))
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Client PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-		else
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->UndecoratedSmoothedPWDB;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-	#else
-	UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-	#endif
+		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 	}
 	else // associated entry pwdb
 	{
@@ -2982,43 +2945,6 @@ FindMinimumRSSI_Dmsp(
 	PADAPTER	pAdapter
 )
 {
-#if 0
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	s32	Rssi_val_min_back_for_mac0;
-	bool		bGetValueFromBuddyAdapter = dm_DualMacGetParameterFromBuddyAdapter(pAdapter);
-	bool		bRestoreRssi = _FALSE;
-	PADAPTER	BuddyAdapter = pAdapter->BuddyAdapter;
-
-	if(pHalData->MacPhyMode92D == DUALMAC_SINGLEPHY)
-	{
-		if(BuddyAdapter!= NULL)
-		{
-			if(pHalData->bSlaveOfDMSP)
-			{
-				//ODM_RT_TRACE(pDM_Odm,COMP_EASY_CONCURRENT,DBG_LOUD,("bSlavecase of dmsp\n"));
-				BuddyAdapter->DualMacDMSPControl.RssiValMinForAnotherMacOfDMSP = pdmpriv->MinUndecoratedPWDBForDM;
-			}
-			else
-			{
-				if(bGetValueFromBuddyAdapter)
-				{
-					//ODM_RT_TRACE(pDM_Odm,COMP_EASY_CONCURRENT,DBG_LOUD,("get new RSSI\n"));
-					bRestoreRssi = _TRUE;
-					Rssi_val_min_back_for_mac0 = pdmpriv->MinUndecoratedPWDBForDM;
-					pdmpriv->MinUndecoratedPWDBForDM = pAdapter->DualMacDMSPControl.RssiValMinForAnotherMacOfDMSP;
-				}
-			}
-		}
-
-	}
-
-	if(bRestoreRssi)
-	{
-		bRestoreRssi = _FALSE;
-		pdmpriv->MinUndecoratedPWDBForDM = Rssi_val_min_back_for_mac0;
-	}
-#endif
 }
 
 static void
@@ -3076,11 +3002,6 @@ odm_RSSIMonitorCheckCE(
 
 					if(psta->rssi_stat.UndecoratedSmoothedPWDB > tmpEntryMaxPWDB)
 						tmpEntryMaxPWDB = psta->rssi_stat.UndecoratedSmoothedPWDB;
-
-					#if 0
-					DBG_8723A("%s mac_id:%u, mac:"MAC_FMT", rssi:%d\n", __func__,
-						psta->mac_id, MAC_ARG(psta->hwaddr), psta->rssi_stat.UndecoratedSmoothedPWDB);
-					#endif
 
 					if(psta->rssi_stat.UndecoratedSmoothedPWDB != (-1)) {
 						#if(RTL8192D_SUPPORT==1)
@@ -4464,12 +4385,6 @@ odm_EdcaTurboCheckCE(
 
 		if ((pDM_Odm->DM_EDCA_Table.prv_traffic_idx != trafficIndex) || (!pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA))
 		{
-
-#if 0
-			//adjust EDCA parameter for BE queue
-			edca_param = EDCAParam[pmlmeinfo->assoc_AP_vendor][trafficIndex];
-#else
-
 			if((pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_CISCO) && (pmlmeext->cur_wireless_mode & WIRELESS_11_24N))
 			{
 				edca_param = EDCAParam[pmlmeinfo->assoc_AP_vendor][trafficIndex];
@@ -4478,7 +4393,6 @@ odm_EdcaTurboCheckCE(
 			{
 				edca_param = EDCAParam[HT_IOT_PEER_UNKNOWN][trafficIndex];
 			}
-#endif
 			rtw_write32(Adapter, REG_EDCA_BE_PARAM, edca_param);
 
 			pDM_Odm->DM_EDCA_Table.prv_traffic_idx = trafficIndex;
@@ -4961,12 +4875,6 @@ void odm_dtc(PDM_ODM_T pDM_Odm)
 	u8 sign;
 	u8 resp_txagc=0;
 
-	#if 0
-	/* As DIG is disabled, DTC is also disable */
-	if(!(pDM_Odm->SupportAbility & ODM_XXXXXX))
-		return;
-	#endif
-
 	if (DTC_BASE < pDM_Odm->RSSI_Min) {
 		/* need to decade the CTS TX power */
 		sign = 1;
@@ -4978,21 +4886,6 @@ void odm_dtc(PDM_ODM_T pDM_Odm)
 				dtc_steps++;
 		}
 	}
-#if 0
-	else if (DTC_DWN_BASE > pDM_Odm->RSSI_Min)
-	{
-		/* needs to increase the CTS TX power */
-		sign = 0;
-		dtc_steps = 1;
-		for (i=0;i<ARRAY_SIZE(dtc_table_up);i++)
-		{
-			if ((dtc_table_up[i] <= pDM_Odm->RSSI_Min) || (dtc_steps>=10))
-				break;
-			else
-				dtc_steps++;
-		}
-	}
-#endif
 	else
 	{
 		sign = 0;

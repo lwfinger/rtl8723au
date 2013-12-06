@@ -52,16 +52,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 
 	#include <basic_types.h>
 
-#if 0
-	typedef u8					u1Byte, *pu1Byte;
-	typedef u16					u2Byte,*pu2Byte;
-	typedef u32					u4Byte,*pu4Byte;
-	typedef u64					u8Byte,*pu8Byte;
-	typedef s8					s1Byte,*ps1Byte;
-	typedef s16					s2Byte,*ps2Byte;
-	typedef s32					s4Byte,*ps4Byte;
-	typedef s64					s8Byte,*ps8Byte;
-#else
 	#define u1Byte		u8
 	#define pu1Byte			u8*
 
@@ -86,7 +76,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define s8Byte		s64
 	#define ps8Byte			s64*
 
-#endif
 	#define DEV_BUS_TYPE	RT_USB_INTERFACE
 
 	typedef struct timer_list		RT_TIMER, *PRT_TIMER;

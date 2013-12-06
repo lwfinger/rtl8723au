@@ -177,33 +177,16 @@ void rtw_usleep_os(int us)
 #ifdef DBG_DELAY_OS
 void _rtw_mdelay_os(int ms, const char *func, const int line)
 {
-	#if 0
-	if(ms>10)
-		DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, ms);
-		rtw_msleep_os(ms);
-	return;
-	#endif
-
-
 	DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, ms);
 
 	mdelay((unsigned long)ms);
 }
+
 void _rtw_udelay_os(int us, const char *func, const int line)
 {
-
-	#if 0
-	if(us > 1000) {
-	DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, us);
-		rtw_usleep_os(us);
-		return;
-	}
-	#endif
-
-
 	DBG_8723A("%s:%d %s(%d)\n", func, line, __FUNCTION__, us);
 
-      udelay((unsigned long)us);
+	udelay((unsigned long)us);
 }
 #else
 void rtw_mdelay_os(int ms)

@@ -1257,47 +1257,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 
 			psecuritypriv->wpa2_group_cipher = group_cipher;
 			psecuritypriv->wpa2_pairwise_cipher = pairwise_cipher;
-#if 0
-			switch(group_cipher)
-			{
-				case WPA_CIPHER_NONE:
-				psecuritypriv->wpa2_group_cipher = _NO_PRIVACY_;
-				break;
-				case WPA_CIPHER_WEP40:
-				psecuritypriv->wpa2_group_cipher = _WEP40_;
-				break;
-				case WPA_CIPHER_TKIP:
-				psecuritypriv->wpa2_group_cipher = _TKIP_;
-				break;
-				case WPA_CIPHER_CCMP:
-				psecuritypriv->wpa2_group_cipher = _AES_;
-				break;
-				case WPA_CIPHER_WEP104:
-				psecuritypriv->wpa2_group_cipher = _WEP104_;
-				break;
-			}
-
-			switch(pairwise_cipher)
-			{
-				case WPA_CIPHER_NONE:
-				psecuritypriv->wpa2_pairwise_cipher = _NO_PRIVACY_;
-				break;
-				case WPA_CIPHER_WEP40:
-				psecuritypriv->wpa2_pairwise_cipher = _WEP40_;
-				break;
-				case WPA_CIPHER_TKIP:
-				psecuritypriv->wpa2_pairwise_cipher = _TKIP_;
-				break;
-				case WPA_CIPHER_CCMP:
-				psecuritypriv->wpa2_pairwise_cipher = _AES_;
-				break;
-				case WPA_CIPHER_WEP104:
-				psecuritypriv->wpa2_pairwise_cipher = _WEP104_;
-				break;
-			}
-#endif
 		}
-
 	}
 
 	/* wpa */
@@ -1320,48 +1280,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 
 				psecuritypriv->wpa_group_cipher = group_cipher;
 				psecuritypriv->wpa_pairwise_cipher = pairwise_cipher;
-
-#if 0
-				switch(group_cipher)
-				{
-					case WPA_CIPHER_NONE:
-					psecuritypriv->wpa_group_cipher = _NO_PRIVACY_;
-					break;
-					case WPA_CIPHER_WEP40:
-					psecuritypriv->wpa_group_cipher = _WEP40_;
-					break;
-					case WPA_CIPHER_TKIP:
-					psecuritypriv->wpa_group_cipher = _TKIP_;
-					break;
-					case WPA_CIPHER_CCMP:
-					psecuritypriv->wpa_group_cipher = _AES_;
-					break;
-					case WPA_CIPHER_WEP104:
-					psecuritypriv->wpa_group_cipher = _WEP104_;
-					break;
-				}
-
-				switch(pairwise_cipher)
-				{
-					case WPA_CIPHER_NONE:
-					psecuritypriv->wpa_pairwise_cipher = _NO_PRIVACY_;
-					break;
-					case WPA_CIPHER_WEP40:
-					psecuritypriv->wpa_pairwise_cipher = _WEP40_;
-					break;
-					case WPA_CIPHER_TKIP:
-					psecuritypriv->wpa_pairwise_cipher = _TKIP_;
-					break;
-					case WPA_CIPHER_CCMP:
-					psecuritypriv->wpa_pairwise_cipher = _AES_;
-					break;
-					case WPA_CIPHER_WEP104:
-					psecuritypriv->wpa_pairwise_cipher = _WEP104_;
-					break;
-				}
-#endif
 			}
-
 			break;
 
 		}
@@ -1990,17 +1909,6 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta)
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &(padapter->mlmeextpriv);
 
-#if 0
-	if (!(psta->capability & WLAN_CAPABILITY_SHORT_PREAMBLE) &&
-	    !psta->no_short_preamble_set) {
-		psta->no_short_preamble_set = 1;
-		pmlmepriv->num_sta_no_short_preamble++;
-		if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
-		     (pmlmepriv->num_sta_no_short_preamble == 1))
-			ieee802_11_set_beacons(hapd->iface);
-	}
-#endif
-
 	if(!(psta->flags & WLAN_STA_SHORT_PREAMBLE))
 	{
 		if(!psta->no_short_preamble_set)
@@ -2036,15 +1944,6 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta)
 		}
 	}
 
-#if 0
-	if (psta->flags & WLAN_STA_NONERP && !psta->nonerp_set) {
-		psta->nonerp_set = 1;
-		pmlmepriv->num_sta_non_erp++;
-		if (pmlmepriv->num_sta_non_erp == 1)
-			ieee802_11_set_beacons(hapd->iface);
-	}
-#endif
-
 	if(psta->flags & WLAN_STA_NONERP)
 	{
 		if(!psta->nonerp_set)
@@ -2077,17 +1976,6 @@ void bss_cap_update_on_sta_join(_adapter *padapter, struct sta_info *psta)
 		}
 
 	}
-
-#if 0
-	if (!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT_TIME) &&
-	    !psta->no_short_slot_time_set) {
-		psta->no_short_slot_time_set = 1;
-		pmlmepriv->num_sta_no_short_slot_time++;
-		if ((pmlmeext->cur_wireless_mode > WIRELESS_11B) &&
-		    (pmlmepriv->num_sta_no_short_slot_time == 1))
-			ieee802_11_set_beacons(hapd->iface);
-	}
-#endif
 
 	if(!(psta->capability & WLAN_CAPABILITY_SHORT_SLOT_TIME))
 	{

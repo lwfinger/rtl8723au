@@ -1411,76 +1411,6 @@ hal_EfuseConstructPGPkt(
 	pTargetPkt->word_cnts = Efuse_CalculateWordCnts(pTargetPkt->word_en);
 }
 
-#if 0
-static u8
-wordEnMatched(
-	PPGPKT_STRUCT	pTargetPkt,
-	PPGPKT_STRUCT	pCurPkt,
-	u8				*pWden)
-{
-	u8	match_word_en = 0x0F;	// default all words are disabled
-	u8	i;
-
-	// check if the same words are enabled both target and current PG packet
-	if (((pTargetPkt->word_en & BIT(0)) == 0) &&
-		((pCurPkt->word_en & BIT(0)) == 0))
-	{
-		match_word_en &= ~BIT(0);				// enable word 0
-	}
-	if (((pTargetPkt->word_en & BIT(1)) == 0) &&
-		((pCurPkt->word_en & BIT(1)) == 0))
-	{
-		match_word_en &= ~BIT(1);				// enable word 1
-	}
-	if (((pTargetPkt->word_en & BIT(2)) == 0) &&
-		((pCurPkt->word_en & BIT(2)) == 0))
-	{
-		match_word_en &= ~BIT(2);				// enable word 2
-	}
-	if (((pTargetPkt->word_en & BIT(3)) == 0) &&
-		((pCurPkt->word_en & BIT(3)) == 0))
-	{
-		match_word_en &= ~BIT(3);				// enable word 3
-	}
-
-	*pWden = match_word_en;
-
-	if (match_word_en != 0xf)
-		return _TRUE;
-	else
-		return _FALSE;
-}
-
-static u8
-hal_EfuseCheckIfDatafollowed(
-	PADAPTER		pAdapter,
-	u8				word_cnts,
-	u16				startAddr,
-	u8				bPseudoTest)
-{
-	u8 bRet=_FALSE;
-	u8 i, efuse_data;
-
-	for (i=0; i<(word_cnts*2); i++)
-	{
-		if (efuse_OneByteRead(pAdapter, (startAddr+i) ,&efuse_data, bPseudoTest) == _FALSE)
-		{
-			DBG_8723A("%s: efuse_OneByteRead FAIL!!\n", __FUNCTION__);
-			bRet = _TRUE;
-			break;
-		}
-
-		if (efuse_data != 0xFF)
-		{
-			bRet = _TRUE;
-			break;
-		}
-	}
-
-	return bRet;
-}
-#endif
-
 static u8
 hal_EfusePartialWriteCheck(
 	PADAPTER		padapter,
@@ -1494,12 +1424,6 @@ hal_EfusePartialWriteCheck(
 	u8	bRet=_FALSE;
 	u16	startAddr=0, efuse_max_available_len=0, efuse_max=0;
 	u8	efuse_data=0;
-#if 0
-	u8	i, cur_header=0;
-	u8	new_wden=0, matched_wden=0, badworden=0;
-	PGPKT_STRUCT	curPkt;
-#endif
-
 
 	EFUSE_GetEfuseDefinition(padapter, efuseType, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &efuse_max_available_len, bPseudoTest);
 	EFUSE_GetEfuseDefinition(padapter, efuseType, TYPE_EFUSE_CONTENT_LEN_BANK, &efuse_max, bPseudoTest);
@@ -2716,15 +2640,6 @@ void _DisableAnalog(PADAPTER padapter, bool bWithoutHWSM)
 	rtw_write16(padapter, REG_APS_FSMCO, value16);//0x4802
 
 	rtw_write8(padapter, REG_RSV_CTRL, 0x0e);
-
-#if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(padapter, 0xfe10, 0x19);
-	}
-#endif
-
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 // HW Auto state machine
@@ -3192,44 +3107,6 @@ Hal_EfuseParseRateIndicationOption(
 	bool			AutoLoadFail
 	)
 {
-#if 0
-	PMGNT_INFO		pMgntInfo = &(padapter->MgntInfo);
-
-	// Rate indication option
-	if(pMgntInfo->ShowRateMode == 0)
-	{
-		if(!AutoLoadFail)
-		{
-			switch((hwinfo[RF_OPTION3_8723A] & 0x0c) >> 2)
-			{
-				case 1: // Rx rate
-					pMgntInfo->bForcedShowRxRate = TRUE;
-					break;
-
-				case 2: // Max Rx rate
-					pMgntInfo->bForcedShowRateStill = TRUE;
-					pMgntInfo->bForcedShowRxRate = TRUE;
-					break;
-
-				default:
-					break;
-			}
-		}
-		else
-		{
-			pMgntInfo->bForcedShowRxRate = TRUE;
-		}
-	}
-	else if(pMgntInfo->ShowRateMode == 2)
-	{
-		pMgntInfo->bForcedShowRxRate = TRUE;
-	}
-	else if(pMgntInfo->ShowRateMode == 3)
-	{
-		pMgntInfo->bForcedShowRxRate = TRUE;
-		pMgntInfo->bForcedShowRxRate = TRUE;
-	}
-#endif
 }
 
 void
@@ -3286,38 +3163,6 @@ Hal_InitChannelPlan(
 		PADAPTER	padapter
 	)
 {
-#if 0
-	PMGNT_INFO		pMgntInfo = &(padapter->MgntInfo);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
-	if((pMgntInfo->RegChannelPlan >= RT_CHANNEL_DOMAIN_MAX) || (pHalData->EEPROMChannelPlan & EEPROM_CHANNEL_PLAN_BY_HW_MASK))
-	{
-		pMgntInfo->ChannelPlan = hal_MapChannelPlan8192C(padapter, (pHalData->EEPROMChannelPlan & (~(EEPROM_CHANNEL_PLAN_BY_HW_MASK))));
-		pMgntInfo->bChnlPlanFromHW = (pHalData->EEPROMChannelPlan & EEPROM_CHANNEL_PLAN_BY_HW_MASK) ? _TRUE : _FALSE; // User cannot change  channel plan.
-	}
-	else
-	{
-		pMgntInfo->ChannelPlan = (RT_CHANNEL_DOMAIN)pMgntInfo->RegChannelPlan;
-	}
-
-	switch(pMgntInfo->ChannelPlan)
-	{
-		case RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN:
-		{
-			PRT_DOT11D_INFO	pDot11dInfo = GET_DOT11D_INFO(pMgntInfo);
-
-			pDot11dInfo->bEnabled = TRUE;
-		}
-			RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("ReadAdapterInfo8187(): Enable dot11d when RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN!\n"));
-			break;
-
-		default: //for MacOSX compiler warning.
-			break;
-	}
-
-	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RegChannelPlan(%d) EEPROMChannelPlan(%d)", pMgntInfo->RegChannelPlan, pHalData->EEPROMChannelPlan));
-	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("Mgnt ChannelPlan = %d\n" , pMgntInfo->ChannelPlan));
-#endif
 }
 
 void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc)
@@ -3500,14 +3345,6 @@ void rtl8723a_fill_default_txdesc(
 			// use REG_INIDATA_RATE_SEL value
 			ptxdesc->datarate = pdmpriv->INIDATA_RATE[pattrib->mac_id];
 
-#if 0
-			ptxdesc->userate = 1; // driver uses rate
-
-			if (pattrib->ht_en)
-				ptxdesc->sgi = 1; // SGI
-
-			ptxdesc->datarate = 0x13; // init rate - mcs7
-#endif
 		}
 		else
 		{
@@ -4031,18 +3868,8 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER padapter, u8 variable, u8 *val)
 		rtw_write32(padapter, REG_RCR, v32);
 
 		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-			(check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-		{
+		    (check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
 			ResumeTxBeacon(padapter);
-#if 0
-			// reset TSF 1/2 after ResumeTxBeacon
-			if (pbuddy_adapter->iface_type == IFACE_PORT1)
-				rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(1));
-			else
-				rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
-#endif
-
-		}
 	}
 }
 #endif
@@ -4272,13 +4099,7 @@ _func_enter_;
 					((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE))
 				{
 					// enable to rx data frame
-#if 0
-					v32 = rtw_read32(padapter, REG_RCR);
-					v32 |= RCR_ADF;
-					rtw_write32(padapter, REG_RCR, v32);
-#else
 					rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
-#endif
 
 					// enable update TSF
 					SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
@@ -4358,20 +4179,6 @@ _func_enter_;
 			break;
 
 		case HW_VAR_RESP_SIFS:
-#if 0
-			// SIFS for OFDM Data ACK
-			rtw_write8(padapter, REG_SIFS_CTX+1, val[0]);
-			// SIFS for OFDM consecutive tx like CTS data!
-			rtw_write8(padapter, REG_SIFS_TRX+1, val[1]);
-
-			rtw_write8(padapter, REG_SPEC_SIFS+1, val[0]);
-			rtw_write8(padapter, REG_MAC_SPEC_SIFS+1, val[0]);
-
-			// 20100719 Joseph: Revise SIFS setting due to Hardware register definition change.
-			rtw_write8(padapter, REG_R2T_SIFS+1, val[0]);
-			rtw_write8(padapter, REG_T2T_SIFS+1, val[0]);
-
-#else
 			//SIFS_Timer = 0x0a0a0808;
 			//RESP_SIFS for CCK
 			rtw_write8(padapter, REG_R2T_SIFS, val[0]); // SIFS_T2T_CCK (0x08)
@@ -4379,7 +4186,6 @@ _func_enter_;
 			//RESP_SIFS for OFDM
 			rtw_write8(padapter, REG_T2T_SIFS, val[2]); //SIFS_T2T_OFDM (0x0a)
 			rtw_write8(padapter, REG_T2T_SIFS+1, val[3]); //SIFS_R2T_OFDM(0x0a)
-#endif
 			break;
 
 		case HW_VAR_ACK_PREAMBLE:

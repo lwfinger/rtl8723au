@@ -961,65 +961,6 @@ USB_AggModeSwitch(
 	PADAPTER			Adapter
 	)
 {
-#if 0
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
-
-	//pHalData->UsbRxHighSpeedMode = FALSE;
-	// How to measure the RX speed? We assume that when traffic is more than
-	if (pMgntInfo->bRegAggDMEnable == _FALSE)
-	{
-		return;	// Inf not support.
-	}
-
-
-	if (pmlmepriv->LinkDetectInfo.bHigherBusyTraffic == _TRUE &&
-		pHalData->UsbRxHighSpeedMode == _FALSE)
-	{
-		pHalData->UsbRxHighSpeedMode = _TRUE;
-		DBG_8723A("UsbAggModeSwitchCheck to HIGH\n");
-	}
-	else if (pmlmepriv->LinkDetectInfo.bHigherBusyTraffic == _FALSE &&
-		pHalData->UsbRxHighSpeedMode == _TRUE)
-	{
-		pHalData->UsbRxHighSpeedMode = _FALSE;
-		DBG_8723A("UsbAggModeSwitchCheck to LOW\n");
-	}
-	else
-	{
-		return;
-	}
-
-	// 2010/12/10 MH Add for USB Aggregation judgement we need to
-	//if( pMgntInfo->LinkDetectInfo.NumRxOkInPeriod > 4000 ||
-		//			pMgntInfo->LinkDetectInfo.NumTxOkInPeriod > 4000 )
-
-#ifdef CONFIG_USB_TX_AGGREGATION
-	//usb_AggSettingTxUpdate(Adapter);
-#endif
-
-#ifdef CONFIG_USB_RX_AGGREGATION
-	if (pHalData->UsbRxHighSpeedMode == _TRUE)
-	{
-		// 2010/12/10 MH The parameter is tested by SD1 engineer and SD3 channel emulator.
-		// USB mode
-		pHalData->UsbRxAggBlockCount		= 40;
-		pHalData->UsbRxAggBlockTimeout	= 5;
-		// Mix mode
-		pHalData->UsbRxAggPageCount		= 72;
-		pHalData->UsbRxAggPageTimeout	= 6;
-	}
-	else
-	{
-		// USB mode
-		pHalData->UsbRxAggBlockCount		= pMgntInfo->RegUsbRxAggBlockCount;
-		pHalData->UsbRxAggBlockTimeout	= pMgntInfo->RegUsbRxAggBlockTimeout;
-		// Mix mode
-		pHalData->UsbRxAggPageCount		= pMgntInfo->RegUsbRxAggPageCount;
-		pHalData->UsbRxAggPageTimeout	= pMgntInfo->RegUsbRxAggPageTimeout;
-	}
-#endif
-#endif
 }	// USB_AggModeSwitch
 
 static void
@@ -1027,88 +968,6 @@ _InitOperationMode(
 	PADAPTER			Adapter
 	)
 {
-#if 0//gtest
-	PHAL_DATA_8192CUSB	pHalData = GetHalData8192CUsb(Adapter);
-	u1Byte				regBwOpMode = 0;
-	u4Byte				regRATR = 0, regRRSR = 0;
-
-
-	//1 This part need to modified according to the rate set we filtered!!
-	//
-	// Set RRSR, RATR, and REG_BWOPMODE registers
-	//
-	switch(Adapter->RegWirelessMode)
-	{
-		case WIRELESS_MODE_B:
-			regBwOpMode = BW_OPMODE_20MHZ;
-			regRATR = RATE_ALL_CCK;
-			regRRSR = RATE_ALL_CCK;
-			break;
-		case WIRELESS_MODE_A:
-			ASSERT(FALSE);
-#if 0
-			regBwOpMode = BW_OPMODE_5G |BW_OPMODE_20MHZ;
-			regRATR = RATE_ALL_OFDM_AG;
-			regRRSR = RATE_ALL_OFDM_AG;
-#endif
-			break;
-		case WIRELESS_MODE_G:
-			regBwOpMode = BW_OPMODE_20MHZ;
-			regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			regRRSR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			break;
-		case WIRELESS_MODE_AUTO:
-			if (Adapter->bInHctTest)
-			{
-			    regBwOpMode = BW_OPMODE_20MHZ;
-			    regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			    regRRSR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			}
-			else
-			{
-			    regBwOpMode = BW_OPMODE_20MHZ;
-			    regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG | RATE_ALL_OFDM_1SS | RATE_ALL_OFDM_2SS;
-			    regRRSR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			}
-			break;
-		case WIRELESS_MODE_N_24G:
-			// It support CCK rate by default.
-			// CCK rate will be filtered out only when associated AP does not support it.
-			regBwOpMode = BW_OPMODE_20MHZ;
-				regRATR = RATE_ALL_CCK | RATE_ALL_OFDM_AG | RATE_ALL_OFDM_1SS | RATE_ALL_OFDM_2SS;
-				regRRSR = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-			break;
-		case WIRELESS_MODE_N_5G:
-			ASSERT(FALSE);
-#if 0
-			regBwOpMode = BW_OPMODE_5G;
-			regRATR = RATE_ALL_OFDM_AG | RATE_ALL_OFDM_1SS | RATE_ALL_OFDM_2SS;
-			regRRSR = RATE_ALL_OFDM_AG;
-#endif
-			break;
-	}
-
-	// Ziv ????????
-	//PlatformEFIOWrite4Byte(Adapter, REG_INIRTS_RATE_SEL, regRRSR);
-	rtw_write8(Adapter, REG_BWOPMODE, regBwOpMode);
-
-	// For Min Spacing configuration.
-	switch(pHalData->RF_Type)
-	{
-		case RF_1T2R:
-		case RF_1T1R:
-			RT_TRACE(COMP_INIT, DBG_LOUD, ("Initializeadapter: RF_Type%s\n", (pHalData->RF_Type==RF_1T1R? "(1T1R)":"(1T2R)")));
-			Adapter->MgntInfo.MinSpaceCfg = (MAX_MSS_DENSITY_1T<<3);
-			break;
-		case RF_2T2R:
-		case RF_2T2R_GREEN:
-			RT_TRACE(COMP_INIT, DBG_LOUD, ("Initializeadapter:RF_Type(2T2R)\n"));
-			Adapter->MgntInfo.MinSpaceCfg = (MAX_MSS_DENSITY_2T<<3);
-			break;
-	}
-
-	rtw_write8(Adapter, REG_AMPDU_MIN_SPACE, Adapter->MgntInfo.MinSpaceCfg);
-#endif
 }
 
 static void
@@ -1167,109 +1026,6 @@ static void _BBTurnOnBlock(
 #define MgntActSet_RF_State(...)
 static void _RfPowerSave(PADAPTER padapter)
 {
-#if 0
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
-	rt_rf_power_state eRfPowerStateToSet;
-	u8 u1bTmp;
-
-
-#if (DISABLE_BB_RF)
-	return;
-#endif
-	//
-	// 2010/08/11 MH Merge from 8192SE for Minicard init. We need to confirm current radio status
-	// and then decide to enable RF or not.!!!??? For Selective suspend mode. We may not
-	// call init_adapter. May cause some problem??
-	//
-	// Fix the bug that Hw/Sw radio off before S3/S4, the RF off action will not be executed
-	// in MgntActSet_RF_State() after wake up, because the value of pHalData->eRFPowerState
-	// is the same as eRfOff, we should change it to eRfOn after we config RF parameters.
-	// Added by tynli. 2010.03.30.
-	ppwrctrl->rf_pwrstate = rf_on;
-	RT_CLEAR_PS_LEVEL(ppwrctrl, RT_RF_OFF_LEVL_HALT_NIC);
-	//Added by chiyokolin, 2011.10.12 for Tx
-	rtw_write8(padapter, REG_TXPAUSE, 0x00);
-
-	// 20100326 Joseph: Copy from GPIOChangeRFWorkItemCallBack() function to check HW radio on/off.
-	// 20100329 Joseph: Revise and integrate the HW/SW radio off code in initialization.
-
-	eRfPowerStateToSet = (rt_rf_power_state) RfOnOffDetect(padapter);
-	ppwrctrl->rfoff_reason |= eRfPowerStateToSet==rf_on ? RF_CHANGE_BY_INIT : RF_CHANGE_BY_HW;
-	ppwrctrl->rfoff_reason |= (ppwrctrl->reg_rfoff) ? RF_CHANGE_BY_SW : 0;
-
-	if (ppwrctrl->rfoff_reason & RF_CHANGE_BY_HW)
-		ppwrctrl->b_hw_radio_off = _TRUE;
-
-	if (ppwrctrl->reg_rfoff == _TRUE)
-	{
-		// User disable RF via registry.
-		RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("InitializeAdapter8192CUsb(): Turn off RF for RegRfOff.\n"));
-		MgntActSet_RF_State(padapter, rf_off, RF_CHANGE_BY_SW, _TRUE);
-
-//		if (padapter->bSlaveOfDMSP)
-//			return;
-	}
-	else if (ppwrctrl->rfoff_reason > RF_CHANGE_BY_PS)
-	{
-		// H/W or S/W RF OFF before sleep.
-		RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("InitializeAdapter8192CUsb(): Turn off RF for RfOffReason(%ld).\n", pMgntInfo->RfOffReason));
-		MgntActSet_RF_State(padapter, rf_off, ppwrctrl->rfoff_reason, _TRUE);
-	}
-	else
-	{
-		// Perform GPIO polling to find out current RF state. added by Roger, 2010.04.09.
-#if 0
-//		if (RT_GetInterfaceSelection(padapter)==INTF_SEL2_MINICARD &&
-		if ((pHalData->BoardType == BOARD_MINICARD) &&
-			(padapter->MgntInfo.PowerSaveControl.bGpioRfSw))
-		{
-			RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("InitializeAdapter8192CU(): RF=%d \n", eRfPowerStateToSet));
-			if (eRfPowerStateToSet == rf_off)
-			{
-				MgntActSet_RF_State(padapter, rf_off, RF_CHANGE_BY_HW, _TRUE);
-				ppwrctrl->b_hw_radio_off = _TRUE;
-			}
-			else
-			{
-				ppwrctrl->rf_pwrstate = rf_off;
-				ppwrctrl->rfoff_reason = RF_CHANGE_BY_INIT;
-				ppwrctrl->b_hw_radio_off = _FALSE;
-				MgntActSet_RF_State(padapter, rf_on, ppwrctrl->rfoff_reason, _TRUE);
-			}
-		}
-		else
-#endif
-		{
-			ppwrctrl->rf_pwrstate = rf_off;
-			ppwrctrl->rfoff_reason = RF_CHANGE_BY_INIT;
-			MgntActSet_RF_State(padapter, rf_on, ppwrctrl->rfoff_reason, _TRUE);
-		}
-
-		ppwrctrl->rfoff_reason = 0;
-		ppwrctrl->b_hw_radio_off = _FALSE;
-		ppwrctrl->rf_pwrstate = rf_on;
-		if (padapter->ledpriv.LedControlHandler)
-			padapter->ledpriv.LedControlHandler(padapter, LED_CTL_POWER_ON);
-	}
-
-	// 2010/-8/09 MH For power down module, we need to enable register block contrl reg at 0x1c.
-	// Then enable power down control bit of register 0x04 BIT4 and BIT15 as 1.
-	if (pHalData->pwrdown && eRfPowerStateToSet == rf_off)
-	{
-		// Enable register area 0x0-0xc.
-		rtw_write8(padapter, REG_RSV_CTRL, 0x0);
-
-		//
-		// <Roger_Notes> We should configure HW PDn source for WiFi ONLY, and then
-		// our HW will be set in power-down mode if PDn source from all  functions are configured.
-		// 2010.10.06.
-		//
-		u1bTmp = rtw_read8(padapter, REG_MULTI_FUNC_CTRL);
-		u1bTmp |= WL_HWPDN_EN;
-		rtw_write8(padapter, REG_MULTI_FUNC_CTRL, u1bTmp);
-	}
-#endif
 }
 
 enum {
@@ -1525,35 +1281,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 		goto exit;
 	}
 
-#ifdef CONFIG_BT_COEXIST
-	//
-	// 2010/09/23 MH Accordgin to Alfred's siggestion. we need to enable SIC to prevent HW
-	// to enter suspend mode automatically. If host does not send SOF every 3ms. Or under DTM
-	// test with rtl8188cu selective suspend enabler filter driver, WIN host will trigger the device to
-	// enter suspend mode after some test (unknow reason now). We need to prevent the case otherwise
-	// the register will be 0xea and all TX/RX path stop accidently.
-	//
-	//
-	// 2010/10/01 MH If the OS is XP, host will trigger USB device to enter D3 mode. In CU HW design
-	// it will enter suspend mode automatically. In slim combo card, the BT clock will be cut off if HW
-	// enter suspend mode. We need to seperate differet case.
-	//
-	if (BT_IsBtExist(Adapter))
-	{
-#if 0
-#if OS_WIN_FROM_VISTA(OS_VERSION)
-		RT_TRACE(COMP_INIT, DBG_LOUD, ("Slim_combo win7/vista need not enable SIC\n"));
-#else
-		RT_TRACE(COMP_INIT, DBG_LOUD, ("Slim_combo XP enable SIC\n"));
-		// 2010/10/15 MH According to Alfre's description, e need to enable bit14 at first an then enable bit12.
-		// Otherwise, HW will enter debug mode and 8051 can not work. We need to stay at test mode to enable SIC.
-		rtw_write16(Adapter, REG_GPIO_MUXCFG, rtw_read16(Adapter, REG_GPIO_MUXCFG)|BIT14);
-		rtw_write16(Adapter, REG_GPIO_MUXCFG, rtw_read16(Adapter, REG_GPIO_MUXCFG)|BIT12);
-#endif
-#endif
-	}
-#endif // CONFIG_BT_COEXIST
-
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 	if (!pregistrypriv->wifi_spec) {
 		boundary = TX_PAGE_BOUNDARY;
@@ -1646,34 +1373,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	//
 //	HAL_AdjustPwrIndexDiffRateOffset(Adapter);
 //	HAL_AdjustPwrIndexbyRegistry(Adapter);
-
-#if 0
-	// The FW command register update must after MAC and FW init ready.
-	if (Adapter->bFWReady == TRUE)
-	{
-		if(pDevice->RegUsbSS)
-		{
-			u1Byte		u1H2CSSRf[3]={0};
-
-			SET_H2CCMD_SELECTIVE_SUSPEND_ROF_CMD_ON(u1H2CSSRf,  1);
-			SET_H2CCMD_SELECTIVE_SUSPEND_ROF_CMD_GPIO_PERIOD(u1H2CSSRf, 500);
-
-			FillH2CCmd92C(Adapter, H2C_SELECTIVE_SUSPEND_ROF_CMD, 3, u1H2CSSRf);
-			RT_TRACE(COMP_INIT, DBG_LOUD,
-			("SS Set H2C_CMD for FW detect GPIO time=%d\n", GET_H2CCMD_SELECTIVE_SUSPEND_ROF_CMD_GPIO_PERIOD(u1H2CSSRf)));
-		}
-		else
-			RT_TRACE(COMP_INIT, DBG_LOUD, ("Non-SS Driver detect GPIO by itself\n"));
-	}
-	else
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, ("Adapter->bFWReady == FALSE\n"));
-		// 2011/02/11 MH If FW is not ready, we can not enter seecitve suspend mode, otherwise,
-		// We can not support GPIO/PBC detection by FW with selectiev suspend support.
-		pDevice->RegUsbSS = FALSE;
-	}
-#endif
-
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 #if (HAL_RF_ENABLE == 1)
@@ -1858,20 +1557,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 	rtl8723a_InitHalDm(Adapter);
-
-#if 0
-	// 2010/05/20 MH We need to init timer after update setting. Otherwise, we can not get correct inf setting.
-	// 2010/05/18 MH For SE series only now. Init GPIO detect time
-	if(pDevice->RegUsbSS)
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, (" call GpioDetectTimerStart8192CU\n"));
-		GpioDetectTimerStart8192CU(Adapter);	// Disable temporarily
-	}
-
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW enter
-	// suspend mode automatically.
-	HwSuspendModeEnable92Cu(Adapter, _FALSE);
-#endif
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 	rtw_hal_set_hwreg(Adapter, HW_VAR_NAV_UPPER, (u8*)&NavUpper);
@@ -2389,15 +2074,6 @@ _ResetDigitalProcedure1(
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
 
 	if(pHalData->FirmwareVersion <=  0x20){
-		#if 0
-		/*****************************
-		f.	SYS_FUNC_EN 0x03[7:0]=0x54		// reset MAC register, DCORE
-		g.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-		******************************/
-		u4Byte	value32 = 0;
-		PlatformIOWrite1Byte(Adapter, REG_SYS_FUNC_EN+1, 0x54);
-		PlatformIOWrite1Byte(Adapter, REG_MCUFWDL, 0);
-		#else
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
@@ -2424,11 +2100,7 @@ _ResetDigitalProcedure1(
 
 			valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 			rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
-
-
-		#endif
-	}
-	else{
+	} else{
 		u8 retry_cnts = 0;
 
 		if(rtw_read8(Adapter, REG_MCUFWDL) & BIT1)
@@ -2578,15 +2250,6 @@ i.	APS_FSMCO 0x04[15:0] = 0x4802		// set USB suspend
 	rtw_write16(Adapter, REG_APS_FSMCO,value16 );//0x4802
 
 	rtw_write8(Adapter, REG_RSV_CTRL, 0x0e);
-
- #if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(Adapter, 0xfe10, 0x19);
-	}
-#endif
-
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 static void rtl8723au_hw_power_down(_adapter *padapter)
@@ -2988,15 +2651,7 @@ _ReadThermalMeter(
 	if(pHalData->EEPROMThermalMeter == 0x1f || AutoloadFail)
 		pdmpriv->bAPKThermalMeterIgnore = _TRUE;
 
-#if 0
-	if(pHalData->EEPROMThermalMeter < 0x06 || pHalData->EEPROMThermalMeter > 0x1c)
-		pHalData->EEPROMThermalMeter = 0x12;
-#endif
-
 	pdmpriv->ThermalMeter[0] = pHalData->EEPROMThermalMeter;
-
-	//RTPRINT(FINIT, INIT_TxPower, ("ThermalMeter = 0x%x\n", pHalData->EEPROMThermalMeter));
-
 }
 
 static void
@@ -3008,39 +2663,6 @@ _ReadRFSetting(
 {
 }
 
-
-#if 0
-static void
-readAntennaDiversity(
-	PADAPTER	pAdapter,
-	u8			*hwinfo,
-	bool		AutoLoadFail
-	)
-{
-
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	struct registry_priv	*registry_par = &pAdapter->registrypriv;
-
-	if(!AutoLoadFail)
-	{
-		// Antenna Diversity setting.
-		if(registry_par->antdiv_cfg == 2) // 2: From Efuse
-			pHalData->AntDivCfg = (hwinfo[EEPROM_RF_OPT1]&0x18)>>3;
-		else
-			pHalData->AntDivCfg = registry_par->antdiv_cfg ;  // 0:OFF , 1:ON,
-
-		DBG_8723A("### AntDivCfg(%x)\n",pHalData->AntDivCfg);
-
-		//if(pHalData->EEPROMBluetoothCoexist!=0 && pHalData->EEPROMBluetoothAntNum==Ant_x1)
-		//	pHalData->AntDivCfg = 0;
-	}
-	else
-	{
-		pHalData->AntDivCfg = 0;
-	}
-
-}
-#endif
 // Read HW power down mode selection
 static void _ReadPSSetting(PADAPTER Adapter, u8*PROMContent, u8	AutoloadFail)
 {

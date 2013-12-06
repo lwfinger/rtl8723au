@@ -945,13 +945,7 @@ bthci_AssocPreferredChannelList(
 
 		// (1) if any wifi or bt HS connection exists
 		if ((pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_CREATOR) ||
-#if 0
-			pMgntInfo->mAssoc ||
-			pMgntInfo->mIbss ||
-			IsExtAPModeExist(padapter)) ||
-#else
 			(check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE|WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE|WIFI_AP_STATE) == _TRUE) ||
-#endif
 			BTHCI_HsConnectionEstablished(padapter))
 		{
 			pTriple->FirstChnl = preferredChnl;
@@ -1895,19 +1889,6 @@ bthci_BuildLogicalLink(
 	memcpy(&RxFlowSpec,
 		&pHciCmd->Data[17], sizeof(HCI_FLOW_SPEC));
 
-#if 0	//for logo special test case only
-		if (i==0)
-		{
-			bthci_SelectFlowType(padapter,BT_TX_BE_FS,BT_RX_BE_FS,&TxFlowSpec,&RxFlowSpec);
-			i=1;
-		}
-		else if (i==1)
-		{
-			bthci_SelectFlowType(padapter,BT_TX_GU_FS,BT_RX_GU_FS,&TxFlowSpec,&RxFlowSpec);
-			i=0;
-		}
-#endif
-
 	MaxSDUSize = TxFlowSpec.MaximumSDUSize;
 	ArriveTime = TxFlowSpec.SDUInterArrivalTime;
 
@@ -1924,13 +1905,8 @@ bthci_BuildLogicalLink(
 		Bandwidth = MaxSDUSize*8*1000/(ArriveTime+244);
 	}
 
-#if 0
-	RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("BuildLogicalLink, PhyLinkHandle = 0x%x, MaximumSDUSize = 0x%lx, SDUInterArrivalTime = 0x%lx, Bandwidth=0x%lx\n",
-		PhyLinkHandle, MaxSDUSize,ArriveTime, Bandwidth));
-#else
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("BuildLogicalLink, PhyLinkHandle=0x%x, MaximumSDUSize=0x%x, SDUInterArrivalTime=0x%x, Bandwidth=0x%x\n",
 		PhyLinkHandle, MaxSDUSize, ArriveTime, Bandwidth));
-#endif
 
 	if (EntryNum == 0xff)
 	{
@@ -1984,9 +1960,6 @@ bthci_BuildLogicalLink(
 				OCF,
 				status);
 
-#if 0// special logo test case only
-			bthci_FakeCommand(padapter, OGF_LINK_CONTROL_COMMANDS, HCI_LOGICAL_LINK_CANCEL);
-#endif
 		}
 
 		if (pBTinfo->BtAsocEntry[EntryNum].BtCurrentState != HCI_STATE_CONNECTED)
@@ -2051,9 +2024,6 @@ bthci_BuildLogicalLink(
 			HCI_STATUS_CONTROLLER_BUSY, 0, 0, 0,EntryNum);
 	}
 
-#if 0// special logo test case only
-	bthci_FakeCommand(padapter, OGF_LINK_CONTROL_COMMANDS, HCI_LOGICAL_LINK_CANCEL);
-#endif
 }
 
 static void
@@ -2082,21 +2052,12 @@ bthci_StartBeaconAndConnect(
 		if (pBTInfo->BtAsocEntry[CurrentAssocNum].AMPRole == AMP_BTAP_CREATOR)
 		{
 			rsprintf((char*)pBTInfo->BtAsocEntry[CurrentAssocNum].BTSsidBuf,32,"AMP-%02x-%02x-%02x-%02x-%02x-%02x",
-#if 0
-			padapter->PermanentAddress[0],
-			padapter->PermanentAddress[1],
-			padapter->PermanentAddress[2],
-			padapter->PermanentAddress[3],
-			padapter->PermanentAddress[4],
-			padapter->PermanentAddress[5]);
-#else
 			padapter->eeprompriv.mac_addr[0],
 			padapter->eeprompriv.mac_addr[1],
 			padapter->eeprompriv.mac_addr[2],
 			padapter->eeprompriv.mac_addr[3],
 			padapter->eeprompriv.mac_addr[4],
 			padapter->eeprompriv.mac_addr[5]);
-#endif
 		}
 		else if (pBTInfo->BtAsocEntry[CurrentAssocNum].AMPRole == AMP_BTAP_JOINER)
 		{
@@ -2119,9 +2080,6 @@ bthci_StartBeaconAndConnect(
 			RTPRINT(FIOCTL, IOCTL_STATE, ("[BT Flag], BT Connect in progress ON!!\n"));
 			BTHCI_SM_WITH_INFO(padapter,HCI_STATE_STARTING,STATE_CMD_MAC_START_COMPLETE,CurrentAssocNum);
 
-#if 0	//for logo special test case only
-			bthci_BuildLogicalLink(padapter, pHciCmd, HCI_CREATE_LOGICAL_LINK);
-#endif
 
 			// 20100325 Joseph: Check RF ON/OFF.
 			// If RF OFF, it reschedule connecting operation after 50ms.
@@ -2802,15 +2760,8 @@ bthci_CmdSetEventMask(
 
 	pu8Temp = (u8*)&pHciCmd->Data[0];
 	pBtHciInfo->BTEventMask = *pu8Temp;
-#if 0
-	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_DETAIL, ("BTEventMask = 0x%"i64fmt"x\n",
-		((pBtHciInfo->BTEventMask & UINT64_C(0xffffffff00000000))>>32)));
-	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_DETAIL, ("%"i64fmt"x\n",
-		(pBtHciInfo->BTEventMask & 0xffffffff)));
-#else
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_DETAIL, ("BTEventMask = 0x%"i64fmt"x\n",
 		pBtHciInfo->BTEventMask));
-#endif
 
 	//send command complete event here when all data are received.
 	{
@@ -3373,12 +3324,6 @@ bthci_CmdReadLocalAMPAssoc(
 		typeLen = bthci_AssocPALVer(padapter, &pRetPar[ret_index]);
 		totalLen += typeLen;
 		remainLen += typeLen;
-#if 0//for logo special test case only
-		ret_index += typeLen;
-		typeLen = bthci_ReservedForTestingPLV(padapter, &pRetPar[ret_index]);
-		totalLen += typeLen;
-		remainLen += typeLen;
-#endif
 		PPacketIrpEvent->Length = (u8)totalLen;
 		*pRemainLen = remainLen;	// AMP_ASSOC_Remaining_Length
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("ReadLocalAMPAssoc, Remaining_Len=%d  \n", remainLen));

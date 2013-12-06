@@ -1232,14 +1232,6 @@ int retriveAdaptorInfoFile(char *path, struct eeprom_priv * eeprom_priv)
 		else
 			ret = _FAIL;
 
-		#if 0
-		if(isAdaptorInfoFileValid()) {
-			return 0;
-		} else {
-			return _FAIL;
-		}
-		#endif
-
 	} else {
 		DBG_8723A("%s NULL pointer\n",__FUNCTION__);
 		ret = _FAIL;

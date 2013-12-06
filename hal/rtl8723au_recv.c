@@ -294,12 +294,6 @@ void update_recvframe_phyinfo(
 	if(pkt_info.bPacketBeacon){
 		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
-			#if 0
-			{
-				printk("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
-			}
-			#endif
 		}
 		//to do Ad-hoc
 	}

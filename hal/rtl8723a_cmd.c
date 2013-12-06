@@ -800,36 +800,13 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 
 	//3 (1) beacon
 	BufIndex = TXDESC_OFFSET;
-#if 0
-	ConstructBeacon(padapter, &ReservedPagePacket[BufIndex], &BeaconLength);
-
-	// When we count the first page size, we need to reserve description size for the RSVD
-	// packet, it will be filled in front of the packet in TXPKTBUF.
-	PageNeed = (u8)PageNum_128(TxDescLen + BeaconLength);
-	// To reserved 2 pages for beacon buffer. 2010.06.24.
-	if (PageNeed == 1)
-		PageNeed += 1;
-#else
 	// skip Beacon Packet
 	PageNeed = 3;
-#endif
 
 	PageNum += PageNeed;
 	pHalData->FwRsvdPageStartOffset = PageNum;
 
 	BufIndex += PageNeed*128;
-
-	//3 (2) ps-poll
-#if 0 // skip
-	RsvdPageLoc.LocPsPoll = PageNum;
-	ConstructPSPoll(padapter, &ReservedPagePacket[BufIndex], &PSPollLength);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], PSPollLength, _TRUE, _FALSE);
-
-	PageNeed = (u8)PageNum_128(TxDescLen + PSPollLength);
-	PageNum += PageNeed;
-
-	BufIndex += PageNeed*128;
-#endif
 
 	//3 (3) null data
 	RsvdPageLoc.LocNullData = PageNum;
@@ -845,40 +822,6 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	PageNum += PageNeed;
 
 	BufIndex += PageNeed*128;
-
-	//3 (4) probe response
-#if 0 // skip
-	RsvdPageLoc.LocProbeRsp = PageNum;
-	ConstructProbeRsp(
-		padapter,
-		&ReservedPagePacket[BufIndex],
-		&ProbeRspLength,
-		get_my_bssid(&pmlmeinfo->network),
-		_FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], ProbeRspLength, _FALSE, _FALSE);
-
-	PageNeed = (u8)PageNum_128(TxDescLen + ProbeRspLength);
-	PageNum += PageNeed;
-
-	BufIndex += PageNeed*128;
-#endif
-
-	//3 (5) Qos null data
-#if 0 // skip
-	RsvdPageLoc.LocQosNull = PageNum;
-	ConstructNullFunctionData(
-		padapter,
-		&ReservedPagePacket[BufIndex],
-		&QosNullLength,
-		get_my_bssid(&pmlmeinfo->network),
-		_TRUE, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], QosNullLength, _FALSE, _FALSE);
-
-	PageNeed = (u8)PageNum_128(TxDescLen + QosNullLength);
-	PageNum += PageNeed;
-
-	BufIndex += PageNeed*128;
-#endif
 
 	//3 (6) BT Qos null data
 	RsvdPageLoc.LocBTQosNull = PageNum;
@@ -1065,28 +1008,10 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 
 	//polling if the IO offloading is done
 	while( (passing_time_ms=rtw_get_passing_time_ms(start_time)) <= max_wating_ms) {
-		#if 0 //C2H
-		if(0xff == rtw_read8(adapter, REG_C2HEVT_CLEAR))
-			break;
-		#else// 0x1c3
 		if(0x00 != (polling_ret=rtw_read8(adapter, 0x1c3)))
 			break;
-		#endif
 		msleep(5);
 	}
-	#if 0 //debug
-	DBG_8723A("IOL %s, polling_ret:0x%02x, 0x1c0=0x%08x, 0x1c4=0x%08x, 0x1cc=0x%08x, 0x1e8=0x%08x, 0x130=0x%08x, 0x134=0x%08x\n"
-			, polling_ret==0xff?"success":"error"
-			, polling_ret
-			, rtw_read32(adapter, 0x1c0)
-			, rtw_read32(adapter, 0x1c4)
-			, rtw_read32(adapter, 0x1cc)
-			, rtw_read32(adapter, 0x1e8)
-			, rtw_read32(adapter, 0x130)
-			, rtw_read32(adapter, 0x134)
-	);
-	rtw_write32(adapter, 0x1c0, 0x0);
-	#endif
 
 	if(polling_ret == 0xff)
 		ret =_SUCCESS;
@@ -1102,25 +1027,11 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 			//, rtw_read32(adapter, 0x130)
 			//, rtw_read32(adapter, 0x134)
 		);
-		#if 0 //debug
-		rtw_write16(adapter, 0x1c4, 0x0000);
-		msleep(10);
-		DBG_8723A("after reset, 0x1c4=0x%08x\n", rtw_read32(adapter, 0x1c4));
-		#endif
-
 	}
 
 	{
-		#if 0 //C2H
-		u32 c2h_evt;
-		int i;
-		c2h_evt = rtw_read32(adapter, REG_C2HEVT_MSG_NORMAL);
-		DBG_8723A("%s io-offloading complete, in %ums: 0x%08x\n", __FUNCTION__, passing_time_ms, c2h_evt);
-		rtw_write8(adapter, REG_C2HEVT_CLEAR, 0x0);
-		#else// 0x1c3
 		//DBG_8723A("%s IOF complete in %ums\n", __FUNCTION__, passing_time_ms);
 		rtw_write8(adapter, 0x1c3, 0x0);
-		#endif
 	}
 
 exit:

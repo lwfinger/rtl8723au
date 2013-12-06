@@ -74,15 +74,6 @@
 #define Rtl8723_FwUMCBCutMPImageArray		Rtl8723SFwUMCBCutMPImgAr
 #define Rtl8723_UMCBCutMPImgArrayLength		Rtl8723SUMCBCutMPImgArrayLength
 
-#if 0 /* CONFIG_MP_INCLUDED */
-	#define Rtl8723E_FwBTImgArray				Rtl8723EFwBTImgArray
-	#define Rtl8723E_FwBTImgArrayLength			Rtl8723EBTImgArrayLength
-
-ray
-
-	#define Rtl8723_PHY_REG_Array_MP			Rtl8723UPHY_REG_Array_MP
-	#define Rtl8723_PHY_REG_Array_MPLength		Rtl8723UPHY_REG_Array_MPLength
-#endif
 #ifndef CONFIG_PHY_SETTING_WITH_ODM
 	// MAC/BB/PHY Array
 	#define Rtl8723_MAC_Array					Rtl8723UMAC_2T_Array

@@ -117,14 +117,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 			memcpy(pIo_buf, pdata, len);
 		}
 
-		#if 0
-		//timeout test for firmware downloading
-		status = rtw_usb_control_msg(udev, pipe, request, reqtype, value, index, pIo_buf, len
-			, ((value >= FW_8192C_START_ADDRESS && value <= FW_8192C_END_ADDRESS) ||value!=0x1000) ?RTW_USB_CONTROL_MSG_TIMEOUT : RTW_USB_CONTROL_MSG_TIMEOUT_TEST
-		);
-		#else
 		status = rtw_usb_control_msg(udev, pipe, request, reqtype, value, index, pIo_buf, len, RTW_USB_CONTROL_MSG_TIMEOUT);
-		#endif
 
 		if ( status == len)   // Success this control transfer.
 		{
@@ -382,96 +375,6 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 }
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
-#if 0
-/**
-* Log the Interrupt value and update counter no matter STA is associated or not. It is
-* implemented for FPGA verification stage because we need to now whether the current FPGA
-* platform is alive
-*
-* \param pAdapter			The adapter context for this minoport
-* \param	IsrContent		The ISR value read from hardware in MPISR
-*
-* We sholud remove this function later because DDK suggest not to executing too many
-* operations in MPISR
-*/
-void
-LogInterruptHistory8723AU(
-	PADAPTER			Adapter
-)
-{
-	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
-
-//	if(pHalData->IntArray[0] & IMR_COMDOK)
-//		pHalData->InterruptLog.nIMR_COMDOK++;
-	if(pHalData->IntArray[0] & UHIMR_VODOK)
-	{
-		pHalData->InterruptLog.nIMR_VODOK++;
-		DBG_8723A("UHIMR_VODOK %d \n", pHalData->InterruptLog.nIMR_VODOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_VIDOK)
-	{
-		pHalData->InterruptLog.nIMR_VIDOK++;
-		DBG_8723A("UHIMR_VIDOK %d\n", pHalData->InterruptLog.nIMR_VIDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_MGNTDOK)
-	{
-		pHalData->InterruptLog.nIMR_MGNTDOK++;
-		DBG_8723A("UHIMR_MGNTDOK %d\n", pHalData->InterruptLog.nIMR_MGNTDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_BEDOK)
-	{
-		pHalData->InterruptLog.nIMR_BEDOK++;
-		DBG_8723A("UHIMR_BEDOK %d\n", pHalData->InterruptLog.nIMR_BEDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_BKDOK)
-	{
-		pHalData->InterruptLog.nIMR_BKDOK++;
-		DBG_8723A("UHIMR_BKDOK %d\n", pHalData->InterruptLog.nIMR_BKDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_ROK)
-	{
-		pHalData->InterruptLog.nIMR_ROK++;
-		DBG_8723A("UHIMR_ROK %d\n", pHalData->InterruptLog.nIMR_ROK);
-	}
-
-	if(pHalData->IntArray[0] & UHIMR_TXBCNOK)
-	{
-		pHalData->InterruptLog.nIMR_TBDOK++;
-		DBG_8723A("UHIMR_TXBCNOK %d\n", pHalData->InterruptLog.nIMR_TBDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_BCNDOK0)
-	{
-		pHalData->InterruptLog.nIMR_BDOK++;
-		DBG_8723A("UHIMR_BCNDOK0 %d\n", pHalData->InterruptLog.nIMR_BDOK);
-	}
-	if(pHalData->IntArray[0] & UHIMR_C2HCMD)
-	{
-		pHalData->InterruptLog.nIMR_C2HCMD++;
-		DBG_8723A("UHIMR_C2HCMD %d\n", pHalData->InterruptLog.nIMR_C2HCMD);
-	}
-	if(pHalData->IntArray[0] & UHIMR_CPWM)
-	{
-		pHalData->InterruptLog.nIMR_C2HCMD++;
-		DBG_8723A("UHIMR_CPWM %d\n", pHalData->InterruptLog.nIMR_CPWM);
-	}
-
-//	if(pHalData->IntArray[0] & IMR_RXCMDOK)
-//		pHalData->InterruptLog.nIMR_RCOK++;
-	if(pHalData->IntArray[0] & UHIMR_RDU)
-	{
-		pHalData->InterruptLog.nIMR_RDU++;
-		DBG_8723A("UHIMR_RDU %d\n", pHalData->InterruptLog.nIMR_RDU);
-	}
-
-	if(pHalData->IntArray[1] & UHIMR_RXFOVW)
-	{
-		pHalData->InterruptLog.nIMR_RXFOVW++;
-		DBG_8723A("UHIMR_RXFOVW %d\n", pHalData->InterruptLog.nIMR_RXFOVW);
-	}
-
-
-}
-#endif
 //
 // Description:
 //	Recognize the interrupt content by reading the interrupt register or content and masking interrupt mask (IMR)
@@ -672,13 +575,6 @@ static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
 
 	prxstat = (struct recv_stat *)pbuf;
 	pkt_cnt = (le32_to_cpu(prxstat->rxdw2)>>16) & 0xff;
-
-#if 0 //temp remove when disable usb rx aggregation
-	if((pkt_cnt > 10) || (pkt_cnt < 1) || (transfer_len<RXDESC_SIZE) ||(pkt_len<=0))
-	{
-		return _FAIL;
-	}
-#endif
 
 	do{
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
@@ -1023,81 +919,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 	}
 	else // Handle BC/MC Packets
 	{
-
 		u8 clone = _TRUE;
-#if 0
-		u8 type, subtype, *paddr2, *paddr3;
-
-		type =  GetFrameType(pbuf);
-		subtype = GetFrameSubType(pbuf); //bit(7)~bit(2)
-
-		switch (type)
-		{
-			case WIFI_MGT_TYPE: //Handle BC/MC mgnt Packets
-				if(subtype == WIFI_BEACON)
-				{
-					paddr3 = GetAddr3Ptr(precvframe->u.hdr.rx_data);
-
-					if (check_fwstate(&secondary_padapter->mlmepriv, _FW_LINKED) &&
-					    !memcmp(paddr3, get_bssid(&secondary_padapter->mlmepriv), ETH_ALEN))
-					{
-						//change to secondary interface
-						precvframe->u.hdr.adapter = secondary_padapter;
-						clone = _FALSE;
-					}
-
-					if (check_fwstate(&primary_padapter->mlmepriv, _FW_LINKED) &&
-					    !memcmp(paddr3, get_bssid(&primary_padapter->mlmepriv), ETH_ALEN))
-					{
-						if(clone==_FALSE)
-						{
-							clone = _TRUE;
-						}
-						else
-						{
-							clone = _FALSE;
-						}
-
-						precvframe->u.hdr.adapter = primary_padapter;
-					}
-
-					if(check_fwstate(&primary_padapter->mlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) ||
-						check_fwstate(&secondary_padapter->mlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING))
-					{
-						clone = _TRUE;
-						precvframe->u.hdr.adapter = primary_padapter;
-					}
-
-				}
-				else if(subtype == WIFI_PROBEREQ)
-				{
-					//probe req frame is only for interface2
-					//change to secondary interface
-					precvframe->u.hdr.adapter = secondary_padapter;
-					clone = _FALSE;
-				}
-				break;
-			case WIFI_CTRL_TYPE: // Handle BC/MC ctrl Packets
-
-				break;
-			case WIFI_DATA_TYPE: //Handle BC/MC data Packets
-					//Notes: AP MODE never rx BC/MC data packets
-
-				paddr2 = GetAddr2Ptr(precvframe->u.hdr.rx_data);
-
-				if (!memcmp(paddr2, get_bssid(&secondary_padapter->mlmepriv), ETH_ALEN))
-				{
-					//change to secondary interface
-					precvframe->u.hdr.adapter = secondary_padapter;
-					clone = _FALSE;
-				}
-
-				break;
-			default:
-
-				break;
-		}
-#endif
 
 		if(_TRUE == clone)
 		{
@@ -1211,13 +1033,6 @@ static int recvbuf2recvframe(_adapter *padapter, _pkt *pskb)
 
 	prxstat = (struct recv_stat *)pbuf;
 	pkt_cnt = (le32_to_cpu(prxstat->rxdw2)>>16) & 0xff;
-
-#if 0 //temp remove when disable usb rx aggregation
-	if((pkt_cnt > 10) || (pkt_cnt < 1) || (transfer_len<RXDESC_SIZE) ||(pkt_len<=0))
-	{
-		return _FAIL;
-	}
-#endif
 
 	do{
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,

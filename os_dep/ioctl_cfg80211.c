@@ -1313,25 +1313,6 @@ static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev,
 				void (*callback)(void *cookie,
 						 struct key_params*))
 {
-#if 0
-	struct iwm_priv *iwm = ndev_to_iwm(ndev);
-	struct iwm_key *key = &iwm->keys[key_index];
-	struct key_params params;
-
-	IWM_DBG_WEXT(iwm, DBG, "Getting key %d\n", key_index);
-
-	memset(&params, 0, sizeof(params));
-
-	params.cipher = key->cipher;
-	params.key_len = key->key_len;
-	params.seq_len = key->seq_len;
-	params.seq = key->seq;
-	params.key = key->key;
-
-	callback(cookie, &params);
-
-	return key->key_len ? 0 : -ENOENT;
-#endif
 	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 	return 0;
 }
@@ -1997,35 +1978,6 @@ exit:
 
 static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-
-	if (changed & WIPHY_PARAM_RTS_THRESHOLD &&
-	    (iwm->conf.rts_threshold != wiphy->rts_threshold)) {
-		int ret;
-
-		iwm->conf.rts_threshold = wiphy->rts_threshold;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_CFG_FIX,
-					     CFG_RTS_THRESHOLD,
-					     iwm->conf.rts_threshold);
-		if (ret < 0)
-			return ret;
-	}
-
-	if (changed & WIPHY_PARAM_FRAG_THRESHOLD &&
-	    (iwm->conf.frag_threshold != wiphy->frag_threshold)) {
-		int ret;
-
-		iwm->conf.frag_threshold = wiphy->frag_threshold;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_FA_CFG_FIX,
-					     CFG_FRAG_THRESHOLD,
-					     iwm->conf.frag_threshold);
-		if (ret < 0)
-			return ret;
-	}
-#endif
 	DBG_8723A("%s\n", __func__);
 	return 0;
 }
@@ -2033,38 +1985,12 @@ static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
 static int cfg80211_rtw_join_ibss(struct wiphy *wiphy, struct net_device *ndev,
 				  struct cfg80211_ibss_params *params)
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-	struct ieee80211_channel *chan = params->channel;
-
-	if (!test_bit(IWM_STATUS_READY, &iwm->status))
-		return -EIO;
-
-	/* UMAC doesn't support creating or joining an IBSS network
-	 * with specified bssid. */
-	if (params->bssid)
-		return -EOPNOTSUPP;
-
-	iwm->channel = ieee80211_frequency_to_channel(chan->center_freq);
-	iwm->umac_profile->ibss.band = chan->band;
-	iwm->umac_profile->ibss.channel = iwm->channel;
-	iwm->umac_profile->ssid.ssid_len = params->ssid_len;
-	memcpy(iwm->umac_profile->ssid.ssid, params->ssid, params->ssid_len);
-
-	return iwm_send_mlme_profile(iwm);
-#endif
 	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 	return 0;
 }
 
 static int cfg80211_rtw_leave_ibss(struct wiphy *wiphy, struct net_device *ndev)
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-
-	if (iwm->umac_profile_active)
-		return iwm_invalidate_mlme_profile(iwm);
-#endif
 	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 	return 0;
 }
@@ -2749,32 +2675,6 @@ static int cfg80211_rtw_set_txpower(struct wiphy *wiphy,
 	enum tx_power_setting type, int dbm)
 #endif
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-	int ret;
-
-	switch (type) {
-	case NL80211_TX_POWER_AUTOMATIC:
-		return 0;
-	case NL80211_TX_POWER_FIXED:
-		if (mbm < 0 || (mbm % 100))
-			return -EOPNOTSUPP;
-
-		if (!test_bit(IWM_STATUS_READY, &iwm->status))
-			return 0;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_CFG_FIX,
-					      CFG_TX_PWR_LIMIT_USR,
-					      MBM_TO_DBM(mbm) * 2);
-		if (ret < 0)
-			return ret;
-
-		return iwm_tx_power_trigger(iwm);
-	default:
-		IWM_ERR(iwm, "Unsupported power type: %d\n", type);
-		return -EOPNOTSUPP;
-	}
-#endif
 	DBG_8723A("%s\n", __func__);
 	return 0;
 }
@@ -4275,28 +4175,10 @@ static s32 cfg80211_rtw_cancel_remain_on_channel(struct wiphy *wiphy,
 		p2p_protocol_wk_hdl(padapter, P2P_RO_CH_WK);
 	}
 
-	#if 0
-	//	Disable P2P Listen State
-	if(!rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT) && !rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
-	{
-		if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-		{
-			_cancel_timer_ex( &pwdinfo->find_phase_timer );
-			_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
-			_cancel_timer_ex( &pwdinfo->pre_tx_scan_timer);
-
-			rtw_p2p_set_state(pwdinfo, P2P_STATE_NONE);
-			memset(pwdinfo, 0x00, sizeof(struct wifidirect_info));
-		}
-	}
-	else
-	#endif
-	{
-		 rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
+	rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
 #ifdef CONFIG_DEBUG_CFG80211
-		 DBG_8723A("%s, role=%d, p2p_state=%d\n", __func__, rtw_p2p_role(pwdinfo), rtw_p2p_state(pwdinfo));
+	DBG_8723A("%s, role=%d, p2p_state=%d\n", __func__, rtw_p2p_role(pwdinfo), rtw_p2p_state(pwdinfo));
 #endif
-	}
 	pcfg80211_wdinfo->is_ro_ch = _FALSE;
 
 	return err;

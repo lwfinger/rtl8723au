@@ -976,22 +976,7 @@ ODM_PhyStatusQuery_92CSeries(
 	{
 		// Select the packets to do RSSI checking for antenna switching.
 		if(pPktinfo->bPacketToSelf || pPktinfo->bPacketBeacon )
-		{
-				/*
-			#if 0//(DM_ODM_SUPPORT_TYPE == ODM_MP)
-			dm_SWAW_RSSI_Check(
-				Adapter,
-				(tmppAdapter!=NULL)?(tmppAdapter==Adapter):TRUE,
-				bPacketMatchBSSID,
-				pEntry,
-				pRfd);
-			#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
-			// Select the packets to do RSSI checking for antenna switching.
-			//odm_SwAntDivRSSICheck8192C(padapter, precvframe->u.hdr.attrib.RxPWDBAll);
-			#endif
-				*/
-				ODM_SwAntDivChkPerPktRssi(pDM_Odm,pPktinfo->StationID,pPhyInfo);
-		}
+			ODM_SwAntDivChkPerPktRssi(pDM_Odm,pPktinfo->StationID,pPhyInfo);
 	}
 	else
 	{
@@ -1025,16 +1010,7 @@ ODM_PhyStatusQuery(
 		PODM_PACKET_INFO_T			pPktinfo
 	)
 {
-#if 0  // How to jaguar jugar series??
-	if(pDM_Odm->SupportICType >= ODM_RTL8195 )
-	{
-		ODM_PhyStatusQuery_JaguarSeries(pDM_Odm,pPhyInfo,pPhyStatus,pPktinfo);
-	}
-	else
-#endif
-	{
-		ODM_PhyStatusQuery_92CSeries(pDM_Odm,pPhyInfo,pPhyStatus,pPktinfo);
-	}
+	ODM_PhyStatusQuery_92CSeries(pDM_Odm,pPhyInfo,pPhyStatus,pPktinfo);
 }
 
 // For future use.

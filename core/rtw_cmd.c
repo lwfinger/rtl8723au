@@ -1218,19 +1218,6 @@ _func_enter_;
 
 	DBG_8723A("%s: smart_ps=%d\n", __func__, padapter->pwrctrlpriv.smart_ps);
 
-	#if 0
-	psecuritypriv->supplicant_ie[0]=(u8)psecnetwork->IELength;
-
-	if(psecnetwork->IELength < (256-1))
-	{
-		memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], psecnetwork->IELength);
-	}
-	else
-	{
-		memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], (256-1));
-	}
-	#endif
-
 	pcmd->cmdsz = get_WLAN_BSSID_EX_sz(psecnetwork);/* get cmdsz before endian conversion */
 
 #ifdef CONFIG_RTL8712
