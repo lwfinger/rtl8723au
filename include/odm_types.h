@@ -30,11 +30,9 @@
 
 #define	DM_ODM_SUPPORT_TYPE			ODM_CE
 
-#if (DM_ODM_SUPPORT_TYPE != ODM_MP)
 #define		RT_PCI_INTERFACE				1
 #define		RT_USB_INTERFACE				2
 #define		RT_SDIO_INTERFACE				3
-#endif
 
 typedef enum _HAL_STATUS{
 	HAL_STATUS_SUCCESS,
@@ -47,121 +45,11 @@ typedef enum _HAL_STATUS{
 	RT_STATUS_OS_API_FAILED,*/
 }HAL_STATUS,*PHAL_STATUS;
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 typedef enum _RT_SPINLOCK_TYPE{
 	RT_TEMP =1,
 }RT_SPINLOCK_TYPE;
-#elif( (DM_ODM_SUPPORT_TYPE == ODM_AP) ||(DM_ODM_SUPPORT_TYPE == ODM_ADSL))
-
-#define		VISTA_USB_RX_REVISE			0
-
-//
-// Declare for ODM spin lock defintion temporarily fro compile pass.
-//
-typedef enum _RT_SPINLOCK_TYPE{
-	RT_TX_SPINLOCK = 1,
-	RT_RX_SPINLOCK = 2,
-	RT_RM_SPINLOCK = 3,
-	RT_CAM_SPINLOCK = 4,
-	RT_SCAN_SPINLOCK = 5,
-	RT_LOG_SPINLOCK = 7,
-	RT_BW_SPINLOCK = 8,
-	RT_CHNLOP_SPINLOCK = 9,
-	RT_RF_OPERATE_SPINLOCK = 10,
-	RT_INITIAL_SPINLOCK = 11,
-	RT_RF_STATE_SPINLOCK = 12, // For RF state. Added by Bruce, 2007-10-30.
-#if VISTA_USB_RX_REVISE
-	RT_USBRX_CONTEXT_SPINLOCK = 13,
-	RT_USBRX_POSTPROC_SPINLOCK = 14, // protect data of Adapter->IndicateW/ IndicateR
-#endif
-	//Shall we define Ndis 6.2 SpinLock Here ?
-	RT_PORT_SPINLOCK=16,
-	RT_VNIC_SPINLOCK=17,
-	RT_HVL_SPINLOCK=18,
-	RT_H2C_SPINLOCK = 20, // For H2C cmd. Added by tynli. 2009.11.09.
-
-	RT_BTData_SPINLOCK=25,
-
-      // add for 92D CCK control issue
-	RT_CCK_PAGEA_SPINLOCK = 28,
-	RT_BUFFER_SPINLOCK = 29,
-	RT_CHANNEL_AND_BANDWIDTH_SPINLOCK = 30,
-	RT_GEN_TEMP_BUF_SPINLOCK = 31,
-	RT_AWB_SPINLOCK = 32,
-	RT_FW_PS_SPINLOCK = 33,
-	RT_HW_TIMER_SPIN_LOCK = 34,
-	RT_MPT_WI_SPINLOCK = 35
-}RT_SPINLOCK_TYPE;
-
-#endif
 
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_MP)
-	#define	STA_INFO_T			RT_WLAN_STA
-	#define	PSTA_INFO_T			PRT_WLAN_STA
-
-	#define CONFIG_HW_ANTENNA_DIVERSITY
-#define CONFIG_SW_ANTENNA_DIVERSITY
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_AP)
-
-	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
-	#define ADSL_AP_BUILD_WORKAROUND
-	#define AP_BUILD_WORKAROUND
-	//
-
-	#ifdef AP_BUILD_WORKAROUND
-	#include "typedef.h"
-	#else
-	typedef unsigned char			bool,*Pbool;
-	typedef unsigned char			u1Byte,*pu1Byte;
-	typedef unsigned short			u2Byte,*pu2Byte;
-	typedef unsigned int			u4Byte,*pu4Byte;
-	typedef unsigned long long		u8Byte,*pu8Byte;
-	typedef char					s1Byte,*ps1Byte;
-	typedef short					s2Byte,*ps2Byte;
-	typedef long					s4Byte,*ps4Byte;
-	typedef long long				s8Byte,*ps8Byte;
-	#endif
-
-	typedef struct rtl8192cd_priv	*prtl8192cd_priv;
-	typedef struct stat_info		STA_INFO_T,*PSTA_INFO_T;
-	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
-	typedef  void *					RT_TIMER_CALL_BACK;
-
-	#define		DEV_BUS_TYPE		RT_PCI_INTERFACE
-
-	#define _TRUE				1
-	#define _FALSE				0
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_ADSL)
-
-	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
-	#define ADSL_AP_BUILD_WORKAROUND
-	#define ADSL_BUILD_WORKAROUND
-	//
-
-	typedef unsigned char		bool,*Pbool;
-	typedef unsigned char		u1Byte,*pu1Byte;
-	typedef unsigned short		u2Byte,*pu2Byte;
-	typedef unsigned int			u4Byte,*pu4Byte;
-	typedef unsigned long long	u8Byte,*pu8Byte;
-	typedef char				s1Byte,*ps1Byte;
-	typedef short				s2Byte,*ps2Byte;
-	typedef long				s4Byte,*ps4Byte;
-	typedef long long			s8Byte,*ps8Byte;
-
-	typedef struct rtl8192cd_priv	*prtl8192cd_priv;
-	typedef struct stat_info		STA_INFO_T,*PSTA_INFO_T;
-	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
-	typedef  void *				RT_TIMER_CALL_BACK;
-
-	#define DEV_BUS_TYPE	RT_PCI_INTERFACE
-
-	#define _TRUE				1
-	#define _FALSE				0
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	#include <basic_types.h>
 
 #if 0
@@ -221,7 +109,5 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define		FOR_BRAZIL_PRETEST	0
 	#define	BT_30_SUPPORT			0
 	#define   FPGA_TWO_MAC_VERIFICATION	0
-#endif
-
 
 #endif // __ODM_TYPES_H__
