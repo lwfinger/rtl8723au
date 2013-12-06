@@ -330,7 +330,7 @@ typedef struct _WLAN_BSSID_EX
 }__attribute__((packed))
 WLAN_BSSID_EX, *PWLAN_BSSID_EX;
 
-__inline  static uint get_WLAN_BSSID_EX_sz(WLAN_BSSID_EX *bss)
+inline  static uint get_WLAN_BSSID_EX_sz(WLAN_BSSID_EX *bss)
 {
 #if 0
 	uint t_len;

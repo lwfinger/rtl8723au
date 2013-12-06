@@ -985,12 +985,12 @@ static void pwr_rpwm_timeout_handler(void *FunctionContext)
 }
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 
-__inline static void register_task_alive(struct pwrctrl_priv *pwrctrl, u32 tag)
+static inline void register_task_alive(struct pwrctrl_priv *pwrctrl, u32 tag)
 {
 	pwrctrl->alives |= tag;
 }
 
-__inline static void unregister_task_alive(struct pwrctrl_priv *pwrctrl, u32 tag)
+static inline void unregister_task_alive(struct pwrctrl_priv *pwrctrl, u32 tag)
 {
 	pwrctrl->alives &= ~tag;
 }

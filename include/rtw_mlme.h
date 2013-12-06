@@ -585,13 +585,13 @@ extern int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv);
 extern int rtw_set_key(_adapter *adapter,struct security_priv *psecuritypriv,int keyid, u8 set_tx);
 extern int rtw_set_auth(_adapter *adapter,struct security_priv *psecuritypriv);
 
-__inline static u8 *get_bssid(struct mlme_priv *pmlmepriv)
+static inline u8 *get_bssid(struct mlme_priv *pmlmepriv)
 {	//if sta_mode:pmlmepriv->cur_network.network.MacAddress=> bssid
 	// if adhoc_mode:pmlmepriv->cur_network.network.MacAddress=> ibss mac address
 	return pmlmepriv->cur_network.network.MacAddress;
 }
 
-__inline static int check_fwstate(struct mlme_priv *pmlmepriv, int state)
+static inline int check_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	if (pmlmepriv->fw_state & state)
 		return _TRUE;
@@ -599,7 +599,7 @@ __inline static int check_fwstate(struct mlme_priv *pmlmepriv, int state)
 	return _FALSE;
 }
 
-__inline static int get_fwstate(struct mlme_priv *pmlmepriv)
+static inline int get_fwstate(struct mlme_priv *pmlmepriv)
 {
 	return pmlmepriv->fw_state;
 }
@@ -611,7 +611,7 @@ __inline static int get_fwstate(struct mlme_priv *pmlmepriv)
  * ### NOTE:#### (!!!!)
  * MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
  */
-__inline static void set_fwstate(struct mlme_priv *pmlmepriv, int state)
+static inline void set_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	pmlmepriv->fw_state |= state;
 	//FOR HW integration
@@ -620,7 +620,7 @@ __inline static void set_fwstate(struct mlme_priv *pmlmepriv, int state)
 	}
 }
 
-__inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, int state)
+static inline void _clr_fwstate_(struct mlme_priv *pmlmepriv, int state)
 {
 	pmlmepriv->fw_state &= ~state;
 	//FOR HW integration
@@ -633,7 +633,7 @@ __inline static void _clr_fwstate_(struct mlme_priv *pmlmepriv, int state)
  * No Limit on the calling context,
  * therefore set it to be the critical section...
  */
-__inline static void clr_fwstate(struct mlme_priv *pmlmepriv, int state)
+static inline void clr_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	if (check_fwstate(pmlmepriv, state) == _TRUE)
@@ -641,14 +641,14 @@ __inline static void clr_fwstate(struct mlme_priv *pmlmepriv, int state)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-__inline static void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
+static inline void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	_clr_fwstate_(pmlmepriv, state);
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-__inline static void up_scanned_network(struct mlme_priv *pmlmepriv)
+static inline void up_scanned_network(struct mlme_priv *pmlmepriv)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned++;
@@ -660,14 +660,14 @@ int rtw_buddy_adapter_up(_adapter *padapter);
 int check_buddy_fwstate(_adapter *padapter, int state);
 #endif //CONFIG_CONCURRENT_MODE
 
-__inline static void down_scanned_network(struct mlme_priv *pmlmepriv)
+static inline void down_scanned_network(struct mlme_priv *pmlmepriv)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned--;
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-__inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, int val)
+static inline void set_scanned_network_val(struct mlme_priv *pmlmepriv, int val)
 {
 	spin_lock_bh(&pmlmepriv->lock);
 	pmlmepriv->num_of_scanned = val;

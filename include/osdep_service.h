@@ -105,13 +105,13 @@ typedef void*	thread_context;
 typedef void timer_hdl_return;
 typedef void* timer_hdl_context;
 
-__inline static struct list_head	*get_list_head(_queue	*queue)
+static inline struct list_head	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));
 }
 
 
-__inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
+static inline void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
 {
 	//setup_timer(ptimer, pfunc,(u32)cntx);
 	ptimer->function = pfunc;
@@ -119,12 +119,12 @@ __inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,voi
 	init_timer(ptimer);
 }
 
-__inline static void _set_timer(_timer *ptimer,u32 delay_time)
+static inline void _set_timer(_timer *ptimer,u32 delay_time)
 {
 	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
 }
 
-__inline static void _cancel_timer(_timer *ptimer,u8 *bcancelled)
+static inline void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 {
 	del_timer_sync(ptimer);
 	*bcancelled=  _TRUE;//TRUE ==1; FALSE==0
@@ -267,12 +267,12 @@ extern void	rtw_udelay_os(int us);
 extern void rtw_yield_os(void);
 
 
-__inline static unsigned char _cancel_timer_ex(_timer *ptimer)
+static inline unsigned char _cancel_timer_ex(_timer *ptimer)
 {
 	return del_timer_sync(ptimer);
 }
 
-static __inline void thread_enter(char *name)
+static inline void thread_enter(char *name)
 {
 #ifdef daemonize
 	daemonize("%s", name);
@@ -280,7 +280,7 @@ static __inline void thread_enter(char *name)
 	allow_signal(SIGTERM);
 }
 
-__inline static void flush_signals_thread(void)
+static inline void flush_signals_thread(void)
 {
 	if (signal_pending (current))
 		flush_signals(current);
@@ -289,7 +289,7 @@ __inline static void flush_signals_thread(void)
 #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
 #define RND4(x)	(((x >> 2) + (((x & 3) == 0) ?  0: 1)) << 2)
 
-__inline static u32 _RND4(u32 sz)
+static inline u32 _RND4(u32 sz)
 {
 
 	u32	val;
@@ -300,7 +300,7 @@ __inline static u32 _RND4(u32 sz)
 
 }
 
-__inline static u32 _RND8(u32 sz)
+static inline u32 _RND8(u32 sz)
 {
 
 	u32	val;
@@ -311,7 +311,7 @@ __inline static u32 _RND8(u32 sz)
 
 }
 
-__inline static u32 _RND128(u32 sz)
+static inline u32 _RND128(u32 sz)
 {
 
 	u32	val;
@@ -322,7 +322,7 @@ __inline static u32 _RND128(u32 sz)
 
 }
 
-__inline static u32 _RND256(u32 sz)
+static inline u32 _RND256(u32 sz)
 {
 
 	u32	val;
@@ -333,7 +333,7 @@ __inline static u32 _RND256(u32 sz)
 
 }
 
-__inline static u32 _RND512(u32 sz)
+static inline u32 _RND512(u32 sz)
 {
 
 	u32	val;
@@ -344,7 +344,7 @@ __inline static u32 _RND512(u32 sz)
 
 }
 
-__inline static u32 bitshift(u32 bitmask)
+static inline u32 bitshift(u32 bitmask)
 {
 	u32 i;
 

@@ -508,7 +508,7 @@ struct _ADAPTER{
 
 int rtw_handle_dualmac(_adapter *adapter, bool init);
 
-__inline static u8 *myid(struct eeprom_priv *peepriv)
+static inline u8 *myid(struct eeprom_priv *peepriv)
 {
 	return (peepriv->mac_addr);
 }

@@ -2434,7 +2434,7 @@ _func_exit_;
 	return ptxservq;
 }
 #else
-__inline static struct tx_servq *rtw_get_sta_pending
+static inline struct tx_servq *rtw_get_sta_pending
 	(_adapter *padapter, _queue **ppstapending, struct sta_info *psta, int up)
 {
 	struct tx_servq *ptxservq;

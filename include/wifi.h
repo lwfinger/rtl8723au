@@ -337,7 +337,7 @@ enum WIFI_REG_DOMAIN {
 
 #define GetAddr4Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 24))
 
-__inline static unsigned char * get_da(unsigned char *pframe)
+static inline unsigned char * get_da(unsigned char *pframe)
 {
 	unsigned char	*da;
 	unsigned int	to_fr_ds	= (GetToDs(pframe) << 1) | GetFrDs(pframe);
@@ -361,7 +361,7 @@ __inline static unsigned char * get_da(unsigned char *pframe)
 }
 
 
-__inline static unsigned char * get_sa(unsigned char *pframe)
+static inline unsigned char * get_sa(unsigned char *pframe)
 {
 	unsigned char	*sa;
 	unsigned int	to_fr_ds	= (GetToDs(pframe) << 1) | GetFrDs(pframe);
@@ -384,7 +384,7 @@ __inline static unsigned char * get_sa(unsigned char *pframe)
 	return sa;
 }
 
-__inline static unsigned char * get_hdr_bssid(unsigned char *pframe)
+static inline unsigned char * get_hdr_bssid(unsigned char *pframe)
 {
 	unsigned char	*sa;
 	unsigned int	to_fr_ds	= (GetToDs(pframe) << 1) | GetFrDs(pframe);
@@ -411,7 +411,7 @@ __inline static unsigned char * get_hdr_bssid(unsigned char *pframe)
 }
 
 
-__inline static int IsFrameTypeCtrl(unsigned char *pframe)
+static inline int IsFrameTypeCtrl(unsigned char *pframe)
 {
 	if(WIFI_CTRL_TYPE == GetFrameType(pframe))
 		return _TRUE;
