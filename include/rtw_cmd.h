@@ -89,7 +89,7 @@
 
 #define CONFIG_C2H_WK
 #ifdef CONFIG_C2H_WK
-		_workitem c2h_wk;
+		struct work_struct c2h_wk;
 		bool c2h_wk_alive;
 		struct rtw_cbuf *c2h_queue;
 		#define C2H_QUEUE_MAX_LEN 10

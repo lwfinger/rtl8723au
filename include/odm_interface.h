@@ -101,7 +101,7 @@ typedef enum _ODM_H2C_CMD
 #if (DM_ODM_SUPPORT_TYPE != ODM_MP)
 typedef  void *PRT_WORK_ITEM ;
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
-typedef void (*RT_WORKITEM_CALL_BACK)(void * pContext);
+typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct * pContext);
 
 #if 0
 typedef struct tasklet_struct RT_WORKITEM_HANDLE, *PRT_WORKITEM_HANDLE;

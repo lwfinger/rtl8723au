@@ -38,11 +38,11 @@ void BlinkTimerCallback(void *data)
 		return;
 	}
 
-	#ifdef CONFIG_LED_HANDLED_BY_CMD_THREAD
+#ifdef CONFIG_LED_HANDLED_BY_CMD_THREAD
 	rtw_led_blink_cmd(padapter, pLed);
-	#else
-	_set_workitem(&(pLed->BlinkWorkItem));
-	#endif
+#else
+	schedule_work(&(pLed->BlinkWorkItem));
+#endif
 }
 
 /*  */
@@ -95,7 +95,7 @@ InitLed871x(
 
 	_init_timer(&(pLed->BlinkTimer), padapter->pnetdev, BlinkTimerCallback, pLed);
 
-	_init_workitem(&(pLed->BlinkWorkItem), BlinkWorkItemCallback, pLed);
+	INIT_WORK(&(pLed->BlinkWorkItem), BlinkWorkItemCallback);
 }
 
 /*  */
@@ -107,7 +107,7 @@ DeInitLed871x(
 	PLED_871x			pLed
 	)
 {
-	_cancel_workitem_sync(&(pLed->BlinkWorkItem));
+	cancel_work_sync(&(pLed->BlinkWorkItem));
 	_cancel_timer_ex(&(pLed->BlinkTimer));
 	ResetLedStatus(pLed);
 }

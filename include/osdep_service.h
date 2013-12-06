@@ -109,7 +109,6 @@ typedef void*	thread_context;
 
 typedef void timer_hdl_return;
 typedef void* timer_hdl_context;
-typedef struct work_struct _workitem;
 
 __inline static struct list_head	*get_list_head(_queue	*queue)
 {
@@ -163,21 +162,6 @@ __inline static void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 #define RTW_TIMER_HDL_NAME(name) rtw_##name##_timer_hdl
 #define RTW_DECLARE_TIMER_HDL(name) void RTW_TIMER_HDL_NAME(name)(RTW_TIMER_HDL_ARGS)
 
-
-__inline static void _init_workitem(_workitem *pwork, void *pfunc, void *cntx)
-{
-	INIT_WORK(pwork, pfunc);
-}
-
-__inline static void _set_workitem(_workitem *pwork)
-{
-	schedule_work(pwork);
-}
-
-__inline static void _cancel_workitem_sync(_workitem *pwork)
-{
-	cancel_work_sync(pwork);
-}
 
 static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 {

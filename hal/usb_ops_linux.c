@@ -521,7 +521,7 @@ InterruptRecognized8723AU(
 		if( ((pHalData->IntArray[0])&UHIMR_CPWM)){
 //			DBG_8723A("%s HIMR=0x%x\n",__func__,pHalData->IntArray[0]);
 			//cpwm_int_hdl(Adapter, &report);
-			_set_workitem(&Adapter->pwrctrlpriv.cpwm_event);
+			schedule_work(&Adapter->pwrctrlpriv.cpwm_event);
 			pHalData->IntArray[0]&= ~UHIMR_CPWM;
 //			DBG_8723A("%s HIMR=0x%x\n",__func__,pHalData->IntArray[0]);
 		}
@@ -566,17 +566,17 @@ static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 				/* Replace with special pointer to trigger c2h_evt_clear */
 				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)&padapter->evtpriv) != _SUCCESS)
 					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
-				_set_workitem(&padapter->evtpriv.c2h_wk);
+				schedule_work(&padapter->evtpriv.c2h_wk);
 			} else if ((c2h_evt = (struct c2h_evt_hdr *)rtw_malloc(16)) != NULL) {
 				memcpy(c2h_evt, purb->transfer_buffer, 16);
 				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)c2h_evt) != _SUCCESS)
 					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
-				_set_workitem(&padapter->evtpriv.c2h_wk);
+				schedule_work(&padapter->evtpriv.c2h_wk);
 			} else {
 				/* Error handling for malloc fail */
 				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)NULL) != _SUCCESS)
 					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
-				_set_workitem(&padapter->evtpriv.c2h_wk);
+				schedule_work(&padapter->evtpriv.c2h_wk);
 			}
 		}
 

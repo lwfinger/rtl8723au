@@ -981,7 +981,7 @@ static void pwr_rpwm_timeout_handler(void *FunctionContext)
 		return;
 	}
 
-	_set_workitem(&pwrpriv->rpwmtimeoutwi);
+	schedule_work(&pwrpriv->rpwmtimeoutwi);
 }
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 
@@ -1344,11 +1344,11 @@ _func_enter_;
 #ifdef CONFIG_LPS_LCLK
 	rtw_hal_set_hwreg(padapter, HW_VAR_SET_RPWM, (u8 *)(&pwrctrlpriv->rpwm));
 
-	_init_workitem(&pwrctrlpriv->cpwm_event, cpwm_event_callback, NULL);
+	INIT_WORK(&pwrctrlpriv->cpwm_event, cpwm_event_callback);
 
 #ifdef CONFIG_LPS_RPWM_TIMER
 	pwrctrlpriv->brpwmtimeout = _FALSE;
-	_init_workitem(&pwrctrlpriv->rpwmtimeoutwi, rpwmtimeout_workitem_callback, NULL);
+	INIT_WORK(&pwrctrlpriv->rpwmtimeoutwi, rpwmtimeout_workitem_callback);
 	_init_timer(&pwrctrlpriv->pwr_rpwm_timer, padapter->pnetdev, pwr_rpwm_timeout_handler, padapter);
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 #endif /*  CONFIG_LPS_LCLK */
@@ -1356,7 +1356,7 @@ _func_enter_;
 	_init_timer(&(pwrctrlpriv->pwr_state_check_timer), padapter->pnetdev, pwr_state_check_handler, (u8 *)padapter);
 
 	#ifdef CONFIG_RESUME_IN_WORKQUEUE
-	_init_workitem(&pwrctrlpriv->resume_work, resume_workitem_callback, NULL);
+	INIT_WORK(&pwrctrlpriv->resume_work, resume_workitem_callback);
 	pwrctrlpriv->rtw_workqueue = create_singlethread_workqueue("rtw_workqueue");
 	#endif /* CONFIG_RESUME_IN_WORKQUEUE */
 
@@ -1407,11 +1407,11 @@ void rtw_resume_in_workqueue(struct pwrctrl_priv *pwrpriv)
 	/*  accquire system's suspend lock preventing from falliing asleep while resume in workqueue */
 	rtw_lock_suspend();
 
-	#if 1
+#if 1
 	queue_work(pwrpriv->rtw_workqueue, &pwrpriv->resume_work);
-	#else
-	_set_workitem(&pwrpriv->resume_work);
-	#endif
+#else
+	schedule_work(&pwrpriv->resume_work);
+#endif
 }
 #endif /* CONFIG_RESUME_IN_WORKQUEUE */
 

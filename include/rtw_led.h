@@ -127,7 +127,7 @@ typedef struct _LED_871x{
 	u8					bLedStartToLinkBlinkInProgress;
 	u8					bLedScanBlinkInProgress;
 
-	_workitem			BlinkWorkItem; // Workitem used by BlinkTimer to manipulate H/W to blink LED.
+	struct work_struct			BlinkWorkItem; // Workitem used by BlinkTimer to manipulate H/W to blink LED.
 } LED_871x, *PLED_871x;
 
 #define IS_LED_WPS_BLINKING(_LED_871x)	(((PLED_871x)_LED_871x)->CurrLedState==LED_BLINK_WPS \

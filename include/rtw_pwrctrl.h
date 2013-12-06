@@ -170,10 +170,10 @@ struct pwrctrl_priv
 	u8	bcn_ant_mode;
 
 	u32	alives;
-	_workitem cpwm_event;
+	struct work_struct cpwm_event;
 #ifdef CONFIG_LPS_RPWM_TIMER
 	u8 brpwmtimeout;
-	_workitem rpwmtimeoutwi;
+	struct work_struct rpwmtimeoutwi;
 	_timer pwr_rpwm_timer;
 #endif // CONFIG_LPS_RPWM_TIMER
 	u8	bpower_saving;
@@ -241,7 +241,7 @@ struct pwrctrl_priv
 
 	#ifdef CONFIG_RESUME_IN_WORKQUEUE
 	struct workqueue_struct *rtw_workqueue;
-	_workitem resume_work;
+	struct work_struct resume_work;
 	#endif
 
 	#ifdef CONFIG_HAS_EARLYSUSPEND

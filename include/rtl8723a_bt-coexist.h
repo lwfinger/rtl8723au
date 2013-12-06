@@ -1124,7 +1124,7 @@ typedef struct _BT_TRAFFIC
 	BT_TRAFFIC_STATISTICS		Bt30TrafficStatistics;
 } BT_TRAFFIC, *PBT_TRAFFIC;
 
-#define RT_WORK_ITEM _workitem
+#define RT_WORK_ITEM struct work_struct
 #define RT_THREAD _thread_hdl_
 
 typedef struct _BT_SECURITY

@@ -126,12 +126,6 @@ static u8 PlatformCancelTimer(PADAPTER a, _timer *ptimer)
 }
 #define PlatformReleaseTimer(...)
 
-// workitem
-// already define in hal/OUTSRC/odm_interface.h
-#define PlatformInitializeWorkItem(padapter, pwi, pfunc, cntx, szID) \
-	_init_workitem(pwi, pfunc, padapter)
-#define PlatformFreeWorkItem(...)
-#define PlatformScheduleWorkItem(pwork) _set_workitem(pwork)
 #define GET_UNDECORATED_AVERAGE_RSSI(padapter)	\
 			(GET_HAL_DATA(padapter)->dmpriv.EntryMinUndecoratedSmoothedPWDB)
 #define RT_RF_CHANGE_SOURCE u32
@@ -5921,7 +5915,7 @@ void bthci_TimerCallbackHCICmd(PRT_TIMER pTimer)
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackHCICmd() ==>\n"));
 
-	PlatformScheduleWorkItem(&pBTinfo->HCICmdWorkItem);
+	schedule_work(&pBTinfo->HCICmdWorkItem);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackHCICmd() <==\n"));
 #endif
@@ -5939,7 +5933,7 @@ void bthci_TimerCallbackSendAclData(PRT_TIMER pTimer)
 	{
 		return;
 	}
-	PlatformScheduleWorkItem(&pBTinfo->HCISendACLDataWorkItem);
+	schedule_work(&pBTinfo->HCISendACLDataWorkItem);
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("HCIAclDataTimerCallback() <==\n"));
 #endif
 }
@@ -5969,7 +5963,7 @@ void bthci_TimerCallbackPsDisable(PRT_TIMER pTimer)
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() ==>\n"));
 
-	PlatformScheduleWorkItem(&(pBTinfo->BTPsDisableWorkItem));
+	schedule_work(&(pBTinfo->BTPsDisableWorkItem));
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() <==\n"));
 }
@@ -6433,47 +6427,18 @@ void BTHCI_InitializeAllWorkItem(PADAPTER padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 #if (BT_THREAD == 0)
-	PlatformInitializeWorkItem(
-		padapter,
-		&(pBTinfo->HCICmdWorkItem),
-		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackHCICmd,
-		(void *)padapter,
-		"HCICmdWorkItem");
+	INIT_WORK(&(pBTinfo->HCICmdWorkItem),
+		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackHCICmd);
 #endif
 #if (SENDTXMEHTOD == 0)
-	PlatformInitializeWorkItem(
-		padapter,
-		&(pBTinfo->HCISendACLDataWorkItem),
-		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackSendACLData,
-		(void *)padapter,
-		"HCISendACLDataWorkItem");
+	INIT_WORK(&(pBTinfo->HCISendACLDataWorkItem),
+		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackSendACLData);
 #endif
-	PlatformInitializeWorkItem(
-		padapter,
-		&(pBTinfo->BTPsDisableWorkItem),
-		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackPsDisable,
-		(void *)padapter,
-		"BTPsDisableWorkItem");
+	INIT_WORK(&(pBTinfo->BTPsDisableWorkItem),
+		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackPsDisable);
 
-	PlatformInitializeWorkItem(
-		padapter,
-		&(pBTinfo->BTConnectWorkItem),
-		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackConnect,
-		(PVOID)padapter,
-		"BTConnectWorkItem");
-}
-
-void BTHCI_FreeAllWorkItem(PADAPTER padapter)
-{
-	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
-#if (BT_THREAD == 0)
-	PlatformFreeWorkItem(&(pBTinfo->HCICmdWorkItem));
-#endif
-#if (SENDTXMEHTOD == 0)
-	PlatformFreeWorkItem(&(pBTinfo->HCISendACLDataWorkItem));
-#endif
-	PlatformFreeWorkItem(&(pBTinfo->BTPsDisableWorkItem));
-	PlatformFreeWorkItem(&(pBTinfo->BTConnectWorkItem));
+	INIT_WORK(&(pBTinfo->BTConnectWorkItem),
+		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackConnect);
 }
 
 void BTHCI_Reset(PADAPTER padapter)
