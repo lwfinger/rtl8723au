@@ -112,12 +112,6 @@ typedef void timer_hdl_return;
 typedef void* timer_hdl_context;
 typedef struct work_struct _workitem;
 
-
-__inline static struct list_head *get_next(struct list_head	*list)
-{
-	return list->next;
-}
-
 __inline static struct list_head	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));

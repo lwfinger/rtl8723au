@@ -721,11 +721,11 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	spin_lock_bh(&pxmitpriv->lock);
 
 	xmitframe_phead = get_list_head(&ptxservq->sta_pending);
-	xmitframe_plist = get_next(xmitframe_phead);
+	xmitframe_plist = xmitframe_phead->next;
 	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
-		xmitframe_plist = get_next(xmitframe_plist);
+		xmitframe_plist = xmitframe_plist->next;
 
 		len = xmitframe_need_length(pxmitframe) + TXDESC_SIZE; // no offset
 		if (pbuf + len > MAX_XMITBUF_SZ) break;

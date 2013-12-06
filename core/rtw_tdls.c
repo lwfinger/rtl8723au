@@ -1699,13 +1699,13 @@ int On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 			spin_lock_bh(&ptdls_sta->sleep_q.lock);
 
 			xmitframe_phead = get_list_head(&ptdls_sta->sleep_q);
-			xmitframe_plist = get_next(xmitframe_phead);
+			xmitframe_plist = xmitframe_phead->next;
 
 			/* transmit buffered frames */
 			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 			{
 				pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
-				xmitframe_plist = get_next(xmitframe_plist);
+				xmitframe_plist = xmitframe_plist->next;
 				list_del_init(&pxmitframe->list);
 
 				ptdls_sta->sleepq_len--;

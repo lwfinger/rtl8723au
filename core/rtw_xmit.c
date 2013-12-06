@@ -1911,7 +1911,7 @@ _func_enter_;
 
 		phead = get_list_head(pfree_queue);
 
-		plist = get_next(phead);
+		plist = phead->next;
 
 		pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
@@ -1990,7 +1990,7 @@ _func_enter_;
 
 		phead = get_list_head(pfree_xmitbuf_queue);
 
-		plist = get_next(phead);
+		plist = phead->next;
 
 		pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
@@ -2128,7 +2128,7 @@ _func_enter_;
 	} else {
 		phead = get_list_head(pfree_xmit_queue);
 
-		plist = get_next(phead);
+		plist = phead->next;
 
 		pxframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
 
@@ -2161,7 +2161,7 @@ _func_enter_;
 		pxframe =  NULL;
 	} else {
 		phead = get_list_head(queue);
-		plist = get_next(phead);
+		plist = phead->next;
 		pxframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
 
 		list_del_init(&(pxframe->list));
@@ -2274,14 +2274,14 @@ _func_enter_;
 	spin_lock_bh(&(pframequeue->lock));
 
 	phead = get_list_head(pframequeue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (rtw_end_of_queue_search(phead, plist) == _FALSE)
 	{
 
 		pxmitframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 		rtw_free_xmitframe(pxmitpriv,pxmitframe);
 
@@ -2310,11 +2310,11 @@ static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, str
 	struct	xmit_frame	*pxmitframe=NULL;
 
 	xmitframe_phead = get_list_head(pframe_queue);
-	xmitframe_plist = get_next(xmitframe_phead);
+	xmitframe_plist = xmitframe_phead->next;
 
 	if ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE) {
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
-		xmitframe_plist = get_next(xmitframe_plist);
+		xmitframe_plist = xmitframe_plist->next;
 		list_del_init(&pxmitframe->list);
 		ptxservq->qcnt--;
 	}
@@ -2348,7 +2348,7 @@ _func_enter_;
 		phwxmit = phwxmit_i + inx[i];
 
 		sta_phead = get_list_head(phwxmit->sta_queue);
-		sta_plist = get_next(sta_phead);
+		sta_plist = sta_phead->next;
 
 		while ((rtw_end_of_queue_search(sta_phead, sta_plist)) == _FALSE)
 		{
@@ -2372,7 +2372,7 @@ _func_enter_;
 				goto exit;
 			}
 
-			sta_plist = get_next(sta_plist);
+			sta_plist = sta_plist->next;
 
 		}
 
@@ -3185,13 +3185,13 @@ static void dequeue_xmitframes_to_sleeping_queue(_adapter *padapter, struct sta_
 	struct hw_xmit *phwxmits =  padapter->xmitpriv.hwxmits;
 
 	phead = get_list_head(pframequeue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (rtw_end_of_queue_search(phead, plist) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 		ret = xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe);
 
@@ -3277,13 +3277,13 @@ void wakeup_sta_to_xmit(_adapter *padapter, struct sta_info *psta)
 	spin_lock_bh(&pxmitpriv->lock);
 
 	xmitframe_phead = get_list_head(&psta->sleep_q);
-	xmitframe_plist = get_next(xmitframe_phead);
+	xmitframe_plist = xmitframe_phead->next;
 
 	while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 
-		xmitframe_plist = get_next(xmitframe_plist);
+		xmitframe_plist = xmitframe_plist->next;
 
 		list_del_init(&pxmitframe->list);
 
@@ -3389,13 +3389,13 @@ void wakeup_sta_to_xmit(_adapter *padapter, struct sta_info *psta)
 		spin_lock_bh(&pxmitpriv->lock);
 
 		xmitframe_phead = get_list_head(&psta_bmc->sleep_q);
-		xmitframe_plist = get_next(xmitframe_phead);
+		xmitframe_plist = xmitframe_phead->next;
 
 		while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 		{
 			pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 
-			xmitframe_plist = get_next(xmitframe_plist);
+			xmitframe_plist = xmitframe_plist->next;
 
 			list_del_init(&pxmitframe->list);
 
@@ -3455,13 +3455,13 @@ void xmit_delivery_enabled_frames(_adapter *padapter, struct sta_info *psta)
 	spin_lock_bh(&pxmitpriv->lock);
 
 	xmitframe_phead = get_list_head(&psta->sleep_q);
-	xmitframe_plist = get_next(xmitframe_phead);
+	xmitframe_plist = xmitframe_phead->next;
 
 	while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 
-		xmitframe_plist = get_next(xmitframe_plist);
+		xmitframe_plist = xmitframe_plist->next;
 
 		switch(pxmitframe->attrib.priority)
 		{
@@ -3574,7 +3574,7 @@ struct xmit_buf* dequeue_pending_xmitbuf(
 		struct list_head *plist, *phead;
 
 		phead = get_list_head(pqueue);
-		plist = get_next(phead);
+		plist = phead->next;
 		pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 		list_del_init(&pxmitbuf->list);
 	}
@@ -3604,8 +3604,9 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 		phead = get_list_head(pqueue);
 		plist = phead;
 		do {
-			plist = get_next(plist);
-				if (plist == phead) break;
+			plist = plist->next;
+			if (plist == phead)
+				break;
 
 			pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 

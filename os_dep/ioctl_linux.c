@@ -1610,7 +1610,7 @@ static int rtw_wx_set_wap(struct net_device *dev,
 	authmode = padapter->securitypriv.ndisauthtype;
 	spin_lock_bh(&queue->lock);
        phead = get_list_head(queue);
-       pmlmepriv->pscanned = get_next(phead);
+       pmlmepriv->pscanned = phead->next;
 
 	while (1)
 	 {
@@ -1638,7 +1638,7 @@ static int rtw_wx_set_wap(struct net_device *dev,
 
 		pnetwork = LIST_CONTAINOR(pmlmepriv->pscanned, struct wlan_network, list);
 
-		pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
+		pmlmepriv->pscanned = pmlmepriv->pscanned->next;
 
 		dst_bssid = pnetwork->network.MacAddress;
 
@@ -2120,7 +2120,7 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -2144,7 +2144,7 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 			ev=translate_scan(padapter, a, pnetwork, ev, stop);
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -2271,7 +2271,7 @@ static int rtw_wx_set_essid(struct net_device *dev,
 		RT_TRACE(_module_rtl871x_ioctl_os_c, _drv_info_, ("rtw_wx_set_essid: ssid=[%s]\n", src_ssid));
 		spin_lock_bh(&queue->lock);
 	       phead = get_list_head(queue);
-              pmlmepriv->pscanned = get_next(phead);
+              pmlmepriv->pscanned = phead->next;
 
 		while (1)
 		{
@@ -2299,7 +2299,7 @@ static int rtw_wx_set_essid(struct net_device *dev,
 
 			pnetwork = LIST_CONTAINOR(pmlmepriv->pscanned, struct wlan_network, list);
 
-			pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
+			pmlmepriv->pscanned = pmlmepriv->pscanned->next;
 
 			dst_ssid = pnetwork->network.Ssid.Ssid;
 
@@ -3526,7 +3526,7 @@ static int rtw_get_ap_info(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -3565,7 +3565,7 @@ static int rtw_get_ap_info(struct net_device *dev,
 
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4194,7 +4194,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (1)
 	{
@@ -4222,7 +4222,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 			break;
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4330,7 +4330,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (1)
 	{
@@ -4370,7 +4370,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 			}
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4421,7 +4421,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (1)
 	{
@@ -4451,7 +4451,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 			break;
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4498,7 +4498,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (1)
 	{
@@ -4524,7 +4524,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 			break;
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4571,7 +4571,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (1) {
 		if (rtw_end_of_queue_search(phead, plist) == _TRUE)
@@ -4597,7 +4597,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 				}
 			}
 		}
-		plist = get_next(plist);
+		plist = plist->next;
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -4667,7 +4667,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -4681,7 +4681,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 			break;
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -4818,7 +4818,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -4857,7 +4857,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -5081,7 +5081,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -5122,7 +5122,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -5374,7 +5374,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -5422,7 +5422,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -6352,13 +6352,13 @@ static int rtw_dbg_port(struct net_device *dev,
 						for(i=0; i< NUM_STA; i++)
 						{
 							phead = &(pstapriv->sta_hash[i]);
-							plist = get_next(phead);
+							plist = phead->next;
 
 							while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 							{
 								psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
 
-								plist = get_next(plist);
+								plist = plist->next;
 
 								if(extra_arg == psta->aid)
 								{
@@ -8311,13 +8311,13 @@ static int rtw_tdls_enable(struct net_device *dev,
 		for(index=0; index< NUM_STA; index++)
 		{
 			phead = &(pstapriv->sta_hash[index]);
-			plist = get_next(phead);
+			plist = phead->next;
 
 			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 			{
 				psta = LIST_CONTAINOR(plist, struct sta_info ,hash_list);
 
-				plist = get_next(plist);
+				plist = plist->next;
 
 				if(psta->tdls_sta_state != TDLS_STATE_NONE)
 				{

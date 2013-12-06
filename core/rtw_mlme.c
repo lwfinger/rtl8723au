@@ -191,7 +191,7 @@ _func_enter_;
 
 	else
 	{
-		pnetwork = LIST_CONTAINOR(get_next(&queue->queue), struct wlan_network, list);
+		pnetwork = LIST_CONTAINOR((&queue->queue)->next, struct wlan_network, list);
 
 		list_del_init(&(pnetwork->list));
 	}
@@ -217,7 +217,7 @@ _func_enter_;
 		pnetwork=NULL;
 		goto exit;
 	}
-	plist = get_next(&(free_queue->queue));
+	plist = free_queue->queue.next;
 
 	pnetwork = LIST_CONTAINOR(plist , struct wlan_network, list);
 
@@ -336,7 +336,7 @@ _func_enter_;
 	/* spin_lock_bh(&scanned_queue->lock); */
 
 	phead = get_list_head(scanned_queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (plist != phead)
        {
@@ -345,7 +345,7 @@ _func_enter_;
 		if (!memcmp(addr, pnetwork->network.MacAddress, ETH_ALEN))
                         break;
 
-		plist = get_next(plist);
+		plist = plist->next;
         }
 
 	if(plist == phead)
@@ -372,14 +372,14 @@ _func_enter_;
 	spin_lock_bh(&scanned_queue->lock);
 
 	phead = get_list_head(scanned_queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (rtw_end_of_queue_search(phead, plist) == _FALSE)
 	{
 
 		pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 		_rtw_free_network(pmlmepriv,pnetwork, isfreeall);
 
@@ -596,7 +596,7 @@ struct	wlan_network	* rtw_get_oldest_wlan_network(_queue *scanned_queue)
 _func_enter_;
 	phead = get_list_head(scanned_queue);
 
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -612,7 +612,7 @@ _func_enter_;
 				oldest = pwlan;
 		}
 
-		plist = get_next(plist);
+		plist = plist->next;
 	}
 _func_exit_;
 	return oldest;
@@ -732,7 +732,7 @@ _func_enter_;
 
 	spin_lock_bh(&queue->lock);
 	phead = get_list_head(queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while(1)
 	{
@@ -748,7 +748,7 @@ _func_enter_;
 		time_after(oldest->last_scanned, pnetwork->last_scanned))
 			oldest = pnetwork;
 
-		plist = get_next(plist);
+		plist = plist->next;
 
 	}
 
@@ -1169,11 +1169,11 @@ _func_enter_;
 	spin_lock_bh(&free_queue->lock);
 
 	phead = get_list_head(scan_queue);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while (plist != phead)
        {
-		ptemp = get_next(plist);
+		ptemp = plist->next;
 		list_del_init(plist);
 		list_add_tail(plist, &free_queue->queue);
 		plist =ptemp;
@@ -2512,7 +2512,7 @@ _func_enter_;
 	phead = get_list_head(queue);
 	adapter = (_adapter *)pmlmepriv->nic_hdl;
 
-	pmlmepriv->pscanned = get_next( phead );
+	pmlmepriv->pscanned = phead->next;
 
 	while (!rtw_end_of_queue_search(phead, pmlmepriv->pscanned)) {
 
@@ -2523,10 +2523,9 @@ _func_enter_;
 			goto exit;
 		}
 
-		pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
+		pmlmepriv->pscanned = pmlmepriv->pscanned->next;
 
 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
-
 	}
 
 	if(candidate == NULL) {

@@ -315,7 +315,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	spin_lock_bh(&pstapriv->auth_list_lock);
 
 	phead = &pstapriv->auth_list;
-	plist = get_next(phead);
+	plist = phead->next;
 
 	/* check auth_queue */
 	#ifdef DBG_EXPIRATION_CHK
@@ -327,7 +327,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		psta = LIST_CONTAINOR(plist, struct sta_info, auth_list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		if(psta->expire_to>0)
 		{
@@ -359,7 +359,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 
 	phead = &pstapriv->asoc_list;
-	plist = get_next(phead);
+	plist = phead->next;
 
 	/* check asoc_queue */
 	#ifdef DBG_EXPIRATION_CHK
@@ -371,7 +371,7 @@ void	expire_timeout_chk(_adapter *padapter)
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		if (chk_sta_is_alive(psta) || !psta->expire_to) {
 			psta->expire_to = pstapriv->expire_to;
@@ -1549,12 +1549,12 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 	spin_lock_bh(&(pacl_node_q->lock));
 
 	phead = get_list_head(pacl_node_q);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		if(!memcmp(paclnode->addr, addr, ETH_ALEN))
 		{
@@ -1615,12 +1615,12 @@ int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 	spin_lock_bh(&(pacl_node_q->lock));
 
 	phead = get_list_head(pacl_node_q);
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		if(!memcmp(paclnode->addr, addr, ETH_ALEN))
 		{
@@ -1966,14 +1966,14 @@ void associated_clients_update(_adapter *padapter, u8 updated)
 		spin_lock_bh(&pstapriv->asoc_list_lock);
 
 		phead = &pstapriv->asoc_list;
-		plist = get_next(phead);
+		plist = phead->next;
 
 		/* check asoc_queue */
 		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 		{
 			psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
 
-			plist = get_next(plist);
+			plist = plist->next;
 
 			VCS_update(padapter, psta);
 		}
@@ -2342,13 +2342,13 @@ int rtw_ap_inform_ch_switch(_adapter *padapter, u8 new_ch, u8 ch_offset)
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 	phead = &pstapriv->asoc_list;
-	plist = get_next(phead);
+	plist = phead->next;
 
 	/* for each sta in asoc_queue */
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		issue_action_spct_ch_switch(padapter, psta->hwaddr, new_ch, ch_offset);
 		psta->expire_to = ((pstapriv->expire_to * 2) > 5) ? 5 : (pstapriv->expire_to * 2);
@@ -2380,13 +2380,13 @@ int rtw_sta_flush(_adapter *padapter)
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 	phead = &pstapriv->asoc_list;
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
 
 		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		/* Remove sta from asoc_list */
 		list_del_init(&psta->asoc_list);
@@ -2493,13 +2493,13 @@ void rtw_ap_restore_network(_adapter *padapter)
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 
 	phead = &pstapriv->asoc_list;
-	plist = get_next(phead);
+	plist = phead->next;
 
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
 
 		psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		stainfo_offset = rtw_stainfo_offset(pstapriv, psta);
 		if (stainfo_offset_valid(stainfo_offset)) {
@@ -2599,11 +2599,11 @@ void stop_ap_mode(_adapter *padapter)
 	/* for ACL */
 	spin_lock_bh(&(pacl_node_q->lock));
 	phead = get_list_head(pacl_node_q);
-	plist = get_next(phead);
+	plist = phead->next;
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 	{
 		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
-		plist = get_next(plist);
+		plist = plist->next;
 
 		if(paclnode->valid == _TRUE)
 		{

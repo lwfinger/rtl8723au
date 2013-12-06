@@ -3103,13 +3103,13 @@ odm_RSSIMonitorCheckCE(
 		for(i=0; i< NUM_STA; i++)
 		{
 			phead = &(pstapriv->sta_hash[i]);
-			plist = get_next(phead);
+			plist = phead->next;
 
 			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 			{
 				psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
 
-				plist = get_next(plist);
+				plist = plist->next;
 
 				if (!memcmp(psta->hwaddr, bcast_addr, ETH_ALEN) ||
 				    !memcmp(psta->hwaddr, myid(&Adapter->eeprompriv), ETH_ALEN))

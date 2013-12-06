@@ -8028,7 +8028,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 		spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 		phead = get_list_head(queue);
-		plist = get_next(phead);
+		plist = phead->next;
 
 		while(1)
 		{
@@ -8041,7 +8041,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 
 			pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
 
-			plist = get_next(plist);
+			plist = plist->next;
 
 			pbss_network = (WLAN_BSSID_EX *)&pnetwork->network;
 
@@ -11009,13 +11009,13 @@ u8 tx_beacon_hdl(_adapter *padapter, unsigned char *pbuf)
 			spin_lock_bh(&pxmitpriv->lock);
 
 			xmitframe_phead = get_list_head(&psta_bmc->sleep_q);
-			xmitframe_plist = get_next(xmitframe_phead);
+			xmitframe_plist = xmitframe_phead->next;
 
 			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 			{
 				pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 
-				xmitframe_plist = get_next(xmitframe_plist);
+				xmitframe_plist = xmitframe_plist->next;
 
 				list_del_init(&pxmitframe->list);
 
