@@ -78,7 +78,8 @@ export TopDIR ?= $(shell pwd)
 OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_interface.o\
 		hal/odm_HWConfig.o\
-		hal/odm.o
+		hal/odm.o\
+		hal/HalPhyRf.o
 
 ifeq ($(CONFIG_RTL8723A), y)
 

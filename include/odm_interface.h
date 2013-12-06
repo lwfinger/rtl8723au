@@ -101,9 +101,33 @@ typedef enum _ODM_H2C_CMD
 #if (DM_ODM_SUPPORT_TYPE != ODM_MP)
 typedef  void *PRT_WORK_ITEM ;
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
-typedef void (*RT_WORKITEM_CALL_BACK)(void *pContext);
+typedef void (*RT_WORKITEM_CALL_BACK)(void * pContext);
+
+#if 0
+typedef struct tasklet_struct RT_WORKITEM_HANDLE, *PRT_WORKITEM_HANDLE;
+
+typedef struct _RT_WORK_ITEM
+{
+
+	RT_WORKITEM_HANDLE			Handle;			// Platform-dependent handle for this workitem, e.g. Ndis Workitem object.
+	void *						Adapter;		// Pointer to Adapter object.
+	void *						pContext;		// Parameter to passed to CallBackFunc().
+	RT_WORKITEM_CALL_BACK		CallbackFunc;	// Callback function of the workitem.
+	u1Byte						RefCount;		// 0: driver is going to unload, 1: No such workitem scheduled, 2: one workitem is schedueled.
+	void *						pPlatformExt;	// Pointer to platform-dependent extension.
+	bool						bFree;
+	char						szID[36];		// An identity string of this workitem.
+}RT_WORK_ITEM, *PRT_WORK_ITEM;
 
 #endif
+
+
+#endif
+
+//
+// =========== Extern Variable ??? It should be forbidden.
+//
+
 
 //
 // =========== EXtern Function Prototype
@@ -203,21 +227,21 @@ ODM_GetRFReg(
 void
 ODM_AllocateMemory(
 	PDM_ODM_T	pDM_Odm,
-	void		**pPtr,
+	void *		*pPtr,
 	u4Byte		length
 	);
 void
 ODM_FreeMemory(
 	PDM_ODM_T	pDM_Odm,
-	void		*pPtr,
+	void *		pPtr,
 	u4Byte		length
 	);
 
 s4Byte ODM_CompareMemory(
 	PDM_ODM_T	pDM_Odm,
-	void		*pBuf1,
-	void		*pBuf2,
-	u4Byte          length
+	void *           pBuf1,
+      	void *           pBuf2,
+      	u4Byte          length
        );
 
 //
@@ -241,11 +265,11 @@ ODM_ReleaseSpinLock(
 //
 void
 ODM_InitializeWorkItem(
-	PDM_ODM_T			pDM_Odm,
-	PRT_WORK_ITEM			pRtWorkItem,
+	PDM_ODM_T					pDM_Odm,
+	PRT_WORK_ITEM				pRtWorkItem,
 	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
-	void				*pContext,
-	const char			*szID
+	void *						pContext,
+	const char*					szID
 	);
 
 void
