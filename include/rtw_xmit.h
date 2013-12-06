@@ -254,7 +254,7 @@ struct xmit_buf
 	u32  len;
 	struct submit_ctx *sctx;
 	u32	ff_hwaddr;
-	PURB	pxmit_urb[8];
+	struct urb *pxmit_urb[8];
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u8 bpending[8];
 	int last[8];
