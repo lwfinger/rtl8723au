@@ -215,7 +215,7 @@ static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
 	u8 rst = _SUCCESS;
 
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
-	_rtw_mutex_init(&dvobj->usb_vendor_req_mutex);
+	mutex_init(&dvobj->usb_vendor_req_mutex);
 #endif
 
 
@@ -246,7 +246,7 @@ static u8 rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 #endif
 
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
-	_rtw_mutex_free(&dvobj->usb_vendor_req_mutex);
+	mutex_destroy(&dvobj->usb_vendor_req_mutex);
 #endif
 
 	return rst;
@@ -273,10 +273,10 @@ _func_enter_;
 		goto exit;
 	}
 
-	_rtw_mutex_init(&pdvobjpriv->hw_init_mutex);
-	_rtw_mutex_init(&pdvobjpriv->h2c_fwcmd_mutex);
-	_rtw_mutex_init(&pdvobjpriv->setch_mutex);
-	_rtw_mutex_init(&pdvobjpriv->setbw_mutex);
+	mutex_init(&pdvobjpriv->hw_init_mutex);
+	mutex_init(&pdvobjpriv->h2c_fwcmd_mutex);
+	mutex_init(&pdvobjpriv->setch_mutex);
+	mutex_init(&pdvobjpriv->setbw_mutex);
 
 
 	pdvobjpriv->pusbintf = usb_intf ;
@@ -353,10 +353,10 @@ _func_enter_;
 free_dvobj:
 	if (status != _SUCCESS && pdvobjpriv) {
 		usb_set_intfdata(usb_intf, NULL);
-		_rtw_mutex_free(&pdvobjpriv->hw_init_mutex);
-		_rtw_mutex_free(&pdvobjpriv->h2c_fwcmd_mutex);
-		_rtw_mutex_free(&pdvobjpriv->setch_mutex);
-		_rtw_mutex_free(&pdvobjpriv->setbw_mutex);
+		mutex_destroy(&pdvobjpriv->hw_init_mutex);
+		mutex_destroy(&pdvobjpriv->h2c_fwcmd_mutex);
+		mutex_destroy(&pdvobjpriv->setch_mutex);
+		mutex_destroy(&pdvobjpriv->setbw_mutex);
 		kfree(pdvobjpriv);
 		pdvobjpriv = NULL;
 	}
@@ -384,10 +384,10 @@ _func_enter_;
 			}
 		}
 		rtw_deinit_intf_priv(dvobj);
-		_rtw_mutex_free(&dvobj->hw_init_mutex);
-		_rtw_mutex_free(&dvobj->h2c_fwcmd_mutex);
-		_rtw_mutex_free(&dvobj->setch_mutex);
-		_rtw_mutex_free(&dvobj->setbw_mutex);
+		mutex_destroy(&dvobj->hw_init_mutex);
+		mutex_destroy(&dvobj->h2c_fwcmd_mutex);
+		mutex_destroy(&dvobj->setch_mutex);
+		mutex_destroy(&dvobj->setbw_mutex);
 		kfree(dvobj);
 	}
 

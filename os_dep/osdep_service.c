@@ -97,25 +97,6 @@ void	_rtw_mfree(u8 *pbuf, u32 sz)
 }
 
 
-void	_rtw_mutex_init(_mutex *pmutex)
-{
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	mutex_init(pmutex);
-#else
-	init_MUTEX(pmutex);
-#endif
-}
-
-void	_rtw_mutex_free(_mutex *pmutex);
-void	_rtw_mutex_free(_mutex *pmutex)
-{
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	mutex_destroy(pmutex);
-#else
-#endif
-}
-
-
 void	_rtw_init_queue(_queue	*pqueue)
 {
 	INIT_LIST_HEAD(&(pqueue->queue));

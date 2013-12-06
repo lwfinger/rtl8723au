@@ -83,11 +83,6 @@
 #define CONFIG_AUTOSUSPEND	1
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-typedef struct mutex		_mutex;
-#else
-typedef struct semaphore	_mutex;
-#endif
 typedef struct timer_list _timer;
 
 struct	__queue	{
@@ -115,28 +110,6 @@ __inline static struct list_head	*get_list_head(_queue	*queue)
 	return (&(queue->queue));
 }
 
-
-__inline static int _enter_critical_mutex(_mutex *pmutex, unsigned long *pirqL)
-{
-	int ret = 0;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	//mutex_lock(pmutex);
-	ret = mutex_lock_interruptible(pmutex);
-#else
-	ret = down_interruptible(pmutex);
-#endif
-	return ret;
-}
-
-
-__inline static void _exit_critical_mutex(_mutex *pmutex, unsigned long *pirqL)
-{
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	mutex_unlock(pmutex);
-#else
-	up(pmutex);
-#endif
-}
 
 __inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
 {
@@ -266,9 +239,6 @@ extern void	_rtw_mfree(u8 *pbuf, u32 sz);
 #define rtw_malloc(sz)			_rtw_malloc((sz))
 #define rtw_zmalloc(sz)			_rtw_zmalloc((sz))
 #define rtw_mfree(pbuf, sz)		_rtw_mfree((pbuf), (sz))
-
-extern void	_rtw_mutex_init(_mutex *pmutex);
-extern void	_rtw_mutex_free(_mutex *pmutex);
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);

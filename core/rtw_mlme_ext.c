@@ -5793,7 +5793,7 @@ s32 dump_mgntframe_and_wait_ack(_adapter *padapter, struct xmit_frame *pmgntfram
 		padapter->bDriverStopped == _TRUE)
 		return -1;
 
-	_enter_critical_mutex(&pxmitpriv->ack_tx_mutex, NULL);
+	mutex_lock(&pxmitpriv->ack_tx_mutex);
 	pxmitpriv->ack_tx = _TRUE;
 
 	pmgntframe->ack_report = 1;
@@ -5802,7 +5802,7 @@ s32 dump_mgntframe_and_wait_ack(_adapter *padapter, struct xmit_frame *pmgntfram
 	}
 
 	pxmitpriv->ack_tx = _FALSE;
-	_exit_critical_mutex(&pxmitpriv->ack_tx_mutex, NULL);
+	mutex_unlock(&pxmitpriv->ack_tx_mutex);
 
 	 return ret;
 #else /* CONFIG_XMIT_ACK */
@@ -11062,11 +11062,11 @@ void dc_SelectChannel(_adapter *padapter, unsigned char channel)
 		ptarget_adapter = padapter;
 	}
 
-	_enter_critical_mutex(&(adapter_to_dvobj(ptarget_adapter)->setch_mutex), NULL);
+	mutex_lock_interruptible(&(adapter_to_dvobj(ptarget_adapter)->setch_mutex));
 
 	rtw_hal_set_chan(ptarget_adapter, channel);
 
-	_exit_critical_mutex(&(adapter_to_dvobj(ptarget_adapter)->setch_mutex), NULL);
+	mutex_unlock(&(adapter_to_dvobj(ptarget_adapter)->setch_mutex));
 }
 
 void dc_SetBWMode(_adapter *padapter, unsigned short bwmode, unsigned char channel_offset)
@@ -11085,11 +11085,11 @@ void dc_SetBWMode(_adapter *padapter, unsigned short bwmode, unsigned char chann
 		ptarget_adapter = padapter;
 	}
 
-	_enter_critical_mutex(&(adapter_to_dvobj(ptarget_adapter)->setbw_mutex), NULL);
+	mutex_lock_interruptible(&(adapter_to_dvobj(ptarget_adapter)->setbw_mutex));
 
 	rtw_hal_set_bwmode(ptarget_adapter, (HT_CHANNEL_WIDTH)bwmode, channel_offset);
 
-	_exit_critical_mutex(&(adapter_to_dvobj(ptarget_adapter)->setbw_mutex), NULL);
+	mutex_unlock(&(adapter_to_dvobj(ptarget_adapter)->setbw_mutex));
 }
 
 static void dc_change_band(_adapter *padapter, WLAN_BSSID_EX *pnetwork)

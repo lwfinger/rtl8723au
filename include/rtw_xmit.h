@@ -432,7 +432,7 @@ struct	xmit_priv	{
 
 #ifdef CONFIG_XMIT_ACK
 	int	ack_tx;
-	_mutex ack_tx_mutex;
+	struct mutex ack_tx_mutex;
 	struct submit_ctx ack_tx_ops;
 #endif
 	spinlock_t lock_sctx;

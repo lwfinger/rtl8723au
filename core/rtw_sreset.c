@@ -26,7 +26,7 @@ void sreset_init_value(_adapter *padapter)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
-	_rtw_mutex_init(&psrtpriv->silentreset_mutex);
+	mutex_init(&psrtpriv->silentreset_mutex);
 	psrtpriv->silent_reset_inprogress = _FALSE;
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 	psrtpriv->last_tx_time =0;
@@ -266,14 +266,13 @@ void sreset_reset(_adapter *padapter)
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
-	unsigned long irqL;
 	u32 start = rtw_get_current_time();
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
-	_enter_critical_mutex(&psrtpriv->silentreset_mutex, &irqL);
+	mutex_lock(&psrtpriv->silentreset_mutex);
 	psrtpriv->silent_reset_inprogress = _TRUE;
 	pwrpriv->change_rfpwrstate = rf_off;
 
@@ -293,7 +292,7 @@ void sreset_reset(_adapter *padapter)
 	#endif
 
 	psrtpriv->silent_reset_inprogress = _FALSE;
-	_exit_critical_mutex(&psrtpriv->silentreset_mutex, &irqL);
+	mutex_unlock(&psrtpriv->silentreset_mutex);
 
 	DBG_8723A("%s done in %d ms\n", __FUNCTION__, rtw_get_passing_time_ms(start));
 #endif

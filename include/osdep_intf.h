@@ -48,7 +48,7 @@ Under Async. IRP (SDIO/USB)
 The protection mechanism is through the pending queue.
 */
 
-	_mutex ioctl_mutex;
+	struct mutex ioctl_mutex;
 
 
 	// when in USB, IO is through interrupt in/out endpoints

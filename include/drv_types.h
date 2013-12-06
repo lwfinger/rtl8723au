@@ -229,10 +229,10 @@ struct dvobj_priv
 	_adapter *if2; //SECONDARY_ADAPTER
 
 	//for local/global synchronization
-	_mutex hw_init_mutex;
-	_mutex h2c_fwcmd_mutex;
-	_mutex setch_mutex;
-	_mutex setbw_mutex;
+	struct mutex hw_init_mutex;
+	struct mutex h2c_fwcmd_mutex;
+	struct mutex setch_mutex;
+	struct mutex setbw_mutex;
 
 	unsigned char	oper_channel; //saved channel info when call set_channel_bw
 	unsigned char	oper_bwmode;
@@ -265,7 +265,7 @@ struct dvobj_priv
 	struct semaphore usb_suspend_sema;
 
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
-	_mutex  usb_vendor_req_mutex;
+	struct mutex  usb_vendor_req_mutex;
 #endif
 
 #ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
