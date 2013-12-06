@@ -3352,11 +3352,6 @@ static void fill_txdesc_sectype(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 				ptxdesc->sectype = 1;
 				break;
 
-#ifdef CONFIG_WAPI_SUPPORT
-			case _SMS4_:
-				ptxdesc->sectype = 2;
-				break;
-#endif
 			case _AES_:
 				ptxdesc->sectype = 3;
 				break;

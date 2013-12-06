@@ -70,10 +70,6 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <rtw_tdls.h>
 #include <rtw_ap.h>
 
-#ifdef CONFIG_WAPI_SUPPORT
-#include <rtw_wapi.h>
-#endif
-
 #ifdef CONFIG_DRVEXT_MODULE
 #include <drvext_api.h>
 #endif
@@ -399,12 +395,6 @@ struct _ADAPTER{
 #ifdef CONFIG_TDLS
 	struct tdls_info	tdlsinfo;
 #endif //CONFIG_TDLS
-
-#ifdef CONFIG_WAPI_SUPPORT
-	u8	WapiSupport;
-	RT_WAPI_T	wapiInfo;
-#endif
-
 
 #ifdef CONFIG_WFD
 	struct wifi_display_info wfd_info;

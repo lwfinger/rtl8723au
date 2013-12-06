@@ -151,7 +151,6 @@ typedef enum _NDIS_802_11_AUTHENTICATION_MODE
     Ndis802_11AuthModeWPA,
     Ndis802_11AuthModeWPAPSK,
     Ndis802_11AuthModeWPANone,
-    Ndis802_11AuthModeWAPI,
     Ndis802_11AuthModeMax               // Not a real mode, defined as upper bound
 } NDIS_802_11_AUTHENTICATION_MODE, *PNDIS_802_11_AUTHENTICATION_MODE;
 
@@ -169,7 +168,6 @@ typedef enum _NDIS_802_11_WEP_STATUS
     Ndis802_11Encryption2KeyAbsent,
     Ndis802_11Encryption3Enabled,
     Ndis802_11Encryption3KeyAbsent,
-    Ndis802_11_EncrypteionWAPI
 } NDIS_802_11_WEP_STATUS, *PNDIS_802_11_WEP_STATUS,
   NDIS_802_11_ENCRYPTION_STATUS, *PNDIS_802_11_ENCRYPTION_STATUS;
 
@@ -304,7 +302,7 @@ typedef struct _WLAN_BCN_INFO
 {
 	/* these infor get from rtw_get_encrypt_info when
 	 *	 * translate scan to UI */
-	u8 encryp_protocol;//ENCRYP_PROTOCOL_E: OPEN/WEP/WPA/WPA2/WAPI
+	u8 encryp_protocol;//ENCRYP_PROTOCOL_E: OPEN/WEP/WPA/WPA2
 	int group_cipher; //WPA/WPA2 group cipher
 	int pairwise_cipher;////WPA/WPA2/WEP pairwise cipher
 	int is_8021x;

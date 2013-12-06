@@ -49,7 +49,6 @@ typedef enum {
 	ENCRYP_PROTOCOL_WEP,       //WEP
 	ENCRYP_PROTOCOL_WPA,       //WPA
 	ENCRYP_PROTOCOL_WPA2,      //WPA2
-	ENCRYP_PROTOCOL_WAPI,      //WAPI: Not support in this version
 	ENCRYP_PROTOCOL_MAX
 }ENCRYP_PROTOCOL_E;
 
@@ -216,9 +215,6 @@ do{\
 			else\
 				encry_algo =(u8) psta->dot118021XPrivacy;\
 			break;\
-	     case dot11AuthAlgrthm_WAPI:\
-		     encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
-		     break;\
 	}\
 }while(0)
 
