@@ -146,8 +146,7 @@ _func_exit_;
 
 union recv_frame *_rtw_alloc_recvframe (_queue *pfree_recv_queue)
 {
-
-	union recv_frame  *precvframe;
+	struct recv_frame_hdr *hdr;
 	struct list_head	*plist, *phead;
 	_adapter *padapter;
 	struct recv_priv *precvpriv;
@@ -155,7 +154,7 @@ _func_enter_;
 
 	if(_rtw_queue_empty(pfree_recv_queue) == _TRUE)
 	{
-		precvframe = NULL;
+		hdr = NULL;
 	}
 	else
 	{
@@ -163,10 +162,10 @@ _func_enter_;
 
 		plist = phead->next;
 
-		precvframe = container_of(plist, union recv_frame, u);
+		hdr = container_of(plist, struct recv_frame_hdr, list);
 
-		list_del_init(&precvframe->u.hdr.list);
-		padapter=precvframe->u.hdr.adapter;
+		list_del_init(&hdr->list);
+		padapter=hdr->adapter;
 		if(padapter !=NULL){
 			precvpriv=&padapter->recvpriv;
 			if(pfree_recv_queue == &precvpriv->free_recv_queue)
@@ -175,8 +174,7 @@ _func_enter_;
 	}
 
 _func_exit_;
-
-	return precvframe;
+	return (union recv_frame *)hdr;
 }
 
 union recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue)
@@ -300,7 +298,7 @@ using spinlock to protect
 
 void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue)
 {
-	union	recv_frame	*precvframe;
+	struct recv_frame_hdr *hdr;
 	struct list_head	*plist, *phead;
 
 _func_enter_;
@@ -310,9 +308,9 @@ _func_enter_;
 	plist = phead->next;
 
 	while(rtw_end_of_queue_search(phead, plist) == _FALSE) {
-		precvframe = container_of(plist, union recv_frame, u);
+		hdr = container_of(plist, struct recv_frame_hdr, list);
 		plist = plist->next;
-		rtw_free_recvframe(precvframe, pfree_recv_queue);
+		rtw_free_recvframe((union recv_frame *)hdr, pfree_recv_queue);
 	}
 
 	spin_unlock(&pframequeue->lock);
@@ -2062,9 +2060,9 @@ _func_enter_;
 
 	phead = get_list_head(defrag_q);
 	plist = phead->next;
-	prframe = container_of(plist, union recv_frame, u);
-	pfhdr=&prframe->u.hdr;
-	list_del_init(&(prframe->u.list));
+	pfhdr = container_of(plist, struct recv_frame_hdr, list);
+	prframe = (union recv_frame *)pfhdr;
+	list_del_init(&(pfhdr->list));
 
 	if(curfragnum!=pfhdr->attrib.frag_num)
 	{
@@ -2086,9 +2084,8 @@ _func_enter_;
 
 	while(rtw_end_of_queue_search(phead, plist) == _FALSE)
 	{
-		pnextrframe = container_of(plist, union recv_frame , u);
-		pnfhdr=&pnextrframe->u.hdr;
-
+		pnfhdr = container_of(plist, struct recv_frame_hdr , list);
+		pnextrframe = (union recv_frame *)pnfhdr;
 		/* check the fragment sequence  (2nd ~n fragment frame) */
 
 		if(curfragnum!=pnfhdr->attrib.frag_num)
@@ -2509,7 +2506,7 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
 	struct list_head	*phead, *plist;
-	union recv_frame *pnextrframe;
+	struct recv_frame_hdr *hdr;
 	struct rx_pkt_attrib *pnextattrib;
 
 	/* DbgPrint("+enqueue_reorder_recvframe()\n"); */
@@ -2522,8 +2519,8 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 
 	while(rtw_end_of_queue_search(phead, plist) == _FALSE)
 	{
-		pnextrframe = container_of(plist, union recv_frame, u);
-		pnextattrib = &pnextrframe->u.hdr.attrib;
+		hdr = container_of(plist, struct recv_frame_hdr, list);
+		pnextattrib = &hdr->attrib;
 
 		if(SN_LESS(pnextattrib->seq_num, pattrib->seq_num))
 		{
@@ -2567,6 +2564,7 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 	/* u8 bcancelled; */
 	struct list_head	*phead, *plist;
 	union recv_frame *prframe;
+	struct recv_frame_hdr *prhdr;
 	struct rx_pkt_attrib *pattrib;
 	/* u8 index = 0; */
 	int bPktInBuf = _FALSE;
@@ -2590,8 +2588,8 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 			return _TRUE;
 		}
 
-		prframe = container_of(plist, union recv_frame, u);
-	        pattrib = &prframe->u.hdr.attrib;
+		prhdr = container_of(plist, struct recv_frame_hdr, list);
+	        pattrib = &prhdr->attrib;
 		preorder_ctrl->indicate_seq = pattrib->seq_num;
 		#ifdef DBG_RX_SEQ
 		DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d, NewSeq: %d\n", __FUNCTION__, __LINE__,
@@ -2603,8 +2601,9 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 	/*  Check if there is any packet need indicate. */
 	while (!list_empty(phead)) {
 
-		prframe = container_of(plist, union recv_frame, u);
-		pattrib = &prframe->u.hdr.attrib;
+		prhdr = container_of(plist, struct recv_frame_hdr, list);
+		prframe = (union recv_frame *)prhdr;
+		pattrib = &prhdr->attrib;
 
 		if(!SN_LESS(preorder_ctrl->indicate_seq, pattrib->seq_num))
 		{

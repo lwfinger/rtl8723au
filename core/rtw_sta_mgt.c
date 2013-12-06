@@ -467,6 +467,7 @@ _func_enter_;
 	{
 		struct list_head	*phead, *plist;
 		union recv_frame *prframe;
+		struct recv_frame_hdr *prhdr;
 		_queue *ppending_recvframe_queue;
 		_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
@@ -482,8 +483,8 @@ _func_enter_;
 		plist = phead->next;
 
 		while (!list_empty(phead)) {
-			prframe = container_of(plist, union recv_frame, u);
-
+			prhdr = container_of(plist, struct recv_frame_hdr, list);
+			prframe = (union recv_frame *)prhdr;
 			plist = plist->next;
 
 			list_del_init(&(prframe->u.hdr.list));
