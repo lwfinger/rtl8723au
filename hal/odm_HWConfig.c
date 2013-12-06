@@ -377,7 +377,7 @@ odm_EVMdbToPercentage(
 
 
 
-VOID
+void
 odm_RxPhyStatus92CSeries_Parsing(
 	PDM_ODM_T					pDM_Odm,
 	PODM_PHY_INFO_T			pPhyInfo,
@@ -737,7 +737,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 #endif
 }
 
-VOID
+void
 odm_Init_RSSIForDM(
 	PDM_ODM_T	pDM_Odm
 	)
@@ -745,7 +745,7 @@ odm_Init_RSSIForDM(
 
 }
 
-VOID
+void
 odm_Process_RSSIForDM(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T			pPhyInfo,
@@ -957,7 +957,7 @@ odm_Process_RSSIForDM(
 //
 // Endianness before calling this API
 //
-VOID
+void
 ODM_PhyStatusQuery_92CSeries(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T				pPhyInfo,
@@ -1005,7 +1005,7 @@ ODM_PhyStatusQuery_92CSeries(
 //
 // Endianness before calling this API
 //
-VOID
+void
 ODM_PhyStatusQuery_JaguarSeries(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T			pPhyInfo,
@@ -1017,7 +1017,7 @@ ODM_PhyStatusQuery_JaguarSeries(
 
 }
 
-VOID
+void
 ODM_PhyStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T				pPhyInfo,
@@ -1038,7 +1038,7 @@ ODM_PhyStatusQuery(
 }
 
 // For future use.
-VOID
+void
 ODM_MacStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 		pu1Byte						pMacStatus,

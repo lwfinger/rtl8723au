@@ -39,7 +39,6 @@
 #endif
 
 #include <linux/types.h>
-#define VOID void
 #define NDIS_OID uint
 #define NDIS_STATUS uint
 

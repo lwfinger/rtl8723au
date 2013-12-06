@@ -25,7 +25,7 @@
 #include <rtl8723a_hal.h>
 
 
-static VOID
+static void
 _FWDownloadEnable(
 	PADAPTER		padapter,
 	bool			enable
@@ -155,7 +155,7 @@ _PageWrite(
 	return _BlockWrite(padapter,buffer,size);
 }
 
-static VOID
+static void
 _FillDummy(
 	u8*		pFwBuf,
 	u32*	pFwLen
@@ -846,7 +846,7 @@ hal_ReadEFuse_WiFi(
 		kfree(efuseTbl);
 }
 
-static VOID
+static void
 hal_ReadEFuse_BT(
 	PADAPTER	padapter,
 	u16			_offset,
@@ -3052,7 +3052,7 @@ Hal_EfuseParseTxPowerInfo_8723A(
 		pHalData->bTXPowerDataReadFromEEPORM = _TRUE;
 }
 
-VOID
+void
 Hal_EfuseParseBTCoexistInfo_8723A(
  PADAPTER			padapter,
  u8*			hwinfo,
@@ -3092,7 +3092,7 @@ Hal_EfuseParseBTCoexistInfo_8723A(
 #endif
 }
 
-VOID
+void
 Hal_EfuseParseEEPROMVer(
 	PADAPTER		padapter,
 	u8*			hwinfo,
@@ -3109,7 +3109,7 @@ Hal_EfuseParseEEPROMVer(
 		pHalData->EEPROMVersion));
 }
 
-VOID
+void
 rtl8723a_EfuseParseChnlPlan(
 	PADAPTER		padapter,
 	u8*			hwinfo,
@@ -3127,7 +3127,7 @@ rtl8723a_EfuseParseChnlPlan(
 	DBG_8723A("mlmepriv.ChannelPlan=0x%02x\n", padapter->mlmepriv.ChannelPlan);
 }
 
-VOID
+void
 Hal_EfuseParseCustomerID(
 	PADAPTER		padapter,
 	u8*			hwinfo,
@@ -3150,7 +3150,7 @@ Hal_EfuseParseCustomerID(
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("EEPROM SubCustomer ID: 0x%02x\n", pHalData->EEPROMSubCustomerID));
 }
 
-VOID
+void
 Hal_EfuseParseAntennaDiversity(
 	PADAPTER		padapter,
 	u8*			hwinfo,
@@ -3185,7 +3185,7 @@ Hal_EfuseParseAntennaDiversity(
 #endif
 }
 
-VOID
+void
 Hal_EfuseParseRateIndicationOption(
 	PADAPTER		padapter,
 	u8*			hwinfo,
@@ -3281,7 +3281,7 @@ Hal_EfuseParseThermalMeter_8723A(
 	DBG_8723A("%s: ThermalMeter=0x%x\n", __FUNCTION__, pHalData->EEPROMThermalMeter);
 }
 
-VOID
+void
 Hal_InitChannelPlan(
 		PADAPTER	padapter
 	)

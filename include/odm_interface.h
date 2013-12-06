@@ -101,7 +101,7 @@ typedef enum _ODM_H2C_CMD
 #if (DM_ODM_SUPPORT_TYPE != ODM_MP)
 typedef  void *PRT_WORK_ITEM ;
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
-typedef VOID (*RT_WORKITEM_CALL_BACK)(void * pContext);
+typedef void (*RT_WORKITEM_CALL_BACK)(void * pContext);
 
 #if 0
 typedef struct tasklet_struct RT_WORKITEM_HANDLE, *PRT_WORKITEM_HANDLE;
@@ -152,28 +152,28 @@ ODM_Read4Byte(
 	u4Byte			RegAddr
 	);
 
-VOID
+void
 ODM_Write1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
 	u1Byte			Data
 	);
 
-VOID
+void
 ODM_Write2Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
 	u2Byte			Data
 	);
 
-VOID
+void
 ODM_Write4Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
 	u4Byte			Data
 	);
 
-VOID
+void
 ODM_SetMACReg(
 	PDM_ODM_T	pDM_Odm,
 	u4Byte		RegAddr,
@@ -188,7 +188,7 @@ ODM_GetMACReg(
 	u4Byte		BitMask
 	);
 
-VOID
+void
 ODM_SetBBReg(
 	PDM_ODM_T	pDM_Odm,
 	u4Byte		RegAddr,
@@ -203,7 +203,7 @@ ODM_GetBBReg(
 	u4Byte		BitMask
 	);
 
-VOID
+void
 ODM_SetRFReg(
 	PDM_ODM_T				pDM_Odm,
 	ODM_RF_RADIO_PATH_E	eRFPath,
@@ -224,13 +224,13 @@ ODM_GetRFReg(
 //
 // Memory Relative Function.
 //
-VOID
+void
 ODM_AllocateMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		*pPtr,
 	u4Byte		length
 	);
-VOID
+void
 ODM_FreeMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		pPtr,
@@ -247,13 +247,13 @@ s4Byte ODM_CompareMemory(
 //
 // ODM MISC-spin lock relative API.
 //
-VOID
+void
 ODM_AcquireSpinLock(
 	PDM_ODM_T			pDM_Odm,
 	RT_SPINLOCK_TYPE	type
 	);
 
-VOID
+void
 ODM_ReleaseSpinLock(
 	PDM_ODM_T			pDM_Odm,
 	RT_SPINLOCK_TYPE	type
@@ -263,7 +263,7 @@ ODM_ReleaseSpinLock(
 //
 // ODM MISC-workitem relative API.
 //
-VOID
+void
 ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
 	PRT_WORK_ITEM				pRtWorkItem,
@@ -272,27 +272,27 @@ ODM_InitializeWorkItem(
 	const char*					szID
 	);
 
-VOID
+void
 ODM_StartWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	);
 
-VOID
+void
 ODM_StopWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	);
 
-VOID
+void
 ODM_FreeWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	);
 
-VOID
+void
 ODM_ScheduleWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	);
 
-VOID
+void
 ODM_IsWorkItemScheduled(
 	PRT_WORK_ITEM	pRtWorkItem
 	);
@@ -300,32 +300,32 @@ ODM_IsWorkItemScheduled(
 //
 // ODM Timer relative API.
 //
-VOID
+void
 ODM_StallExecution(
 	u4Byte	usDelay
 	);
 
-VOID
+void
 ODM_delay_ms(u4Byte	ms);
 
 
-VOID
+void
 ODM_delay_us(u4Byte	us);
 
-VOID
+void
 ODM_sleep_ms(u4Byte	ms);
 
-VOID
+void
 ODM_sleep_us(u4Byte	us);
 
-VOID
+void
 ODM_SetTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer,
 	u4Byte			msDelay
 	);
 
-VOID
+void
 ODM_InitializeTimer(
 	PDM_ODM_T			pDM_Odm,
 	PRT_TIMER			pTimer,
@@ -334,13 +334,13 @@ ODM_InitializeTimer(
 	const char*			szID
 	);
 
-VOID
+void
 ODM_CancelTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer
 	);
 
-VOID
+void
 ODM_ReleaseTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer
@@ -351,7 +351,7 @@ ODM_ReleaseTimer(
 // ODM FW relative API.
 //
 #if (DM_ODM_SUPPORT_TYPE & ODM_MP)
-VOID
+void
 ODM_FillH2CCmd(
 	PADAPTER		Adapter,
 	u1Byte	ElementID,

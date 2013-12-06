@@ -23,7 +23,7 @@
 #if(DM_ODM_SUPPORT_TYPE & ODM_MP)
 #include "Mp_Precomp.h"
 
-VOID
+void
 phy_PathAStandBy(
 	PADAPTER	pAdapter
 	)
@@ -170,7 +170,7 @@ phy_PathB_IQK_8192C(
 
 }
 
-VOID
+void
 phy_PathAFillIQKMatrix(
 	PADAPTER	pAdapter,
   bool	bIQKOK,
@@ -231,7 +231,7 @@ phy_PathAFillIQKMatrix(
 	}
 }
 
-VOID
+void
 phy_PathBFillIQKMatrix(
 	PADAPTER	pAdapter,
   bool	bIQKOK,
@@ -370,7 +370,7 @@ phy_SimularityCompare(
 	return phy_SimularityCompare_92C(pAdapter, result, c1, c2);
 }
 
-VOID
+void
 phy_IQCalibrate_8192C(
 	PADAPTER	pAdapter,
 	s4Byte		result[][8],
@@ -557,7 +557,7 @@ phy_IQCalibrate_8192C(
 	RTPRINT(FINIT, INIT_IQK, ("phy_IQCalibrate_8192C() <==\n"));
 }
 
-VOID
+void
 phy_LCCalibrate92C(
 	PADAPTER	pAdapter,
 	bool		is2T
@@ -621,7 +621,7 @@ phy_LCCalibrate92C(
 }
 
 
-VOID
+void
 phy_LCCalibrate(
 	PADAPTER	pAdapter,
 	bool		is2T
@@ -637,7 +637,7 @@ phy_LCCalibrate(
 #define		APK_CURVE_REG_NUM 4
 #define		PATH_NUM		2
 
-VOID
+void
 phy_APCalibrate_8192C(
 	PADAPTER	pAdapter,
 	s1Byte		delta,
@@ -759,7 +759,7 @@ phy_APCalibrate_8192C(
 }
 
 
-VOID
+void
 PHY_IQCalibrate_8192C(
 	PADAPTER	pAdapter,
 	bool		bReCovery
@@ -915,7 +915,7 @@ PHY_IQCalibrate_8192C(
 }
 
 
-VOID
+void
 PHY_LCCalibrate_8192C(
 	PADAPTER	pAdapter
 	)
@@ -974,7 +974,7 @@ PHY_LCCalibrate_8192C(
 
 }
 
-VOID
+void
 PHY_APCalibrate_8192C(
 	PADAPTER	pAdapter,
 	s1Byte		delta
@@ -994,7 +994,7 @@ PHY_APCalibrate_8192C(
 //3 IQ Calibration
 //3============================================================
 
-VOID
+void
 ODM_ResetIQKResult(
 	PDM_ODM_T	pDM_Odm
 )

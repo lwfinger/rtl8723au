@@ -6437,7 +6437,7 @@ void BTHCI_InitializeAllWorkItem(PADAPTER padapter)
 		padapter,
 		&(pBTinfo->HCICmdWorkItem),
 		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackHCICmd,
-		(PVOID)padapter,
+		(void *)padapter,
 		"HCICmdWorkItem");
 #endif
 #if (SENDTXMEHTOD == 0)
@@ -6445,14 +6445,14 @@ void BTHCI_InitializeAllWorkItem(PADAPTER padapter)
 		padapter,
 		&(pBTinfo->HCISendACLDataWorkItem),
 		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackSendACLData,
-		(PVOID)padapter,
+		(void *)padapter,
 		"HCISendACLDataWorkItem");
 #endif
 	PlatformInitializeWorkItem(
 		padapter,
 		&(pBTinfo->BTPsDisableWorkItem),
 		(RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackPsDisable,
-		(PVOID)padapter,
+		(void *)padapter,
 		"BTPsDisableWorkItem");
 
 	PlatformInitializeWorkItem(
@@ -11895,7 +11895,7 @@ void BTDM_2AntNotifyBtOperation8723(PADAPTER padapter)
 
 
 void btdm_BtHwCountersMonitor(PADAPTER padapter);
-VOID
+void
 BTDM_2AntFwC2hBtInfo8723A(
 	PADAPTER	padapter
 	)

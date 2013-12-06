@@ -168,7 +168,7 @@ void	HalSetBrateCfg(
 	}
 }
 
-static VOID
+static void
 _OneOutPipeMapping(
 	PADAPTER	pAdapter
 	)
@@ -186,7 +186,7 @@ _OneOutPipeMapping(
 	pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
 }
 
-static VOID
+static void
 _TwoOutPipeMapping(
 	PADAPTER	pAdapter,
 	bool		bWIFICfg
@@ -230,7 +230,7 @@ _TwoOutPipeMapping(
 	}
 }
 
-static VOID _ThreeOutPipeMapping(
+static void _ThreeOutPipeMapping(
 	PADAPTER	pAdapter,
 	bool		bWIFICfg
 	)

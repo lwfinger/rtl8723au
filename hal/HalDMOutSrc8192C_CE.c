@@ -27,7 +27,7 @@
 #define		DPK_DELTA_MAPPING_NUM	13
 #define		index_mapping_HP_NUM	15
 /* 091212 chiyokolin */
-static	VOID
+static	void
 odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	PADAPTER Adapter)
 {
@@ -379,13 +379,13 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 /*  */
 /*	Added by Roger, 2009.06.18. */
 /*  */
-static VOID
+static void
 ODM_TXPowerTracking92CDirectCall(PADAPTER Adapter)
 {
 	odm_TXPowerTrackingCallback_ThermalMeter_92C(Adapter);
 }
 
-static VOID
+static void
 odm_CheckTXPowerTracking_ThermalMeter(
 	PADAPTER		Adapter)
 {
@@ -411,7 +411,7 @@ odm_CheckTXPowerTracking_ThermalMeter(
 	}
 }
 
-VOID
+void
 rtl8192c_odm_CheckTXPowerTracking(
 	PADAPTER		Adapter)
 {
@@ -593,7 +593,7 @@ _PHY_PathB_IQK(
 	return result;
 }
 
-static VOID
+static void
 _PHY_PathAFillIQKMatrix(
 	PADAPTER	pAdapter,
 	bool		bIQKOK,
@@ -645,7 +645,7 @@ _PHY_PathAFillIQKMatrix(
 	}
 }
 
-static VOID
+static void
 _PHY_PathBFillIQKMatrix(
 	PADAPTER	pAdapter,
 	bool	bIQKOK,
@@ -694,7 +694,7 @@ _PHY_PathBFillIQKMatrix(
 	}
 }
 
-static VOID
+static void
 _PHY_SaveADDARegisters(
 	PADAPTER	pAdapter,
 	u32*		ADDAReg,
@@ -709,7 +709,7 @@ _PHY_SaveADDARegisters(
 	}
 }
 
-static VOID
+static void
 _PHY_SaveMACRegisters(
 	PADAPTER	pAdapter,
 	u32*		MACReg,
@@ -724,7 +724,7 @@ _PHY_SaveMACRegisters(
 	MACBackup[i] = rtw_read32(pAdapter, MACReg[i]);
 }
 
-static VOID
+static void
 _PHY_ReloadADDARegisters(
 	PADAPTER	pAdapter,
 	u32*		ADDAReg,
@@ -739,7 +739,7 @@ _PHY_ReloadADDARegisters(
 	}
 }
 
-static VOID
+static void
 _PHY_ReloadMACRegisters(
 	PADAPTER	pAdapter,
 	u32*		MACReg,
@@ -754,7 +754,7 @@ _PHY_ReloadMACRegisters(
 	rtw_write32(pAdapter, MACReg[i], MACBackup[i]);
 }
 
-static VOID
+static void
 _PHY_PathADDAOn(
 	PADAPTER	pAdapter,
 	u32*		ADDAReg,
@@ -780,7 +780,7 @@ _PHY_PathADDAOn(
 
 }
 
-static VOID
+static void
 _PHY_MACSettingCalibration(
 	PADAPTER	pAdapter,
 	u32*		MACReg,
@@ -797,7 +797,7 @@ _PHY_MACSettingCalibration(
 	rtw_write8(pAdapter, MACReg[i], (u8)(MACBackup[i]&(~BIT5)));
 }
 
-static VOID
+static void
 _PHY_PathAStandBy(
 	PADAPTER	pAdapter
 	)
@@ -807,7 +807,7 @@ _PHY_PathAStandBy(
 	PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x80800000);
 }
 
-static VOID
+static void
 _PHY_PIModeSwitch(
 	PADAPTER	pAdapter,
 	bool		PIMode
@@ -892,7 +892,7 @@ _PHY_SimularityCompare(
 
 }
 
-static VOID
+static void
 _PHY_IQCalibrate(
 	PADAPTER	pAdapter,
 	int		result[][8],
@@ -1068,7 +1068,7 @@ _PHY_IQCalibrate(
 	}
 }
 
-static VOID
+static void
 _PHY_LCCalibrate(
 	PADAPTER	pAdapter,
 	bool		is2T
@@ -1139,7 +1139,7 @@ _PHY_LCCalibrate(
 #define		APK_CURVE_REG_NUM 4
 #define		PATH_NUM		2
 
-static VOID
+static void
 _PHY_APCalibrate(
 	PADAPTER	pAdapter,
 	char		delta,
@@ -1253,7 +1253,7 @@ _PHY_APCalibrate(
 	return;
 }
 
-VOID
+void
 rtl8192c_PHY_IQCalibrate(
 	PADAPTER	pAdapter,
 	bool	bReCovery
@@ -1391,7 +1391,7 @@ rtl8192c_PHY_IQCalibrate(
 	_PHY_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pdmpriv->IQK_BB_backup_recover, 9);
 }
 
-VOID
+void
 rtl8192c_PHY_LCCalibrate(
 	PADAPTER	pAdapter
 	)
@@ -1420,7 +1420,7 @@ rtl8192c_PHY_LCCalibrate(
 	}
 }
 
-VOID
+void
 rtl8192c_PHY_APCalibrate(
 	PADAPTER	pAdapter,
 	char		delta

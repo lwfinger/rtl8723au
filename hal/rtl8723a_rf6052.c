@@ -157,7 +157,7 @@ void rtl8192c_RF_ChangeTxPath(	PADAPTER	Adapter,
  *
  * Note:		For RF type 0222D
  *---------------------------------------------------------------------------*/
-VOID
+void
 rtl8192c_PHY_RF6052SetBandwidth(
 	PADAPTER				Adapter,
 	HT_CHANNEL_WIDTH		Bandwidth)	//20M or 40M
@@ -201,7 +201,7 @@ rtl8192c_PHY_RF6052SetBandwidth(
  *
  *---------------------------------------------------------------------------*/
 
-VOID
+void
 rtl8192c_PHY_RF6052SetCckTxPower(
 	PADAPTER		Adapter,
 	u8*			pPowerlevel)
@@ -562,7 +562,7 @@ static void writeOFDMPowerReg(
  * 01/22/2009	MHC		Support new EPRO format from SD3.
  *
  *---------------------------------------------------------------------------*/
-VOID
+void
 rtl8192c_PHY_RF6052SetOFDMTxPower(
 	PADAPTER	Adapter,
 	u8*		pPowerLevel,
@@ -585,7 +585,7 @@ rtl8192c_PHY_RF6052SetOFDMTxPower(
 }
 
 
-static VOID
+static void
 phy_RF6052_Config_HardCode(
 	PADAPTER		Adapter
 	)
@@ -781,7 +781,7 @@ PHY_RFShadowRead(
 }	/* PHY_RFShadowRead */
 
 
-VOID
+void
 PHY_RFShadowWrite(
 	PADAPTER			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
@@ -820,7 +820,7 @@ PHY_RFShadowCompare(
 }	/* PHY_RFShadowCompare */
 
 
-VOID
+void
 PHY_RFShadowRecorver(
 	PADAPTER			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
@@ -843,7 +843,7 @@ PHY_RFShadowRecorver(
 }	/* PHY_RFShadowRecorver */
 
 
-VOID
+void
 PHY_RFShadowCompareAll(
 	PADAPTER			Adapter)
 {
@@ -861,7 +861,7 @@ PHY_RFShadowCompareAll(
 }	/* PHY_RFShadowCompareAll */
 
 
-VOID
+void
 PHY_RFShadowRecorverAll(
 	PADAPTER			Adapter)
 {
@@ -879,7 +879,7 @@ PHY_RFShadowRecorverAll(
 }	/* PHY_RFShadowRecorverAll */
 
 
-VOID
+void
 PHY_RFShadowCompareFlagSet(
 	PADAPTER			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
@@ -892,7 +892,7 @@ PHY_RFShadowCompareFlagSet(
 }	/* PHY_RFShadowCompareFlagSet */
 
 
-VOID
+void
 PHY_RFShadowRecorverFlagSet(
 	PADAPTER			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
@@ -905,7 +905,7 @@ PHY_RFShadowRecorverFlagSet(
 }	/* PHY_RFShadowRecorverFlagSet */
 
 
-VOID
+void
 PHY_RFShadowCompareFlagSetAll(
 	PADAPTER			Adapter)
 {
@@ -927,7 +927,7 @@ PHY_RFShadowCompareFlagSetAll(
 }	/* PHY_RFShadowCompareFlagSetAll */
 
 
-VOID
+void
 PHY_RFShadowRecorverFlagSetAll(
 	PADAPTER			Adapter)
 {
@@ -948,7 +948,7 @@ PHY_RFShadowRecorverFlagSetAll(
 
 }	/* PHY_RFShadowCompareFlagSetAll */
 
-VOID
+void
 PHY_RFShadowRefresh(
 	PADAPTER			Adapter)
 {

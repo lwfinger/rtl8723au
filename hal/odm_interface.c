@@ -87,7 +87,7 @@ ODM_Read4Byte(
 }
 
 
-VOID
+void
 ODM_Write1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
@@ -108,7 +108,7 @@ ODM_Write1Byte(
 }
 
 
-VOID
+void
 ODM_Write2Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
@@ -129,7 +129,7 @@ ODM_Write2Byte(
 }
 
 
-VOID
+void
 ODM_Write4Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
@@ -150,7 +150,7 @@ ODM_Write4Byte(
 }
 
 
-VOID
+void
 ODM_SetMACReg(
 	PDM_ODM_T	pDM_Odm,
 	u4Byte		RegAddr,
@@ -183,7 +183,7 @@ ODM_GetMACReg(
 }
 
 
-VOID
+void
 ODM_SetBBReg(
 	PDM_ODM_T	pDM_Odm,
 	u4Byte		RegAddr,
@@ -216,7 +216,7 @@ ODM_GetBBReg(
 }
 
 
-VOID
+void
 ODM_SetRFReg(
 	PDM_ODM_T			pDM_Odm,
 	ODM_RF_RADIO_PATH_E	eRFPath,
@@ -256,7 +256,7 @@ ODM_GetRFReg(
 //
 // ODM Memory relative API.
 //
-VOID
+void
 ODM_AllocateMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		*pPtr,
@@ -274,7 +274,7 @@ ODM_AllocateMemory(
 }
 
 // length could be ignored, used to detect memory leakage.
-VOID
+void
 ODM_FreeMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		pPtr,
@@ -295,7 +295,7 @@ ODM_FreeMemory(
 //
 // ODM MISC relative API.
 //
-VOID
+void
 ODM_AcquireSpinLock(
 	PDM_ODM_T			pDM_Odm,
 	RT_SPINLOCK_TYPE	type
@@ -310,7 +310,7 @@ ODM_AcquireSpinLock(
 	PlatformAcquireSpinLock(Adapter, type);
 #endif
 }
-VOID
+void
 ODM_ReleaseSpinLock(
 	PDM_ODM_T			pDM_Odm,
 	RT_SPINLOCK_TYPE	type
@@ -329,7 +329,7 @@ ODM_ReleaseSpinLock(
 //
 // Work item relative API. FOr MP driver only~!
 //
-VOID
+void
 ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
 	PRT_WORK_ITEM				pRtWorkItem,
@@ -349,7 +349,7 @@ ODM_InitializeWorkItem(
 }
 
 
-VOID
+void
 ODM_StartWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	)
@@ -364,7 +364,7 @@ ODM_StartWorkItem(
 }
 
 
-VOID
+void
 ODM_StopWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	)
@@ -379,7 +379,7 @@ ODM_StopWorkItem(
 }
 
 
-VOID
+void
 ODM_FreeWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	)
@@ -394,7 +394,7 @@ ODM_FreeWorkItem(
 }
 
 
-VOID
+void
 ODM_ScheduleWorkItem(
 	PRT_WORK_ITEM	pRtWorkItem
 	)
@@ -409,7 +409,7 @@ ODM_ScheduleWorkItem(
 }
 
 
-VOID
+void
 ODM_IsWorkItemScheduled(
 	PRT_WORK_ITEM	pRtWorkItem
 	)
@@ -428,7 +428,7 @@ ODM_IsWorkItemScheduled(
 //
 // ODM Timer relative API.
 //
-VOID
+void
 ODM_StallExecution(
 	u4Byte	usDelay
 	)
@@ -442,7 +442,7 @@ ODM_StallExecution(
 #endif
 }
 
-VOID
+void
 ODM_delay_ms(u4Byte	ms)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -454,7 +454,7 @@ ODM_delay_ms(u4Byte	ms)
 #endif
 }
 
-VOID
+void
 ODM_delay_us(u4Byte	us)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -466,7 +466,7 @@ ODM_delay_us(u4Byte	us)
 #endif
 }
 
-VOID
+void
 ODM_sleep_ms(u4Byte	ms)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -477,7 +477,7 @@ ODM_sleep_ms(u4Byte	ms)
 #endif
 }
 
-VOID
+void
 ODM_sleep_us(u4Byte	us)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -488,7 +488,7 @@ ODM_sleep_us(u4Byte	us)
 #endif
 }
 
-VOID
+void
 ODM_SetTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer,
@@ -506,7 +506,7 @@ ODM_SetTimer(
 
 }
 
-VOID
+void
 ODM_InitializeTimer(
 	PDM_ODM_T			pDM_Odm,
 	PRT_TIMER			pTimer,
@@ -529,7 +529,7 @@ ODM_InitializeTimer(
 }
 
 
-VOID
+void
 ODM_CancelTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer
@@ -546,7 +546,7 @@ ODM_CancelTimer(
 }
 
 
-VOID
+void
 ODM_ReleaseTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer
@@ -577,7 +577,7 @@ ODM_ReleaseTimer(
 // ODM FW relative API.
 //
 #if (DM_ODM_SUPPORT_TYPE & ODM_MP)
-VOID
+void
 ODM_FillH2CCmd(
 	PADAPTER		Adapter,
 	u1Byte	ElementID,

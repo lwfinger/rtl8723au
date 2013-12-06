@@ -57,19 +57,19 @@
 //
 // IQ calibrate
 //
-VOID rtl8192c_PHY_IQCalibrate(PADAPTER pAdapter, bool bReCovery);
+void rtl8192c_PHY_IQCalibrate(PADAPTER pAdapter, bool bReCovery);
 
 //
 // LC calibrate
 //
-VOID rtl8192c_PHY_LCCalibrate(PADAPTER	pAdapter);
+void rtl8192c_PHY_LCCalibrate(PADAPTER	pAdapter);
 
 //
 // AP calibrate
 //
-VOID rtl8192c_PHY_APCalibrate(PADAPTER	pAdapter, char		delta);
+void rtl8192c_PHY_APCalibrate(PADAPTER	pAdapter, char		delta);
 
-VOID rtl8192c_odm_CheckTXPowerTracking(PADAPTER Adapter);
+void rtl8192c_odm_CheckTXPowerTracking(PADAPTER Adapter);
 
 #ifdef CONFIG_ANTENNA_DIVERSITY
 void	odm_AntDivCompare8192C(PADAPTER Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);

@@ -148,12 +148,12 @@ typedef struct _Phy_Status_Rpt_8195
 } PHY_STATUS_RPT_8195_T,*pPHY_STATUS_RPT_8195_T;
 
 
-VOID
+void
 odm_Init_RSSIForDM(
 	PDM_ODM_T	pDM_Odm
 	);
 
-VOID
+void
 ODM_PhyStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 	PODM_PHY_INFO_T			pPhyInfo,
@@ -161,7 +161,7 @@ ODM_PhyStatusQuery(
 	PODM_PACKET_INFO_T			pPktinfo
 	);
 
-VOID
+void
 ODM_MacStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 	pu1Byte						pMacStatus,

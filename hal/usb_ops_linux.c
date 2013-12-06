@@ -394,7 +394,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 * We sholud remove this function later because DDK suggest not to executing too many
 * operations in MPISR
 */
-VOID
+void
 LogInterruptHistory8723AU(
 	PADAPTER			Adapter
 )

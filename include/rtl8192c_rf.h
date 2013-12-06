@@ -75,8 +75,8 @@ void		rtl8192c_RF_ChangeTxPath(PADAPTER Adapter,
 										u16		DataRate);
 void		rtl8192c_PHY_RF6052SetBandwidth(PADAPTER Adapter,
 						HT_CHANNEL_WIDTH Bandwidth);
-VOID	rtl8192c_PHY_RF6052SetCckTxPower(PADAPTER Adapter, u8* pPowerlevel);
-VOID	rtl8192c_PHY_RF6052SetOFDMTxPower(PADAPTER Adapter, u8* pPowerLevel,
+void	rtl8192c_PHY_RF6052SetCckTxPower(PADAPTER Adapter, u8* pPowerlevel);
+void	rtl8192c_PHY_RF6052SetOFDMTxPower(PADAPTER Adapter, u8* pPowerLevel,
 					  u8 Channel);
 int	PHY_RF6052_Config8192C(PADAPTER Adapter);
 

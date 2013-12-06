@@ -169,10 +169,7 @@
 #endif
 
 
-VOID
-ODM_InitDebugSetting(
-		PDM_ODM_T		pDM_Odm
-	);
+void ODM_InitDebugSetting(PDM_ODM_T pDM_Odm);
 
 
 

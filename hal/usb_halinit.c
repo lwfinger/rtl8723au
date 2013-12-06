@@ -55,7 +55,7 @@
 #endif
 
 
-static VOID
+static void
 _ConfigChipOutEP(
 	PADAPTER	pAdapter,
 	u8		NumOutPipe
@@ -265,7 +265,7 @@ static u8 _LLTRead(
 //	MAC init functions
 //
 //---------------------------------------------------------------
-static VOID
+static void
 _SetMacID(
   PADAPTER Adapter, u8* MacID
 	)
@@ -281,7 +281,7 @@ _SetMacID(
 	}
 }
 
-static VOID
+static void
 _SetBSSID(
   PADAPTER Adapter, u8* BSSID
 	)
@@ -299,7 +299,7 @@ _SetBSSID(
 
 
 // Shall USB interface init this?
-static VOID
+static void
 _InitInterrupt(
   PADAPTER Adapter
 	)
@@ -315,7 +315,7 @@ _InitInterrupt(
 }
 
 
-static VOID
+static void
 _InitQueueReservedPage(
   PADAPTER Adapter
 	)
@@ -360,7 +360,7 @@ _InitQueueReservedPage(
 	rtw_write32(Adapter, REG_RQPN, value32);
 }
 
-static VOID
+static void
 _InitTxBufferBoundary(
   PADAPTER Adapter
 	)
@@ -391,7 +391,7 @@ _InitTxBufferBoundary(
 #endif
 }
 
-static VOID
+static void
 _InitPageBoundary(
   PADAPTER Adapter
 	)
@@ -406,7 +406,7 @@ _InitPageBoundary(
 }
 
 
-static VOID
+static void
 _InitNormalChipRegPriority(
 	PADAPTER	Adapter,
 	u16		beQ,
@@ -426,7 +426,7 @@ _InitNormalChipRegPriority(
 	rtw_write16(Adapter, REG_TRXDMA_CTRL, value16);
 }
 
-static VOID
+static void
 _InitNormalChipOneOutEpPriority(
 	PADAPTER Adapter
 	)
@@ -461,7 +461,7 @@ _InitNormalChipOneOutEpPriority(
 
 }
 
-static VOID
+static void
 _InitNormalChipTwoOutEpPriority(
 	PADAPTER Adapter
 	)
@@ -514,7 +514,7 @@ _InitNormalChipTwoOutEpPriority(
 
 }
 
-static VOID
+static void
 _InitNormalChipThreeOutEpPriority(
 	PADAPTER Adapter
 	)
@@ -541,7 +541,7 @@ _InitNormalChipThreeOutEpPriority(
 	_InitNormalChipRegPriority(Adapter,beQ,bkQ,viQ,voQ,mgtQ,hiQ);
 }
 
-static VOID
+static void
 _InitNormalChipQueuePriority(
 	PADAPTER Adapter
 	)
@@ -567,7 +567,7 @@ _InitNormalChipQueuePriority(
 
 }
 
-static VOID
+static void
 _InitQueuePriority(
   PADAPTER Adapter
 	)
@@ -575,7 +575,7 @@ _InitQueuePriority(
 	_InitNormalChipQueuePriority(Adapter);
 }
 
-static VOID
+static void
 _InitHardwareDropIncorrectBulkOut(
   PADAPTER Adapter
 	)
@@ -585,7 +585,7 @@ _InitHardwareDropIncorrectBulkOut(
 	rtw_write32(Adapter, REG_TXDMA_OFFSET_CHK, value32);
 }
 
-static VOID
+static void
 _InitNetworkType(
   PADAPTER Adapter
 	)
@@ -604,7 +604,7 @@ _InitNetworkType(
 //	RASSERT(pIoBase->rtw_read8(REG_CR + 2) == 0x2);
 }
 
-static VOID
+static void
 _InitTransferPageSize(
   PADAPTER Adapter
 	)
@@ -616,7 +616,7 @@ _InitTransferPageSize(
 	rtw_write8(Adapter, REG_PBP, value8);
 }
 
-static VOID
+static void
 _InitDriverInfoSize(
   PADAPTER	Adapter,
 	u8		drvInfoSize
@@ -625,7 +625,7 @@ _InitDriverInfoSize(
 	rtw_write8(Adapter,REG_RX_DRVINFO_SZ, drvInfoSize);
 }
 
-static VOID
+static void
 _InitWMACSetting(
   PADAPTER Adapter
 	)
@@ -669,7 +669,7 @@ _InitWMACSetting(
 
 }
 
-static VOID
+static void
 _InitAdaptiveCtrl(
   PADAPTER Adapter
 	)
@@ -696,7 +696,7 @@ _InitAdaptiveCtrl(
 
 }
 
-static VOID
+static void
 _InitRateFallback(
   PADAPTER Adapter
 	)
@@ -710,7 +710,7 @@ _InitRateFallback(
 }
 
 
-static VOID
+static void
 _InitEDCA(
   PADAPTER Adapter
 	)
@@ -747,7 +747,7 @@ static void _InitHWLed(PADAPTER Adapter)
 }
 #endif //CONFIG_LED
 
-static VOID
+static void
 _InitRDGSetting(
 	PADAPTER Adapter
 	)
@@ -757,7 +757,7 @@ _InitRDGSetting(
 	rtw_write8(Adapter,REG_RD_RESP_PKT_TH,0x05);
 }
 
-static VOID
+static void
 _InitRxSetting(
 	PADAPTER Adapter
 	)
@@ -766,7 +766,7 @@ _InitRxSetting(
 	rtw_write32(Adapter, 0x0700, 0x87654321);
 }
 
-static VOID
+static void
 _InitRetryFunction(
   PADAPTER Adapter
 	)
@@ -796,7 +796,7 @@ _InitRetryFunction(
  *	12/10/2010	MHC		Seperate to smaller function.
  *
  *---------------------------------------------------------------------------*/
-static VOID
+static void
 usb_AggSettingTxUpdate(
 	PADAPTER			Adapter
 	)
@@ -836,7 +836,7 @@ usb_AggSettingTxUpdate(
  *	12/10/2010	MHC		Seperate to smaller function.
  *
  *---------------------------------------------------------------------------*/
-static VOID
+static void
 usb_AggSettingRxUpdate(
 	PADAPTER			Adapter
 	)
@@ -920,7 +920,7 @@ usb_AggSettingRxUpdate(
 #endif
 }	// usb_AggSettingRxUpdate
 
-static VOID
+static void
 InitUsbAggregationSetting(
   PADAPTER Adapter
 	)
@@ -956,7 +956,7 @@ InitUsbAggregationSetting(
  *	12/10/2010	MHC		Create Version 0.
  *
  *---------------------------------------------------------------------------*/
-VOID
+void
 USB_AggModeSwitch(
 	PADAPTER			Adapter
 	)
@@ -1022,7 +1022,7 @@ USB_AggModeSwitch(
 #endif
 }	// USB_AggModeSwitch
 
-static VOID
+static void
 _InitOperationMode(
 	PADAPTER			Adapter
 	)
@@ -1111,7 +1111,7 @@ _InitOperationMode(
 #endif
 }
 
-static VOID
+static void
 _InitRFType(
 	PADAPTER Adapter
 	)
@@ -1140,7 +1140,7 @@ _InitRFType(
 
 }
 
-static VOID _InitAdhocWorkaroundParams(PADAPTER Adapter)
+static void _InitAdhocWorkaroundParams(PADAPTER Adapter)
 {
 #ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1152,7 +1152,7 @@ static VOID _InitAdhocWorkaroundParams(PADAPTER Adapter)
 }
 
 // Set CCK and OFDM Block "ON"
-static VOID _BBTurnOnBlock(
+static void _BBTurnOnBlock(
 	PADAPTER		Adapter
 	)
 {
@@ -1312,7 +1312,7 @@ HalDetectPwrDownMode(
 // If Efuse 0x0e bit1 is not enabled, we can not support selective suspend for Minicard and
 // slim card.
 //
-static VOID
+static void
 HalDetectSelectiveSuspendMode(
  PADAPTER				Adapter
 	)
@@ -1364,7 +1364,7 @@ HalDetectSelectiveSuspendMode(
  *	When		Who		Remark
  *	08/23/2010	MHC		HW suspend mode switch test..
  *---------------------------------------------------------------------------*/
-static VOID
+static void
 HwSuspendModeEnable92Cu(
 	PADAPTER	pAdapter,
 	u8			Type
@@ -1915,7 +1915,7 @@ _func_exit_;
 
 #define SYNC_SD7_20110802_phy_SsPwrSwitch92CU
 #ifdef SYNC_SD7_20110802_phy_SsPwrSwitch92CU
-VOID
+void
 phy_SsPwrSwitch92CU(
 	PADAPTER			Adapter,
 	rt_rf_power_state	eRFPowerState,
@@ -2178,7 +2178,7 @@ void _ps_close_RF(_adapter *padapter){
 
 
 
-static VOID
+static void
 _DisableGPIO(
 	PADAPTER	Adapter
 	)
@@ -2215,7 +2215,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 
 } //end of _DisableGPIO()
 
-static VOID
+static void
 _ResetFWDownloadRegister(
  PADAPTER			Adapter
 	)
@@ -2266,7 +2266,7 @@ _DisableRF_AFE(
 
 }
 
-static VOID
+static void
 _ResetBB(
  PADAPTER			Adapter
 	)
@@ -2280,7 +2280,7 @@ _ResetBB(
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset BB.\n"));
 }
 
-static VOID
+static void
 _ResetMCU(
  PADAPTER			Adapter
 	)
@@ -2294,7 +2294,7 @@ _ResetMCU(
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset MCU.\n"));
 }
 
-static VOID
+static void
 _DisableMAC_AFE_PLL(
  PADAPTER			Adapter
 	)
@@ -2311,7 +2311,7 @@ _DisableMAC_AFE_PLL(
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable MAC, AFE PLL.\n"));
 }
 
-static VOID
+static void
 _AutoPowerDownToHostOff(
 	PADAPTER		Adapter
 	)
@@ -2332,7 +2332,7 @@ _AutoPowerDownToHostOff(
 
 }
 
-static VOID
+static void
 _SetUsbSuspend(
  PADAPTER			Adapter
 	)
@@ -2350,7 +2350,7 @@ _SetUsbSuspend(
 
 }
 
-static VOID
+static void
 _DisableRFAFEAndResetBB(
  PADAPTER			Adapter
 	)
@@ -2379,7 +2379,7 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
 }
 
-static VOID
+static void
 _ResetDigitalProcedure1(
 	PADAPTER			Adapter,
 	bool				bWithoutHWSM
@@ -2506,7 +2506,7 @@ _ResetDigitalProcedure1(
 
 }
 
-static VOID
+static void
 _ResetDigitalProcedure2(
 	PADAPTER			Adapter
 )
@@ -2524,7 +2524,7 @@ m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 	rtw_write8(Adapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
-static VOID
+static void
 _DisableAnalog(
  PADAPTER			Adapter,
  bool			bWithoutHWSM
@@ -2615,7 +2615,7 @@ static void rtl8723au_hw_power_down(_adapter *padapter)
 // Description: RTL8723e card disable power sequence v003 which suggested by Scott.
 // First created by tynli. 2011.01.28.
 //
-VOID
+void
 CardDisableRTL8723U(
 	PADAPTER			Adapter
 )
@@ -2865,7 +2865,7 @@ _ReadIDs(
 }
 
 
-static VOID
+static void
 _ReadMACAddress(
 	PADAPTER	Adapter,
 	u8*		PROMContent,
@@ -2890,7 +2890,7 @@ _ReadMACAddress(
 
 }
 
-static VOID
+static void
 _ReadBoardType(
 	PADAPTER	Adapter,
 	u8*		PROMContent,
@@ -2923,7 +2923,7 @@ _ReadBoardType(
 }
 
 
-static VOID
+static void
 _ReadLEDSetting(
 	PADAPTER	Adapter,
 	u8*		PROMContent,
@@ -2964,7 +2964,7 @@ _ReadLEDSetting(
 #endif //CONFIG_SW_LED
 }
 
-static VOID
+static void
 _ReadThermalMeter(
 	PADAPTER	Adapter,
 	u8*	PROMContent,
@@ -2999,7 +2999,7 @@ _ReadThermalMeter(
 
 }
 
-static VOID
+static void
 _ReadRFSetting(
 	PADAPTER	Adapter,
 	u8*	PROMContent,
@@ -3010,7 +3010,7 @@ _ReadRFSetting(
 
 
 #if 0
-static VOID
+static void
 readAntennaDiversity(
 	PADAPTER	pAdapter,
 	u8			*hwinfo,
@@ -3083,7 +3083,7 @@ static void _ReadPSSetting(PADAPTER Adapter, u8*PROMContent, u8	AutoloadFail)
 
 
 
-VOID
+void
 Hal_EfuseParsePIDVID_8723AU(
 	PADAPTER		pAdapter,
 	u8*			hwinfo,
@@ -3266,7 +3266,7 @@ Hal_ReadMACAddrFromFile_8723AU(
 #endif //CONFIG_EFUSE_CONFIG_FILE
 
 
-static VOID
+static void
 readAdapterInfo(
 	PADAPTER	padapter
 	)
@@ -3340,7 +3340,7 @@ static void _ReadPROMContent(
 }
 
 
-static VOID
+static void
 _InitOtherVariable(
  PADAPTER		Adapter
 	)
@@ -3358,7 +3358,7 @@ _InitOtherVariable(
 
 }
 
-static VOID
+static void
 _ReadRFType(
 	PADAPTER	Adapter
 	)
