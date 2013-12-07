@@ -96,10 +96,6 @@ typedef unsigned char	_buffer;
 typedef struct	__queue	_queue;
 typedef	struct	net_device * _nic_hdl;
 
-typedef void*		_thread_hdl_;
-typedef int		thread_return;
-typedef void*	thread_context;
-
 #define thread_exit() complete_and_exit(NULL, 0)
 
 typedef void timer_hdl_return;

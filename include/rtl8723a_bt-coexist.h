@@ -1100,7 +1100,6 @@ typedef struct _BT_TRAFFIC
 } BT_TRAFFIC, *PBT_TRAFFIC;
 
 #define RT_WORK_ITEM struct work_struct
-#define RT_THREAD _thread_hdl_
 
 typedef struct _BT_SECURITY
 {
@@ -1133,7 +1132,7 @@ typedef struct _BT30Info
 	RT_WORK_ITEM		HCISendACLDataWorkItem;
 	RT_TIMER				BTHCISendAclDataTimer;
 #elif(SENDTXMEHTOD==2)
-	RT_THREAD			BTTxThread;
+	void *			BTTxThread;
 #endif
 	RT_WORK_ITEM		BTPsDisableWorkItem;
 	RT_WORK_ITEM		BTConnectWorkItem;

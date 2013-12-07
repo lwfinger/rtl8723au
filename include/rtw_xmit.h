@@ -498,7 +498,7 @@ void	enqueue_pending_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmit
 struct xmit_buf*	dequeue_pending_xmitbuf(struct xmit_priv *pxmitpriv);
 struct xmit_buf*	dequeue_pending_xmitbuf_under_survey(struct xmit_priv *pxmitpriv);
 int	check_pending_xmitbuf(struct xmit_priv *pxmitpriv);
-thread_return	rtw_xmit_thread(thread_context context);
+int	rtw_xmit_thread(void *context);
 #endif
 
 u32	rtw_get_ff_hwaddr(struct xmit_frame	*pxmitframe);

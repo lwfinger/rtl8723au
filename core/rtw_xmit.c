@@ -3649,7 +3649,7 @@ int check_pending_xmitbuf(
 		return _FALSE;
 }
 
-thread_return rtw_xmit_thread(thread_context context)
+int rtw_xmit_thread(void *context)
 {
 	s32 err;
 	PADAPTER padapter;
