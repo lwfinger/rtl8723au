@@ -2398,7 +2398,7 @@ ODM_RAStateCheck(
 		PDM_ODM_T		pDM_Odm,
 		s4Byte			RSSI,
 		bool			bForceUpdate,
-		pu1Byte			pRATRState
+		u8 *			pRATRState
 	)
 {
 	PODM_RATE_ADAPTIVE pRA = &pDM_Odm->RateAdaptive;

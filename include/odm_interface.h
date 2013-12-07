@@ -320,18 +320,18 @@ ODM_FillH2CCmd(
 	PADAPTER		Adapter,
 	u1Byte	ElementID,
 	u4Byte	CmdLen,
-	pu1Byte	pCmdBuffer
+	u8 *	pCmdBuffer
 );
 #else
 u4Byte
 ODM_FillH2CCmd(
-	pu1Byte		pH2CBuffer,
+	u8 *		pH2CBuffer,
 	u4Byte		H2CBufferLen,
 	u4Byte		CmdNum,
 	pu4Byte		pElementID,
 	pu4Byte		pCmdLen,
-	pu1Byte*		pCmbBuffer,
-	pu1Byte		CmdStartSeq
+	u8 **		pCmbBuffer,
+	u8 *		CmdStartSeq
 	);
 #endif
 #endif	// __ODM_INTERFACE_H__

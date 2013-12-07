@@ -157,14 +157,14 @@ void
 ODM_PhyStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 	PODM_PHY_INFO_T			pPhyInfo,
-	pu1Byte						pPhyStatus,
+	u8 *						pPhyStatus,
 	PODM_PACKET_INFO_T			pPktinfo
 	);
 
 void
 ODM_MacStatusQuery(
 	PDM_ODM_T					pDM_Odm,
-	pu1Byte						pMacStatus,
+	u8 *						pMacStatus,
 	u1Byte						MacID,
 	bool						bPacketMatchBSSID,
 	bool						bPacketToSelf,

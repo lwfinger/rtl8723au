@@ -582,7 +582,7 @@ ODM_FillH2CCmd(
 	PADAPTER		Adapter,
 	u1Byte	ElementID,
 	u4Byte	CmdLen,
-	pu1Byte	pCmdBuffer
+	u8 *	pCmdBuffer
 )
 {
 	if(IS_HARDWARE_TYPE_JAGUAR(Adapter))
@@ -622,13 +622,13 @@ ODM_FillH2CCmd(
 #else
 u4Byte
 ODM_FillH2CCmd(
-	pu1Byte		pH2CBuffer,
+	u8 *		pH2CBuffer,
 	u4Byte		H2CBufferLen,
 	u4Byte		CmdNum,
 	pu4Byte		pElementID,
 	pu4Byte		pCmdLen,
-	pu1Byte*		pCmbBuffer,
-	pu1Byte		CmdStartSeq
+	u8 **		pCmbBuffer,
+	u8 *		CmdStartSeq
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))

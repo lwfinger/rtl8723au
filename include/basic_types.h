@@ -210,7 +210,7 @@ typedef	__kernel_ssize_t	SSIZE_T;
 //pclint
 #define SET_BITS_TO_LE_1BYTE_8BIT(__pStart, __BitOffset, __BitLen, __Value) \
 { \
-	*((pu1Byte)(__pStart)) = \
+	*((u8 *)(__pStart)) = \
 		EF1Byte( \
 			LE_BITS_CLEARED_TO_1BYTE_8BIT(__pStart, __BitOffset, __BitLen) \
 			| \
