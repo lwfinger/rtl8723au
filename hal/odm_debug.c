@@ -34,4 +34,4 @@ pDM_Odm->DebugLevel				=	ODM_DBG_TRACE;
 pDM_Odm->DebugComponents			= 0;
 }
 
-u4Byte GlobalDebugLevel;
+u32 GlobalDebugLevel;

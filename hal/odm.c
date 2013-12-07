@@ -42,7 +42,7 @@ const u16 dB_Invert_Table[8][12] = {
 
 
 //avoid to warn in FreeBSD ==> To DO modify
-u4Byte EDCAParam[HT_IOT_PEER_MAX][3] =
+u32 EDCAParam[HT_IOT_PEER_MAX][3] =
 {          // UL			DL
 	{0x5ea42b, 0x5ea42b, 0x5ea42b}, //0:unknown AP
 	{0xa44f, 0x5ea44f, 0x5e431c}, // 1:realtek AP
@@ -66,7 +66,7 @@ u4Byte EDCAParam[HT_IOT_PEER_MAX][3] =
 //============================================================
 // Global var
 //============================================================
-u4Byte OFDMSwingTable[OFDM_TABLE_SIZE_92D] = {
+u32 OFDMSwingTable[OFDM_TABLE_SIZE_92D] = {
 	0x7f8001fe, // 0, +6.0dB
 	0x788001e2, // 1, +5.5dB
 	0x71c001c7, // 2, +5.0dB
@@ -501,10 +501,10 @@ odm_InitHybridAntDiv(
 bool
 odm_StaDefAntSel(
  PDM_ODM_T	pDM_Odm,
- u4Byte		OFDM_Ant1_Cnt,
- u4Byte		OFDM_Ant2_Cnt,
- u4Byte		CCK_Ant1_Cnt,
- u4Byte		CCK_Ant2_Cnt,
+ u32		OFDM_Ant1_Cnt,
+ u32		OFDM_Ant2_Cnt,
+ u32		CCK_Ant1_Cnt,
+ u32		CCK_Ant2_Cnt,
  u8		*pDefAnt
 	);
 
@@ -664,7 +664,7 @@ void
 ODM_CmnInfoInit(
 		PDM_ODM_T		pDM_Odm,
 		ODM_CMNINFO_E	CmnInfo,
-		u4Byte			Value
+		u32			Value
 	)
 {
 	//ODM_RT_TRACE(pDM_Odm,);
@@ -678,7 +678,7 @@ ODM_CmnInfoInit(
 		// Fixed ODM value.
 		//
 		case	ODM_CMNINFO_ABILITY:
-			pDM_Odm->SupportAbility = (u4Byte)Value;
+			pDM_Odm->SupportAbility = (u32)Value;
 			break;
 		case	ODM_CMNINFO_PLATFORM:
 			pDM_Odm->SupportPlatform = (u8)Value;
@@ -912,7 +912,7 @@ ODM_CmnInfoPtrArrayHook(
 void
 ODM_CmnInfoUpdate(
 		PDM_ODM_T		pDM_Odm,
-		u4Byte			CmnInfo,
+		u32			CmnInfo,
 		u8Byte			Value
 	)
 {
@@ -922,7 +922,7 @@ ODM_CmnInfoUpdate(
 	switch	(CmnInfo)
 	{
 		case	ODM_CMNINFO_ABILITY:
-			pDM_Odm->SupportAbility = (u4Byte)Value;
+			pDM_Odm->SupportAbility = (u32)Value;
 			break;
 
 		case	ODM_CMNINFO_RF_TYPE:
@@ -950,7 +950,7 @@ ODM_CmnInfoUpdate(
 			break;
 
 		case	ODM_CMNINFO_DBG_LEVEL:
-			pDM_Odm->DebugLevel = (u4Byte)Value;
+			pDM_Odm->DebugLevel = (u32)Value;
 			break;
 		case	ODM_CMNINFO_RA_THRESHOLD_HIGH:
 			pDM_Odm->RateAdaptive.HighRSSIThresh = (u8)Value;
@@ -1115,7 +1115,7 @@ odm_FindMinimumRSSI(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	u4Byte	i;
+	u32	i;
 	u8	RSSI_Min = 0xFF;
 
 	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
@@ -1139,7 +1139,7 @@ odm_IsLinked(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	u4Byte i;
+	u32 i;
 	bool Linked = FALSE;
 
 	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
@@ -1178,8 +1178,8 @@ odm_IsLinked(
 void
 ODM_ChangeDynamicInitGainThresh(
 	PDM_ODM_T	pDM_Odm,
-	u4Byte		DM_Type,
-	u4Byte		DM_Value
+	u32		DM_Type,
+	u32		DM_Value
 	)
 {
 	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
@@ -1786,7 +1786,7 @@ odm_FalseAlarmCounterStatistics(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	u4Byte ret_value;
+	u32 ret_value;
 	PFALSE_ALARM_STATISTICS FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
 
 	if(!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT))
@@ -2192,14 +2192,14 @@ odm_RateAdaptiveMaskInit(
 	pOdmRA->LowRSSIThresh = 20;
 }
 
-u4Byte ODM_Get_Rate_Bitmap(
+u32 ODM_Get_Rate_Bitmap(
 	PDM_ODM_T	pDM_Odm,
-	u4Byte		macid,
-	u4Byte		ra_mask,
+	u32		macid,
+	u32		ra_mask,
 	u8		rssi_level)
 {
 	PSTA_INFO_T	pEntry;
-	u4Byte	rate_bitmap = 0x0fffffff;
+	u32	rate_bitmap = 0x0fffffff;
 	u8	WirelessMode;
 	//u8	WirelessMode =*(pDM_Odm->pWirelessMode);
 
@@ -2492,7 +2492,7 @@ odm_DynamicTxPowerSavePowerIndex(
 	)
 {
 	u8		index;
-	u4Byte		Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
+	u32		Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -2510,7 +2510,7 @@ odm_DynamicTxPowerRestorePowerIndex(
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	u4Byte			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
+	u32			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	for(index = 0; index< 6; index++)
 		rtw_write8(Adapter, Power_Index_REG[index], pdmpriv->PowerIndex_backup[index]);
@@ -2523,7 +2523,7 @@ odm_DynamicTxPowerWritePowerIndex(
 {
 
 	u8			index;
-	u4Byte			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
+	u32			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 
 	for(index = 0; index< 6; index++)
 		//PlatformEFIOWrite1Byte(Adapter, Power_Index_REG[index], Value);
@@ -4007,10 +4007,10 @@ odm_InitHybridAntDiv(
 bool
 odm_StaDefAntSel(
  PDM_ODM_T	pDM_Odm,
- u4Byte		OFDM_Ant1_Cnt,
- u4Byte		OFDM_Ant2_Cnt,
- u4Byte		CCK_Ant1_Cnt,
- u4Byte		CCK_Ant2_Cnt,
+ u32		OFDM_Ant1_Cnt,
+ u32		OFDM_Ant2_Cnt,
+ u32		CCK_Ant1_Cnt,
+ u32		CCK_Ant2_Cnt,
  u8		*pDefAnt
 
 	)
@@ -4051,7 +4051,7 @@ odm_StaDefAntSel(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV,ODM_DBG_LOUD,("TxAnt = %s\n",((*pDefAnt)==1)?"Ant1":"Ant2"));
 
 #endif
-	//u4Byte antsel = ODM_GetBBReg(pDM_Odm, 0xc88, bMaskByte0);
+	//u32 antsel = ODM_GetBBReg(pDM_Odm, 0xc88, bMaskByte0);
 	//(*pDefAnt)= (u8) antsel;
 
 
@@ -4103,7 +4103,7 @@ void
 ODM_AntselStatistics_88C(
 		PDM_ODM_T		pDM_Odm,
 		u8			MacId,
-		u4Byte			PWDBAll,
+		u32			PWDBAll,
 		bool			isCCKrate
 )
 {
@@ -4147,7 +4147,7 @@ odm_HwAntDiv_92C_92D(
 )
 {
 	SWAT_T			*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	u4Byte			RSSI_Min=0xFF, RSSI, RSSI_Ant1, RSSI_Ant2;
+	u32			RSSI_Min=0xFF, RSSI, RSSI_Ant1, RSSI_Ant2;
 	u8			RxIdleAnt, i;
 	bool		bRet=FALSE;
 	PSTA_INFO_T	pEntry;
@@ -4424,7 +4424,7 @@ dm_CheckEdcaTurbo_EXIT:
 // need to ODM CE Platform
 //move to here for ANT detection mechanism using
 
-u4Byte
+u32
 GetPSDData(
  PDM_ODM_T	pDM_Odm,
 	unsigned int	point,
@@ -4432,7 +4432,7 @@ GetPSDData(
 {
 	//unsigned int	val, rfval;
 	//int	psd_report;
-	u4Byte	psd_report;
+	u32	psd_report;
 
 	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	//Debug Message
@@ -4456,7 +4456,7 @@ GetPSDData(
 	psd_report = ODM_GetBBReg(pDM_Odm,0x8B4, bMaskDWord) & 0x0000FFFF;
 
 #if 1//(DEV_BUS_TYPE == RT_PCI_INTERFACE) && ( (RT_PLATFORM == PLATFORM_LINUX) || (RT_PLATFORM == PLATFORM_MACOSX))
-	psd_report = (u4Byte) (ConvertTo_dB(psd_report))+(u4Byte)(initial_gain_psd-0x1c);
+	psd_report = (u32) (ConvertTo_dB(psd_report))+(u32)(initial_gain_psd-0x1c);
 #else
 	psd_report = (int) (20*log10((double)psd_report))+(int)(initial_gain_psd-0x1c);
 #endif
@@ -4465,13 +4465,13 @@ GetPSDData(
 
 }
 
-u4Byte
+u32
 ConvertTo_dB(
-	u4Byte	Value)
+	u32	Value)
 {
 	u8 i;
 	u8 j;
-	u4Byte dB;
+	u32 dB;
 
 	Value = Value & 0xFFFF;
 
@@ -4535,12 +4535,12 @@ ODM_SingleDualAntennaDefaultSetting(
 void
 odm_PHY_SaveAFERegisters(
 	PDM_ODM_T	pDM_Odm,
-	pu4Byte		AFEReg,
-	pu4Byte		AFEBackup,
-	u4Byte		RegisterNum
+	u32 *		AFEReg,
+	u32 *		AFEBackup,
+	u32		RegisterNum
 	)
 {
-	u4Byte	i;
+	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Save ADDA parameters.\n"));
 	for( i = 0 ; i < RegisterNum ; i++){
@@ -4551,12 +4551,12 @@ odm_PHY_SaveAFERegisters(
 void
 odm_PHY_ReloadAFERegisters(
 	PDM_ODM_T	pDM_Odm,
-	pu4Byte		AFEReg,
-	pu4Byte		AFEBackup,
-	u4Byte		RegiesterNum
+	u32 *		AFEReg,
+	u32 *		AFEBackup,
+	u32		RegiesterNum
 	)
 {
-	u4Byte	i;
+	u32	i;
 
 	//RTPRINT(FINIT, INIT_IQK, ("Reload ADDA power saving parameters !\n"));
 	for(i = 0 ; i < RegiesterNum; i++)
@@ -4584,15 +4584,15 @@ ODM_SingleDualAntennaDetection(
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	//PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	u4Byte		CurrentChannel,RfLoopReg;
+	u32		CurrentChannel,RfLoopReg;
 	u8		n;
-	u4Byte		Reg88c, Regc08, Reg874, Regc50;
+	u32		Reg88c, Regc08, Reg874, Regc50;
 	u8		initial_gain = 0x5a;
-	u4Byte		PSD_report_tmp;
-	u4Byte		AntA_report = 0x0, AntB_report = 0x0,AntO_report=0x0;
+	u32		PSD_report_tmp;
+	u32		AntA_report = 0x0, AntB_report = 0x0,AntO_report=0x0;
 	bool		bResult = TRUE;
-	u4Byte		AFE_Backup[16];
-	u4Byte		AFE_REG_8723A[16] = {
+	u32		AFE_Backup[16];
+	u32		AFE_REG_8723A[16] = {
 					rRx_Wait_CCA,	rTx_CCK_RFON,
 					rTx_CCK_BBON,	rTx_OFDM_RFON,
 					rTx_OFDM_BBON,	rTx_To_Rx,

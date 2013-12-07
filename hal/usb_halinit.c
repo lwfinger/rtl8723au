@@ -88,7 +88,7 @@ _ConfigChipOutEP(
 	}
 
 	// TODO: Error recovery for this case
-	//RT_ASSERT((NumOutPipe == pHalData->OutEpNumber), ("Out EP number isn't match! %d(Descriptor) != %d (SIE reg)\n", (u4Byte)NumOutPipe, (u4Byte)pHalData->OutEpNumber));
+	//RT_ASSERT((NumOutPipe == pHalData->OutEpNumber), ("Out EP number isn't match! %d(Descriptor) != %d (SIE reg)\n", (u32)NumOutPipe, (u32)pHalData->OutEpNumber));
 
 }
 
@@ -630,7 +630,7 @@ _InitWMACSetting(
   PADAPTER Adapter
 	)
 {
-	//u4Byte			value32;
+	//u32			value32;
 	//u16			value16;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 

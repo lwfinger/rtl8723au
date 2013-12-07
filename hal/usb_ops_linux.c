@@ -403,13 +403,13 @@ InterruptRecognized8723AU(
 //	RT_PRINT_DATA(COMP_RECV, DBG_LOUD, ("InterruptRecognized8723AU Interrupt buffer \n"), buffer, MAX_RECEIVE_INTERRUPT_BUFFER_SIZE(Adapter));
 
 	memcpy(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), 4);
-//	PlatformMoveMemory(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), sizeof(u4Byte));
+//	PlatformMoveMemory(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), sizeof(u32));
 //	DBG_8723A("InterruptRecognized8723AU HISR = 0x%x HIMR = 0x%x\n", pHalData->IntArray[0],pHalData->IntrMask[0]);
 	pHalData->IntArray[0] &= pHalData->IntrMask[0];
 
 	//For HISR extension. Added by tynli. 2009.10.07.
 	memcpy(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
-//	PlatformMoveMemory(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), sizeof(u4Byte));
+//	PlatformMoveMemory(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), sizeof(u32));
 //	DBG_8723A("InterruptRecognized8192CUsb HISRE = 0x%x HIMRE = 0x%x\n", pHalData->IntArray[1], pHalData->IntrMask[1]);
 	pHalData->IntArray[1] &= pHalData->IntrMask[1];
 

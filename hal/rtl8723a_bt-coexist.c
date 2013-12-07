@@ -12450,7 +12450,7 @@ u32 BTDM_BtTxRxCounterH(	PADAPTER	padapter)
 u32 BTDM_BtTxRxCounterL(	PADAPTER	padapter	)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	u4Byte	counters=0;
+	u32	counters=0;
 
 	counters = pHalData->bt_coexist.halCoex8723.lowPriorityTx+
 		pHalData->bt_coexist.halCoex8723.lowPriorityRx ;

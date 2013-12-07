@@ -756,8 +756,8 @@ odm_Process_RSSIForDM(
 	s4Byte			UndecoratedSmoothedPWDB, UndecoratedSmoothedCCK, UndecoratedSmoothedOFDM, RSSI_Ave;
 	u8			isCCKrate=0;
 	u8			RSSI_max, RSSI_min, i;
-	u4Byte			OFDM_pkt=0;
-	u4Byte			Weighting=0;
+	u32			OFDM_pkt=0;
+	u32			Weighting=0;
 	PSTA_INFO_T	pEntry;
 
 	if(pPktinfo->StationID == 0xFF)
@@ -870,7 +870,7 @@ odm_Process_RSSIForDM(
 			}
 			else
 			{
-				if(pPhyInfo->RxPWDBAll > (u4Byte)UndecoratedSmoothedOFDM)
+				if(pPhyInfo->RxPWDBAll > (u32)UndecoratedSmoothedOFDM)
 				{
 					UndecoratedSmoothedOFDM =
 							( ((UndecoratedSmoothedOFDM)*(Rx_Smooth_Factor-1)) +
@@ -899,7 +899,7 @@ odm_Process_RSSIForDM(
 			}
 			else
 			{
-				if(pPhyInfo->RxPWDBAll > (u4Byte)UndecoratedSmoothedCCK)
+				if(pPhyInfo->RxPWDBAll > (u32)UndecoratedSmoothedCCK)
 				{
 					UndecoratedSmoothedCCK =
 							( ((UndecoratedSmoothedCCK)*(Rx_Smooth_Factor-1)) +

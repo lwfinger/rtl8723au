@@ -31,7 +31,7 @@ void
 ODM_ReadFirmware_8723A_rtl8723fw_B(
 	PDM_ODM_T    pDM_Odm,
 	u8       *pFirmware,
-	u4Byte       *pFirmwareSize
+	u32       *pFirmwareSize
 );
 
 #endif

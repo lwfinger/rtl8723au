@@ -61,10 +61,10 @@
 * OverView:	Get shifted position of the BitMask
 *
 * Input:
-*			u4Byte		BitMask,
+*			u32		BitMask,
 *
 * Output:	none
-* Return:		u4Byte		Return the shift bit bit position of the mask
+* Return:		u32		Return the shift bit bit position of the mask
 */
 static	u32
 phy_CalculateBitShift(
@@ -90,11 +90,11 @@ phy_CalculateBitShift(
 *
 * Input:
 *			PADAPTER		Adapter,
-*			u4Byte			RegAddr,		//The target address to be readback
-*			u4Byte			BitMask		//The target bit position in the target address
+*			u32			RegAddr,		//The target address to be readback
+*			u32			BitMask		//The target bit position in the target address
 *										//to be readback
 * Output:	None
-* Return:		u4Byte			Data			//The readback register value
+* Return:		u32			Data			//The readback register value
 * Note:		This function is equal to "GetRegSetting" in PHY programming guide
 */
 u32
@@ -132,10 +132,10 @@ rtl8192c_PHY_QueryBBReg(
 *
 * Input:
 *			PADAPTER		Adapter,
-*			u4Byte			RegAddr,		//The target address to be modified
-*			u4Byte			BitMask		//The target bit position in the target address
+*			u32			RegAddr,		//The target address to be modified
+*			u32			BitMask		//The target bit position in the target address
 *										//to be modified
-*			u4Byte			Data			//The new register value in the target bit position
+*			u32			Data			//The new register value in the target bit position
 *										//of the target address
 *
 * Output:	None
@@ -243,10 +243,10 @@ phy_FwRFSerialWrite(
 * Input:
 *			PADAPTER		Adapter,
 *			RF_RADIO_PATH_E	eRFPath,	//Radio path of A/B/C/D
-*			u4Byte			Offset,		//The target address to be read
+*			u32			Offset,		//The target address to be read
 *
 * Output:	None
-* Return:		u4Byte			reback value
+* Return:		u32			reback value
 * Note:		Threre are three types of serial operations:
 *			1. Software serial write
 *			2. Hardware LSSI-Low Speed Serial Interface
@@ -335,8 +335,8 @@ phy_RFSerialRead(
 * Input:
 *			PADAPTER		Adapter,
 *			RF_RADIO_PATH_E	eRFPath,	//Radio path of A/B/C/D
-*			u4Byte			Offset,		//The target address to be read
-*			u4Byte			Data			//The new register Data in the target bit position
+*			u32			Offset,		//The target address to be read
+*			u32			Data			//The new register Data in the target bit position
 *										//of the target to be read
 *
 * Output:	None
@@ -426,12 +426,12 @@ phy_RFSerialWrite(
 * Input:
 *			PADAPTER		Adapter,
 *			RF_RADIO_PATH_E	eRFPath,	//Radio path of A/B/C/D
-*			u4Byte			RegAddr,		//The target address to be read
-*			u4Byte			BitMask		//The target bit position in the target address
+*			u32			RegAddr,		//The target address to be read
+*			u32			BitMask		//The target bit position in the target address
 *										//to be read
 *
 * Output:	None
-* Return:		u4Byte			Readback value
+* Return:		u32			Readback value
 * Note:		This function is equal to "GetRFRegSetting" in PHY programming guide
 */
 u32
@@ -466,10 +466,10 @@ rtl8192c_PHY_QueryRFReg(
 * Input:
 *			PADAPTER		Adapter,
 *			RF_RADIO_PATH_E	eRFPath,	//Radio path of A/B/C/D
-*			u4Byte			RegAddr,		//The target address to be modified
-*			u4Byte			BitMask		//The target bit position in the target address
+*			u32			RegAddr,		//The target address to be modified
+*			u32			BitMask		//The target bit position in the target address
 *										//to be modified
-*			u4Byte			Data			//The new register Data in the target bit position
+*			u32			Data			//The new register Data in the target bit position
 *										//of the target address
 *
 * Output:	None
@@ -2054,7 +2054,7 @@ _PHY_SetBWMode92C(
 	//return;
 
 	// Added it for 20/40 mhz switch time evaluation by guangan 070531
-	//u4Byte				NowL, NowH;
+	//u32				NowL, NowH;
 	//u8Byte				BeginTime, EndTime;
 
 	/*RT_TRACE(COMP_SCAN, DBG_LOUD, ("==>PHY_SetBWModeCallback8192C()  Switch to %s bandwidth\n", \

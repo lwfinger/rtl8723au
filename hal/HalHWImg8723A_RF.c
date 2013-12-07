@@ -23,14 +23,14 @@
 #if (RTL8723A_SUPPORT == 1)
 static bool
 CheckCondition(
-    const u4Byte  Condition,
-    const u4Byte  Hex
+    const u32  Condition,
+    const u32  Hex
     )
 {
-    u4Byte _board     = (Hex & 0x000000FF);
-    u4Byte _interface = (Hex & 0x0000FF00) >> 8;
-    u4Byte _platform  = (Hex & 0x00FF0000) >> 16;
-    u4Byte cond = Condition;
+    u32 _board     = (Hex & 0x000000FF);
+    u32 _interface = (Hex & 0x0000FF00) >> 8;
+    u32 _platform  = (Hex & 0x00FF0000) >> 16;
+    u32 cond = Condition;
 
     if ( Condition == 0xCDCDCDCD )
         return TRUE;
@@ -56,7 +56,7 @@ CheckCondition(
 *                           RadioA_1T.TXT
 ******************************************************************************/
 
-u4Byte Array_RadioA_1T_8723A[] = {
+u32 Array_RadioA_1T_8723A[] = {
 		0x000, 0x00030159,
 		0x001, 0x00031284,
 		0x002, 0x00098000,
@@ -223,15 +223,15 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
-	u4Byte     hex         = 0;
-	u4Byte     i           = 0;
+	u32     hex         = 0;
+	u32     i           = 0;
 	u16     count       = 0;
-	pu4Byte    ptr_array   = NULL;
+	u32 *    ptr_array   = NULL;
 	u8     platform    = pDM_Odm->SupportPlatform;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
 	u8     board       = pDM_Odm->BoardType;
-	u4Byte     ArrayLen    = sizeof(Array_RadioA_1T_8723A)/sizeof(u4Byte);
-	pu4Byte    Array       = Array_RadioA_1T_8723A;
+	u32     ArrayLen    = sizeof(Array_RadioA_1T_8723A)/sizeof(u32);
+	u32 *    Array       = Array_RadioA_1T_8723A;
 
 
 	hex += board;
@@ -241,8 +241,8 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 
 	for (i = 0; i < ArrayLen; i += 2 )
 	{
-	    u4Byte v1 = Array[i];
-	    u4Byte v2 = Array[i+1];
+	    u32 v1 = Array[i];
+	    u32 v2 = Array[i+1];
 
 	    // This (offset, data) pair meets the condition.
 	    if ( v1 < 0xCDCDCDCD )
