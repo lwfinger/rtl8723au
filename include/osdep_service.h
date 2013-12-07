@@ -90,8 +90,6 @@ struct	__queue	{
 	spinlock_t		lock;
 };
 
-typedef	struct sk_buff	_pkt;
-
 typedef struct	__queue	_queue;
 typedef	struct	net_device * _nic_hdl;
 
