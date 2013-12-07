@@ -517,7 +517,7 @@ rtl8192c_PHY_SetRFReg(
  *			  Read/Write
  *
  * Input:	PADAPTER		Adapter
- *			ps1Byte				pFileName
+ *			s8 *				pFileName
  *
  * Output:      NONE
  *
@@ -546,7 +546,7 @@ phy_ConfigMACWithParaFile(
  *			  Read/Write
  *
  * Input:	PADAPTER		Adapter
- *			ps1Byte				pFileName
+ *			s8 *				pFileName
  *
  * Output:      NONE
  *
@@ -776,7 +776,7 @@ phy_InitBBRFRegisterDefinition(
  *			  Read/Write
  *
  * Input:	PADAPTER		Adapter
- *			ps1Byte				pFileName
+ *			s8 *				pFileName
  *
  * Output:      NONE
  *
@@ -1363,7 +1363,7 @@ PHY_RFConfig8723A(
  * Overview:    This function read RF parameters from general file format, and do RF 3-wire
  *
  * Input:	PADAPTER			Adapter
- *			ps1Byte					pFileName
+ *			s8 *					pFileName
  *			RF_RADIO_PATH_E	eRFPath
  *
  * Output:      NONE
@@ -1433,7 +1433,7 @@ PHY_ConfigRFExternalPA(
  * Overview:    This function read RF parameters from general file format, and do RF 3-wire
  *
  * Input:	PADAPTER			Adapter
- *			ps1Byte					pFileName
+ *			s8 *					pFileName
  *			RF_RADIO_PATH_E	eRFPath
  *
  * Output:      NONE

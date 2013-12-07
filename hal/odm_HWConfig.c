@@ -42,7 +42,7 @@
 
 u8
 odm_QueryRxPwrPercentage(
-		s1Byte		AntPower
+		s8		AntPower
 	)
 {
 	if ((AntPower <= -100) || (AntPower >= 20))
@@ -348,13 +348,13 @@ static u8 odm_SQ_process_patch_RT_CID_819x_Lenovo(
 
 static u8
 odm_EVMdbToPercentage(
-	s1Byte Value
+	s8 Value
     )
 {
 	//
 	// -33dB~0dB to 0%~99%
 	//
-	s1Byte ret_val;
+	s8 ret_val;
 
 	ret_val = Value;
 	//ret_val /= 2;
@@ -387,7 +387,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 {
 	SWAT_T				*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	u8				i, Max_spatial_stream;
-	s1Byte				rx_pwr[4], rx_pwr_all=0;
+	s8				rx_pwr[4], rx_pwr_all=0;
 	u8				EVM, PWDB_ALL = 0, PWDB_ALL_BT;
 	u8				RSSI, total_rssi=0;
 	u8				isCCKrate=0;

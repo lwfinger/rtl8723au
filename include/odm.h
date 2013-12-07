@@ -144,9 +144,9 @@ typedef struct _Dynamic_Initial_Gain_Threshold_
 	u8		CurIGValue;
 	u8		BackupIGValue;
 
-	s1Byte		BackoffVal;
-	s1Byte		BackoffVal_range_max;
-	s1Byte		BackoffVal_range_min;
+	s8		BackoffVal;
+	s8		BackoffVal_range_max;
+	s8		BackoffVal_range_min;
 	u8		rx_gain_range_max;
 	u8		rx_gain_range_min;
 	u8		Rssi_val_min;
@@ -354,8 +354,8 @@ typedef struct _ODM_Phy_Status_Info_
 	u8		SignalQuality;	 // in 0-100 index.
 	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; //EVM
 	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];// in 0~100 index
-	s1Byte		RxPower; // in dBm Translate from PWdB
-	s1Byte		RecvSignalPower;// Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures.
+	s8		RxPower; // in dBm Translate from PWdB
+	s8		RecvSignalPower;// Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures.
 	u8		BTRxRSSIPercentage;
 	u8		SignalStrength; // in 0-100 index.
 	u8		RxPwr[MAX_PATH_NUM_92CS];//per-path's pwdb
@@ -366,7 +366,7 @@ typedef struct _ODM_Phy_Status_Info_
 typedef struct _ODM_Phy_Dbg_Info_
 {
 	//ODM Write,debug info
-	s1Byte		RxSNRdB[MAX_PATH_NUM_92CS];
+	s8		RxSNRdB[MAX_PATH_NUM_92CS];
 	u64		NumQryPhyStatus;
 	u64		NumQryPhyStatusCCK;
 	u64		NumQryPhyStatusOFDM;
