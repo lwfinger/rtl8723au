@@ -823,7 +823,7 @@ _func_enter_;
 	bReady = _FALSE;
 	start_time = rtw_get_current_time();
 
-	rtw_yield_os();
+	yield();
 
 	while(1)
 	{

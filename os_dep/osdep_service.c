@@ -199,11 +199,6 @@ void rtw_udelay_os(int us)
 }
 #endif
 
-void rtw_yield_os(void)
-{
-	yield();
-}
-
 #define RTW_SUSPEND_LOCK_NAME "rtw_wifi"
 
 #ifdef CONFIG_WAKELOCK
