@@ -201,7 +201,7 @@ ODM_FreeMemory(
 	u32		length
 	);
 
-s4Byte ODM_CompareMemory(
+s32 ODM_CompareMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *           pBuf1,
       	void *           pBuf2,

@@ -58,12 +58,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define s2Byte		s16
 	#define ps2Byte			s16*
 
-	#define s4Byte		s32
-	#define ps4Byte			s32*
-
-	#define s8Byte		s64
-	#define ps8Byte			s64*
-
 	#define DEV_BUS_TYPE	RT_USB_INTERFACE
 
 	typedef struct timer_list		RT_TIMER, *PRT_TIMER;

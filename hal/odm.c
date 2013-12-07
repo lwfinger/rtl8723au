@@ -2396,7 +2396,7 @@ odm_RefreshRateAdaptiveMaskAPADSL(
 bool
 ODM_RAStateCheck(
 		PDM_ODM_T		pDM_Odm,
-		s4Byte			RSSI,
+		s32			RSSI,
 		bool			bForceUpdate,
 		u8 *			pRATRState
 	)
@@ -3511,7 +3511,7 @@ odm_SwAntDivChkAntSwitchNIC(
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	s4Byte			curRSSI=100, RSSI_A, RSSI_B;
+	s32			curRSSI=100, RSSI_A, RSSI_B;
 	u8			nextAntenna=Antenna_B;
 	//static u64		lastTxOkCnt=0, lastRxOkCnt=0;
 	u64			curTxOkCnt, curRxOkCnt;

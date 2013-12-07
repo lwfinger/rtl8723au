@@ -65,13 +65,13 @@ odm_QueryRxPwrPercentage(
 // 2012/01/12 MH MOve some signal strength smooth method to MP HAL layer.
 // IF other SW team do not support the feature, remove this section.??
 //
-s4Byte
+s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	PDM_ODM_T pDM_Odm,
-	s4Byte CurrSig
+	s32 CurrSig
 )
 {
-	s4Byte RetSig;
+	s32 RetSig;
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 	//if(pDM_Odm->SupportInterface  == ODM_ITRF_PCIE)
 	{
@@ -121,13 +121,13 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	return RetSig;
 }
 
-s4Byte
+s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
  PDM_ODM_T pDM_Odm,
-	s4Byte CurrSig
+	s32 CurrSig
 )
 {
-	s4Byte RetSig;
+	s32 RetSig;
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 	//if(pDM_Odm->SupportInterface  == ODM_ITRF_USB)
 	{
@@ -182,13 +182,13 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
 }
 
 
-s4Byte
+s32
 odm_SignalScaleMapping_92CSeries(
 	PDM_ODM_T pDM_Odm,
-	s4Byte CurrSig
+	s32 CurrSig
 )
 {
-	s4Byte RetSig;
+	s32 RetSig;
 #if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
 	if(pDM_Odm->SupportInterface  == ODM_ITRF_PCIE)
 	{
@@ -275,10 +275,10 @@ odm_SignalScaleMapping_92CSeries(
 #endif
 	return RetSig;
 }
-s4Byte
+s32
 odm_SignalScaleMapping(
 	PDM_ODM_T pDM_Odm,
-	s4Byte CurrSig
+	s32 CurrSig
 )
 {
 	if(	(pDM_Odm->SupportPlatform == ODM_MP) &&
@@ -633,7 +633,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 
 		#if (DM_ODM_SUPPORT_TYPE &  (/*ODM_MP|*/ODM_CE|ODM_AP|ODM_ADSL))
 			//Get Rx snr value in DB
-			pPhyInfo->RxSNR[i] = pDM_Odm->PhyDbgInfo.RxSNRdB[i] = (s4Byte)(pPhyStaRpt->path_rxsnr[i]/2);
+			pPhyInfo->RxSNR[i] = pDM_Odm->PhyDbgInfo.RxSNRdB[i] = (s32)(pPhyStaRpt->path_rxsnr[i]/2);
 		#endif
 
 			/* Record Signal Strength for next packet */
@@ -753,7 +753,7 @@ odm_Process_RSSIForDM(
 	)
 {
 
-	s4Byte			UndecoratedSmoothedPWDB, UndecoratedSmoothedCCK, UndecoratedSmoothedOFDM, RSSI_Ave;
+	s32			UndecoratedSmoothedPWDB, UndecoratedSmoothedCCK, UndecoratedSmoothedOFDM, RSSI_Ave;
 	u8			isCCKrate=0;
 	u8			RSSI_max, RSSI_min, i;
 	u32			OFDM_pkt=0;
