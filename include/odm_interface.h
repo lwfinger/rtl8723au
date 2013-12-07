@@ -104,7 +104,7 @@ ODM_Read1Byte(
 	u4Byte			RegAddr
 	);
 
-u2Byte
+u16
 ODM_Read2Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr
@@ -127,7 +127,7 @@ void
 ODM_Write2Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
-	u2Byte			Data
+	u16			Data
 	);
 
 void

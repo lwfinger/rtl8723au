@@ -2716,7 +2716,7 @@ Hal_InitPGData(
 			// Read all Content from EEPROM or EFUSE.
 			for(i = 0; i < HWSET_MAX_SIZE; i += 2)
 			{
-//				value16 = EF2Byte(ReadEEprom(pAdapter, (u2Byte) (i>>1)));
+//				value16 = EF2Byte(ReadEEprom(pAdapter, (u16) (i>>1)));
 //				*((u16*)(&PROMContent[i])) = value16;
 			}
 		}

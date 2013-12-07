@@ -229,7 +229,7 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 
 	u4Byte     hex         = 0;
 	u4Byte     i           = 0;
-	u2Byte     count       = 0;
+	u16     count       = 0;
 	pu4Byte    ptr_array   = NULL;
 	u8     platform    = pDM_Odm->SupportPlatform;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
@@ -500,7 +500,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 
 	u4Byte     hex         = 0;
 	u4Byte     i           = 0;
-	u2Byte     count       = 0;
+	u16     count       = 0;
 	pu4Byte    ptr_array   = NULL;
 	u8     platform    = pDM_Odm->SupportPlatform;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
@@ -579,7 +579,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 
 	u4Byte     hex         = 0;
 	u4Byte     i           = 0;
-	u2Byte     count       = 0;
+	u16     count       = 0;
 	pu4Byte    ptr_array   = NULL;
 	u8     platform    = pDM_Odm->SupportPlatform;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
@@ -766,7 +766,7 @@ ODM_ReadAndConfig_PHY_REG_PG_8723A(
 {
 	u4Byte     hex = 0;
 	u4Byte     i           = 0;
-	u2Byte     count       = 0;
+	u16     count       = 0;
 	pu4Byte    ptr_array   = NULL;
 	u8     platform    = pDM_Odm->SupportPlatform;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
