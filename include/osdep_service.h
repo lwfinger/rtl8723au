@@ -91,7 +91,6 @@ struct	__queue	{
 };
 
 typedef struct	__queue	_queue;
-typedef	struct	net_device * _nic_hdl;
 
 #define thread_exit() complete_and_exit(NULL, 0)
 
@@ -104,7 +103,8 @@ static inline struct list_head	*get_list_head(_queue	*queue)
 }
 
 
-static inline void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
+static inline void _init_timer(_timer *ptimer, struct net_device *nic_hdl,
+			       void *pfunc, void* cntx)
 {
 	//setup_timer(ptimer, pfunc,(u32)cntx);
 	ptimer->function = pfunc;
@@ -256,9 +256,6 @@ extern void _rtw_udelay_os(int us, const char *func, const int line);
 extern void	rtw_mdelay_os(int ms);
 extern void	rtw_udelay_os(int us);
 #endif
-
-extern void rtw_yield_os(void);
-
 
 static inline unsigned char _cancel_timer_ex(_timer *ptimer)
 {

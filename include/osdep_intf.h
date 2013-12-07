@@ -115,6 +115,6 @@ void rtw_drv_if2_stop(_adapter *if2);
 #endif
 
 int rtw_drv_register_netdev(_adapter *padapter);
-void rtw_ndev_destructor(_nic_hdl ndev);
+void rtw_ndev_destructor(struct net_device *ndev);
 
 #endif	//_OSDEP_INTF_H_
