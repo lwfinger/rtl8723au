@@ -263,23 +263,23 @@ typedef struct _SW_Antenna_Switch_
 	s4Byte		RSSI_cnt_A;
 	s4Byte		RSSI_cnt_B;
 
-	u8Byte		lastTxOkCnt;
-	u8Byte		lastRxOkCnt;
-	u8Byte		TXByteCnt_A;
-	u8Byte		TXByteCnt_B;
-	u8Byte		RXByteCnt_A;
-	u8Byte		RXByteCnt_B;
+	u64		lastTxOkCnt;
+	u64		lastRxOkCnt;
+	u64		TXByteCnt_A;
+	u64		TXByteCnt_B;
+	u64		RXByteCnt_A;
+	u64		RXByteCnt_B;
 	u8		TrafficLoad;
 	RT_TIMER	SwAntennaSwitchTimer;
 /* CE Platform use
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
 	_timer SwAntennaSwitchTimer;
-	u8Byte lastTxOkCnt;
-	u8Byte lastRxOkCnt;
-	u8Byte TXByteCnt_A;
-	u8Byte TXByteCnt_B;
-	u8Byte RXByteCnt_A;
-	u8Byte RXByteCnt_B;
+	u64 lastTxOkCnt;
+	u64 lastRxOkCnt;
+	u64 TXByteCnt_A;
+	u64 TXByteCnt_B;
+	u64 RXByteCnt_A;
+	u64 RXByteCnt_B;
 	u8 DoubleComfirm;
 	u8 TrafficLoad;
 	//SW Antenna Switch
@@ -367,9 +367,9 @@ typedef struct _ODM_Phy_Dbg_Info_
 {
 	//ODM Write,debug info
 	s1Byte		RxSNRdB[MAX_PATH_NUM_92CS];
-	u8Byte		NumQryPhyStatus;
-	u8Byte		NumQryPhyStatusCCK;
-	u8Byte		NumQryPhyStatusOFDM;
+	u64		NumQryPhyStatus;
+	u64		NumQryPhyStatusCCK;
+	u64		NumQryPhyStatusOFDM;
 	//Others
 	s4Byte		RxEVM[MAX_PATH_NUM_92CS];
 
@@ -508,7 +508,7 @@ typedef enum _ODM_Common_Info_Definition
 	ODM_CMNINFO_WIFI_DISPLAY,
 	ODM_CMNINFO_LINK,
 	ODM_CMNINFO_RSSI_MIN,
-	ODM_CMNINFO_DBG_COMP,				// u8Byte
+	ODM_CMNINFO_DBG_COMP,				// u64
 	ODM_CMNINFO_DBG_LEVEL,				// u32
 	ODM_CMNINFO_RA_THRESHOLD_HIGH,		// u8
 	ODM_CMNINFO_RA_THRESHOLD_LOW,		// u8
@@ -943,7 +943,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 	rtl8192cd_priv		fake_priv;
 
-	u8Byte			DebugComponents;
+	u64			DebugComponents;
 	u32			DebugLevel;
 
 //------ ODM HANDLE, DRIVER NEEDS NOT TO HOOK------//
@@ -1013,9 +1013,9 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	// MAC PHY Mode SMSP/DMSP/DMDP = 0/1/2
 	u8			*pMacPhyMode;
 	//TX Unicast byte count
-	u8Byte			*pNumTxBytesUnicast;
+	u64			*pNumTxBytesUnicast;
 	//RX Unicast byte count
-	u8Byte			*pNumRxBytesUnicast;
+	u64			*pNumRxBytesUnicast;
 	// Wireless mode B/G/A/N = BIT0/BIT1/BIT2/BIT3
 	u8			*pWirelessMode; //ODM_WIRELESS_MODE_E
 	// Frequence band 2.4G/5G = 0/1
@@ -1491,7 +1491,7 @@ void
 ODM_CmnInfoUpdate(
 		PDM_ODM_T		pDM_Odm,
 		u32			CmnInfo,
-		u8Byte			Value
+		u64			Value
 	);
 
 void

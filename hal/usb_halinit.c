@@ -3182,7 +3182,7 @@ GetHalDefVar8192CUsb(
 			break;
 		case HW_DEF_ODM_DBG_FLAG:
 			{
-				u8Byte	DebugComponents = *((u32*)pValue);
+				u64	DebugComponents = *((u32*)pValue);
 				PDM_ODM_T	pDM_Odm = &(pHalData->odmpriv);
 				printk("pDM_Odm->DebugComponents = 0x%llx \n",pDM_Odm->DebugComponents );
 			}
@@ -3270,7 +3270,7 @@ SetHalDefVar8192CUsb(
 			break;
 		case HW_DEF_ODM_DBG_FLAG:
 			{
-				u8Byte	DebugComponents = *((u8Byte*)pValue);
+				u64	DebugComponents = *((u64*)pValue);
 				PDM_ODM_T	pDM_Odm = &(pHalData->odmpriv);
 				pDM_Odm->DebugComponents = DebugComponents;
 			}

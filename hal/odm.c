@@ -779,11 +779,11 @@ ODM_CmnInfoHook(
 			break;
 
 		case	ODM_CMNINFO_TX_UNI:
-			pDM_Odm->pNumTxBytesUnicast = (u8Byte *)pValue;
+			pDM_Odm->pNumTxBytesUnicast = (u64 *)pValue;
 			break;
 
 		case	ODM_CMNINFO_RX_UNI:
-			pDM_Odm->pNumRxBytesUnicast = (u8Byte *)pValue;
+			pDM_Odm->pNumRxBytesUnicast = (u64 *)pValue;
 			break;
 
 		case	ODM_CMNINFO_WM_MODE:
@@ -913,7 +913,7 @@ void
 ODM_CmnInfoUpdate(
 		PDM_ODM_T		pDM_Odm,
 		u32			CmnInfo,
-		u8Byte			Value
+		u64			Value
 	)
 {
 	//
@@ -3513,10 +3513,10 @@ odm_SwAntDivChkAntSwitchNIC(
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	s4Byte			curRSSI=100, RSSI_A, RSSI_B;
 	u8			nextAntenna=Antenna_B;
-	//static u8Byte		lastTxOkCnt=0, lastRxOkCnt=0;
-	u8Byte			curTxOkCnt, curRxOkCnt;
-	//static u8Byte		TXByteCnt_A=0, TXByteCnt_B=0, RXByteCnt_A=0, RXByteCnt_B=0;
-	u8Byte			CurByteCnt=0, PreByteCnt=0;
+	//static u64		lastTxOkCnt=0, lastRxOkCnt=0;
+	u64			curTxOkCnt, curRxOkCnt;
+	//static u64		TXByteCnt_A=0, TXByteCnt_B=0, RXByteCnt_A=0, RXByteCnt_B=0;
+	u64			CurByteCnt=0, PreByteCnt=0;
 	//static u8		TrafficLoad = TRAFFIC_LOW;
 	u8			Score_A=0, Score_B=0;
 	u8			i;
