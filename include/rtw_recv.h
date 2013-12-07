@@ -567,9 +567,9 @@ static inline u8 *recvframe_pull_tail(union recv_frame *precvframe, int sz)
 
 
 
-static inline _buffer * get_rxbuf_desc(union recv_frame *precvframe)
+static inline unsigned char *get_rxbuf_desc(union recv_frame *precvframe)
 {
-	_buffer * buf_desc;
+	unsigned char *buf_desc;
 
 	if(precvframe==NULL)
 		return NULL;

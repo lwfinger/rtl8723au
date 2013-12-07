@@ -91,7 +91,6 @@ struct	__queue	{
 };
 
 typedef	struct sk_buff	_pkt;
-typedef unsigned char	_buffer;
 
 typedef struct	__queue	_queue;
 typedef	struct	net_device * _nic_hdl;
