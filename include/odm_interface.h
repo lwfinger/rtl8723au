@@ -98,7 +98,7 @@ typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct * pContext);
 //
 
 
-u1Byte
+u8
 ODM_Read1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr
@@ -120,7 +120,7 @@ void
 ODM_Write1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
-	u1Byte			Data
+	u8			Data
 	);
 
 void
@@ -318,7 +318,7 @@ ODM_ReleaseTimer(
 void
 ODM_FillH2CCmd(
 	PADAPTER		Adapter,
-	u1Byte	ElementID,
+	u8	ElementID,
 	u4Byte	CmdLen,
 	u8 *	pCmdBuffer
 );

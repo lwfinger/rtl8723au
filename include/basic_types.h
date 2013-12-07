@@ -214,7 +214,7 @@ typedef	__kernel_ssize_t	SSIZE_T;
 		EF1Byte( \
 			LE_BITS_CLEARED_TO_1BYTE_8BIT(__pStart, __BitOffset, __BitLen) \
 			| \
-			((u1Byte)__Value) \
+			((u8)__Value) \
 		); \
 }
 

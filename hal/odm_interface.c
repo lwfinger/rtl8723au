@@ -27,7 +27,7 @@
 // ODM IO Relative API.
 //
 
-u1Byte
+u8
 ODM_Read1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr
@@ -91,7 +91,7 @@ void
 ODM_Write1Byte(
 	PDM_ODM_T		pDM_Odm,
 	u4Byte			RegAddr,
-	u1Byte			Data
+	u8			Data
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
@@ -580,7 +580,7 @@ ODM_ReleaseTimer(
 void
 ODM_FillH2CCmd(
 	PADAPTER		Adapter,
-	u1Byte	ElementID,
+	u8	ElementID,
 	u4Byte	CmdLen,
 	u8 *	pCmdBuffer
 )

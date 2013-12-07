@@ -40,7 +40,7 @@
 #define READ_AND_CONFIG_MP(ic, txt) (ODM_ReadAndConfig##txt##ic(pDM_Odm))
 #define READ_AND_CONFIG_TC(ic, txt) (ODM_ReadAndConfig_TC##txt##ic(pDM_Odm))
 
-u1Byte
+u8
 odm_QueryRxPwrPercentage(
 		s1Byte		AntPower
 	)
@@ -301,15 +301,15 @@ odm_SignalScaleMapping(
 #endif
 
 //pMgntInfo->CustomerID == RT_CID_819x_Lenovo
-static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
+static u8 odm_SQ_process_patch_RT_CID_819x_Lenovo(
  PDM_ODM_T	pDM_Odm,
- u1Byte		isCCKrate,
- u1Byte		PWDB_ALL,
- u1Byte		path,
- u1Byte		RSSI
+ u8		isCCKrate,
+ u8		PWDB_ALL,
+ u8		path,
+ u8		RSSI
 )
 {
-	u1Byte	SQ;
+	u8	SQ;
 #if (DM_ODM_SUPPORT_TYPE &  ODM_MP)
 	// mapping to 5 bars for vista signal strength
 	// signal quality in driver will be displayed to signal strength
@@ -346,7 +346,7 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
 	return SQ;
 }
 
-static u1Byte
+static u8
 odm_EVMdbToPercentage(
 	s1Byte Value
     )
@@ -386,14 +386,14 @@ odm_RxPhyStatus92CSeries_Parsing(
 	)
 {
 	SWAT_T				*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	u1Byte				i, Max_spatial_stream;
+	u8				i, Max_spatial_stream;
 	s1Byte				rx_pwr[4], rx_pwr_all=0;
-	u1Byte				EVM, PWDB_ALL = 0, PWDB_ALL_BT;
-	u1Byte				RSSI, total_rssi=0;
-	u1Byte				isCCKrate=0;
-	u1Byte				rf_rx_num = 0;
-	u1Byte				cck_highpwr = 0;
-	u1Byte				LNA_idx, VGA_idx;
+	u8				EVM, PWDB_ALL = 0, PWDB_ALL_BT;
+	u8				RSSI, total_rssi=0;
+	u8				isCCKrate=0;
+	u8				rf_rx_num = 0;
+	u8				cck_highpwr = 0;
+	u8				LNA_idx, VGA_idx;
 
 	PPHY_STATUS_RPT_8192CD_T pPhyStaRpt = (PPHY_STATUS_RPT_8192CD_T)pPhyStatus;
 
@@ -404,8 +404,8 @@ odm_RxPhyStatus92CSeries_Parsing(
 
 
 	if(isCCKrate) {
-		u1Byte report;
-		u1Byte cck_agc_rpt;
+		u8 report;
+		u8 cck_agc_rpt;
 
 		pDM_Odm->PhyDbgInfo.NumQryPhyStatusCCK++;
 		//
@@ -564,7 +564,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 		//
 		if(pPktinfo->bPacketMatchBSSID)
 		{
-			u1Byte	SQ,SQ_rpt;
+			u8	SQ,SQ_rpt;
 
 			if((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)){//pMgntInfo->CustomerID == RT_CID_819x_Lenovo
 				SQ = odm_SQ_process_patch_RT_CID_819x_Lenovo(pDM_Odm,isCCKrate,PWDB_ALL,0,0);
@@ -629,7 +629,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 					RSSI -= 4;
 			}
 
-			pPhyInfo->RxMIMOSignalStrength[i] =(u1Byte) RSSI;
+			pPhyInfo->RxMIMOSignalStrength[i] =(u8) RSSI;
 
 		#if (DM_ODM_SUPPORT_TYPE &  (/*ODM_MP|*/ODM_CE|ODM_AP|ODM_ADSL))
 			//Get Rx snr value in DB
@@ -693,9 +693,9 @@ odm_RxPhyStatus92CSeries_Parsing(
 				{
 					if(i==ODM_RF_PATH_A) // Fill value in RFD, Get the first spatial stream only
 					{
-						pPhyInfo->SignalQuality = (u1Byte)(EVM & 0xff);
+						pPhyInfo->SignalQuality = (u8)(EVM & 0xff);
 					}
-					pPhyInfo->RxMIMOSignalQuality[i] = (u1Byte)(EVM & 0xff);
+					pPhyInfo->RxMIMOSignalQuality[i] = (u8)(EVM & 0xff);
 				}
 			}
 		}
@@ -708,9 +708,9 @@ odm_RxPhyStatus92CSeries_Parsing(
 	{
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 		// 2012/01/12 MH Use customeris signal strength from HalComRxdDesc.c/
-		pPhyInfo->SignalStrength = (u1Byte)(SignalScaleMapping(pDM_Odm->Adapter, PWDB_ALL));//PWDB_ALL;
+		pPhyInfo->SignalStrength = (u8)(SignalScaleMapping(pDM_Odm->Adapter, PWDB_ALL));//PWDB_ALL;
 #else
-		pPhyInfo->SignalStrength = (u1Byte)(odm_SignalScaleMapping(pDM_Odm, PWDB_ALL));//PWDB_ALL;
+		pPhyInfo->SignalStrength = (u8)(odm_SignalScaleMapping(pDM_Odm, PWDB_ALL));//PWDB_ALL;
 #endif
 	}
 	else
@@ -719,9 +719,9 @@ odm_RxPhyStatus92CSeries_Parsing(
 		{
 #if (DM_ODM_SUPPORT_TYPE == ODM_MP)
 			// 2012/01/12 MH Use customeris signal strength from HalComRxdDesc.c/
-			pPhyInfo->SignalStrength = (u1Byte)(SignalScaleMapping(pDM_Odm->Adapter, total_rssi/=rf_rx_num));//PWDB_ALL;
+			pPhyInfo->SignalStrength = (u8)(SignalScaleMapping(pDM_Odm->Adapter, total_rssi/=rf_rx_num));//PWDB_ALL;
 #else
-			pPhyInfo->SignalStrength = (u1Byte)(odm_SignalScaleMapping(pDM_Odm, total_rssi/=rf_rx_num));
+			pPhyInfo->SignalStrength = (u8)(odm_SignalScaleMapping(pDM_Odm, total_rssi/=rf_rx_num));
 #endif
 		}
 	}
@@ -754,8 +754,8 @@ odm_Process_RSSIForDM(
 {
 
 	s4Byte			UndecoratedSmoothedPWDB, UndecoratedSmoothedCCK, UndecoratedSmoothedOFDM, RSSI_Ave;
-	u1Byte			isCCKrate=0;
-	u1Byte			RSSI_max, RSSI_min, i;
+	u8			isCCKrate=0;
+	u8			RSSI_max, RSSI_min, i;
 	u4Byte			OFDM_pkt=0;
 	u4Byte			Weighting=0;
 	PSTA_INFO_T	pEntry;
@@ -789,7 +789,7 @@ odm_Process_RSSIForDM(
 #if (RTL8188E_SUPPORT == 1)
 	if(pDM_Odm->SupportICType == ODM_RTL8188E)
 	{
-		u1Byte	antsel_tr_mux;
+		u8	antsel_tr_mux;
 		pFAT_T	pDM_FatTable = &pDM_Odm->DM_FatTable;
 
 		if(pDM_Odm->AntDivType == CG_TRX_SMART_ANTDIV)
@@ -925,7 +925,7 @@ odm_Process_RSSIForDM(
 				pEntry->rssi_stat.ValidBit++;
 
 			for(i=0; i<pEntry->rssi_stat.ValidBit; i++)
-				OFDM_pkt += (u1Byte)(pEntry->rssi_stat.PacketMap>>i)&BIT0;
+				OFDM_pkt += (u8)(pEntry->rssi_stat.PacketMap>>i)&BIT0;
 
 			if(pEntry->rssi_stat.ValidBit == 64)
 			{
@@ -1018,7 +1018,7 @@ void
 ODM_MacStatusQuery(
 	PDM_ODM_T					pDM_Odm,
 		u8 *						pMacStatus,
-		u1Byte						MacID,
+		u8						MacID,
 		bool						bPacketMatchBSSID,
 		bool						bPacketToSelf,
 		bool						bPacketBeacon
@@ -1127,7 +1127,7 @@ ODM_ConfigMACWithHeaderFile(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-	u1Byte result = HAL_STATUS_SUCCESS;
+	u8 result = HAL_STATUS_SUCCESS;
 #if (RTL8723A_SUPPORT == 1)
 	if (pDM_Odm->SupportICType == ODM_RTL8723A)
 	{

@@ -487,7 +487,7 @@ rtl8192c_PHY_SetRFReg(
 {
 
 	//HAL_DATA_TYPE	*pHalData		= GET_HAL_DATA(Adapter);
-	//u1Byte			RFWaitCounter	= 0;
+	//u8			RFWaitCounter	= 0;
 	u32		Original_Value, BitShift;
 	//_irqL	irqL;
 
@@ -828,7 +828,7 @@ phy_ConfigBBExternalPA(
  *			  Read/Write
  *
  * Input:	PADAPTER		Adapter
- *			u1Byte			ConfigType     0 => PHY_CONFIG
+ *			u8			ConfigType     0 => PHY_CONFIG
  *										 1 =>AGC_TAB
  *
  * Output:      NONE
@@ -1921,7 +1921,7 @@ static void ccxPowerIndexCheck(
  *			We must consider RF path later!!!!!!!
  *
  * Input:       PADAPTER		Adapter
- *			u1Byte		channel
+ *			u8		channel
  *
  * Output:      NONE
  *

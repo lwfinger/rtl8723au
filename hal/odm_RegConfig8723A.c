@@ -103,7 +103,7 @@ void
 odm_ConfigMAC_8723A(
 	PDM_ODM_T	pDM_Odm,
 	u4Byte		Addr,
-	u1Byte		Data
+	u8		Data
 	)
 {
 	ODM_Write1Byte(pDM_Odm, Addr, Data);

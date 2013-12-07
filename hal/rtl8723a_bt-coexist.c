@@ -9074,7 +9074,7 @@ void btdm_SetSwFullTimeDacSwing(PADAPTER		padapter,u8	bSwDacSwingOn,u32	swDacSwi
 
 void btdm_SetFwDacSwingLevel(PADAPTER padapter, u8 dacSwingLvl)
 {
-	u1Byte			H2C_Parameter[1] ={0};
+	u8			H2C_Parameter[1] ={0};
 
 	H2C_Parameter[0] = dacSwingLvl;
 
@@ -9155,7 +9155,7 @@ void btdm_2AntLowPenaltyRa(PADAPTER	padapter, u8	bLowPenaltyRa)
 	if(pBtdm8723->bPreLowPenaltyRa == pBtdm8723->bCurLowPenaltyRa)
 		return;
 
-	BTDM_SetSwPenaltyTxRateAdaptive(padapter, (u1Byte)pBtdm8723->bCurLowPenaltyRa);
+	BTDM_SetSwPenaltyTxRateAdaptive(padapter, (u8)pBtdm8723->bCurLowPenaltyRa);
 
 	pBtdm8723->bPreLowPenaltyRa = pBtdm8723->bCurLowPenaltyRa;
 	}
@@ -11814,7 +11814,7 @@ BTDM_2AntFwC2hBtInfo8723A(
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
-	u1Byte	btInfo=0;
+	u8	btInfo=0;
 	u8			algorithm=BT_2ANT_COEX_ALGO_UNDEFINED;
 	u8			bScoExist=_FALSE, bBtLinkExist=_FALSE, bBtHsModeExist=_FALSE;
 	btInfo = pHalData->bt_coexist.halCoex8723.c2hBtInfoOriginal;

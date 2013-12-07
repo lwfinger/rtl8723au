@@ -231,9 +231,9 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 	u4Byte     i           = 0;
 	u2Byte     count       = 0;
 	pu4Byte    ptr_array   = NULL;
-	u1Byte     platform    = pDM_Odm->SupportPlatform;
-	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u8     platform    = pDM_Odm->SupportPlatform;
+	u8     interfaceValue   = pDM_Odm->SupportInterface;
+	u8     board       = pDM_Odm->BoardType;
 	u4Byte     ArrayLen    = sizeof(Array_AGC_TAB_1T_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_AGC_TAB_1T_8723A;
 
@@ -502,9 +502,9 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 	u4Byte     i           = 0;
 	u2Byte     count       = 0;
 	pu4Byte    ptr_array   = NULL;
-	u1Byte     platform    = pDM_Odm->SupportPlatform;
-	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u8     platform    = pDM_Odm->SupportPlatform;
+	u8     interfaceValue   = pDM_Odm->SupportInterface;
+	u8     board       = pDM_Odm->BoardType;
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_1T_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_1T_8723A;
 
@@ -581,9 +581,9 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 	u4Byte     i           = 0;
 	u2Byte     count       = 0;
 	pu4Byte    ptr_array   = NULL;
-	u1Byte     platform    = pDM_Odm->SupportPlatform;
-	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u8     platform    = pDM_Odm->SupportPlatform;
+	u8     interfaceValue   = pDM_Odm->SupportInterface;
+	u8     board       = pDM_Odm->BoardType;
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_MP_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_MP_8723A;
 
@@ -768,9 +768,9 @@ ODM_ReadAndConfig_PHY_REG_PG_8723A(
 	u4Byte     i           = 0;
 	u2Byte     count       = 0;
 	pu4Byte    ptr_array   = NULL;
-	u1Byte     platform    = pDM_Odm->SupportPlatform;
-	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u8     platform    = pDM_Odm->SupportPlatform;
+	u8     interfaceValue   = pDM_Odm->SupportInterface;
+	u8     board       = pDM_Odm->BoardType;
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_PG_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_PG_8723A;
 
