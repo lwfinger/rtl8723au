@@ -42,9 +42,7 @@
 #define NDIS_OID uint
 #define NDIS_STATUS uint
 
-typedef		__kernel_size_t	SIZE_T;
-typedef	__kernel_ssize_t	SSIZE_T;
-#define FIELD_OFFSET(s,field)	((SSIZE_T)&((s*)(0))->field)
+#define FIELD_OFFSET(s,field)	((__kernel_ssize_t)&((s*)(0))->field)
 
 //port from fw by thomas
 // TODO: Belows are Sync from SD7-Driver. It is necessary to check correctness
