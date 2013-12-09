@@ -22,8 +22,8 @@
 
 #include <Hal8192CPhyCfg.h>
 /* MAC/BB/RF HAL config */
-int	PHY_BBConfig8723A(PADAPTER	Adapter	);
-int	PHY_RFConfig8723A(PADAPTER	Adapter	);
-s32 PHY_MACConfig8723A(PADAPTER padapter);
+int PHY_BBConfig8723A(struct rtw_adapter *Adapter);
+int PHY_RFConfig8723A(struct rtw_adapter *Adapter);
+s32 PHY_MACConfig8723A(struct rtw_adapter *padapter);
 
 #endif

@@ -27,10 +27,10 @@
 #ifdef CONFIG_TDLS
 extern unsigned char MCS_rate_2R[16];
 extern unsigned char MCS_rate_1R[16];
-extern void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame);
-extern s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe);
+extern void process_wmmps_data(struct rtw_adapter *padapter, union recv_frame *precv_frame);
+extern s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 
-void rtw_reset_tdls_info(_adapter* padapter)
+void rtw_reset_tdls_info(struct rtw_adapter* padapter)
 {
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
@@ -51,7 +51,7 @@ void rtw_reset_tdls_info(_adapter* padapter)
 #endif /* CONFIG_WFD */
 }
 
-int rtw_init_tdls_info(_adapter* padapter)
+int rtw_init_tdls_info(struct rtw_adapter* padapter)
 {
 	int	res = _SUCCESS;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
@@ -70,7 +70,7 @@ void rtw_free_tdls_info(struct tdls_info *ptdlsinfo)
 	memset(ptdlsinfo, 0, sizeof(struct tdls_info));
 }
 
-void issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, struct sta_info *ptdls_sta, unsigned int power_mode)
+void issue_nulldata_to_TDLS_peer_STA(struct rtw_adapter *padapter, struct sta_info *ptdls_sta, unsigned int power_mode)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -123,7 +123,7 @@ void issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, struct sta_info *ptdls_
 	return;
 }
 
-s32 update_tdls_attrib(_adapter *padapter, struct pkt_attrib *pattrib)
+s32 update_tdls_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib)
 {
 
 	struct sta_info *psta = NULL;
@@ -233,7 +233,7 @@ exit:
 	return res;
 }
 
-void free_tdls_sta(_adapter *padapter, struct sta_info *ptdls_sta)
+void free_tdls_sta(struct rtw_adapter *padapter, struct sta_info *ptdls_sta)
 {
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -277,7 +277,7 @@ void rtw_tdls_set_mac_id(struct tdls_info *ptdlsinfo, struct sta_info *ptdls_sta
 }
 
 /* TDLS encryption(if needed) will always be CCMP */
-void rtw_tdls_set_key(_adapter *adapter, struct rx_pkt_attrib *prx_pkt_attrib, struct sta_info *ptdls_sta)
+void rtw_tdls_set_key(struct rtw_adapter *adapter, struct rx_pkt_attrib *prx_pkt_attrib, struct sta_info *ptdls_sta)
 {
 	if(prx_pkt_attrib->encrypt)
 	{
@@ -286,7 +286,7 @@ void rtw_tdls_set_key(_adapter *adapter, struct rx_pkt_attrib *prx_pkt_attrib, s
 	}
 }
 
-void rtw_tdls_process_ht_cap(_adapter *adapter, struct sta_info *ptdls_sta, u8 *data, u8 Length)
+void rtw_tdls_process_ht_cap(struct rtw_adapter *adapter, struct sta_info *ptdls_sta, u8 *data, u8 Length)
 {
 	/* save HT capabilities in the sta object */
 	memset(&ptdls_sta->htpriv.ht_cap, 0, sizeof(struct rtw_ieee80211_ht_cap));
@@ -337,7 +337,7 @@ void rtw_tdls_process_ht_cap(_adapter *adapter, struct sta_info *ptdls_sta, u8 *
 	}
 }
 
-u8 *rtw_tdls_set_ht_cap(_adapter *padapter, u8 *pframe, struct pkt_attrib *pattrib)
+u8 *rtw_tdls_set_ht_cap(struct rtw_adapter *padapter, u8 *pframe, struct pkt_attrib *pattrib)
 {
 	struct rtw_ieee80211_ht_cap ht_capie;
 	u8 rf_type;
@@ -441,7 +441,7 @@ void rtw_tdls_process_wfd_ie(struct tdls_info *ptdlsinfo, u8 *ptr, u8 length)
 	}
 }
 
-void issue_tunneled_probe_req(_adapter *padapter)
+void issue_tunneled_probe_req(struct rtw_adapter *padapter)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -484,7 +484,7 @@ exit:
 	return;
 }
 
-void issue_tunneled_probe_rsp(_adapter *padapter, union recv_frame *precv_frame)
+void issue_tunneled_probe_rsp(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -528,7 +528,7 @@ exit:
 }
 #endif /* CONFIG_WFD */
 
-void issue_tdls_setup_req(_adapter *padapter, u8 *mac_addr)
+void issue_tdls_setup_req(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	struct tdls_info	*ptdlsinfo = &padapter->tdlsinfo;
 	struct xmit_frame			*pmgntframe;
@@ -610,7 +610,7 @@ exit:
 	return;
 }
 
-void issue_tdls_teardown(_adapter *padapter, u8 *mac_addr)
+void issue_tdls_teardown(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -673,7 +673,7 @@ exit:
 	return;
 }
 
-void issue_tdls_dis_req(_adapter *padapter, u8 *mac_addr)
+void issue_tdls_dis_req(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -718,7 +718,7 @@ exit:
 	return;
 }
 
-void issue_tdls_setup_rsp(_adapter *padapter, union recv_frame *precv_frame)
+void issue_tdls_setup_rsp(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -760,7 +760,7 @@ exit:
 	return;
 }
 
-void issue_tdls_setup_cfm(_adapter *padapter, union recv_frame *precv_frame)
+void issue_tdls_setup_cfm(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 	struct xmit_frame			*pmgntframe;
@@ -805,7 +805,7 @@ exit:
 }
 
 /* TDLS Discovery Response frame is a management action frame */
-void issue_tdls_dis_rsp(_adapter *padapter, union recv_frame *precv_frame, u8 dialog)
+void issue_tdls_dis_rsp(struct rtw_adapter *padapter, union recv_frame *precv_frame, u8 dialog)
 {
 	struct xmit_frame		*pmgntframe;
 	struct pkt_attrib		*pattrib;
@@ -861,7 +861,7 @@ void issue_tdls_dis_rsp(_adapter *padapter, union recv_frame *precv_frame, u8 di
 	return;
 }
 
-void issue_tdls_peer_traffic_indication(_adapter *padapter, struct sta_info *ptdls_sta)
+void issue_tdls_peer_traffic_indication(struct rtw_adapter *padapter, struct sta_info *ptdls_sta)
 {
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -908,7 +908,7 @@ exit:
 	return;
 }
 
-void issue_tdls_ch_switch_req(_adapter *padapter, u8 *mac_addr)
+void issue_tdls_ch_switch_req(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	struct xmit_frame	*pmgntframe;
 	struct pkt_attrib	*pattrib;
@@ -948,7 +948,7 @@ exit:
 	return;
 }
 
-void issue_tdls_ch_switch_rsp(_adapter *padapter, u8 *mac_addr)
+void issue_tdls_ch_switch_rsp(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	struct xmit_frame	*pmgntframe;
 	struct pkt_attrib	*pattrib;
@@ -997,7 +997,7 @@ exit:
 	return;
 }
 
-int On_TDLS_Dis_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Dis_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta = NULL, *psta = rtw_get_stainfo(&(adapter->stapriv), get_bssid(&(adapter->mlmepriv)));
 	struct recv_priv *precvpriv = &(adapter->recvpriv);
@@ -1073,7 +1073,7 @@ int On_TDLS_Dis_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-int On_TDLS_Setup_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Req(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	u8 *psa, *pmyid;
@@ -1292,7 +1292,7 @@ exit:
 	return _FAIL;
 }
 
-int On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct sta_info *ptdls_sta= NULL;
@@ -1467,7 +1467,7 @@ int On_TDLS_Setup_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-int On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Setup_Cfm(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct sta_info *ptdls_sta= NULL;
@@ -1561,7 +1561,7 @@ int On_TDLS_Setup_Cfm(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-int On_TDLS_Dis_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Dis_Req(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct rx_pkt_attrib	*prx_pkt_attrib = &precv_frame->u.hdr.attrib;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -1619,7 +1619,7 @@ exit:
 	return _FAIL;
 }
 
-int On_TDLS_Teardown(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Teardown(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	u8 *psa;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
@@ -1657,7 +1657,7 @@ u8 TDLS_check_ch_state(uint state){
 }
 
 /* we process buffered data for 1. U-APSD, 2. ch. switch, 3. U-APSD + ch. switch here */
-int On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Peer_Traffic_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
@@ -1749,7 +1749,7 @@ int On_TDLS_Peer_Traffic_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-int On_TDLS_Ch_Switch_Req(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Ch_Switch_Req(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta= NULL;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -1822,7 +1822,7 @@ int On_TDLS_Ch_Switch_Req(_adapter *adapter, union recv_frame *precv_frame)
 	return _FAIL;
 }
 
-int On_TDLS_Ch_Switch_Rsp(_adapter *adapter, union recv_frame *precv_frame)
+int On_TDLS_Ch_Switch_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 {
 	struct sta_info *ptdls_sta= NULL;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -1909,7 +1909,7 @@ int On_TDLS_Ch_Switch_Rsp(_adapter *adapter, union recv_frame *precv_frame)
 }
 
 #ifdef CONFIG_WFD
-void wfd_ie_tdls(_adapter * padapter, u8 *pframe, u32 *pktlen )
+void wfd_ie_tdls(struct rtw_adapter * padapter, u8 *pframe, u32 *pktlen )
 {
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct wifi_display_info	*pwfd_info = padapter->tdlsinfo.wfd_info;
@@ -1997,7 +1997,7 @@ void wfd_ie_tdls(_adapter * padapter, u8 *pframe, u32 *pktlen )
 }
 #endif /* CONFIG_WFD */
 
-void rtw_build_tdls_setup_req_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_setup_req_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
@@ -2114,7 +2114,7 @@ void rtw_build_tdls_setup_req_ies(_adapter * padapter, struct xmit_frame * pxmit
 #endif /* CONFIG_WFD */
 }
 
-void rtw_build_tdls_setup_rsp_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_setup_rsp_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
@@ -2262,7 +2262,7 @@ void rtw_build_tdls_setup_rsp_ies(_adapter * padapter, struct xmit_frame * pxmit
 #endif /* CONFIG_WFD */
 }
 
-void rtw_build_tdls_setup_cfm_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_setup_cfm_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
@@ -2333,7 +2333,7 @@ void rtw_build_tdls_setup_cfm_ies(_adapter * padapter, struct xmit_frame * pxmit
 		wpa_tdls_ftie_mic(ptdls_sta->tpk.kck, 3, plinkid_ie, prsnie, ptimeout_ie, pftie, pftie_mic);
 }
 
-void rtw_build_tdls_teardown_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_teardown_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2365,7 +2365,7 @@ void rtw_build_tdls_teardown_ies(_adapter * padapter, struct xmit_frame * pxmitf
 	pframe = rtw_set_ie(pframe, _LINK_ID_IE_,  18, link_id_addr, &(pattrib->pktlen));
 }
 
-void rtw_build_tdls_dis_req_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_dis_req_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2390,7 +2390,7 @@ void rtw_build_tdls_dis_req_ies(_adapter * padapter, struct xmit_frame * pxmitfr
 	pframe = rtw_set_ie(pframe, _LINK_ID_IE_,  18, link_id_addr, &(pattrib->pktlen));
 }
 
-void rtw_build_tdls_dis_rsp_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe, u8 dialog)
+void rtw_build_tdls_dis_rsp_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe, u8 dialog)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
@@ -2481,7 +2481,7 @@ void rtw_build_tdls_dis_rsp_ies(_adapter * padapter, struct xmit_frame * pxmitfr
 	pframe = rtw_set_ie(pframe, _LINK_ID_IE_, 18, link_id_addr, &(pattrib->pktlen));
 }
 
-void rtw_build_tdls_peer_traffic_indication_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_peer_traffic_indication_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2520,7 +2520,7 @@ void rtw_build_tdls_peer_traffic_indication_ies(_adapter * padapter, struct xmit
 	pframe = rtw_set_ie(pframe, _PTI_BUFFER_STATUS_, 1, &AC_queue, &(pattrib->pktlen));
 }
 
-void rtw_build_tdls_ch_switch_req_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_ch_switch_req_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2558,7 +2558,7 @@ void rtw_build_tdls_ch_switch_req_ies(_adapter * padapter, struct xmit_frame * p
 	ptdls_sta->ch_switch_timeout=switch_timeout;
 }
 
-void rtw_build_tdls_ch_switch_rsp_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tdls_ch_switch_rsp_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2592,7 +2592,7 @@ void rtw_build_tdls_ch_switch_rsp_ies(_adapter * padapter, struct xmit_frame * p
 }
 
 #ifdef CONFIG_WFD
-void rtw_build_tunneled_probe_req_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tunneled_probe_req_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2625,7 +2625,7 @@ void rtw_build_tunneled_probe_req_ies(_adapter * padapter, struct xmit_frame * p
 	}
 }
 
-void rtw_build_tunneled_probe_rsp_ies(_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
+void rtw_build_tunneled_probe_rsp_ies(struct rtw_adapter * padapter, struct xmit_frame * pxmitframe, u8 *pframe)
 {
 
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
@@ -2674,7 +2674,7 @@ void _TPK_timer_hdl(void *FunctionContext)
 	_set_timer(&ptdls_sta->TPK_timer, ptdls_sta->TDLS_PeerKey_Lifetime/TPK_RESEND_COUNT);
 }
 
-void init_TPK_timer(_adapter *padapter, struct sta_info *psta)
+void init_TPK_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 
@@ -2688,7 +2688,7 @@ void _ch_switch_timer_hdl(void *FunctionContext)
 {
 
 	struct sta_info *ptdls_sta = (struct sta_info *)FunctionContext;
-	_adapter *padapter = ptdls_sta->padapter;
+	struct rtw_adapter *padapter = ptdls_sta->padapter;
 
 	if( ptdls_sta->option == TDLS_DONE_CH_SEN ){
 		rtw_tdls_cmd(padapter, ptdls_sta->hwaddr, TDLS_DONE_CH_SEN);
@@ -2700,7 +2700,7 @@ void _ch_switch_timer_hdl(void *FunctionContext)
 	}
 }
 
-void init_ch_switch_timer(_adapter *padapter, struct sta_info *psta)
+void init_ch_switch_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 	_init_timer(&psta->option_timer, padapter->pnetdev, _ch_switch_timer_hdl, psta);
@@ -2712,7 +2712,7 @@ void _base_ch_timer_hdl(void *FunctionContext)
 	rtw_tdls_cmd(ptdls_sta->padapter, ptdls_sta->hwaddr, TDLS_P_OFF_CH);
 }
 
-void init_base_ch_timer(_adapter *padapter, struct sta_info *psta)
+void init_base_ch_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 	_init_timer(&psta->base_ch_timer, padapter->pnetdev, _base_ch_timer_hdl, psta);
@@ -2724,7 +2724,7 @@ void _off_ch_timer_hdl(void *FunctionContext)
 	rtw_tdls_cmd(ptdls_sta->padapter, ptdls_sta->hwaddr, TDLS_P_BASE_CH );
 }
 
-void init_off_ch_timer(_adapter *padapter, struct sta_info *psta)
+void init_off_ch_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 	_init_timer(&psta->off_ch_timer, padapter->pnetdev, _off_ch_timer_hdl, psta);
@@ -2744,7 +2744,7 @@ void _tdls_handshake_timer_hdl(void *FunctionContext)
 	}
 }
 
-void init_handshake_timer(_adapter *padapter, struct sta_info *psta)
+void init_handshake_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 	_init_timer(&psta->handshake_timer, padapter->pnetdev, _tdls_handshake_timer_hdl, psta);
@@ -2755,7 +2755,7 @@ void _tdls_alive_timer_phase1_hdl(void *FunctionContext)
 {
 	_irqL irqL;
 	struct sta_info *ptdls_sta = (struct sta_info *)FunctionContext;
-	_adapter *padapter = ptdls_sta->padapter;
+	struct rtw_adapter *padapter = ptdls_sta->padapter;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
 	spin_lock_bh(&ptdlsinfo->hdl_lock);
@@ -2783,7 +2783,7 @@ void _tdls_alive_timer_phase2_hdl(void *FunctionContext)
 {
 	_irqL irqL;
 	struct sta_info *ptdls_sta = (struct sta_info *)FunctionContext;
-	_adapter *padapter = ptdls_sta->padapter;
+	struct rtw_adapter *padapter = ptdls_sta->padapter;
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
 	spin_lock_bh(&(ptdlsinfo->hdl_lock));
@@ -2829,14 +2829,14 @@ void _tdls_alive_timer_phase2_hdl(void *FunctionContext)
 }
 }
 
-void init_tdls_alive_timer(_adapter *padapter, struct sta_info *psta)
+void init_tdls_alive_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
 	_init_timer(&psta->alive_timer1, padapter->pnetdev, _tdls_alive_timer_phase1_hdl, psta);
 	_init_timer(&psta->alive_timer2, padapter->pnetdev, _tdls_alive_timer_phase2_hdl, psta);
 }
 
-int update_sgi_tdls(_adapter *padapter, struct sta_info *psta)
+int update_sgi_tdls(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	struct ht_priv	*psta_ht = NULL;
 	psta_ht = &psta->htpriv;
@@ -2849,7 +2849,7 @@ int update_sgi_tdls(_adapter *padapter, struct sta_info *psta)
 		return _FALSE;
 }
 
-u32 update_mask_tdls(_adapter *padapter, struct sta_info *psta)
+u32 update_mask_tdls(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	int i;
 	u8 rf_type, id;

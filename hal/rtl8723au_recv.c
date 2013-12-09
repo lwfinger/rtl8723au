@@ -36,7 +36,7 @@
 //#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
-void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf)
+void rtl8192cu_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 {
 
 	precvbuf->transfer_len = 0;
@@ -53,7 +53,7 @@ void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf)
 
 }
 
-int	rtl8192cu_init_recv_priv(_adapter *padapter)
+int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 {
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 	int	i, res = _SUCCESS;
@@ -164,7 +164,7 @@ exit:
 
 }
 
-void rtl8192cu_free_recv_priv (_adapter *padapter)
+void rtl8192cu_free_recv_priv (struct rtw_adapter *padapter)
 {
 	int	i;
 	struct recv_buf	*precvbuf;
@@ -265,7 +265,7 @@ void update_recvframe_phyinfo(
 	union recv_frame	*precvframe,
 	struct phy_stat *pphy_status)
 {
-	PADAPTER			padapter = precvframe->u.hdr.adapter;
+	struct rtw_adapter *	padapter = precvframe->u.hdr.adapter;
 	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
 	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter);
 	PODM_PHY_INFO_T		pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);

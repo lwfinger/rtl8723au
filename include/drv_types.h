@@ -42,8 +42,6 @@ enum _NIC_VERSION {
 };
 
 
-typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
-
 #ifdef CONFIG_80211N_HT
 #include <rtw_ht.h>
 #endif
@@ -210,10 +208,10 @@ struct registry_priv
 
 #define MAX_CONTINUAL_URB_ERR 4
 
-#define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->if1)
+#define GET_PRIMARY_ADAPTER(padapter) (((struct rtw_adapter *)padapter)->dvobj->if1)
 
-#define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
-#define GET_ADAPTER(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])
+#define GET_IFACE_NUMS(padapter) (((struct rtw_adapter *)padapter)->dvobj->iface_nums)
+#define GET_ADAPTER(padapter, iface_id) (((struct rtw_adapter *)padapter)->dvobj->padapters[iface_id])
 
 enum _IFACE_ID {
 	IFACE_ID0, //maping to PRIMARY_ADAPTER
@@ -225,8 +223,8 @@ enum _IFACE_ID {
 
 struct dvobj_priv
 {
-	_adapter *if1; //PRIMARY_ADAPTER
-	_adapter *if2; //SECONDARY_ADAPTER
+	struct rtw_adapter *if1; //PRIMARY_ADAPTER
+	struct rtw_adapter *if2; //SECONDARY_ADAPTER
 
 	//for local/global synchronization
 	struct mutex hw_init_mutex;
@@ -238,7 +236,7 @@ struct dvobj_priv
 	unsigned char	oper_bwmode;
 	unsigned char	oper_ch_offset;//PRIME_CHNL_OFFSET
 
-	_adapter *padapters[IFACE_ID_MAX];
+	struct rtw_adapter *padapters[IFACE_ID_MAX];
 	u8 iface_nums; // total number of ifaces used runtime
 
 	//For 92D, DMDP have 2 interface.
@@ -322,7 +320,7 @@ typedef struct loopbackdata
 }LOOPBACKDATA, *PLOOPBACKDATA;
 #endif
 
-struct _ADAPTER{
+struct rtw_adapter {
 	int	DriverState;// for disable driver using module, use dongle to replace module.
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
@@ -399,8 +397,8 @@ struct _ADAPTER{
 	void *xmitThread;
 	void *recvThread;
 
-	void (*intf_start)(_adapter * adapter);
-	void (*intf_stop)(_adapter * adapter);
+	void (*intf_start)(struct rtw_adapter * adapter);
+	void (*intf_stop)(struct rtw_adapter * adapter);
 
 	struct net_device *pnetdev;
 
@@ -439,7 +437,7 @@ struct _ADAPTER{
 	u8	bDisableAutosuspend;
 #endif
 
-	_adapter *pbuddy_adapter;
+	struct rtw_adapter *pbuddy_adapter;
 
 #if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
 	u8 isprimary; //is primary adapter or not
@@ -487,7 +485,7 @@ struct _ADAPTER{
 
 #define adapter_to_dvobj(adapter) (adapter->dvobj)
 
-int rtw_handle_dualmac(_adapter *adapter, bool init);
+int rtw_handle_dualmac(struct rtw_adapter *adapter, bool init);
 
 static inline u8 *myid(struct eeprom_priv *peepriv)
 {

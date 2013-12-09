@@ -209,17 +209,17 @@ struct txrpt_ccx_8723a {
 
 #ifdef CONFIG_XMIT_ACK
 void dump_txrpt_ccx_8723a(void *buf);
-void handle_txrpt_ccx_8723a(_adapter *adapter, void *buf);
+void handle_txrpt_ccx_8723a(struct rtw_adapter *adapter, void *buf);
 #else
 #define dump_txrpt_ccx_8723a(buf) do {} while(0)
 #define handle_txrpt_ccx_8723a(adapter, buf) do {} while(0)
 #endif //CONFIG_XMIT_ACK
 
 void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem);
-void rtl8723a_fill_fake_txdesc(PADAPTER padapter, u8 *pDesc, u32 BufferLen, u8 IsPsPoll, u8 IsBTQosNull);
+void rtl8723a_fill_fake_txdesc(struct rtw_adapter *padapter, u8 *pDesc, u32 BufferLen, u8 IsPsPoll, u8 IsBTQosNull);
 
-s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
-s32 rtl8723au_xmit_buf_handler(PADAPTER padapter);
+s32	rtl8723au_hal_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
+s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter);
 #define hal_xmit_handler rtl8723au_xmit_buf_handler
 
 #endif

@@ -39,10 +39,7 @@
 //		Turn on LED according to LedPin specified.
 //
 void
-SwLedOn(
-	_adapter			*padapter,
-	PLED_871x		pLed
-)
+SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -84,10 +81,7 @@ SwLedOn(
 //		Turn off LED according to LedPin specified.
 //
 void
-SwLedOff(
-	_adapter			*padapter,
-	PLED_871x		pLed
-)
+SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -137,9 +131,7 @@ exit:
 //		Initialize all LED_871x objects.
 //
 void
-rtl8723au_InitSwLeds(
-	_adapter	*padapter
-	)
+rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 {
 	struct led_priv *pledpriv = &(padapter->ledpriv);
 
@@ -156,9 +148,7 @@ rtl8723au_InitSwLeds(
 //		DeInitialize all LED_819xUsb objects.
 //
 void
-rtl8723au_DeInitSwLeds(
-	_adapter	*padapter
-	)
+rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter)
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 

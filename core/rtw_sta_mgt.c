@@ -373,7 +373,7 @@ _func_exit_;
 }
 
 /*  using pstapriv->sta_hash_lock to protect */
-u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
+u32	rtw_free_stainfo(struct rtw_adapter *padapter , struct sta_info *psta)
 {
 	int i;
 	_queue *pfree_sta_queue;
@@ -559,7 +559,7 @@ _func_exit_;
 }
 
 /*  free all stainfo which in sta_hash[all] */
-void rtw_free_all_stainfo(_adapter *padapter)
+void rtw_free_all_stainfo(struct rtw_adapter *padapter)
 {
 	struct list_head	*plist, *phead;
 	s32	index;
@@ -646,7 +646,7 @@ _func_exit_;
 	return psta;
 }
 
-u32 rtw_init_bcmc_stainfo(_adapter* padapter)
+u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter)
 {
 
 	struct sta_info		*psta;
@@ -686,7 +686,7 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-struct sta_info* rtw_get_bcmc_stainfo(_adapter* padapter)
+struct sta_info* rtw_get_bcmc_stainfo(struct rtw_adapter* padapter)
 {
 	struct sta_info		*psta;
 	struct sta_priv		*pstapriv = &padapter->stapriv;
@@ -697,7 +697,7 @@ _func_exit_;
 	return psta;
 }
 
-u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr)
+u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	u8 res = _TRUE;
 #ifdef  CONFIG_AP_MODE

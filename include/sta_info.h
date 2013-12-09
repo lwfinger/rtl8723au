@@ -100,7 +100,7 @@ struct sta_info {
 	//struct list_head asoc_list; //20061114
 	//struct list_head sleep_list;//sleep_q
 	//struct list_head wakeup_list;//wakeup_q
-	_adapter *padapter;
+	struct rtw_adapter *padapter;
 
 	struct sta_xmit_priv sta_xmitpriv;
 	struct sta_recv_priv sta_recvpriv;
@@ -387,7 +387,7 @@ struct	sta_priv {
 	_queue sleep_q;
 	_queue wakeup_q;
 
-	_adapter *padapter;
+	struct rtw_adapter *padapter;
 
 
 #ifdef CONFIG_AP_MODE
@@ -444,12 +444,12 @@ extern u32	_rtw_free_sta_priv(struct sta_priv *pstapriv);
 int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta);
 struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int offset);
 
-extern struct sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr);
-extern u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta);
-extern void rtw_free_all_stainfo(_adapter *padapter);
+extern struct sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
+extern u32 rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta);
+extern void rtw_free_all_stainfo(struct rtw_adapter *padapter);
 extern struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
-extern u32 rtw_init_bcmc_stainfo(_adapter* padapter);
-extern struct sta_info* rtw_get_bcmc_stainfo(_adapter* padapter);
-extern u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr);
+extern u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter);
+extern struct sta_info* rtw_get_bcmc_stainfo(struct rtw_adapter* padapter);
+extern u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr);
 
 #endif //_STA_INFO_H_

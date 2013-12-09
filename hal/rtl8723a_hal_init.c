@@ -27,7 +27,7 @@
 
 static void
 _FWDownloadEnable(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	bool			enable
 	)
 {
@@ -60,7 +60,7 @@ _FWDownloadEnable(
 
 static int
 _BlockWrite(
-		PADAPTER		padapter,
+		struct rtw_adapter *		padapter,
 		void *		buffer,
 		u32			buffSize
 	)
@@ -140,7 +140,7 @@ exit:
 
 static int
 _PageWrite(
-		PADAPTER	padapter,
+		struct rtw_adapter *	padapter,
 		u32			page,
 		void *		buffer,
 		u32			size
@@ -177,7 +177,7 @@ _FillDummy(
 
 static int
 _WriteFW(
-		PADAPTER		padapter,
+		struct rtw_adapter *		padapter,
 		void *			buffer,
 		u32			size
 	)
@@ -214,7 +214,7 @@ exit:
 	return ret;
 }
 
-static s32 _FWFreeToGo(PADAPTER padapter)
+static s32 _FWFreeToGo(struct rtw_adapter * padapter)
 {
 	u32	counter = 0;
 	u32	value32;
@@ -253,7 +253,7 @@ static s32 _FWFreeToGo(PADAPTER padapter)
 
 #define IS_FW_81xxC(padapter)	(((GET_HAL_DATA(padapter))->FirmwareSignature & 0xFFF0) == 0x88C0)
 
-void rtl8723a_FirmwareSelfReset(PADAPTER padapter)
+void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	u8	u1bTmp;
@@ -297,7 +297,7 @@ u8	fw_buffer_8723a[FW_8723A_SIZE];
 //		Download 8192C firmware code.
 //
 //
-s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
+s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 {
 	s32	rtStatus = _SUCCESS;
 	u8 writeFW_retry = 0;
@@ -476,7 +476,7 @@ Exit:
 	return rtStatus;
 }
 
-void rtl8723a_InitializeFirmwareVars(PADAPTER padapter)
+void rtl8723a_InitializeFirmwareVars(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -490,7 +490,7 @@ void rtl8723a_InitializeFirmwareVars(PADAPTER padapter)
 //	pHalData->H2CStopInsertQueue = _FALSE;
 }
 
-static void rtl8723a_free_hal_data(PADAPTER padapter)
+static void rtl8723a_free_hal_data(struct rtw_adapter * padapter)
 {
 _func_enter_;
 	if (padapter->HalData) {
@@ -505,7 +505,7 @@ _func_exit_;
 //===========================================================
 static u8
 hal_EfuseSwitchToBank(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			bank,
 	u8			bPseudoTest)
 {
@@ -558,7 +558,7 @@ hal_EfuseSwitchToBank(
 
 static void
 Hal_GetEfuseDefinition(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			efuseType,
 	u8			type,
 	void		*pOut,
@@ -665,7 +665,7 @@ Hal_GetEfuseDefinition(
 
 static void
 Hal_EfusePowerSwitch(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			bWrite,
 	u8			PwrState)
 {
@@ -719,7 +719,7 @@ Hal_EfusePowerSwitch(
 
 static void
 hal_ReadEFuse_WiFi(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u16			_offset,
 	u16			_size_byte,
 	u8			*pbuf,
@@ -848,7 +848,7 @@ hal_ReadEFuse_WiFi(
 
 static void
 hal_ReadEFuse_BT(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u16			_offset,
 	u16			_size_byte,
 	u8			*pbuf,
@@ -997,7 +997,7 @@ exit:
 
 static void
 Hal_ReadEFuse(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			efuseType,
 	u16			_offset,
 	u16			_size_byte,
@@ -1012,7 +1012,7 @@ Hal_ReadEFuse(
 
 static u16
 hal_EfuseGetCurrentSize_WiFi(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	bool			bPseudoTest)
 {
 #ifdef HAL_EFUSE_MEMORY
@@ -1093,7 +1093,7 @@ hal_EfuseGetCurrentSize_WiFi(
 
 static u16
 hal_EfuseGetCurrentSize_BT(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	bool			bPseudoTest)
 {
 #ifdef HAL_EFUSE_MEMORY
@@ -1202,7 +1202,7 @@ hal_EfuseGetCurrentSize_BT(
 
 static u16
 Hal_EfuseGetCurrentSize(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u8			efuseType,
 	bool			bPseudoTest)
 {
@@ -1218,7 +1218,7 @@ Hal_EfuseGetCurrentSize(
 
 static u8
 Hal_EfuseWordEnableDataWrite(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u16			efuse_addr,
 	u8			word_en,
 	u8			*data,
@@ -1287,7 +1287,7 @@ Hal_EfuseWordEnableDataWrite(
 
 static s32
 Hal_EfusePgPacketRead(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			offset,
 	u8			*data,
 	bool			bPseudoTest)
@@ -1377,7 +1377,7 @@ Hal_EfusePgPacketRead(
 
 static u8
 hal_EfusePgCheckAvailableAddr(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u8			efuseType,
 	u8		bPseudoTest)
 {
@@ -1413,7 +1413,7 @@ hal_EfuseConstructPGPkt(
 
 static u8
 hal_EfusePartialWriteCheck(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8				efuseType,
 	u16				*pAddr,
 	PPGPKT_STRUCT	pTargetPkt,
@@ -1557,7 +1557,7 @@ hal_EfusePartialWriteCheck(
 
 static u8
 hal_EfusePgPacketWrite1ByteHeader(
-	PADAPTER		pAdapter,
+	struct rtw_adapter *		pAdapter,
 	u8				efuseType,
 	u16				*pAddr,
 	PPGPKT_STRUCT	pTargetPkt,
@@ -1596,7 +1596,7 @@ hal_EfusePgPacketWrite1ByteHeader(
 
 static u8
 hal_EfusePgPacketWrite2ByteHeader(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8				efuseType,
 	u16				*pAddr,
 	PPGPKT_STRUCT	pTargetPkt,
@@ -1665,7 +1665,7 @@ hal_EfusePgPacketWrite2ByteHeader(
 
 static u8
 hal_EfusePgPacketWriteHeader(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8				efuseType,
 	u16				*pAddr,
 	PPGPKT_STRUCT	pTargetPkt,
@@ -1687,7 +1687,7 @@ hal_EfusePgPacketWriteHeader(
 
 static u8
 hal_EfusePgPacketWriteData(
-	PADAPTER		pAdapter,
+	struct rtw_adapter *		pAdapter,
 	u8				efuseType,
 	u16				*pAddr,
 	PPGPKT_STRUCT	pTargetPkt,
@@ -1711,7 +1711,7 @@ hal_EfusePgPacketWriteData(
 
 static s32
 Hal_EfusePgPacketWrite(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			offset,
 	u8			word_en,
 	u8			*pData,
@@ -1739,12 +1739,8 @@ Hal_EfusePgPacketWrite(
 }
 
 static bool
-Hal_EfusePgPacketWrite_BT(
-	_adapter *pAdapter,
-	u8			offset,
-	u8			word_en,
-	u8			*pData,
-	bool			bPseudoTest)
+Hal_EfusePgPacketWrite_BT(struct rtw_adapter *pAdapter,
+			  u8 offset, u8 word_en, u8 *pData, bool bPseudoTest)
 {
 	PGPKT_STRUCT targetPkt;
 	u16 startAddr=0;
@@ -1769,7 +1765,7 @@ Hal_EfusePgPacketWrite_BT(
 
 static HAL_VERSION
 ReadChipVersion8723A(
-	PADAPTER	padapter
+	struct rtw_adapter *	padapter
 	)
 {
 	u32				value32;
@@ -1818,7 +1814,7 @@ ReadChipVersion8723A(
 }
 
 
-static void rtl8723a_read_chip_version(PADAPTER padapter)
+static void rtl8723a_read_chip_version(struct rtw_adapter * padapter)
 {
 	ReadChipVersion8723A(padapter);
 }
@@ -1832,7 +1828,7 @@ static void rtl8723a_read_chip_version(PADAPTER padapter)
 // This prevents from race condition when setting this register.
 // The value of pHalData->RegBcnCtrlVal is initialized in HwConfigureRTL8192CE() function.
 //
-void SetBcnCtrlReg(PADAPTER padapter, u8 SetBits, u8 ClearBits)
+void SetBcnCtrlReg(struct rtw_adapter * padapter, u8 SetBits, u8 ClearBits)
 {
 	PHAL_DATA_TYPE pHalData;
 	u32 addr;
@@ -1861,7 +1857,7 @@ void SetBcnCtrlReg(PADAPTER padapter, u8 SetBits, u8 ClearBits)
 	rtw_write8(padapter, addr, *pRegBcnCtrlVal);
 }
 
-void rtl8723a_InitBeaconParameters(PADAPTER padapter)
+void rtl8723a_InitBeaconParameters(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -1882,7 +1878,7 @@ void rtl8723a_InitBeaconParameters(PADAPTER padapter)
 	rtw_write16(padapter, REG_BCNTCFG, 0x660F);
 }
 
-void rtl8723a_InitBeaconMaxError(PADAPTER padapter, u8 InfraMode)
+void rtl8723a_InitBeaconMaxError(struct rtw_adapter * padapter, u8 InfraMode)
 {
 #ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
 	rtw_write8(padapter, REG_BCN_MAX_ERR, 0xFF);
@@ -1891,7 +1887,7 @@ void rtl8723a_InitBeaconMaxError(PADAPTER padapter, u8 InfraMode)
 #endif
 }
 
-static void ResumeTxBeacon(PADAPTER padapter)
+static void ResumeTxBeacon(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -1908,7 +1904,7 @@ static void ResumeTxBeacon(PADAPTER padapter)
 	rtw_write8(padapter, REG_TBTT_PROHIBIT+2, pHalData->RegReg542);
 }
 
-static void StopTxBeacon(PADAPTER padapter)
+static void StopTxBeacon(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -1927,13 +1923,13 @@ static void StopTxBeacon(PADAPTER padapter)
 	CheckFwRsvdPageContent(padapter);  // 2010.06.23. Added by tynli.
 }
 
-static void _BeaconFunctionEnable(PADAPTER padapter, u8 Enable, u8 Linked)
+static void _BeaconFunctionEnable(struct rtw_adapter * padapter, u8 Enable, u8 Linked)
 {
 	SetBcnCtrlReg(padapter, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB, 0);
 	rtw_write8(padapter, REG_RD_CTRL+1, 0x6F);
 }
 
-static void rtl8723a_SetBeaconRelatedRegisters(PADAPTER padapter)
+static void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter * padapter)
 {
 	u32 value32;
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
@@ -1991,7 +1987,7 @@ static void rtl8723a_SetBeaconRelatedRegisters(PADAPTER padapter)
 }
 
 void rtl8723a_GetHalODMVar(
-	PADAPTER				Adapter,
+	struct rtw_adapter *				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	void *					pValue1,
 	bool					bSet)
@@ -2007,7 +2003,7 @@ void rtl8723a_GetHalODMVar(
 }
 
 void rtl8723a_SetHalODMVar(
-	PADAPTER				Adapter,
+	struct rtw_adapter *				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	void *					pValue1,
 	bool					bSet)
@@ -2046,7 +2042,7 @@ void rtl8723a_SetHalODMVar(
 			break;
 	}
 }
-void hal_notch_filter_8723a(_adapter *adapter, bool enable)
+void hal_notch_filter_8723a(struct rtw_adapter *adapter, bool enable)
 {
 	if (enable) {
 		DBG_8723A("Enable notch filter\n");
@@ -2066,7 +2062,8 @@ s32 c2h_id_filter_ccx_8723a(u8 id)
 	return ret;
 }
 
-static s32 c2h_handler_8723a(_adapter *padapter, struct c2h_evt_hdr *c2h_evt)
+static s32 c2h_handler_8723a(struct rtw_adapter *padapter,
+			     struct c2h_evt_hdr *c2h_evt)
 {
 	s32 ret = _SUCCESS;
 	u8 i = 0;
@@ -2187,7 +2184,7 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 #endif
 }
 
-void rtl8723a_InitAntenna_Selection(PADAPTER padapter)
+void rtl8723a_InitAntenna_Selection(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 val;
@@ -2201,7 +2198,7 @@ void rtl8723a_InitAntenna_Selection(PADAPTER padapter)
 	rtw_write8(padapter, REG_LEDCFG2, val);
 }
 
-void rtl8723a_CheckAntenna_Selection(PADAPTER padapter)
+void rtl8723a_CheckAntenna_Selection(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 val;
@@ -2216,7 +2213,7 @@ void rtl8723a_CheckAntenna_Selection(PADAPTER padapter)
 		rtw_write8(padapter, REG_LEDCFG2, val);
 	}
 }
-void rtl8723a_DeinitAntenna_Selection(PADAPTER padapter)
+void rtl8723a_DeinitAntenna_Selection(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 val;
@@ -2230,7 +2227,7 @@ void rtl8723a_DeinitAntenna_Selection(PADAPTER padapter)
 
 }
 
-void rtl8723a_init_default_value(PADAPTER padapter)
+void rtl8723a_init_default_value(struct rtw_adapter * padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	struct dm_priv *pdmpriv;
@@ -2279,7 +2276,7 @@ void rtl8723a_init_default_value(PADAPTER padapter)
 #endif
 }
 
-u8 GetEEPROMSize8723A(PADAPTER padapter)
+u8 GetEEPROMSize8723A(struct rtw_adapter * padapter)
 {
 	u8 size = 0;
 	u32	cr;
@@ -2298,7 +2295,7 @@ u8 GetEEPROMSize8723A(PADAPTER padapter)
 // LLT R/W/Init function
 //
 //-------------------------------------------------------------------------
-s32 _LLTWrite(PADAPTER padapter, u32 address, u32 data)
+s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
 {
 	s32	status = _SUCCESS;
 	s32	count = 0;
@@ -2325,7 +2322,7 @@ s32 _LLTWrite(PADAPTER padapter, u32 address, u32 data)
 	return status;
 }
 
-u8 _LLTRead(PADAPTER padapter, u32 address)
+u8 _LLTRead(struct rtw_adapter * padapter, u32 address)
 {
 	s32	count = 0;
 	u32	value = _LLT_INIT_ADDR(address) | _LLT_OP(_LLT_READ_ACCESS);
@@ -2350,7 +2347,7 @@ u8 _LLTRead(PADAPTER padapter, u32 address)
 	return 0xFF;
 }
 
-s32 InitLLTTable(PADAPTER padapter, u32 boundary)
+s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 {
 	s32	status = _SUCCESS;
 	u32	i;
@@ -2390,7 +2387,7 @@ s32 InitLLTTable(PADAPTER padapter, u32 boundary)
 	return status;
 }
 
-void _DisableGPIO(PADAPTER	padapter)
+void _DisableGPIO(struct rtw_adapter *	padapter)
 {
 /***************************************
 j. GPIO_PIN_CTRL 0x44[31:0]=0x000		//
@@ -2428,7 +2425,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
 } //end of _DisableGPIO()
 
-void _DisableRFAFEAndResetBB8192C(PADAPTER padapter)
+void _DisableRFAFEAndResetBB8192C(struct rtw_adapter * padapter)
 {
 /**************************************
 a.	TXPAUSE 0x522[7:0] = 0xFF             //Pause MAC TX queue
@@ -2460,12 +2457,12 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 //	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
 }
 
-void _DisableRFAFEAndResetBB(PADAPTER padapter)
+void _DisableRFAFEAndResetBB(struct rtw_adapter * padapter)
 {
 	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
-void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
+void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
@@ -2575,12 +2572,12 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, bool bWithoutHWSM)
 
 }
 
-void _ResetDigitalProcedure1(PADAPTER padapter, bool bWithoutHWSM)
+void _ResetDigitalProcedure1(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
-void _ResetDigitalProcedure2(PADAPTER padapter)
+void _ResetDigitalProcedure2(struct rtw_adapter * padapter)
 {
 /*****************************
 k.	SYS_FUNC_EN 0x03[7:0] = 0x44			// disable ELDR runction
@@ -2591,7 +2588,7 @@ m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
-void _DisableAnalog(PADAPTER padapter, bool bWithoutHWSM)
+void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
 	u16 value16 = 0;
@@ -2643,7 +2640,7 @@ void _DisableAnalog(PADAPTER padapter, bool bWithoutHWSM)
 }
 
 // HW Auto state machine
-s32 CardDisableHWSM(PADAPTER padapter, u8 resetMCU)
+s32 CardDisableHWSM(struct rtw_adapter * padapter, u8 resetMCU)
 {
 	int rtStatus = _SUCCESS;
 
@@ -2669,7 +2666,7 @@ s32 CardDisableHWSM(PADAPTER padapter, u8 resetMCU)
 }
 
 // without HW Auto state machine
-s32 CardDisableWithoutHWSM(PADAPTER padapter)
+s32 CardDisableWithoutHWSM(struct rtw_adapter * padapter)
 {
 	s32 rtStatus = _SUCCESS;
 
@@ -2700,7 +2697,7 @@ s32 CardDisableWithoutHWSM(PADAPTER padapter)
 
 void
 Hal_InitPGData(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			*PROMContent)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
@@ -2740,7 +2737,7 @@ Hal_InitPGData(
 
 void
 Hal_EfuseParseIDCode(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			*hwinfo
 	)
 {
@@ -2881,7 +2878,7 @@ Hal_GetChnlGroup(
 
 void
 Hal_EfuseParseTxPowerInfo_8723A(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			PROMContent,
 	bool			AutoLoadFail
 	)
@@ -2969,7 +2966,7 @@ Hal_EfuseParseTxPowerInfo_8723A(
 
 void
 Hal_EfuseParseBTCoexistInfo_8723A(
- PADAPTER			padapter,
+ struct rtw_adapter *			padapter,
  u8*			hwinfo,
  bool			AutoLoadFail
 	)
@@ -3009,7 +3006,7 @@ Hal_EfuseParseBTCoexistInfo_8723A(
 
 void
 Hal_EfuseParseEEPROMVer(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			hwinfo,
 	bool			AutoLoadFail
 	)
@@ -3026,7 +3023,7 @@ Hal_EfuseParseEEPROMVer(
 
 void
 rtl8723a_EfuseParseChnlPlan(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			hwinfo,
 	bool			AutoLoadFail
 	)
@@ -3044,7 +3041,7 @@ rtl8723a_EfuseParseChnlPlan(
 
 void
 Hal_EfuseParseCustomerID(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			hwinfo,
 	bool			AutoLoadFail
 	)
@@ -3067,7 +3064,7 @@ Hal_EfuseParseCustomerID(
 
 void
 Hal_EfuseParseAntennaDiversity(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			hwinfo,
 	bool			AutoLoadFail
 	)
@@ -3102,7 +3099,7 @@ Hal_EfuseParseAntennaDiversity(
 
 void
 Hal_EfuseParseRateIndicationOption(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	u8*			hwinfo,
 	bool			AutoLoadFail
 	)
@@ -3111,7 +3108,7 @@ Hal_EfuseParseRateIndicationOption(
 
 void
 Hal_EfuseParseXtal_8723A(
-	PADAPTER		pAdapter,
+	struct rtw_adapter *		pAdapter,
 	u8			*hwinfo,
 	u8			AutoLoadFail
 	)
@@ -3133,7 +3130,7 @@ Hal_EfuseParseXtal_8723A(
 
 void
 Hal_EfuseParseThermalMeter_8723A(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			*PROMContent,
 	u8			AutoloadFail
 	)
@@ -3160,7 +3157,7 @@ Hal_EfuseParseThermalMeter_8723A(
 
 void
 Hal_InitChannelPlan(
-		PADAPTER	padapter
+		struct rtw_adapter *	padapter
 	)
 {
 }
@@ -3292,7 +3289,7 @@ void rtl8723a_fill_default_txdesc(
 	struct xmit_frame *pxmitframe,
 	u8 *pbuf)
 {
-	PADAPTER padapter;
+	struct rtw_adapter * padapter;
 	HAL_DATA_TYPE *pHalData;
 	struct dm_priv *pdmpriv;
 	struct mlme_ext_priv *pmlmeext;
@@ -3462,7 +3459,7 @@ void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 // Added by tynli. 2009.10.15.
 //
 void rtl8723a_fill_fake_txdesc(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8*			pDesc,
 	u32			BufferLen,
 	u8			IsPsPoll,
@@ -3510,7 +3507,7 @@ void rtl8723a_fill_fake_txdesc(
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
-int reset_tsf(PADAPTER Adapter, u8 reset_port )
+int reset_tsf(struct rtw_adapter * Adapter, u8 reset_port )
 {
 	u8 reset_cnt_before = 0, reset_cnt_after = 0, loop_cnt = 0;
 	u32 reg_reset_tsf_cnt = (IFACE_PORT0==reset_port) ?
@@ -3530,7 +3527,7 @@ int reset_tsf(PADAPTER Adapter, u8 reset_port )
 }
 #endif
 
-static void hw_var_set_opmode(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u8 val8;
 	u8 mode = *val;
@@ -3651,7 +3648,7 @@ static void hw_var_set_opmode(PADAPTER padapter, u8 variable, u8 *val)
 	rtw_write8(padapter, MSR, val8);
 }
 
-static void hw_var_set_macaddr(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_macaddr(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u8 idx = 0;
 	u32 reg_macid;
@@ -3673,7 +3670,7 @@ static void hw_var_set_macaddr(PADAPTER padapter, u8 variable, u8 *val)
 	}
 }
 
-static void hw_var_set_bssid(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_bssid(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u8	idx = 0;
 	u32 reg_bssid;
@@ -3695,7 +3692,7 @@ static void hw_var_set_bssid(PADAPTER padapter, u8 variable, u8 *val)
 	}
 }
 
-static void hw_var_set_correct_tsf(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u64 tsf;
 	u32 reg_tsftr;
@@ -3785,7 +3782,7 @@ static void hw_var_set_correct_tsf(PADAPTER padapter, u8 variable, u8 *val)
 	}
 }
 
-static void hw_var_set_mlme_disconnect(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_mlme_disconnect(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 #ifdef CONFIG_CONCURRENT_MODE
@@ -3819,7 +3816,7 @@ static void hw_var_set_mlme_disconnect(PADAPTER padapter, u8 variable, u8 *val)
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
-static void hw_var_set_mlme_sitesurvey(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_mlme_sitesurvey(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -3865,7 +3862,7 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER padapter, u8 variable, u8 *val)
 }
 #endif
 
-static void hw_var_set_mlme_join(PADAPTER padapter, u8 variable, u8 *val)
+static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u8 RetryLimit = 0x30;
 	u8 type = *val;
@@ -3954,7 +3951,7 @@ static void hw_var_set_mlme_join(PADAPTER padapter, u8 variable, u8 *val)
 	rtw_write16(padapter, REG_RL, RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit << RETRY_LIMIT_LONG_SHIFT);
 }
 
-void SetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
+void SetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -4579,7 +4576,7 @@ _func_enter_;
 _func_exit_;
 }
 
-void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
+void GetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -4673,7 +4670,7 @@ void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
 
 #ifdef CONFIG_BT_COEXIST
 
-void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter)
+void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	PDM_ODM_T pDM_Odm;
@@ -4719,15 +4716,17 @@ void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter)
 }
 #endif // CONFIG_BT_COEXIST
 
-void rtl8723a_clone_haldata(_adapter* dst_adapter, _adapter* src_adapter)
+void rtl8723a_clone_haldata(struct rtw_adapter* dst_adapter,
+			    struct rtw_adapter* src_adapter)
 {
-	memcpy(dst_adapter->HalData, src_adapter->HalData, dst_adapter->hal_data_sz);
+	memcpy(dst_adapter->HalData, src_adapter->HalData,
+	       dst_adapter->hal_data_sz);
 }
 
-void rtl8723a_start_thread(_adapter *padapter)
+void rtl8723a_start_thread(struct rtw_adapter *padapter)
 {
 }
 
-void rtl8723a_stop_thread(_adapter *padapter)
+void rtl8723a_stop_thread(struct rtw_adapter *padapter)
 {
 }

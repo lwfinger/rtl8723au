@@ -122,7 +122,7 @@ void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib)
 
 }
 
-int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz)
+int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz)
 {
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -158,7 +158,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	return _SUCCESS;
 }
 
-void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz)
+void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz)
 {
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -186,7 +186,7 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)
 
-void rtw_os_pkt_complete(_adapter *padapter, struct sk_buff *pkt)
+void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	u16	queue;
@@ -211,7 +211,7 @@ void rtw_os_pkt_complete(_adapter *padapter, struct sk_buff *pkt)
 	dev_kfree_skb_any(pkt);
 }
 
-void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
+void rtw_os_xmit_complete(struct rtw_adapter *padapter, struct xmit_frame *pxframe)
 {
 	if(pxframe->pkt)
 	{
@@ -225,9 +225,9 @@ void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe)
 	pxframe->pkt = NULL;
 }
 
-void rtw_os_xmit_schedule(_adapter *padapter)
+void rtw_os_xmit_schedule(struct rtw_adapter *padapter)
 {
-	_adapter *pri_adapter = padapter;
+	struct rtw_adapter *pri_adapter = padapter;
 	struct xmit_priv *pxmitpriv;
 
 	if(!padapter)
@@ -245,7 +245,7 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 	spin_unlock_bh(&pxmitpriv->lock);
 }
 
-static void rtw_check_xmit_resource(_adapter *padapter, struct sk_buff *pkt)
+static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff *pkt)
 {
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
@@ -274,7 +274,7 @@ static void rtw_check_xmit_resource(_adapter *padapter, struct sk_buff *pkt)
 }
 
 #ifdef CONFIG_TX_MCAST2UNI
-int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
+int rtw_mlcst2unicst(struct rtw_adapter *padapter, struct sk_buff *skb)
 {
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -344,7 +344,7 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 
 int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev)
 {
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 #ifdef CONFIG_TX_MCAST2UNI
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;

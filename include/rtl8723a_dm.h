@@ -182,12 +182,10 @@ struct dm_priv
 // function prototype
 //============================================================
 
-void rtl8723a_init_dm_priv(PADAPTER padapter);
-void rtl8723a_deinit_dm_priv(PADAPTER padapter);
+void rtl8723a_init_dm_priv(struct rtw_adapter *padapter);
+void rtl8723a_deinit_dm_priv(struct rtw_adapter *padapter);
 
-void rtl8723a_InitHalDm(PADAPTER padapter);
-void rtl8723a_HalDmWatchDog(PADAPTER padapter);
-
-
+void rtl8723a_InitHalDm(struct rtw_adapter *padapter);
+void rtl8723a_HalDmWatchDog(struct rtw_adapter *padapter);
 
 #endif

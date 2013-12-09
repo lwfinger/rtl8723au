@@ -42,19 +42,19 @@
 
 static void
 dm_CheckProtection(
-	PADAPTER	Adapter
+	struct rtw_adapter *	Adapter
 	)
 {
 }
 
 static void
 dm_CheckStatistics(
-	PADAPTER	Adapter
+	struct rtw_adapter *	Adapter
 	)
 {
 }
 
-static void dm_CheckPbcGPIO(_adapter *padapter)
+static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 {
 	u8	tmp1byte;
 	u8	bPbcPressed = _FALSE;
@@ -103,7 +103,7 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 //
 static void
 dm_InitGPIOSetting(
-	PADAPTER	Adapter
+	struct rtw_adapter *	Adapter
 	)
 {
 	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(Adapter);
@@ -118,7 +118,7 @@ dm_InitGPIOSetting(
 //============================================================
 // functions
 //============================================================
-static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
+static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
@@ -180,7 +180,7 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T2R);
 	}
 }
-static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
+static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
 	struct mlme_priv		*pmlmepriv = &Adapter->mlmepriv;
@@ -229,7 +229,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	//pHalData->CurrentBandType92D
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BAND,&(pDM_Odm->u8_temp));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_DMSP_GET_VALUE,&(pDM_Odm->u8_temp));
-	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BUDDY_ADAPTOR,&(pDM_Odm->PADAPTER_temp));
+	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BUDDY_ADAPTOR,&(pDM_Odm->struct rtw_adapter *_temp));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_DMSP_IS_MASTER,&(pDM_Odm->u8_temp));
 	//================= only for 8192D   =================
 	// driver havn't those variable now
@@ -250,7 +250,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 
 void
 rtl8723a_InitHalDm(
-	PADAPTER	Adapter
+	struct rtw_adapter *	Adapter
 	)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
@@ -280,7 +280,7 @@ rtl8723a_InitHalDm(
 
 void
 rtl8723a_HalDmWatchDog(
-	PADAPTER	Adapter
+	struct rtw_adapter *	Adapter
 	)
 {
 	bool		bFwCurrentInPSMode = _FALSE;
@@ -289,7 +289,7 @@ rtl8723a_HalDmWatchDog(
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 #ifdef CONFIG_CONCURRENT_MODE
-	PADAPTER pbuddy_adapter = Adapter->pbuddy_adapter;
+	struct rtw_adapter * pbuddy_adapter = Adapter->pbuddy_adapter;
 #endif //CONFIG_CONCURRENT_MODE
 
 	hw_init_completed = Adapter->hw_init_completed;
@@ -379,7 +379,7 @@ skip_dm:
 
 }
 
-void rtl8723a_init_dm_priv(PADAPTER Adapter)
+void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -392,7 +392,7 @@ void rtl8723a_init_dm_priv(PADAPTER Adapter)
 #endif
 }
 
-void rtl8723a_deinit_dm_priv(PADAPTER Adapter)
+void rtl8723a_deinit_dm_priv(struct rtw_adapter *Adapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;

@@ -37,7 +37,7 @@
 #define EX_MESSAGE_BOX_SIZE	2
 
 
-static u8 _is_fw_read_cmd_down(_adapter* padapter, u8 msgbox_num)
+static u8 _is_fw_read_cmd_down(struct rtw_adapter* padapter, u8 msgbox_num)
 {
 	u8	read_down = _FALSE;
 	int	retry_cnts = 100;
@@ -64,7 +64,7 @@ static u8 _is_fw_read_cmd_down(_adapter* padapter, u8 msgbox_num)
 *| h2c_msg	|Ext_bit	|CMD_ID	|
 *
 ******************************************/
-s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
+s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 {
 	u8 bcmd_down = _FALSE;
 	s32 retry_cnts = 100;
@@ -142,7 +142,7 @@ _func_exit_;
 	return ret;
 }
 
-u8 rtl8192c_h2c_msg_hdl(_adapter *padapter, unsigned char *pbuf)
+u8 rtl8192c_h2c_msg_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 {
 	u8 ElementID, CmdLen;
 	u8 *pCmdBuffer;
@@ -162,7 +162,7 @@ u8 rtl8192c_h2c_msg_hdl(_adapter *padapter, unsigned char *pbuf)
 }
 
 #if defined(CONFIG_AUTOSUSPEND) && defined(SUPPORT_HW_RFOFF_DETECTED)
-u8 rtl8192c_set_FwSelectSuspend_cmd(_adapter *padapter ,u8 bfwpoll, u16 period)
+u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter *padapter ,u8 bfwpoll, u16 period)
 {
 	u8	res=_SUCCESS;
 	struct H2C_SS_RFOFF_PARAM param;
@@ -174,7 +174,7 @@ u8 rtl8192c_set_FwSelectSuspend_cmd(_adapter *padapter ,u8 bfwpoll, u16 period)
 }
 #endif //CONFIG_AUTOSUSPEND && SUPPORT_HW_RFOFF_DETECTED
 
-u8 rtl8192c_set_rssi_cmd(_adapter*padapter, u8 *param)
+u8 rtl8192c_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {
 	u8	res=_SUCCESS;
 
@@ -189,7 +189,7 @@ _func_exit_;
 	return res;
 }
 
-u8 rtl8192c_set_raid_cmd(_adapter*padapter, u32 mask, u8 arg)
+u8 rtl8192c_set_raid_cmd(struct rtw_adapter*padapter, u32 mask, u8 arg)
 {
 	u8	buf[5];
 	u8	res=_SUCCESS;
@@ -213,7 +213,7 @@ _func_exit_;
 //bitmap[28:31]= Rate Adaptive id
 //arg[0:4] = macid
 //arg[5] = Short GI
-void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
+void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
@@ -256,7 +256,7 @@ void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 
 }
 
-void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode)
+void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 {
 	SETPWRMODE_PARM H2CSetPwrMode;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
@@ -277,7 +277,7 @@ _func_enter_;
 _func_exit_;
 }
 
-void ConstructBeacon(_adapter *padapter, u8 *pframe, u32 *pLength)
+void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
@@ -379,7 +379,7 @@ _ConstructBeacon:
 
 }
 
-void ConstructPSPoll(_adapter *padapter, u8 *pframe, u32 *pLength)
+void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
@@ -410,7 +410,7 @@ void ConstructPSPoll(_adapter *padapter, u8 *pframe, u32 *pLength)
 }
 
 void ConstructNullFunctionData(
-	PADAPTER padapter,
+	struct rtw_adapter *padapter,
 	u8		*pframe,
 	u32		*pLength,
 	u8		*StaAddr,
@@ -482,7 +482,7 @@ void ConstructNullFunctionData(
 	*pLength = pktlen;
 }
 
-void ConstructProbeRsp(_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr, bool bHideSSID)
+void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr, bool bHideSSID)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
@@ -525,9 +525,7 @@ void ConstructProbeRsp(_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr
 // To check if reserved page content is destroyed by beacon beacuse beacon is too large.
 // 2010.06.23. Added by tynli.
 void
-CheckFwRsvdPageContent(
-	PADAPTER		Adapter
-)
+CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 {
 	HAL_DATA_TYPE*	pHalData = GET_HAL_DATA(Adapter);
 	u32	MaxBcnPageNum;
@@ -552,7 +550,7 @@ CheckFwRsvdPageContent(
 //			      TRUE: At the second time, we should send the first packet (default:beacon)
 //						to Hw again and set the lengh in descriptor to the real beacon lengh.
 // 2009.10.15 by tynli.
-static void SetFwRsvdPagePkt(PADAPTER padapter, bool bDLFinished)
+static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 {
 	PHAL_DATA_TYPE pHalData;
 	struct xmit_frame	*pmgntframe;
@@ -687,7 +685,7 @@ exit:
 	kfree(ReservedPagePacket);
 }
 
-void rtl8723a_set_FwJoinBssReport_cmd(PADAPTER padapter, u8 mstatus)
+void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 {
 	JOINBSSRPT_PARM	JoinBssRptParm;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -764,7 +762,7 @@ _func_exit_;
 }
 
 #ifdef CONFIG_BT_COEXIST
-static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
+static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	struct xmit_frame	*pmgntframe;
@@ -855,7 +853,7 @@ exit:
 	kfree(ReservedPagePacket);
 }
 
-void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(PADAPTER padapter)
+void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 bRecover = _FALSE;
@@ -888,7 +886,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(PADAPTER padapter)
 #endif
 
 #ifdef CONFIG_P2P_PS
-void rtl8192c_set_p2p_ps_offload_cmd(_adapter* padapter, u8 p2p_ps_state)
+void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct pwrctrl_priv		*pwrpriv = &padapter->pwrctrlpriv;
@@ -1044,7 +1042,7 @@ exit:
 /*
 	ask FW to Reset sync register at Beacon early interrupt
 */
-u8 rtl8723c_reset_tsf(_adapter *padapter, u8 reset_port )
+u8 rtl8723c_reset_tsf(struct rtw_adapter *padapter, u8 reset_port)
 {
 	u8	buf[2];
 	u8	res=_SUCCESS;

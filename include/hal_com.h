@@ -153,7 +153,7 @@ void dump_chip_info(HAL_VERSION	ChipVersion);
 
 u8	//return the final channel plan decision
 hal_com_get_channel_plan(
-	PADAPTER	padapter,
+	struct rtw_adapter	*padapter,
 	u8			hw_channel_plan,	//channel plan from HW (efuse/eeprom)
 	u8			sw_channel_plan,	//channel plan from SW (registry/module param)
 	u8			def_channel_plan,	//channel plan used when the former two is invalid
@@ -162,19 +162,14 @@ hal_com_get_channel_plan(
 
 u8	MRateToHwRate(u8 rate);
 
-void	HalSetBrateCfg(PADAPTER		Adapter,
-		       u8		*mBratesOS,
-		       u16		*pBrateCfg);
+void HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS, u16 *pBrateCfg);
 
 bool
-Hal_MappingOutPipe(
-	PADAPTER	pAdapter,
-	u8		NumOutPipe
-	);
+Hal_MappingOutPipe(struct rtw_adapter *pAdapter, u8 NumOutPipe);
 
-void hal_init_macaddr(_adapter *adapter);
+void hal_init_macaddr(struct rtw_adapter *adapter);
 
-void c2h_evt_clear(_adapter *adapter);
-s32 c2h_evt_read(_adapter *adapter, u8 *buf);
+void c2h_evt_clear(struct rtw_adapter *adapter);
+s32 c2h_evt_read(struct rtw_adapter *adapter, u8 *buf);
 
 #endif //__HAL_COMMON_H__

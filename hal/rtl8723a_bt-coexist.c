@@ -118,7 +118,7 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define PlatformInitializeTimer(padapter, ptimer, pfunc, cntx, szID) \
 	_init_timer(ptimer, padapter->pnetdev, pfunc, padapter)
 #define PlatformSetTimer(a, ptimer, delay)	_set_timer(ptimer, delay)
-static u8 PlatformCancelTimer(PADAPTER a, _timer *ptimer)
+static u8 PlatformCancelTimer(struct rtw_adapter *a, _timer *ptimer)
 {
 	u8 bcancelled;
 	_cancel_timer(ptimer, &bcancelled);
@@ -154,7 +154,7 @@ typedef enum _RT_JOIN_ACTION{
 #ifdef __BT_C__ // COMMOM/BT.c
 // ===== Below this line is sync from SD7 driver COMMOM/BT.c =====
 
-static u8 BT_Operation(PADAPTER padapter)
+static u8 BT_Operation(struct rtw_adapter *padapter)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -165,7 +165,7 @@ static u8 BT_Operation(PADAPTER padapter)
 		return _FALSE;
 }
 
-static u8 BT_IsLegalChannel(PADAPTER padapter, u8 channel)
+static u8 BT_IsLegalChannel(struct rtw_adapter *padapter, u8 channel)
 {
 	PRT_CHANNEL_INFO pChanneList = NULL;
 	u8 channelLen, i;
@@ -186,19 +186,19 @@ static u8 BT_IsLegalChannel(PADAPTER padapter, u8 channel)
 	return 0;
 }
 
-void BT_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
+void BT_SignalCompensation(struct rtw_adapter *padapter, u8 *rssi_wifi, u8 *rssi_bt)
 {
 	BTDM_SignalCompensation(padapter, rssi_wifi, rssi_bt);
 }
 
-void BT_WifiScanNotify(PADAPTER padapter, u8 scanType)
+void BT_WifiScanNotify(struct rtw_adapter *padapter, u8 scanType)
 {
 	BTHCI_WifiScanNotify(padapter, scanType);
 	BTDM_CheckAntSelMode(padapter);
 	BTDM_WifiScanNotify(padapter, scanType);
 }
 
-void BT_WifiAssociateNotify(PADAPTER padapter, u8 action)
+void BT_WifiAssociateNotify(struct rtw_adapter *padapter, u8 action)
 {
 	// action :
 	// TRUE = associate start
@@ -209,22 +209,22 @@ void BT_WifiAssociateNotify(PADAPTER padapter, u8 action)
 	BTDM_WifiAssociateNotify(padapter, action);
 }
 
-void BT_WifiMediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
+void BT_WifiMediaStatusNotify(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
 {
 	BTDM_MediaStatusNotify(padapter, mstatus);
 }
 
-void BT_SpecialPacketNotify(PADAPTER padapter)
+void BT_SpecialPacketNotify(struct rtw_adapter *padapter)
 {
 	BTDM_ForDhcp(padapter);
 }
 
-void BT_HaltProcess(PADAPTER padapter)
+void BT_HaltProcess(struct rtw_adapter *padapter)
 {
 	BTDM_ForHalt(padapter);
 }
 
-void BT_LpsLeave(PADAPTER padapter)
+void BT_LpsLeave(struct rtw_adapter *padapter)
 {
 	BTDM_LpsLeave(padapter);
 }
@@ -235,11 +235,11 @@ void BT_LpsLeave(PADAPTER padapter)
 #ifdef __BT_HANDLEPACKET_C__ // COMMOM/bt_handlepacket.c
 // ===== Below this line is sync from SD7 driver COMMOM/bt_handlepacket.c =====
 
-static void btpkt_SendBeacon(PADAPTER padapter)
+static void btpkt_SendBeacon(struct rtw_adapter *padapter)
 {
 }
 
-static void BTPKT_WPAAuthINITIALIZE(PADAPTER padapter, u8 EntryNum)
+static void BTPKT_WPAAuthINITIALIZE(struct rtw_adapter *padapter, u8 EntryNum)
 {
 }
 
@@ -249,7 +249,7 @@ static void BTPKT_TimerCallbackWPAAuth(PRT_TIMER pTimer)
 
 static void BTPKT_TimerCallbackBeacon(PRT_TIMER pTimer)
 {
-	PADAPTER	padapter = (PADAPTER)pTimer;
+	struct rtw_adapter *	padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTinfo->BtMgnt;
 
@@ -284,7 +284,7 @@ static void BTPKT_TimerCallbackBeacon(PRT_TIMER pTimer)
 	(_os).Length=(_len);
 
 static RT_STATUS PlatformIndicateBTEvent(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	void						*pEvntData,
 	u32						dataLen
 	)
@@ -315,12 +315,12 @@ static u8	testPMK[PMK_LEN] = {2,2,3,3,4,4,5,5,6,6,
 							4,4,2,2,8,8,9,9,2,2,
 							5,5};
 
-static u8 bthci_GetLocalChannel(PADAPTER padapter)
+static u8 bthci_GetLocalChannel(struct rtw_adapter *padapter)
 {
 	return padapter->mlmeextpriv.cur_channel;
 }
 
-static u8 bthci_GetCurrentEntryNum(PADAPTER padapter, u8 PhyHandle)
+static u8 bthci_GetCurrentEntryNum(struct rtw_adapter *padapter, u8 PhyHandle)
 {
 	PBT30Info pBTInfo = GET_BT_INFO(padapter);
 	u8 i;
@@ -336,7 +336,7 @@ static u8 bthci_GetCurrentEntryNum(PADAPTER padapter, u8 PhyHandle)
 	return 0xFF;
 }
 
-static void bthci_DecideBTChannel(PADAPTER padapter, u8 EntryNum)
+static void bthci_DecideBTChannel(struct rtw_adapter *padapter, u8 EntryNum)
 {
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv;
@@ -453,7 +453,7 @@ static void bthci_DecideBTChannel(PADAPTER padapter, u8 EntryNum)
 
 //Success:return _TRUE
 //Fail:return _FALSE
-static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
+static u8 bthci_GetAssocInfo(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTInfo;
 	PBT_HCI_INFO	pBtHciInfo;
@@ -546,7 +546,7 @@ static u8 bthci_GetAssocInfo(PADAPTER padapter, u8 EntryNum)
 	return _TRUE;
 }
 
-static u8 bthci_AddEntry(PADAPTER padapter)
+static u8 bthci_AddEntry(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo;
 	PBT_MGNT		pBtMgnt;
@@ -570,14 +570,14 @@ static u8 bthci_AddEntry(PADAPTER padapter)
 	return _TRUE;
 }
 
-static u8 bthci_DiscardTxPackets(PADAPTER padapter, u16 LLH)
+static u8 bthci_DiscardTxPackets(struct rtw_adapter *padapter, u16 LLH)
 {
 	return _FALSE;
 }
 
 static u8
 bthci_CheckLogLinkBehavior(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_FLOW_SPEC			TxFlowSpec
 	)
 {
@@ -639,7 +639,7 @@ bthci_CheckLogLinkBehavior(
 
 static void
 bthci_SelectFlowType(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	BT_LL_FLOWSPEC			TxLLFlowSpec,
 	BT_LL_FLOWSPEC			RxLLFlowSpec,
 	PHCI_FLOW_SPEC		TxFlowSpec,
@@ -861,7 +861,7 @@ bthci_SelectFlowType(
 
 static u16
 bthci_AssocMACAddr(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	void	*pbuf
 	)
 {
@@ -886,7 +886,7 @@ bthci_AssocMACAddr(
 
 static u16
 bthci_PALCapabilities(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	void	*pbuf
 	)
 {
@@ -910,7 +910,7 @@ bthci_PALCapabilities(
 
 static u16
 bthci_AssocPreferredChannelList(
-	PADAPTER		padapter,
+	struct rtw_adapter *		padapter,
 	void	*pbuf,
 	u8		EntryNum
 	)
@@ -966,7 +966,7 @@ bthci_AssocPreferredChannelList(
 	return (pAssoStrc->Length+3);
 }
 
-static u16 bthci_AssocPALVer(PADAPTER padapter, void *pbuf)
+static u16 bthci_AssocPALVer(struct rtw_adapter *padapter, void *pbuf)
 {
 	PAMP_ASSOC_STRUCTURE pAssoStrc = (PAMP_ASSOC_STRUCTURE)pbuf;
 	u8 *pu1Tmp;
@@ -992,7 +992,7 @@ static u16 bthci_AssocPALVer(PADAPTER padapter, void *pbuf)
 
 static u16
 bthci_ReservedForTestingPLV(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	void	*pbuf
 	)
 {
@@ -1021,7 +1021,7 @@ bthci_ReservedForTestingPLV(
 	return (pAssoStrc->Length+3);
 }
 
-static u8 bthci_CheckRfStateBeforeConnect(PADAPTER padapter)
+static u8 bthci_CheckRfStateBeforeConnect(struct rtw_adapter *padapter)
 {
 	PBT30Info				pBTInfo;
 	rt_rf_power_state		RfState;
@@ -1050,7 +1050,7 @@ bthci_ConstructScanList(
 	u16			*pDuration
 	)
 {
-	PADAPTER				padapter;
+	struct rtw_adapter *				padapter;
 	PBT_HCI_INFO				pBtHciInfo;
 	PCHNL_TXPOWER_TRIPLE	pTriple_subband;
 	PCOMMON_TRIPLE			pTriple;
@@ -1105,13 +1105,13 @@ bthci_ConstructScanList(
 		return _TRUE;
 }
 
-static void bthci_ResponderStartToScan(PADAPTER padapter)
+static void bthci_ResponderStartToScan(struct rtw_adapter *padapter)
 {
 }
 
 static u8
 bthci_PhyLinkConnectionInProgress(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		PhyLinkHandle
 	)
 {
@@ -1132,7 +1132,7 @@ bthci_PhyLinkConnectionInProgress(
 
 static void
 bthci_ResetFlowSpec(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8	EntryNum,
 	u8	index
 	)
@@ -1164,7 +1164,7 @@ bthci_ResetFlowSpec(
 	pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[index].Rx_Flow_Spec.FlushTimeout = 0xffffffff;
 }
 
-static void bthci_ResetEntry(PADAPTER padapter, u8 EntryNum)
+static void bthci_ResetEntry(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTinfo;
 	PBT_MGNT		pBtMgnt;
@@ -1222,7 +1222,7 @@ static void bthci_ResetEntry(PADAPTER padapter, u8 EntryNum)
 
 static void
 bthci_RemoveEntryByEntryNum(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		EntryNum
 	)
 {
@@ -1318,7 +1318,7 @@ static u8 bthci_ExtensionEventHeaderRtk(u8 *pbuf, u8 extensionEvent)
 
 static RT_STATUS
 bthci_IndicateEvent(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	void		*pEvntData,
 	u32		dataLen
 	)
@@ -1332,7 +1332,7 @@ bthci_IndicateEvent(
 
 static void
 bthci_EventWriteRemoteAmpAssoc(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	HCI_STATUS	status,
 	u8		PLHandle
 	)
@@ -1362,7 +1362,7 @@ bthci_EventWriteRemoteAmpAssoc(
 
 static void
 bthci_EventEnhancedFlushComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u16					LLH
 	)
 {
@@ -1382,7 +1382,7 @@ bthci_EventEnhancedFlushComplete(
 
 static void
 bthci_EventShortRangeModeChangeComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	u8					ShortRangeState,
 	u8					EntryNum
@@ -1412,7 +1412,7 @@ bthci_EventShortRangeModeChangeComplete(
 
 static void
 bthci_EventSendFlowSpecModifyComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	u16					logicHandle
 	)
@@ -1442,7 +1442,7 @@ bthci_EventSendFlowSpecModifyComplete(
 
 static void
 bthci_EventExtGetBTRSSI(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u16						ConnectionHandle
 	)
 {
@@ -1473,7 +1473,7 @@ bthci_EventExtGetBTRSSI(
 
 static void
 bthci_EventExtWifiScanNotify(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u8						scanType
 	)
 {
@@ -1510,7 +1510,7 @@ bthci_EventExtWifiScanNotify(
 
 static void
 bthci_EventAMPReceiverReport(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		Reason
 	)
 {
@@ -1560,7 +1560,7 @@ bthci_EventAMPReceiverReport(
 
 static void
 bthci_EventChannelSelected(
-	PADAPTER				padapter,
+	struct rtw_adapter *				padapter,
 	u8				EntryNum
 	)
 {
@@ -1587,7 +1587,7 @@ bthci_EventChannelSelected(
 
 static void
 bthci_EventDisconnectPhyLinkComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	HCI_STATUS				Reason,
 	u8					EntryNum
@@ -1616,7 +1616,7 @@ bthci_EventDisconnectPhyLinkComplete(
 
 static void
 bthci_EventPhysicalLinkComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	u8					EntryNum,
 	u8					PLHandle
@@ -1665,7 +1665,7 @@ bthci_EventPhysicalLinkComplete(
 
 static void
 bthci_EventCommandStatus(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u8					OGF,
 	u16					OCF,
 	HCI_STATUS				HciStatus
@@ -1692,7 +1692,7 @@ bthci_EventCommandStatus(
 
 static void
 bthci_EventLogicalLinkComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	u8					PhyLinkHandle,
 	u16					LogLinkHandle,
@@ -1739,7 +1739,7 @@ bthci_EventLogicalLinkComplete(
 
 static void
 bthci_EventDisconnectLogicalLinkComplete(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	HCI_STATUS				HciStatus,
 	u16					LogLinkHandle,
 	HCI_STATUS				Reason
@@ -1773,7 +1773,7 @@ bthci_EventDisconnectLogicalLinkComplete(
 
 static void
 bthci_EventFlushOccurred(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u16					LogLinkHandle
 	)
 {
@@ -1793,7 +1793,7 @@ bthci_EventFlushOccurred(
 
 static HCI_STATUS
 bthci_BuildPhysicalLink(
-	PADAPTER						padapter,
+	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd,
 	u16							OCF
 )
@@ -1864,7 +1864,7 @@ bthci_BuildPhysicalLink(
 
 static void
 bthci_BuildLogicalLink(
-	PADAPTER						padapter,
+	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd,
 	u16						OCF
 	)
@@ -2028,7 +2028,7 @@ bthci_BuildLogicalLink(
 
 static void
 bthci_StartBeaconAndConnect(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd,
 	u8		CurrentAssocNum
 	)
@@ -2146,7 +2146,7 @@ static void bthci_ResetBtHciInfo(PBT_HCI_INFO pBtHciInfo)
 	pBtHciInfo->TestNumOfErrBits = 0;
 }
 
-static void bthci_ResetBtSec(PADAPTER padapter, PBT_SECURITY pBtSec)
+static void bthci_ResetBtSec(struct rtw_adapter *padapter, PBT_SECURITY pBtSec)
 {
 //	PMGNT_INFO	pMgntInfo = &padapter->MgntInfo;
 
@@ -2190,10 +2190,10 @@ static void bthci_ResetBtExtInfo(PBT_MGNT pBtMgnt)
 	pBtMgnt->ExtConfig.bBTA2DPBusy = _FALSE;
 }
 
-static HCI_STATUS bthci_CmdReset(PADAPTER _padapter, u8 bNeedSendEvent)
+static HCI_STATUS bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEvent)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-	PADAPTER	padapter;
+	struct rtw_adapter *	padapter;
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo;
 	PBT_MGNT		pBtMgnt;
@@ -2275,7 +2275,7 @@ static HCI_STATUS bthci_CmdReset(PADAPTER _padapter, u8 bNeedSendEvent)
 
 static HCI_STATUS
 bthci_CmdWriteRemoteAMPAssoc(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2340,7 +2340,7 @@ bthci_CmdWriteRemoteAMPAssoc(
 }
 
 //7.3.13
-static HCI_STATUS bthci_CmdReadConnectionAcceptTimeout(PADAPTER padapter)
+static HCI_STATUS bthci_CmdReadConnectionAcceptTimeout(struct rtw_adapter *padapter)
 {
 	HCI_STATUS		status = HCI_STATUS_SUCCESS;
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
@@ -2378,7 +2378,7 @@ static HCI_STATUS bthci_CmdReadConnectionAcceptTimeout(PADAPTER padapter)
 //7.3.3
 static HCI_STATUS
 bthci_CmdSetEventFilter(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2390,7 +2390,7 @@ bthci_CmdSetEventFilter(
 //7.3.14
 static HCI_STATUS
 bthci_CmdWriteConnectionAcceptTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2433,7 +2433,7 @@ bthci_CmdWriteConnectionAcceptTimeout(
 
 static HCI_STATUS
 bthci_CmdReadPageTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2473,7 +2473,7 @@ bthci_CmdReadPageTimeout(
 
 static HCI_STATUS
 bthci_CmdWritePageTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2516,7 +2516,7 @@ bthci_CmdWritePageTimeout(
 
 static HCI_STATUS
 bthci_CmdReadLinkSupervisionTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2570,7 +2570,7 @@ bthci_CmdReadLinkSupervisionTimeout(
 
 static HCI_STATUS
 bthci_CmdWriteLinkSupervisionTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2628,7 +2628,7 @@ bthci_CmdWriteLinkSupervisionTimeout(
 
 static HCI_STATUS
 bthci_CmdEnhancedFlush(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2670,7 +2670,7 @@ bthci_CmdEnhancedFlush(
 
 static HCI_STATUS
 bthci_CmdReadLogicalLinkAcceptTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2710,7 +2710,7 @@ bthci_CmdReadLogicalLinkAcceptTimeout(
 
 static HCI_STATUS
 bthci_CmdWriteLogicalLinkAcceptTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2748,7 +2748,7 @@ bthci_CmdWriteLogicalLinkAcceptTimeout(
 
 static HCI_STATUS
 bthci_CmdSetEventMask(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2792,7 +2792,7 @@ bthci_CmdSetEventMask(
 // 7.3.69
 static HCI_STATUS
 bthci_CmdSetEventMaskPage2(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2834,7 +2834,7 @@ bthci_CmdSetEventMaskPage2(
 
 static HCI_STATUS
 bthci_CmdReadLocationData(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2880,7 +2880,7 @@ bthci_CmdReadLocationData(
 
 static HCI_STATUS
 bthci_CmdWriteLocationData(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2927,7 +2927,7 @@ bthci_CmdWriteLocationData(
 
 static HCI_STATUS
 bthci_CmdReadFlowControlMode(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -2962,7 +2962,7 @@ bthci_CmdReadFlowControlMode(
 
 static HCI_STATUS
 bthci_CmdWriteFlowControlMode(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3001,7 +3001,7 @@ bthci_CmdWriteFlowControlMode(
 
 static HCI_STATUS
 bthci_CmdReadBestEffortFlushTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3058,7 +3058,7 @@ bthci_CmdReadBestEffortFlushTimeout(
 
 static HCI_STATUS
 bthci_CmdWriteBestEffortFlushTimeout(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3114,7 +3114,7 @@ bthci_CmdWriteBestEffortFlushTimeout(
 
 static HCI_STATUS
 bthci_CmdShortRangeMode(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3147,7 +3147,7 @@ bthci_CmdShortRangeMode(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadLocalSupportedCommands(PADAPTER padapter)
+static HCI_STATUS bthci_CmdReadLocalSupportedCommands(struct rtw_adapter *padapter)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -3209,7 +3209,7 @@ static HCI_STATUS bthci_CmdReadLocalSupportedCommands(PADAPTER padapter)
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadLocalSupportedFeatures(PADAPTER padapter)
+static HCI_STATUS bthci_CmdReadLocalSupportedFeatures(struct rtw_adapter *padapter)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -3243,7 +3243,7 @@ static HCI_STATUS bthci_CmdReadLocalSupportedFeatures(PADAPTER padapter)
 
 static HCI_STATUS
 bthci_CmdReadLocalAMPAssoc(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3337,7 +3337,7 @@ bthci_CmdReadLocalAMPAssoc(
 
 static HCI_STATUS
 bthci_CmdReadFailedContactCounter(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3382,7 +3382,7 @@ bthci_CmdReadFailedContactCounter(
 
 static HCI_STATUS
 bthci_CmdResetFailedContactCounter(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3430,7 +3430,7 @@ bthci_CmdResetFailedContactCounter(
 //
 static HCI_STATUS
 bthci_CmdReadLocalVersionInformation(
-	PADAPTER	padapter
+	struct rtw_adapter *	padapter
 	)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
@@ -3482,7 +3482,7 @@ bthci_CmdReadLocalVersionInformation(
 }
 
 //7.4.7
-static HCI_STATUS bthci_CmdReadDataBlockSize(PADAPTER padapter)
+static HCI_STATUS bthci_CmdReadDataBlockSize(struct rtw_adapter *padapter)
 {
 	HCI_STATUS			status = HCI_STATUS_SUCCESS;
 
@@ -3525,7 +3525,7 @@ static HCI_STATUS bthci_CmdReadDataBlockSize(PADAPTER padapter)
 // 7.4.5
 static HCI_STATUS
 bthci_CmdReadBufferSize(
-	PADAPTER					padapter
+	struct rtw_adapter *					padapter
 	)
 {
 	HCI_STATUS			status = HCI_STATUS_SUCCESS;
@@ -3571,7 +3571,7 @@ bthci_CmdReadBufferSize(
 
 static HCI_STATUS
 bthci_CmdReadLocalAMPInfo(
-	PADAPTER					padapter
+	struct rtw_adapter *					padapter
 	)
 {
 	HCI_STATUS			status = HCI_STATUS_SUCCESS;
@@ -3642,7 +3642,7 @@ bthci_CmdReadLocalAMPInfo(
 
 static HCI_STATUS
 bthci_CmdCreatePhysicalLink(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3660,7 +3660,7 @@ bthci_CmdCreatePhysicalLink(
 
 static HCI_STATUS
 bthci_CmdReadLinkQuality(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3708,7 +3708,7 @@ bthci_CmdReadLinkQuality(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadRSSI(PADAPTER padapter)
+static HCI_STATUS bthci_CmdReadRSSI(struct rtw_adapter *padapter)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	return status;
@@ -3716,7 +3716,7 @@ static HCI_STATUS bthci_CmdReadRSSI(PADAPTER padapter)
 
 static HCI_STATUS
 bthci_CmdCreateLogicalLink(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3734,7 +3734,7 @@ bthci_CmdCreateLogicalLink(
 
 static HCI_STATUS
 bthci_CmdAcceptLogicalLink(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3752,7 +3752,7 @@ bthci_CmdAcceptLogicalLink(
 
 static HCI_STATUS
 bthci_CmdDisconnectLogicalLink(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -3817,10 +3817,9 @@ bthci_CmdDisconnectLogicalLink(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdLogicalLinkCancel(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdLogicalLinkCancel(struct rtw_adapter *padapter,
+			   PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
@@ -3891,10 +3890,9 @@ static HCI_STATUS bthci_CmdLogicalLinkCancel(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdFlowSpecModify(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdFlowSpecModify(struct rtw_adapter *padapter,
+			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
@@ -3937,10 +3935,9 @@ static HCI_STATUS bthci_CmdFlowSpecModify(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdAcceptPhysicalLink(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdAcceptPhysicalLink(struct rtw_adapter *padapter,
+			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS	status;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -3954,10 +3951,9 @@ static HCI_STATUS bthci_CmdAcceptPhysicalLink(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdDisconnectPhysicalLink(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdDisconnectPhysicalLink(struct rtw_adapter *padapter,
+				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 
 	HCI_STATUS	status = HCI_STATUS_SUCCESS;
@@ -4003,10 +3999,9 @@ static HCI_STATUS bthci_CmdDisconnectPhysicalLink(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdSetACLLinkDataFlowMode(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdSetACLLinkDataFlowMode(struct rtw_adapter *padapter,
+				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
@@ -4050,10 +4045,9 @@ static HCI_STATUS bthci_CmdSetACLLinkDataFlowMode(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdSetACLLinkStatus(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdSetACLLinkStatus(struct rtw_adapter *padapter,
+			  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4114,7 +4108,7 @@ static HCI_STATUS bthci_CmdSetACLLinkStatus(
 
 static HCI_STATUS
 bthci_CmdSetSCOLinkStatus(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4156,7 +4150,7 @@ bthci_CmdSetSCOLinkStatus(
 
 static HCI_STATUS
 bthci_CmdSetRSSIValue(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4215,7 +4209,7 @@ bthci_CmdSetRSSIValue(
 
 static HCI_STATUS
 bthci_CmdSetCurrentBluetoothStatus(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4256,7 +4250,7 @@ bthci_CmdSetCurrentBluetoothStatus(
 
 static HCI_STATUS
 bthci_CmdExtensionVersionNotify(
-	PADAPTER						padapter,
+	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4300,7 +4294,7 @@ bthci_CmdExtensionVersionNotify(
 
 static HCI_STATUS
 bthci_CmdLinkStatusNotify(
-	PADAPTER						padapter,
+	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4382,7 +4376,7 @@ bthci_CmdLinkStatusNotify(
 
 static HCI_STATUS
 bthci_CmdBtOperationNotify(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4458,10 +4452,9 @@ bthci_CmdBtOperationNotify(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdEnableWifiScanNotify(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdEnableWifiScanNotify(struct rtw_adapter *padapter,
+			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4499,10 +4492,9 @@ static HCI_STATUS bthci_CmdEnableWifiScanNotify(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdWIFICurrentChannel(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdWIFICurrentChannel(struct rtw_adapter *padapter,
+			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
@@ -4553,10 +4545,9 @@ static HCI_STATUS bthci_CmdWIFICurrentChannel(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdWIFICurrentBandwidth(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdWIFICurrentBandwidth(struct rtw_adapter *padapter,
+			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	HT_CHANNEL_WIDTH bw;
@@ -4606,12 +4597,12 @@ static HCI_STATUS bthci_CmdWIFICurrentBandwidth(
 
 static HCI_STATUS
 bthci_CmdWIFIConnectionStatus(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-	PADAPTER pDefaultAdapter = GetDefaultAdapter(padapter);
+	struct rtw_adapter *pDefaultAdapter = GetDefaultAdapter(padapter);
 	u8		connectStatus = HCI_WIFI_NOT_CONNECTED;
 
 	if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE) {
@@ -4655,7 +4646,7 @@ bthci_CmdWIFIConnectionStatus(
 
 static HCI_STATUS
 bthci_CmdEnableDeviceUnderTestMode(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
@@ -4692,10 +4683,9 @@ bthci_CmdEnableDeviceUnderTestMode(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdAMPTestEnd(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdAMPTestEnd(struct rtw_adapter *padapter,
+		    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4737,10 +4727,9 @@ static HCI_STATUS bthci_CmdAMPTestEnd(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdAMPTestCommand(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdAMPTestCommand(struct rtw_adapter *padapter,
+			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4837,10 +4826,9 @@ static HCI_STATUS bthci_CmdAMPTestCommand(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdEnableAMPReceiverReports(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdEnableAMPReceiverReports(struct rtw_adapter *padapter,
+				  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4905,10 +4893,9 @@ static HCI_STATUS bthci_CmdEnableAMPReceiverReports(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdHostBufferSize(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdHostBufferSize(struct rtw_adapter *padapter,
+			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -4945,20 +4932,17 @@ static HCI_STATUS bthci_CmdHostBufferSize(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdHostNumberOfCompletedPackets(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_CmdHostNumberOfCompletedPackets(struct rtw_adapter *padapter,
+				      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
 	return status;
 }
 
-static HCI_STATUS bthci_UnknownCMD(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_UnknownCMD(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_UNKNOW_HCI_CMD;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -4973,10 +4957,9 @@ static HCI_STATUS bthci_UnknownCMD(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFInformationalParameters(
-	PADAPTER					padapter,
-	PPACKET_IRP_HCICMD_DATA	pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFInformationalParameters(struct rtw_adapter *padapter,
+				       PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -5011,10 +4994,9 @@ static HCI_STATUS bthci_HandleOGFInformationalParameters(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFSetEventMaskCMD(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFSetEventMaskCMD(struct rtw_adapter *padapter,
+			       PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -5117,10 +5099,9 @@ static HCI_STATUS bthci_HandleOGFSetEventMaskCMD(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFStatusParameters(
-	PADAPTER						padapter,
-	PPACKET_IRP_HCICMD_DATA	pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFStatusParameters(struct rtw_adapter *padapter,
+				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -5163,10 +5144,9 @@ static HCI_STATUS bthci_HandleOGFStatusParameters(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFLinkControlCMD(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFLinkControlCMD(struct rtw_adapter *padapter,
+			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 
@@ -5214,10 +5194,9 @@ static HCI_STATUS bthci_HandleOGFLinkControlCMD(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFTestingCMD(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFTestingCMD(struct rtw_adapter *padapter,
+			  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	switch (pHciCmd->OCF)
@@ -5247,10 +5226,9 @@ static HCI_STATUS bthci_HandleOGFTestingCMD(
 	return status;
 }
 
-static HCI_STATUS bthci_HandleOGFExtension(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static HCI_STATUS
+bthci_HandleOGFExtension(struct rtw_adapter *padapter,
+			 PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
 	switch (pHciCmd->OCF)
@@ -5316,11 +5294,8 @@ static HCI_STATUS bthci_HandleOGFExtension(
 	return status;
 }
 
-static void bthci_FakeCommand(
-	PADAPTER	padapter,
-	u16	OGF,
-	u16	OCF
-	)
+static void
+bthci_FakeCommand(struct rtw_adapter *padapter,	u16 OGF, u16 OCF)
 {
 #define MAX_TMP_BUF_SIZE	200
 	u8	buffer[MAX_TMP_BUF_SIZE];
@@ -5340,11 +5315,9 @@ static void bthci_FakeCommand(
 	}
 }
 
-static void bthci_StateStarting(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateStarting(struct rtw_adapter *padapter,
+		    HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5398,11 +5371,9 @@ static void bthci_StateStarting(
 	}
 }
 
-static void bthci_StateConnecting(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateConnecting(struct rtw_adapter *padapter,
+		      HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5465,11 +5436,9 @@ static void bthci_StateConnecting(
 	}
 }
 
-static void bthci_StateConnected(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateConnected(struct rtw_adapter *padapter,
+		     HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
 {
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -5558,11 +5527,9 @@ static void bthci_StateConnected(
 	}
 }
 
-static void bthci_StateAuth(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
+		u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5626,11 +5593,9 @@ static void bthci_StateAuth(
 	}
 }
 
-static void bthci_StateDisconnecting(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateDisconnecting(struct rtw_adapter *padapter,
+			 HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5679,11 +5644,9 @@ static void bthci_StateDisconnecting(
 	}
 }
 
-static void bthci_StateDisconnected(
-	PADAPTER					padapter,
-	HCI_STATE_WITH_CMD		StateCmd,
-	u8					EntryNum
-	)
+static void
+bthci_StateDisconnected(struct rtw_adapter *padapter,
+			HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
 {
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -5799,10 +5762,8 @@ static void bthci_StateDisconnected(
 	}
 }
 
-static void bthci_UseFakeData(
-	PADAPTER	padapter,
-	PPACKET_IRP_HCICMD_DATA		pHciCmd
-	)
+static void
+bthci_UseFakeData(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	if (pHciCmd->OGF == OGF_LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_CREATE_LOGICAL_LINK)
 	{
@@ -5823,8 +5784,8 @@ static void bthci_UseFakeData(
 static void bthci_TimerCallbackHCICmd(PRT_TIMER pTimer)
 {
 #if (BT_THREAD == 0)
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackHCICmd() ==>\n"));
@@ -5838,8 +5799,8 @@ static void bthci_TimerCallbackHCICmd(PRT_TIMER pTimer)
 static void bthci_TimerCallbackSendAclData(PRT_TIMER pTimer)
 {
 #if (SENDTXMEHTOD == 0)
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("HCIAclDataTimerCallback() ==>\n"));
@@ -5854,8 +5815,8 @@ static void bthci_TimerCallbackSendAclData(PRT_TIMER pTimer)
 
 static void bthci_TimerCallbackDiscardAclData(PRT_TIMER pTimer)
 {
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -5871,8 +5832,8 @@ static void bthci_TimerCallbackDiscardAclData(PRT_TIMER pTimer)
 
 static void bthci_TimerCallbackPsDisable(PRT_TIMER pTimer)
 {
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() ==>\n"));
@@ -5884,8 +5845,8 @@ static void bthci_TimerCallbackPsDisable(PRT_TIMER pTimer)
 
 static void bthci_TimerCallbackJoinTimeout(PRT_TIMER pTimer)
 {
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	u8			CurrentEntry = pBtMgnt->CurrentConnectEntryNum;
@@ -5914,8 +5875,8 @@ static void bthci_TimerCallbackJoinTimeout(PRT_TIMER pTimer)
 
 static void bthci_TimerCallbackSendTestPacket(PRT_TIMER pTimer)
 {
-//	PADAPTER		padapter = (PADAPTER)pTimer->padapter;
-	PADAPTER		padapter = (PADAPTER)pTimer;
+//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -5945,7 +5906,7 @@ static void bthci_TimerCallbackAsocTimeout(PRT_TIMER pTimer)
 
 static void bthci_TimerCallbackDisconnectPhysicalLink(PRT_TIMER pTimer)
 {
-	PADAPTER		padapter = (PADAPTER)pTimer;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 
@@ -5962,7 +5923,7 @@ static void bthci_TimerCallbackDisconnectPhysicalLink(PRT_TIMER pTimer)
 
 }
 
-static u8 bthci_WaitForRfReady(PADAPTER padapter)
+static u8 bthci_WaitForRfReady(struct rtw_adapter *padapter)
 {
 	u8 bRet = _FALSE;
 
@@ -5996,7 +5957,7 @@ static u8 bthci_WaitForRfReady(PADAPTER padapter)
 
 static void bthci_WorkItemCallbackPsDisable(void *pContext)
 {
-	PADAPTER		padapter = (PADAPTER)pContext;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pContext;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	u8			CurrentAssocNum;
 
@@ -6028,21 +5989,21 @@ static void bthci_WorkItemCallbackHCICmd(void *pContext)
 static void bthci_WorkItemCallbackSendACLData(void *pContext)
 {
 #if (SENDTXMEHTOD == 0)
-	PADAPTER		padapter = (PADAPTER)pContext;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pContext;
 	PlatformTxBTQueuedPackets(padapter);
 #endif
 }
 
 static void bthci_WorkItemCallbackConnect(void *pContext)
 {
-	PADAPTER		padapter = (PADAPTER)pContext;
+	struct rtw_adapter *		padapter = (struct rtw_adapter *)pContext;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 
 //	BTPKT_JoinerConnectProcess(padapter, pBtMgnt->CurrentConnectEntryNum); // not porting yet
 }
 
-static u8 BTHCI_GetConnectEntryNum(PADAPTER padapter)
+static u8 BTHCI_GetConnectEntryNum(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -6050,7 +6011,7 @@ static u8 BTHCI_GetConnectEntryNum(PADAPTER padapter)
 	return bthci_GetCurrentEntryNum(padapter, pBtMgnt->BtCurrentPhyLinkhandle);
 }
 
-static u8 BTHCI_GetCurrentEntryNumByMAC(PADAPTER padapter, u8 *SA)
+static u8 BTHCI_GetCurrentEntryNumByMAC(struct rtw_adapter *padapter, u8 *SA)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	u8	i;
@@ -6069,7 +6030,7 @@ static u8 BTHCI_GetCurrentEntryNumByMAC(PADAPTER padapter, u8 *SA)
 	return 0xFF;
 }
 
-static void BTHCI_StatusWatchdog(PADAPTER padapter)
+static void BTHCI_StatusWatchdog(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO			pMgntInfo = &padapter->MgntInfo;
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
@@ -6124,11 +6085,9 @@ static void BTHCI_StatusWatchdog(PADAPTER padapter)
 		pBtTraffic->Bt30TrafficStatistics.bRxBusyTraffic));
 }
 
-static void BTHCI_NotifyRFState(
-	PADAPTER				padapter,
-	rt_rf_power_state		StateToSet,
-	RT_RF_CHANGE_SOURCE	ChangeSource
-	)
+static void
+BTHCI_NotifyRFState(struct rtw_adapter *padapter, rt_rf_power_state StateToSet,
+		    RT_RF_CHANGE_SOURCE ChangeSource)
 {
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
 	RT_RF_CHANGE_SOURCE	RfOffReason = ppwrctrl->rfoff_reason;
@@ -6184,11 +6143,8 @@ static void BTHCI_NotifyRFState(
 	}
 }
 
-static void BTHCI_IndicateAMPStatus(
-	PADAPTER			padapter,
-	u8				JoinAction,
-	u8				channel
-	)
+static void
+BTHCI_IndicateAMPStatus(struct rtw_adapter *padapter, u8 JoinAction, u8 channel)
 {
 //	PMGNT_INFO	pMgntInfo = &(padapter->MgntInfo);
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -6235,11 +6191,12 @@ static void BTHCI_IndicateAMPStatus(
 	}
 }
 
-void BTHCI_EventParse(PADAPTER padapter, void *pEvntData, u32 dataLen)
+void BTHCI_EventParse(struct rtw_adapter *padapter, void *pEvntData, u32 dataLen)
 {
 }
 
-static u16 BTHCI_GetPhysicalLinkHandle(PADAPTER padapter, u8 EntryNum)
+static u16
+BTHCI_GetPhysicalLinkHandle(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	u16 handle;
@@ -6249,12 +6206,9 @@ static u16 BTHCI_GetPhysicalLinkHandle(PADAPTER padapter, u8 EntryNum)
 	return handle;
 }
 
-static RT_STATUS BTHCI_IndicateRxData(
-	PADAPTER					padapter,
-	void						*pData,
-	u32						dataLen,
-	u8						EntryNum
-	)
+static RT_STATUS
+BTHCI_IndicateRxData(struct rtw_adapter *padapter, void *pData,
+		     u32 dataLen, u8 EntryNum)
 {
 	RT_STATUS	rt_status;
 
@@ -6263,7 +6217,7 @@ static RT_STATUS BTHCI_IndicateRxData(
 	return rt_status;
 }
 
-static void BTHCI_InitializeAllTimer(PADAPTER padapter)
+static void BTHCI_InitializeAllTimer(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
@@ -6287,7 +6241,7 @@ static void BTHCI_InitializeAllTimer(PADAPTER padapter)
 	PlatformInitializeTimer(padapter, &pBTinfo->BTAsocTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackAsocTimeout, NULL, "BTAsocTimeoutTimer");
 }
 
-static void BTHCI_CancelAllTimer(PADAPTER padapter)
+static void BTHCI_CancelAllTimer(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
@@ -6310,7 +6264,7 @@ static void BTHCI_CancelAllTimer(PADAPTER padapter)
 	PlatformCancelTimer(padapter, &pBTinfo->BTAsocTimeoutTimer);
 }
 
-static void BTHCI_ReleaseAllTimer(PADAPTER padapter)
+static void BTHCI_ReleaseAllTimer(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
@@ -6334,7 +6288,7 @@ static void BTHCI_ReleaseAllTimer(PADAPTER padapter)
 	PlatformReleaseTimer(padapter, &pBTinfo->BTPsDisableTimer);
 }
 
-static void BTHCI_InitializeAllWorkItem(PADAPTER padapter)
+static void BTHCI_InitializeAllWorkItem(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 #if (BT_THREAD == 0)
@@ -6352,12 +6306,12 @@ static void BTHCI_InitializeAllWorkItem(PADAPTER padapter)
 		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackConnect);
 }
 
-static void BTHCI_Reset(PADAPTER padapter)
+static void BTHCI_Reset(struct rtw_adapter *padapter)
 {
 	bthci_CmdReset(padapter, _FALSE);
 }
 
-u8 BTHCI_HsConnectionEstablished(PADAPTER padapter)
+u8 BTHCI_HsConnectionEstablished(struct rtw_adapter *padapter)
 {
 	u8			bBtConnectionExist = _FALSE;
 	PBT30Info	pBtinfo = GET_BT_INFO(padapter);
@@ -6377,10 +6331,9 @@ u8 BTHCI_HsConnectionEstablished(PADAPTER padapter)
 	return bBtConnectionExist;
 }
 
-static u8 BTHCI_CheckProfileExist(
-	PADAPTER	padapter,
-	BT_TRAFFIC_MODE_PROFILE	Profile
-	)
+static u8
+BTHCI_CheckProfileExist(struct rtw_adapter *padapter,
+			BT_TRAFFIC_MODE_PROFILE Profile)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6399,7 +6352,7 @@ static u8 BTHCI_CheckProfileExist(
 	return IsPRofile;
 }
 
-static u8 BTHCI_GetBTCoreSpecByProf(PADAPTER padapter, u8 profile)
+static u8 BTHCI_GetBTCoreSpecByProf(struct rtw_adapter *padapter, u8 profile)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6418,7 +6371,7 @@ static u8 BTHCI_GetBTCoreSpecByProf(PADAPTER padapter, u8 profile)
 	return btSpec;
 }
 
-static void BTHCI_GetProfileNameMoto(PADAPTER padapter)
+static void BTHCI_GetProfileNameMoto(struct rtw_adapter *padapter)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6459,7 +6412,7 @@ static void BTHCI_GetProfileNameMoto(PADAPTER padapter)
 	}
 }
 
-void BTHCI_UpdateBTProfileRTKToMoto(PADAPTER padapter)
+void BTHCI_UpdateBTProfileRTKToMoto(struct rtw_adapter *padapter)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6502,7 +6455,7 @@ void BTHCI_UpdateBTProfileRTKToMoto(PADAPTER padapter)
 		pBtMgnt->ExtConfig.NumberOfHandle, pBtMgnt->ExtConfig.NumberOfSCO));
 }
 
-static void BTHCI_GetBTRSSI(PADAPTER padapter)
+static void BTHCI_GetBTRSSI(struct rtw_adapter *padapter)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6516,7 +6469,7 @@ static void BTHCI_GetBTRSSI(PADAPTER padapter)
 	}
 }
 
-void BTHCI_WifiScanNotify(PADAPTER padapter, u8 scanType)
+void BTHCI_WifiScanNotify(struct rtw_adapter *padapter, u8 scanType)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6527,7 +6480,7 @@ void BTHCI_WifiScanNotify(PADAPTER padapter, u8 scanType)
 
 void
 BTHCI_StateMachine(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u8					StateToEnter,
 	HCI_STATE_WITH_CMD		StateCmd,
 	u8					EntryNum
@@ -6609,7 +6562,7 @@ BTHCI_StateMachine(
 	}
 }
 
-void BTHCI_DisconnectPeer(PADAPTER padapter, u8 EntryNum)
+void BTHCI_DisconnectPeer(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -6638,7 +6591,7 @@ void BTHCI_DisconnectPeer(PADAPTER padapter, u8 EntryNum)
 	}
 }
 
-void BTHCI_EventNumOfCompletedDataBlocks(PADAPTER padapter)
+void BTHCI_EventNumOfCompletedDataBlocks(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -6708,7 +6661,7 @@ void BTHCI_EventNumOfCompletedDataBlocks(PADAPTER padapter)
 	}
 }
 
-static void BTHCI_EventNumOfCompletedPackets(PADAPTER padapter)
+static void BTHCI_EventNumOfCompletedPackets(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO pMgntInfo = &padapter->MgntInfo;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
@@ -6759,7 +6712,7 @@ static void BTHCI_EventNumOfCompletedPackets(PADAPTER padapter)
 
 void
 BTHCI_EventAMPStatusChange(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	u8						AMP_Status
 	)
 {
@@ -6800,9 +6753,9 @@ BTHCI_EventAMPStatusChange(
 	}
 }
 
-void BTHCI_DisconnectAll(PADAPTER padapter)
+void BTHCI_DisconnectAll(struct rtw_adapter *padapter)
 {
-	PADAPTER		pDefaultAdapter = GetDefaultAdapter(padapter);
+	struct rtw_adapter *		pDefaultAdapter = GetDefaultAdapter(padapter);
 //	PMGNT_INFO		pMgntInfo = &(pDefaultAdapter->MgntInfo);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 
@@ -6832,7 +6785,7 @@ void BTHCI_DisconnectAll(PADAPTER padapter)
 
 HCI_STATUS
 BTHCI_HandleHCICMD(
-	PADAPTER					padapter,
+	struct rtw_adapter *					padapter,
 	PPACKET_IRP_HCICMD_DATA	pHciCmd
 	)
 {
@@ -6899,10 +6852,9 @@ BTHCI_HandleHCICMD(
 	return status;
 }
 
-static void BTHCI_SetLinkStatusNotify(
-	PADAPTER					padapter,
-	PPACKET_IRP_HCICMD_DATA	pHciCmd
-	)
+static void
+BTHCI_SetLinkStatusNotify(struct rtw_adapter *padapter,
+			  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	bthci_CmdLinkStatusNotify(padapter, pHciCmd);
 }
@@ -6925,16 +6877,12 @@ static const char *const BtStateString[] =
 	"BT_STATE_NOT_DEFINED"
 };
 
-extern s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
+extern s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
 // ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.c =====
 
-static void btdm_SetFw50(
-	PADAPTER	padapter,
-	u8		byte1,
-	u8		byte2,
-	u8		byte3
-	)
+static void
+btdm_SetFw50(struct rtw_adapter *padapter, u8 byte1, u8 byte2, u8 byte3)
 {
 	u8			H2C_Parameter[3] = {0};
 
@@ -6948,7 +6896,7 @@ static void btdm_SetFw50(
 	FillH2CCmd(padapter, 0x50, 3, H2C_Parameter);
 }
 
-static void btdm_SetFwIgnoreWlanAct(PADAPTER padapter, u8 bEnable)
+static void btdm_SetFwIgnoreWlanAct(struct rtw_adapter *padapter, u8 bEnable)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8			H2C_Parameter[1] = {0};
@@ -6970,7 +6918,7 @@ static void btdm_SetFwIgnoreWlanAct(PADAPTER padapter, u8 bEnable)
 	FillH2CCmd(padapter, BT_IGNORE_WLAN_ACT_EID, 1, H2C_Parameter);
 }
 
-static void btdm_NotifyFwScan(PADAPTER padapter, u8 scanType)
+static void btdm_NotifyFwScan(struct rtw_adapter *padapter, u8 scanType)
 {
 	u8			H2C_Parameter[1] = {0};
 
@@ -6983,7 +6931,8 @@ static void btdm_NotifyFwScan(PADAPTER padapter, u8 scanType)
 	FillH2CCmd(padapter, 0x3b, 1, H2C_Parameter);
 }
 
-static void btdm_1AntSetPSMode(PADAPTER padapter, u8 enable, u8 smartps, u8 mode)
+static void btdm_1AntSetPSMode(struct rtw_adapter *padapter,
+			       u8 enable, u8 smartps, u8 mode)
 {
 	struct pwrctrl_priv *pwrctrl;
 
@@ -7000,7 +6949,7 @@ static void btdm_1AntSetPSMode(PADAPTER padapter, u8 enable, u8 smartps, u8 mode
 	}
 }
 
-static void btdm_1AntTSFSwitch(PADAPTER padapter, u8 enable)
+static void btdm_1AntTSFSwitch(struct rtw_adapter *padapter, u8 enable)
 {
 	u8 oldVal, newVal;
 
@@ -7016,7 +6965,7 @@ static void btdm_1AntTSFSwitch(PADAPTER padapter, u8 enable)
 		rtw_write8(padapter, 0x550, newVal);
 }
 
-static u8 btdm_Is1AntPsTdmaStateChange(PADAPTER padapter)
+static u8 btdm_Is1AntPsTdmaStateChange(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_1ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm1Ant;
@@ -7036,7 +6985,7 @@ static u8 btdm_Is1AntPsTdmaStateChange(PADAPTER padapter)
 // Before enter TDMA, make sure Power Saving is enable!
 static void
 btdm_1AntPsTdma(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		bTurnOn,
 	u8		type
 	)
@@ -7222,7 +7171,9 @@ btdm_1AntPsTdma(
 	pBtdm8723->prePsTdma = pBtdm8723->curPsTdma;
 }
 
-static void _btdm_1AntSetPSTDMA(PADAPTER padapter, u8 bPSEn, u8 smartps, u8 psOption, u8 bTDMAOn, u8 tdmaType)
+static void
+_btdm_1AntSetPSTDMA(struct rtw_adapter *padapter, u8 bPSEn, u8 smartps,
+		    u8 psOption, u8 bTDMAOn, u8 tdmaType)
 {
 	struct pwrctrl_priv *pwrctrl;
 	PHAL_DATA_TYPE pHalData;
@@ -7321,12 +7272,14 @@ static void _btdm_1AntSetPSTDMA(PADAPTER padapter, u8 bPSEn, u8 smartps, u8 psOp
 	btdm_1AntPsTdma(padapter, bTDMAOn, tdmaType);
 }
 
-static void btdm_1AntSetPSTDMA(PADAPTER padapter, u8 bPSEn, u8 psOption, u8 bTDMAOn, u8 tdmaType)
+static void
+btdm_1AntSetPSTDMA(struct rtw_adapter *padapter, u8 bPSEn,
+		   u8 psOption, u8 bTDMAOn, u8 tdmaType)
 {
 	_btdm_1AntSetPSTDMA(padapter, bPSEn, 0, psOption, bTDMAOn, tdmaType);
 }
 
-static void btdm_1AntWifiParaAdjust(PADAPTER padapter, u8 bEnable)
+static void btdm_1AntWifiParaAdjust(struct rtw_adapter *padapter, u8 bEnable)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_1ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm1Ant;
@@ -7355,7 +7308,7 @@ static void btdm_1AntWifiParaAdjust(PADAPTER padapter, u8 bEnable)
 //	pBtdm8723->preWifiPara = pBtdm8723->curWifiPara;
 }
 
-static void btdm_1AntPtaParaReload(PADAPTER padapter)
+static void btdm_1AntPtaParaReload(struct rtw_adapter *padapter)
 {
 	// PTA parameter
 	rtw_write8(padapter, 0x6cc, 0x0);			// 1-Ant coex
@@ -7390,7 +7343,7 @@ static void btdm_1AntPtaParaReload(PADAPTER padapter)
  *	0: keep
  *	-1: downgrade (add BT duration time)
  */
-static s8 btdm_1AntTdmaJudgement(PADAPTER padapter, u8 retry)
+static s8 btdm_1AntTdmaJudgement(struct rtw_adapter *padapter, u8 retry)
 {
 	PHAL_DATA_TYPE		pHalData;
 	PBTDM_8723A_1ANT	pBtdm8723;
@@ -7477,7 +7430,7 @@ static s8 btdm_1AntTdmaJudgement(PADAPTER padapter, u8 retry)
 	return ret;
 }
 
-static void btdm_1AntTdmaDurationAdjustForACL(PADAPTER padapter)
+static void btdm_1AntTdmaDurationAdjustForACL(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_1ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm1Ant;
@@ -7606,7 +7559,7 @@ static u8 btdm_1AntAdjustbyWiFiRSSI(u8 RSSI_Now, u8 RSSI_Last, u8 RSSI_Th)
 	return type;
 }
 
-static void btdm_1AntTdmaDurationAdjustForSCO(PADAPTER padapter)
+static void btdm_1AntTdmaDurationAdjustForSCO(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	PBTDM_8723A_1ANT pBtdm8723;
@@ -7721,7 +7674,7 @@ _exit_1AntTdmaDurationAdjustForSCO:
 	pBtdm8723->psTdmaMonitorCntForSCO++;
 }
 
-static void btdm_1AntCoexProcessForWifiConnect(PADAPTER padapter)
+static void btdm_1AntCoexProcessForWifiConnect(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *pmlmepriv;
 	PHAL_DATA_TYPE pHalData;
@@ -7844,7 +7797,7 @@ static void btdm_1AntCoexProcessForWifiConnect(PADAPTER padapter)
 	pBtdm8723->psTdmaGlobalCnt++;
 }
 
-static void btdm_1AntUpdateHalRAMask(PADAPTER padapter, u32 mac_id, u32 filter)
+static void btdm_1AntUpdateHalRAMask(struct rtw_adapter *padapter, u32 mac_id, u32 filter)
 {
 	u8 init_rate = 0;
 	u8 raid;
@@ -7934,7 +7887,7 @@ static void btdm_1AntUpdateHalRAMask(PADAPTER padapter, u32 mac_id, u32 filter)
 	pdmpriv->INIDATA_RATE[mac_id] = init_rate;
 }
 
-static void btdm_1AntUpdateHalRAMaskForSCO(PADAPTER padapter, u8 forceUpdate)
+static void btdm_1AntUpdateHalRAMaskForSCO(struct rtw_adapter *padapter, u8 forceUpdate)
 {
 	PBTDM_8723A_1ANT pBtdm8723;
 	struct sta_priv *pstapriv;
@@ -7966,7 +7919,7 @@ static void btdm_1AntUpdateHalRAMaskForSCO(PADAPTER padapter, u8 forceUpdate)
 	pBtdm8723->bRAChanged = _TRUE;
 }
 
-static void btdm_1AntRecoverHalRAMask(PADAPTER padapter)
+static void btdm_1AntRecoverHalRAMask(struct rtw_adapter *padapter)
 {
 	PBTDM_8723A_1ANT pBtdm8723;
 	struct sta_priv *pstapriv;
@@ -7989,7 +7942,9 @@ static void btdm_1AntRecoverHalRAMask(PADAPTER padapter)
 	pBtdm8723->bRAChanged = _FALSE;
 }
 
-static void btdm_1AntBTStateChangeHandler(PADAPTER padapter, BT_STATE_1ANT oldState, BT_STATE_1ANT newState)
+static void
+btdm_1AntBTStateChangeHandler(struct rtw_adapter *padapter,
+			      BT_STATE_1ANT oldState, BT_STATE_1ANT newState)
 {
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], BT state change, %s => %s\n", BtStateString[oldState], BtStateString[newState]));
 
@@ -8060,7 +8015,7 @@ static void btdm_1AntBTStateChangeHandler(PADAPTER padapter, BT_STATE_1ANT oldSt
 	}
 }
 
-static void btdm_1AntBtCoexistHandler(PADAPTER padapter)
+static void btdm_1AntBtCoexistHandler(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE		pHalData;
 	PBT_COEXIST_8723A	pBtCoex8723;
@@ -8123,7 +8078,7 @@ static void btdm_1AntBtCoexistHandler(PADAPTER padapter)
 	pBtCoex8723->prec2hBtInfo = pBtCoex8723->c2hBtInfo;
 }
 
-void BTDM_1AntSignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
+void BTDM_1AntSignalCompensation(struct rtw_adapter *padapter, u8 *rssi_wifi, u8 *rssi_bt)
 {
 	PHAL_DATA_TYPE pHalData;
 	PBTDM_8723A_1ANT pBtdm8723;
@@ -8186,10 +8141,8 @@ void BTDM_1AntSignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 	}
 }
 
-static void BTDM_1AntSetWifiRssiThresh(
-	PADAPTER	padapter,
-	u8		rssiThresh
-	)
+static void
+BTDM_1AntSetWifiRssiThresh(struct rtw_adapter *padapter, u8 rssiThresh)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_1ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm1Ant;
@@ -8198,7 +8151,7 @@ static void BTDM_1AntSetWifiRssiThresh(
 	DBG_8723A("cosa set rssi thresh = %d\n", pBtdm8723->wifiRssiThresh);
 }
 
-static void BTDM_1AntParaInit(PADAPTER padapter)
+static void BTDM_1AntParaInit(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	PBT_COEXIST_8723A pBtCoex;
@@ -8227,7 +8180,7 @@ static void BTDM_1AntParaInit(PADAPTER padapter)
 	}
 }
 
-static void BTDM_1AntForHalt(PADAPTER padapter)
+static void BTDM_1AntForHalt(struct rtw_adapter *padapter)
 {
 	RTPRINT(FBT, BT_TRACE, ("\n[BTCoex], 1Ant for halt\n"));
 
@@ -8244,7 +8197,7 @@ static void BTDM_1AntForHalt(PADAPTER padapter)
 	btdm_SetFwIgnoreWlanAct(padapter, _TRUE);
 }
 
-static void BTDM_1AntLpsLeave(PADAPTER padapter)
+static void BTDM_1AntLpsLeave(struct rtw_adapter *padapter)
 {
 	RTPRINT(FBT, BT_TRACE, ("\n[BTCoex], 1Ant for LPS Leave\n"));
 
@@ -8255,7 +8208,7 @@ static void BTDM_1AntLpsLeave(PADAPTER padapter)
 //	btdm_1AntPsTdma(padapter, _FALSE, 8);
 }
 
-static void BTDM_1AntWifiAssociateNotify(PADAPTER padapter, u8 type)
+static void BTDM_1AntWifiAssociateNotify(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -8316,7 +8269,9 @@ static void BTDM_1AntWifiAssociateNotify(PADAPTER padapter, u8 type)
 	}
 }
 
-static void BTDM_1AntMediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
+static void
+BTDM_1AntMediaStatusNotify(struct rtw_adapter *padapter,
+			   RT_MEDIA_STATUS mstatus)
 {
 	PBT_COEXIST_8723A pBtCoex;
 
@@ -8351,7 +8306,7 @@ static void BTDM_1AntMediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatu
 	}
 }
 
-void BTDM_1AntForDhcp(PADAPTER padapter)
+void BTDM_1AntForDhcp(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 u1tmp;
@@ -8426,7 +8381,7 @@ void BTDM_1AntForDhcp(PADAPTER padapter)
 #endif
 }
 
-static void BTDM_1AntWifiScanNotify(PADAPTER padapter, u8 scanType)
+static void BTDM_1AntWifiScanNotify(struct rtw_adapter *padapter, u8 scanType)
 {
 	PHAL_DATA_TYPE	pHalData;
 	u8 u1tmp;
@@ -8497,7 +8452,7 @@ static void BTDM_1AntWifiScanNotify(PADAPTER padapter, u8 scanType)
 	}
 }
 
-static void BTDM_1AntFwC2hBtInfo8723A(PADAPTER padapter)
+static void BTDM_1AntFwC2hBtInfo8723A(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -8581,7 +8536,7 @@ static void BTDM_1AntFwC2hBtInfo8723A(PADAPTER padapter)
 		pBtCoex->c2hBtProfile &= ~BT_INFO_HID;
 }
 
-void BTDM_1AntBtCoexist8723A(PADAPTER padapter)
+void BTDM_1AntBtCoexist8723A(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *pmlmepriv;
 	PHAL_DATA_TYPE	pHalData;
@@ -8631,7 +8586,7 @@ void BTDM_1AntBtCoexist8723A(PADAPTER padapter)
 //============================================================
 // local function start with btdm_
 //============================================================
-static u8 btdm_ActionAlgorithm(PADAPTER	padapter)
+static u8 btdm_ActionAlgorithm(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -8966,23 +8921,23 @@ static u8 btdm_ActionAlgorithm(PADAPTER	padapter)
 	}
 
 	return algorithm;
-	}
+}
 
-static u8 btdm_NeedToDecBtPwr(PADAPTER padapter)
+static u8 btdm_NeedToDecBtPwr(struct rtw_adapter *padapter)
 	{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PADAPTER	pDefaultAdapter = GetDefaultAdapter(padapter);
-	u8	bRet=_FALSE;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	struct rtw_adapter *pDefaultAdapter = GetDefaultAdapter(padapter);
+	u8 bRet = _FALSE;
 
-	if(BT_Operation(padapter)) {
-		if(pHalData->dmpriv.EntryMinUndecoratedSmoothedPWDB > 47) {
+	if (BT_Operation(padapter)) {
+		if (pHalData->dmpriv.EntryMinUndecoratedSmoothedPWDB > 47) {
 			RTPRINT(FBT, BT_TRACE, ("Need to decrease bt power for HS mode!!\n"));
 			bRet = _TRUE;
 		} else {
 			RTPRINT(FBT, BT_TRACE, ("NO Need to decrease bt power for HS mode!!\n"));
 		}
 	} else {
-		if(BTDM_IsWifiConnectionExist(padapter)) {
+		if (BTDM_IsWifiConnectionExist(padapter)) {
 			RTPRINT(FBT, BT_TRACE, ("Need to decrease bt power for Wifi is connected!!\n"));
 			bRet = _TRUE;
 		}
@@ -8990,13 +8945,10 @@ static u8 btdm_NeedToDecBtPwr(PADAPTER padapter)
 	return bRet;
 }
 
-static void btdm_SetCoexTable(
-	PADAPTER	padapter,
-	u32		val0x6c0,
-	u32		val0x6c8,
-	u8		val0x6cc
-	)
-		{
+static void
+btdm_SetCoexTable(struct rtw_adapter *padapter, u32 val0x6c0,
+		  u32 val0x6c8, u8 val0x6cc)
+{
 	RTPRINT(FBT, BT_TRACE, ("set coex table, set 0x6c0=0x%x\n", val0x6c0));
 	rtw_write32(padapter, 0x6c0, val0x6c0);
 
@@ -9005,10 +8957,12 @@ static void btdm_SetCoexTable(
 
 	RTPRINT(FBT, BT_TRACE, ("set coex table, set 0x6cc=0x%x\n", val0x6cc));
 	rtw_write8(padapter, 0x6cc, val0x6cc);
-		}
+}
 
 
-static void btdm_SetSwFullTimeDacSwing(PADAPTER		padapter,u8	bSwDacSwingOn,u32	swDacSwingLvl)
+static void
+btdm_SetSwFullTimeDacSwing(struct rtw_adapter *	padapter, u8 bSwDacSwingOn,
+			   u32 swDacSwingLvl)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -9026,7 +8980,8 @@ static void btdm_SetSwFullTimeDacSwing(PADAPTER		padapter,u8	bSwDacSwingOn,u32	s
 }
 
 
-static void btdm_SetFwDacSwingLevel(PADAPTER padapter, u8 dacSwingLvl)
+static void
+btdm_SetFwDacSwingLevel(struct rtw_adapter *padapter, u8 dacSwingLvl)
 {
 	u8			H2C_Parameter[1] ={0};
 
@@ -9038,9 +8993,9 @@ static void btdm_SetFwDacSwingLevel(PADAPTER padapter, u8 dacSwingLvl)
 	FillH2CCmd(padapter, 0x29, 1, H2C_Parameter);
 }
 
-static void btdm_2AntDecBtPwr(PADAPTER padapter,u8	bDecBtPwr)
+static void btdm_2AntDecBtPwr(struct rtw_adapter *padapter, u8 bDecBtPwr)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], Dec BT power = %s\n",  ((bDecBtPwr)? "ON":"OFF")));
@@ -9049,7 +9004,7 @@ static void btdm_2AntDecBtPwr(PADAPTER padapter,u8	bDecBtPwr)
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreDecBtPwr=%d, bCurDecBtPwr=%d\n",
 	//	pBtdm8723->bPreDecBtPwr, pBtdm8723->bCurDecBtPwr));
 
-	if(pBtdm8723->bPreDecBtPwr == pBtdm8723->bCurDecBtPwr)
+	if (pBtdm8723->bPreDecBtPwr == pBtdm8723->bCurDecBtPwr)
 		return;
 
 	BTDM_SetFwDecBtPwr(padapter, pBtdm8723->bCurDecBtPwr);
@@ -9057,7 +9012,8 @@ static void btdm_2AntDecBtPwr(PADAPTER padapter,u8	bDecBtPwr)
 	pBtdm8723->bPreDecBtPwr = pBtdm8723->bCurDecBtPwr;
 }
 
-static void btdm_2AntFwDacSwingLvl(PADAPTER	padapter,u8	fwDacSwingLvl)
+static void
+btdm_2AntFwDacSwingLvl(struct rtw_adapter *padapter, u8 fwDacSwingLvl)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
@@ -9076,7 +9032,8 @@ static void btdm_2AntFwDacSwingLvl(PADAPTER	padapter,u8	fwDacSwingLvl)
 	pBtdm8723->preFwDacSwingLvl = pBtdm8723->curFwDacSwingLvl;
 }
 
-static void btdm_2AntRfShrink( PADAPTER	padapter, u8	bRxRfShrinkOn)
+static void
+btdm_2AntRfShrink(struct rtw_adapter *padapter, u8 bRxRfShrinkOn)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
@@ -9095,10 +9052,11 @@ static void btdm_2AntRfShrink( PADAPTER	padapter, u8	bRxRfShrinkOn)
 	pBtdm8723->bPreRfRxLpfShrink = pBtdm8723->bCurRfRxLpfShrink;
 }
 
-static void btdm_2AntLowPenaltyRa(PADAPTER	padapter, u8	bLowPenaltyRa)
+static void
+btdm_2AntLowPenaltyRa(struct rtw_adapter *padapter, u8 bLowPenaltyRa)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], turn LowPenaltyRA = %s\n",  ((bLowPenaltyRa)? "ON":"OFF")));
 	pBtdm8723->bCurLowPenaltyRa = bLowPenaltyRa;
@@ -9114,10 +9072,12 @@ static void btdm_2AntLowPenaltyRa(PADAPTER	padapter, u8	bLowPenaltyRa)
 	pBtdm8723->bPreLowPenaltyRa = pBtdm8723->bCurLowPenaltyRa;
 }
 
-static void btdm_2AntDacSwing(PADAPTER	padapter,u8	bDacSwingOn,u32	dacSwingLvl	)
+static void
+btdm_2AntDacSwing(struct rtw_adapter *padapter,
+		  u8 bDacSwingOn, u32 dacSwingLvl)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], turn DacSwing=%s, dacSwingLvl=0x%x\n",
 		((bDacSwingOn)? "ON":"OFF"), dacSwingLvl));
@@ -9128,8 +9088,8 @@ static void btdm_2AntDacSwing(PADAPTER	padapter,u8	bDacSwingOn,u32	dacSwingLvl	)
 	//	pBtdm8723->bPreDacSwingOn, pBtdm8723->preDacSwingLvl,
 	//	pBtdm8723->bCurDacSwingOn, pBtdm8723->curDacSwingLvl));
 
-	if( (pBtdm8723->bPreDacSwingOn == pBtdm8723->bCurDacSwingOn) &&
-		(pBtdm8723->preDacSwingLvl == pBtdm8723->curDacSwingLvl) )
+	if ((pBtdm8723->bPreDacSwingOn == pBtdm8723->bCurDacSwingOn) &&
+	    (pBtdm8723->preDacSwingLvl == pBtdm8723->curDacSwingLvl))
 		return;
 
 	rtw_mdelay_os(30);
@@ -9139,10 +9099,10 @@ static void btdm_2AntDacSwing(PADAPTER	padapter,u8	bDacSwingOn,u32	dacSwingLvl	)
 	pBtdm8723->preDacSwingLvl = pBtdm8723->curDacSwingLvl;
 }
 
-static void btdm_2AntAdcBackOff(PADAPTER	padapter,u8	bAdcBackOff)
+static void btdm_2AntAdcBackOff(struct rtw_adapter *padapter, u8 bAdcBackOff)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], turn AdcBackOff = %s\n",  ((bAdcBackOff)? "ON":"OFF")));
 	pBtdm8723->bCurAdcBackOff = bAdcBackOff;
@@ -9150,7 +9110,7 @@ static void btdm_2AntAdcBackOff(PADAPTER	padapter,u8	bAdcBackOff)
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreAdcBackOff=%d, bCurAdcBackOff=%d\n",
 	//	pBtdm8723->bPreAdcBackOff, pBtdm8723->bCurAdcBackOff));
 
-	if(pBtdm8723->bPreAdcBackOff == pBtdm8723->bCurAdcBackOff)
+	if (pBtdm8723->bPreAdcBackOff == pBtdm8723->bCurAdcBackOff)
 		return;
 
 	BTDM_BBBackOffLevel(padapter, (u8)pBtdm8723->bCurAdcBackOff);
@@ -9158,10 +9118,10 @@ static void btdm_2AntAdcBackOff(PADAPTER	padapter,u8	bAdcBackOff)
 	pBtdm8723->bPreAdcBackOff = pBtdm8723->bCurAdcBackOff;
 }
 
-static void btdm_2AntAgcTable(PADAPTER	padapter,u8	bAgcTableEn)
+static void btdm_2AntAgcTable(struct rtw_adapter *padapter, u8 bAgcTableEn)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], %s Agc Table\n",  ((bAgcTableEn)? "Enable":"Disable")));
 	pBtdm8723->bCurAgcTableEn = bAgcTableEn;
@@ -9169,7 +9129,7 @@ static void btdm_2AntAgcTable(PADAPTER	padapter,u8	bAgcTableEn)
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreAgcTableEn=%d, bCurAgcTableEn=%d\n",
 	//	pBtdm8723->bPreAgcTableEn, pBtdm8723->bCurAgcTableEn));
 
-	if(pBtdm8723->bPreAgcTableEn == pBtdm8723->bCurAgcTableEn)
+	if (pBtdm8723->bPreAgcTableEn == pBtdm8723->bCurAgcTableEn)
 		return;
 
 	BTDM_AGCTable(padapter, (u8)bAgcTableEn);
@@ -9177,10 +9137,12 @@ static void btdm_2AntAgcTable(PADAPTER	padapter,u8	bAgcTableEn)
 	pBtdm8723->bPreAgcTableEn = pBtdm8723->bCurAgcTableEn;
 }
 
-static void btdm_2AntCoexTable( PADAPTER	padapter,u32	val0x6c0,u32	val0x6c8,u8	val0x6cc)
+static void
+btdm_2AntCoexTable(struct rtw_adapter *padapter,
+		   u32 val0x6c0, u32 val0x6c8, u8 val0x6cc)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], write Coex Table 0x6c0=0x%x, 0x6c8=0x%x, 0x6cc=0x%x\n",
 		val0x6c0, val0x6c8, val0x6cc));
@@ -9193,9 +9155,9 @@ static void btdm_2AntCoexTable( PADAPTER	padapter,u32	val0x6c0,u32	val0x6c8,u8	v
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], curVal0x6c0=0x%x, curVal0x6c8=0x%x, curVal0x6cc=0x%x !!\n",
 	//	pBtdm8723->curVal0x6c0, pBtdm8723->curVal0x6c8, pBtdm8723->curVal0x6cc));
 
-	if( (pBtdm8723->preVal0x6c0 == pBtdm8723->curVal0x6c0) &&
-		(pBtdm8723->preVal0x6c8 == pBtdm8723->curVal0x6c8) &&
-		(pBtdm8723->preVal0x6cc == pBtdm8723->curVal0x6cc) )
+	if ((pBtdm8723->preVal0x6c0 == pBtdm8723->curVal0x6c0) &&
+	    (pBtdm8723->preVal0x6c8 == pBtdm8723->curVal0x6c8) &&
+	    (pBtdm8723->preVal0x6cc == pBtdm8723->curVal0x6cc))
 		return;
 
 	btdm_SetCoexTable(padapter, val0x6c0, val0x6c8, val0x6cc);
@@ -9205,10 +9167,10 @@ static void btdm_2AntCoexTable( PADAPTER	padapter,u32	val0x6c0,u32	val0x6c8,u8	v
 	pBtdm8723->preVal0x6cc = pBtdm8723->curVal0x6cc;
 }
 
-static void btdm_2AntIgnoreWlanAct(PADAPTER	padapter,u8	bEnable)
+static void btdm_2AntIgnoreWlanAct(struct rtw_adapter *padapter, u8 bEnable)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], turn Ignore WlanAct %s\n", (bEnable? "ON":"OFF")));
 	pBtdm8723->bCurIgnoreWlanAct = bEnable;
@@ -9216,22 +9178,24 @@ static void btdm_2AntIgnoreWlanAct(PADAPTER	padapter,u8	bEnable)
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreIgnoreWlanAct = %d, bCurIgnoreWlanAct = %d!!\n",
 	//	pBtdm8723->bPreIgnoreWlanAct, pBtdm8723->bCurIgnoreWlanAct));
 
-	if(pBtdm8723->bPreIgnoreWlanAct == pBtdm8723->bCurIgnoreWlanAct)
+	if (pBtdm8723->bPreIgnoreWlanAct == pBtdm8723->bCurIgnoreWlanAct)
 		return;
 
 	btdm_SetFwIgnoreWlanAct(padapter,bEnable);
 	pBtdm8723->bPreIgnoreWlanAct = pBtdm8723->bCurIgnoreWlanAct;
 }
 
-static void btdm_2AntSetFw3a(PADAPTER	padapter,u8	byte1,u8	byte2,u8		byte3,u8		byte4,u8		byte5)
-	{
-	u8		H2C_Parameter[5] ={0};
+static void
+btdm_2AntSetFw3a(struct rtw_adapter *padapter, u8 byte1, u8 byte2,
+		 u8 byte3, u8 byte4, u8 byte5)
+{
+	u8 H2C_Parameter[5] ={0};
 
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
 	// byte1[1:0] != 0 means enable pstdma
 	// for 2Ant bt coexist, if byte1 != 0 means enable pstdma
-	if(byte1)
+	if (byte1)
 	{
 		pHalData->bt_coexist.bFWCoexistAllOff = _FALSE;
 	}
@@ -9254,10 +9218,10 @@ static void btdm_2AntSetFw3a(PADAPTER	padapter,u8	byte1,u8	byte2,u8		byte3,u8		b
 	FillH2CCmd(padapter, 0x3a, 5, H2C_Parameter);
 	}
 
-static void btdm_2AntPsTdma(PADAPTER	padapter,u8	bTurnOn,u8	type)
-	{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+static void btdm_2AntPsTdma(struct rtw_adapter *padapter, u8 bTurnOn, u8 type)
+{
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 	u32			btTxRxCnt=0;
 	u8			bTurnOnByCnt=_FALSE;
 	u8			psTdmaTypeByCnt=0;
@@ -9285,11 +9249,11 @@ static void btdm_2AntPsTdma(PADAPTER	padapter,u8	bTurnOn,u8	type)
 	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], prePsTdma = %d, curPsTdma = %d!!\n",
 	//	pBtdm8723->prePsTdma, pBtdm8723->curPsTdma));
 
-	if( (pBtdm8723->bPrePsTdmaOn == pBtdm8723->bCurPsTdmaOn) &&
-		(pBtdm8723->prePsTdma == pBtdm8723->curPsTdma) )
+	if ((pBtdm8723->bPrePsTdmaOn == pBtdm8723->bCurPsTdmaOn) &&
+	    (pBtdm8723->prePsTdma == pBtdm8723->curPsTdma))
 		return;
 
-	if(bTurnOn)
+	if (bTurnOn)
 	{
 		switch(type)
 		{
@@ -9380,7 +9344,7 @@ static void btdm_2AntPsTdma(PADAPTER	padapter,u8	bTurnOn,u8	type)
 
 
 
-static void btdm_2AntBtInquiryPage(PADAPTER	padapter)
+static void btdm_2AntBtInquiryPage(struct rtw_adapter *padapter)
 {
 	btdm_2AntCoexTable(padapter, 0x55555555, 0xffff, 0x3);
 	btdm_2AntIgnoreWlanAct(padapter, _FALSE);
@@ -9388,15 +9352,15 @@ static void btdm_2AntBtInquiryPage(PADAPTER	padapter)
 }
 
 
-static u8 btdm_HoldForBtInqPage( PADAPTER	padapter)
-	{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	u32			curTime=rtw_get_current_time();
+static u8 btdm_HoldForBtInqPage( struct rtw_adapter *padapter)
+{
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	u32 curTime = rtw_get_current_time();
 
-	if(pHalData->bt_coexist.halCoex8723.bC2hBtInquiryPage)
+	if (pHalData->bt_coexist.halCoex8723.bC2hBtInquiryPage)
 	{
 		// bt inquiry or page is started.
-		if(pHalData->bt_coexist.halCoex8723.btInqPageStartTime == 0)
+		if (pHalData->bt_coexist.halCoex8723.btInqPageStartTime == 0)
 		{
 			pHalData->bt_coexist.halCoex8723.btInqPageStartTime = curTime;
 			RTPRINT(FBT, BT_TRACE, ("[BTCoex], BT Inquiry/page is started at time : 0x%"i64fmt"x \n",
@@ -9406,7 +9370,7 @@ static u8 btdm_HoldForBtInqPage( PADAPTER	padapter)
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], BT Inquiry/page started time : 0x%"i64fmt"x, curTime : 0x%x \n",
 		pHalData->bt_coexist.halCoex8723.btInqPageStartTime, curTime));
 
-	if(pHalData->bt_coexist.halCoex8723.btInqPageStartTime)
+	if (pHalData->bt_coexist.halCoex8723.btInqPageStartTime)
 	{
 		if(( (curTime - pHalData->bt_coexist.halCoex8723.btInqPageStartTime)/1000000) >= 10)
 		{
@@ -9415,7 +9379,7 @@ static u8 btdm_HoldForBtInqPage( PADAPTER	padapter)
 		}
 		}
 
-	if(pHalData->bt_coexist.halCoex8723.btInqPageStartTime)
+	if (pHalData->bt_coexist.halCoex8723.btInqPageStartTime)
 		{
 		btdm_2AntCoexTable(padapter, 0x55555555, 0xffff, 0x3);
 		btdm_2AntIgnoreWlanAct(padapter, _FALSE);
@@ -9427,7 +9391,7 @@ static u8 btdm_HoldForBtInqPage( PADAPTER	padapter)
 		}
 
 
-static u8 btdm_Is2Ant8723ACommonAction(PADAPTER	padapter)
+static u8 btdm_Is2Ant8723ACommonAction(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
@@ -9557,7 +9521,9 @@ static u8 btdm_Is2Ant8723ACommonAction(PADAPTER	padapter)
 }
 
 
-static void btdm_2AntTdmaDurationAdjust(PADAPTER	 padapter,u8		bScoHid,u8	bTxPause,u8		maxInterval)
+static void
+btdm_2AntTdmaDurationAdjust(struct rtw_adapter *padapter, u8 bScoHid,
+			    u8 bTxPause, u8 maxInterval)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT_MGNT		pBtMgnt = &pHalData->BtInfo.BtMgnt;
@@ -10446,7 +10412,7 @@ static void btdm_2AntTdmaDurationAdjust(PADAPTER	 padapter,u8		bScoHid,u8	bTxPau
 }
 
 // default Action
-static void btdm_2Ant8723AAction0(PADAPTER	padapter)
+static void btdm_2Ant8723AAction0(struct rtw_adapter *padapter)
 {
 	btdm_2AntIgnoreWlanAct(padapter, _FALSE);
 	btdm_2AntPsTdma(padapter, _FALSE, 0);
@@ -10462,7 +10428,7 @@ static void btdm_2Ant8723AAction0(PADAPTER	padapter)
 }
 
 // SCO only or SCO+PAN(HS)
-static void btdm_2Ant8723ASCOAction(PADAPTER padapter)
+static void btdm_2Ant8723ASCOAction(struct rtw_adapter *padapter)
 {
 	u8	btRssiState, btRssiState1;
 
@@ -10536,7 +10502,7 @@ static void btdm_2Ant8723ASCOAction(PADAPTER padapter)
 	}
 
 
-static void btdm_2Ant8723AHIDAction(PADAPTER padapter)
+static void btdm_2Ant8723AHIDAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1;
 
@@ -10608,7 +10574,7 @@ static void btdm_2Ant8723AHIDAction(PADAPTER padapter)
 		}
 
 //A2DP only / PAN(EDR) only/ A2DP+PAN(HS)
-static void btdm_2Ant8723AA2DPAction(PADAPTER padapter)
+static void btdm_2Ant8723AA2DPAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -10720,7 +10686,7 @@ static void btdm_2Ant8723AA2DPAction(PADAPTER padapter)
 }
 
 
-static void btdm_2Ant8723APANEDRAction(PADAPTER padapter)
+static void btdm_2Ant8723APANEDRAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1;
 
@@ -10795,7 +10761,7 @@ static void btdm_2Ant8723APANEDRAction(PADAPTER padapter)
 
 
 //PAN(HS) only
-static void btdm_2Ant8723APANHSAction(PADAPTER	padapter)
+static void btdm_2Ant8723APANHSAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1;
 
@@ -10857,7 +10823,7 @@ static void btdm_2Ant8723APANHSAction(PADAPTER	padapter)
 
 
 //PAN(EDR)+A2DP
-static void btdm_2Ant8723APANEDRA2DPAction(PADAPTER	padapter)
+static void btdm_2Ant8723APANEDRA2DPAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1, btInfoExt;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -10972,17 +10938,16 @@ static void btdm_2Ant8723APANEDRA2DPAction(PADAPTER	padapter)
 }
 
 
-static void btdm_2Ant8723APANEDRHIDAction(PADAPTER	padapter)
+static void btdm_2Ant8723APANEDRHIDAction(struct rtw_adapter *padapter)
 {
-	u8		btRssiState, btRssiState1;
+	u8 btRssiState, btRssiState1;
 
-	if(btdm_NeedToDecBtPwr(padapter))
+	if (btdm_NeedToDecBtPwr(padapter))
 		btdm_2AntDecBtPwr(padapter, _TRUE);
 	else
 		btdm_2AntDecBtPwr(padapter, _FALSE);
 
-	if(BTDM_IsHT40(padapter))
-	{
+	if (BTDM_IsHT40(padapter)) {
 		RTPRINT(FBT, BT_TRACE, ("HT40\n"));
 		btRssiState = BTDM_CheckCoexRSSIState(padapter, 2, 37, 0);
 		// fw mechanism
@@ -11044,7 +11009,7 @@ static void btdm_2Ant8723APANEDRHIDAction(PADAPTER	padapter)
 }
 
 // HID+A2DP+PAN(EDR)
-static void btdm_2Ant8723AHIDA2DPPANEDRAction(PADAPTER	padapter)
+static void btdm_2Ant8723AHIDA2DPPANEDRAction(struct rtw_adapter *padapter)
 {
 	u8		btRssiState, btRssiState1, btInfoExt;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -11154,8 +11119,8 @@ static void btdm_2Ant8723AHIDA2DPPANEDRAction(PADAPTER	padapter)
 	}
 
 
-static void btdm_2Ant8723AHIDA2DPAction(PADAPTER	padapter)
-	{
+static void btdm_2Ant8723AHIDA2DPAction(struct rtw_adapter *padapter)
+{
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8		btRssiState, btRssiState1, btInfoExt;
 
@@ -11265,7 +11230,7 @@ static void btdm_2Ant8723AHIDA2DPAction(PADAPTER	padapter)
 }
 
 
-static void btdm_2Ant8723AHidScoEsco(PADAPTER	padapter	)
+static void btdm_2Ant8723AHidScoEsco(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8		btRssiState, btRssiState1, btInfoExt;
@@ -11378,7 +11343,7 @@ static void btdm_2Ant8723AHidScoEsco(PADAPTER	padapter	)
 	}
 }
 
-static void btdm_2Ant8723AFtpA2dp(	PADAPTER	padapter	)
+static void btdm_2Ant8723AFtpA2dp(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8		btRssiState, btRssiState1, btInfoExt;
@@ -11456,7 +11421,7 @@ static void btdm_2Ant8723AFtpA2dp(	PADAPTER	padapter	)
 	}
 
 
-static void btdm_2Ant8723AA2dp(PADAPTER padapter)
+static void btdm_2Ant8723AA2dp(struct rtw_adapter *padapter)
 	{
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8		btRssiState, btRssiState1, btInfoExt;
@@ -11534,7 +11499,7 @@ static void btdm_2Ant8723AA2dp(PADAPTER padapter)
 }
 
 
-static void btdm_2Ant8723Ftp(PADAPTER	padapter)
+static void btdm_2Ant8723Ftp(struct rtw_adapter *padapter)
 		{
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8		btRssiState, btRssiState1, btInfoExt;
@@ -11614,11 +11579,11 @@ static void btdm_2Ant8723Ftp(PADAPTER	padapter)
 //============================================================
 // extern function start with BTDM_
 //============================================================
-static void BTDM_2AntParaInit(PADAPTER padapter)
+static void BTDM_2AntParaInit(struct rtw_adapter *padapter)
 {
 
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
-	PBTDM_8723A_2ANT	pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
+	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	PBTDM_8723A_2ANT pBtdm8723 = &pHalData->bt_coexist.halCoex8723.btdm2Ant;
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], 2Ant Parameter Init!!\n"));
 
@@ -11659,12 +11624,12 @@ static void BTDM_2AntParaInit(PADAPTER padapter)
 	btdm_2AntIgnoreWlanAct(padapter, _FALSE);
 }
 
-static void BTDM_2AntHwCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_2AntHwCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	btdm_2AntCoexTable(padapter, 0x55555555, 0xffff, 0x3);
 }
 
-static void BTDM_2AntFwCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_2AntFwCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	btdm_2AntIgnoreWlanAct(padapter, _FALSE);
 	btdm_2AntPsTdma(padapter, _FALSE, 0);
@@ -11672,7 +11637,7 @@ static void BTDM_2AntFwCoexAllOff8723A(PADAPTER padapter)
 	btdm_2AntDecBtPwr(padapter, _FALSE);
 }
 
-static void BTDM_2AntSwCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_2AntSwCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	btdm_2AntAgcTable(padapter, _FALSE);
 	btdm_2AntAdcBackOff(padapter, _FALSE);
@@ -11682,7 +11647,7 @@ static void BTDM_2AntSwCoexAllOff8723A(PADAPTER padapter)
 }
 
 
-static void BTDM_2AntIpsNotify8723A(PADAPTER	padapter,u8		type)
+static void BTDM_2AntIpsNotify8723A(struct rtw_adapter *padapter, u8 type)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt=&pBTInfo->BtMgnt;
@@ -11691,11 +11656,11 @@ static void BTDM_2AntIpsNotify8723A(PADAPTER	padapter,u8		type)
 	{
 		RTPRINT(FBT, BT_TRACE, ("[BT][DM], enter IPS, turn off all BT Coexist DM\n"));
 		BTDM_CoexAllOff(padapter);
-}
+	}
 }
 
 
-static void BTDM_2AntNotifyBtOperation8723(PADAPTER padapter)
+static void BTDM_2AntNotifyBtOperation8723(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -11753,9 +11718,9 @@ static void BTDM_2AntNotifyBtOperation8723(PADAPTER padapter)
 	}
 }
 
-static void BTDM_2AntFwC2hBtInfo8723A(
-	PADAPTER	padapter
-	)
+
+static void
+BTDM_2AntFwC2hBtInfo8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -11958,7 +11923,7 @@ static void BTDM_2AntFwC2hBtInfo8723A(
 }
 
 
-void BTDM_2AntBtCoexist8723A(PADAPTER padapter)
+void BTDM_2AntBtCoexist8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -12179,7 +12144,7 @@ static const char *const BtLinkRoleString[]={
 	"Slave",
 };
 
-static u8 btdm_BtWifiAntNum(PADAPTER padapter)
+static u8 btdm_BtWifiAntNum(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT_COEXIST_8723A	pBtCoex = &pHalData->bt_coexist.halCoex8723;
@@ -12203,7 +12168,7 @@ static u8 btdm_BtWifiAntNum(PADAPTER padapter)
 	return Ant_x2;
 }
 
-static void btdm_BtHwCountersMonitor(PADAPTER padapter)
+static void btdm_BtHwCountersMonitor(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u32				regHPTxRx, regLPTxRx, u4Tmp;
@@ -12238,7 +12203,7 @@ static void btdm_BtHwCountersMonitor(PADAPTER padapter)
 }
 
 // This function check if 8723 bt is disabled
-static void btdm_BtEnableDisableCheck8723A(PADAPTER padapter)
+static void btdm_BtEnableDisableCheck8723A(struct rtw_adapter *padapter)
 {
 	u8		btAlife = _TRUE;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
@@ -12319,7 +12284,7 @@ static void btdm_BtEnableDisableCheck8723A(PADAPTER padapter)
 	}
 }
 
-static void btdm_BTCoexist8723AHandler(PADAPTER padapter)
+static void btdm_BTCoexist8723AHandler(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 
@@ -12382,7 +12347,7 @@ static void btdm_BTCoexist8723AHandler(PADAPTER padapter)
 //============================================================
 // extern function start with BTDM_
 //============================================================
-u32 BTDM_BtTxRxCounterH(	PADAPTER	padapter)
+u32 BTDM_BtTxRxCounterH(	struct rtw_adapter *	padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u32	counters=0;
@@ -12392,7 +12357,7 @@ u32 BTDM_BtTxRxCounterH(	PADAPTER	padapter)
 	return counters;
 }
 
-u32 BTDM_BtTxRxCounterL(	PADAPTER	padapter	)
+u32 BTDM_BtTxRxCounterL(	struct rtw_adapter *	padapter	)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u32	counters=0;
@@ -12402,7 +12367,7 @@ u32 BTDM_BtTxRxCounterL(	PADAPTER	padapter	)
 	return counters;
 }
 
-void BTDM_SetFwChnlInfo(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
+void BTDM_SetFwChnlInfo(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
 {
 //	PMGNT_INFO	pMgntInfo = &padapter->MgntInfo;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -12460,7 +12425,7 @@ void BTDM_SetFwChnlInfo(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
 	FillH2CCmd(padapter, 0x19, 3, H2C_Parameter);
 }
 
-u8 BTDM_IsWifiConnectionExist(PADAPTER padapter)
+u8 BTDM_IsWifiConnectionExist(struct rtw_adapter *padapter)
 {
 	u8 bRet = _FALSE;
 
@@ -12475,7 +12440,7 @@ u8 BTDM_IsWifiConnectionExist(PADAPTER padapter)
 }
 
 void BTDM_SetFw3a(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		byte1,
 	u8		byte2,
 	u8		byte3,
@@ -12525,7 +12490,7 @@ void BTDM_SetFw3a(
 	FillH2CCmd(padapter, 0x3a, 5, H2C_Parameter);
 }
 
-static void BTDM_ForceBtCoexMechanism(PADAPTER	padapter, u8 type)
+static void BTDM_ForceBtCoexMechanism(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -12542,7 +12507,7 @@ static void BTDM_ForceBtCoexMechanism(PADAPTER	padapter, u8 type)
 	}
 }
 
-void BTDM_QueryBtInformation(PADAPTER padapter)
+void BTDM_QueryBtInformation(struct rtw_adapter *padapter)
 {
 	u8 H2C_Parameter[1] = {0};
 	PHAL_DATA_TYPE pHalData;
@@ -12579,7 +12544,7 @@ void BTDM_QueryBtInformation(PADAPTER padapter)
 	FillH2CCmd(padapter, 0x38, 1, H2C_Parameter);
 }
 
-void BTDM_SetSwRfRxLpfCorner(PADAPTER padapter, u8 type)
+void BTDM_SetSwRfRxLpfCorner(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -12600,7 +12565,7 @@ void BTDM_SetSwRfRxLpfCorner(PADAPTER padapter, u8 type)
 
 void
 BTDM_SetSwPenaltyTxRateAdaptive(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		raType
 	)
 {
@@ -12624,7 +12589,7 @@ BTDM_SetSwPenaltyTxRateAdaptive(
 	rtw_write8(padapter, 0x4fd, tmpU1);
 }
 
-void BTDM_SetFwDecBtPwr(PADAPTER padapter, u8 bDecBtPwr)
+void BTDM_SetFwDecBtPwr(struct rtw_adapter *padapter, u8 bDecBtPwr)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8			H2C_Parameter[1] = {0};
@@ -12644,7 +12609,7 @@ void BTDM_SetFwDecBtPwr(PADAPTER padapter, u8 bDecBtPwr)
 	FillH2CCmd(padapter, 0x21, 1, H2C_Parameter);
 }
 
-u8 BTDM_BtProfileSupport(PADAPTER padapter)
+u8 BTDM_BtProfileSupport(struct rtw_adapter *padapter)
 {
 	u8			bRet = _FALSE;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -12661,12 +12626,12 @@ u8 BTDM_BtProfileSupport(PADAPTER padapter)
 	return bRet;
 }
 
-static void BTDM_AdjustForBtOperation8723A(PADAPTER padapter)
+static void BTDM_AdjustForBtOperation8723A(struct rtw_adapter *padapter)
 {
 	//BTDM_2AntAdjustForBtOperation8723(padapter);
 }
 
-static void BTDM_FwC2hBtRssi8723A(PADAPTER padapter, u8 *tmpBuf)
+static void BTDM_FwC2hBtRssi8723A(struct rtw_adapter *padapter, u8 *tmpBuf)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8			percent=0, u1tmp=0;
@@ -12678,7 +12643,8 @@ static void BTDM_FwC2hBtRssi8723A(PADAPTER padapter, u8 *tmpBuf)
 //	RTPRINT(FBT, BT_TRACE, ("[BTC2H], BT RSSI=%d\n", percent));
 }
 
-static void BTDM_FwC2hBtInfo8723A(PADAPTER padapter, u8 *tmpBuf, u8 length)
+static void
+BTDM_FwC2hBtInfo8723A(struct rtw_adapter *padapter, u8 *tmpBuf, u8 length)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -12742,7 +12708,7 @@ static void BTDM_FwC2hBtInfo8723A(PADAPTER padapter, u8 *tmpBuf, u8 length)
 	btdm_BTCoexist8723AHandler(padapter);
 }
 
-static void BTDM_Display8723ABtCoexInfo(PADAPTER padapter)
+static void BTDM_Display8723ABtCoexInfo(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT_COEXIST_8723A	pBtCoex = &pHalData->bt_coexist.halCoex8723;
@@ -12960,13 +12926,15 @@ static void BTDM_Display8723ABtCoexInfo(PADAPTER padapter)
 	DCMD_Printf(btCoexDbgBuf);
 }
 
-static void BTDM_8723ASignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
+static void
+BTDM_8723ASignalCompensation(struct rtw_adapter *padapter,
+			     u8 *rssi_wifi, u8 *rssi_bt)
 {
 	if (btdm_BtWifiAntNum(padapter) == Ant_x1)
 		BTDM_1AntSignalCompensation(padapter, rssi_wifi, rssi_bt);
 }
 
-static void BTDM_8723AInit(PADAPTER padapter)
+static void BTDM_8723AInit(struct rtw_adapter *padapter)
 {
 	if (btdm_BtWifiAntNum(padapter) == Ant_x2)
 		BTDM_2AntParaInit(padapter);
@@ -12974,7 +12942,7 @@ static void BTDM_8723AInit(PADAPTER padapter)
 		BTDM_1AntParaInit(padapter);
 }
 
-static void BTDM_HWCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_HWCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -12986,7 +12954,7 @@ static void BTDM_HWCoexAllOff8723A(PADAPTER padapter)
 		BTDM_2AntHwCoexAllOff8723A(padapter);
 }
 
-static void BTDM_FWCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_FWCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -12998,7 +12966,7 @@ static void BTDM_FWCoexAllOff8723A(PADAPTER padapter)
 		BTDM_2AntFwCoexAllOff8723A(padapter);
 }
 
-static void BTDM_SWCoexAllOff8723A(PADAPTER padapter)
+static void BTDM_SWCoexAllOff8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13010,10 +12978,8 @@ static void BTDM_SWCoexAllOff8723A(PADAPTER padapter)
 		BTDM_2AntSwCoexAllOff8723A(padapter);
 }
 
-static void BTDM_Set8723ABtCoexCurrAntNum(
-	PADAPTER	padapter,
-	u8		antNum
-	)
+static void
+BTDM_Set8723ABtCoexCurrAntNum(struct rtw_adapter *padapter, u8 antNum)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT_COEXIST_8723A	pBtCoex = &pHalData->bt_coexist.halCoex8723;
@@ -13028,7 +12994,7 @@ static void BTDM_Set8723ABtCoexCurrAntNum(
 	}
 }
 
-void BTDM_LpsLeave(PADAPTER padapter)
+void BTDM_LpsLeave(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13040,7 +13006,7 @@ void BTDM_LpsLeave(PADAPTER padapter)
 		BTDM_1AntLpsLeave(padapter);
 }
 
-static void BTDM_ForHalt8723A(PADAPTER padapter)
+static void BTDM_ForHalt8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13052,7 +13018,7 @@ static void BTDM_ForHalt8723A(PADAPTER padapter)
 		BTDM_1AntForHalt(padapter);
 }
 
-static void BTDM_WifiScanNotify8723A(PADAPTER padapter, u8 scanType)
+static void BTDM_WifiScanNotify8723A(struct rtw_adapter *padapter, u8 scanType)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13064,7 +13030,8 @@ static void BTDM_WifiScanNotify8723A(PADAPTER padapter, u8 scanType)
 		BTDM_1AntWifiScanNotify(padapter, scanType);
 }
 
-static void BTDM_WifiAssociateNotify8723A(PADAPTER padapter, u8 action)
+static void
+BTDM_WifiAssociateNotify8723A(struct rtw_adapter *padapter, u8 action)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13076,7 +13043,9 @@ static void BTDM_WifiAssociateNotify8723A(PADAPTER padapter, u8 action)
 		BTDM_1AntWifiAssociateNotify(padapter, action);
 }
 
-static void BTDM_MediaStatusNotify8723A(PADAPTER padapter, RT_MEDIA_STATUS	 mstatus)
+static void
+BTDM_MediaStatusNotify8723A(struct rtw_adapter *padapter,
+			    RT_MEDIA_STATUS mstatus)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13093,7 +13062,7 @@ static void BTDM_MediaStatusNotify8723A(PADAPTER padapter, RT_MEDIA_STATUS	 msta
 		BTDM_1AntMediaStatusNotify(padapter, mstatus);
 }
 
-static void BTDM_ForDhcp8723A(PADAPTER padapter)
+static void BTDM_ForDhcp8723A(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13105,7 +13074,7 @@ static void BTDM_ForDhcp8723A(PADAPTER padapter)
 		BTDM_1AntForDhcp(padapter);
 }
 
-u8 BTDM_1Ant8723A(PADAPTER padapter)
+u8 BTDM_1Ant8723A(struct rtw_adapter *padapter)
 {
 	if (btdm_BtWifiAntNum(padapter) == Ant_x1)
 		return _TRUE;
@@ -13113,7 +13082,7 @@ u8 BTDM_1Ant8723A(PADAPTER padapter)
 		return _FALSE;
 }
 
-static void BTDM_BTCoexist8723A(PADAPTER padapter)
+static void BTDM_BTCoexist8723A(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -13171,13 +13140,13 @@ static void BTDM_BTCoexist8723A(PADAPTER padapter)
 //============================================================
 // local function start with btdm_
 //============================================================
-static void btdm_WriteReg860(PADAPTER padapter, u16 value)
+static void btdm_WriteReg860(struct rtw_adapter *padapter, u16 value)
 {
 	RTPRINT(FBT, BT_TRACE, ("btdm_WriteReg860(), value = 0x%x\n", value));
 	PHY_SetBBReg(padapter, 0x860, bMaskLWord, value);
 }
 
-static void btdm_CheckCounterOnly1Ant(PADAPTER padapter)
+static void btdm_CheckCounterOnly1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
@@ -13226,7 +13195,7 @@ static void btdm_CheckCounterOnly1Ant(PADAPTER padapter)
 
 static u8
 btdm_IsSingleAnt(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		bSingleAntOn,
 	u8		bInterruptOn,
 	u8		bMultiNAVOn
@@ -13250,7 +13219,7 @@ btdm_IsSingleAnt(
 	return bRet;
 }
 
-static u8 btdm_IsBalance(PADAPTER padapter, u8 bBalanceOn)
+static u8 btdm_IsBalance(struct rtw_adapter *padapter, u8 bBalanceOn)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -13264,7 +13233,7 @@ static u8 btdm_IsBalance(PADAPTER padapter, u8 bBalanceOn)
 	return _FALSE;
 }
 
-static u8 btdm_EarphoneSpecDetect(PADAPTER padapter)
+static u8 btdm_EarphoneSpecDetect(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -13364,7 +13333,7 @@ static u8 btdm_EarphoneSpecDetect(PADAPTER padapter)
 //
 //==============================================================
 
-static void btdm_SCOActionBC81Ant(PADAPTER padapter)
+static void btdm_SCOActionBC81Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -13415,7 +13384,7 @@ static void btdm_SCOActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_SCOAction1Ant(PADAPTER padapter)
+static u8 btdm_SCOAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -13434,13 +13403,13 @@ static u8 btdm_SCOAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDActionBC81Ant(PADAPTER padapter)
+static void btdm_HIDActionBC81Ant(struct rtw_adapter *padapter)
 {
 	BTDM_Balance(padapter, _FALSE, 0, 0);
 	BTDM_SingleAnt(padapter, _TRUE, _TRUE, _FALSE);
 }
 
-static u8 btdm_HIDAction1Ant(PADAPTER padapter)
+static u8 btdm_HIDAction1Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter)	;
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13460,7 +13429,7 @@ static u8 btdm_HIDAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_A2DPActionBC81Ant(PADAPTER padapter)
+static void btdm_A2DPActionBC81Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13537,7 +13506,7 @@ static void btdm_A2DPActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_A2DPAction1Ant(PADAPTER padapter)
+static u8 btdm_A2DPAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter)	;
@@ -13557,7 +13526,7 @@ static u8 btdm_A2DPAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_PANActionBC81Ant(PADAPTER padapter)
+static void btdm_PANActionBC81Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -13662,7 +13631,7 @@ static void btdm_PANActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_PANAction1Ant(PADAPTER padapter)
+static u8 btdm_PANAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -13682,7 +13651,7 @@ static u8 btdm_PANAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDA2DPActionBC81Ant(PADAPTER padapter)
+static void btdm_HIDA2DPActionBC81Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13701,7 +13670,7 @@ static void btdm_HIDA2DPActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_HIDA2DPAction1Ant(PADAPTER padapter)
+static u8 btdm_HIDA2DPAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -13718,7 +13687,7 @@ static u8 btdm_HIDA2DPAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDPANActionBC81Ant(PADAPTER padapter)
+static void btdm_HIDPANActionBC81Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13737,7 +13706,7 @@ static void btdm_HIDPANActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_HIDPANAction1Ant(PADAPTER padapter)
+static u8 btdm_HIDPANAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -13754,7 +13723,7 @@ static u8 btdm_HIDPANAction1Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_PANA2DPActionBC81Ant(PADAPTER padapter)
+static void btdm_PANA2DPActionBC81Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -13777,7 +13746,7 @@ static void btdm_PANA2DPActionBC81Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_PANA2DPAction1Ant(PADAPTER padapter)
+static u8 btdm_PANA2DPAction1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -13798,13 +13767,13 @@ static u8 btdm_PANA2DPAction1Ant(PADAPTER padapter)
 // extern function start with BTDM_
 //============================================================
 
-static void BTDM_SetAntenna(PADAPTER padapter, u8 who)
+static void BTDM_SetAntenna(struct rtw_adapter *padapter, u8 who)
 {
 }
 
 void
 BTDM_SingleAnt(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8		bSingleAntOn,
 	u8		bInterruptOn,
 	u8		bMultiNAVOn
@@ -13846,7 +13815,7 @@ BTDM_SingleAnt(
 		H2C_Parameter[0]<<16|H2C_Parameter[1]<<8|H2C_Parameter[2]));
 }
 
-void BTDM_CheckBTIdleChange1Ant(PADAPTER padapter)
+void BTDM_CheckBTIdleChange1Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -14012,7 +13981,7 @@ void BTDM_CheckBTIdleChange1Ant(PADAPTER padapter)
 	}
 }
 
-static void BTDM_BTCoexistWithProfile1Ant(PADAPTER padapter)
+static void BTDM_BTCoexistWithProfile1Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -14126,14 +14095,12 @@ static void BTDM_BTCoexistWithProfile1Ant(PADAPTER padapter)
 //============================================================
 // local function start with btdm_
 //============================================================
-static void btdm_BtEnableDisableCheck(
-	PADAPTER	padapter,
-	u32		BT_Active
-	)
+static void
+btdm_BtEnableDisableCheck(struct rtw_adapter *padapter, u32 BT_Active)
 {
 }
 
-static void btdm_CheckBTState2Ant(PADAPTER padapter)
+static void btdm_CheckBTState2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
@@ -14344,7 +14311,7 @@ static void btdm_CheckBTState2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_WLANActOff(PADAPTER padapter)
+static void btdm_WLANActOff(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -14354,7 +14321,7 @@ static void btdm_WLANActOff(PADAPTER padapter)
 	BTDM_DiminishWiFi(padapter, _FALSE, _FALSE, 0x0, BT_FW_NAV_OFF);
 }
 
-static void btdm_WLANActBTPrecedence(PADAPTER padapter)
+static void btdm_WLANActBTPrecedence(struct rtw_adapter *padapter)
 {
 	BTDM_Balance(padapter, _FALSE, 0, 0);
 	BTDM_DiminishWiFi(padapter, _FALSE, _FALSE, 0x0, BT_FW_NAV_OFF);
@@ -14374,7 +14341,7 @@ static void btdm_WLANActBTPrecedence(PADAPTER padapter)
 //
 //==============================================================
 
-static void btdm_DacSwing(PADAPTER padapter, u8 type)
+static void btdm_DacSwing(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -14414,7 +14381,7 @@ static void btdm_DacSwing(PADAPTER padapter, u8 type)
 		pHalData->bt_coexist.bSWCoexistAllOff = _FALSE;
 }
 
-static void btdm_A2DPActionBC42Ant(PADAPTER padapter)
+static void btdm_A2DPActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -14491,7 +14458,7 @@ static void btdm_A2DPActionBC42Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_A2DPActionBC82Ant(PADAPTER padapter)
+static void btdm_A2DPActionBC82Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -14565,7 +14532,7 @@ static void btdm_A2DPActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_A2DPActionBC82Ant92d(PADAPTER padapter)
+static void btdm_A2DPActionBC82Ant92d(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -14663,7 +14630,7 @@ static void btdm_A2DPActionBC82Ant92d(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_A2DPAction2Ant(PADAPTER padapter)
+static u8 btdm_A2DPAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -14707,7 +14674,7 @@ static u8 btdm_A2DPAction2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_PANActionBC42Ant(PADAPTER padapter)
+static void btdm_PANActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -14745,7 +14712,7 @@ static void btdm_PANActionBC42Ant(PADAPTER padapter)
 	BTDM_SWCoexAllOff(padapter);
 }
 
-static void btdm_PANActionBC82Ant(PADAPTER padapter)
+static void btdm_PANActionBC82Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -14904,7 +14871,7 @@ static void btdm_PANActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_PANActionBC82Ant92d(PADAPTER padapter)
+static void btdm_PANActionBC82Ant92d(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15081,7 +15048,7 @@ static void btdm_PANActionBC82Ant92d(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_PANAction2Ant(PADAPTER padapter)
+static u8 btdm_PANAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -15125,7 +15092,7 @@ static u8 btdm_PANAction2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDActionBC42Ant(PADAPTER padapter)
+static void btdm_HIDActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15157,7 +15124,7 @@ static void btdm_HIDActionBC42Ant(PADAPTER padapter)
 	BTDM_SWCoexAllOff(padapter);
 }
 
-static void btdm_HIDActionBC82Ant(PADAPTER padapter)
+static void btdm_HIDActionBC82Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15220,7 +15187,7 @@ static void btdm_HIDActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDActionBC82Ant92d(PADAPTER padapter)
+static void btdm_HIDActionBC82Ant92d(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15281,7 +15248,7 @@ static void btdm_HIDActionBC82Ant92d(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_HIDAction2Ant(PADAPTER padapter)
+static u8 btdm_HIDAction2Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter)	;
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -15325,7 +15292,7 @@ static u8 btdm_HIDAction2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_SCOActionBC42Ant(PADAPTER padapter)
+static void btdm_SCOActionBC42Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -15336,7 +15303,7 @@ static void btdm_SCOActionBC42Ant(PADAPTER padapter)
 	BTDM_SWCoexAllOff(padapter);
 }
 
-static void btdm_SCOActionBC82Ant(PADAPTER padapter)
+static void btdm_SCOActionBC82Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8	btRssiState;
@@ -15382,7 +15349,7 @@ static void btdm_SCOActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_SCOActionBC82Ant92d(PADAPTER padapter)
+static void btdm_SCOActionBC82Ant92d(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	u8	btRssiState, rssiState1;
@@ -15438,7 +15405,7 @@ static void btdm_SCOActionBC82Ant92d(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_SCOAction2Ant(PADAPTER padapter)
+static u8 btdm_SCOAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -15480,7 +15447,7 @@ static u8 btdm_SCOAction2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDA2DPActionBC42Ant(PADAPTER padapter)
+static void btdm_HIDA2DPActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15557,7 +15524,7 @@ static void btdm_HIDA2DPActionBC42Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDA2DPActionBC82Ant(PADAPTER padapter)
+static void btdm_HIDA2DPActionBC82Ant(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -15614,7 +15581,7 @@ static void btdm_HIDA2DPActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDA2DPActionBC82Ant92d(PADAPTER padapter)
+static void btdm_HIDA2DPActionBC82Ant92d(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -15687,7 +15654,7 @@ static void btdm_HIDA2DPActionBC82Ant92d(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_HIDA2DPAction2Ant(PADAPTER padapter)
+static u8 btdm_HIDA2DPAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -15729,7 +15696,7 @@ static u8 btdm_HIDA2DPAction2Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_HIDPANActionBC42Ant(PADAPTER padapter)
+static void btdm_HIDPANActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15774,7 +15741,7 @@ static void btdm_HIDPANActionBC42Ant(PADAPTER padapter)
 	BTDM_SWCoexAllOff(padapter);
 }
 
-static void btdm_HIDPANActionBC82Ant(PADAPTER padapter)
+static void btdm_HIDPANActionBC82Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -15860,7 +15827,7 @@ static void btdm_HIDPANActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_HIDPANAction2Ant(PADAPTER padapter)
+static u8 btdm_HIDPANAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -15903,7 +15870,7 @@ static u8 btdm_HIDPANAction2Ant(PADAPTER padapter)
 
 }
 
-static void btdm_PANA2DPActionBC42Ant(PADAPTER padapter)
+static void btdm_PANA2DPActionBC42Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -15953,7 +15920,7 @@ static void btdm_PANA2DPActionBC42Ant(PADAPTER padapter)
 	}
 }
 
-static void btdm_PANA2DPActionBC82Ant(PADAPTER padapter)
+static void btdm_PANA2DPActionBC82Ant(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -16036,7 +16003,7 @@ static void btdm_PANA2DPActionBC82Ant(PADAPTER padapter)
 	}
 }
 
-static u8 btdm_PANA2DPAction2Ant(PADAPTER padapter)
+static u8 btdm_PANA2DPAction2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -16082,14 +16049,14 @@ static u8 btdm_PANA2DPAction2Ant(PADAPTER padapter)
 // extern function start with BTDM_
 //============================================================
 
-static void BTDM_SwCoexAllOff92C(PADAPTER padapter)
+static void BTDM_SwCoexAllOff92C(struct rtw_adapter *padapter)
 {
 	BTDM_AGCTable(padapter, BT_AGCTABLE_OFF);
 	BTDM_BBBackOffLevel(padapter, BT_BB_BACKOFF_OFF);
 	btdm_DacSwing(padapter, BT_DACSWING_OFF);
 }
 
-static void BTDM_SwCoexAllOff92D(PADAPTER padapter)
+static void BTDM_SwCoexAllOff92D(struct rtw_adapter *padapter)
 {
 	BTDM_AGCTable(padapter, BT_AGCTABLE_OFF);
 	BTDM_BBBackOffLevel(padapter, BT_BB_BACKOFF_OFF);
@@ -16098,7 +16065,7 @@ static void BTDM_SwCoexAllOff92D(PADAPTER padapter)
 
 void
 BTDM_DiminishWiFi(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			bDACOn,
 	u8			bInterruptOn,
 	u8			DACSwingLevel,
@@ -16143,7 +16110,7 @@ BTDM_DiminishWiFi(
 		bNAVOn?"ON":"OFF"));
 }
 
-static void BTDM_BTCoexistWithProfile2Ant(PADAPTER padapter)
+static void BTDM_BTCoexistWithProfile2Ant(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -16255,7 +16222,7 @@ static void BTDM_BTCoexistWithProfile2Ant(PADAPTER padapter)
 //============================================================
 // local function
 //============================================================
-static void btdm_BTCoexistWithProfile(PADAPTER padapter)
+static void btdm_BTCoexistWithProfile(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -16271,7 +16238,7 @@ static void btdm_BTCoexistWithProfile(PADAPTER padapter)
 	}
 }
 
-static void btdm_ResetFWCoexState(PADAPTER padapter)
+static void btdm_ResetFWCoexState(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -16279,7 +16246,7 @@ static void btdm_ResetFWCoexState(PADAPTER padapter)
 	pHalData->bt_coexist.PreviousState = 0;
 }
 
-static void btdm_InitBtCoexistDM(PADAPTER padapter)
+static void btdm_InitBtCoexistDM(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -16297,35 +16264,35 @@ static void btdm_InitBtCoexistDM(PADAPTER padapter)
 //============================================================
 // extern function
 //============================================================
-void BTDM_CheckAntSelMode(PADAPTER padapter)
+void BTDM_CheckAntSelMode(struct rtw_adapter *padapter)
 {
 }
 
-static u8 BTDM_NeedToRoamForBtEnableDisable(PADAPTER padapter)
+static u8 BTDM_NeedToRoamForBtEnableDisable(struct rtw_adapter *padapter)
 {
 	return _FALSE;
 }
 
-void BTDM_FwC2hBtRssi(PADAPTER padapter, u8 *tmpBuf)
+void BTDM_FwC2hBtRssi(struct rtw_adapter *padapter, u8 *tmpBuf)
 {
 	BTDM_FwC2hBtRssi8723A(padapter, tmpBuf);
 }
 
-void BTDM_FwC2hBtInfo(PADAPTER padapter, u8 *tmpBuf, u8 length)
+void BTDM_FwC2hBtInfo(struct rtw_adapter *padapter, u8 *tmpBuf, u8 length)
 {
 	BTDM_FwC2hBtInfo8723A(padapter, tmpBuf, length);
 }
 
-void BTDM_DisplayBtCoexInfo(PADAPTER padapter)
+void BTDM_DisplayBtCoexInfo(struct rtw_adapter *padapter)
 {
 	BTDM_Display8723ABtCoexInfo(padapter);
 }
 
-void BTDM_RejectAPAggregatedPacket(PADAPTER padapter, u8 bReject)
+void BTDM_RejectAPAggregatedPacket(struct rtw_adapter *padapter, u8 bReject)
 {
 }
 
-u8 BTDM_IsHT40(PADAPTER padapter)
+u8 BTDM_IsHT40(struct rtw_adapter *padapter)
 {
 	u8 isHT40 = _TRUE;
 	HT_CHANNEL_WIDTH bw;
@@ -16344,7 +16311,7 @@ u8 BTDM_IsHT40(PADAPTER padapter)
 	return isHT40;
 }
 
-u8 BTDM_Legacy(PADAPTER padapter)
+u8 BTDM_Legacy(struct rtw_adapter *padapter)
 {
 	struct mlme_ext_priv *pmlmeext;
 	u8			isLegacy = _FALSE;
@@ -16358,7 +16325,7 @@ u8 BTDM_Legacy(PADAPTER padapter)
 	return isLegacy;
 }
 
-void BTDM_CheckWiFiState(PADAPTER padapter)
+void BTDM_CheckWiFiState(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	struct mlme_priv *pmlmepriv;
@@ -16431,7 +16398,7 @@ void BTDM_CheckWiFiState(PADAPTER padapter)
 	}
 }
 
-s32 BTDM_GetRxSS(PADAPTER padapter)
+s32 BTDM_GetRxSS(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv;
@@ -16456,7 +16423,7 @@ s32 BTDM_GetRxSS(PADAPTER padapter)
 	return UndecoratedSmoothedPWDB;
 }
 
-static s32 BTDM_GetRxBeaconSS(PADAPTER padapter)
+static s32 BTDM_GetRxBeaconSS(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	struct mlme_priv *pmlmepriv;
@@ -16480,7 +16447,7 @@ static s32 BTDM_GetRxBeaconSS(PADAPTER padapter)
 // Get beacon rssi state
 u8
 BTDM_CheckCoexBcnRssiState(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			levelNum,
 	u8			RssiThresh,
 	u8			RssiThresh1
@@ -16603,7 +16570,7 @@ BTDM_CheckCoexBcnRssiState(
 
 u8
 BTDM_CheckCoexRSSIState1(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			levelNum,
 	u8			RssiThresh,
 	u8			RssiThresh1
@@ -16726,7 +16693,7 @@ BTDM_CheckCoexRSSIState1(
 
 u8
 BTDM_CheckCoexRSSIState(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			levelNum,
 	u8			RssiThresh,
 	u8			RssiThresh1
@@ -16847,7 +16814,7 @@ BTDM_CheckCoexRSSIState(
 	return btRssiState;
 }
 
-u8 BTDM_DisableEDCATurbo(PADAPTER padapter)
+u8 BTDM_DisableEDCATurbo(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo;
 	PBT_MGNT		pBtMgnt;
@@ -16924,7 +16891,7 @@ u8 BTDM_DisableEDCATurbo(PADAPTER padapter)
 
 void
 BTDM_Balance(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			bBalanceOn,
 	u8			ms0,
 	u8			ms1
@@ -16955,7 +16922,7 @@ BTDM_Balance(
 	FillH2CCmd(padapter, 0xc, 3, H2C_Parameter);
 }
 
-void BTDM_AGCTable(PADAPTER padapter, u8 type)
+void BTDM_AGCTable(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 	if (type == BT_AGCTABLE_OFF)
@@ -16996,7 +16963,7 @@ void BTDM_AGCTable(PADAPTER padapter, u8 type)
 	}
 }
 
-void BTDM_BBBackOffLevel(PADAPTER padapter, u8 type)
+void BTDM_BBBackOffLevel(struct rtw_adapter *padapter, u8 type)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17013,7 +16980,7 @@ void BTDM_BBBackOffLevel(PADAPTER padapter, u8 type)
 	}
 }
 
-void BTDM_FWCoexAllOff(PADAPTER padapter)
+void BTDM_FWCoexAllOff(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17030,7 +16997,7 @@ void BTDM_FWCoexAllOff(PADAPTER padapter)
 	pHalData->bt_coexist.bFWCoexistAllOff = _TRUE;
 }
 
-void BTDM_SWCoexAllOff(PADAPTER padapter)
+void BTDM_SWCoexAllOff(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17046,7 +17013,7 @@ void BTDM_SWCoexAllOff(PADAPTER padapter)
 	pHalData->bt_coexist.bSWCoexistAllOff = _TRUE;
 }
 
-void BTDM_HWCoexAllOff(PADAPTER padapter)
+void BTDM_HWCoexAllOff(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17063,14 +17030,14 @@ void BTDM_HWCoexAllOff(PADAPTER padapter)
 	pHalData->bt_coexist.bHWCoexistAllOff = _TRUE;
 }
 
-void BTDM_CoexAllOff(PADAPTER padapter)
+void BTDM_CoexAllOff(struct rtw_adapter *padapter)
 {
 	BTDM_FWCoexAllOff(padapter);
 	BTDM_SWCoexAllOff(padapter);
 	BTDM_HWCoexAllOff(padapter);
 }
 
-static void BTDM_TurnOffBtCoexistBeforeEnterLPS(PADAPTER padapter)
+static void BTDM_TurnOffBtCoexistBeforeEnterLPS(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17098,7 +17065,7 @@ static void BTDM_TurnOffBtCoexistBeforeEnterLPS(PADAPTER padapter)
 	}
 }
 
-void BTDM_TurnOffBtCoexistBeforeEnterIPS(PADAPTER padapter)
+void BTDM_TurnOffBtCoexistBeforeEnterIPS(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17124,7 +17091,7 @@ void BTDM_TurnOffBtCoexistBeforeEnterIPS(PADAPTER padapter)
 	}
 }
 
-void BTDM_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
+void BTDM_SignalCompensation(struct rtw_adapter *padapter, u8 *rssi_wifi, u8 *rssi_bt)
 {
 	BTDM_8723ASignalCompensation(padapter, rssi_wifi, rssi_bt);
 }
@@ -17152,11 +17119,11 @@ void BTDM_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 	}
 
 */
-void dm_CheckBTState(_adapter *pAdapter)
+void dm_CheckBTState(struct rtw_adapter *pAdapter)
 {
 	u8 value=0,regValue8=0;
 	u32 regvalue32=0;
-	//_adapter *pAdapter = (_adapter*)context;
+	//_adapter *pAdapter = (struct rtw_adapter*)context;
 
 //	if (pAdapter->drv_in_test == CMCC_TEST)
 //		return;
@@ -17207,7 +17174,7 @@ void dm_CheckBTState(_adapter *pAdapter)
 void check_bt_status_work(void *data)
 {
 	struct delayed_work *dwork;
-	PADAPTER padapter;
+	struct rtw_adapter *padapter;
 
 	dwork = container_of(data, struct delayed_work, work);
 	padapter = container_of(dwork, struct _ADAPTER, checkbt_work);
@@ -17220,7 +17187,7 @@ void check_bt_status_work(void *data)
 	dm_CheckBTState(padapter);
 }
 #endif
-void BTDM_Coexist(PADAPTER padapter)
+void BTDM_Coexist(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -17254,7 +17221,7 @@ void BTDM_Coexist(PADAPTER padapter)
 	RTPRINT(FBT, BT_TRACE, ("[DM][BT], BTDM end!!\n\n"));
 }
 
-void BTDM_UpdateCoexState(PADAPTER padapter)
+void BTDM_UpdateCoexState(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -17268,7 +17235,7 @@ void BTDM_UpdateCoexState(PADAPTER padapter)
 	}
 }
 
-u8 BTDM_IsSameCoexistState(PADAPTER padapter)
+u8 BTDM_IsSameCoexistState(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
@@ -17283,7 +17250,7 @@ u8 BTDM_IsSameCoexistState(PADAPTER padapter)
 	}
 }
 
-void BTDM_PWDBMonitor(PADAPTER padapter)
+void BTDM_PWDBMonitor(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	PBT30Info		pBTInfo = GET_BT_INFO(GetDefaultAdapter(padapter));
@@ -17339,7 +17306,7 @@ void BTDM_PWDBMonitor(PADAPTER padapter)
 	}
 }
 
-static u8 BTDM_DigByBtRssi(PADAPTER padapter)
+static u8 BTDM_DigByBtRssi(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	PBT30Info		pBTInfo = GET_BT_INFO(GetDefaultAdapter(padapter));
@@ -17387,7 +17354,7 @@ static u8 BTDM_DigByBtRssi(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsBTBusy(PADAPTER padapter)
+u8 BTDM_IsBTBusy(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17398,7 +17365,7 @@ u8 BTDM_IsBTBusy(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsWifiBusy(PADAPTER padapter)
+u8 BTDM_IsWifiBusy(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	struct mlme_priv *pmlmepriv = &(GetDefaultAdapter(padapter)->mlmepriv);
@@ -17414,7 +17381,7 @@ u8 BTDM_IsWifiBusy(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsCoexistStateChanged(PADAPTER padapter)
+u8 BTDM_IsCoexistStateChanged(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17424,7 +17391,7 @@ u8 BTDM_IsCoexistStateChanged(PADAPTER padapter)
 		return _TRUE;
 }
 
-u8 BTDM_IsWifiUplink(PADAPTER padapter)
+u8 BTDM_IsWifiUplink(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	struct mlme_priv *pmlmepriv;
@@ -17443,7 +17410,7 @@ u8 BTDM_IsWifiUplink(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsWifiDownlink(PADAPTER padapter)
+u8 BTDM_IsWifiDownlink(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	struct mlme_priv *pmlmepriv;
@@ -17462,7 +17429,7 @@ u8 BTDM_IsWifiDownlink(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsBTHSMode(PADAPTER padapter)
+u8 BTDM_IsBTHSMode(struct rtw_adapter *padapter)
 {
 //	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo);
 	PHAL_DATA_TYPE	pHalData;
@@ -17478,7 +17445,7 @@ u8 BTDM_IsBTHSMode(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsBTUplink(PADAPTER padapter)
+u8 BTDM_IsBTUplink(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17488,7 +17455,7 @@ u8 BTDM_IsBTUplink(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 BTDM_IsBTDownlink(PADAPTER padapter)
+u8 BTDM_IsBTDownlink(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17498,13 +17465,13 @@ u8 BTDM_IsBTDownlink(PADAPTER padapter)
 		return _FALSE;
 }
 
-void BTDM_AdjustForBtOperation(PADAPTER padapter)
+void BTDM_AdjustForBtOperation(struct rtw_adapter *padapter)
 {
 	RTPRINT(FBT, BT_TRACE, ("[BT][DM], BTDM_AdjustForBtOperation()\n"));
 	BTDM_AdjustForBtOperation8723A(padapter);
 }
 
-static u8 BTDM_AdjustRssiForAgcTableOn(PADAPTER padapter)
+static u8 BTDM_AdjustRssiForAgcTableOn(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17517,12 +17484,12 @@ static u8 BTDM_AdjustRssiForAgcTableOn(PADAPTER padapter)
 	return 0;
 }
 
-void BTDM_SetBtCoexCurrAntNum(PADAPTER padapter, u8 antNum)
+void BTDM_SetBtCoexCurrAntNum(struct rtw_adapter *padapter, u8 antNum)
 {
 	BTDM_Set8723ABtCoexCurrAntNum(padapter, antNum);
 }
 
-void BTDM_ForHalt(PADAPTER padapter)
+void BTDM_ForHalt(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17535,7 +17502,7 @@ void BTDM_ForHalt(PADAPTER padapter)
 	GET_HAL_DATA(padapter)->bt_coexist.bInitlized = _FALSE;
 }
 
-void BTDM_WifiScanNotify(PADAPTER padapter, u8 scanType)
+void BTDM_WifiScanNotify(struct rtw_adapter *padapter, u8 scanType)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17547,7 +17514,7 @@ void BTDM_WifiScanNotify(PADAPTER padapter, u8 scanType)
 	BTDM_WifiScanNotify8723A(padapter, scanType);
 }
 
-void BTDM_WifiAssociateNotify(PADAPTER padapter, u8 action)
+void BTDM_WifiAssociateNotify(struct rtw_adapter *padapter, u8 action)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17559,7 +17526,7 @@ void BTDM_WifiAssociateNotify(PADAPTER padapter, u8 action)
 	BTDM_WifiAssociateNotify8723A(padapter, action);
 }
 
-void BTDM_MediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
+void BTDM_MediaStatusNotify(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17571,7 +17538,7 @@ void BTDM_MediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
 	BTDM_MediaStatusNotify8723A(padapter, mstatus);
 }
 
-void BTDM_ForDhcp(PADAPTER padapter)
+void BTDM_ForDhcp(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17583,7 +17550,7 @@ void BTDM_ForDhcp(PADAPTER padapter)
 	BTDM_ForDhcp8723A(padapter);
 }
 
-void BTDM_ResetActionProfileState(PADAPTER padapter)
+void BTDM_ResetActionProfileState(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17592,7 +17559,7 @@ void BTDM_ResetActionProfileState(PADAPTER padapter)
 		BT_COEX_STATE_PROFILE_PAN|BT_COEX_STATE_PROFILE_SCO);
 }
 
-u8 BTDM_IsActionSCO(PADAPTER padapter)
+u8 BTDM_IsActionSCO(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17626,7 +17593,7 @@ u8 BTDM_IsActionSCO(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionHID(PADAPTER padapter)
+u8 BTDM_IsActionHID(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTInfo;
 	PHAL_DATA_TYPE	pHalData;
@@ -17660,7 +17627,7 @@ u8 BTDM_IsActionHID(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionA2DP(PADAPTER padapter)
+u8 BTDM_IsActionA2DP(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17694,7 +17661,7 @@ u8 BTDM_IsActionA2DP(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionPAN(PADAPTER padapter)
+u8 BTDM_IsActionPAN(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17728,7 +17695,7 @@ u8 BTDM_IsActionPAN(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionHIDA2DP(PADAPTER padapter)
+u8 BTDM_IsActionHIDA2DP(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17762,7 +17729,7 @@ u8 BTDM_IsActionHIDA2DP(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionHIDPAN(PADAPTER padapter)
+u8 BTDM_IsActionHIDPAN(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17794,7 +17761,7 @@ u8 BTDM_IsActionHIDPAN(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsActionPANA2DP(PADAPTER padapter)
+u8 BTDM_IsActionPANA2DP(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 	PBT30Info		pBTInfo;
@@ -17826,7 +17793,7 @@ u8 BTDM_IsActionPANA2DP(PADAPTER padapter)
 	return bRet;
 }
 
-u8 BTDM_IsBtDisabled(PADAPTER padapter)
+u8 BTDM_IsBtDisabled(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17843,7 +17810,7 @@ u8 BTDM_IsBtDisabled(PADAPTER padapter)
 // in beacon related interrupt, so we have to write beacon control
 // register now.
 //============================================
-static void WA_BTDM_EnableBTFwCounterPolling(PADAPTER padapter)
+static void WA_BTDM_EnableBTFwCounterPolling(struct rtw_adapter *padapter)
 {
 }
 
@@ -17857,21 +17824,21 @@ static void WA_BTDM_EnableBTFwCounterPolling(PADAPTER padapter)
 //	local function
 //==================================================
 
-static void halbt_InitHwConfig8723A(PADAPTER padapter)
+static void halbt_InitHwConfig8723A(struct rtw_adapter *padapter)
 {
 }
 
 //==================================================
 //	extern function
 //==================================================
-u8 HALBT_GetPGAntNum(PADAPTER padapter)
+u8 HALBT_GetPGAntNum(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
 	return pHalData->bt_coexist.BT_Ant_Num;
 }
 
-void HALBT_SetKey(PADAPTER padapter, u8 EntryNum)
+void HALBT_SetKey(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTinfo;
 	PBT_ASOC_ENTRY	pBtAssocEntry;
@@ -17887,7 +17854,7 @@ void HALBT_SetKey(PADAPTER padapter, u8 EntryNum)
 	write_cam(padapter, pBtAssocEntry->HwCAMIndex, usConfig, pBtAssocEntry->BTRemoteMACAddr, pBtAssocEntry->PTK + TKIP_ENC_KEY_POS);
 }
 
-void HALBT_RemoveKey(PADAPTER padapter, u8 EntryNum)
+void HALBT_RemoveKey(struct rtw_adapter *padapter, u8 EntryNum)
 {
 	PBT30Info		pBTinfo;
 	PBT_ASOC_ENTRY	pBtAssocEntry;
@@ -17903,7 +17870,7 @@ void HALBT_RemoveKey(PADAPTER padapter, u8 EntryNum)
 	}
 }
 
-void HALBT_InitBTVars8723A(PADAPTER padapter)
+void HALBT_InitBTVars8723A(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData;
 
@@ -17941,7 +17908,7 @@ void HALBT_InitBTVars8723A(PADAPTER padapter)
 	}
 }
 
-u8 HALBT_IsBTExist(PADAPTER padapter)
+u8 HALBT_IsBTExist(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -17951,20 +17918,20 @@ u8 HALBT_IsBTExist(PADAPTER padapter)
 		return _FALSE;
 }
 
-u8 HALBT_BTChipType(PADAPTER padapter)
+u8 HALBT_BTChipType(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
 	return pHalData->bt_coexist.BT_CoexistType;
 }
 
-void HALBT_InitHwConfig(PADAPTER padapter)
+void HALBT_InitHwConfig(struct rtw_adapter *padapter)
 {
 	halbt_InitHwConfig8723A(padapter);
 	BTDM_Coexist(padapter);
 }
 
-static void HALBT_IPSRFOffCheck(PADAPTER padapter)
+static void HALBT_IPSRFOffCheck(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo;
 	PBT_MGNT		pBtMgnt;
@@ -17982,7 +17949,7 @@ static void HALBT_IPSRFOffCheck(PADAPTER padapter)
 	}
 }
 
-static void HALBT_LPSRFOffCheck(PADAPTER padapter)
+static void HALBT_LPSRFOffCheck(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo;
 	PBT_MGNT		pBtMgnt;
@@ -18000,32 +17967,28 @@ static void HALBT_LPSRFOffCheck(PADAPTER padapter)
 	}
 }
 
-void HALBT_SetRtsCtsNoLenLimit(PADAPTER padapter)
+void HALBT_SetRtsCtsNoLenLimit(struct rtw_adapter *padapter)
 {
 #if (RTS_CTS_NO_LEN_LIMIT == 1)
 	rtw_write32(padapter, 0x4c8, 0xc140402);
 #endif
 }
 
-static u8 HALBT_OnlySupport1T(PADAPTER padapter)
+static u8 HALBT_OnlySupport1T(struct rtw_adapter *padapter)
 {
 	return _FALSE;
 }
 
-static u8 HALBT_BtRegAccess(
-	PADAPTER	padapter,
-	u32			accessType,
-	u32			regType,
-	u32			regOffset,
-	u32			wValue,
-	u32			*pRetVal
-	)
+static u8
+HALBT_BtRegAccess(struct rtw_adapter *padapter, u32 accessType, u32 regType,
+		  u32 regOffset, u32 wValue, u32 *pRetVal)
 {
 	*pRetVal = 0x223;
 	return _TRUE;
 }
 
-static void HALBT_SwitchWirelessMode(PADAPTER padapter, u8 targetWirelessMode)
+static void HALBT_SwitchWirelessMode(struct rtw_adapter *padapter,
+				     u8 targetWirelessMode)
 {
 }
 

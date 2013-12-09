@@ -257,56 +257,56 @@ struct pwrctrl_priv
 #define rtw_set_pwr_state_check_timer(pwrctrlpriv) \
 	_rtw_set_pwr_state_check_timer((pwrctrlpriv), (pwrctrlpriv)->pwr_state_check_interval)
 
-extern void rtw_init_pwrctrl_priv(_adapter *adapter);
-extern void rtw_free_pwrctrl_priv(_adapter * adapter);
+extern void rtw_init_pwrctrl_priv(struct rtw_adapter *adapter);
+extern void rtw_free_pwrctrl_priv(struct rtw_adapter * adapter);
 
 #ifdef CONFIG_LPS_LCLK
-extern s32 rtw_register_tx_alive(PADAPTER padapter);
-extern void rtw_unregister_tx_alive(PADAPTER padapter);
-extern s32 rtw_register_rx_alive(PADAPTER padapter);
-extern void rtw_unregister_rx_alive(PADAPTER padapter);
-extern s32 rtw_register_cmd_alive(PADAPTER padapter);
-extern void rtw_unregister_cmd_alive(PADAPTER padapter);
-extern s32 rtw_register_evt_alive(PADAPTER padapter);
-extern void rtw_unregister_evt_alive(PADAPTER padapter);
-extern void cpwm_int_hdl(PADAPTER padapter, struct reportpwrstate_parm *preportpwrstate);
-extern void LPS_Leave_check(PADAPTER padapter);
+extern s32 rtw_register_tx_alive(struct rtw_adapter * padapter);
+extern void rtw_unregister_tx_alive(struct rtw_adapter * padapter);
+extern s32 rtw_register_rx_alive(struct rtw_adapter * padapter);
+extern void rtw_unregister_rx_alive(struct rtw_adapter * padapter);
+extern s32 rtw_register_cmd_alive(struct rtw_adapter * padapter);
+extern void rtw_unregister_cmd_alive(struct rtw_adapter * padapter);
+extern s32 rtw_register_evt_alive(struct rtw_adapter * padapter);
+extern void rtw_unregister_evt_alive(struct rtw_adapter * padapter);
+extern void cpwm_int_hdl(struct rtw_adapter * padapter, struct reportpwrstate_parm *preportpwrstate);
+extern void LPS_Leave_check(struct rtw_adapter * padapter);
 #endif
 
-extern void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode);
-extern void rtw_set_rpwm(_adapter * padapter, u8 val8);
-extern void LeaveAllPowerSaveMode(PADAPTER Adapter);
+extern void rtw_set_ps_mode(struct rtw_adapter * padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode);
+extern void rtw_set_rpwm(struct rtw_adapter * padapter, u8 val8);
+extern void LeaveAllPowerSaveMode(struct rtw_adapter * Adapter);
 #ifdef CONFIG_IPS
-void ips_enter(_adapter * padapter);
-int ips_leave(_adapter * padapter);
+void ips_enter(struct rtw_adapter * padapter);
+int ips_leave(struct rtw_adapter * padapter);
 #endif
 
-void rtw_ps_processor(_adapter*padapter);
+void rtw_ps_processor(struct rtw_adapter*padapter);
 
 #ifdef CONFIG_AUTOSUSPEND
-int autoresume_enter(_adapter* padapter);
+int autoresume_enter(struct rtw_adapter* padapter);
 #endif
 #ifdef SUPPORT_HW_RFOFF_DETECTED
-rt_rf_power_state RfOnOffDetect(PADAPTER pAdapter );
+rt_rf_power_state RfOnOffDetect(struct rtw_adapter * pAdapter );
 #endif
 
 
 #ifdef CONFIG_LPS
-s32 LPS_RF_ON_check(PADAPTER padapter, u32 delay_ms);
-void LPS_Enter(PADAPTER padapter);
-void LPS_Leave(PADAPTER padapter);
+s32 LPS_RF_ON_check(struct rtw_adapter * padapter, u32 delay_ms);
+void LPS_Enter(struct rtw_adapter * padapter);
+void LPS_Leave(struct rtw_adapter * padapter);
 #endif
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 void rtw_resume_in_workqueue(struct pwrctrl_priv *pwrpriv);
 #endif //CONFIG_RESUME_IN_WORKQUEUE
 
-u8 rtw_interface_ps_func(_adapter *padapter,HAL_INTF_PS_FUNC efunc_id,u8* val);
-void rtw_set_ips_deny(_adapter *padapter, u32 ms);
-int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller);
+u8 rtw_interface_ps_func(struct rtw_adapter *padapter,HAL_INTF_PS_FUNC efunc_id,u8* val);
+void rtw_set_ips_deny(struct rtw_adapter *padapter, u32 ms);
+int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char *caller);
 #define rtw_pwr_wakeup(adapter) _rtw_pwr_wakeup(adapter, RTW_PWR_STATE_CHK_INTERVAL, __FUNCTION__)
 #define rtw_pwr_wakeup_ex(adapter, ips_deffer_ms) _rtw_pwr_wakeup(adapter, ips_deffer_ms, __FUNCTION__)
-int rtw_pm_set_ips(_adapter *padapter, u8 mode);
-int rtw_pm_set_lps(_adapter *padapter, u8 mode);
+int rtw_pm_set_ips(struct rtw_adapter *padapter, u8 mode);
+int rtw_pm_set_lps(struct rtw_adapter *padapter, u8 mode);
 
 #endif  //__RTL871X_PWRCTRL_H_

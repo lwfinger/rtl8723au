@@ -92,7 +92,7 @@ static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
  *						Firmwaer support the utility later.
  *
  *---------------------------------------------------------------------------*/
-void rtl8192c_RF_ChangeTxPath(	PADAPTER	Adapter,
+void rtl8192c_RF_ChangeTxPath(	struct rtw_adapter *	Adapter,
 										u16		DataRate)
 {
 // We do not support gain table change inACUT now !!!! Delete later !!!
@@ -104,7 +104,7 @@ void rtl8192c_RF_ChangeTxPath(	PADAPTER	Adapter,
  *
  * Overview:    This function is called by SetBWModeCallback8190Pci() only
  *
- * Input:       PADAPTER				Adapter
+ * Input:       struct rtw_adapter *				Adapter
  *			WIRELESS_BANDWIDTH_E	Bandwidth	//20M or 40M
  *
  * Output:      NONE
@@ -115,7 +115,7 @@ void rtl8192c_RF_ChangeTxPath(	PADAPTER	Adapter,
  *---------------------------------------------------------------------------*/
 void
 rtl8192c_PHY_RF6052SetBandwidth(
-	PADAPTER				Adapter,
+	struct rtw_adapter *				Adapter,
 	HT_CHANNEL_WIDTH		Bandwidth)	//20M or 40M
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -159,7 +159,7 @@ rtl8192c_PHY_RF6052SetBandwidth(
 
 void
 rtl8192c_PHY_RF6052SetCckTxPower(
-	PADAPTER		Adapter,
+	struct rtw_adapter *		Adapter,
 	u8*			pPowerlevel)
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
@@ -267,7 +267,7 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 // powerbase1 for HT MCS rates
 //
 static void getPowerBase(
-	PADAPTER	Adapter,
+	struct rtw_adapter *	Adapter,
 	u8*		pPowerLevel,
 	u8		Channel,
 	u32*	OfdmBase,
@@ -307,7 +307,7 @@ static void getPowerBase(
 }
 
 static void getTxPowerWriteValByRegulatory(
-		PADAPTER	Adapter,
+		struct rtw_adapter *	Adapter,
 		u8		Channel,
 		u8		index,
 		u32*		powerBase0,
@@ -439,7 +439,7 @@ static void getTxPowerWriteValByRegulatory(
 }
 
 static void writeOFDMPowerReg(
-		PADAPTER	Adapter,
+		struct rtw_adapter *	Adapter,
 		u8		index,
 		u32*		pValue
 	)
@@ -520,7 +520,7 @@ static void writeOFDMPowerReg(
  *---------------------------------------------------------------------------*/
 void
 rtl8192c_PHY_RF6052SetOFDMTxPower(
-	PADAPTER	Adapter,
+	struct rtw_adapter *	Adapter,
 	u8*		pPowerLevel,
 	u8		Channel)
 {
@@ -543,7 +543,7 @@ rtl8192c_PHY_RF6052SetOFDMTxPower(
 
 static void
 phy_RF6052_Config_HardCode(
-	PADAPTER		Adapter
+	struct rtw_adapter *		Adapter
 	)
 {
 
@@ -556,7 +556,7 @@ phy_RF6052_Config_HardCode(
 
 static int
 phy_RF6052_Config_ParaFile(
-	PADAPTER		Adapter
+	struct rtw_adapter *		Adapter
 	)
 {
 	u32					u4RegValue;
@@ -675,7 +675,7 @@ phy_RF6052_Config_ParaFile_Fail:
 
 int
 PHY_RF6052_Config8723A(
-	PADAPTER		Adapter)
+	struct rtw_adapter *		Adapter)
 {
 	HAL_DATA_TYPE				*pHalData = GET_HAL_DATA(Adapter);
 	int					rtStatus = _SUCCESS;

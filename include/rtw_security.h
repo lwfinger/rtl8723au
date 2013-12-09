@@ -406,16 +406,16 @@ void rtw_seccalctkipmic(
 	u8 *Miccode,
 	u8   priority);
 
-u32 rtw_aes_encrypt(_adapter *padapter, u8 *pxmitframe);
-u32 rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe);
-void rtw_wep_encrypt(_adapter *padapter, u8  *pxmitframe);
+u32 rtw_aes_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
+u32 rtw_tkip_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
+void rtw_wep_encrypt(struct rtw_adapter *padapter, u8  *pxmitframe);
 
-u32 rtw_aes_decrypt(_adapter *padapter, u8  *precvframe);
-u32 rtw_tkip_decrypt(_adapter *padapter, u8  *precvframe);
-void rtw_wep_decrypt(_adapter *padapter, u8  *precvframe);
+u32 rtw_aes_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
+u32 rtw_tkip_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
+void rtw_wep_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
 
 #ifdef CONFIG_TDLS
-void wpa_tdls_generate_tpk(_adapter *padapter, struct sta_info *psta);
+void wpa_tdls_generate_tpk(struct rtw_adapter *padapter, struct sta_info *psta);
 int wpa_tdls_ftie_mic(u8 *kck, u8 trans_seq,
 						u8 *lnkid, u8 *rsnie, u8 *timeoutie, u8 *ftie,
 						u8 *mic);

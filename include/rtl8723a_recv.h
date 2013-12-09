@@ -23,7 +23,7 @@
 #include <rtl8192c_recv.h>
 
 void rtl8192c_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
-void rtl8192c_process_phy_info(PADAPTER padapter, void *prframe);
+void rtl8192c_process_phy_info(struct rtw_adapter *padapter, void *prframe);
 void update_recvframe_attrib(union recv_frame *precvframe, struct recv_stat *prxstat);
 void update_recvframe_phyinfo(union recv_frame *precvframe, struct phy_stat *pphy_info);
 

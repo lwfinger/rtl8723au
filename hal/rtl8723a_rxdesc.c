@@ -36,7 +36,7 @@ static s32  translate2dbm(u8 signal_strength_idx)
 	return signal_power;
 }
 
-static void process_rssi(_adapter *padapter,union recv_frame *prframe)
+static void process_rssi(struct rtw_adapter *padapter,union recv_frame *prframe)
 {
 	u32	last_rssi, tmp_val;
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
@@ -90,7 +90,7 @@ static void process_rssi(_adapter *padapter,union recv_frame *prframe)
 
 }// Process_UI_RSSI_8192C
 
-static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
+static void process_link_qual(struct rtw_adapter *padapter,union recv_frame *prframe)
 {
 	u32	last_evm=0, tmpVal;
 	struct rx_pkt_attrib *pattrib;
@@ -154,8 +154,8 @@ static void process_link_qual(_adapter *padapter,union recv_frame *prframe)
 }// Process_UiLinkQuality8192S
 
 
-//void rtl8192c_process_phy_info(_adapter *padapter, union recv_frame *prframe)
-void rtl8192c_process_phy_info(_adapter *padapter, void *prframe)
+//void rtl8192c_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe)
+void rtl8192c_process_phy_info(struct rtw_adapter *padapter, void *prframe)
 {
 	union recv_frame *precvframe = (union recv_frame *)prframe;
 	//

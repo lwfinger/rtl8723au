@@ -28,7 +28,7 @@
 //#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
-s32	rtl8192cu_init_xmit_priv(_adapter *padapter)
+s32	rtl8192cu_init_xmit_priv(struct rtw_adapter *padapter)
 {
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
@@ -38,11 +38,11 @@ s32	rtl8192cu_init_xmit_priv(_adapter *padapter)
 	return _SUCCESS;
 }
 
-void	rtl8192cu_free_xmit_priv(_adapter *padapter)
+void	rtl8192cu_free_xmit_priv(struct rtw_adapter *padapter)
 {
 }
 
-static void do_queue_select(_adapter	*padapter, struct pkt_attrib *pattrib)
+static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pattrib)
 {
 	u8 qsel;
 
@@ -57,7 +57,7 @@ static void do_queue_select(_adapter	*padapter, struct pkt_attrib *pattrib)
 	pattrib->qsel = qsel;
 }
 
-int urb_zero_packet_chk(_adapter *padapter, int sz)
+int urb_zero_packet_chk(struct rtw_adapter *padapter, int sz)
 {
 	int blnSetTxDescOffset;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(padapter);
@@ -190,7 +190,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 {
 	int	pull=0;
 	uint	qsel;
-	_adapter			*padapter = pxmitframe->padapter;
+	struct rtw_adapter	*padapter = pxmitframe->padapter;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
@@ -466,7 +466,7 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 #endif
 
 
-static s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe)
+static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 ret = _SUCCESS;
 	s32 inner_ret = _SUCCESS;
@@ -571,7 +571,7 @@ static u32 xmitframe_need_length(struct xmit_frame *pxmitframe)
 }
 
 #define IDEA_CONDITION 1	// check all packets before enqueue
-s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct xmit_frame *pxmitframe = NULL;
@@ -831,7 +831,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 #else
 
-s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 {
 
 	struct hw_xmit *phwxmits;
@@ -910,7 +910,7 @@ s32 rtl8192cu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 
 
 
-static s32 xmitframe_direct(_adapter *padapter, struct xmit_frame *pxmitframe)
+static s32 xmitframe_direct(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 res = _SUCCESS;
 
@@ -928,7 +928,7 @@ static s32 xmitframe_direct(_adapter *padapter, struct xmit_frame *pxmitframe)
  *	_TRUE	dump packet directly
  *	_FALSE	enqueue packet
  */
-static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
+static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 res;
 	struct xmit_buf *pxmitbuf = NULL;
@@ -1037,7 +1037,7 @@ enqueue:
 	return _FALSE;
 }
 
-s32 rtl8192cu_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
+s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe)
 {
 	return rtw_dump_xframe(padapter, pmgntframe);
 }
@@ -1047,12 +1047,12 @@ s32 rtl8192cu_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
  *	_TRUE	dump packet directly ok
  *	_FALSE	temporary can't transmit packets to hardware
  */
-s32 rtl8192cu_hal_xmit(_adapter *padapter, struct xmit_frame *pxmitframe)
+s32 rtl8192cu_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	return pre_xmitframe(padapter, pxmitframe);
 }
 
-s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe)
+s32	rtl8723au_hal_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 	s32 err;
@@ -1084,7 +1084,7 @@ static void rtl8192cu_hostap_mgnt_xmit_cb(struct urb *urb)
 	dev_kfree_skb_any(skb);
 }
 
-s32 rtl8192cu_hostap_mgnt_xmit_entry(_adapter *padapter, _pkt *pkt)
+s32 rtl8192cu_hostap_mgnt_xmit_entry(struct rtw_adapter *padapter, _pkt *pkt)
 {
 	u16 fc;
 	int rc, len, pipe;

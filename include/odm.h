@@ -936,7 +936,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	//
 	//	Add for different team use temporarily
 	//
-	PADAPTER		Adapter;		// For CE/NIC team
+	struct rtw_adapter	*Adapter;		// For CE/NIC team
 	prtl8192cd_priv	priv;			// For AP/ADSL team
 	// WHen you use Adapter or priv pointer, you must make sure the pointer is ready.
 	bool			odm_ready;
@@ -1008,7 +1008,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 	u8			u8_temp;
 	bool			bool_temp;
-	PADAPTER		PADAPTER_temp;
+	struct rtw_adapter	*PADAPTER_temp;
 
 	// MAC PHY Mode SMSP/DMSP/DMDP = 0/1/2
 	u8			*pMacPhyMode;
@@ -1031,7 +1031,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	// Common info for 92D DMSP
 
 	bool			*pbGetValueFromOtherMac;
-	PADAPTER		*pBuddyAdapter;
+	struct rtw_adapter	**pBuddyAdapter;
 	bool			*pbMasterOfDMSP; //MAC0: master, MAC1: slave
 	// Common info for Status
 	bool			*pbScanInProcess;

@@ -21,22 +21,22 @@
 #define __USB_HAL_H__
 
 #ifdef CONFIG_RTL8192C
-void rtl8192cu_set_hal_ops(_adapter * padapter);
+void rtl8192cu_set_hal_ops(struct rtw_adapter *padapter);
 #define hal_set_hal_ops	rtl8192cu_set_hal_ops
 #endif
 
 #ifdef CONFIG_RTL8192D
-void rtl8192du_set_hal_ops(_adapter * padapter);
+void rtl8192du_set_hal_ops(struct rtw_adapter *padapter);
 #define hal_set_hal_ops	rtl8192du_set_hal_ops
 #endif
 
 #ifdef CONFIG_RTL8723A
-void rtl8723au_set_hal_ops(_adapter * padapter);
+void rtl8723au_set_hal_ops(struct rtw_adapter *padapter);
 #define hal_set_hal_ops	rtl8723au_set_hal_ops
 #endif
 
 #ifdef CONFIG_RTL8188E
-void rtl8188eu_set_hal_ops(_adapter * padapter);
+void rtl8188eu_set_hal_ops(struct rtw_adapter *padapter);
 #define hal_set_hal_ops	rtl8188eu_set_hal_ops
 #endif
 

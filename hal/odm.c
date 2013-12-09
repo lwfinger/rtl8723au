@@ -815,7 +815,7 @@ ODM_CmnInfoHook(
 			break;
 
 		case	ODM_CMNINFO_BUDDY_ADAPTOR:
-			pDM_Odm->pBuddyAdapter = (PADAPTER *)pValue;
+			pDM_Odm->pBuddyAdapter = (struct rtw_adapter **)pValue;
 			break;
 
 		case	ODM_CMNINFO_DMSP_IS_MASTER:
@@ -1291,7 +1291,7 @@ odm_DIGbyRSSI_LPS(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	PADAPTER					pAdapter =pDM_Odm->Adapter;
+	struct rtw_adapter *					pAdapter =pDM_Odm->Adapter;
 	pDIG_T						pDM_DigTable = &pDM_Odm->DM_DigTable;
 	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 	u8	RSSI_Lower=DM_DIG_MIN_NIC;   //0x1E or 0x1C
@@ -2353,7 +2353,7 @@ odm_RefreshRateAdaptiveMaskCE(
 	)
 {
 	u8	i;
-	PADAPTER	pAdapter	 =  pDM_Odm->Adapter;
+	struct rtw_adapter *	pAdapter	 =  pDM_Odm->Adapter;
 
 	if(pAdapter->bDriverStopped)
 	{
@@ -2461,7 +2461,7 @@ odm_DynamicTxPowerInit(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	PADAPTER	Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	pdmpriv->bDynamicTxPowerEnable = _FALSE;
@@ -2489,7 +2489,7 @@ odm_DynamicTxPowerSavePowerIndex(
 	u8		index;
 	u32		Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 
-	PADAPTER	Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	for(index = 0; index< 6; index++)
@@ -2502,7 +2502,7 @@ odm_DynamicTxPowerRestorePowerIndex(
 	)
 {
 	u8			index;
-	PADAPTER		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u32			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
@@ -2534,9 +2534,9 @@ odm_DynamicTxPower(
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
-	// For CE/NIC use PADAPTER
+	// For CE/NIC use struct rtw_adapter *
 	//
-	//PADAPTER		pAdapter = pDM_Odm->Adapter;
+	//struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 //	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
@@ -2613,7 +2613,7 @@ odm_DynamicTxPower_92C(
 	)
 {
 #if (RTL8192C_SUPPORT==1)
-	PADAPTER Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
@@ -2674,7 +2674,7 @@ odm_DynamicTxPower_92D(
 	)
 {
 #if (RTL8192D_SUPPORT==1)
-	PADAPTER Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 
@@ -2682,7 +2682,7 @@ odm_DynamicTxPower_92D(
 	DM_ODM_T		*podmpriv = &pHalData->odmpriv;
 	int	UndecoratedSmoothedPWDB;
 	#if (RTL8192D_EASY_SMART_CONCURRENT == 1)
-	PADAPTER	BuddyAdapter = Adapter->BuddyAdapter;
+	struct rtw_adapter *	BuddyAdapter = Adapter->BuddyAdapter;
 	bool		bGetValueFromBuddyAdapter = DualMacGetParameterFromBuddyAdapter(Adapter);
 	u8		HighPowerLvlBackForMac0 = TxHighPwrLevel_Level1;
 	#endif
@@ -2838,9 +2838,9 @@ odm_RSSIMonitorCheck(
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
-	// For CE/NIC use PADAPTER
+	// For CE/NIC use struct rtw_adapter *
 	//
-	PADAPTER		pAdapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_RSSI_MONITOR))
@@ -2885,14 +2885,14 @@ odm_RSSIMonitorCheckMP(
 //
 static void
 FindMinimumRSSI_Dmsp(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 )
 {
 }
 
 static void
 FindMinimumRSSI(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -2921,7 +2921,7 @@ odm_RSSIMonitorCheckCE(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	PADAPTER	Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int	i;
@@ -3124,7 +3124,7 @@ odm_TXPowerTrackingThermalMeterInit(
 	}
 	#else
 	{
-		PADAPTER		Adapter = pDM_Odm->Adapter;
+		struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 		struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
@@ -3148,9 +3148,9 @@ ODM_TXPowerTrackingCheck(
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
-	// For CE/NIC use PADAPTER
+	// For CE/NIC use struct rtw_adapter *
 	//
-	PADAPTER		pAdapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
 	//if (!(pDM_Odm->SupportAbility & ODM_RF_TX_PWR_TRACK))
@@ -3187,7 +3187,7 @@ odm_TXPowerTrackingCheckCE(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	PADAPTER	Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	#if( (RTL8192C_SUPPORT==1) ||  (RTL8723A_SUPPORT==1) )
 	rtl8192c_odm_CheckTXPowerTracking(Adapter);
 	#endif
@@ -3269,7 +3269,7 @@ odm_SwAntDivInit_NIC_8723A(
 	PDM_ODM_T		pDM_Odm)
 {
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	PADAPTER		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 	u8			btAntNum=BT_GetPGAntNum(Adapter);
 
 
@@ -3395,9 +3395,9 @@ odm_SwAntDivChkAntSwitch(
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
-	// For CE/NIC use PADAPTER
+	// For CE/NIC use struct rtw_adapter *
 	//
-	PADAPTER		pAdapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
 	//
@@ -3764,7 +3764,7 @@ odm_SwAntDivChkAntSwitchNIC(
 
 	//1 6.Set next timer
 	{
-		PADAPTER		pAdapter = pDM_Odm->Adapter;
+		struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
 
@@ -3823,7 +3823,7 @@ odm_SwAntDivChkAntSwitchNIC(
 void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
 {
 	PDM_ODM_T	pDM_Odm= (PDM_ODM_T)FunctionContext;
-	PADAPTER	padapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	padapter = pDM_Odm->Adapter;
 	if(padapter->net_closed == _TRUE)
 	    return;
 	odm_SwAntDivChkAntSwitch(pDM_Odm, SWAW_STEP_DETERMINE);
@@ -4207,7 +4207,7 @@ ODM_EdcaTurboInit(
     PDM_ODM_T		pDM_Odm)
 {
 
-	PADAPTER	Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = FALSE;
 	pDM_Odm->DM_EDCA_Table.bIsCurRDLState = FALSE;
 	Adapter->recvpriv.bIsAnyNonBEPkts =FALSE;
@@ -4227,9 +4227,9 @@ odm_EdcaTurboCheck(
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
-	// For CE/NIC use PADAPTER
+	// For CE/NIC use struct rtw_adapter *
 	//
-	PADAPTER		pAdapter = pDM_Odm->Adapter;
+	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
 	//
@@ -4264,7 +4264,7 @@ odm_EdcaTurboCheckCE(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	PADAPTER		       Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	u32	trafficIndex;
 	u32	edca_param;

@@ -317,7 +317,7 @@ ODM_ReleaseTimer(
 #if (DM_ODM_SUPPORT_TYPE & ODM_MP)
 void
 ODM_FillH2CCmd(
-	PADAPTER		Adapter,
+	struct rtw_adapter *Adapter,
 	u8	ElementID,
 	u32	CmdLen,
 	u8 *	pCmdBuffer

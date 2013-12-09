@@ -46,7 +46,7 @@ void dump_txrpt_ccx_8723a(void *buf)
 	);
 }
 
-void handle_txrpt_ccx_8723a(_adapter *adapter, void *buf)
+void handle_txrpt_ccx_8723a(struct rtw_adapter *adapter, void *buf)
 {
 	struct txrpt_ccx_8723a *txrpt_ccx = buf;
 

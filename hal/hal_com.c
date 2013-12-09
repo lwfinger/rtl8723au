@@ -69,7 +69,7 @@ void dump_chip_info(HAL_VERSION	ChipVersion)
 
 u8	/* return the final channel plan decision */
 hal_com_get_channel_plan(
-	PADAPTER	padapter,
+	struct rtw_adapter *	padapter,
 	u8			hw_channel_plan,	/* channel plan from HW (efuse/eeprom) */
 	u8			sw_channel_plan,	/* channel plan from SW (registry/module param) */
 	u8			def_channel_plan,	/* channel plan used when the former two is invalid */
@@ -136,7 +136,7 @@ u8	MRateToHwRate(u8 rate)
 }
 
 void	HalSetBrateCfg(
- PADAPTER		Adapter,
+ struct rtw_adapter *		Adapter,
  u8			*mBratesOS,
  u16			*pBrateCfg)
 {
@@ -170,7 +170,7 @@ void	HalSetBrateCfg(
 
 static void
 _OneOutPipeMapping(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 	)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(pAdapter);
@@ -188,7 +188,7 @@ _OneOutPipeMapping(
 
 static void
 _TwoOutPipeMapping(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		bWIFICfg
 	)
 {
@@ -231,7 +231,7 @@ _TwoOutPipeMapping(
 }
 
 static void _ThreeOutPipeMapping(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		bWIFICfg
 	)
 {
@@ -273,7 +273,7 @@ static void _ThreeOutPipeMapping(
 
 bool
 Hal_MappingOutPipe(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u8		NumOutPipe
 	)
 {
@@ -302,7 +302,7 @@ Hal_MappingOutPipe(
 	return result;
 }
 
-void hal_init_macaddr(_adapter *adapter)
+void hal_init_macaddr(struct rtw_adapter *adapter)
 {
 	rtw_hal_set_hwreg(adapter, HW_VAR_MAC_ADDR, adapter->eeprompriv.mac_addr);
 #ifdef  CONFIG_CONCURRENT_MODE
@@ -317,12 +317,12 @@ void hal_init_macaddr(_adapter *adapter)
 * BITS	 [127:120]	[119:16]      [15:8]		  [7:4]		   [3:0]
 */
 
-void c2h_evt_clear(_adapter *adapter)
+void c2h_evt_clear(struct rtw_adapter *adapter)
 {
 	rtw_write8(adapter, REG_C2HEVT_CLEAR, C2H_EVT_HOST_CLOSE);
 }
 
-s32 c2h_evt_read(_adapter *adapter, u8 *buf)
+s32 c2h_evt_read(struct rtw_adapter *adapter, u8 *buf)
 {
 	s32 ret = _FAIL;
 	struct c2h_evt_hdr *c2h_evt;

@@ -150,29 +150,29 @@ typedef struct _LOWPWR_LPS_PARM
 
 
 // host message to firmware cmd
-void rtl8723a_set_FwPwrMode_cmd(PADAPTER padapter, u8 Mode);
-void rtl8723a_set_FwJoinBssReport_cmd(PADAPTER padapter, u8 mstatus);
+void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter * padapter, u8 Mode);
+void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter * padapter, u8 mstatus);
 #ifdef CONFIG_BT_COEXIST
-void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(PADAPTER padapter);
+void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter * padapter);
 #endif
-u8 rtl8192c_set_rssi_cmd(PADAPTER padapter, u8 *param);
-//u8 rtl8723a_set_rssi_cmd(PADAPTER padapter, u8 *param);
-u8 rtl8192c_set_raid_cmd(PADAPTER padapter, u32 mask, u8 arg);
-//u8 rtl8723a_set_raid_cmd(PADAPTER padapter, u32 mask, u8 arg);
-void rtl8192c_Add_RateATid(PADAPTER padapter, u32 bitmap, u8 arg, u8 rssi_level);
-//void rtl8723a_Add_RateATid(PADAPTER padapter, u32 bitmap, u8 arg);
-u8 rtl8192c_set_FwSelectSuspend_cmd(PADAPTER padapter, u8 bfwpoll, u16 period);
-//u8 rtl8723a_set_FwSelectSuspend_cmd(PADAPTER padapter, u8 bfwpoll, u16 period);
+u8 rtl8192c_set_rssi_cmd(struct rtw_adapter * padapter, u8 *param);
+//u8 rtl8723a_set_rssi_cmd(struct rtw_adapter * padapter, u8 *param);
+u8 rtl8192c_set_raid_cmd(struct rtw_adapter * padapter, u32 mask, u8 arg);
+//u8 rtl8723a_set_raid_cmd(struct rtw_adapter * padapter, u32 mask, u8 arg);
+void rtl8192c_Add_RateATid(struct rtw_adapter * padapter, u32 bitmap, u8 arg, u8 rssi_level);
+//void rtl8723a_Add_RateATid(struct rtw_adapter * padapter, u32 bitmap, u8 arg);
+u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter * padapter, u8 bfwpoll, u16 period);
+//u8 rtl8723a_set_FwSelectSuspend_cmd(struct rtw_adapter * padapter, u8 bfwpoll, u16 period);
 
 #ifdef CONFIG_P2P
-void rtl8192c_set_p2p_ps_offload_cmd(PADAPTER padapter, u8 p2p_ps_state);
-//void rtl8723a_set_p2p_ps_offload_cmd(PADAPTER padapter, u8 p2p_ps_state);
+void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter * padapter, u8 p2p_ps_state);
+//void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter * padapter, u8 p2p_ps_state);
 #endif //CONFIG_P2P
 
-void CheckFwRsvdPageContent(PADAPTER padapter);
+void CheckFwRsvdPageContent(struct rtw_adapter *padapter);
 
 #endif
 
 #ifdef CONFIG_TSF_RESET_OFFLOAD
-u8 rtl8723c_reset_tsf(_adapter *padapter, u8 reset_port);
+u8 rtl8723c_reset_tsf(struct rtw_adapter *padapter, u8 reset_port);
 #endif	// CONFIG_TSF_RESET_OFFLOAD

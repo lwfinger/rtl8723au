@@ -57,23 +57,23 @@
 //
 // IQ calibrate
 //
-void rtl8192c_PHY_IQCalibrate(PADAPTER pAdapter, bool bReCovery);
+void rtl8192c_PHY_IQCalibrate(struct rtw_adapter *pAdapter, bool bReCovery);
 
 //
 // LC calibrate
 //
-void rtl8192c_PHY_LCCalibrate(PADAPTER	pAdapter);
+void rtl8192c_PHY_LCCalibrate(struct rtw_adapter *pAdapter);
 
 //
 // AP calibrate
 //
-void rtl8192c_PHY_APCalibrate(PADAPTER	pAdapter, char		delta);
+void rtl8192c_PHY_APCalibrate(struct rtw_adapter *pAdapter, char delta);
 
-void rtl8192c_odm_CheckTXPowerTracking(PADAPTER Adapter);
+void rtl8192c_odm_CheckTXPowerTracking(struct rtw_adapter *Adapter);
 
 #ifdef CONFIG_ANTENNA_DIVERSITY
-void	odm_AntDivCompare8192C(PADAPTER Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
-u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter);
+void	odm_AntDivCompare8192C(struct rtw_adapter *Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
+u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter);
 #endif
 
 #endif	//__HAL8190PCIDM_H__

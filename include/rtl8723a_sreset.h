@@ -26,7 +26,7 @@
 #include <rtw_sreset.h>
 
 #ifdef DBG_CONFIG_ERROR_DETECT
-extern void rtl8723a_sreset_xmit_status_check(_adapter *padapter);
-extern void rtl8723a_sreset_linked_status_check(_adapter *padapter);
+extern void rtl8723a_sreset_xmit_status_check(struct rtw_adapter *padapter);
+extern void rtl8723a_sreset_linked_status_check(struct rtw_adapter *padapter);
 #endif
 #endif

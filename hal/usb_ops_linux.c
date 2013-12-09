@@ -32,7 +32,7 @@
 
 static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 index, void *pdata, u16 len, u8 requesttype)
 {
-	_adapter		*padapter = pintfhdl->padapter ;
+	struct rtw_adapter		*padapter = pintfhdl->padapter ;
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device *udev=pdvobjpriv->pusbdev;
 
@@ -392,11 +392,8 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 //	If any interrupt matches the mask (IMR), return TRUE, and return FALSE otherwise.
 //
 bool
-InterruptRecognized8723AU(
-	PADAPTER			Adapter,
-	void *				pContent,
-	u32				ContentLen
-)
+InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
+			  u32 ContentLen)
 {
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
 	u8 *			buffer = (u8 *)pContent;
@@ -439,7 +436,7 @@ InterruptRecognized8723AU(
 static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 {
 	int	err;
-	PADAPTER padapter = (PADAPTER)purb->context;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)purb->context;
 
 
 	if(padapter->bSurpriseRemoved || padapter->bDriverStopped||padapter->bReadPortCancel)
@@ -522,7 +519,7 @@ static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 	int	err;
 	unsigned int pipe;
 	u32	ret = _SUCCESS;
-	_adapter			*adapter = pintfhdl->padapter;
+	struct rtw_adapter			*adapter = pintfhdl->padapter;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
 	struct recv_priv	*precvpriv = &adapter->recvpriv;
 	struct usb_device	*pusbd = pdvobj->pusbdev;
@@ -553,7 +550,7 @@ _func_exit_;
 #endif
 
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-static int recvbuf2recvframe(_adapter *padapter, struct recv_buf *precvbuf)
+static int recvbuf2recvframe(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 {
 	u8	*pbuf;
 	u8	shift_sz = 0;
@@ -719,7 +716,7 @@ _exit_recvbuf2recvframe:
 void rtl8192cu_recv_tasklet(void *priv)
 {
 	struct recv_buf *precvbuf = NULL;
-	_adapter	*padapter = (_adapter*)priv;
+	struct rtw_adapter	*padapter = (struct rtw_adapter*)priv;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	while (NULL != (precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue)))
@@ -742,7 +739,7 @@ void rtl8192cu_recv_tasklet(void *priv)
 static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 {
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
-	_adapter			*padapter =(_adapter *)precvbuf->adapter;
+	struct rtw_adapter			*padapter =(struct rtw_adapter *)precvbuf->adapter;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete!!!\n"));
@@ -829,7 +826,7 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 	u32 ret = _SUCCESS;
 	struct urb *purb = NULL;
 	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
-	_adapter		*adapter = pintfhdl->padapter;
+	struct rtw_adapter		*adapter = pintfhdl->padapter;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
 	struct recv_priv	*precvpriv = &adapter->recvpriv;
 	struct usb_device	*pusbd = pdvobj->pusbdev;
@@ -892,8 +889,8 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 #ifdef CONFIG_CONCURRENT_MODE
 	u8 *primary_myid, *secondary_myid, *paddr1;
 	union recv_frame	*precvframe_if2 = NULL;
-	_adapter *primary_padapter = precvframe->u.hdr.adapter;
-	_adapter *secondary_padapter = primary_padapter->pbuddy_adapter;
+	struct rtw_adapter *primary_padapter = precvframe->u.hdr.adapter;
+	struct rtw_adapter *secondary_padapter = primary_padapter->pbuddy_adapter;
 	struct recv_priv *precvpriv = &primary_padapter->recvpriv;
 	_queue *pfree_recv_queue = &precvpriv->free_recv_queue;
 	u8	*pbuf = precvframe->u.hdr.rx_data;
@@ -1011,7 +1008,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxsta
 
 }
 
-static int recvbuf2recvframe(_adapter *padapter, struct sk_buff *pskb)
+static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 {
 	u8	*pbuf;
 	u8	shift_sz = 0;
@@ -1196,7 +1193,7 @@ _exit_recvbuf2recvframe:
 void rtl8192cu_recv_tasklet(void *priv)
 {
 	struct sk_buff		*pskb;
-	_adapter		*padapter = (_adapter*)priv;
+	struct rtw_adapter		*padapter = (struct rtw_adapter*)priv;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue)))
@@ -1231,7 +1228,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 {
 	uint isevt, *pbuf;
 	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
-	_adapter			*padapter =(_adapter *)precvbuf->adapter;
+	struct rtw_adapter			*padapter =(struct rtw_adapter *)precvbuf->adapter;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete!!!\n"));
@@ -1344,7 +1341,7 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 	u32 ret = _SUCCESS;
 	struct urb *purb = NULL;
 	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
-	_adapter		*adapter = pintfhdl->padapter;
+	struct rtw_adapter		*adapter = pintfhdl->padapter;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
 	struct recv_priv	*precvpriv = &adapter->recvpriv;
 	struct usb_device	*pusbd = pdvobj->pusbdev;
@@ -1429,7 +1426,7 @@ _func_exit_;
 void rtl8192cu_xmit_tasklet(void *priv)
 {
 	int ret = _FALSE;
-	_adapter *padapter = (_adapter*)priv;
+	struct rtw_adapter *padapter = (struct rtw_adapter*)priv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	if(check_fwstate(&padapter->mlmepriv, _FW_UNDER_SURVEY) == _TRUE)
@@ -1488,7 +1485,7 @@ void rtl8723au_set_intf_ops(struct _io_ops	*pops)
 
 }
 
-void rtl8723au_set_hw_type(_adapter *padapter)
+void rtl8723au_set_hw_type(struct rtw_adapter *padapter)
 {
 	padapter->chip_type = RTL8723A;
 	padapter->HardwareType = HARDWARE_TYPE_RTL8723AU;

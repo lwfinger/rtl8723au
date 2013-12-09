@@ -673,63 +673,63 @@ typedef struct phystatus_8723a
 
 
 // rtl8723a_hal_init.c
-int FirmwareDownloadBT(PADAPTER Adapter, PRT_FIRMWARE_8723A pFirmware);
-s32 rtl8723a_FirmwareDownload(PADAPTER padapter);
-void rtl8723a_FirmwareSelfReset(PADAPTER padapter);
-void rtl8723a_InitializeFirmwareVars(PADAPTER padapter);
+int FirmwareDownloadBT(struct rtw_adapter *Adapter, PRT_FIRMWARE_8723A pFirmware);
+s32 rtl8723a_FirmwareDownload(struct rtw_adapter *padapter);
+void rtl8723a_FirmwareSelfReset(struct rtw_adapter *padapter);
+void rtl8723a_InitializeFirmwareVars(struct rtw_adapter *padapter);
 
-void rtl8723a_InitAntenna_Selection(PADAPTER padapter);
-void rtl8723a_DeinitAntenna_Selection(PADAPTER padapter);
-void rtl8723a_CheckAntenna_Selection(PADAPTER padapter);
-void rtl8723a_init_default_value(PADAPTER padapter);
+void rtl8723a_InitAntenna_Selection(struct rtw_adapter *padapter);
+void rtl8723a_DeinitAntenna_Selection(struct rtw_adapter *padapter);
+void rtl8723a_CheckAntenna_Selection(struct rtw_adapter *padapter);
+void rtl8723a_init_default_value(struct rtw_adapter *padapter);
 
-s32 InitLLTTable(PADAPTER padapter, u32 boundary);
+s32 InitLLTTable(struct rtw_adapter *padapter, u32 boundary);
 
-s32 CardDisableHWSM(PADAPTER padapter, u8 resetMCU);
-s32 CardDisableWithoutHWSM(PADAPTER padapter);
+s32 CardDisableHWSM(struct rtw_adapter *padapter, u8 resetMCU);
+s32 CardDisableWithoutHWSM(struct rtw_adapter *padapter);
 
 // EFuse
-u8 GetEEPROMSize8723A(PADAPTER padapter);
-void Hal_InitPGData(PADAPTER padapter, u8 *PROMContent);
-void Hal_EfuseParseIDCode(PADAPTER padapter, u8 *hwinfo);
-void Hal_EfuseParseTxPowerInfo_8723A(PADAPTER padapter, u8 *PROMContent, bool AutoLoadFail);
-void Hal_EfuseParseBTCoexistInfo_8723A(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void Hal_EfuseParseEEPROMVer(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void rtl8723a_EfuseParseChnlPlan(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void Hal_EfuseParseCustomerID(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void Hal_EfuseParseAntennaDiversity(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void Hal_EfuseParseRateIndicationOption(PADAPTER padapter, u8 *hwinfo, bool AutoLoadFail);
-void Hal_EfuseParseXtal_8723A(PADAPTER pAdapter, u8 *hwinfo, u8 AutoLoadFail);
-void Hal_EfuseParseThermalMeter_8723A(PADAPTER padapter, u8 *hwinfo, u8 AutoLoadFail);
+u8 GetEEPROMSize8723A(struct rtw_adapter *padapter);
+void Hal_InitPGData(struct rtw_adapter *padapter, u8 *PROMContent);
+void Hal_EfuseParseIDCode(struct rtw_adapter *padapter, u8 *hwinfo);
+void Hal_EfuseParseTxPowerInfo_8723A(struct rtw_adapter *padapter, u8 *PROMContent, bool AutoLoadFail);
+void Hal_EfuseParseBTCoexistInfo_8723A(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void Hal_EfuseParseEEPROMVer(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void rtl8723a_EfuseParseChnlPlan(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void Hal_EfuseParseCustomerID(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void Hal_EfuseParseAntennaDiversity(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void Hal_EfuseParseRateIndicationOption(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
+void Hal_EfuseParseXtal_8723A(struct rtw_adapter *pAdapter, u8 *hwinfo, u8 AutoLoadFail);
+void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, u8 AutoLoadFail);
 
-//RT_CHANNEL_DOMAIN rtl8723a_HalMapChannelPlan(PADAPTER padapter, u8 HalChannelPlan);
-//VERSION_8192C rtl8723a_ReadChipVersion(PADAPTER padapter);
-//void rtl8723a_ReadBluetoothCoexistInfo(PADAPTER padapter, u8 *PROMContent, bool AutoloadFail);
-void Hal_InitChannelPlan(PADAPTER padapter);
+//RT_CHANNEL_DOMAIN rtl8723a_HalMapChannelPlan(struct rtw_adapter *padapter, u8 HalChannelPlan);
+//VERSION_8192C rtl8723a_ReadChipVersion(struct rtw_adapter *padapter);
+//void rtl8723a_ReadBluetoothCoexistInfo(struct rtw_adapter *padapter, u8 *PROMContent, bool AutoloadFail);
+void Hal_InitChannelPlan(struct rtw_adapter *padapter);
 
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
-void SetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val);
-void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val);
+void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
+void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
 #ifdef CONFIG_BT_COEXIST
-void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter);
+void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 #endif
 
 // register
-void SetBcnCtrlReg(PADAPTER padapter, u8 SetBits, u8 ClearBits);
-void rtl8723a_InitBeaconParameters(PADAPTER padapter);
-void rtl8723a_InitBeaconMaxError(PADAPTER padapter, u8 InfraMode);
+void SetBcnCtrlReg(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);
+void rtl8723a_InitBeaconParameters(struct rtw_adapter *padapter);
+void rtl8723a_InitBeaconMaxError(struct rtw_adapter *padapter, u8 InfraMode);
 
-void rtl8723a_clone_haldata(_adapter *dst_adapter, _adapter *src_adapter);
-void rtl8723a_start_thread(_adapter *padapter);
-void rtl8723a_stop_thread(_adapter *padapter);
+void rtl8723a_clone_haldata(struct rtw_adapter *dst_adapter, struct rtw_adapter *src_adapter);
+void rtl8723a_start_thread(struct rtw_adapter *padapter);
+void rtl8723a_stop_thread(struct rtw_adapter *padapter);
 
 s32 c2h_id_filter_ccx_8723a(u8 id);
 
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
-void rtl8723a_init_checkbthang_workqueue(_adapter * padapter);
-void rtl8723a_free_checkbthang_workqueue(_adapter * padapter);
-void rtl8723a_cancel_checkbthang_workqueue(_adapter * padapter);
-void rtl8723a_hal_check_bt_hang(_adapter * padapter);
+void rtl8723a_init_checkbthang_workqueue(struct rtw_adapter * padapter);
+void rtl8723a_free_checkbthang_workqueue(struct rtw_adapter * padapter);
+void rtl8723a_cancel_checkbthang_workqueue(struct rtw_adapter * padapter);
+void rtl8723a_hal_check_bt_hang(struct rtw_adapter * padapter);
 #endif
 #endif

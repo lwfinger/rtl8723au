@@ -152,7 +152,7 @@ struct io_req {
 	u8	*pbuf;
 	struct semaphore	sema;
 
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt);
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt);
 	u8 *cnxt;
 };
 
@@ -175,7 +175,7 @@ struct	intf_hdl {
 	u16 len;
 	u16 done_len;
 */
-	_adapter *padapter;
+	struct rtw_adapter *padapter;
 	struct dvobj_priv *pintf_dev;//	pointer to &(padapter->dvobjpriv);
 
 	struct _io_ops	io_ops;
@@ -313,15 +313,15 @@ struct io_queue {
 
 struct io_priv{
 
-	_adapter *padapter;
+	struct rtw_adapter *padapter;
 
 	struct intf_hdl intf;
 
 };
 
-extern uint ioreq_flush(_adapter *adapter, struct io_queue *ioqueue);
+extern uint ioreq_flush(struct rtw_adapter *adapter, struct io_queue *ioqueue);
 extern void sync_ioreq_enqueue(struct io_req *preq,struct io_queue *ioqueue);
-extern uint sync_ioreq_flush(_adapter *adapter, struct io_queue *ioqueue);
+extern uint sync_ioreq_flush(struct rtw_adapter *adapter, struct io_queue *ioqueue);
 
 
 extern uint free_ioreq(struct io_req *preq, struct io_queue *pio_queue);
@@ -330,43 +330,43 @@ extern struct io_req *alloc_ioreq(struct io_queue *pio_q);
 extern uint register_intf_hdl(u8 *dev, struct intf_hdl *pintfhdl);
 extern void unregister_intf_hdl(struct intf_hdl *pintfhdl);
 
-extern void _rtw_attrib_read(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern void _rtw_attrib_write(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void _rtw_attrib_read(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void _rtw_attrib_write(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
-extern u8 _rtw_read8(_adapter *adapter, u32 addr);
-extern u16 _rtw_read16(_adapter *adapter, u32 addr);
-extern u32 _rtw_read32(_adapter *adapter, u32 addr);
-extern void _rtw_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern void _rtw_read_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern void _rtw_read_port_cancel(_adapter *adapter);
+extern u8 _rtw_read8(struct rtw_adapter *adapter, u32 addr);
+extern u16 _rtw_read16(struct rtw_adapter *adapter, u32 addr);
+extern u32 _rtw_read32(struct rtw_adapter *adapter, u32 addr);
+extern void _rtw_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void _rtw_read_port_cancel(struct rtw_adapter *adapter);
 
 
-extern int _rtw_write8(_adapter *adapter, u32 addr, u8 val);
-extern int _rtw_write16(_adapter *adapter, u32 addr, u16 val);
-extern int _rtw_write32(_adapter *adapter, u32 addr, u32 val);
-extern int _rtw_writeN(_adapter *adapter, u32 addr, u32 length, u8 *pdata);
+extern int _rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val);
+extern int _rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val);
+extern int _rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val);
+extern int _rtw_writeN(struct rtw_adapter *adapter, u32 addr, u32 length, u8 *pdata);
 
-extern int _rtw_write8_async(_adapter *adapter, u32 addr, u8 val);
-extern int _rtw_write16_async(_adapter *adapter, u32 addr, u16 val);
-extern int _rtw_write32_async(_adapter *adapter, u32 addr, u32 val);
+extern int _rtw_write8_async(struct rtw_adapter *adapter, u32 addr, u8 val);
+extern int _rtw_write16_async(struct rtw_adapter *adapter, u32 addr, u16 val);
+extern int _rtw_write32_async(struct rtw_adapter *adapter, u32 addr, u32 val);
 
-extern void _rtw_write_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern u32 _rtw_write_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-u32 _rtw_write_port_and_wait(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int timeout_ms);
-extern void _rtw_write_port_cancel(_adapter *adapter);
+extern void _rtw_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int timeout_ms);
+extern void _rtw_write_port_cancel(struct rtw_adapter *adapter);
 
 #ifdef DBG_IO
 bool match_read_sniff_ranges(u16 addr, u16 len);
 bool match_write_sniff_ranges(u16 addr, u16 len);
 
-extern u8 dbg_rtw_read8(_adapter *adapter, u32 addr, const char *caller, const int line);
-extern u16 dbg_rtw_read16(_adapter *adapter, u32 addr, const char *caller, const int line);
-extern u32 dbg_rtw_read32(_adapter *adapter, u32 addr, const char *caller, const int line);
+extern u8 dbg_rtw_read8(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line);
+extern u16 dbg_rtw_read16(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line);
+extern u32 dbg_rtw_read32(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line);
 
-extern int dbg_rtw_write8(_adapter *adapter, u32 addr, u8 val, const char *caller, const int line);
-extern int dbg_rtw_write16(_adapter *adapter, u32 addr, u16 val, const char *caller, const int line);
-extern int dbg_rtw_write32(_adapter *adapter, u32 addr, u32 val, const char *caller, const int line);
-extern int dbg_rtw_writeN(_adapter *adapter, u32 addr ,u32 length , u8 *data, const char *caller, const int line);
+extern int dbg_rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val, const char *caller, const int line);
+extern int dbg_rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val, const char *caller, const int line);
+extern int dbg_rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val, const char *caller, const int line);
+extern int dbg_rtw_writeN(struct rtw_adapter *adapter, u32 addr ,u32 length , u8 *data, const char *caller, const int line);
 
 #define rtw_read8(adapter, addr) dbg_rtw_read8((adapter), (addr), __FUNCTION__, __LINE__)
 #define rtw_read16(adapter, addr) dbg_rtw_read16((adapter), (addr), __FUNCTION__, __LINE__)
@@ -411,47 +411,47 @@ extern int dbg_rtw_writeN(_adapter *adapter, u32 addr ,u32 length , u8 *data, co
 #define rtw_write_port_cancel(adapter) _rtw_write_port_cancel((adapter))
 #endif //DBG_IO
 
-extern void rtw_write_scsi(_adapter *adapter, u32 cnt, u8 *pmem);
+extern void rtw_write_scsi(struct rtw_adapter *adapter, u32 cnt, u8 *pmem);
 
 //ioreq
-extern void ioreq_read8(_adapter *adapter, u32 addr, u8 *pval);
-extern void ioreq_read16(_adapter *adapter, u32 addr, u16 *pval);
-extern void ioreq_read32(_adapter *adapter, u32 addr, u32 *pval);
-extern void ioreq_write8(_adapter *adapter, u32 addr, u8 val);
-extern void ioreq_write16(_adapter *adapter, u32 addr, u16 val);
-extern void ioreq_write32(_adapter *adapter, u32 addr, u32 val);
+extern void ioreq_read8(struct rtw_adapter *adapter, u32 addr, u8 *pval);
+extern void ioreq_read16(struct rtw_adapter *adapter, u32 addr, u16 *pval);
+extern void ioreq_read32(struct rtw_adapter *adapter, u32 addr, u32 *pval);
+extern void ioreq_write8(struct rtw_adapter *adapter, u32 addr, u8 val);
+extern void ioreq_write16(struct rtw_adapter *adapter, u32 addr, u16 val);
+extern void ioreq_write32(struct rtw_adapter *adapter, u32 addr, u32 val);
 
 
-extern uint async_read8(_adapter *adapter, u32 addr, u8 *pbuff,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-extern uint async_read16(_adapter *adapter, u32 addr,  u8 *pbuff,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-extern uint async_read32(_adapter *adapter, u32 addr,  u8 *pbuff,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern uint async_read8(struct rtw_adapter *adapter, u32 addr, u8 *pbuff,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern uint async_read16(struct rtw_adapter *adapter, u32 addr,  u8 *pbuff,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern uint async_read32(struct rtw_adapter *adapter, u32 addr,  u8 *pbuff,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
 
-extern void async_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern void async_read_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void async_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void async_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
-extern void async_write8(_adapter *adapter, u32 addr, u8 val,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-extern void async_write16(_adapter *adapter, u32 addr, u16 val,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-extern void async_write32(_adapter *adapter, u32 addr, u32 val,
-	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern void async_write8(struct rtw_adapter *adapter, u32 addr, u8 val,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern void async_write16(struct rtw_adapter *adapter, u32 addr, u16 val,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
+extern void async_write32(struct rtw_adapter *adapter, u32 addr, u32 val,
+	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
 
-extern void async_write_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-extern void async_write_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-
-
-int rtw_init_io_priv(_adapter *padapter, void (*set_intf_ops)(struct _io_ops *pops));
+extern void async_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+extern void async_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
 
-extern uint alloc_io_queue(_adapter *adapter);
-extern void free_io_queue(_adapter *adapter);
+int rtw_init_io_priv(struct rtw_adapter *padapter, void (*set_intf_ops)(struct _io_ops *pops));
+
+
+extern uint alloc_io_queue(struct rtw_adapter *adapter);
+extern void free_io_queue(struct rtw_adapter *adapter);
 extern void async_bus_io(struct io_queue *pio_q);
 extern void bus_sync_io(struct io_queue *pio_q);
 extern u32 _ioreq2rwmem(struct io_queue *pio_q);
-extern void dev_power_down(_adapter * Adapter, u8 bpwrup);
+extern void dev_power_down(struct rtw_adapter * Adapter, u8 bpwrup);
 
 /*
 #define RTL_R8(reg)		rtw_read8(padapter, reg)

@@ -29,7 +29,7 @@
 /* 091212 chiyokolin */
 static	void
 odm_TXPowerTrackingCallback_ThermalMeter_92C(
-	PADAPTER Adapter)
+	struct rtw_adapter *Adapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -380,14 +380,14 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 /*	Added by Roger, 2009.06.18. */
 /*  */
 static void
-ODM_TXPowerTracking92CDirectCall(PADAPTER Adapter)
+ODM_TXPowerTracking92CDirectCall(struct rtw_adapter *Adapter)
 {
 	odm_TXPowerTrackingCallback_ThermalMeter_92C(Adapter);
 }
 
 static void
 odm_CheckTXPowerTracking_ThermalMeter(
-	PADAPTER		Adapter)
+	struct rtw_adapter *		Adapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -413,7 +413,7 @@ odm_CheckTXPowerTracking_ThermalMeter(
 
 void
 rtl8192c_odm_CheckTXPowerTracking(
-	PADAPTER		Adapter)
+	struct rtw_adapter *		Adapter)
 {
 	odm_CheckTXPowerTracking_ThermalMeter(Adapter);
 }
@@ -429,7 +429,7 @@ void odm_SwAntDivResetBeforeLink8192C(PDM_ODM_T pDM_Odm)
 }
 
 /*  Compare RSSI for deciding antenna */
-void	odm_AntDivCompare8192C(PADAPTER Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src)
+void	odm_AntDivCompare8192C(struct rtw_adapter *Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src)
 {
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -446,7 +446,7 @@ void	odm_AntDivCompare8192C(PADAPTER Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX 
 }
 
 /*  Add new function to reset the state of antenna diversity before link. */
-u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter )
+u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter )
 {
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -494,7 +494,7 @@ u8 odm_AntDivBeforeLink8192C(PADAPTER Adapter )
 
 static u8			/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
 _PHY_PathA_IQK(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		configPathB
 	)
 {
@@ -554,7 +554,7 @@ _PHY_PathA_IQK(
 
 static u8				/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
 _PHY_PathB_IQK(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 	)
 {
 	u32 regEAC, regEB4, regEBC, regEC4, regECC;
@@ -595,7 +595,7 @@ _PHY_PathB_IQK(
 
 static void
 _PHY_PathAFillIQKMatrix(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		bIQKOK,
 	int			result[][8],
 	u8			final_candidate,
@@ -647,7 +647,7 @@ _PHY_PathAFillIQKMatrix(
 
 static void
 _PHY_PathBFillIQKMatrix(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool	bIQKOK,
 	int			result[][8],
 	u8			final_candidate,
@@ -696,7 +696,7 @@ _PHY_PathBFillIQKMatrix(
 
 static void
 _PHY_SaveADDARegisters(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		ADDAReg,
 	u32*		ADDABackup,
 	u32			RegisterNum
@@ -711,7 +711,7 @@ _PHY_SaveADDARegisters(
 
 static void
 _PHY_SaveMACRegisters(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		MACReg,
 	u32*		MACBackup
 	)
@@ -726,7 +726,7 @@ _PHY_SaveMACRegisters(
 
 static void
 _PHY_ReloadADDARegisters(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		ADDAReg,
 	u32*		ADDABackup,
 	u32			RegiesterNum
@@ -741,7 +741,7 @@ _PHY_ReloadADDARegisters(
 
 static void
 _PHY_ReloadMACRegisters(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		MACReg,
 	u32*		MACBackup
 	)
@@ -756,7 +756,7 @@ _PHY_ReloadMACRegisters(
 
 static void
 _PHY_PathADDAOn(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		ADDAReg,
 	bool		isPathAOn,
 	bool		is2T
@@ -782,7 +782,7 @@ _PHY_PathADDAOn(
 
 static void
 _PHY_MACSettingCalibration(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	u32*		MACReg,
 	u32*		MACBackup
 	)
@@ -799,7 +799,7 @@ _PHY_MACSettingCalibration(
 
 static void
 _PHY_PathAStandBy(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 	)
 {
 	PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0x0);
@@ -809,7 +809,7 @@ _PHY_PathAStandBy(
 
 static void
 _PHY_PIModeSwitch(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		PIMode
 	)
 {
@@ -825,7 +825,7 @@ return _FALSE => do IQK again
 */
 static bool
 _PHY_SimularityCompare(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	int		result[][8],
 	u8		 c1,
 	u8		 c2
@@ -894,7 +894,7 @@ _PHY_SimularityCompare(
 
 static void
 _PHY_IQCalibrate(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	int		result[][8],
 	u8		t,
 	bool		is2T
@@ -1070,7 +1070,7 @@ _PHY_IQCalibrate(
 
 static void
 _PHY_LCCalibrate(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool		is2T
 	)
 {
@@ -1141,7 +1141,7 @@ _PHY_LCCalibrate(
 
 static void
 _PHY_APCalibrate(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	char		delta,
 	bool		is2T
 	)
@@ -1255,7 +1255,7 @@ _PHY_APCalibrate(
 
 void
 rtl8192c_PHY_IQCalibrate(
-	PADAPTER	pAdapter,
+	struct rtw_adapter *	pAdapter,
 	bool	bReCovery
 	)
 {
@@ -1393,7 +1393,7 @@ rtl8192c_PHY_IQCalibrate(
 
 void
 rtl8192c_PHY_LCCalibrate(
-	PADAPTER	pAdapter
+	struct rtw_adapter *	pAdapter
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1421,9 +1421,6 @@ rtl8192c_PHY_LCCalibrate(
 }
 
 void
-rtl8192c_PHY_APCalibrate(
-	PADAPTER	pAdapter,
-	char		delta
-	)
+rtl8192c_PHY_APCalibrate(struct rtw_adapter *pAdapter, char delta)
 {
 }

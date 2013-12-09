@@ -24,7 +24,7 @@
 
 
 #ifdef DBG_CONFIG_ERROR_DETECT
-void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
+void rtl8723a_sreset_xmit_status_check(struct rtw_adapter *padapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
@@ -71,7 +71,7 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 	}
 }
 
-void rtl8723a_sreset_linked_status_check(_adapter *padapter)
+void rtl8723a_sreset_linked_status_check(struct rtw_adapter *padapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
