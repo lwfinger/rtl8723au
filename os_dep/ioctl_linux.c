@@ -78,12 +78,31 @@ extern u8 key_2char2num(u8 hch, u8 lch);
 extern u8 str_2char2num(u8 hch, u8 lch);
 extern u8 convert_ip_addr(u8 hch, u8 mch, u8 lch);
 
-u32 rtw_rates[] = {1000000,2000000,5500000,11000000,
-	6000000,9000000,12000000,18000000,24000000,36000000,48000000,54000000};
-
-static const char * const iw_operation_mode[] =
+u32 rtw_rates[] =
 {
-	"Auto", "Ad-Hoc", "Managed",  "Master", "Repeater", "Secondary", "Monitor"
+	1000000,
+	2000000,
+	5500000,
+	11000000,
+	6000000,
+	9000000,
+	12000000,
+	18000000,
+	24000000,
+	36000000,
+	48000000,
+	54000000
+};
+
+static const char *const iw_operation_mode[] =
+{
+	"Auto",
+	"Ad-Hoc",
+	"Managed",
+	"Master",
+	"Repeater",
+	"Secondary",
+	"Monitor"
 };
 
 static int hex2num_i(char c)
@@ -142,17 +161,18 @@ static void indicate_wx_custom_event(struct rtw_adapter *padapter, char *msg)
 	union iwreq_data wrqu;
 
 	if (strlen(msg) > IW_CUSTOM_MAX) {
-		DBG_8723A("%s strlen(msg):%zu > IW_CUSTOM_MAX:%u\n", __func__ , strlen(msg), IW_CUSTOM_MAX);
+		DBG_8723A("%s strlen(msg):%zu > IW_CUSTOM_MAX:%u\n",
+			  __func__ , strlen(msg), IW_CUSTOM_MAX);
 		return;
 	}
 
 	buff = kzalloc(IW_CUSTOM_MAX + 1, GFP_KERNEL);
-	if(!buff)
+	if (!buff)
 		return;
 
 	memcpy(buff, msg, strlen(msg));
 
-	memset(&wrqu,0,sizeof(wrqu));
+	memset(&wrqu, 0, sizeof(wrqu));
 	wrqu.data.length = strlen(msg);
 
 	DBG_8723A("%s %s\n", __func__, buff);
@@ -161,7 +181,6 @@ static void indicate_wx_custom_event(struct rtw_adapter *padapter, char *msg)
 #endif
 
 	kfree(buff);
-
 }
 
 
@@ -170,20 +189,18 @@ static void request_wps_pbc_event(struct rtw_adapter *padapter)
 	u8 *buff, *p;
 	union iwreq_data wrqu;
 
-
 	buff = kzalloc(IW_CUSTOM_MAX, GFP_KERNEL);
 	if(!buff)
 		return;
 
-	p=buff;
+	p = buff;
+	p += sprintf(p, "WPS_PBC_START.request=TRUE");
 
-	p+=sprintf(p, "WPS_PBC_START.request=TRUE");
-
-	memset(&wrqu,0,sizeof(wrqu));
+	memset(&wrqu, 0, sizeof(wrqu));
 
 	wrqu.data.length = p-buff;
 
-	wrqu.data.length = (wrqu.data.length<IW_CUSTOM_MAX) ? wrqu.data.length:IW_CUSTOM_MAX;
+	wrqu.data.length = (wrqu.data.length < IW_CUSTOM_MAX) ? wrqu.data.length:IW_CUSTOM_MAX;
 
 	DBG_8723A("%s\n", __func__);
 
@@ -191,17 +208,15 @@ static void request_wps_pbc_event(struct rtw_adapter *padapter)
 	wireless_send_event(padapter->pnetdev, IWEVCUSTOM, &wrqu, buff);
 #endif
 
-	if(buff) {
+	if (buff)
 		kfree(buff);
-	}
-
 }
 
 
 void indicate_wx_scan_complete_event(struct rtw_adapter *padapter)
 {
 	union iwreq_data wrqu;
-	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 	memset(&wrqu, 0, sizeof(union iwreq_data));
 
@@ -221,7 +236,8 @@ void rtw_indicate_wx_assoc_event(struct rtw_adapter *padapter)
 
 	wrqu.ap_addr.sa_family = ARPHRD_ETHER;
 
-	memcpy(wrqu.ap_addr.sa_data, pmlmepriv->cur_network.network.MacAddress, ETH_ALEN);
+	memcpy(wrqu.ap_addr.sa_data,
+	       pmlmepriv->cur_network.network.MacAddress, ETH_ALEN);
 
 	DBG_8723A_LEVEL(_drv_always_, "assoc success\n");
 #ifndef CONFIG_IOCTL_CFG80211
@@ -288,7 +304,7 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	char *p;
 	u16 max_rate=0, rate, ht_cap=_FALSE;
 	u32 i = 0;
-	char	*current_val;
+	char *current_val;
 	long rssi;
 	u8 bw_40MHz=0, short_GI=0;
 	u16 mcs_rate=0;
@@ -299,43 +315,42 @@ static char *translate_scan(struct rtw_adapter *padapter,
 
 #ifdef CONFIG_P2P
 #ifdef CONFIG_WFD
-	if ( SCAN_RESULT_ALL == pwdinfo->wfd_info->scan_result_type )
-	{
-
-	}
-	else if ( ( SCAN_RESULT_P2P_ONLY == pwdinfo->wfd_info->scan_result_type ) ||
-		      ( SCAN_RESULT_WFD_TYPE == pwdinfo->wfd_info->scan_result_type ) )
+	if (pwdinfo->wfd_info->scan_result_type == SCAN_RESULT_ALL) {
+	} else if ((pwdinfo->wfd_info->scan_result_type == SCAN_RESULT_P2P_ONLY) ||
+		   (pwdinfo->wfd_info->scan_result_type == SCAN_RESULT_WFD_TYPE))
 #endif // CONFIG_WFD
 	{
-		if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-		{
+		if (!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)) {
 			u32	blnGotP2PIE = _FALSE;
 
-			//	User is doing the P2P device discovery
-			//	The prefix of SSID should be "DIRECT-" and the IE should contains the P2P IE.
-			//	If not, the driver should ignore this AP and go to the next AP.
+			/*
+			 * User is doing the P2P device discovery
+			 * The prefix of SSID should be "DIRECT-" and the IE
+			 * should contains the P2P IE. If not, the driver
+			 * should ignore this AP and go to the next AP.
+			 *
+			 * Verifying the SSID
+			 */
+			if (!memcmp(pnetwork->network.Ssid.Ssid,
+				    pwdinfo->p2p_wildcard_ssid,
+				    P2P_WILDCARD_SSID_LEN)) {
+				u32 p2pielen = 0;
 
-			//	Verifying the SSID
-			if (!memcmp(pnetwork->network.Ssid.Ssid, pwdinfo->p2p_wildcard_ssid, P2P_WILDCARD_SSID_LEN))
-			{
-				u32	p2pielen = 0;
-
-				if (pnetwork->network.Reserved[0] == 2) { // Probe Request
-					//	Verifying the P2P IE
-					if ( rtw_get_p2p_ie( pnetwork->network.IEs, pnetwork->network.IELength, NULL, &p2pielen) )
-					{
+				/* Probe Request */
+				if (pnetwork->network.Reserved[0] == 2) {
+					/* Verifying the P2P IE */
+					if (rtw_get_p2p_ie(pnetwork->network.IEs, pnetwork->network.IELength, NULL, &p2pielen)) {
 						blnGotP2PIE = _TRUE;
 					}
-				} else { // Beacon or Probe Respones
-					//	Verifying the P2P IE
-					if ( rtw_get_p2p_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen) )
-					{
+				} else { /* Beacon or Probe Respones */
+					 /*	Verifying the P2P IE */
+					if (rtw_get_p2p_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen)) {
 						blnGotP2PIE = _TRUE;
 					}
 				}
 			}
 
-			if ( blnGotP2PIE == _FALSE )
+			if (blnGotP2PIE == _FALSE)
 			{
 				return start;
 			}
@@ -344,42 +359,54 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	}
 
 #ifdef CONFIG_WFD
-	if ( SCAN_RESULT_WFD_TYPE == pwdinfo->wfd_info->scan_result_type )
-	{
+	if (pwdinfo->wfd_info->scan_result_type == SCAN_RESULT_WFD_TYPE) {
 		u32	blnGotWFD = _FALSE;
-		u8	wfd_ie[ 128 ] = { 0x00 };
+		u8	wfd_ie[128] = {0x00};
 		uint	wfd_ielen = 0;
 
-		if ( rtw_get_wfd_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12,  wfd_ie, &wfd_ielen ) )
-		{
-			u8	wfd_devinfo[ 6 ] = { 0x00 };
+		if (rtw_get_wfd_ie(&pnetwork->network.IEs[12],
+				   pnetwork->network.IELength - 12,
+				   wfd_ie, &wfd_ielen)) {
+			u8	wfd_devinfo[6] = {0x00};
 			uint	wfd_devlen = 6;
 
-			if ( rtw_get_wfd_attr_content( wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, wfd_devinfo, &wfd_devlen) )
-			{
-				if ( pwdinfo->wfd_info->wfd_device_type == WFD_DEVINFO_PSINK )
-				{
-					//	the first two bits will indicate the WFD device type
-					if ( ( wfd_devinfo[ 1 ] & 0x03 ) == WFD_DEVINFO_SOURCE )
-					{
-						//	If this device is Miracast PSink device, the scan reuslt should just provide the Miracast source.
+			if (rtw_get_wfd_attr_content(wfd_ie, wfd_ielen,
+						     WFD_ATTR_DEVICE_INFO,
+						     wfd_devinfo,
+						     &wfd_devlen)) {
+				if (pwdinfo->wfd_info->wfd_device_type ==
+				    WFD_DEVINFO_PSINK) {
+					/* the first two bits will indicate
+					   the WFD device type */
+					if ((wfd_devinfo[1] & 0x03) ==
+					    WFD_DEVINFO_SOURCE) {
+						/* If this device is Miracast
+						 * PSink device, the scan
+						 * reuslt should just provide
+						 * the Miracast source. */
 						blnGotWFD = _TRUE;
 					}
 				}
-				else if ( pwdinfo->wfd_info->wfd_device_type == WFD_DEVINFO_SOURCE )
-				{
-					//	the first two bits will indicate the WFD device type
-					if ( ( wfd_devinfo[ 1 ] & 0x03 ) == WFD_DEVINFO_PSINK )
-					{
-						//	If this device is Miracast source device, the scan reuslt should just provide the Miracast PSink.
-						//	Todo: How about the SSink?!
+				else if (pwdinfo->wfd_info->wfd_device_type ==
+					 WFD_DEVINFO_SOURCE) {
+					/* the first two bits will indicate
+					   the WFD device type */
+					if ((wfd_devinfo[1] & 0x03) ==
+					    WFD_DEVINFO_PSINK) {
+						/*
+						 * If this device is Miracast
+						 * source device, the scan
+						 * reuslt should just provide
+						 * the Miracast PSink.
+						 * Todo: How about the SSink?!
+						 */
 						blnGotWFD = _TRUE;
 					}
 				}
 			}
 		}
 
-		if ( blnGotWFD == _FALSE )
+		if (blnGotWFD == _FALSE)
 		{
 			return start;
 		}
@@ -398,50 +425,48 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	/* Add the ESSID */
 	iwe.cmd = SIOCGIWESSID;
 	iwe.u.data.flags = 1;
-	iwe.u.data.length = min((u16)pnetwork->network.Ssid.SsidLength, (u16)32);
-	start = iwe_stream_add_point(info, start, stop, &iwe, pnetwork->network.Ssid.Ssid);
+	iwe.u.data.length = min((u16)pnetwork->network.Ssid.SsidLength,
+				(u16)32);
+	start = iwe_stream_add_point(info, start, stop, &iwe,
+				     pnetwork->network.Ssid.Ssid);
 
 	//parsing HT_CAP_IE
-	p = rtw_get_ie(&pnetwork->network.IEs[12], _HT_CAPABILITY_IE_, &ht_ielen, pnetwork->network.IELength-12);
+	p = rtw_get_ie(&pnetwork->network.IEs[12], _HT_CAPABILITY_IE_,
+		       &ht_ielen, pnetwork->network.IELength - 12);
 
-	if(p && ht_ielen>0)
+	if (p && ht_ielen>0)
 	{
 		struct ieee80211_ht_cap *pht_capie;
 		ht_cap = _TRUE;
 		pht_capie = (struct ieee80211_ht_cap *)(p+2);
 		memcpy(&mcs_rate , &pht_capie->mcs, 2);
-		bw_40MHz = (pht_capie->cap_info & IEEE80211_HT_CAP_SUP_WIDTH_20_40) ? 1:0;
-		short_GI = (pht_capie->cap_info&(IEEE80211_HT_CAP_SGI_20|IEEE80211_HT_CAP_SGI_40)) ? 1:0;
+		bw_40MHz = (pht_capie->cap_info &
+			    IEEE80211_HT_CAP_SUP_WIDTH_20_40) ? 1:0;
+		short_GI = (pht_capie->cap_info & 
+			    (IEEE80211_HT_CAP_SGI_20|IEEE80211_HT_CAP_SGI_40)) ? 1:0;
 	}
 
 	/* Add the protocol name */
 	iwe.cmd = SIOCGIWNAME;
-	if ((rtw_is_cckratesonly_included((u8*)&pnetwork->network.SupportedRates)) == _TRUE)
-	{
-		if(ht_cap == _TRUE)
+	if ((rtw_is_cckratesonly_included((u8*)&pnetwork->network.SupportedRates)) == _TRUE) {
+		if (ht_cap == _TRUE)
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bn");
 		else
-		snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11b");
-	}
-	else if ((rtw_is_cckrates_included((u8*)&pnetwork->network.SupportedRates)) == _TRUE)
-	{
+			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11b");
+	} else if ((rtw_is_cckrates_included((u8*)&pnetwork->network.SupportedRates)) == _TRUE) {
 		if(ht_cap == _TRUE)
 			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bgn");
 		else
-		snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bg");
-	}
-	else
-	{
-		if(pnetwork->network.Configuration.DSConfig > 14)
+			snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11bg");
+	} else {
+		if (pnetwork->network.Configuration.DSConfig > 14)
 		{
 			if(ht_cap == _TRUE)
 				snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11an");
 			else
 				snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11a");
-		}
-		else
-		{
-			if(ht_cap == _TRUE)
+		} else {
+			if (ht_cap == _TRUE)
 				snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11gn");
 			else
 				snprintf(iwe.u.name, IFNAMSIZ, "IEEE 802.11g");
@@ -452,26 +477,29 @@ static char *translate_scan(struct rtw_adapter *padapter,
 
 	  /* Add mode */
         iwe.cmd = SIOCGIWMODE;
-	memcpy((u8 *)&cap, rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
+	memcpy((u8 *)&cap,
+	       rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
 
 
 	cap = le16_to_cpu(cap);
 
-	if(cap & (WLAN_CAPABILITY_IBSS |WLAN_CAPABILITY_ESS)){
+	if (cap & (WLAN_CAPABILITY_IBSS |WLAN_CAPABILITY_ESS)) {
 		if (cap & WLAN_CAPABILITY_ESS)
 			iwe.u.mode = IW_MODE_MASTER;
 		else
 			iwe.u.mode = IW_MODE_ADHOC;
 
-		start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_UINT_LEN);
+		start = iwe_stream_add_event(info, start, stop, &iwe,
+					     IW_EV_UINT_LEN);
 	}
 
-	if(pnetwork->network.Configuration.DSConfig<1 /*|| pnetwork->network.Configuration.DSConfig>14*/)
+	if (pnetwork->network.Configuration.DSConfig<1 /*|| pnetwork->network.Configuration.DSConfig>14*/)
 		pnetwork->network.Configuration.DSConfig = 1;
 
 	 /* Add frequency/channel */
 	iwe.cmd = SIOCGIWFREQ;
-	iwe.u.freq.m = rtw_ch2freq(pnetwork->network.Configuration.DSConfig) * 100000;
+	iwe.u.freq.m =
+		rtw_ch2freq(pnetwork->network.Configuration.DSConfig) * 100000;
 	iwe.u.freq.e = 1;
 	iwe.u.freq.i = pnetwork->network.Configuration.DSConfig;
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_FREQ_LEN);
@@ -483,14 +511,14 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	else
 		iwe.u.data.flags = IW_ENCODE_DISABLED;
 	iwe.u.data.length = 0;
-	start = iwe_stream_add_point(info, start, stop, &iwe, pnetwork->network.Ssid.Ssid);
+	start = iwe_stream_add_point(info, start, stop, &iwe,
+				     pnetwork->network.Ssid.Ssid);
 
 	/*Add basic and extended rates */
 	max_rate = 0;
 	p = custom;
 	p += snprintf(p, MAX_CUSTOM_LEN - (p - custom), " Rates (Mb/s): ");
-	while(pnetwork->network.SupportedRates[i]!=0)
-	{
+	while (pnetwork->network.SupportedRates[i] != 0) {
 		rate = pnetwork->network.SupportedRates[i]&0x7F;
 		if (rate > max_rate)
 			max_rate = rate;
@@ -499,19 +527,17 @@ static char *translate_scan(struct rtw_adapter *padapter,
 		i++;
 	}
 
-	if(ht_cap == _TRUE)
+	if (ht_cap == _TRUE)
 	{
-		if(mcs_rate&0x8000)//MCS15
+		if (mcs_rate & 0x8000)//MCS15
 		{
-			max_rate = (bw_40MHz) ? ((short_GI)?300:270):((short_GI)?144:130);
+			max_rate = (bw_40MHz) ?
+				((short_GI) ? 300 : 270) : ((short_GI)?144:130);
 
-		}
-		else if(mcs_rate&0x0080)//MCS7
+		} else if (mcs_rate & 0x0080)//MCS7
 		{
 			max_rate = (bw_40MHz) ? ((short_GI)?150:135):((short_GI)?72:65);
-		}
-		else//default MCS7
-		{
+		} else { //default MCS7
 			//DBG_8723A("wx_get_scan, mcs_rate_bitmap=0x%x\n", mcs_rate);
 			max_rate = (bw_40MHz) ? ((short_GI)?150:135):((short_GI)?72:65);
 		}
@@ -535,8 +561,7 @@ static char *translate_scan(struct rtw_adapter *padapter,
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("rtw_wx_get_scan: ssid=%s\n",pnetwork->network.Ssid.Ssid));
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("rtw_wx_get_scan: wpa_len=%d rsn_len=%d\n",wpa_len,rsn_len));
 
-		if (wpa_len > 0)
-		{
+		if (wpa_len > 0) {
 			p=buf;
 			memset(buf, 0, MAX_WPA_IE_LEN);
 			p += sprintf(p, "wpa_ie=");
@@ -547,15 +572,16 @@ static char *translate_scan(struct rtw_adapter *padapter,
 			memset(&iwe, 0, sizeof(iwe));
 			iwe.cmd = IWEVCUSTOM;
 			iwe.u.data.length = strlen(buf);
-			start = iwe_stream_add_point(info, start, stop, &iwe,buf);
+			start = iwe_stream_add_point(info, start, stop,
+						     &iwe,buf);
 
 			memset(&iwe, 0, sizeof(iwe));
 			iwe.cmd =IWEVGENIE;
 			iwe.u.data.length = wpa_len;
-			start = iwe_stream_add_point(info, start, stop, &iwe, wpa_ie);
+			start = iwe_stream_add_point(info, start, stop,
+						     &iwe, wpa_ie);
 		}
-		if (rsn_len > 0)
-		{
+		if (rsn_len > 0) {
 			p = buf;
 			memset(buf, 0, MAX_WPA_IE_LEN);
 			p += sprintf(p, "rsn_ie=");
@@ -565,16 +591,19 @@ static char *translate_scan(struct rtw_adapter *padapter,
 			memset(&iwe, 0, sizeof(iwe));
 			iwe.cmd = IWEVCUSTOM;
 			iwe.u.data.length = strlen(buf);
-			start = iwe_stream_add_point(info, start, stop, &iwe,buf);
+			start = iwe_stream_add_point(info, start, stop,
+						     &iwe,buf);
 
 			memset(&iwe, 0, sizeof(iwe));
 			iwe.cmd =IWEVGENIE;
 			iwe.u.data.length = rsn_len;
-			start = iwe_stream_add_point(info, start, stop, &iwe, rsn_ie);
+			start = iwe_stream_add_point(info, start, stop,
+						     &iwe, rsn_ie);
 		}
 	}
 
-	{ //parsing WPS IE
+	/* parsing WPS IE */
+	{
 		uint cnt = 0,total_ielen;
 		u8 *wpsie_ptr=NULL;
 		uint wps_ielen = 0;
@@ -602,13 +631,14 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	/* Add quality statistics */
 	iwe.cmd = IWEVQUAL;
 	iwe.u.qual.updated = IW_QUAL_QUAL_UPDATED | IW_QUAL_LEVEL_UPDATED | IW_QUAL_NOISE_INVALID
-	#ifdef CONFIG_SIGNAL_DISPLAY_DBM
+#ifdef CONFIG_SIGNAL_DISPLAY_DBM
 		| IW_QUAL_DBM
-	#endif
+#endif
 	;
 
-	if ( check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE &&
-		is_same_network(&pmlmepriv->cur_network.network, &pnetwork->network)) {
+	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE &&
+	    is_same_network(&pmlmepriv->cur_network.network,
+			    &pnetwork->network)) {
 		ss = padapter->recvpriv.signal_strength;
 		sq = padapter->recvpriv.signal_qual;
 	} else {
@@ -617,14 +647,14 @@ static char *translate_scan(struct rtw_adapter *padapter,
 	}
 
 
-	#ifdef CONFIG_SIGNAL_DISPLAY_DBM
+#ifdef CONFIG_SIGNAL_DISPLAY_DBM
 	iwe.u.qual.level = (u8) translate_percentage_to_dbm(ss);//dbm
-	#else
+#else
 	iwe.u.qual.level = (u8)ss;//%
-	#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_BT_COEXIST
 	BT_SignalCompensation(padapter, &iwe.u.qual.level, NULL);
-	#endif // CONFIG_BT_COEXIST
-	#endif
+#endif // CONFIG_BT_COEXIST
+#endif
 
 	iwe.u.qual.qual = (u8)sq;   // signal quality
 
