@@ -48,12 +48,7 @@
 #include <rtl8188e_hal.h>
 #endif
 
-#ifdef CONFIG_RTL8723A
-//extern u8 _InitPowerOn(PADAPTER padapter);
-//extern s32 rtl8723a_FirmwareDownload(PADAPTER padapter);
 extern s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
-#endif
-
 
 #define RTL_IOCTL_WPA_SUPPLICANT	SIOCIWFIRSTPRIV+30
 
@@ -9214,7 +9209,6 @@ static int rtw_test(
 	}
 #endif
 
-#ifdef CONFIG_RTL8723A
 #ifdef CONFIG_BT_COEXIST
 #define GET_BT_INFO(padapter)	(&GET_HAL_DATA(padapter)->BtInfo)
 
@@ -9293,7 +9287,6 @@ static int rtw_test(
 
 		wrqu->data.length = strlen(extra) + 1;
 	}
-#endif // CONFIG_RTL8723A
 out:
 	kfree(pbuf);
 	return 0;
