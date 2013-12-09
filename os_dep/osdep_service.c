@@ -203,64 +203,50 @@ void rtw_udelay_os(int us)
 
 #ifdef CONFIG_WAKELOCK
 static struct wake_lock rtw_suspend_lock;
-#elif defined(CONFIG_ANDROID_POWER)
-static android_suspend_lock_t rtw_suspend_lock ={
-	.name = RTW_SUSPEND_LOCK_NAME
-};
 #endif
 
 inline void rtw_suspend_lock_init(void)
 {
-	#ifdef CONFIG_WAKELOCK
+#ifdef CONFIG_WAKELOCK
 	wake_lock_init(&rtw_suspend_lock, WAKE_LOCK_SUSPEND, RTW_SUSPEND_LOCK_NAME);
-	#elif defined(CONFIG_ANDROID_POWER)
-	android_init_suspend_lock(&rtw_suspend_lock);
-	#endif
+#endif
 }
 
 inline void rtw_suspend_lock_uninit(void)
 {
-	#ifdef CONFIG_WAKELOCK
+#ifdef CONFIG_WAKELOCK
 	wake_lock_destroy(&rtw_suspend_lock);
-	#elif defined(CONFIG_ANDROID_POWER)
-	android_uninit_suspend_lock(&rtw_suspend_lock);
-	#endif
+#endif
 }
 
 inline void rtw_lock_suspend(void)
 {
-	#ifdef CONFIG_WAKELOCK
+#ifdef CONFIG_WAKELOCK
 	wake_lock(&rtw_suspend_lock);
-	#elif defined(CONFIG_ANDROID_POWER)
-	android_lock_suspend(&rtw_suspend_lock);
-	#endif
+#endif
 
-	#if  defined(CONFIG_WAKELOCK) || defined(CONFIG_ANDROID_POWER)
+#if  defined(CONFIG_WAKELOCK)
 	//DBG_8723A("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
-	#endif
+#endif
 }
 
 inline void rtw_unlock_suspend(void)
 {
-	#ifdef CONFIG_WAKELOCK
+#ifdef CONFIG_WAKELOCK
 	wake_unlock(&rtw_suspend_lock);
-	#elif defined(CONFIG_ANDROID_POWER)
-	android_unlock_suspend(&rtw_suspend_lock);
-	#endif
+#endif
 
-	#if  defined(CONFIG_WAKELOCK) || defined(CONFIG_ANDROID_POWER)
+#if  defined(CONFIG_WAKELOCK)
 	//DBG_8723A("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
-	#endif
+#endif
 }
 
 #ifdef CONFIG_WOWLAN
 inline void rtw_lock_suspend_timeout(long timeout)
 {
-	#ifdef CONFIG_WAKELOCK
+#ifdef CONFIG_WAKELOCK
 	wake_lock_timeout(&rtw_suspend_lock, timeout);
-	#elif defined(CONFIG_ANDROID_POWER)
-	android_lock_suspend_auto_expire(&rtw_suspend_lock, timeout);
-	#endif
+#endif
 }
 #endif //CONFIG_WOWLAN
 

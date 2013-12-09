@@ -782,16 +782,7 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);
 #else
-		if (rtw_is_earlysuspend_registered(pwrpriv)
-			#ifdef CONFIG_WOWLAN
-			&& !padapter->pwrctrlpriv.wowlan_mode
-			#endif /* CONFIG_WOWLAN */
-		) {
-			/* jeff: bypass resume here, do in late_resume */
-			rtw_set_do_late_resume(pwrpriv, _TRUE);
-		} else {
-			ret = rtw_resume_process(padapter);
-		}
+		ret = rtw_resume_process(padapter);
 #endif /* CONFIG_RESUME_IN_WORKQUEUE */
 	}
 
@@ -1459,9 +1450,6 @@ _func_enter_;
 		//DBG_8723A("r871xu_dev_remove():module removed\n");
 		padapter->hw_init_completed = _FALSE;
 	}*/
-#if defined(CONFIG_HAS_EARLYSUSPEND) || defined(CONFIG_ANDROID_POWER)
-	rtw_unregister_early_suspend(&padapter->pwrctrlpriv);
-#endif
 
 	rtw_pm_set_ips(padapter, IPS_NONE);
 	rtw_pm_set_lps(padapter, PS_MODE_ACTIVE);

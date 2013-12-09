@@ -24,11 +24,6 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#ifdef CONFIG_HAS_EARLYSUSPEND
-#include <linux/earlysuspend.h>
-#endif //CONFIG_HAS_EARLYSUSPEND
-
-
 #define FW_PWR0	0
 #define FW_PWR1		1
 #define FW_PWR2		2
@@ -244,16 +239,6 @@ struct pwrctrl_priv
 	struct work_struct resume_work;
 	#endif
 
-	#ifdef CONFIG_HAS_EARLYSUSPEND
-	struct early_suspend early_suspend;
-	u8 do_late_resume;
-	#endif //CONFIG_HAS_EARLYSUSPEND
-
-	#ifdef CONFIG_ANDROID_POWER
-	android_early_suspend_t early_suspend;
-	u8 do_late_resume;
-	#endif
-
 	#ifdef CONFIG_INTEL_PROXIM
 	u8	stored_power_mgnt;
 	#endif
@@ -319,20 +304,6 @@ void LPS_Leave(PADAPTER padapter);
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 void rtw_resume_in_workqueue(struct pwrctrl_priv *pwrpriv);
 #endif //CONFIG_RESUME_IN_WORKQUEUE
-
-#if defined(CONFIG_HAS_EARLYSUSPEND ) || defined(CONFIG_ANDROID_POWER)
-bool rtw_is_earlysuspend_registered(struct pwrctrl_priv *pwrpriv);
-bool rtw_is_do_late_resume(struct pwrctrl_priv *pwrpriv);
-void rtw_set_do_late_resume(struct pwrctrl_priv *pwrpriv, bool enable);
-void rtw_register_early_suspend(struct pwrctrl_priv *pwrpriv);
-void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv);
-#else
-#define rtw_is_earlysuspend_registered(pwrpriv) _FALSE
-#define rtw_is_do_late_resume(pwrpriv) _FALSE
-#define rtw_set_do_late_resume(pwrpriv, enable) do {} while (0)
-#define rtw_register_early_suspend(pwrpriv) do {} while (0)
-#define rtw_unregister_early_suspend(pwrpriv) do {} while (0)
-#endif /* CONFIG_HAS_EARLYSUSPEND || CONFIG_ANDROID_POWER */
 
 u8 rtw_interface_ps_func(_adapter *padapter,HAL_INTF_PS_FUNC efunc_id,u8* val);
 void rtw_set_ips_deny(_adapter *padapter, u32 ms);
