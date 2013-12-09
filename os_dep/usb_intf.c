@@ -50,7 +50,7 @@ int rtw_resume_process(_adapter *padapter);
 
 
 static int rtw_drv_init(struct usb_interface *pusb_intf,const struct usb_device_id *pdid);
-static void rtw_dev_remove(struct usb_interface *pusb_intf);
+static void rtw_disconnect(struct usb_interface *pusb_intf);
 
 
 #define USB_VENDER_ID_REALTEK		0x0BDA
@@ -78,31 +78,26 @@ static struct specific_device_id specific_device_id_tbl[] = {
 	{}
 };
 
-struct rtw_usb_drv {
-	struct usb_driver usbdrv;
-	int drv_registered;
-};
-
 #ifdef CONFIG_RTL8192C
 static struct usb_device_id rtl8192c_usb_id_tbl[] ={
 	RTL8192C_USB_IDS
 	{}	/* Terminating entry */
 };
 
-struct rtw_usb_drv rtl8192c_usb_drv = {
-	.usbdrv.name = (char*)"rtl8192cu",
-	.usbdrv.probe = rtw_drv_init,
-	.usbdrv.disconnect = rtw_dev_remove,
-	.usbdrv.id_table = rtl8192c_usb_id_tbl,
-	.usbdrv.suspend =  rtw_suspend,
-	.usbdrv.resume = rtw_resume,
-	.usbdrv.reset_resume   = rtw_resume,
-	#ifdef CONFIG_AUTOSUSPEND
-	.usbdrv.supports_autosuspend = 1,
-	#endif
+struct usb_driver rtl8192c_usb_drv = {
+	.name = (char*)"rtl8192cu",
+	.probe = rtw_drv_init,
+	.disconnect = rtw_disconnect,
+	.id_table = rtl8192c_usb_id_tbl,
+	.suspend = rtw_suspend,
+	.resume = rtw_resume,
+	.reset_resume  = rtw_resume,
+#ifdef CONFIG_AUTOSUSPEND
+	.supports_autosuspend = 1,
+#endif
 };
 
-static struct rtw_usb_drv *usb_drv = &rtl8192c_usb_drv;
+static struct usb_driver *usb_drv = &rtl8192c_usb_drv;
 #endif /* CONFIG_RTL8192C */
 
 #ifdef CONFIG_RTL8192D
@@ -111,19 +106,19 @@ static struct usb_device_id rtl8192d_usb_id_tbl[] ={
 	{}	/* Terminating entry */
 };
 
-struct rtw_usb_drv rtl8192d_usb_drv = {
-	.usbdrv.name = (char*)"rtl8192du",
-	.usbdrv.probe = rtw_drv_init,
-	.usbdrv.disconnect = rtw_dev_remove,
-	.usbdrv.id_table = rtl8192d_usb_id_tbl,
-	.usbdrv.suspend =  rtw_suspend,
-	.usbdrv.resume = rtw_resume,
-	.usbdrv.reset_resume   = rtw_resume,
-	#ifdef CONFIG_AUTOSUSPEND
-	.usbdrv.supports_autosuspend = 1,
-	#endif
+struct usb_driver rtl8192d_usb_drv = {
+	.name = (char*)"rtl8192du",
+	.probe = rtw_drv_init,
+	.disconnect = rtw_disconnect,
+	.id_table = rtl8192d_usb_id_tbl,
+	.suspend = rtw_suspend,
+	.resume = rtw_resume,
+	.reset_resume  = rtw_resume,
+#ifdef CONFIG_AUTOSUSPEND
+	.supports_autosuspend = 1,
+#endif
 };
-static struct rtw_usb_drv *usb_drv = &rtl8192d_usb_drv;
+static struct usb_driver *usb_drv = &rtl8192d_usb_drv;
 #endif /* CONFIG_RTL8192D */
 
 #ifdef CONFIG_RTL8723A
@@ -132,20 +127,20 @@ static struct usb_device_id rtl8723a_usb_id_tbl[] ={
 	{}	/* Terminating entry */
 };
 
-static struct rtw_usb_drv rtl8723a_usb_drv = {
-	.usbdrv.name = (char*)"rtl8723au",
-	.usbdrv.probe = rtw_drv_init,
-	.usbdrv.disconnect = rtw_dev_remove,
-	.usbdrv.id_table = rtl8723a_usb_id_tbl,
-	.usbdrv.suspend =  rtw_suspend,
-	.usbdrv.resume = rtw_resume,
-	.usbdrv.reset_resume   = rtw_resume,
-	#ifdef CONFIG_AUTOSUSPEND
-	.usbdrv.supports_autosuspend = 1,
-	#endif
+static struct usb_driver rtl8723a_usb_drv = {
+	.name = (char*)"rtl8723au",
+	.probe = rtw_drv_init,
+	.disconnect = rtw_disconnect,
+	.id_table = rtl8723a_usb_id_tbl,
+	.suspend = rtw_suspend,
+	.resume = rtw_resume,
+	.reset_resume  = rtw_resume,
+#ifdef CONFIG_AUTOSUSPEND
+	.supports_autosuspend = 1,
+#endif
 };
 
-static struct rtw_usb_drv *usb_drv = &rtl8723a_usb_drv;
+static struct usb_driver *usb_drv = &rtl8723a_usb_drv;
 #endif /* CONFIG_RTL8723A */
 
 #ifdef CONFIG_RTL8188E
@@ -154,20 +149,20 @@ static struct usb_device_id rtl8188e_usb_id_tbl[] ={
 	{}	/* Terminating entry */
 };
 
-struct rtw_usb_drv rtl8188e_usb_drv = {
-	.usbdrv.name = (char*)"rtl8188eu",
-	.usbdrv.probe = rtw_drv_init,
-	.usbdrv.disconnect = rtw_dev_remove,
-	.usbdrv.id_table = rtl8188e_usb_id_tbl,
-	.usbdrv.suspend =  rtw_suspend,
-	.usbdrv.resume = rtw_resume,
-	.usbdrv.reset_resume   = rtw_resume,
-	#ifdef CONFIG_AUTOSUSPEND
-	.usbdrv.supports_autosuspend = 1,
-	#endif
+struct usb_driver rtl8188e_usb_drv = {
+	.name = (char*)"rtl8188eu",
+	.probe = rtw_drv_init,
+	.disconnect = rtw_disconnect,
+	.id_table = rtl8188e_usb_id_tbl,
+	.suspend =  rtw_suspend,
+	.resume = rtw_resume,
+	.reset_resume   = rtw_resume,
+#ifdef CONFIG_AUTOSUSPEND
+	.supports_autosuspend = 1,
+#endif
 };
 
-static struct rtw_usb_drv *usb_drv = &rtl8188e_usb_drv;
+static struct usb_driver *usb_drv = &rtl8188e_usb_drv;
 #endif /* CONFIG_RTL8188E */
 
 static inline int RT_usb_endpoint_dir_in(const struct usb_endpoint_descriptor *epd)
@@ -1427,29 +1422,24 @@ exit:
 /*
  * dev_remove() - our device is being removed
 */
-//rmmod module & unplug(SurpriseRemoved) will call r871xu_dev_remove() => how to recognize both
-static void rtw_dev_remove(struct usb_interface *pusb_intf)
+static void rtw_disconnect(struct usb_interface *pusb_intf)
 {
-	struct dvobj_priv *dvobj = usb_get_intfdata(pusb_intf);
-	_adapter *padapter = dvobj->if1;
-	struct net_device *pnetdev = padapter->pnetdev;
-	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
+	struct dvobj_priv *dvobj;
+	_adapter *padapter;
+	struct net_device *pnetdev;
+	struct mlme_priv *pmlmepriv;
 
-_func_enter_;
+	dvobj = usb_get_intfdata(pusb_intf);
+	if (!dvobj)
+		return;
 
-	DBG_8723A("+rtw_dev_remove\n");
+	padapter = dvobj->if1;
+	pnetdev = padapter->pnetdev;
+	pmlmepriv= &padapter->mlmepriv;
+
+	usb_set_intfdata(pusb_intf, NULL);
+
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+dev_remove()\n"));
-
-	if(usb_drv->drv_registered == _TRUE)
-	{
-		//DBG_8723A("r871xu_dev_remove():padapter->bSurpriseRemoved == _TRUE\n");
-		padapter->bSurpriseRemoved = _TRUE;
-	}
-	/*else
-	{
-		//DBG_8723A("r871xu_dev_remove():module removed\n");
-		padapter->hw_init_completed = _FALSE;
-	}*/
 
 	rtw_pm_set_ips(padapter, IPS_NONE);
 	rtw_pm_set_lps(padapter, PS_MODE_ACTIVE);
@@ -1459,31 +1449,23 @@ _func_enter_;
 #ifdef CONFIG_CONCURRENT_MODE
 	rtw_drv_if2_stop(dvobj->if2);
 #endif
-
 	rtw_usb_if1_deinit(padapter);
 
 #ifdef CONFIG_CONCURRENT_MODE
 	rtw_drv_if2_free(dvobj->if2);
 #endif
-
 	usb_dvobj_deinit(pusb_intf);
 
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("-dev_remove()\n"));
 	DBG_8723A("-r871xu_dev_remove, done\n");
 
-
 #ifdef CONFIG_INTEL_PROXIM
 	rtw_sw_export=NULL;
 #endif
-
-	#ifdef DBG_MEM_ALLOC
-	rtw_dump_mem_stat ();
-	#endif
-_func_exit_;
-
 	return;
 
 }
+
 extern int console_suspend_enabled;
 
 static int __init rtw_drv_entry(void)
@@ -1494,8 +1476,7 @@ static int __init rtw_drv_entry(void)
 	DBG_8723A("build time: %s %s\n", __DATE__, __TIME__);
 	rtw_suspend_lock_init();
 
-	usb_drv->drv_registered = _TRUE;
-	return usb_register(&usb_drv->usbdrv);
+	return usb_register(usb_drv);
 }
 
 static void __exit rtw_drv_halt(void)
@@ -1505,8 +1486,7 @@ static void __exit rtw_drv_halt(void)
 
 	rtw_suspend_lock_uninit();
 
-	usb_drv->drv_registered = _FALSE;
-	usb_deregister(&usb_drv->usbdrv);
+	usb_deregister(usb_drv);
 
 	DBG_8723A("-rtw_drv_halt\n");
 }
