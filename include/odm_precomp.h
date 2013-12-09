@@ -46,9 +46,6 @@
 #include "odm_RegDefine11N.h"
 
 #if (RTL8192C_SUPPORT==1)
-#ifdef CONFIG_INTEL_PROXIM
-#include "intel_proxim.h"
-#endif
 #include  "HalDMOutSrc8192C_CE.h"
 #include <rtl8192c_hal.h>
 #elif (RTL8192D_SUPPORT==1)

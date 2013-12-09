@@ -3387,16 +3387,7 @@ void rtl8723a_fill_default_txdesc(
 		}
 #endif //CONFIG_XMIT_ACK
 
-#ifdef CONFIG_INTEL_PROXIM
-		if((padapter->proximity.proxim_on==_TRUE)&&(pattrib->intel_proxim==_TRUE)){
-			DBG_8723A("\n %s pattrib->rate=%d\n",__FUNCTION__,pattrib->rate);
-			ptxdesc->datarate = pattrib->rate;
-		}
-		else
-#endif
-		{
-			ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
-		}
+		ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 	}
 	else if (pxmitframe->frame_tag == TXAGG_FRAMETAG)
 	{

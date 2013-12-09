@@ -175,12 +175,6 @@ static bool rtw_pwr_unassociated_idle(_adapter *adapter)
 		}
 	}
 
-#ifdef CONFIG_INTEL_PROXIM
-	if(adapter->proximity.proxim_on==_TRUE){
-		return;
-	}
-#endif
-
 	if (pxmit_priv->free_xmitbuf_cnt != NR_XMITBUFF ||
 		pxmit_priv->free_xmit_extbuf_cnt != NR_XMIT_EXTBUFF) {
 		DBG_8723A_LEVEL(_drv_always_, "There are some pkts to transmit\n");

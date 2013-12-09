@@ -2468,12 +2468,7 @@ odm_DynamicTxPowerInit(
 
 	#if (RTL8192C_SUPPORT==1)
 
-	#ifdef CONFIG_INTEL_PROXIM
-	if((pHalData->BoardType == BOARD_USB_High_PA)||(Adapter->proximity.proxim_support==_TRUE))
-	#else
 	if(pHalData->BoardType == BOARD_USB_High_PA)
-	#endif
-
 	{
 		//odm_SavePowerIndex(Adapter);
 		odm_DynamicTxPowerSavePowerIndex(pDM_Odm);
@@ -2617,7 +2612,7 @@ odm_DynamicTxPower_92C(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-	#if (RTL8192C_SUPPORT==1)
+#if (RTL8192C_SUPPORT==1)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -2625,93 +2620,41 @@ odm_DynamicTxPower_92C(
 	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
 	int	UndecoratedSmoothedPWDB;
 
-	if(!pdmpriv->bDynamicTxPowerEnable)
+	if (!pdmpriv->bDynamicTxPowerEnable)
 		return;
 
-#ifdef CONFIG_INTEL_PROXIM
-	if(Adapter->proximity.proxim_on== _TRUE){
-		struct proximity_priv *prox_priv=Adapter->proximity.proximity_priv;
-		// Intel set fixed tx power
-		printk("\n %s  Adapter->proximity.proxim_on=%d prox_priv->proxim_modeinfo->power_output=%d \n",__FUNCTION__,Adapter->proximity.proxim_on,prox_priv->proxim_modeinfo->power_output);
-		if(prox_priv!=NULL){
-			if(prox_priv->proxim_modeinfo->power_output> 0)
-			{
-				switch(prox_priv->proxim_modeinfo->power_output)
-				{
-					case 1:
-						pdmpriv->DynamicTxHighPowerLvl  = TxHighPwrLevel_100;
-						printk("TxHighPwrLevel_100\n");
-						break;
-					case 2:
-						pdmpriv->DynamicTxHighPowerLvl  = TxHighPwrLevel_70;
-						printk("TxHighPwrLevel_70\n");
-						break;
-					case 3:
-						pdmpriv->DynamicTxHighPowerLvl  = TxHighPwrLevel_50;
-						printk("TxHighPwrLevel_50\n");
-						break;
-					case 4:
-						pdmpriv->DynamicTxHighPowerLvl  = TxHighPwrLevel_35;
-						printk("TxHighPwrLevel_35\n");
-						break;
-					case 5:
-						pdmpriv->DynamicTxHighPowerLvl  = TxHighPwrLevel_15;
-						printk("TxHighPwrLevel_15\n");
-						break;
-					default:
-						pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_100;
-						printk("TxHighPwrLevel_100\n");
-						break;
-				}
-			}
-		}
+	// STA not connected and AP not connected
+	if ((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&
+	    (pdmpriv->EntryMinUndecoratedSmoothedPWDB == 0)) {
+		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("Not connected to any \n"));
+		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
+
+		//the LastDTPlvl should reset when disconnect,
+		//otherwise the tx power level wouldn't change when disconnect and connect again.
+		// Maddest 20091220.
+		pdmpriv->LastDTPLvl=TxHighPwrLevel_Normal;
+		return;
 	}
-	else
-#endif
-	{
-		// STA not connected and AP not connected
-		if((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&
-			(pdmpriv->EntryMinUndecoratedSmoothedPWDB == 0))
-		{
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("Not connected to any \n"));
-			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
 
-			//the LastDTPlvl should reset when disconnect,
-			//otherwise the tx power level wouldn't change when disconnect and connect again.
-			// Maddest 20091220.
-			pdmpriv->LastDTPLvl=TxHighPwrLevel_Normal;
-			return;
-		}
-
-		if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-		}
-		else // associated entry pwdb
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-
-		if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2)
-		{
-			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x0)\n"));
-		}
-		else if((UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL2-3)) &&
-			(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL1) )
-		{
-			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
-		}
-		else if(UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL1-5))
-		{
-			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Normal\n"));
-		}
+	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) {	// Default port
+		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
+	} else { // associated entry pwdb
+		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
+		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 	}
-	if( (pdmpriv->DynamicTxHighPowerLvl != pdmpriv->LastDTPLvl) )
-	{
+
+	if (UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2) {
+		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
+		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x0)\n"));
+	} else if ((UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL2-3)) &&
+		   (UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL1) ) {
+		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
+		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
+	} else if (UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL1-5)) {
+		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
+		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Normal\n"));
+	}
+	if ((pdmpriv->DynamicTxHighPowerLvl != pdmpriv->LastDTPLvl)) {
 		PHY_SetTxPowerLevel8192C(Adapter, pHalData->CurrentChannel);
 		if(pdmpriv->DynamicTxHighPowerLvl == TxHighPwrLevel_Normal) // HP1 -> Normal  or HP2 -> Normal
 			odm_DynamicTxPowerRestorePowerIndex(pDM_Odm);
@@ -2721,7 +2664,7 @@ odm_DynamicTxPower_92C(
 			odm_DynamicTxPowerWritePowerIndex(pDM_Odm, 0x10);
 	}
 	pdmpriv->LastDTPLvl = pdmpriv->DynamicTxHighPowerLvl;
-	#endif
+#endif
 }
 
 
