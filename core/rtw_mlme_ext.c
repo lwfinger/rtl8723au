@@ -1922,27 +1922,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 		DBG_8723A("indicate_sta_join_event to upper layer - hostapd\n");
 		#ifdef CONFIG_IOCTL_CFG80211
 		if (1) {
-			#ifdef COMPAT_KERNEL_RELEASE
 			rtw_cfg80211_indicate_sta_assoc(padapter, pframe, pkt_len);
-			#elif (!defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
-			rtw_cfg80211_indicate_sta_assoc(padapter, pframe, pkt_len);
-			#else /* !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
-			spin_lock_bh(&pstat->lock);
-			if(pstat->passoc_req)
-			{
-				rtw_mfree(pstat->passoc_req, pstat->assoc_req_len);
-				pstat->passoc_req = NULL;
-				pstat->assoc_req_len = 0;
-			}
-
-			pstat->passoc_req =  rtw_zmalloc(pkt_len);
-			if(pstat->passoc_req)
-			{
-				memcpy(pstat->passoc_req, pframe, pkt_len);
-				pstat->assoc_req_len = pkt_len;
-			}
-			spin_unlock_bh(&pstat->lock);
-			#endif /* !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 		}
 		else
 		#endif /* CONFIG_IOCTL_CFG80211 */

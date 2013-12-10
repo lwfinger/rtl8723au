@@ -1887,46 +1887,12 @@ _func_enter_;
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
 	{
 		psta = rtw_get_stainfo(&adapter->stapriv, pstassoc->macaddr);
-		if(psta)
-		{
-#ifdef CONFIG_IOCTL_CFG80211
-			#ifdef COMPAT_KERNEL_RELEASE
-
-			#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
-			u8 *passoc_req = NULL;
-			u32 assoc_req_len;
-
-			spin_lock_bh(&psta->lock);
-			if(psta->passoc_req && psta->assoc_req_len>0)
-			{
-				passoc_req = rtw_zmalloc(psta->assoc_req_len);
-				if(passoc_req)
-				{
-					assoc_req_len = psta->assoc_req_len;
-					memcpy(passoc_req, psta->passoc_req, assoc_req_len);
-
-					rtw_mfree(psta->passoc_req , psta->assoc_req_len);
-					psta->passoc_req = NULL;
-					psta->assoc_req_len = 0;
-				}
-			}
-			spin_unlock_bh(&psta->lock);
-
-			if(passoc_req && assoc_req_len>0)
-			{
-				rtw_cfg80211_indicate_sta_assoc(adapter, passoc_req, assoc_req_len);
-
-				rtw_mfree(passoc_req, assoc_req_len);
-			}
-			#endif /* defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
-#endif /* CONFIG_IOCTL_CFG80211 */
-
+		if (psta) {
 			/* bss_cap_update_on_sta_join(adapter, psta); */
 			/* sta_info_update(adapter, psta); */
 			ap_sta_info_defer_update(adapter, psta);
 
 			rtw_stassoc_hw_rpt(adapter,psta);
-
 		}
 
 		goto exit;
@@ -2023,16 +1989,8 @@ _func_enter_;
 		rtw_hal_set_hwreg(adapter, HW_VAR_H2C_MEDIA_STATUS_RPT, (u8 *)&media_status);
 	}
 
-        if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
+        if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
         {
-#ifdef CONFIG_IOCTL_CFG80211
-		#ifdef COMPAT_KERNEL_RELEASE
-
-		#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
-		rtw_cfg80211_indicate_sta_disassoc(adapter, pstadel->macaddr, *(u16*)pstadel->rsvd);
-		#endif /* defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
-#endif /* CONFIG_IOCTL_CFG80211 */
-
 		return;
         }
 

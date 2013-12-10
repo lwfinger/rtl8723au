@@ -2762,7 +2762,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 
 	DBG_8723A("%s(padapter=%p,%s)\n", __func__, padapter, ndev->name);
 
-#if defined(RTW_USE_CFG80211_STA_EVENT) || defined(COMPAT_KERNEL_RELEASE)
+#if defined(RTW_USE_CFG80211_STA_EVENT)
 	{
 		struct station_info sinfo;
 		u8 ie_offset;
@@ -2784,21 +2784,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 	else
 		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
 
-	#ifdef COMPAT_KERNEL_RELEASE
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
-	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
-	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
-	#else //COMPAT_KERNEL_RELEASE
-	{
-		//to avoid WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION)  when calling cfg80211_send_rx_assoc()
-		pwdev->iftype = NL80211_IFTYPE_STATION;
-		DBG_8723A("iftype=%d before call cfg80211_send_rx_assoc()\n", pwdev->iftype);
-		rtw_cfg80211_send_rx_assoc(padapter, NULL, pmgmt_frame, frame_len);
-		DBG_8723A("iftype=%d after call cfg80211_send_rx_assoc()\n", pwdev->iftype);
-		pwdev->iftype = NL80211_IFTYPE_AP;
-		//cfg80211_rx_action(padapter->pnetdev, freq, pmgmt_frame, frame_len, GFP_ATOMIC);
-	}
-	#endif //COMPAT_KERNEL_RELEASE
 #endif /* defined(RTW_USE_CFG80211_STA_EVENT) */
 
 }
@@ -2818,7 +2804,7 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 
 	DBG_8723A("%s(padapter=%p,%s)\n", __func__, padapter, ndev->name);
 
-#if defined(RTW_USE_CFG80211_STA_EVENT) || defined(COMPAT_KERNEL_RELEASE)
+#if defined(RTW_USE_CFG80211_STA_EVENT)
 	cfg80211_del_sta(ndev, da, GFP_ATOMIC);
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
@@ -2847,14 +2833,7 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 	reason = cpu_to_le16(reason);
 	pmgmt_frame = rtw_set_fixed_ie(pmgmt_frame, _RSON_CODE_ , (unsigned char *)&reason, &frame_len);
 
-	#ifdef COMPAT_KERNEL_RELEASE
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len, GFP_ATOMIC);
-	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
-	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len, GFP_ATOMIC);
-	#else //COMPAT_KERNEL_RELEASE
-	cfg80211_send_disassoc(padapter->pnetdev, mgmt_buf, frame_len);
-	//cfg80211_rx_action(padapter->pnetdev, freq, mgmt_buf, frame_len, GFP_ATOMIC);
-	#endif //COMPAT_KERNEL_RELEASE
 #endif /* defined(RTW_USE_CFG80211_STA_EVENT) */
 }
 

@@ -1008,12 +1008,7 @@ struct net_device *rtw_init_netdev(struct rtw_adapter *old_padapter)
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+init_net_dev\n"));
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_adapter), 4);
-#else
-	pnetdev = alloc_etherdev(sizeof(struct rtw_rtw_adapter));
-#endif
-
 	if (!pnetdev)
 		return NULL;
 
