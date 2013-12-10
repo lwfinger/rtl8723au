@@ -1599,7 +1599,9 @@ static const struct net_device_ops rtw_netdev_if2_ops = {
 };
 
 	#include <usb_hal.h>
-_adapter *rtw_drv_if2_init(struct rtw_adapter *primary_padapter, void (*set_intf_ops)(struct _io_ops *pops))
+struct rtw_adapter *
+rtw_drv_if2_init(struct rtw_adapter *primary_padapter,
+		 void (*set_intf_ops)(struct _io_ops *pops))
 {
 	int res = _FAIL;
 	struct net_device *pnetdev = NULL;
