@@ -7820,14 +7820,6 @@ static int rtw_wx_set_priv(struct net_device *dev,
 		case ANDROID_WIFI_CMD_MACADDR :
 			sprintf(ext, "MACADDR = " MAC_FMT, MAC_ARG(dev->dev_addr));
 			break;
-		case ANDROID_WIFI_CMD_COUNTRY :
-			{
-				char country_code[10];
-				sscanf(ext, "%*s %s", country_code);
-				rtw_set_country(padapter, country_code);
-				sprintf(ext, "OK");
-			}
-			break;
 		default :
 			#ifdef  CONFIG_DEBUG_RTW_WX_SET_PRIV
 			DBG_8723A("%s: %s unknowned req=%s\n", __func__,

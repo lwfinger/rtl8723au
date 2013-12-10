@@ -48,6 +48,5 @@ u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid);
 
 u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter);
 int rtw_set_channel_plan(struct rtw_adapter *adapter, u8 channel_plan);
-int rtw_set_country(struct rtw_adapter *adapter, const char *country_code);
 
 #endif
