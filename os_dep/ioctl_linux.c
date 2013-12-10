@@ -311,7 +311,7 @@ _func_enter_;
 exit:
 
 	if (pwep) {
-		kfree((u8 *)pwep);
+		kfree(pwep);
 	}
 
 _func_exit_;
@@ -2680,7 +2680,7 @@ static u8 set_pairwise_key(struct rtw_adapter *padapter, struct sta_info *psta)
 
 	psetstakey_para = (struct set_stakey_parm*)kzalloc(sizeof(struct set_stakey_parm), GFP_KERNEL);
 	if(psetstakey_para==NULL){
-		kfree((u8 *) ph2c);
+		kfree(ph2c);
 		res=_FAIL;
 		goto exit;
 	}
@@ -3763,7 +3763,7 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 
 
 out:
-	kfree((u8 *)param);
+	kfree(param);
 fail:
 	return ret;
 }
