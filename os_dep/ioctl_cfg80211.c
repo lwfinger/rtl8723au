@@ -1180,11 +1180,9 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 	DBG_8723A("pairwise=%d\n", pairwise);
 
 	param_len = sizeof(struct ieee_param) + params->key_len;
-	param = (struct ieee_param *)kmalloc(param_len, GFP_KERNEL);
+	param = (struct ieee_param *)kzalloc(param_len, GFP_KERNEL);
 	if (param == NULL)
 		return -1;
-
-	memset(param, 0, param_len);
 
 	param->cmd = IEEE_CMD_SET_ENCRYPTION;
 	memset(param->sta_addr, 0xff, ETH_ALEN);
@@ -1871,9 +1869,9 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	memset(ssid, 0, sizeof(NDIS_802_11_SSID)*RTW_SSID_SCAN_AMOUNT);
 	//parsing request ssids, n_ssids
 	for (i = 0; i < request->n_ssids && i < RTW_SSID_SCAN_AMOUNT; i++) {
-		#ifdef CONFIG_DEBUG_CFG80211
+#ifdef CONFIG_DEBUG_CFG80211
 		DBG_8723A("ssid=%s, len=%d\n", ssids[i].ssid, ssids[i].ssid_len);
-		#endif
+#endif
 		memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
 		ssid[i].SsidLength = ssids[i].ssid_len;
 	}
