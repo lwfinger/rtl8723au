@@ -1020,11 +1020,9 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 
 	SET_NETDEV_DEV(pnetdev, dvobj_to_dev(dvobj));
 
-#ifdef CONFIG_IOCTL_CFG80211
 	if (rtw_wdev_alloc(padapter, dvobj_to_dev(dvobj)) != 0) {
 		goto handle_dualmac;
 	}
-#endif
 
 	//step 2. hook HalFunc, allocate HalData
 	hal_set_hal_ops(padapter);
@@ -1098,10 +1096,8 @@ free_hal_data:
 		kfree(padapter->HalData);
 free_wdev:
 	if(status != _SUCCESS) {
-		#ifdef CONFIG_IOCTL_CFG80211
 		rtw_wdev_unregister(padapter->rtw_wdev);
 		rtw_wdev_free(padapter->rtw_wdev);
-		#endif
 	}
 handle_dualmac:
 	if (status != _SUCCESS)
@@ -1151,13 +1147,11 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 
 	rtw_handle_dualmac(if1, 0);
 
-#ifdef CONFIG_IOCTL_CFG80211
 	if(if1->rtw_wdev)
 	{
 		rtw_wdev_unregister(if1->rtw_wdev);
 		rtw_wdev_free(if1->rtw_wdev);
 	}
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 	if (1 == if1->pwrctrlpriv.autopm_cnt) {

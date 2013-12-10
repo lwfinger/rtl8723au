@@ -128,9 +128,7 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 	struct xmit_priv *pxmit_priv = &adapter->xmitpriv;
 #ifdef CONFIG_P2P
 	struct wifidirect_info	*pwdinfo = &(adapter->wdinfo);
-#ifdef CONFIG_IOCTL_CFG80211
 	struct cfg80211_wifidirect_info *pcfg80211_wdinfo = &adapter->cfg80211_wdinfo;
-#endif
 #endif
 
 	bool ret = _FALSE;
@@ -142,11 +140,11 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 		|| check_fwstate(pmlmepriv, WIFI_UNDER_LINKING|WIFI_UNDER_WPS)
 		|| check_fwstate(pmlmepriv, WIFI_AP_STATE)
 		|| check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE)
-		#if defined(CONFIG_P2P) && defined(CONFIG_IOCTL_CFG80211) && defined(CONFIG_P2P_IPS)
+#if defined(CONFIG_P2P) && defined(CONFIG_P2P_IPS)
 		|| pcfg80211_wdinfo->is_ro_ch
-		#elif defined(CONFIG_P2P)
+#elif defined(CONFIG_P2P)
 		|| !rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)
-		#endif
+#endif
 	) {
 		goto exit;
 	}
@@ -154,22 +152,20 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 	/* consider buddy, if exist */
 	if (buddy) {
 		struct mlme_priv *b_pmlmepriv = &(buddy->mlmepriv);
-		#ifdef CONFIG_P2P
+#ifdef CONFIG_P2P
 		struct wifidirect_info *b_pwdinfo = &(buddy->wdinfo);
-		#ifdef CONFIG_IOCTL_CFG80211
 		struct cfg80211_wifidirect_info *b_pcfg80211_wdinfo = &buddy->cfg80211_wdinfo;
-		#endif
-		#endif
+#endif
 
 		if (check_fwstate(b_pmlmepriv, WIFI_ASOC_STATE|WIFI_SITE_MONITOR)
 			|| check_fwstate(b_pmlmepriv, WIFI_UNDER_LINKING|WIFI_UNDER_WPS)
 			|| check_fwstate(b_pmlmepriv, WIFI_AP_STATE)
 			|| check_fwstate(b_pmlmepriv, WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE)
-			#if defined(CONFIG_P2P) && defined(CONFIG_IOCTL_CFG80211) && defined(CONFIG_P2P_IPS)
+#if defined(CONFIG_P2P) && defined(CONFIG_P2P_IPS)
 			|| b_pcfg80211_wdinfo->is_ro_ch
-			#elif defined(CONFIG_P2P)
+#elif defined(CONFIG_P2P)
 			|| !rtw_p2p_chk_state(b_pwdinfo, P2P_STATE_NONE)
-			#endif
+#endif
 		) {
 			goto exit;
 		}
@@ -459,10 +455,8 @@ u8 PS_RDY_CHECK(struct rtw_adapter * padapter)
 		DBG_8723A("Group handshake still in progress !!!\n");
 		return _FALSE;
 	}
-#ifdef CONFIG_IOCTL_CFG80211
 	if (!rtw_cfg80211_pwr_mgmt(padapter))
 		return _FALSE;
-#endif
 
 	return _TRUE;
 }
@@ -661,22 +655,20 @@ _func_enter_;
 	/* consider buddy, if exist */
 	if (buddy) {
 		struct mlme_priv *b_pmlmepriv = &(buddy->mlmepriv);
-		#ifdef CONFIG_P2P
+#ifdef CONFIG_P2P
 		struct wifidirect_info *b_pwdinfo = &(buddy->wdinfo);
-		#ifdef CONFIG_IOCTL_CFG80211
 		struct cfg80211_wifidirect_info *b_pcfg80211_wdinfo = &buddy->cfg80211_wdinfo;
-		#endif
-		#endif
+#endif
 
 		if (check_fwstate(b_pmlmepriv, WIFI_ASOC_STATE|WIFI_SITE_MONITOR)
 			|| check_fwstate(b_pmlmepriv, WIFI_UNDER_LINKING|WIFI_UNDER_WPS)
 			|| check_fwstate(b_pmlmepriv, WIFI_AP_STATE)
 			|| check_fwstate(b_pmlmepriv, WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE)
-			#if defined(CONFIG_P2P) && defined(CONFIG_IOCTL_CFG80211) && defined(CONFIG_P2P_IPS)
+#if defined(CONFIG_P2P) && defined(CONFIG_P2P_IPS)
 			|| b_pcfg80211_wdinfo->is_ro_ch
-			#elif defined(CONFIG_P2P)
+#elif defined(CONFIG_P2P)
 			|| !rtw_p2p_chk_state(b_pwdinfo, P2P_STATE_NONE)
-			#endif
+#endif
 			|| rtw_is_scan_deny(buddy)
 		) {
 			return;

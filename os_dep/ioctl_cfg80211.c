@@ -26,7 +26,6 @@
 #include <rtw_ioctl_set.h>
 #include <xmit_osdep.h>
 
-#ifdef CONFIG_IOCTL_CFG80211
 
 #include "ioctl_cfg80211.h"
 
@@ -4883,5 +4882,3 @@ void rtw_wdev_unregister(struct wireless_dev *wdev)
 
 	wiphy_unregister(wdev->wiphy);
 }
-
-#endif //CONFIG_IOCTL_CFG80211

@@ -3274,100 +3274,13 @@ _func_enter_;
 		struct mlme_ext_priv *pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
 
 		pwdinfo->operating_channel = pbuddy_mlmeext->cur_channel;
-#ifdef CONFIG_IOCTL_CFG80211
 
 		DBG_8723A("%s, switch ch back to buddy's cur_channel=%d\n", __func__, pbuddy_mlmeext->cur_channel);
 
 		set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
 
 		issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
-
-#else /* CONFIG_IOCTL_CFG80211 */
-		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_IDLE))
-		{
-			/*	Now, the driver stays on the AP's channel. */
-			/*	If the pwdinfo->ext_listen_period = 0, that means the P2P listen state is not available on listen channel. */
-			if ( pwdinfo->ext_listen_period > 0 )
-			{
-				DBG_8723A( "[%s] P2P_STATE_IDLE, ext_listen_period = %d\n", __FUNCTION__, pwdinfo->ext_listen_period );
-
-				if ( pbuddy_mlmeext->cur_channel != pwdinfo->listen_channel )
-				{
-					/*	Will switch to listen channel so that need to send the NULL data with PW bit to AP. */
-					issue_nulldata(pbuddy_adapter, NULL, 1, 3, 500);
-					set_channel_bwmode(padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-				}
-
-				rtw_p2p_set_state(pwdinfo, P2P_STATE_LISTEN);
-				val8 = 1;
-				rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-
-				/*	Todo: To check the value of pwdinfo->ext_listen_period is equal to 0 or not. */
-				_set_timer( &pwdinfo->ap_p2p_switch_timer, pwdinfo->ext_listen_period );
-			}
-		}
-		else if ( rtw_p2p_chk_state(pwdinfo, P2P_STATE_LISTEN) ||
-				rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_FAIL) ||
-				( rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_ING) && pwdinfo->nego_req_info.benable == _FALSE ) ||
-				rtw_p2p_chk_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_REQ) )
-		{
-			/*	Now, the driver is in the listen state of P2P mode. */
-			DBG_8723A( "[%s] P2P_STATE_IDLE, ext_listen_interval = %d\n", __FUNCTION__, pwdinfo->ext_listen_interval );
-
-			/*	Commented by Albert 2012/11/01 */
-			/*	If the AP's channel is the same as the listen channel, we should still be in the listen state */
-			/*	Other P2P device is still able to find this device out even this device is in the AP's channel. */
-			/*	So, configure this device to be able to receive the probe request frame and set it to listen state. */
-			if ( pbuddy_mlmeext->cur_channel != pwdinfo->listen_channel )
-			{
-				set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
-				val8 = 0;
-				padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-				rtw_p2p_set_state(pwdinfo, P2P_STATE_IDLE);
-				issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
-			}
-
-			/*	Todo: To check the value of pwdinfo->ext_listen_interval is equal to 0 or not. */
-			_set_timer( &pwdinfo->ap_p2p_switch_timer, pwdinfo->ext_listen_interval );
-		}
-		else if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_OK))
-		{
-			/*	The driver had finished the P2P handshake successfully. */
-			val8 = 0;
-			rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-			set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
-			issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
-		}
-		else if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ))
-		{
-			val8 = 1;
-			set_channel_bwmode(padapter, pwdinfo->tx_prov_disc_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-			rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-			issue_probereq_p2p(padapter, NULL);
-			_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-		}
-		else if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_ING) && pwdinfo->nego_req_info.benable == _TRUE)
-		{
-			val8 = 1;
-			set_channel_bwmode(padapter, pwdinfo->nego_req_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-			rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-			issue_probereq_p2p(padapter, NULL);
-			_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-		}
-		else if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_INVITE_REQ ) && pwdinfo->invitereq_info.benable == _TRUE)
-		{
-			/*
-			val8 = 1;
-			set_channel_bwmode(padapter, , HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-			rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-			issue_probereq_p2p(padapter, NULL);
-			_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-			*/
-		}
-#endif /* CONFIG_IOCTL_CFG80211 */
-	}
-	else
-	{
+	} else {
 		set_channel_bwmode( padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 	}
 
@@ -3375,7 +3288,6 @@ _func_exit_;
 }
 #endif
 
-#ifdef CONFIG_IOCTL_CFG80211
 static void ro_ch_handler(struct rtw_adapter *padapter)
 {
 	struct cfg80211_wifidirect_info *pcfg80211_wdinfo = &padapter->cfg80211_wdinfo;
@@ -3849,7 +3761,6 @@ void rtw_init_cfg80211_wifidirect_info(struct rtw_adapter *padapter)
 
 	_init_timer( &pcfg80211_wdinfo->remain_on_ch_timer, padapter->pnetdev, ro_ch_timer_process, padapter );
 }
-#endif /* CONFIG_IOCTL_CFG80211 */
 
 void p2p_protocol_wk_hdl(struct rtw_adapter *padapter, int intCmdType)
 {
@@ -3926,13 +3837,11 @@ _func_enter_;
 		}
 #endif
 #endif
-#ifdef CONFIG_IOCTL_CFG80211
 		case P2P_RO_CH_WK:
 		{
 			ro_ch_handler( padapter );
 			break;
 		}
-#endif /* CONFIG_IOCTL_CFG80211 */
 
 	}
 
@@ -4266,16 +4175,12 @@ void ap_p2p_switch_timer_process (void *FunctionContext)
 {
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
-#ifdef CONFIG_IOCTL_CFG80211
 	struct rtw_wdev_priv *pwdev_priv = wdev_to_priv(adapter->rtw_wdev);
-#endif
 
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
-#ifdef CONFIG_IOCTL_CFG80211
 	atomic_set(&pwdev_priv->switch_ch_to, 1);
-#endif
 
 	p2p_protocol_wk_cmd( adapter, P2P_AP_P2P_CH_SWITCH_PROCESS_WK );
 }
@@ -4475,15 +4380,8 @@ void init_wifidirect_info(struct rtw_adapter *padapter, enum P2P_ROLE role)
 	memset( pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, '0', 3 );
 	memset( &pwdinfo->groupid_info, 0x00, sizeof( struct group_id_info ) );
 #ifdef CONFIG_CONCURRENT_MODE
-#ifdef CONFIG_IOCTL_CFG80211
 	pwdinfo->ext_listen_interval = 1000; /* The interval to be available with legacy AP during p2p0-find/scan */
 	pwdinfo->ext_listen_period = 3000; /* The time period to be available for P2P during nego */
-#else /* CONFIG_IOCTL_CFG80211 */
-	/* pwdinfo->ext_listen_interval = 3000; */
-	/* pwdinfo->ext_listen_period = 400; */
-	pwdinfo->ext_listen_interval = 1000;
-	pwdinfo->ext_listen_period = 1000;
-#endif /* CONFIG_IOCTL_CFG80211 */
 #endif
 	pwdinfo->wfd_tdls_enable = 0;
 	memset( pwdinfo->p2p_peer_interface_addr, 0x00, ETH_ALEN );
