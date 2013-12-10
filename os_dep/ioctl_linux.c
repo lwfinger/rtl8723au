@@ -206,16 +206,6 @@ static void request_wps_pbc_event(struct rtw_adapter *padapter)
 }
 
 
-void rtw_indicate_wx_disassoc_event(struct rtw_adapter *padapter)
-{
-	union iwreq_data wrqu;
-
-	memset(&wrqu, 0, sizeof(union iwreq_data));
-
-	wrqu.ap_addr.sa_family = ARPHRD_ETHER;
-	memset(wrqu.ap_addr.sa_data, 0, ETH_ALEN);
-}
-
 /*
 uint	rtw_is_cckrates_included(u8 *rate)
 {
