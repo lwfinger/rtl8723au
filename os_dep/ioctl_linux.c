@@ -206,17 +206,6 @@ static void request_wps_pbc_event(struct rtw_adapter *padapter)
 }
 
 
-void indicate_wx_scan_complete_event(struct rtw_adapter *padapter)
-{
-	union iwreq_data wrqu;
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-
-	memset(&wrqu, 0, sizeof(union iwreq_data));
-
-	//DBG_8723A("+rtw_indicate_wx_scan_complete_event\n");
-}
-
-
 void rtw_indicate_wx_assoc_event(struct rtw_adapter *padapter)
 {
 	union iwreq_data wrqu;
@@ -1776,13 +1765,11 @@ _func_enter_;
 	// modify by thomas 2011-02-22.
 	if (pmlmepriv->LinkDetectInfo.bBusyTraffic == _TRUE)
 	{
-		indicate_wx_scan_complete_event(padapter);
 		goto exit;
 	}
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
 	{
-		indicate_wx_scan_complete_event(padapter);
 		goto exit;
 	}
 
@@ -1813,8 +1800,6 @@ _func_enter_;
 			pmlmepriv->scanning_via_buddy_intf = _TRUE;
 		}
 
-		indicate_wx_scan_complete_event(padapter);
-
 		goto exit;
 	}
 #endif
@@ -1822,7 +1807,6 @@ _func_enter_;
 #ifdef CONFIG_DUALMAC_CONCURRENT
 	if (dc_check_fwstate(padapter, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)== _TRUE)
 	{
-		indicate_wx_scan_complete_event(padapter);
 		goto exit;
 	}
 #endif

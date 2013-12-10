@@ -32,7 +32,6 @@
 #include <wlan_bssdef.h>
 #include <rtw_ioctl_set.h>
 
-extern void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
 extern u8 rtw_do_join(struct rtw_adapter * padapter);
 
 #ifdef CONFIG_DISABLE_MCS13TO15
@@ -1109,7 +1108,6 @@ _func_enter_;
 		}
 	}
 
-	indicate_wx_scan_complete_event(adapter);
 	/* DBG_8723A("scan complete in %dms\n",rtw_get_passing_time_ms(pmlmepriv->scan_start_time)); */
 
 	spin_unlock_bh(&pmlmepriv->lock);

@@ -109,11 +109,9 @@ _func_enter_;
 _func_exit_;
 }
 
-extern void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
 void rtw_os_indicate_scan_done(struct rtw_adapter *padapter, bool aborted)
 {
 	rtw_cfg80211_indicate_scan_done(wdev_to_priv(padapter->rtw_wdev), aborted);
-	indicate_wx_scan_complete_event(padapter);
 }
 
 static RT_PMKID_LIST   backupPMKIDList[ NUM_PMKID_CACHE ];

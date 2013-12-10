@@ -29,8 +29,6 @@
 #include <usb_ops.h>
 #include <linux/ieee80211.h>
 
-extern void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
-
 u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid)
 {
 	u8	 i;
@@ -562,7 +560,6 @@ _func_enter_;
 	} else {
 		if (rtw_is_scan_deny(padapter)) {
 			DBG_8723A(FUNC_ADPT_FMT": scan deny\n", FUNC_ADPT_ARG(padapter));
-			indicate_wx_scan_complete_event(padapter);
 			return _SUCCESS;
 		}
 
