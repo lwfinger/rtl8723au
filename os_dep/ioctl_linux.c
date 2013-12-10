@@ -58,82 +58,9 @@
 extern int ui_pid[3];
 #endif
 
-// combo scan
-#define WEXT_CSCAN_AMOUNT 9
-#define WEXT_CSCAN_BUF_LEN		360
-#define WEXT_CSCAN_HEADER		"CSCAN S\x01\x00\x00S\x00"
-#define WEXT_CSCAN_HEADER_SIZE		12
-#define WEXT_CSCAN_SSID_SECTION		'S'
-#define WEXT_CSCAN_CHANNEL_SECTION	'C'
-#define WEXT_CSCAN_NPROBE_SECTION	'N'
-#define WEXT_CSCAN_ACTV_DWELL_SECTION	'A'
-#define WEXT_CSCAN_PASV_DWELL_SECTION	'P'
-#define WEXT_CSCAN_HOME_DWELL_SECTION	'H'
-#define WEXT_CSCAN_TYPE_SECTION		'T'
-
 
 extern u8 key_2char2num(u8 hch, u8 lch);
 extern u8 str_2char2num(u8 hch, u8 lch);
-extern u8 convert_ip_addr(u8 hch, u8 mch, u8 lch);
-
-u32 rtw_rates[] =
-{
-	1000000,
-	2000000,
-	5500000,
-	11000000,
-	6000000,
-	9000000,
-	12000000,
-	18000000,
-	24000000,
-	36000000,
-	48000000,
-	54000000
-};
-
-static const char *const iw_operation_mode[] =
-{
-	"Auto",
-	"Ad-Hoc",
-	"Managed",
-	"Master",
-	"Repeater",
-	"Secondary",
-	"Monitor"
-};
-
-/*
-uint	rtw_is_cckrates_included(u8 *rate)
-{
-		u32	i = 0;
-
-		while(rate[i]!=0)
-		{
-			if  (  (((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
-			(((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
-			return _TRUE;
-			i++;
-		}
-
-		return _FALSE;
-}
-
-uint	rtw_is_cckratesonly_included(u8 *rate)
-{
-	u32 i = 0;
-
-	while(rate[i]!=0)
-	{
-			if  (  (((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
-				(((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
-			return _FALSE;
-			i++;
-	}
-
-	return _TRUE;
-}
-*/
 
 static int wpa_set_auth_algs(struct net_device *dev, u32 value)
 {
@@ -2492,36 +2419,6 @@ static int rtw_p2p_got_wpsinfo(struct net_device *dev,
 }
 
 #endif //CONFIG_P2P
-
-static int rtw_cta_test_start(struct net_device *dev,
-							   struct iw_request_info *info,
-							   union iwreq_data *wrqu, char *extra)
-{
-	int ret = 0;
-	struct rtw_adapter	*padapter = netdev_priv(dev);
-	DBG_8723A("%s %s\n", __func__, extra);
-	if (!strcmp(extra, "1"))
-		padapter->in_cta_test = 1;
-	else
-		padapter->in_cta_test = 0;
-
-	if(padapter->in_cta_test)
-	{
-		u32 v = rtw_read32(padapter, REG_RCR);
-		v &= ~(RCR_CBSSID_DATA | RCR_CBSSID_BCN );//| RCR_ADF
-		rtw_write32(padapter, REG_RCR, v);
-		DBG_8723A("enable RCR_ADF\n");
-	}
-	else
-	{
-		u32 v = rtw_read32(padapter, REG_RCR);
-		v |= RCR_CBSSID_DATA | RCR_CBSSID_BCN ;//| RCR_ADF
-		rtw_write32(padapter, REG_RCR, v);
-		DBG_8723A("disable RCR_ADF\n");
-	}
-	return ret;
-}
-
 
 static void mac_reg_dump(struct rtw_adapter *padapter)
 {
