@@ -866,7 +866,6 @@ static struct net_device_stats *rtw_net_get_stats(struct net_device *pnetdev)
 	return &padapter->stats;
 }
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 /*
  * AC to queue mapping
  *
@@ -944,15 +943,11 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 
 }
 
-#endif
-
 static const struct net_device_ops rtw_netdev_ops = {
 	.ndo_open = netdev_open,
 	.ndo_stop = netdev_close,
 	.ndo_start_xmit = rtw_xmit_entry,
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	.ndo_select_queue	= rtw_select_queue,
-#endif
 	.ndo_set_mac_address = rtw_net_set_mac_address,
 	.ndo_get_stats = rtw_net_get_stats,
 	.ndo_do_ioctl = rtw_ioctl,
@@ -1227,12 +1222,6 @@ u8 rtw_reset_drv_sw(struct rtw_adapter *padapter)
 	pmlmepriv->LinkDetectInfo.bBusyTraffic = _FALSE;
 
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY |_FW_UNDER_LINKING);
-
-#ifdef CONFIG_AUTOSUSPEND
-	#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22) && LINUX_VERSION_CODE<=KERNEL_VERSION(2,6,34))
-		adapter_to_dvobj(padapter)->pusbdev->autosuspend_disabled = 1;//autosuspend disabled by the user
-	#endif
-#endif
 
 #ifdef DBG_CONFIG_ERROR_DETECT
 	rtw_hal_sreset_reset_value(padapter);
@@ -1619,11 +1608,8 @@ static const struct net_device_ops rtw_netdev_if2_ops = {
         .ndo_set_mac_address = rtw_net_set_mac_address,
         .ndo_get_stats = rtw_net_get_stats,
         .ndo_do_ioctl = rtw_ioctl,
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	.ndo_select_queue	= rtw_select_queue,
-#endif
 };
-
 
 	#include <usb_hal.h>
 _adapter *rtw_drv_if2_init(struct rtw_adapter *primary_padapter, void (*set_intf_ops)(struct _io_ops *pops))
@@ -1819,18 +1805,12 @@ void netdev_br_init(struct net_device *netdev)
 {
 	struct rtw_adapter *adapter = (struct rtw_adapter *)rtw_netdev_priv(netdev);
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 	rcu_read_lock();
-#endif	// (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 
 	//if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)
 	{
 		//struct net_bridge	*br = netdev->br_port->br;//->dev->dev_addr;
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-		if (netdev->br_port)
-#else   // (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
 		if (rcu_dereference(adapter->pnetdev->rx_handler_data))
-#endif  // (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
 		{
 			struct net_device *br_netdev;
 			struct net *devnet = NULL;
@@ -1849,9 +1829,7 @@ void netdev_br_init(struct net_device *netdev)
 		adapter->ethBrExtInfo.addPPPoETag = 1;
 	}
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 	rcu_read_unlock();
-#endif	// (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 }
 #endif //CONFIG_BR_EXT
 
