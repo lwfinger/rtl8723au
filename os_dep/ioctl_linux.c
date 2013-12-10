@@ -1957,11 +1957,7 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 #endif // CONFIG_CONCURRENT_MODE
 */
 
-	wait_status = _FW_UNDER_SURVEY
-		#ifndef CONFIG_ANDROID
-		|_FW_UNDER_LINKING
-		#endif
-	;
+	wait_status = _FW_UNDER_SURVEY | _FW_UNDER_LINKING;
 
 #ifdef CONFIG_DUALMAC_CONCURRENT
 	while(dc_check_fwstate(padapter, wait_status)== _TRUE)
@@ -2790,20 +2786,17 @@ static int rtw_wx_set_auth(struct net_device *dev,
 		}
 
 	case IW_AUTH_80211_AUTH_ALG:
-
-		#if defined(CONFIG_ANDROID) || 1
 		/*
-		 *  It's the starting point of a link layer connection using wpa_supplicant
+		 * It's the starting point of a link layer connection
+		 * using wpa_supplicant
 		*/
-		if(check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
+		if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
 			LeaveAllPowerSaveMode(padapter);
 			rtw_disassoc_cmd(padapter, 500, _FALSE);
 			DBG_8723A("%s...call rtw_indicate_disconnect\n ",__func__);
 			rtw_indicate_disconnect(padapter);
 			rtw_free_assoc_resources(padapter, 1);
 		}
-		#endif
-
 
 		ret = wpa_set_auth_algs(dev, (u32)param->value);
 
@@ -7792,53 +7785,6 @@ static int rtw_wx_set_priv(struct net_device *dev,
 		ret = rtw_wx_set_scan(dev, info, awrq, ext);
 		goto FREE_EXT;
 	}
-
-#ifdef CONFIG_ANDROID
-	//DBG_8723A("rtw_wx_set_priv: %s req=%s\n", dev->name, ext);
-
-	i = rtw_android_cmdstr_to_num(ext);
-
-	switch(i) {
-		case ANDROID_WIFI_CMD_RSSI :
-			{
-				struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-				struct	wlan_network	*pcur_network = &pmlmepriv->cur_network;
-
-				if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) {
-					sprintf(ext, "%s rssi %d", pcur_network->network.Ssid.Ssid, padapter->recvpriv.rssi);
-				} else {
-					sprintf(ext, "OK");
-				}
-			}
-			break;
-		case ANDROID_WIFI_CMD_LINKSPEED :
-			{
-				u16 mbps = rtw_get_cur_max_rate(padapter)/10;
-				sprintf(ext, "LINKSPEED %d", mbps);
-			}
-			break;
-		case ANDROID_WIFI_CMD_MACADDR :
-			sprintf(ext, "MACADDR = " MAC_FMT, MAC_ARG(dev->dev_addr));
-			break;
-		default :
-			#ifdef  CONFIG_DEBUG_RTW_WX_SET_PRIV
-			DBG_8723A("%s: %s unknowned req=%s\n", __func__,
-				dev->name, ext_dbg);
-			#endif
-
-			sprintf(ext, "OK");
-
-	}
-
-	if (copy_to_user(dwrq->pointer, ext, min(dwrq->length, (u16)(strlen(ext)+1)) ) )
-		ret = -EFAULT;
-
-	#ifdef CONFIG_DEBUG_RTW_WX_SET_PRIV
-	DBG_8723A("%s: %s req=%s rep=%s dwrq->length=%d, strlen(ext)+1=%d\n", __func__,
-		dev->name, ext_dbg ,ext, dwrq->length, (u16)(strlen(ext)+1));
-	#endif
-#endif //end of CONFIG_ANDROID
-
 
 FREE_EXT:
 
