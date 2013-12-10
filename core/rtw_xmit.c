@@ -2656,13 +2656,9 @@ int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff **pskb)
 
 		/* mac_clone_handle_frame(priv, skb); */
 
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-		br_port = padapter->pnetdev->br_port;
-#else   /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 		rcu_read_lock();
 		br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
 		rcu_read_unlock();
-#endif  /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 		spin_lock_bh(&padapter->br_ext_lock);
 		if (!(skb->data[0] & 1) && br_port &&
 		    memcmp(skb->data+MACADDRLEN, padapter->br_mac, MACADDRLEN) &&
@@ -2675,9 +2671,6 @@ int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff **pskb)
 		} else
 		/* if (!priv->pmib->ethBrExtInfo.nat25_disable) */
 		{
-/*			if (priv->dev->br_port && */
-/*				 !memcmp(skb->data+MACADDRLEN, priv->br_mac, MACADDRLEN)) { */
-#if 1
 			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
 				is_vlan_tag = 1;
 				vlan_hdr = *((unsigned short *)(skb->data+MACADDRLEN*2+2));
@@ -2714,7 +2707,6 @@ int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff **pskb)
 				}
 			}
 			spin_unlock_bh(&padapter->br_ext_lock);
-#endif /*  1 */
 			if (do_nat25)
 			{
 				int nat25_db_handle(struct rtw_adapter *priv, struct sk_buff *skb, int method);
@@ -2886,13 +2878,9 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **ppkt)
 
 #ifdef CONFIG_BR_EXT
 
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-	br_port = padapter->pnetdev->br_port;
-#else   /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 	rcu_read_lock();
 	br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
 	rcu_read_unlock();
-#endif  /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 
 	if( br_port && check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)
 	{
