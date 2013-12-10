@@ -3078,7 +3078,7 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 		goto out;
 	}
 
-	mon_ndev = rtw_alloc_etherdev(sizeof(struct rtw_adapter));
+	mon_ndev = alloc_etherdev(sizeof(struct rtw_adapter));
 	if (!mon_ndev) {
 		DBG_8723A(FUNC_ADPT_FMT" allocate ndev fail\n", FUNC_ADPT_ARG(padapter));
 		ret = -ENOMEM;

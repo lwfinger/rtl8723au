@@ -366,9 +366,6 @@ extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
 	pnetdev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
 #endif
 */
-#define rtw_alloc_etherdev(sizeof_priv) alloc_etherdev((sizeof_priv))
-
-#define rtw_free_netdev(netdev) free_netdev((netdev))
 
 #define NDEV_FMT "%s"
 #define NDEV_ARG(ndev) ndev->name

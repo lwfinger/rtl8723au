@@ -415,9 +415,9 @@ int hostapd_mode_init(struct rtw_adapter *padapter)
 	struct hostapd_priv *phostapdpriv;
 	struct net_device *pnetdev;
 
-	pnetdev = rtw_alloc_etherdev(sizeof(struct hostapd_priv));
+	pnetdev = alloc_etherdev(sizeof(struct hostapd_priv));
 	if (!pnetdev)
-	   return -ENOMEM;
+		return -ENOMEM;
 
 	//SET_MODULE_OWNER(pnetdev);
 	ether_setup(pnetdev);
@@ -466,9 +466,9 @@ int hostapd_mode_init(struct rtw_adapter *padapter)
 	{
 		DBG_8723A("hostapd_mode_init(): register_netdev fail!\n");
 
-		if(pnetdev)
+		if (pnetdev)
 		{
-			rtw_free_netdev(pnetdev);
+			free_netdev(pnetdev);
 		}
 	}
 
@@ -482,7 +482,7 @@ void hostapd_mode_unload(struct rtw_adapter *padapter)
 	struct net_device *pnetdev = phostapdpriv->pmgnt_netdev;
 
 	unregister_netdev(pnetdev);
-	rtw_free_netdev(pnetdev);
+	free_netdev(pnetdev);
 
 }
 

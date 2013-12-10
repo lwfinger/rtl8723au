@@ -1109,7 +1109,7 @@ handle_dualmac:
 free_adapter:
 	if (status != _SUCCESS) {
 		if (pnetdev)
-			rtw_free_netdev(pnetdev);
+			free_netdev(pnetdev);
 		padapter = NULL;
 	}
 exit:
@@ -1168,8 +1168,8 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 
 	rtw_free_drv_sw(if1);
 
-	if(pnetdev)
-		rtw_free_netdev(pnetdev);
+	if (pnetdev)
+		free_netdev(pnetdev);
 }
 
 static void dump_usb_interface(struct usb_interface *usb_intf)

@@ -1008,7 +1008,11 @@ struct net_device *rtw_init_netdev(struct rtw_adapter *old_padapter)
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+init_net_dev\n"));
 
-	pnetdev = rtw_alloc_etherdev(sizeof(struct rtw_adapter));
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_adapter), 4);
+#else
+	pnetdev = alloc_etherdev(sizeof(struct rtw_rtw_adapter));
+#endif
 
 	if (!pnetdev)
 		return NULL;
@@ -1729,7 +1733,7 @@ error_rtw_drv_if2_init:
 		rtw_free_drv_sw(padapter);
 
 	if (pnetdev)
-		rtw_free_netdev(pnetdev);
+		free_netdev(pnetdev);
 
 	return NULL;
 
@@ -1752,7 +1756,7 @@ void rtw_drv_if2_free(struct rtw_adapter *if2)
 
 	rtw_free_drv_sw(padapter);
 
-	rtw_free_netdev(pnetdev);
+	free_netdev(pnetdev);
 
 }
 
@@ -1857,7 +1861,7 @@ error_register_netdev:
 	{
 		rtw_free_drv_sw(padapter);
 
-		rtw_free_netdev(pnetdev);
+		free_netdev(pnetdev);
 	}
 
 	return ret;
