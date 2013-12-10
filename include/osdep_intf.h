@@ -84,9 +84,7 @@ int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);
 struct net_device *rtw_init_netdev(struct rtw_adapter *padapter);
 
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 u16 rtw_recv_select_queue(struct sk_buff *skb);
-#endif //LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35)
 
 #ifdef CONFIG_PROC_DEBUG
 void rtw_proc_init_one(struct net_device *dev);
