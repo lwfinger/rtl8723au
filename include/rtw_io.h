@@ -35,13 +35,8 @@
 #include <linux/usb.h>
 #include <linux/usb/ch9.h>
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 #define rtw_usb_buffer_alloc(dev, size, dma) usb_alloc_coherent((dev), (size), (in_interrupt() ? GFP_ATOMIC : GFP_KERNEL), (dma))
 #define rtw_usb_buffer_free(dev, size, addr, dma) usb_free_coherent((dev), (size), (addr), (dma))
-#else
-#define rtw_usb_buffer_alloc(dev, size, dma) usb_buffer_alloc((dev), (size), (in_interrupt() ? GFP_ATOMIC : GFP_KERNEL), (dma))
-#define rtw_usb_buffer_free(dev, size, addr, dma) usb_buffer_free((dev), (size), (addr), (dma))
-#endif
 
 #define NUM_IOREQ		8
 
