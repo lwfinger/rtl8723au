@@ -466,11 +466,7 @@ struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv, void *old_p
 	struct net_device *pnetdev;
 	struct rtw_netdev_priv_indicator *pnpi;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
-#else
-	pnetdev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
-#endif
 	if (!pnetdev)
 		goto RETURN;
 
@@ -487,11 +483,7 @@ struct net_device *rtw_alloc_etherdev(int sizeof_priv)
 	struct net_device *pnetdev;
 	struct rtw_netdev_priv_indicator *pnpi;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
-#else
-	pnetdev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
-#endif
 	if (!pnetdev)
 		goto RETURN;
 
@@ -529,8 +521,7 @@ RETURN:
 }
 
 /*
-* Jeff: this function should be called under ioctl (rtnl_lock is accquired) while
-* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,26)
+* This function should be called under ioctl (rtnl_lock is accquired)
 */
 int rtw_change_ifname(struct rtw_adapter *padapter, const char *ifname)
 {
