@@ -47,6 +47,5 @@ u8 rtw_set_802_11_remove_key(struct rtw_adapter * padapter, NDIS_802_11_REMOVE_K
 u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid);
 
 u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter);
-int rtw_set_channel_plan(struct rtw_adapter *adapter, u8 channel_plan);
 
 #endif

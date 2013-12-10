@@ -1193,19 +1193,3 @@ u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter)
 
 	return max_rate;
 }
-
-/*
-* rtw_set_channel_plan -
-* @adapter: pointer to _adapter structure
-* @channel_plan:
-*
-* Return _SUCCESS or _FAIL
-*/
-int rtw_set_channel_plan(struct rtw_adapter *adapter, u8 channel_plan)
-{
-	struct registry_priv *pregistrypriv = &adapter->registrypriv;
-	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
-
-	/* handle by cmd_thread to sync with scan operation */
-	return rtw_set_chplan_cmd(adapter, channel_plan, 1);
-}
