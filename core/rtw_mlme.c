@@ -1893,7 +1893,7 @@ _func_enter_;
 #ifdef CONFIG_IOCTL_CFG80211
 			#ifdef COMPAT_KERNEL_RELEASE
 
-			#elif (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)) || defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
+			#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
 			u8 *passoc_req = NULL;
 			u32 assoc_req_len;
 
@@ -1919,7 +1919,7 @@ _func_enter_;
 
 				rtw_mfree(passoc_req, assoc_req_len);
 			}
-			#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)) || defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
+			#endif /* defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 #endif /* CONFIG_IOCTL_CFG80211 */
 
 			/* bss_cap_update_on_sta_join(adapter, psta); */
@@ -2029,9 +2029,9 @@ _func_enter_;
 #ifdef CONFIG_IOCTL_CFG80211
 		#ifdef COMPAT_KERNEL_RELEASE
 
-		#elif (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)) || defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
+		#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
 		rtw_cfg80211_indicate_sta_disassoc(adapter, pstadel->macaddr, *(u16*)pstadel->rsvd);
-		#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)) || defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
+		#endif /* defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 #endif /* CONFIG_IOCTL_CFG80211 */
 
 		return;
@@ -2333,15 +2333,9 @@ void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
 
 #ifdef CONFIG_BR_EXT
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 	rcu_read_lock();
-#endif	/*  (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35)) */
 
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-	if( adapter->pnetdev->br_port
-#else	/*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 	if( rcu_dereference(adapter->pnetdev->rx_handler_data)
-#endif	/*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 		&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
 	{
 		/*  expire NAT2.5 entry */
@@ -2358,9 +2352,7 @@ void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
 		}
 	}
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
 	rcu_read_unlock();
-#endif	/*  (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35)) */
 
 #endif	/*  CONFIG_BR_EXT */
 }
