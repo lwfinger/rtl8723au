@@ -135,11 +135,7 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 		for(i=0; i<NR_PREALLOC_RECV_SKB; i++)
 		{
 
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)) // http://www.mail-archive.com/netdev@vger.kernel.org/msg17214.html
-			pskb = __dev_alloc_skb(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
-	#else
 			pskb = __netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
-	#endif
 
 			if(pskb)
 			{
