@@ -182,7 +182,7 @@ _func_enter_;
 
 #ifdef CONFIG_IOCTL_CFG80211
 	rtw_cfg80211_indicate_disconnect(adapter);
-#endif //CONFIG_IOCTL_CFG80211
+#endif
 
 	rtw_indicate_wx_disassoc_event(adapter);
 

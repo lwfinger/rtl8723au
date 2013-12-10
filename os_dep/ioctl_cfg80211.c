@@ -187,7 +187,7 @@ struct ieee80211_supported_band *rtw_spt_band_alloc(
 		kzalloc(sizeof(struct ieee80211_supported_band) +
 			sizeof(struct ieee80211_channel)*n_channels +
 			sizeof(struct ieee80211_rate)*n_bitrates, GFP_KERNEL);
-	if(!spt_band)
+	if (!spt_band)
 		goto exit;
 
 	spt_band->channels = (struct ieee80211_channel*)(((u8*)spt_band)+sizeof(struct ieee80211_supported_band));
@@ -196,13 +196,10 @@ struct ieee80211_supported_band *rtw_spt_band_alloc(
 	spt_band->n_channels = n_channels;
 	spt_band->n_bitrates = n_bitrates;
 
-	if(band == IEEE80211_BAND_2GHZ)
-	{
+	if (band == IEEE80211_BAND_2GHZ) {
 		rtw_2g_channels_init(spt_band->channels);
 		rtw_2g_rates_init(spt_band->bitrates);
-	}
-	else if(band == IEEE80211_BAND_5GHZ)
-	{
+	} else if (band == IEEE80211_BAND_5GHZ) {
 		rtw_5g_channels_init(spt_band->channels);
 		rtw_5g_rates_init(spt_band->bitrates);
 	}
@@ -430,7 +427,7 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 		return -EINVAL;
 	}
 
-	cfg80211_put_bss(bss);
+	cfg80211_put_bss(wiphy, bss);
 
 exit:
 	return ret;
@@ -466,7 +463,7 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 	}
 #endif //CONFIG_P2P
 
-	#ifdef CONFIG_LAYER2_ROAMING
+#ifdef CONFIG_LAYER2_ROAMING
 	if (rtw_to_roaming(padapter) > 0) {
 		struct wiphy *wiphy = pwdev->wiphy;
 		struct ieee80211_channel *notify_channel;
@@ -491,16 +488,21 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 			, GFP_ATOMIC);
 	}
 	else
-	#endif
+#endif
 	{
+#if 0
 		DBG_8723A("pwdev->sme_state(b)=%d\n", pwdev->sme_state);
-		cfg80211_connect_result(padapter->pnetdev, cur_network->network.MacAddress
-			, pmlmepriv->assoc_req+sizeof(struct rtw_ieee80211_hdr_3addr)+2
-			, pmlmepriv->assoc_req_len-sizeof(struct rtw_ieee80211_hdr_3addr)-2
-			, pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6
-			, pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6
-			, WLAN_STATUS_SUCCESS, GFP_ATOMIC);
+#endif
+		cfg80211_connect_result(padapter->pnetdev,
+					cur_network->network.MacAddress,
+					pmlmepriv->assoc_req+sizeof(struct rtw_ieee80211_hdr_3addr)+2,
+					pmlmepriv->assoc_req_len-sizeof(struct rtw_ieee80211_hdr_3addr)-2,
+					pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6,
+					pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6,
+					WLAN_STATUS_SUCCESS, GFP_ATOMIC);
+#if 0
 		DBG_8723A("pwdev->sme_state(a)=%d\n", pwdev->sme_state);
+#endif
 	}
 }
 
@@ -518,7 +520,7 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 	    pwdev->iftype != NL80211_IFTYPE_P2P_CLIENT)
 		return;
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
 		return;
 
 #ifdef CONFIG_P2P
@@ -536,17 +538,31 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 #endif //CONFIG_P2P
 
 	if (!padapter->mlmepriv.not_indic_disco) {
-		DBG_8723A("pwdev->sme_state(b)=%d\n", pwdev->sme_state);
+#if 0
+		DBG_8723A("pwdev->sme_state(b)=%d\n", pwdev->sme_state;
+#endif
 
-		if(pwdev->sme_state==CFG80211_SME_CONNECTING)
-			cfg80211_connect_result(padapter->pnetdev, NULL, NULL, 0, NULL, 0,
-				WLAN_STATUS_UNSPECIFIED_FAILURE, GFP_ATOMIC/*GFP_KERNEL*/);
-		else if(pwdev->sme_state==CFG80211_SME_CONNECTED)
+#if 1
+		if (check_fwstate(&padapter->mlmepriv, WIFI_UNDER_LINKING)) {
+#else
+		if (pwdev->sme_state==CFG80211_SME_CONNECTING)
+#endif
+			cfg80211_connect_result(padapter->pnetdev, NULL, NULL,
+						0, NULL, 0,
+						WLAN_STATUS_UNSPECIFIED_FAILURE,
+						GFP_ATOMIC/*GFP_KERNEL*/);
+#if 0
+		} else if(pwdev->sme_state==CFG80211_SME_CONNECTED)
+#else
+		} else if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
+#endif
 			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
 		//else
 			//DBG_8723A("pwdev->sme_state=%d\n", pwdev->sme_state);
-
+		}
+#if 0
 		DBG_8723A("pwdev->sme_state(a)=%d\n", pwdev->sme_state);
+#endif
 	}
 }
 
@@ -567,7 +583,7 @@ static u8 set_pairwise_key(struct rtw_adapter *padapter, struct sta_info *psta)
 
 	psetstakey_para = (struct set_stakey_parm*)
 		kzalloc(sizeof(struct set_stakey_parm), GFP_KERNEL);
-	if(psetstakey_para==NULL){
+	if (psetstakey_para==NULL){
 		kfree(ph2c);
 		res=_FAIL;
 		goto exit;
@@ -601,20 +617,18 @@ static int set_group_key(struct rtw_adapter *padapter, u8 *key, u8 alg, int keyi
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
-	pcmd = (struct cmd_obj*)kzalloc(sizeof(struct	cmd_obj), GFP_KERNEL);
-	if(pcmd==NULL){
+	pcmd = (struct cmd_obj*)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
+	if (!pcmd) {
 		res= _FAIL;
 		goto exit;
 	}
-	psetkeyparm=(struct setkey_parm*)
+	psetkeyparm = (struct setkey_parm*)
 		kzalloc(sizeof(struct setkey_parm), GFP_KERNEL);
-	if(psetkeyparm==NULL){
+	if (!psetkeyparm) {
 		kfree(pcmd);
 		res= _FAIL;
 		goto exit;
 	}
-
-	memset(psetkeyparm, 0, sizeof(struct setkey_parm));
 
 	psetkeyparm->keyid=(u8)keyid;
 	if (is_wep_enc(alg))
@@ -1510,7 +1524,7 @@ exit:
 
 void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool aborted)
 {
-	_irqL	irqL;
+	unsigned long irqL;
 
 	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	if(pwdev_priv->scan_request != NULL)
@@ -1544,8 +1558,8 @@ void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool abor
 
 void rtw_cfg80211_surveydone_event_callback(struct rtw_adapter *padapter)
 {
-	_irqL	irqL;
-	_list					*plist, *phead;
+	unsigned long irqL;
+	struct list_head					*plist, *phead;
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	_queue				*queue	= &(pmlmepriv->scanned_queue);
 	struct	wlan_network	*pnetwork = NULL;
@@ -1712,7 +1726,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
 	NDIS_802_11_SSID ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
-	_irqL	irqL;
+	unsigned long	irqL;
 	u8 *wps_ie=NULL;
 	uint wps_ielen=0;
 	u8 *p2p_ie=NULL;
@@ -2094,7 +2108,7 @@ static int rtw_cfg80211_set_wpa_ie(struct rtw_adapter *padapter, u8 *pie, size_t
 
 	pos = buf;
 	if(ielen < RSN_HEADER_LEN){
-		RT_TRACE(_module_rtl871x_ioctl_os_c,_drv_err_,("Ie len too short %d\n", ielen));
+			     RT_TRACE(_module_rtl871x_ioctl_os_c,_drv_err_,("Ie len too short %d\n", (int)ielen));
 		ret  = -1;
 		goto exit;
 	}
@@ -2284,8 +2298,8 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 				 struct cfg80211_connect_params *sme)
 {
 	int ret=0;
-	_irqL irqL;
-	_list *phead;
+	unsigned long irqL;
+	struct list_head *phead;
 	struct wlan_network *pnetwork = NULL;
 	NDIS_802_11_AUTHENTICATION_MODE authmode;
 	NDIS_802_11_SSID ndis_ssid;
@@ -2573,7 +2587,7 @@ static int cfg80211_rtw_disconnect(struct wiphy *wiphy, struct net_device *ndev,
 
 	rtw_set_roaming(padapter, 0);
 
-	if(check_fwstate(&padapter->mlmepriv, _FW_LINKED))
+	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED))
 	{
 		rtw_scan_abort(padapter);
 		LeaveAllPowerSaveMode(padapter);
@@ -2774,7 +2788,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 
 	#ifdef COMPAT_KERNEL_RELEASE
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
-	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
+	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
 	#else //COMPAT_KERNEL_RELEASE
 	{
@@ -2837,7 +2851,7 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 
 	#ifdef COMPAT_KERNEL_RELEASE
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len, GFP_ATOMIC);
-	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
+	#elif !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len, GFP_ATOMIC);
 	#else //COMPAT_KERNEL_RELEASE
 	cfg80211_send_disassoc(padapter->pnetdev, mgmt_buf, frame_len);
@@ -3089,7 +3103,8 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 	mon_wdev = (struct wireless_dev *)
 		kzalloc(sizeof(struct wireless_dev), GFP_KERNEL);
 	if (!mon_wdev) {
-		DBG_8723A(FUNC_ADPT_FMT" allocate mon_wdev fail\n", FUNC_ADPT_ARG(padapter));
+		DBG_8723A(FUNC_ADPT_FMT" allocate mon_wdev fail\n",
+			  FUNC_ADPT_ARG(padapter));
 		ret = -ENOMEM;
 		goto out;
 	}
@@ -3200,18 +3215,19 @@ static int rtw_add_beacon(struct rtw_adapter *adapter, const u8 *head, size_t he
 	//struct sta_priv *pstapriv = &padapter->stapriv;
 
 
-	DBG_8723A("%s beacon_head_len=%zu, beacon_tail_len=%zu\n", __FUNCTION__, head_len, tail_len);
+	DBG_8723A("%s beacon_head_len=%zu, beacon_tail_len=%zu\n",
+		  __FUNCTION__, head_len, tail_len);
 
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
 		return -EINVAL;
 
-	if(head_len<24)
+	if (head_len<24)
 		return -EINVAL;
 
 
 	pbuf = kzalloc(head_len+tail_len, GFP_KERNEL);
-	if(!pbuf)
+	if (!pbuf)
 		return -ENOMEM;
 
 
@@ -3309,8 +3325,8 @@ static int cfg80211_rtw_start_ap(struct wiphy *wiphy, struct net_device *ndev,
 
 		if(0)
 		DBG_8723A(FUNC_ADPT_FMT" ssid:(%s,%d), from ie:(%s,%d)\n", FUNC_ADPT_ARG(adapter),
-			settings->ssid, settings->ssid_len,
-			pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength);
+			  settings->ssid, (int)settings->ssid_len,
+			  pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength);
 
 		memcpy(pbss_network->Ssid.Ssid, (void *)settings->ssid, settings->ssid_len);
 		pbss_network->Ssid.SsidLength = settings->ssid_len;
@@ -3357,8 +3373,8 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 			       u8 *mac)
 {
 	int ret=0;
-	_irqL irqL;
-	_list	*phead, *plist;
+	unsigned long irqL;
+	struct list_head *phead, *plist;
 	u8 updated;
 	struct sta_info *psta = NULL;
 	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
@@ -4344,8 +4360,9 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 				pmlmepriv->wfd_beacon_ie = NULL;
 			}
 
-			pmlmepriv->wfd_beacon_ie = kmalloc(wfd_ielen);
-			if ( pmlmepriv->wfd_beacon_ie == NULL) {
+			pmlmepriv->wfd_beacon_ie =
+				kmalloc(wfd_ielen, GFP_KERNEL);
+			if (pmlmepriv->wfd_beacon_ie == NULL) {
 				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 				return -EINVAL;
 
@@ -4378,18 +4395,16 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 	DBG_8723A("%s, ielen=%d\n", __func__, len);
 #endif
 
-	if(len>0)
-	{
-		if((wps_ie = rtw_get_wps_ie(buf, len, NULL, &wps_ielen)))
-		{
+	if (len>0) {
+		if ((wps_ie = rtw_get_wps_ie(buf, len, NULL, &wps_ielen))) {
 			uint	attr_contentlen = 0;
 			u16	uconfig_method, *puconfig_method = NULL;
 
-			#ifdef CONFIG_DEBUG_CFG80211
+#ifdef CONFIG_DEBUG_CFG80211
 			DBG_8723A("probe_resp_wps_ielen=%d\n", wps_ielen);
-			#endif
+#endif
 
-			if(pmlmepriv->wps_probe_resp_ie)
+			if (pmlmepriv->wps_probe_resp_ie)
 			{
 				u32 free_len = pmlmepriv->wps_probe_resp_ie_len;
 				pmlmepriv->wps_probe_resp_ie_len = 0;
@@ -4397,19 +4412,22 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 				pmlmepriv->wps_probe_resp_ie = NULL;
 			}
 
-			pmlmepriv->wps_probe_resp_ie = kmalloc(wps_ielen);
-			if ( pmlmepriv->wps_probe_resp_ie == NULL) {
-				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
+			pmlmepriv->wps_probe_resp_ie =
+				kmalloc(wps_ielen, GFP_KERNEL);
+			if (pmlmepriv->wps_probe_resp_ie == NULL) {
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n",
+					  __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
 
-			//add PUSH_BUTTON config_method by driver self in wpsie of probe_resp at GO Mode
-			if ( (puconfig_method = (u16*)rtw_get_wps_attr_content( wps_ie, wps_ielen, WPS_ATTR_CONF_METHOD , NULL, &attr_contentlen)) != NULL )
+			/* add PUSH_BUTTON config_method by driver self in
+			   wpsie of probe_resp at GO Mode */
+			if ((puconfig_method = (u16*)rtw_get_wps_attr_content(wps_ie, wps_ielen, WPS_ATTR_CONF_METHOD , NULL, &attr_contentlen)) != NULL)
 			{
-				#ifdef CONFIG_DEBUG_CFG80211
+#ifdef CONFIG_DEBUG_CFG80211
 				//printk("config_method in wpsie of probe_resp = 0x%x\n", be16_to_cpu(*puconfig_method));
-				#endif
+#endif
 
 				uconfig_method = WPS_CM_PUSH_BUTTON;
 				uconfig_method = cpu_to_be16( uconfig_method );
@@ -4425,20 +4443,22 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 		//buf += wps_ielen;
 		//len -= wps_ielen;
 
-		#ifdef CONFIG_P2P
+#ifdef CONFIG_P2P
 		if((p2p_ie=rtw_get_p2p_ie(buf, len, NULL, &p2p_ielen)))
 		{
 			u8 is_GO = _FALSE;
 			u32 attr_contentlen = 0;
 			u16 cap_attr=0;
 
-			#ifdef CONFIG_DEBUG_CFG80211
+#ifdef CONFIG_DEBUG_CFG80211
 			DBG_8723A("probe_resp_p2p_ielen=%d\n", p2p_ielen);
-			#endif
+#endif
 
 			//Check P2P Capability ATTR
-			if( rtw_get_p2p_attr_content( p2p_ie, p2p_ielen, P2P_ATTR_CAPABILITY, (u8*)&cap_attr, (uint*) &attr_contentlen) )
-			{
+			if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen,
+						     P2P_ATTR_CAPABILITY,
+						     (u8*)&cap_attr,
+						     (uint*)&attr_contentlen)) {
 				u8 grp_cap=0;
 				//DBG_8723A( "[%s] Got P2P Capability Attr!!\n", __FUNCTION__ );
 				cap_attr = le16_to_cpu(cap_attr);
@@ -4450,81 +4470,77 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 					DBG_8723A("Got P2P Capability Attr, grp_cap=0x%x, is_GO\n", grp_cap);
 			}
 
-
-			if(is_GO == _FALSE)
-			{
-				if(pmlmepriv->p2p_probe_resp_ie)
-				{
+			if (is_GO == _FALSE) {
+				if (pmlmepriv->p2p_probe_resp_ie) {
 					u32 free_len = pmlmepriv->p2p_probe_resp_ie_len;
 					pmlmepriv->p2p_probe_resp_ie_len = 0;
 					kfree(pmlmepriv->p2p_probe_resp_ie);
 					pmlmepriv->p2p_probe_resp_ie = NULL;
 				}
 
-				pmlmepriv->p2p_probe_resp_ie = kmalloc(p2p_ielen);
-				if ( pmlmepriv->p2p_probe_resp_ie == NULL) {
+				pmlmepriv->p2p_probe_resp_ie =
+					kmalloc(p2p_ielen, GFP_KERNEL);
+				if (pmlmepriv->p2p_probe_resp_ie == NULL) {
 					DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 					return -EINVAL;
-
 				}
-				memcpy(pmlmepriv->p2p_probe_resp_ie, p2p_ie, p2p_ielen);
+				memcpy(pmlmepriv->p2p_probe_resp_ie, p2p_ie,
+				       p2p_ielen);
 				pmlmepriv->p2p_probe_resp_ie_len = p2p_ielen;
-			}
-			else
-			{
-				if(pmlmepriv->p2p_go_probe_resp_ie)
-				{
+			} else {
+				if (pmlmepriv->p2p_go_probe_resp_ie) {
 					u32 free_len = pmlmepriv->p2p_go_probe_resp_ie_len;
 					pmlmepriv->p2p_go_probe_resp_ie_len = 0;
 					kfree(pmlmepriv->p2p_go_probe_resp_ie);
 					pmlmepriv->p2p_go_probe_resp_ie = NULL;
 				}
 
-				pmlmepriv->p2p_go_probe_resp_ie = kmalloc(p2p_ielen);
-				if ( pmlmepriv->p2p_go_probe_resp_ie == NULL) {
+				pmlmepriv->p2p_go_probe_resp_ie =
+					kmalloc(p2p_ielen, GFP_KERNEL);
+				if (pmlmepriv->p2p_go_probe_resp_ie == NULL) {
 					DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
 					return -EINVAL;
 
 				}
-				memcpy(pmlmepriv->p2p_go_probe_resp_ie, p2p_ie, p2p_ielen);
+				memcpy(pmlmepriv->p2p_go_probe_resp_ie,
+				       p2p_ie, p2p_ielen);
 				pmlmepriv->p2p_go_probe_resp_ie_len = p2p_ielen;
 			}
-
 		}
-		#endif //CONFIG_P2P
+#endif //CONFIG_P2P
 
 		//buf += p2p_ielen;
 		//len -= p2p_ielen;
 
-		#ifdef CONFIG_WFD
-		if(rtw_get_wfd_ie(buf, len, NULL, &wfd_ielen))
+#ifdef CONFIG_WFD
+		if (rtw_get_wfd_ie(buf, len, NULL, &wfd_ielen))
 		{
-			#ifdef CONFIG_DEBUG_CFG80211
+#ifdef CONFIG_DEBUG_CFG80211
 			DBG_8723A("probe_resp_wfd_ielen=%d\n", wfd_ielen);
-			#endif
+#endif
 
-			if(pmlmepriv->wfd_probe_resp_ie)
-			{
+			if (pmlmepriv->wfd_probe_resp_ie) {
 				u32 free_len = pmlmepriv->wfd_probe_resp_ie_len;
 				pmlmepriv->wfd_probe_resp_ie_len = 0;
 				kfree(pmlmepriv->wfd_probe_resp_ie);
 				pmlmepriv->wfd_probe_resp_ie = NULL;
 			}
 
-			pmlmepriv->wfd_probe_resp_ie = kmalloc(wfd_ielen);
-			if ( pmlmepriv->wfd_probe_resp_ie == NULL) {
-				DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
+			pmlmepriv->wfd_probe_resp_ie =
+				kmalloc(wfd_ielen, GFP_KERNEL);
+			if (pmlmepriv->wfd_probe_resp_ie == NULL) {
+				DBG_8723A("%s()-%d: kmalloc() ERROR!\n",
+					  __FUNCTION__, __LINE__);
 				return -EINVAL;
 
 			}
-			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_resp_ie, &pmlmepriv->wfd_probe_resp_ie_len);
+			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_resp_ie,
+				       &pmlmepriv->wfd_probe_resp_ie_len);
 		}
-		#endif //CONFIG_WFD
-
+#endif //CONFIG_WFD
 	}
 
 	return ret;
-
 }
 
 static int rtw_cfg80211_set_assoc_resp_wpsp2pie(struct net_device *net, char *buf, int len)
@@ -4545,9 +4561,10 @@ static int rtw_cfg80211_set_assoc_resp_wpsp2pie(struct net_device *net, char *bu
 			pmlmepriv->wps_assoc_resp_ie = NULL;
 		}
 
-		pmlmepriv->wps_assoc_resp_ie = kmalloc(len);
-		if ( pmlmepriv->wps_assoc_resp_ie == NULL) {
-			DBG_8723A("%s()-%d: kmalloc() ERROR!\n", __FUNCTION__, __LINE__);
+		pmlmepriv->wps_assoc_resp_ie = kmalloc(len, GFP_KERNEL);
+		if (pmlmepriv->wps_assoc_resp_ie == NULL) {
+			DBG_8723A("%s()-%d: kmalloc() ERROR!\n",
+				  __FUNCTION__, __LINE__);
 			return -EINVAL;
 
 		}
@@ -4761,15 +4778,17 @@ static void rtw_cfg80211_preinit_wiphy(struct rtw_adapter *padapter, struct wiph
 	wiphy->n_cipher_suites = ARRAY_SIZE(rtw_cipher_suites);
 
 	/* if (padapter->registrypriv.wireless_mode & WIRELESS_11G) */
-		wiphy->bands[IEEE80211_BAND_2GHZ] = rtw_spt_band_alloc(IEEE80211_BAND_2GHZ);
+		wiphy->bands[IEEE80211_BAND_2GHZ] =
+			rtw_spt_band_alloc(IEEE80211_BAND_2GHZ);
 	/* if (padapter->registrypriv.wireless_mode & WIRELESS_11A) */
-		wiphy->bands[IEEE80211_BAND_5GHZ] = rtw_spt_band_alloc(IEEE80211_BAND_5GHZ);
+		wiphy->bands[IEEE80211_BAND_5GHZ] =
+			rtw_spt_band_alloc(IEEE80211_BAND_5GHZ);
 
 
 	wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
 	wiphy->flags |= WIPHY_FLAG_OFFCHAN_TX | WIPHY_FLAG_HAVE_AP_SME;
 
-	if(padapter->registrypriv.power_mgnt != PS_MODE_ACTIVE)
+	if (padapter->registrypriv.power_mgnt != PS_MODE_ACTIVE)
 		wiphy->flags |= WIPHY_FLAG_PS_ON_BY_DEFAULT;
 	else
 		wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
@@ -4802,7 +4821,8 @@ int rtw_wdev_alloc(struct rtw_adapter *padapter, struct device *dev)
 	}
 
 	/*  wdev */
-	wdev = (struct wireless_dev *)kzalloc(sizeof(struct wireless_dev));
+	wdev = (struct wireless_dev *)kzalloc(sizeof(struct wireless_dev),
+					      GFP_KERNEL);
 	if (!wdev) {
 		DBG_8723A("Couldn't allocate wireless device\n");
 		ret = -ENOMEM;

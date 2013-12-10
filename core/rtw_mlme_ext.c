@@ -1924,7 +1924,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 		if (1) {
 			#ifdef COMPAT_KERNEL_RELEASE
 			rtw_cfg80211_indicate_sta_assoc(padapter, pframe, pkt_len);
-			#elif (!defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
+			#elif (!defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
 			rtw_cfg80211_indicate_sta_assoc(padapter, pframe, pkt_len);
 			#else /* !defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 			spin_lock_bh(&pstat->lock);

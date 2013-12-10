@@ -1338,19 +1338,18 @@ _func_enter_;
 
         /* DBG_8723A("clear wps when %s\n", __func__); */
 
-	if(rtw_to_roaming(padapter) > 0)
+	if (rtw_to_roaming(padapter) > 0)
 		_clr_fwstate_(pmlmepriv, _FW_LINKED);
 
-	if(check_fwstate(&padapter->mlmepriv, _FW_LINKED)
-		|| (rtw_to_roaming(padapter) <= 0)
-	)
-	{
+	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED) ||
+	    (rtw_to_roaming(padapter) <= 0)) {
 		rtw_os_indicate_disconnect(padapter);
 
 		/* set ips_deny_time to avoid enter IPS before LPS leave */
-		padapter->pwrctrlpriv.ips_deny_time = rtw_get_current_time() + rtw_ms_to_systime(3000);
+		padapter->pwrctrlpriv.ips_deny_time =
+			rtw_get_current_time() + rtw_ms_to_systime(3000);
 
-	      _clr_fwstate_(pmlmepriv, _FW_LINKED);
+		_clr_fwstate_(pmlmepriv, _FW_LINKED);
 
 		rtw_led_control(padapter, LED_CTL_NO_LINK);
 
@@ -1893,7 +1892,7 @@ _func_enter_;
 #ifdef CONFIG_IOCTL_CFG80211
 			#ifdef COMPAT_KERNEL_RELEASE
 
-			#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
+			#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
 			u8 *passoc_req = NULL;
 			u32 assoc_req_len;
 
@@ -2029,7 +2028,7 @@ _func_enter_;
 #ifdef CONFIG_IOCTL_CFG80211
 		#ifdef COMPAT_KERNEL_RELEASE
 
-		#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER)
+		#elif (defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER))
 		rtw_cfg80211_indicate_sta_disassoc(adapter, pstadel->macaddr, *(u16*)pstadel->rsvd);
 		#endif /* defined(CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER) */
 #endif /* CONFIG_IOCTL_CFG80211 */
