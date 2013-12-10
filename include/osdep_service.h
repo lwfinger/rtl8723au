@@ -368,7 +368,6 @@ extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
 */
 #define rtw_alloc_etherdev(sizeof_priv) alloc_etherdev((sizeof_priv))
 
-#define rtw_netdev_priv(netdev) netdev_priv((netdev))
 #define rtw_free_netdev(netdev) free_netdev((netdev))
 
 #define NDEV_FMT "%s"

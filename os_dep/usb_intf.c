@@ -990,7 +990,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	if ((pnetdev = rtw_init_netdev(padapter)) == NULL) {
 		goto handle_dualmac;
 	}
-	padapter = rtw_netdev_priv(pnetdev);
+	padapter = netdev_priv(pnetdev);
 
 	padapter->dvobj = dvobj;
 	padapter->bDriverStopped=_TRUE;

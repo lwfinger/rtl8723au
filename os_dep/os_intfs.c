@@ -299,7 +299,7 @@ void rtw_proc_init_one(struct net_device *dev)
 {
 	struct proc_dir_entry *dir_dev = NULL;
 	struct proc_dir_entry *entry=NULL;
-	struct rtw_adapter	*padapter = rtw_netdev_priv(dev);
+	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 rf_type;
 
 	if(rtw_proc == NULL)
@@ -622,7 +622,7 @@ void rtw_proc_init_one(struct net_device *dev)
 void rtw_proc_remove_one(struct net_device *dev)
 {
 	struct proc_dir_entry *dir_dev = NULL;
-	struct rtw_adapter	*padapter = rtw_netdev_priv(dev);
+	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 rf_type;
 
 	dir_dev = padapter->dir_dev;
@@ -835,7 +835,7 @@ _func_exit_;
 
 static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct sockaddr *addr = p;
 
 	if(padapter->bup == _FALSE)
@@ -852,7 +852,7 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 
 static struct net_device_stats *rtw_net_get_stats(struct net_device *pnetdev)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
 	struct recv_priv *precvpriv = &(padapter->recvpriv);
 
@@ -902,7 +902,7 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 
 static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb)
 {
-	struct rtw_adapter	*padapter = rtw_netdev_priv(dev);
+	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 	skb->priority = rtw_classify8021d(skb);
@@ -955,7 +955,7 @@ static const struct net_device_ops rtw_netdev_ops = {
 
 int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 {
-	struct rtw_adapter *padapter = rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 
 #ifdef CONFIG_EASY_REPLACEMENT
 	struct net_device	*TargetNetdev = NULL;
@@ -968,7 +968,7 @@ int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 		TargetNetdev = dev_get_by_name(devnet, "wlan0");
 		if(TargetNetdev) {
 			DBG_8723A("Force onboard module driver disappear !!!\n");
-			TargetAdapter = rtw_netdev_priv(TargetNetdev);
+			TargetAdapter = netdev_priv(TargetNetdev);
 			TargetAdapter->DriverState = DRIVER_DISAPPEAR;
 
 			padapter->pid[0] = TargetAdapter->pid[0];
@@ -1014,7 +1014,7 @@ struct net_device *rtw_init_netdev(struct rtw_adapter *old_padapter)
 		return NULL;
 
 	pnetdev->dev.type = &wlan_type;
-	padapter = rtw_netdev_priv(pnetdev);
+	padapter = netdev_priv(pnetdev);
 	padapter->pnetdev = pnetdev;
 
 	//pnetdev->init = NULL;
@@ -1489,7 +1489,7 @@ u8 rtw_free_drv_sw(struct rtw_adapter *padapter)
 #ifdef CONFIG_CONCURRENT_MODE
 int _netdev_if2_open(struct net_device *pnetdev)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct rtw_adapter *primary_padapter = padapter->pbuddy_adapter;
 
 	DBG_8723A("+871x_drv - if2_open, bup=%d\n", padapter->bup);
@@ -1570,7 +1570,7 @@ netdev_if2_open_error:
 int netdev_if2_open(struct net_device *pnetdev)
 {
 	int ret;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 
 	mutex_lock(&(adapter_to_dvobj(padapter)->hw_init_mutex));
 	ret = _netdev_if2_open(pnetdev);
@@ -1580,7 +1580,7 @@ int netdev_if2_open(struct net_device *pnetdev)
 
 static int netdev_if2_close(struct net_device *pnetdev)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 
 	padapter->net_closed = _TRUE;
 
@@ -1630,7 +1630,7 @@ _adapter *rtw_drv_if2_init(struct rtw_adapter *primary_padapter, void (*set_intf
 #endif
 
 	/****** init adapter ******/
-	padapter = rtw_netdev_priv(pnetdev);
+	padapter = netdev_priv(pnetdev);
 	memcpy(padapter, primary_padapter, sizeof(struct rtw_adapter));
 
 	//
@@ -1800,7 +1800,7 @@ void rtw_drv_if2_stop(struct rtw_adapter *if2)
 #ifdef CONFIG_BR_EXT
 void netdev_br_init(struct net_device *netdev)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)rtw_netdev_priv(netdev);
+	struct rtw_adapter *adapter = netdev_priv(netdev);
 
 	rcu_read_lock();
 
@@ -1898,7 +1898,7 @@ int rtw_drv_register_netdev(struct rtw_adapter *if1)
 int _netdev_open(struct net_device *pnetdev)
 {
 	uint status;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+871x_drv - dev_open\n"));
@@ -2009,7 +2009,7 @@ netdev_open_error:
 int netdev_open(struct net_device *pnetdev)
 {
 	int ret;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 
 	mutex_lock(&(adapter_to_dvobj(padapter)->hw_init_mutex));
 	ret = _netdev_open(pnetdev);
@@ -2138,7 +2138,7 @@ int pm_netdev_open(struct net_device *pnetdev,u8 bnormal)
 		status = netdev_open(pnetdev);
 #ifdef CONFIG_IPS
 	else
-		status =  (_SUCCESS == ips_netdrv_open((struct rtw_adapter *)rtw_netdev_priv(pnetdev)))?(0):(-1);
+		status =  (_SUCCESS == ips_netdrv_open(netdev_priv(pnetdev)))?(0):(-1);
 #endif
 
 	return status;
@@ -2146,7 +2146,7 @@ int pm_netdev_open(struct net_device *pnetdev,u8 bnormal)
 
 static int netdev_close(struct net_device *pnetdev)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(pnetdev);
+	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+871x_drv - drv_close\n"));
 

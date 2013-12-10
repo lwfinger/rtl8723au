@@ -353,7 +353,7 @@ void rtw_indicate_sta_disassoc_event(struct rtw_adapter *padapter, struct sta_in
 
 static int mgnt_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
 {
-	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
+	struct hostapd_priv *phostapdpriv = netdev_priv(pnetdev);
 	struct rtw_adapter *padapter = (struct rtw_adapter *)phostapdpriv->padapter;
 
 	//DBG_8723A("%s\n", __FUNCTION__);
@@ -363,7 +363,7 @@ static int mgnt_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
 
 static int mgnt_netdev_open(struct net_device *pnetdev)
 {
-	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
+	struct hostapd_priv *phostapdpriv = netdev_priv(pnetdev);
 
 	DBG_8723A("mgnt_netdev_open: MAC Address:" MAC_FMT "\n", MAC_ARG(pnetdev->dev_addr));
 
@@ -384,7 +384,7 @@ static int mgnt_netdev_open(struct net_device *pnetdev)
 }
 static int mgnt_netdev_close(struct net_device *pnetdev)
 {
-	struct hostapd_priv *phostapdpriv = rtw_netdev_priv(pnetdev);
+	struct hostapd_priv *phostapdpriv = netdev_priv(pnetdev);
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
@@ -424,7 +424,7 @@ int hostapd_mode_init(struct rtw_adapter *padapter)
 
 	//pnetdev->type = ARPHRD_IEEE80211;
 
-	phostapdpriv = rtw_netdev_priv(pnetdev);
+	phostapdpriv = netdev_priv(pnetdev);
 	phostapdpriv->pmgnt_netdev = pnetdev;
 	phostapdpriv->padapter= padapter;
 	padapter->phostapdpriv = phostapdpriv;

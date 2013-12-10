@@ -699,7 +699,7 @@ static int rtw_cfg80211_ap_set_encryption(struct net_device *dev, struct ieee_pa
 	int ret = 0;
 	u32 wep_key_idx, wep_key_len,wep_total_len;
 	struct sta_info *psta = NULL, *pbcmc_sta = NULL;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(dev);
+	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct security_priv* psecuritypriv=&(padapter->securitypriv);
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -984,7 +984,7 @@ static int rtw_cfg80211_set_encryption(struct net_device *dev, struct ieee_param
 {
 	int ret = 0;
 	u32 wep_key_idx, wep_key_len,wep_total_len;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(dev);
+	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 #ifdef CONFIG_P2P
@@ -1276,7 +1276,7 @@ static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev,
 static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
 				u8 key_index, bool pairwise, const u8 *mac_addr)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
+	struct rtw_adapter *padapter = netdev_priv(ndev);
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 
 	DBG_8723A(FUNC_NDEV_FMT" key_index=%d\n", FUNC_NDEV_ARG(ndev), key_index);
@@ -1295,7 +1295,7 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
 	, bool unicast, bool multicast
 	)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
+	struct rtw_adapter *padapter = netdev_priv(ndev);
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 
 		DBG_8723A(FUNC_NDEV_FMT" key_index=%d"
@@ -2889,7 +2889,7 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 	unsigned char dst_mac_addr[6];
 	struct ieee80211_hdr *dot11_hdr;
 	struct ieee80211_radiotap_header *rtap_hdr;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
+	struct rtw_adapter *padapter = netdev_priv(ndev);
 
 	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 
@@ -3370,7 +3370,7 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 	struct list_head *phead, *plist;
 	u8 updated;
 	struct sta_info *psta = NULL;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
+	struct rtw_adapter *padapter = netdev_priv(ndev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct sta_priv *pstapriv = &padapter->stapriv;
 
@@ -4266,7 +4266,7 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 	u8 *p2p_ie;
 	u32	wfd_ielen = 0;
 	u8 *wfd_ie;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(ndev);
+	struct rtw_adapter *padapter = netdev_priv(ndev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &(padapter->mlmeextpriv);
 
@@ -4381,7 +4381,7 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 	u8 *p2p_ie;
 	u32	wfd_ielen = 0;
 	u8 *wfd_ie;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(net);
+	struct rtw_adapter *padapter = netdev_priv(net);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 
 #ifdef CONFIG_DEBUG_CFG80211
@@ -4539,7 +4539,7 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 static int rtw_cfg80211_set_assoc_resp_wpsp2pie(struct net_device *net, char *buf, int len)
 {
 	int ret = 0;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)rtw_netdev_priv(net);
+	struct rtw_adapter *padapter = netdev_priv(net);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 
 	DBG_8723A("%s, ielen=%d\n", __func__, len);
