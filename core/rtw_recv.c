@@ -2344,13 +2344,9 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, union recv_frame *prframe)
 			/*  Insert NAT2.5 RX here! */
 			struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 			void *br_port = NULL;
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-			br_port = padapter->pnetdev->br_port;
-#else   /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 			rcu_read_lock();
 			br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
 			rcu_read_unlock();
-#endif  /*  (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35)) */
 
 			if (br_port &&
 			    (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)) {
