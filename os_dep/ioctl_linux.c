@@ -155,32 +155,6 @@ static int hwaddr_aton_i(const char *txt, u8 *addr)
 	return 0;
 }
 
-static void indicate_wx_custom_event(struct rtw_adapter *padapter, char *msg)
-{
-	u8 *buff, *p;
-	union iwreq_data wrqu;
-
-	if (strlen(msg) > IW_CUSTOM_MAX) {
-		DBG_8723A("%s strlen(msg):%zu > IW_CUSTOM_MAX:%u\n",
-			  __func__ , strlen(msg), IW_CUSTOM_MAX);
-		return;
-	}
-
-	buff = kzalloc(IW_CUSTOM_MAX + 1, GFP_KERNEL);
-	if (!buff)
-		return;
-
-	memcpy(buff, msg, strlen(msg));
-
-	memset(&wrqu, 0, sizeof(wrqu));
-	wrqu.data.length = strlen(msg);
-
-	DBG_8723A("%s %s\n", __func__, buff);
-
-	kfree(buff);
-}
-
-
 /*
 uint	rtw_is_cckrates_included(u8 *rate)
 {
@@ -7825,12 +7799,6 @@ static int rtw_wx_set_priv(struct net_device *dev,
 	i = rtw_android_cmdstr_to_num(ext);
 
 	switch(i) {
-		case ANDROID_WIFI_CMD_START :
-			indicate_wx_custom_event(padapter, "START");
-			break;
-		case ANDROID_WIFI_CMD_STOP :
-			indicate_wx_custom_event(padapter, "STOP");
-			break;
 		case ANDROID_WIFI_CMD_RSSI :
 			{
 				struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
