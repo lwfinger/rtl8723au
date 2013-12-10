@@ -188,7 +188,6 @@ void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *px
 
 void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
 {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
 	u16	queue;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
@@ -203,11 +202,6 @@ void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
 		if(__netif_subqueue_stopped(padapter->pnetdev, queue))
 			netif_wake_subqueue(padapter->pnetdev, queue);
 	}
-#else
-	if (netif_queue_stopped(padapter->pnetdev))
-		netif_wake_queue(padapter->pnetdev);
-#endif
-
 	dev_kfree_skb_any(pkt);
 }
 
@@ -248,7 +242,6 @@ void rtw_os_xmit_schedule(struct rtw_adapter *padapter)
 static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff *pkt)
 {
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	u16	queue;
 
 	queue = skb_get_queue_mapping(pkt);
@@ -264,13 +257,6 @@ static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff
 				netif_stop_subqueue(padapter->pnetdev, queue);
 		}
 	}
-#else
-	if(pxmitpriv->free_xmitframe_cnt<=4)
-	{
-		if (!rtw_netif_queue_stopped(padapter->pnetdev))
-			rtw_netif_stop_queue(padapter->pnetdev);
-	}
-#endif
 }
 
 #ifdef CONFIG_TX_MCAST2UNI
@@ -351,9 +337,7 @@ int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev)
 	extern int rtw_mc2u_disable;
 #endif	// CONFIG_TX_MCAST2UNI
 	s32 res = 0;
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	u16 queue;
-#endif
 
 _func_enter_;
 
