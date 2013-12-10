@@ -181,31 +181,6 @@ static void indicate_wx_custom_event(struct rtw_adapter *padapter, char *msg)
 }
 
 
-static void request_wps_pbc_event(struct rtw_adapter *padapter)
-{
-	u8 *buff, *p;
-	union iwreq_data wrqu;
-
-	buff = kzalloc(IW_CUSTOM_MAX, GFP_KERNEL);
-	if(!buff)
-		return;
-
-	p = buff;
-	p += sprintf(p, "WPS_PBC_START.request=TRUE");
-
-	memset(&wrqu, 0, sizeof(wrqu));
-
-	wrqu.data.length = p-buff;
-
-	wrqu.data.length = (wrqu.data.length < IW_CUSTOM_MAX) ? wrqu.data.length:IW_CUSTOM_MAX;
-
-	DBG_8723A("%s\n", __func__);
-
-	if (buff)
-		kfree(buff);
-}
-
-
 /*
 uint	rtw_is_cckrates_included(u8 *rate)
 {
