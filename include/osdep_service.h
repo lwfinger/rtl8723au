@@ -359,25 +359,17 @@ extern int rtw_retrive_from_file(char *path, u8* buf, u32 sz);
 extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
 
 
-#if 1 //#ifdef MEM_ALLOC_REFINE_ADAPTOR
-struct rtw_netdev_priv_indicator {
-	void *priv;
-	u32 sizeof_priv;
-};
-struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv, void *old_priv);
-extern struct net_device * rtw_alloc_etherdev(int sizeof_priv);
-
-#define rtw_netdev_priv(netdev) ( ((struct rtw_netdev_priv_indicator *)netdev_priv(netdev))->priv )
-
-extern void rtw_free_netdev(struct net_device * netdev);
-
-#else //MEM_ALLOC_REFINE_ADAPTOR
-
+/*
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
+#else
+	pnetdev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
+#endif
+*/
 #define rtw_alloc_etherdev(sizeof_priv) alloc_etherdev((sizeof_priv))
 
 #define rtw_netdev_priv(netdev) netdev_priv((netdev))
 #define rtw_free_netdev(netdev) free_netdev((netdev))
-#endif
 
 #define NDEV_FMT "%s"
 #define NDEV_ARG(ndev) ndev->name

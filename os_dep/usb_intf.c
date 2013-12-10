@@ -987,14 +987,14 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	struct net_device *pnetdev = NULL;
 	int status = _FAIL;
 
-	if ((padapter = (struct rtw_adapter *)rtw_zvmalloc(sizeof(*padapter))) == NULL) {
-		goto exit;
+	if ((pnetdev = rtw_init_netdev(padapter)) == NULL) {
+		goto handle_dualmac;
 	}
+	padapter = rtw_netdev_priv(pnetdev);
+
 	padapter->dvobj = dvobj;
-	dvobj->if1 = padapter;
-
 	padapter->bDriverStopped=_TRUE;
-
+	dvobj->if1 = padapter;
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
 	padapter->iface_id = IFACE_ID0;
 
@@ -1002,34 +1002,29 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	//set adapter_type/iface type for primary padapter
 	padapter->isprimary = _TRUE;
 	padapter->adapter_type = PRIMARY_ADAPTER;
-	#ifndef CONFIG_HWPORT_SWAP
+#ifndef CONFIG_HWPORT_SWAP
 	padapter->iface_type = IFACE_PORT0;
-	#else
+#else
 	padapter->iface_type = IFACE_PORT1;
-	#endif
+#endif
 #endif
 
-	#ifndef RTW_DVOBJ_CHIP_HW_TYPE
+#ifndef RTW_DVOBJ_CHIP_HW_TYPE
 	//step 1-1., decide the chip_type via vid/pid
 	padapter->interface_type = RTW_USB;
 	decide_chip_type_by_usb_device_id(padapter, pdid);
-	#endif
+#endif
 
 	if (rtw_handle_dualmac(padapter, 1) != _SUCCESS)
 		goto free_adapter;
 
-	if((pnetdev = rtw_init_netdev(padapter)) == NULL) {
-		goto handle_dualmac;
-	}
 	SET_NETDEV_DEV(pnetdev, dvobj_to_dev(dvobj));
-	padapter = rtw_netdev_priv(pnetdev);
 
 #ifdef CONFIG_IOCTL_CFG80211
-	if(rtw_wdev_alloc(padapter, dvobj_to_dev(dvobj)) != 0) {
+	if (rtw_wdev_alloc(padapter, dvobj_to_dev(dvobj)) != 0) {
 		goto handle_dualmac;
 	}
 #endif
-
 
 	//step 2. hook HalFunc, allocate HalData
 	hal_set_hal_ops(padapter);
@@ -1115,8 +1110,6 @@ free_adapter:
 	if (status != _SUCCESS) {
 		if (pnetdev)
 			rtw_free_netdev(pnetdev);
-		else if (padapter)
-			rtw_vmfree((u8*)padapter, sizeof(*padapter));
 		padapter = NULL;
 	}
 exit:

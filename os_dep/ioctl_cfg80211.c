@@ -3063,7 +3063,6 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 	int ret = 0;
 	struct net_device* mon_ndev = NULL;
 	struct wireless_dev* mon_wdev = NULL;
-	struct rtw_netdev_priv_indicator *pnpi;
 	struct rtw_wdev_priv *pwdev_priv = wdev_to_priv(padapter->rtw_wdev);
 
 	if (!name ) {
@@ -3079,7 +3078,7 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 		goto out;
 	}
 
-	mon_ndev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
+	mon_ndev = rtw_alloc_etherdev(sizeof(struct rtw_adapter));
 	if (!mon_ndev) {
 		DBG_8723A(FUNC_ADPT_FMT" allocate ndev fail\n", FUNC_ADPT_ARG(padapter));
 		ret = -ENOMEM;
@@ -3092,10 +3091,6 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 	mon_ndev->destructor = rtw_ndev_destructor;
 
 	mon_ndev->netdev_ops = &rtw_cfg80211_monitor_if_ops;
-
-	pnpi = netdev_priv(mon_ndev);
-	pnpi->priv = padapter;
-	pnpi->sizeof_priv = sizeof(struct rtw_adapter);
 
 	/*  wdev */
 	mon_wdev = (struct wireless_dev *)

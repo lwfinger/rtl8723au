@@ -461,65 +461,6 @@ int rtw_store_to_file(char *path, u8* buf, u32 sz)
 	return ret>=0?ret:0;
 }
 
-struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv, void *old_priv)
-{
-	struct net_device *pnetdev;
-	struct rtw_netdev_priv_indicator *pnpi;
-
-	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
-	if (!pnetdev)
-		goto RETURN;
-
-	pnpi = netdev_priv(pnetdev);
-	pnpi->priv=old_priv;
-	pnpi->sizeof_priv=sizeof_priv;
-
-RETURN:
-	return pnetdev;
-}
-
-struct net_device *rtw_alloc_etherdev(int sizeof_priv)
-{
-	struct net_device *pnetdev;
-	struct rtw_netdev_priv_indicator *pnpi;
-
-	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
-	if (!pnetdev)
-		goto RETURN;
-
-	pnpi = netdev_priv(pnetdev);
-
-	pnpi->priv = rtw_zvmalloc(sizeof_priv);
-	if (!pnpi->priv) {
-		free_netdev(pnetdev);
-		pnetdev = NULL;
-		goto RETURN;
-	}
-
-	pnpi->sizeof_priv=sizeof_priv;
-RETURN:
-	return pnetdev;
-}
-
-void rtw_free_netdev(struct net_device * netdev)
-{
-	struct rtw_netdev_priv_indicator *pnpi;
-
-	if(!netdev)
-		goto RETURN;
-
-	pnpi = netdev_priv(netdev);
-
-	if(!pnpi->priv)
-		goto RETURN;
-
-	rtw_vmfree(pnpi->priv, pnpi->sizeof_priv);
-	free_netdev(netdev);
-
-RETURN:
-	return;
-}
-
 /*
 * This function should be called under ioctl (rtnl_lock is accquired)
 */
