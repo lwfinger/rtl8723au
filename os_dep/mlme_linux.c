@@ -90,7 +90,6 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 #endif
 }
 
-extern void rtw_indicate_wx_assoc_event(struct rtw_adapter *padapter);
 extern void rtw_indicate_wx_disassoc_event(struct rtw_adapter *padapter);
 
 void rtw_os_indicate_connect(struct rtw_adapter *adapter)
@@ -100,7 +99,6 @@ _func_enter_;
 
 	rtw_cfg80211_indicate_connect(adapter);
 
-	rtw_indicate_wx_assoc_event(adapter);
 	netif_carrier_on(adapter->pnetdev);
 
 	if(adapter->pid[2] !=0)
