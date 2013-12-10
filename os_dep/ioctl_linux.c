@@ -7820,19 +7820,6 @@ static int rtw_wx_set_priv(struct net_device *dev,
 		case ANDROID_WIFI_CMD_MACADDR :
 			sprintf(ext, "MACADDR = " MAC_FMT, MAC_ARG(dev->dev_addr));
 			break;
-		case ANDROID_WIFI_CMD_SCAN_ACTIVE :
-			{
-				//rtw_set_scan_mode(padapter, SCAN_ACTIVE);
-				sprintf(ext, "OK");
-			}
-			break;
-		case ANDROID_WIFI_CMD_SCAN_PASSIVE :
-			{
-				//rtw_set_scan_mode(padapter, SCAN_PASSIVE);
-				sprintf(ext, "OK");
-			}
-			break;
-
 		case ANDROID_WIFI_CMD_COUNTRY :
 			{
 				char country_code[10];

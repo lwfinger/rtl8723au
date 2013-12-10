@@ -1195,23 +1195,6 @@ u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter)
 }
 
 /*
-* rtw_set_scan_mode -
-* @adapter: pointer to _adapter structure
-* @scan_mode:
-*
-* Return _SUCCESS or _FAIL
-*/
-int rtw_set_scan_mode(struct rtw_adapter *adapter, RT_SCAN_TYPE scan_mode)
-{
-	if(scan_mode != SCAN_ACTIVE && scan_mode != SCAN_PASSIVE)
-		return _FAIL;
-
-	adapter->mlmepriv.scan_mode = scan_mode;
-
-	return _SUCCESS;
-}
-
-/*
 * rtw_set_channel_plan -
 * @adapter: pointer to _adapter structure
 * @channel_plan:
