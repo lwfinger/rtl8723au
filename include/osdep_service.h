@@ -131,41 +131,25 @@ static inline void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 
 static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 {
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	return (netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 0)) &&
 		netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 1)) &&
 		netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 2)) &&
 		netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 3)) );
-#else
-	return netif_queue_stopped(pnetdev);
-#endif
 }
 
 static inline void rtw_netif_wake_queue(struct net_device *pnetdev)
 {
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	netif_tx_wake_all_queues(pnetdev);
-#else
-	netif_wake_queue(pnetdev);
-#endif
 }
 
 static inline void rtw_netif_start_queue(struct net_device *pnetdev)
 {
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	netif_tx_start_all_queues(pnetdev);
-#else
-	netif_start_queue(pnetdev);
-#endif
 }
 
 static inline void rtw_netif_stop_queue(struct net_device *pnetdev)
 {
-#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	netif_tx_stop_all_queues(pnetdev);
-#else
-	netif_stop_queue(pnetdev);
-#endif
 }
 
 #ifndef BIT
