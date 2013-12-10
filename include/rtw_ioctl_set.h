@@ -41,8 +41,6 @@ u8 rtw_set_802_11_bssid_list_scan(struct rtw_adapter* padapter, NDIS_802_11_SSID
 u8 rtw_set_802_11_infrastructure_mode(struct rtw_adapter * padapter, NDIS_802_11_NETWORK_INFRASTRUCTURE networktype);
 u8 rtw_set_802_11_remove_wep(struct rtw_adapter * padapter, u32 keyindex);
 u8 rtw_set_802_11_ssid(struct rtw_adapter * padapter, NDIS_802_11_SSID * ssid);
-u8 rtw_set_802_11_remove_key(struct rtw_adapter * padapter, NDIS_802_11_REMOVE_KEY * key);
-
 
 u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid);
 

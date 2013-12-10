@@ -1070,58 +1070,6 @@ _func_exit_;
 	return ret;
 }
 
-u8 rtw_set_802_11_remove_key(struct rtw_adapter*	padapter, NDIS_802_11_REMOVE_KEY *key){
-
-	uint				encryptionalgo;
-	u8 * pbssid;
-	struct sta_info *stainfo;
-	u8	bgroup = (key->KeyIndex & 0x4000000) > 0 ? _FALSE: _TRUE;
-	u8	keyIndex = (u8)key->KeyIndex & 0x03;
-	u8	ret=_SUCCESS;
-
-_func_enter_;
-
-	if ((key->KeyIndex & 0xbffffffc) > 0) {
-		ret=_FAIL;
-		goto exit;
-	}
-
-	if (bgroup == _TRUE) {
-		encryptionalgo= padapter->securitypriv.dot118021XGrpPrivacy;
-		/*  clear group key by index */
-		/* NdisZeroMemory(Adapter->MgntInfo.SecurityInfo.KeyBuf[keyIndex], MAX_WEP_KEY_LEN); */
-		/* Adapter->MgntInfo.SecurityInfo.KeyLen[keyIndex] = 0; */
-
-		memset(&padapter->securitypriv.dot118021XGrpKey[keyIndex], 0, 16);
-
-		/*  \todo Send a H2C Command to Firmware for removing this Key in CAM Entry. */
-
-	} else {
-
-		pbssid=get_bssid(&padapter->mlmepriv);
-		stainfo=rtw_get_stainfo(&padapter->stapriv , pbssid );
-		if(stainfo !=NULL){
-			encryptionalgo=stainfo->dot118021XPrivacy;
-
-		/*  clear key by BSSID */
-		memset(&stainfo->dot118021x_UncstKey, 0, 16);
-
-		/*  \todo Send a H2C Command to Firmware for disable this Key in CAM Entry. */
-
-		}
-		else{
-			ret= _FAIL;
-			goto exit;
-		}
-	}
-
-exit:
-
-_func_exit_;
-
-	return _TRUE;
-}
-
 /*
 * rtw_get_cur_max_rate -
 * @adapter: pointer to _adapter structure
