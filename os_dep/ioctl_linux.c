@@ -48,8 +48,6 @@
 #include <rtl8188e_hal.h>
 #endif
 
-extern s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
-
 #define RTL_IOCTL_WPA_SUPPLICANT	SIOCIWFIRSTPRIV+30
 
 #define SCAN_ITEM_SIZE 768
