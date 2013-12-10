@@ -1615,10 +1615,6 @@ _adapter *rtw_drv_if2_init(struct rtw_adapter *primary_padapter, void (*set_intf
 	DBG_8723A("register rtw_netdev_if2_ops to netdev_ops\n");
 	pnetdev->netdev_ops = &rtw_netdev_if2_ops;
 
-#ifdef CONFIG_NO_WIRELESS_HANDLERS
-	pnetdev->wireless_handlers = NULL;
-#endif
-
 	/****** init adapter ******/
 	padapter = netdev_priv(pnetdev);
 	memcpy(padapter, primary_padapter, sizeof(struct rtw_adapter));

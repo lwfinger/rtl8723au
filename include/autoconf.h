@@ -61,7 +61,6 @@
 		#define CONFIG_HOSTAPD_MLME
 	#endif
 	//#define CONFIG_FIND_BEST_CHANNEL
-	//#define CONFIG_NO_WIRELESS_HANDLERS
 #endif
 
 #define CONFIG_P2P
