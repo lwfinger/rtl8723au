@@ -123,7 +123,7 @@ void SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed);
 
 #define CONFIG_LED_REMOVE_HAL
 
-void
+static void
 SwLedBlink(
 	PLED_871x			pLed
 	)
@@ -240,8 +240,7 @@ SwLedBlink(
 	}
 }
 
-void
-SwLedBlink1(
+static void SwLedBlink1(
 	PLED_871x			pLed
 	)
 {
@@ -451,8 +450,7 @@ SwLedBlink1(
 	}
 }
 
-void
-SwLedBlink2(
+static void SwLedBlink2(
 	PLED_871x			pLed
 	)
 {
@@ -572,8 +570,7 @@ SwLedBlink2(
 	}
 }
 
-void
-SwLedBlink3(
+static void SwLedBlink3(
 	PLED_871x			pLed
 	)
 {
@@ -739,8 +736,7 @@ SwLedBlink3(
 	}
 }
 
-void
-SwLedBlink4(
+static void SwLedBlink4(
 	PLED_871x			pLed
 	)
 {
@@ -935,8 +931,7 @@ SwLedBlink4(
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("SwLedBlink4 CurrLedState %d\n", pLed->CurrLedState));
 }
 
-void
-SwLedBlink5(
+static void SwLedBlink5(
 	PLED_871x			pLed
 	)
 {
@@ -1050,8 +1045,7 @@ SwLedBlink5(
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("SwLedBlink5 CurrLedState %d\n", pLed->CurrLedState));
 }
 
-void
-SwLedBlink6(
+static void SwLedBlink6(
 	PLED_871x			pLed
 	)
 {
