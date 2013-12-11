@@ -25,7 +25,7 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <mlme_osdep.h>
-
+#include <rtw_ioctl_set.h>
 
 /*
 void sitesurvey_ctrl_handler(void *FunctionContext)
@@ -223,20 +223,20 @@ _func_exit_;
 
 }
 
-void _survey_timer_hdl (void *FunctionContext)
+static void _survey_timer_hdl (void *FunctionContext)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
 
 	survey_timer_hdl(padapter);
 }
 
-void _link_timer_hdl (void *FunctionContext)
+static void _link_timer_hdl (void *FunctionContext)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
 	link_timer_hdl(padapter);
 }
 
-void _addba_timer_hdl(void *FunctionContext)
+static void _addba_timer_hdl(void *FunctionContext)
 {
 	struct sta_info *psta = (struct sta_info *)FunctionContext;
 	addba_timer_hdl(psta);

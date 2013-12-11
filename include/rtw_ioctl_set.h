@@ -45,5 +45,9 @@ u8 rtw_set_802_11_ssid(struct rtw_adapter * padapter, NDIS_802_11_SSID * ssid);
 u8 rtw_validate_ssid(NDIS_802_11_SSID *ssid);
 
 u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter);
+void rtw_indicate_wx_assoc_event(struct rtw_adapter *padapter);
+void rtw_indicate_wx_disassoc_event(struct rtw_adapter *padapter);
+void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
+s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
 #endif
