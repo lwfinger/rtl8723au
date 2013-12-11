@@ -27,7 +27,6 @@
 #include <mlme_osdep.h>
 #include <circ_buf.h>
 #include <rtw_ioctl_set.h>
-
 #include <rtl8723a_hal.h>
 
 
@@ -277,7 +276,7 @@ _func_enter_;
 _func_exit_;
 }
 
-void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
+static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
@@ -379,7 +378,7 @@ _ConstructBeacon:
 
 }
 
-void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
+static void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
@@ -409,7 +408,7 @@ void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 	*pLength = 16;
 }
 
-void ConstructNullFunctionData(
+static void ConstructNullFunctionData(
 	struct rtw_adapter *padapter,
 	u8		*pframe,
 	u32		*pLength,
@@ -482,7 +481,7 @@ void ConstructNullFunctionData(
 	*pLength = pktlen;
 }
 
-void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr, bool bHideSSID)
+static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr, bool bHideSSID)
 {
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
