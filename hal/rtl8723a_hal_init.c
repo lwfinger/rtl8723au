@@ -1986,7 +1986,7 @@ static void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter * padapter)
 	SetBcnCtrlReg(padapter, DIS_BCNQ_SUB, 0);
 }
 
-void rtl8723a_GetHalODMVar(
+static void rtl8723a_GetHalODMVar(
 	struct rtw_adapter *				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	void *					pValue1,
@@ -2002,7 +2002,7 @@ void rtl8723a_GetHalODMVar(
 	}
 }
 
-void rtl8723a_SetHalODMVar(
+static void rtl8723a_SetHalODMVar(
 	struct rtw_adapter *				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	void *					pValue1,
@@ -2042,7 +2042,8 @@ void rtl8723a_SetHalODMVar(
 			break;
 	}
 }
-void hal_notch_filter_8723a(struct rtw_adapter *adapter, bool enable)
+
+static void hal_notch_filter_8723a(struct rtw_adapter *adapter, bool enable)
 {
 	if (enable) {
 		DBG_8723A("Enable notch filter\n");
@@ -2295,7 +2296,7 @@ u8 GetEEPROMSize8723A(struct rtw_adapter * padapter)
 // LLT R/W/Init function
 //
 //-------------------------------------------------------------------------
-s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
+static s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
 {
 	s32	status = _SUCCESS;
 	s32	count = 0;
@@ -2322,7 +2323,7 @@ s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
 	return status;
 }
 
-u8 _LLTRead(struct rtw_adapter * padapter, u32 address)
+static u8 _LLTRead(struct rtw_adapter * padapter, u32 address)
 {
 	s32	count = 0;
 	u32	value = _LLT_INIT_ADDR(address) | _LLT_OP(_LLT_READ_ACCESS);
@@ -2387,7 +2388,7 @@ s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 	return status;
 }
 
-void _DisableGPIO(struct rtw_adapter *	padapter)
+static void _DisableGPIO(struct rtw_adapter *	padapter)
 {
 /***************************************
 j. GPIO_PIN_CTRL 0x44[31:0]=0x000		//
@@ -2425,7 +2426,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
 } //end of _DisableGPIO()
 
-void _DisableRFAFEAndResetBB8192C(struct rtw_adapter * padapter)
+static void _DisableRFAFEAndResetBB8192C(struct rtw_adapter * padapter)
 {
 /**************************************
 a.	TXPAUSE 0x522[7:0] = 0xFF             //Pause MAC TX queue
@@ -2457,12 +2458,12 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 //	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
 }
 
-void _DisableRFAFEAndResetBB(struct rtw_adapter * padapter)
+static void _DisableRFAFEAndResetBB(struct rtw_adapter * padapter)
 {
 	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
-void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWithoutHWSM)
+static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
@@ -2572,12 +2573,12 @@ void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWithoutHWS
 
 }
 
-void _ResetDigitalProcedure1(struct rtw_adapter * padapter, bool bWithoutHWSM)
+static void _ResetDigitalProcedure1(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
-void _ResetDigitalProcedure2(struct rtw_adapter * padapter)
+static void _ResetDigitalProcedure2(struct rtw_adapter * padapter)
 {
 /*****************************
 k.	SYS_FUNC_EN 0x03[7:0] = 0x44			// disable ELDR runction
@@ -2588,7 +2589,7 @@ m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
-void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
+static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
 	u16 value16 = 0;
@@ -3162,7 +3163,7 @@ Hal_InitChannelPlan(
 {
 }
 
-void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc)
+static void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 {
 	u16	*usPtr = (u16*)ptxdesc;
 	u32 count = 16;		// (32 bytes / 2 bytes per XOR) => 16 times
@@ -3285,7 +3286,7 @@ static void fill_txdesc_phy(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 	}
 }
 
-void rtl8723a_fill_default_txdesc(
+static void rtl8723a_fill_default_txdesc(
 	struct xmit_frame *pxmitframe,
 	u8 *pbuf)
 {
