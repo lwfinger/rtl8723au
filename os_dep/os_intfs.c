@@ -46,142 +46,142 @@ MODULE_AUTHOR("Realtek Semiconductor Corp.");
 MODULE_VERSION(DRIVERVERSION);
 
 /* module param defaults */
-int rtw_chip_version = 0x00;
-int rtw_rfintfs = HWPI;
-int rtw_lbkmode = 0;//RTL8712_AIR_TRX;
-int rtw_debug = 1;
+static int rtw_chip_version = 0x00;
+static int rtw_rfintfs = HWPI;
+static int rtw_lbkmode = 0;//RTL8712_AIR_TRX;
+static int rtw_debug = 1;
 
-int rtw_network_mode = Ndis802_11IBSS;//Ndis802_11Infrastructure;//infra, ad-hoc, auto
+static int rtw_network_mode = Ndis802_11IBSS;//Ndis802_11Infrastructure;//infra, ad-hoc, auto
 //NDIS_802_11_SSID	ssid;
-int rtw_channel = 1;//ad-hoc support requirement
-int rtw_wireless_mode = WIRELESS_11BG_24N;
-int rtw_vrtl_carrier_sense = AUTO_VCS;
-int rtw_vcs_type = RTS_CTS;//*
-int rtw_rts_thresh = 2347;//*
-int rtw_frag_thresh = 2346;//*
-int rtw_preamble = PREAMBLE_LONG;//long, short, auto
-int rtw_scan_mode = 1;//active, passive
-int rtw_adhoc_tx_pwr = 1;
-int rtw_soft_ap = 0;
+static int rtw_channel = 1;//ad-hoc support requirement
+static int rtw_wireless_mode = WIRELESS_11BG_24N;
+static int rtw_vrtl_carrier_sense = AUTO_VCS;
+static int rtw_vcs_type = RTS_CTS;//*
+static int rtw_rts_thresh = 2347;//*
+static int rtw_frag_thresh = 2346;//*
+static int rtw_preamble = PREAMBLE_LONG;//long, short, auto
+static int rtw_scan_mode = 1;//active, passive
+static int rtw_adhoc_tx_pwr = 1;
+static int rtw_soft_ap;
 //int smart_ps = 1;
 #ifdef CONFIG_POWER_SAVING
-int rtw_power_mgnt = 1;
+static int rtw_power_mgnt = 1;
 #ifdef CONFIG_IPS_LEVEL_2
-int rtw_ips_mode = IPS_LEVEL_2;
+static int rtw_ips_mode = IPS_LEVEL_2;
 #else
-int rtw_ips_mode = IPS_NORMAL;
+static int rtw_ips_mode = IPS_NORMAL;
 #endif
 #else
-int rtw_power_mgnt = PS_MODE_ACTIVE;
-int rtw_ips_mode = IPS_NONE;
+static int rtw_power_mgnt = PS_MODE_ACTIVE;
+static int rtw_ips_mode = IPS_NONE;
 #endif
 
-int rtw_smart_ps = 2;
+static int rtw_smart_ps = 2;
 
 #ifdef CONFIG_TX_EARLY_MODE
-int rtw_early_mode=1;
+static int rtw_early_mode=1;
 #endif
 module_param(rtw_ips_mode, int, 0644);
 MODULE_PARM_DESC(rtw_ips_mode,"The default IPS mode");
 
-int rtw_radio_enable = 1;
-int rtw_long_retry_lmt = 7;
-int rtw_short_retry_lmt = 7;
-int rtw_busy_thresh = 40;
+static int rtw_radio_enable = 1;
+static int rtw_long_retry_lmt = 7;
+static int rtw_short_retry_lmt = 7;
+static int rtw_busy_thresh = 40;
 //int qos_enable = 0; //*
-int rtw_ack_policy = NORMAL_ACK;
+static int rtw_ack_policy = NORMAL_ACK;
 
-int rtw_software_encrypt = 0;
-int rtw_software_decrypt = 0;
+static int rtw_software_encrypt;
+static int rtw_software_decrypt;
 
-int rtw_acm_method = 0;// 0:By SW 1:By HW.
+static int rtw_acm_method;// 0:By SW 1:By HW.
 
-int rtw_wmm_enable = 1;// default is set to enable the wmm.
-int rtw_uapsd_enable = 0;
-int rtw_uapsd_max_sp = NO_LIMIT;
-int rtw_uapsd_acbk_en = 0;
-int rtw_uapsd_acbe_en = 0;
-int rtw_uapsd_acvi_en = 0;
-int rtw_uapsd_acvo_en = 0;
+static int rtw_wmm_enable = 1;// default is set to enable the wmm.
+static int rtw_uapsd_enable;
+static int rtw_uapsd_max_sp = NO_LIMIT;
+static int rtw_uapsd_acbk_en;
+static int rtw_uapsd_acbe_en;
+static int rtw_uapsd_acvi_en;
+static int rtw_uapsd_acvo_en;
 
 #ifdef CONFIG_80211N_HT
 int rtw_ht_enable = 1;
 int rtw_cbw40_enable = 3; // 0 :diable, bit(0): enable 2.4g, bit(1): enable 5g
 int rtw_ampdu_enable = 1;//for enable tx_ampdu
-int rtw_rx_stbc = 1;// 0: disable, bit(0):enable 2.4g, bit(1):enable 5g, default is set to enable 2.4GHZ for IOT issue with bufflao's AP at 5GHZ
-int rtw_ampdu_amsdu = 0;// 0: disabled, 1:enabled, 2:auto
+static int rtw_rx_stbc = 1;// 0: disable, bit(0):enable 2.4g, bit(1):enable 5g, default is set to enable 2.4GHZ for IOT issue with bufflao's AP at 5GHZ
+static int rtw_ampdu_amsdu;// 0: disabled, 1:enabled, 2:auto
 #endif
 
-int rtw_lowrate_two_xmit = 1;//Use 2 path Tx to transmit MCS0~7 and legacy mode
+static int rtw_lowrate_two_xmit = 1;//Use 2 path Tx to transmit MCS0~7 and legacy mode
 
 //int rf_config = RF_1T2R;  // 1T2R
-int rtw_rf_config = RF_819X_MAX_TYPE;  //auto
-int rtw_low_power = 0;
+static int rtw_rf_config = RF_819X_MAX_TYPE;  //auto
+static int rtw_low_power;
 #ifdef CONFIG_WIFI_TEST
-int rtw_wifi_spec = 1;//for wifi test
+static int rtw_wifi_spec = 1;//for wifi test
 #else
-int rtw_wifi_spec = 0;
+static int rtw_wifi_spec;
 #endif
-int rtw_channel_plan = RT_CHANNEL_DOMAIN_MAX;
+static int rtw_channel_plan = RT_CHANNEL_DOMAIN_MAX;
 
 #ifdef CONFIG_BT_COEXIST
-int rtw_btcoex_enable = 1;
-int rtw_bt_iso = 2;// 0:Low, 1:High, 2:From Efuse
-int rtw_bt_sco = 3;// 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter, 4.Busy, 5.OtherBusy
-int rtw_bt_ampdu =1 ;// 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU.
+static int rtw_btcoex_enable = 1;
+static int rtw_bt_iso = 2;// 0:Low, 1:High, 2:From Efuse
+static int rtw_bt_sco = 3;// 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter, 4.Busy, 5.OtherBusy
+static int rtw_bt_ampdu =1 ;// 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU.
 #endif
 
-int rtw_AcceptAddbaReq = _TRUE;// 0:Reject AP's Add BA req, 1:Accept AP's Add BA req.
+static int rtw_AcceptAddbaReq = _TRUE;// 0:Reject AP's Add BA req, 1:Accept AP's Add BA req.
 
-int rtw_antdiv_cfg = 2; // 0:OFF , 1:ON, 2:decide by Efuse config
-int rtw_antdiv_type = 0 ; //0:decide by efuse  1: for 88EE, 1Tx and 1RxCG are diversity.(2 Ant with SPDT), 2:  for 88EE, 1Tx and 2Rx are diversity.( 2 Ant, Tx and RxCG are both on aux port, RxCS is on main port ), 3: for 88EE, 1Tx and 1RxCG are fixed.(1Ant, Tx and RxCG are both on aux port)
+static int rtw_antdiv_cfg = 2; // 0:OFF , 1:ON, 2:decide by Efuse config
+static int rtw_antdiv_type = 0 ; //0:decide by efuse  1: for 88EE, 1Tx and 1RxCG are diversity.(2 Ant with SPDT), 2:  for 88EE, 1Tx and 2Rx are diversity.( 2 Ant, Tx and RxCG are both on aux port, RxCS is on main port ), 3: for 88EE, 1Tx and 1RxCG are fixed.(1Ant, Tx and RxCG are both on aux port)
 
 
 #ifdef CONFIG_USB_AUTOSUSPEND
-int rtw_enusbss = 1;//0:disable,1:enable
+static int rtw_enusbss = 1;//0:disable,1:enable
 #else
-int rtw_enusbss = 0;//0:disable,1:enable
+static int rtw_enusbss;//0:disable,1:enable
 #endif
 
-int rtw_hwpdn_mode=2;//0:disable,1:enable,2: by EFUSE config
+static int rtw_hwpdn_mode=2;//0:disable,1:enable,2: by EFUSE config
 
 #ifdef CONFIG_HW_PWRP_DETECTION
-int rtw_hwpwrp_detect = 1;
+static int rtw_hwpwrp_detect = 1;
 #else
-int rtw_hwpwrp_detect = 0; //HW power  ping detect 0:disable , 1:enable
+static int rtw_hwpwrp_detect; //HW power  ping detect 0:disable , 1:enable
 #endif
 
-int rtw_hw_wps_pbc = 1;
+static int rtw_hw_wps_pbc = 1;
 
 #ifdef CONFIG_TX_MCAST2UNI
-int rtw_mc2u_disable = 0;
+static int rtw_mc2u_disable;
 #endif	// CONFIG_TX_MCAST2UNI
 
 #ifdef CONFIG_DUALMAC_CONCURRENT
-int rtw_dmsp = 0;
+static int rtw_dmsp = 0;
 #endif	// CONFIG_DUALMAC_CONCURRENT
 
 #ifdef CONFIG_80211D
-int rtw_80211d = 0;
+static int rtw_80211d = 0;
 #endif
 
 #ifdef CONFIG_REGULATORY_CTRL
-int rtw_regulatory_id =2;
+static int rtw_regulatory_id =2;
 #else
-int rtw_regulatory_id = 0xff;// Regulatory tab id, 0xff = follow efuse's setting
+static int rtw_regulatory_id = 0xff;// Regulatory tab id, 0xff = follow efuse's setting
 #endif
 module_param(rtw_regulatory_id, int, 0644);
 
 
-char* ifname = "wlan%d";
+static char *ifname = "wlan%d";
 module_param(ifname, charp, 0644);
 MODULE_PARM_DESC(ifname, "The default name to allocate for first interface");
 
-char* if2name = "wlan%d";
+static char *if2name = "wlan%d";
 module_param(if2name, charp, 0644);
 MODULE_PARM_DESC(if2name, "The default name to allocate for second interface");
 
-char* rtw_initmac = 0;  // temp mac address if users want to use instead of the mac address in Efuse
+char *rtw_initmac = NULL;  // temp mac address if users want to use instead of the mac address in Efuse
 
 module_param(rtw_initmac, charp, 0644);
 module_param(rtw_channel_plan, int, 0644);
@@ -229,7 +229,7 @@ MODULE_PARM_DESC(rtw_adaptor_info_caching_file_path, "The path of adapter info c
 #endif //CONFIG_ADAPTOR_INFO_CACHING_FILE
 
 #ifdef CONFIG_LAYER2_ROAMING
-uint rtw_max_roaming_times=2;
+static uint rtw_max_roaming_times=2;
 module_param(rtw_max_roaming_times, uint, 0644);
 MODULE_PARM_DESC(rtw_max_roaming_times,"The max roaming times to try");
 #endif //CONFIG_LAYER2_ROAMING
@@ -264,7 +264,7 @@ module_param(rtw_btcoex_enable, int, 0644);
 MODULE_PARM_DESC(rtw_btcoex_enable, "Enable BT co-existence mechanism");
 #endif
 
-uint rtw_notch_filter = RTW_NOTCH_FILTER;
+static uint rtw_notch_filter = RTW_NOTCH_FILTER;
 module_param(rtw_notch_filter, uint, 0644);
 MODULE_PARM_DESC(rtw_notch_filter, "0:Disable, 1:Enable, 2:Enable only for P2P");
 module_param_named(debug, rtw_debug, int, 0444);
@@ -708,7 +708,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 #endif
 #endif //ifndef create_proc_entry
 
-uint loadparam(struct rtw_adapter *padapter,  struct net_device *pnetdev)
+static uint loadparam(struct rtw_adapter *padapter,  struct net_device *pnetdev)
 {
 
 	uint status = _SUCCESS;
@@ -877,7 +877,7 @@ static struct net_device_stats *rtw_net_get_stats(struct net_device *pnetdev)
 static const u16 rtw_1d_to_queue[8] = { 2, 3, 3, 2, 1, 1, 0, 0 };
 
 /* Given a data frame determine the 802.1p/1d tag to use. */
-unsigned int rtw_classify8021d(struct sk_buff *skb)
+static unsigned int rtw_classify8021d(struct sk_buff *skb)
 {
 	unsigned int dscp;
 
@@ -1965,7 +1965,7 @@ int netdev_open(struct net_device *pnetdev)
 }
 
 #ifdef CONFIG_IPS
-int  ips_netdrv_open(struct rtw_adapter *padapter)
+static int  ips_netdrv_open(struct rtw_adapter *padapter)
 {
 	int status = _SUCCESS;
 	padapter->net_closed = _FALSE;
@@ -2039,7 +2039,7 @@ void rtw_ips_dev_unload(struct rtw_adapter *padapter)
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 	DBG_8723A("====> %s...\n",__FUNCTION__);
 
-	rtw_hal_set_hwreg(padapter, HW_VAR_FIFO_CLEARN_UP, 0);
+	rtw_hal_set_hwreg(padapter, HW_VAR_FIFO_CLEARN_UP, NULL);
 
 	if(padapter->intf_stop)
 	{
