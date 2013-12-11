@@ -57,7 +57,7 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
 	pattrib->qsel = qsel;
 }
 
-int urb_zero_packet_chk(struct rtw_adapter *padapter, int sz)
+static int urb_zero_packet_chk(struct rtw_adapter *padapter, int sz)
 {
 	int blnSetTxDescOffset;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(padapter);
@@ -101,7 +101,7 @@ void rtl8192cu_cal_txdesc_chksum(struct tx_desc	*ptxdesc)
 
 }
 
-void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct tx_desc *ptxdesc)
+static void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct tx_desc *ptxdesc)
 {
 	if ((pattrib->encrypt > 0) && !pattrib->bswenc)
 	{
@@ -130,7 +130,7 @@ void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct tx_desc *ptxdesc)
 
 }
 
-void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
+static void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
 {
 	//DBG_8723A("cvs_mode=%d\n", pattrib->vcs_mode);
 
@@ -167,10 +167,8 @@ void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
 	}
 }
 
-void fill_txdesc_phy(struct pkt_attrib *pattrib, u32 *pdw)
+static void fill_txdesc_phy(struct pkt_attrib *pattrib, u32 *pdw)
 {
-	//DBG_8723A("bwmode=%d, ch_off=%d\n", pattrib->bwmode, pattrib->ch_offset);
-
 	if(pattrib->ht_en)
 	{
 		*pdw |= (pattrib->bwmode&HT_CHANNEL_WIDTH_40)?	cpu_to_le32(BIT(25)):0;
