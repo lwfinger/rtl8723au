@@ -56,7 +56,7 @@ CheckCondition(
 *                           AGC_TAB_1T.TXT
 ******************************************************************************/
 
-u32 Array_AGC_TAB_1T_8723A[] = {
+static u32 Array_AGC_TAB_1T_8723A[] = {
 		0xC78, 0x7B000001,
 		0xC78, 0x7B010001,
 		0xC78, 0x7B020001,
@@ -293,7 +293,7 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 *                           PHY_REG_1T.TXT
 ******************************************************************************/
 
-u32 Array_PHY_REG_1T_8723A[] = {
+static u32 Array_PHY_REG_1T_8723A[] = {
 		0x800, 0x80040000,
 		0x804, 0x00000003,
 		0x808, 0x0000FC00,
@@ -564,7 +564,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 *                           PHY_REG_MP.TXT
 ******************************************************************************/
 
-u32 Array_PHY_REG_MP_8723A[] = {
+static u32 Array_PHY_REG_MP_8723A[] = {
 		0xC30, 0x69E9AC4A,
 		0xC3C, 0x0A979718,
 
@@ -643,7 +643,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-u32 Array_PHY_REG_PG_8723A[] = {
+static u32 Array_PHY_REG_PG_8723A[] = {
 		0xE00, 0xFFFFFFFF, 0x0A0C0C0C,
 		0xE04, 0xFFFFFFFF, 0x02040608,
 		0xE08, 0x0000FF00, 0x00000000,
