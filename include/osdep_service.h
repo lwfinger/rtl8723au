@@ -81,6 +81,11 @@
 #define CONFIG_AUTOSUSPEND	1
 #endif
 
+struct rtw_adapter;
+struct c2h_evt_hdr;
+
+typedef s32 (*c2h_id_filter)(u8 id);
+
 typedef struct timer_list _timer;
 
 struct	__queue	{
@@ -214,6 +219,18 @@ extern void	_rtw_mfree(u8 *pbuf, u32 sz);
 #define rtw_malloc(sz)			_rtw_malloc((sz))
 #define rtw_zmalloc(sz)			_rtw_zmalloc((sz))
 #define rtw_mfree(pbuf, sz)		_rtw_mfree((pbuf), (sz))
+
+extern unsigned char REALTEK_96B_IE[];
+extern unsigned char MCS_rate_2R[16];
+extern unsigned char RTW_WPA_OUI[];
+extern unsigned char WPA_TKIP_CIPHER[4];
+extern unsigned char RSN_TKIP_CIPHER[4];
+
+#ifdef CONFIG_DISABLE_MCS13TO15
+extern unsigned char	MCS_rate_2R_MCS13TO15_OFF[16];
+#endif /* CONFIG_DISABLE_MCS13TO15 */
+extern unsigned char	MCS_rate_2R[16];
+extern unsigned char	MCS_rate_1R[16];
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);
@@ -456,17 +473,17 @@ struct rtw_cbuf {
 	void *bufs[0];
 };
 
+extern char *rtw_initmac;
+
 bool rtw_cbuf_full(struct rtw_cbuf *cbuf);
 bool rtw_cbuf_empty(struct rtw_cbuf *cbuf);
 bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf);
 void *rtw_cbuf_pop(struct rtw_cbuf *cbuf);
 struct rtw_cbuf *rtw_cbuf_alloc(u32 size);
 void rtw_cbuf_free(struct rtw_cbuf *cbuf);
-
-#ifdef CONFIG_XMIT_ACK
-#ifdef CONFIG_XMIT_ACK_POLLING
+int rtw_change_ifname(struct rtw_adapter *padapter, const char *ifname);
 s32 c2h_evt_hdl(struct rtw_adapter *adapter, struct c2h_evt_hdr *c2h_evt, c2h_id_filter filter);
-#endif
-#endif
+void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
+u8 rtw_do_join(struct rtw_adapter *padapter);
 
 #endif
