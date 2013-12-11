@@ -24,9 +24,7 @@
 
 #include "odm_precomp.h"
 
-
-
-const u16 dB_Invert_Table[8][12] = {
+static const u16 dB_Invert_Table[8][12] = {
 	{	1,		1,		1,		2,		2,		2,		2,		3,		3,		3,		4,		4},
 	{	4,		5,		6,		6,		7,		8,		9,		10,		11,		13,		14,		16},
 	{	18,		20,		22,		25,		28,		32,		35,		40,		45,		50,		56,		63},
@@ -36,28 +34,17 @@ const u16 dB_Invert_Table[8][12] = {
 	{	4467,	5012,	5623,	6310,	7079,	7943,	8913,	10000,	11220,	12589,	14125,	15849},
 	{	17783,	19953,	22387,	25119,	28184,	31623,	35481,	39811,	44668,	50119,	56234,	65535}};
 
-// 20100515 Joseph: Add global variable to keep temporary scan list for antenna switching test.
-//u8			tmpNumBssDesc;
-//RT_WLAN_BSS	tmpbssDesc[MAX_BSS_DESC];
-
-
-//avoid to warn in FreeBSD ==> To DO modify
-u32 EDCAParam[HT_IOT_PEER_MAX][3] =
-{          // UL			DL
+static u32 EDCAParam[HT_IOT_PEER_MAX][3] = {          // UL			DL
 	{0x5ea42b, 0x5ea42b, 0x5ea42b}, //0:unknown AP
 	{0xa44f, 0x5ea44f, 0x5e431c}, // 1:realtek AP
 	{0x5ea42b, 0x5ea42b, 0x5ea42b}, // 2:unknown AP => realtek_92SE
 	{0x5ea32b, 0x5ea42b, 0x5e4322}, // 3:broadcom AP
 	{0x5ea422, 0x00a44f, 0x00a44f}, // 4:ralink AP
 	{0x5ea322, 0x00a630, 0x00a44f}, // 5:atheros AP
-	//{0x5ea42b, 0x5ea42b, 0x5ea42b},// 6:cisco AP
 	{0x5e4322, 0x5e4322, 0x5e4322},// 6:cisco AP
-	//{0x3ea430, 0x00a630, 0x3ea44f}, // 7:cisco AP
 	{0x5ea44f, 0x00a44f, 0x5ea42b}, // 8:marvell AP
-	//{0x5ea44f, 0x5ea44f, 0x5ea44f}, // 9realtek AP
 	{0x5ea42b, 0x5ea42b, 0x5ea42b}, // 10:unknown AP=> 92U AP
 	{0x5ea42b, 0xa630, 0x5e431c}, // 11:airgocap AP
-//	{0x5e4322, 0x00a44f, 0x5ea44f}, // 12:unknown AP
 };
 //============================================================
 // EDCA Paramter for AP/ADSL   by Mingzhi 2011-11-22
@@ -1108,119 +1095,7 @@ odm_CmnInfoUpdate_Debug(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("RSSI_Min=%d\n",pDM_Odm->RSSI_Min) );
 }
 
-
-/*
-void
-odm_FindMinimumRSSI(
-		PDM_ODM_T		pDM_Odm
-	)
-{
-	u32	i;
-	u8	RSSI_Min = 0xFF;
-
-	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
-	{
-//		if(pDM_Odm->pODM_StaInfo[i] != NULL)
-		if(IS_STA_VALID(pDM_Odm->pODM_StaInfo[i]) )
-		{
-			if(pDM_Odm->pODM_StaInfo[i]->RSSI_Ave < RSSI_Min)
-			{
-				RSSI_Min = pDM_Odm->pODM_StaInfo[i]->RSSI_Ave;
-			}
-		}
-	}
-
-	pDM_Odm->RSSI_Min = RSSI_Min;
-
-}
-
-void
-odm_IsLinked(
-		PDM_ODM_T		pDM_Odm
-	)
-{
-	u32 i;
-	bool Linked = FALSE;
-
-	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
-	{
-			if(IS_STA_VALID(pDM_Odm->pODM_StaInfo[i]) )
-			{
-				Linked = TRUE;
-				break;
-			}
-
-	}
-
-	pDM_Odm->bLinked = Linked;
-}
-*/
-
-
-//3============================================================
-//3 DIG
-//3============================================================
-/*-----------------------------------------------------------------------------
- * Function:	odm_DIGInit()
- *
- * Overview:	Set DIG scheme init value.
- *
- * Input:		NONE
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who		Remark
- *
- *---------------------------------------------------------------------------*/
-void
-ODM_ChangeDynamicInitGainThresh(
-	PDM_ODM_T	pDM_Odm,
-	u32		DM_Type,
-	u32		DM_Value
-	)
-{
-	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
-
-	if (DM_Type == DIG_TYPE_THRESH_HIGH)
-	{
-		pDM_DigTable->RssiHighThresh = DM_Value;
-	}
-	else if (DM_Type == DIG_TYPE_THRESH_LOW)
-	{
-		pDM_DigTable->RssiLowThresh = DM_Value;
-	}
-	else if (DM_Type == DIG_TYPE_ENABLE)
-	{
-		pDM_DigTable->Dig_Enable_Flag	= TRUE;
-	}
-	else if (DM_Type == DIG_TYPE_DISABLE)
-	{
-		pDM_DigTable->Dig_Enable_Flag = FALSE;
-	}
-	else if (DM_Type == DIG_TYPE_BACKOFF)
-	{
-		if(DM_Value > 30)
-			DM_Value = 30;
-		pDM_DigTable->BackoffVal = (u8)DM_Value;
-	}
-	else if(DM_Type == DIG_TYPE_RX_GAIN_MIN)
-	{
-		if(DM_Value == 0)
-			DM_Value = 0x1;
-		pDM_DigTable->rx_gain_range_min = (u8)DM_Value;
-	}
-	else if(DM_Type == DIG_TYPE_RX_GAIN_MAX)
-	{
-		if(DM_Value > 0x50)
-			DM_Value = 0x50;
-		pDM_DigTable->rx_gain_range_max = (u8)DM_Value;
-	}
-}	/* DM_ChangeDynamicInitGainThresh */
-
-int getIGIForDiff(int value_IGI)
+static int getIGIForDiff(int value_IGI)
 {
 	#define ONERCCA_LOW_TH		0x30
 	#define ONERCCA_LOW_DIFF	8
@@ -1235,9 +1110,7 @@ int getIGIForDiff(int value_IGI)
 	}
 }
 
-
-void
-ODM_Write_DIG(
+void ODM_Write_DIG(
 	PDM_ODM_T		pDM_Odm,
 	u8			CurrentIGI
 	)
@@ -3831,19 +3704,36 @@ void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
 
 #else //#if(defined(CONFIG_SW_ANTENNA_DIVERSITY))
 
-void odm_SwAntDivInit(		PDM_ODM_T		pDM_Odm	) {}
+void odm_SwAntDivInit(PDM_ODM_T pDM_Odm)
+{
+}
+
 void ODM_SwAntDivChkPerPktRssi(
  PDM_ODM_T	pDM_Odm,
  u8		StationID,
  PODM_PHY_INFO_T pPhyInfo
-	) {}
+	)
+{
+}
+
 void odm_SwAntDivChkAntSwitch(
 		PDM_ODM_T		pDM_Odm,
 		u8			Step
-	) {}
-void ODM_SwAntDivResetBeforeLink(		PDM_ODM_T		pDM_Odm	){}
-void ODM_SwAntDivRestAfterLink(		PDM_ODM_T		pDM_Odm	){}
-void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext){}
+	)
+{
+}
+
+static void ODM_SwAntDivResetBeforeLink(PDM_ODM_T pDM_Odm)
+{
+}
+
+void ODM_SwAntDivRestAfterLink(PDM_ODM_T pDM_Odm)
+{
+}
+
+void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
+{
+}
 
 #endif //#if(defined(CONFIG_SW_ANTENNA_DIVERSITY))
 
@@ -4187,13 +4077,19 @@ odm_HwAntDiv(
 
 }
 
-
-
 #else //#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 
-void odm_InitHybridAntDiv( PDM_ODM_T	pDM_Odm		){}
-void odm_HwAntDiv(	PDM_ODM_T	pDM_Odm){}
-void ODM_SetTxAntByTxInfo_88C_92D(		PDM_ODM_T		pDM_Odm){ }
+void odm_InitHybridAntDiv(PDM_ODM_T pDM_Odm)
+{
+}
+
+void odm_HwAntDiv(PDM_ODM_T pDM_Odm)
+{
+}
+
+static void ODM_SetTxAntByTxInfo_88C_92D(PDM_ODM_T pDM_Odm)
+{
+}
 
 #endif //#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 
@@ -4474,9 +4370,7 @@ ODM_SingleDualAntennaDefaultSetting(
 
 //2 8723A ANT DETECT
 
-
-void
-odm_PHY_SaveAFERegisters(
+static void odm_PHY_SaveAFERegisters(
 	PDM_ODM_T	pDM_Odm,
 	u32 *		AFEReg,
 	u32 *		AFEBackup,
@@ -4491,8 +4385,7 @@ odm_PHY_SaveAFERegisters(
 	}
 }
 
-void
-odm_PHY_ReloadAFERegisters(
+static void odm_PHY_ReloadAFERegisters(
 	PDM_ODM_T	pDM_Odm,
 	u32 *		AFEReg,
 	u32 *		AFEBackup,
