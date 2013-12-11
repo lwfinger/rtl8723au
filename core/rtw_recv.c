@@ -616,8 +616,9 @@ _func_exit_;
 
 	return return_packet;
 }
+
 /* set the security information in the recv_frame */
-union recv_frame * portctrl(struct rtw_adapter *adapter,union recv_frame * precv_frame)
+static union recv_frame *portctrl(struct rtw_adapter *adapter,union recv_frame *precv_frame)
 {
 	u8   *psta_addr, *ptr;
 	uint  auth_alg;
@@ -1922,7 +1923,7 @@ _func_exit_;
 
 /* remove the wlanhdr and add the eth_hdr */
 
-int wlanhdr_to_ethhdr ( union recv_frame *precvframe)
+static int wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 {
 	int	rmv_len;
 	u16	eth_type, len;
@@ -2624,8 +2625,7 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 	struct recv_reorder_ctrl *preorder_ctrl = prframe->u.hdr.preorder_ctrl;
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
 
-	if(!pattrib->amsdu)
-	{
+	if (!pattrib->amsdu) {
 		/* s1. */
 		wlanhdr_to_ethhdr(prframe);
 
@@ -2637,7 +2637,6 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 
 				rtw_recv_indicatepkt(padapter, prframe);
 				return _SUCCESS;
-
 			}
 
 			#ifdef DBG_RX_DROP_FRAME
@@ -2645,11 +2644,9 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 			#endif
 
 			return _FAIL;
-
 		}
 
-		if (preorder_ctrl->enable == _FALSE)
-		{
+		if (preorder_ctrl->enable == _FALSE) {
 			/* indicate this recv_frame */
 			preorder_ctrl->indicate_seq = pattrib->seq_num;
 			#ifdef DBG_RX_SEQ
@@ -2674,11 +2671,9 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 		return _SUCCESS;
 #endif
 
-	}
-	else if(pattrib->amsdu==1) /* temp filter -> means didn't support A-MSDUs in a A-MPDU */
-	{
-		if (preorder_ctrl->enable == _FALSE)
-		{
+	} else if(pattrib->amsdu==1) {
+		 /* temp filter -> means didn't support A-MSDUs in a A-MPDU */
+		if (preorder_ctrl->enable == _FALSE) {
 			preorder_ctrl->indicate_seq = pattrib->seq_num;
 			#ifdef DBG_RX_SEQ
 			DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d, NewSeq: %d\n", __FUNCTION__, __LINE__,
@@ -2693,18 +2688,13 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 				preorder_ctrl->indicate_seq, pattrib->seq_num);
 			#endif
 
-			if(retval != _SUCCESS){
+			if (retval != _SUCCESS) {
 				#ifdef DBG_RX_DROP_FRAME
 				DBG_8723A("DBG_RX_DROP_FRAME %s amsdu_to_msdu fail\n", __FUNCTION__);
 				#endif
 			}
-
 			return retval;
 		}
-	}
-	else
-	{
-
 	}
 
 	spin_lock_bh(&ppending_recvframe_queue->lock);
@@ -2714,14 +2704,7 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 		  preorder_ctrl->indicate_seq, pattrib->seq_num));
 
 	/* s2. check if winstart_b(indicate_seq) needs to been updated */
-	if(!check_indicate_seq(preorder_ctrl, pattrib->seq_num))
-	{
-		/* pHTInfo->RxReorderDropCounter++; */
-		/* ReturnRFDList(Adapter, pRfd); */
-		/* RT_TRACE(COMP_RX_REORDER, DBG_TRACE, ("RxReorderIndicatePacket() ==> Packet Drop!!\n")); */
-		/* spin_unlock_irqrestore(&ppending_recvframe_queue->lock); */
-		/* return _FAIL; */
-
+	if (!check_indicate_seq(preorder_ctrl, pattrib->seq_num)) {
 		#ifdef DBG_RX_DROP_FRAME
 		DBG_8723A("DBG_RX_DROP_FRAME %s check_indicate_seq fail\n", __FUNCTION__);
 		#endif
@@ -2729,11 +2712,7 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 	}
 
 	/* s3. Insert all packet into Reorder Queue to maintain its ordering. */
-	if(!enqueue_reorder_recvframe(preorder_ctrl, prframe))
-	{
-		/* DbgPrint("recv_indicatepkt_reorder, enqueue_reorder_recvframe fail!\n"); */
-		/* spin_unlock_irqrestore(&ppending_recvframe_queue->lock); */
-		/* return _FAIL; */
+	if (!enqueue_reorder_recvframe(preorder_ctrl, prframe)) {
 		#ifdef DBG_RX_DROP_FRAME
 		DBG_8723A("DBG_RX_DROP_FRAME %s enqueue_reorder_recvframe fail\n", __FUNCTION__);
 		#endif
@@ -2750,14 +2729,10 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter, union recv_frame *prf
 	/*  2. All packets with SeqNum larger than or equal to WinStart => Buffer it. */
 	/*  */
 
-	/* recv_indicatepkts_in_order(padapter, preorder_ctrl, _TRUE); */
-	if(recv_indicatepkts_in_order(padapter, preorder_ctrl, _FALSE)==_TRUE)
-	{
+	if (recv_indicatepkts_in_order(padapter, preorder_ctrl, _FALSE)==_TRUE) {
 		_set_timer(&preorder_ctrl->reordering_ctrl_timer, REORDER_WAIT_TIME);
 		spin_unlock_bh(&ppending_recvframe_queue->lock);
-	}
-	else
-	{
+	} else {
 		spin_unlock_bh(&ppending_recvframe_queue->lock);
 		_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
 	}
@@ -2870,7 +2845,7 @@ int process_recv_indicatepkts(struct rtw_adapter *padapter, union recv_frame *pr
 	return retval;
 }
 
-int recv_func_prehandle(struct rtw_adapter *padapter, union recv_frame *rframe)
+static int recv_func_prehandle(struct rtw_adapter *padapter, union recv_frame *rframe)
 {
 	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = &rframe->u.hdr.attrib;
@@ -2890,7 +2865,7 @@ exit:
 	return ret;
 }
 
-int recv_func_posthandle(struct rtw_adapter *padapter, union recv_frame *prframe)
+static int recv_func_posthandle(struct rtw_adapter *padapter, union recv_frame *prframe)
 {
 	int ret = _SUCCESS;
 	union recv_frame *orig_prframe = prframe;
