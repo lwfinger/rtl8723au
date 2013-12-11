@@ -109,7 +109,7 @@ bool sreset_inprogress(struct rtw_adapter *padapter)
 #endif
 }
 
-void sreset_restore_security_station(struct rtw_adapter *padapter)
+static void sreset_restore_security_station(struct rtw_adapter *padapter)
 {
 	u8 EntryId = 0;
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
@@ -146,7 +146,7 @@ void sreset_restore_security_station(struct rtw_adapter *padapter)
 	}
 }
 
-void sreset_restore_network_station(struct rtw_adapter *padapter)
+static void sreset_restore_network_station(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -191,7 +191,7 @@ void sreset_restore_network_station(struct rtw_adapter *padapter)
 	sreset_restore_security_station(padapter);
 }
 
-void sreset_restore_network_status(struct rtw_adapter *padapter)
+static void sreset_restore_network_status(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -210,7 +210,7 @@ void sreset_restore_network_status(struct rtw_adapter *padapter)
 	}
 }
 
-void sreset_stop_adapter(struct rtw_adapter *padapter)
+static void sreset_stop_adapter(struct rtw_adapter *padapter)
 {
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
@@ -235,7 +235,7 @@ void sreset_stop_adapter(struct rtw_adapter *padapter)
 		_rtw_join_timeout_handler(padapter);
 }
 
-void sreset_start_adapter(struct rtw_adapter *padapter)
+static void sreset_start_adapter(struct rtw_adapter *padapter)
 {
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
