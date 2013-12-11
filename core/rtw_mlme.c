@@ -34,14 +34,6 @@
 
 extern u8 rtw_do_join(struct rtw_adapter * padapter);
 
-#ifdef CONFIG_DISABLE_MCS13TO15
-extern unsigned char	MCS_rate_2R_MCS13TO15_OFF[16];
-extern unsigned char	MCS_rate_2R[16];
-#else /* CONFIG_DISABLE_MCS13TO15 */
-extern unsigned char	MCS_rate_2R[16];
-#endif /* CONFIG_DISABLE_MCS13TO15 */
-extern unsigned char	MCS_rate_1R[16];
-
 int	_rtw_init_mlme_priv (struct rtw_adapter* padapter)
 {
 	int	i;
@@ -1633,7 +1625,7 @@ _func_enter_;
 	if(pnetwork->network.Length > sizeof(WLAN_BSSID_EX))
 	{
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n\n ***joinbss_evt_callback return a wrong bss ***\n\n"));
-		goto ignore_joinbss_callback;
+		goto exit;
 	}
 
 	spin_lock_bh(&pmlmepriv->lock);
@@ -1784,6 +1776,7 @@ _func_enter_;
 ignore_joinbss_callback:
 
 	spin_unlock_bh(&pmlmepriv->lock);
+exit:
 	_func_exit_;
 }
 
@@ -1808,7 +1801,7 @@ _func_enter_;
 _func_exit_;
 }
 
-u8 search_max_mac_id(struct rtw_adapter *padapter)
+static u8 search_max_mac_id(struct rtw_adapter *padapter)
 {
 	u8 mac_id, aid;
 #if (RATE_ADAPTIVE_SUPPORT==1)	/* for 88E RA */
