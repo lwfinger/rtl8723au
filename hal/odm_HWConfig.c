@@ -40,24 +40,14 @@
 #define READ_AND_CONFIG_MP(ic, txt) (ODM_ReadAndConfig##txt##ic(pDM_Odm))
 #define READ_AND_CONFIG_TC(ic, txt) (ODM_ReadAndConfig_TC##txt##ic(pDM_Odm))
 
-u8
-odm_QueryRxPwrPercentage(
-		s8		AntPower
-	)
+static u8 odm_QueryRxPwrPercentage(s8 AntPower)
 {
 	if ((AntPower <= -100) || (AntPower >= 20))
-	{
 		return	0;
-	}
 	else if (AntPower >= 0)
-	{
 		return	100;
-	}
 	else
-	{
-		return	(100+AntPower);
-	}
-
+		return	100 + AntPower;
 }
 
 #if (DM_ODM_SUPPORT_TYPE != ODM_MP)
@@ -65,7 +55,7 @@ odm_QueryRxPwrPercentage(
 // 2012/01/12 MH MOve some signal strength smooth method to MP HAL layer.
 // IF other SW team do not support the feature, remove this section.??
 //
-s32
+static s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	PDM_ODM_T pDM_Odm,
 	s32 CurrSig
@@ -121,7 +111,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	return RetSig;
 }
 
-s32
+static s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
  PDM_ODM_T pDM_Odm,
 	s32 CurrSig
@@ -182,7 +172,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
 }
 
 
-s32
+static s32
 odm_SignalScaleMapping_92CSeries(
 	PDM_ODM_T pDM_Odm,
 	s32 CurrSig
@@ -275,11 +265,8 @@ odm_SignalScaleMapping_92CSeries(
 #endif
 	return RetSig;
 }
-s32
-odm_SignalScaleMapping(
-	PDM_ODM_T pDM_Odm,
-	s32 CurrSig
-)
+
+static s32 odm_SignalScaleMapping(PDM_ODM_T pDM_Odm, s32 CurrSig)
 {
 	if(	(pDM_Odm->SupportPlatform == ODM_MP) &&
 		(pDM_Odm->SupportInterface  != ODM_ITRF_PCIE) && //USB & SDIO
@@ -377,8 +364,7 @@ odm_EVMdbToPercentage(
 
 
 
-void
-odm_RxPhyStatus92CSeries_Parsing(
+static void odm_RxPhyStatus92CSeries_Parsing(
 	PDM_ODM_T					pDM_Odm,
 	PODM_PHY_INFO_T			pPhyInfo,
 	u8 *						pPhyStatus,
@@ -465,7 +451,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 					break;
 			}
 			rx_pwr_all += 6;
-			PWDB_ALL = odm_QueryRxPwrPercentage(rx_pwr_all);
+				PWDB_ALL = odm_QueryRxPwrPercentage(rx_pwr_all);
 			if(cck_highpwr == FALSE)
 			{
 				if(PWDB_ALL >= 80)
@@ -745,8 +731,7 @@ odm_Init_RSSIForDM(
 
 }
 
-void
-odm_Process_RSSIForDM(
+static void odm_Process_RSSIForDM(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T			pPhyInfo,
 		PODM_PACKET_INFO_T			pPktinfo
@@ -957,8 +942,7 @@ odm_Process_RSSIForDM(
 //
 // Endianness before calling this API
 //
-void
-ODM_PhyStatusQuery_92CSeries(
+static void ODM_PhyStatusQuery_92CSeries(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T				pPhyInfo,
 		u8 *						pPhyStatus,
@@ -990,8 +974,7 @@ ODM_PhyStatusQuery_92CSeries(
 //
 // Endianness before calling this API
 //
-void
-ODM_PhyStatusQuery_JaguarSeries(
+static void ODM_PhyStatusQuery_JaguarSeries(
 	PDM_ODM_T					pDM_Odm,
 		PODM_PHY_INFO_T			pPhyInfo,
 		u8 *						pPhyStatus,
