@@ -403,23 +403,8 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 	memcpy(pbuf, pnetwork->network.IEs, pnetwork->network.IELength);
 	len += pnetwork->network.IELength;
 
-	//#ifdef CONFIG_P2P
-	//if(rtw_get_p2p_ie(pnetwork->network.IEs+12, pnetwork->network.IELength-12, NULL, NULL))
-	//{
-	//	DBG_8723A("%s, got p2p_ie\n", __func__);
-	//}
-	//#endif
-
-
-#if 1
 	bss = cfg80211_inform_bss_frame(wiphy, notify_channel, (struct ieee80211_mgmt *)buf,
 		len, notify_signal, GFP_ATOMIC);
-#else
-
-	bss = cfg80211_inform_bss(wiphy, notify_channel, (const u8 *)pnetwork->network.MacAddress,
-                notify_timestamp, notify_capability, notify_interval, notify_ie,
-                notify_ielen, notify_signal, GFP_ATOMIC/*GFP_KERNEL*/);
-#endif
 
 	if (unlikely(!bss)) {
 		DBG_8723A("rtw_cfg80211_inform_bss error\n");
@@ -430,7 +415,6 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 
 exit:
 	return ret;
-
 }
 
 void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
@@ -537,31 +521,14 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 #endif //CONFIG_P2P
 
 	if (!padapter->mlmepriv.not_indic_disco) {
-#if 0
-		DBG_8723A("pwdev->sme_state(b)=%d\n", pwdev->sme_state;
-#endif
-
-#if 1
 		if (check_fwstate(&padapter->mlmepriv, WIFI_UNDER_LINKING)) {
-#else
-		if (pwdev->sme_state==CFG80211_SME_CONNECTING)
-#endif
 			cfg80211_connect_result(padapter->pnetdev, NULL, NULL,
 						0, NULL, 0,
 						WLAN_STATUS_UNSPECIFIED_FAILURE,
 						GFP_ATOMIC/*GFP_KERNEL*/);
-#if 0
-		} else if(pwdev->sme_state==CFG80211_SME_CONNECTED)
-#else
 		} else if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
-#endif
 			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
-		//else
-			//DBG_8723A("pwdev->sme_state=%d\n", pwdev->sme_state);
 		}
-#if 0
-		DBG_8723A("pwdev->sme_state(a)=%d\n", pwdev->sme_state);
-#endif
 	}
 }
 

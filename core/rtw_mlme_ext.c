@@ -645,7 +645,6 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 	}
 	ptable += index;
 
-#if 1
 	if (psta != NULL)
 	{
 		if (GetRetry(pframe))
@@ -659,14 +658,6 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 		}
 		psta->RxMgmtFrameSeqNum = precv_frame->u.hdr.attrib.seq_num;
 	}
-#else
-
-	if(GetRetry(pframe))
-	{
-		/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("drop due to decache!\n")); */
-		/* return; */
-	}
-#endif
 
 #ifdef CONFIG_AP_MODE
 	switch (GetFrameSubType(pframe))
@@ -6838,7 +6829,6 @@ void issue_assocreq(struct rtw_adapter *padapter)
 
 	/* supported rate & extended supported rate */
 
-#if 1	/*  Check if the AP's supported rates are also supported by STA. */
 	get_rate_set(padapter, sta_bssrate, &sta_bssrate_len);
 	/* DBG_8723A("sta_bssrate_len=%d\n", sta_bssrate_len); */
 
@@ -6866,8 +6856,6 @@ void issue_assocreq(struct rtw_adapter *padapter)
 					== (sta_bssrate[j]|IEEE80211_BASIC_RATE_MASK)) {
 				/* DBG_8723A("match i = %d, j=%d\n", i, j); */
 				break;
-			} else {
-				/* DBG_8723A("not match: %02X != %02X\n", (pmlmeinfo->network.SupportedRates[i]|IEEE80211_BASIC_RATE_MASK), (sta_bssrate[j]|IEEE80211_BASIC_RATE_MASK)); */
 			}
 		}
 
@@ -6882,8 +6870,6 @@ void issue_assocreq(struct rtw_adapter *padapter)
 
 	bssrate_len = index;
 	DBG_8723A("bssrate_len = %d\n", bssrate_len);
-
-#endif	/*  Check if the AP's supported rates are also supported by STA. */
 
 	if (bssrate_len == 0) {
 		rtw_free_xmitbuf(pxmitpriv, pmgntframe->pxmitbuf);

@@ -1182,7 +1182,6 @@ static void dump_usb_interface(struct usb_interface *usb_intf)
 	struct usb_host_endpoint		*host_endp;
 	struct usb_endpoint_descriptor	*endp_desc;
 
-#if 1 /* The usb device this usb interface belongs to */
 	DBG_8723A("usb_interface:%p, usb_device:%p(num:%d, path:%s), usb_device_descriptor:%p\n", usb_intf, udev, udev->devnum, udev->devpath, dev_desc);
 	DBG_8723A("bLength:%u\n", dev_desc->bLength);
 	DBG_8723A("bDescriptorType:0x%02x\n", dev_desc->bDescriptorType);
@@ -1198,10 +1197,7 @@ static void dump_usb_interface(struct usb_interface *usb_intf)
 	DBG_8723A("iProduct:0x%02x\n", dev_desc->iProduct);
 	DBG_8723A("iSerialNumber:0x%02x\n", dev_desc->iSerialNumber);
 	DBG_8723A("bNumConfigurations:%u\n", dev_desc->bNumConfigurations);
-#endif
 
-
-#if 1 /* The acting usb_config_descriptor */
 	DBG_8723A("\nact_conf_desc:%p\n", act_conf_desc);
 	DBG_8723A("bLength:%u\n", act_conf_desc->bLength);
 	DBG_8723A("bDescriptorType:0x%02x\n", act_conf_desc->bDescriptorType);
@@ -1211,15 +1207,12 @@ static void dump_usb_interface(struct usb_interface *usb_intf)
 	DBG_8723A("iConfiguration:0x%02x\n", act_conf_desc->iConfiguration);
 	DBG_8723A("bmAttributes:0x%02x\n", act_conf_desc->bmAttributes);
 	DBG_8723A("bMaxPower=%u\n", act_conf_desc->bMaxPower);
-#endif
-
 
 	DBG_8723A("****** num of altsetting = (%d) ******/\n", usb_intf->num_altsetting);
 	/* Get he host side alternate setting (the current alternate setting) for this interface*/
 	host_iface = usb_intf->cur_altsetting;
 	iface_desc = &host_iface->desc;
 
-#if 1 /* The current alternate setting*/
 	DBG_8723A("\nusb_interface_descriptor:%p:\n", iface_desc);
 	DBG_8723A("bLength:%u\n", iface_desc->bLength);
 	DBG_8723A("bDescriptorType:0x%02x\n", iface_desc->bDescriptorType);
@@ -1230,17 +1223,11 @@ static void dump_usb_interface(struct usb_interface *usb_intf)
 	DBG_8723A("bInterfaceSubClass=%x\n", iface_desc->bInterfaceSubClass);
 	DBG_8723A("bInterfaceProtocol=%x\n", iface_desc->bInterfaceProtocol);
 	DBG_8723A("iInterface=%x\n", iface_desc->iInterface);
-#endif
 
 
-#if 1
-	//DBG_8723A("\ndump usb_endpoint_descriptor:\n");
-
-	for (i = 0; i < iface_desc->bNumEndpoints; i++)
-	{
+	for (i = 0; i < iface_desc->bNumEndpoints; i++) {
 		host_endp = host_iface->endpoint + i;
-		if (host_endp)
-		{
+		if (host_endp) {
 			endp_desc = &host_endp->desc;
 
 			DBG_8723A("\nusb_endpoint_descriptor(%d):\n", i);
@@ -1251,38 +1238,21 @@ static void dump_usb_interface(struct usb_interface *usb_intf)
 			DBG_8723A("wMaxPacketSize=%x\n",endp_desc->wMaxPacketSize);
 			DBG_8723A("wMaxPacketSize=%x\n",le16_to_cpu(endp_desc->wMaxPacketSize));
 			DBG_8723A("bInterval=%x\n",endp_desc->bInterval);
-			//DBG_8723A("bRefresh=%x\n",pendp_desc->bRefresh);
-			//DBG_8723A("bSynchAddress=%x\n",pendp_desc->bSynchAddress);
 
 			if (RT_usb_endpoint_is_bulk_in(endp_desc))
-			{
 				DBG_8723A("RT_usb_endpoint_is_bulk_in = %x\n", RT_usb_endpoint_num(endp_desc));
-				//pdvobjpriv->RtNumInPipes++;
-			}
 			else if (RT_usb_endpoint_is_int_in(endp_desc))
-			{
 				DBG_8723A("RT_usb_endpoint_is_int_in = %x, Interval = %x\n", RT_usb_endpoint_num(endp_desc),endp_desc->bInterval);
-				//pdvobjpriv->RtNumInPipes++;
-			}
 			else if (RT_usb_endpoint_is_bulk_out(endp_desc))
-			{
 				DBG_8723A("RT_usb_endpoint_is_bulk_out = %x\n", RT_usb_endpoint_num(endp_desc));
-				//pdvobjpriv->RtNumOutPipes++;
-			}
-			//pdvobjpriv->ep_num[i] = RT_usb_endpoint_num(pendp_desc);
 		}
 	}
-
-	//DBG_8723A("nr_endpoint=%d, in_num=%d, out_num=%d\n\n", pdvobjpriv->nr_endpoint, pdvobjpriv->RtNumInPipes, pdvobjpriv->RtNumOutPipes);
-#endif
 
 	if (udev->speed == USB_SPEED_HIGH)
 		DBG_8723A("USB_SPEED_HIGH\n");
 	else
 		DBG_8723A("NON USB_SPEED_HIGH\n");
-
 }
-
 
 static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device_id *pdid)
 {
@@ -1292,7 +1262,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 	struct dvobj_priv *dvobj;
 
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_init\n"));
-	//DBG_8723A("+rtw_drv_init\n");
 
 	//step 0.
 	process_spec_devid(pdid);

@@ -1473,74 +1473,10 @@ hal_EfusePartialWriteCheck(
 
 		if (efuse_OneByteRead(padapter, startAddr, &efuse_data, bPseudoTest) && (efuse_data!=0xFF))
 		{
-#if 1
 			bRet = _FALSE;
 			DBG_8723A("%s: Something Wrong! last bytes(%#X=0x%02X) is not 0xFF\n",
 				__FUNCTION__, startAddr, efuse_data);
 			break;
-#else
-			if (EXT_HEADER(efuse_data))
-			{
-				cur_header = efuse_data;
-				startAddr++;
-				efuse_OneByteRead(padapter, startAddr, &efuse_data, bPseudoTest);
-				if (ALL_WORDS_DISABLED(efuse_data))
-				{
-					DBG_8723A("%s: Error condition, all words disabled!", __FUNCTION__);
-					bRet = _FALSE;
-					break;
-				}
-				else
-				{
-					curPkt.offset = ((cur_header & 0xE0) >> 5) | ((efuse_data & 0xF0) >> 1);
-					curPkt.word_en = efuse_data & 0x0F;
-				}
-			}
-			else
-			{
-				cur_header  =  efuse_data;
-				curPkt.offset = (cur_header>>4) & 0x0F;
-				curPkt.word_en = cur_header & 0x0F;
-			}
-
-			curPkt.word_cnts = Efuse_CalculateWordCnts(curPkt.word_en);
-			// if same header is found but no data followed
-			// write some part of data followed by the header.
-			if ((curPkt.offset == pTargetPkt->offset) &&
-				(hal_EfuseCheckIfDatafollowed(padapter, curPkt.word_cnts, startAddr+1, bPseudoTest) == _FALSE) &&
-				wordEnMatched(pTargetPkt, &curPkt, &matched_wden) == _TRUE)
-			{
-				DBG_8723A("%s: Need to partial write data by the previous wrote header\n", __FUNCTION__);
-				// Here to write partial data
-				badworden = Efuse_WordEnableDataWrite(padapter, startAddr+1, matched_wden, pTargetPkt->data, bPseudoTest);
-				if (badworden != 0x0F)
-				{
-					u32	PgWriteSuccess=0;
-					// if write fail on some words, write these bad words again
-					if (efuseType == EFUSE_WIFI)
-						PgWriteSuccess = Efuse_PgPacketWrite(padapter, pTargetPkt->offset, badworden, pTargetPkt->data, bPseudoTest);
-					else
-						PgWriteSuccess = Efuse_PgPacketWrite_BT(padapter, pTargetPkt->offset, badworden, pTargetPkt->data, bPseudoTest);
-
-					if (!PgWriteSuccess)
-					{
-						bRet = _FALSE;	// write fail, return
-						break;
-					}
-				}
-				// partial write ok, update the target packet for later use
-				for (i=0; i<4; i++)
-				{
-					if ((matched_wden & (0x1<<i)) == 0)	// this word has been written
-					{
-						pTargetPkt->word_en |= (0x1<<i);	// disable the word
-					}
-				}
-				pTargetPkt->word_cnts = Efuse_CalculateWordCnts(pTargetPkt->word_en);
-			}
-			// read from next header
-			startAddr = startAddr + (curPkt.word_cnts*2) + 1;
-#endif
 		}
 		else
 		{
@@ -1795,10 +1731,7 @@ ReadChipVersion8723A(
 	pHalData->MultiFunc |= ((value32 & BT_FUNC_EN) ? RT_MULTI_FUNC_BT : 0);
 	pHalData->MultiFunc |= ((value32 & GPS_FUNC_EN) ? RT_MULTI_FUNC_GPS : 0);
 	pHalData->PolarityCtl = ((value32 & WL_HWPDN_SL) ? RT_POLARITY_HIGH_ACT : RT_POLARITY_LOW_ACT);
-//#if DBG
-#if 1
 	dump_chip_info(ChipVersion);
-#endif
 	pHalData->VersionID = ChipVersion;
 
 	if (IS_1T2R(ChipVersion))
@@ -2910,11 +2843,8 @@ Hal_EfuseParseTxPowerInfo_8723A(
 			pHalData->TxPwrLevelHT40_2S[rfPath][ch] = (pwr > diff) ? (pwr - diff) : 0;
 		}
 	}
-#if 1
-	for(rfPath = 0 ; rfPath < RF_PATH_MAX ; rfPath++)
-	{
-		for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
-		{
+	for(rfPath = 0 ; rfPath < RF_PATH_MAX ; rfPath++) {
+		for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++) {
 			RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
 				("RF(%u)-Ch(%u) [CCK / HT40_1S / HT40_2S] = [0x%x / 0x%x / 0x%x]\n",
 				rfPath, ch, pHalData->TxPwrLevelCck[rfPath][ch],
@@ -2923,40 +2853,29 @@ Hal_EfuseParseTxPowerInfo_8723A(
 
 		}
 	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
-	{
+	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++) {
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-A Ht20 to HT40 Diff[%u] = 0x%x(%d)\n", ch,
 			pHalData->TxPwrHt20Diff[RF_PATH_A][ch], pHalData->TxPwrHt20Diff[RF_PATH_A][ch]));
 	}
 	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
-	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-A Legacy to Ht40 Diff[%u] = 0x%x\n", ch, pHalData->TxPwrLegacyHtDiff[RF_PATH_A][ch]));
-	}
-	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
-	{
+	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++) {
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-B Ht20 to HT40 Diff[%u] = 0x%x(%d)\n", ch,
 			pHalData->TxPwrHt20Diff[RF_PATH_B][ch], pHalData->TxPwrHt20Diff[RF_PATH_B][ch]));
 	}
 	for(ch = 0 ; ch < CHANNEL_MAX_NUMBER ; ch++)
-	{
 		RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("RF-B Legacy to HT40 Diff[%u] = 0x%x\n", ch, pHalData->TxPwrLegacyHtDiff[RF_PATH_B][ch]));
-	}
-#endif
-	if(!AutoLoadFail)
-	{
+	if(!AutoLoadFail) {
 		struct registry_priv  *registry_par = &padapter->registrypriv;
 		if( registry_par->regulatory_tid == 0xff){
 			if( PROMContent[RF_OPTION1_8723A] == 0xff)
 				pHalData->EEPROMRegulatory = 0 ;
 			else
 				pHalData->EEPROMRegulatory = PROMContent[RF_OPTION1_8723A]&0x7;	//bit0~2
-		}
-		else{
+		} else {
 			pHalData->EEPROMRegulatory = registry_par->regulatory_tid;
 		}
-	}
-	else
-	{
+	} else {
 		pHalData->EEPROMRegulatory = 0;
 	}
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("EEPROMRegulatory = 0x%x\n", pHalData->EEPROMRegulatory));
@@ -3114,7 +3033,6 @@ Hal_EfuseParseXtal_8723A(
 	u8			AutoLoadFail
 	)
 {
-#if 1
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(pAdapter);
 
 	if (!AutoLoadFail){
@@ -3126,7 +3044,6 @@ Hal_EfuseParseXtal_8723A(
 		pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
 	}
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: CrystalCap=0x%2x\n", __FUNCTION__, pHalData->CrystalCap));
-#endif
 }
 
 void

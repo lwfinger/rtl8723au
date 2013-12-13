@@ -1839,7 +1839,6 @@ _func_enter_;
 	pattrib->privacy = GetPrivacy(ptr);
 	pattrib->order = GetOrder(ptr);
 
-#if 1 /* Dump rx packets */
 {
 	u8 bDumpRxPkt;
 	rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
@@ -1875,7 +1874,6 @@ _func_enter_;
 		}
 	}
 }
-#endif
 	switch (type)
 	{
 		case WIFI_MGT_TYPE: /* mgnt */

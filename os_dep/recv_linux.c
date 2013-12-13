@@ -323,19 +323,7 @@ _func_enter_;
 	rcu_read_unlock();
 
 	if( br_port	&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
-	{
 		int nat25_handle_frame(struct rtw_adapter *priv, struct sk_buff *skb);
-		if (nat25_handle_frame(padapter, skb) == -1) {
-			//priv->ext_stats.rx_data_drops++;
-			//DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n");
-			//return FAIL;
-#if 1
-			// bypass this frame to upper layer!!
-#else
-			goto _recv_indicatepkt_drop;
-#endif
-		}
-	}
 
 #endif	// CONFIG_BR_EXT
 

@@ -8324,61 +8324,7 @@ void BTDM_1AntForDhcp(struct rtw_adapter *padapter)
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], 1Ant for DHCP, WiFi is %s\n", BTDM_IsWifiBusy(padapter)?"Busy":"IDLE"));
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], 1Ant for DHCP, %s\n", BtStateString[BtState]));
 
-#if 1
-
 	BTDM_1AntWifiAssociateNotify(padapter, _TRUE);
-
-#else
-
-//	rtl8723a_set_lowpwr_lps_cmd(padapter, _FALSE);
-
-	if (BT_IsBtDisabled(padapter) == _TRUE)
-	{
-		RTPRINT(FBT, BT_TRACE, ("[BTCoex], 1Ant for DHCP, BT is disabled\n"));
-			btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _FALSE, 9);
-	}
-	else
-	{
-		if ((BtState == BT_INFO_STATE_SCO_ONLY_BUSY) ||
-			(BtState == BT_INFO_STATE_ACL_SCO_BUSY))
-		{
-			if (_TRUE == pBtCoex->bC2hBtInquiryPage)
-				btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _TRUE, 32);
-			else
-				btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _TRUE, 27);
-		}
-		else if (BtState == BT_INFO_STATE_ACL_ONLY_BUSY)
-		{
-			padapter->pwrctrlpriv.btcoex_rfon = _TRUE;
-			if(padapter->securitypriv.ndisencryptstatus != Ndis802_11EncryptionDisabled)
-			{
-				btdm_1AntSetPSTDMA(padapter, _TRUE, 0, _TRUE, 18);
-				RTPRINT(FBT, BT_TRACE,
-						("[BTCoex], 1Ant for DHCP, Encrypted AP, set TDMA(%s, %d)\n",
-						pBtdm8723->bCurPsTdmaOn?"ON":"OFF", pBtdm8723->curPsTdma));
-			}
-			else
-			{
-				switch (pBtdm8723->curPsTdma)
-				{
-					case 1:
-					case 2:
-						RTPRINT(FBT, BT_TRACE,
-								("[BTCoex], 1Ant for DHCP, Keep TDMA(%s, %d)\n",
-								pBtdm8723->bCurPsTdmaOn?"ON":"OFF", pBtdm8723->curPsTdma));
-						break;
-					default:
-						btdm_1AntSetPSTDMA(padapter, _TRUE, 0, _TRUE, 16);
-						break;
-				}
-			}
-		}
-		else
-		{
-			btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _TRUE, 28);
-		}
-	}
-#endif
 }
 
 static void BTDM_1AntWifiScanNotify(struct rtw_adapter *padapter, u8 scanType)

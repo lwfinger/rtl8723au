@@ -412,7 +412,6 @@ typedef enum tag_Dynamic_ODM_Support_Ability_Type
 // 2011/20/20 MH For MP driver RT_WLAN_STA =  STA_INFO_T
 // Please declare below ODM relative info in your STA info structure.
 //
-#if 1
 typedef		struct _ODM_STA_INFO{
 	// Driver Write
 	bool		bUsed;				// record the sta status link or not?
@@ -437,7 +436,6 @@ typedef		struct _ODM_STA_INFO{
 	// ODM Write Wilson will handle this part(said by Luke.Lee)
 	//TX_RPT_T		pTxRpt;				// Define in IC folder. Move lower layer.
 }ODM_STA_INFO_T, *PODM_STA_INFO_T;
-#endif
 
 //
 // 2011/10/20 MH Define Common info enum for all team.
@@ -778,7 +776,6 @@ typedef struct _ODM_RA_Info_
 	u16 RptTime;
 	u8 RAWaitingCounter;
 	u8 RAPendingCounter;
-#if 1 //POWER_TRAINING_ACTIVE == 1 // For compile  pass only~!
 	u8 PTActive;  // on or off
 	u8 PTTryState;  // 0 trying state, 1 for decision state
 	u8 PTStage;  // 0~6
@@ -788,7 +785,6 @@ typedef struct _ODM_RA_Info_
 	u8 PTModeSS;  // decide whitch rate should do PT
 	u8 RAstage;  // StageRA, decide how many times RA will be done between PT
 	u8 PTSmoothFactor;
-#endif
 } ODM_RA_INFO_T,*PODM_RA_INFO_T;
 
 typedef struct _IQK_MATRIX_REGS_SETTING{
@@ -1167,13 +1163,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	// ODM relative workitem.
 } DM_ODM_T, *PDM_ODM_T;		// DM_Dynamic_Mechanism_Structure
 
-
-
-#if 1 //92c-series
 #define ODM_RF_PATH_MAX 2
-#else //jaguar - series
-#define ODM_RF_PATH_MAX 4
-#endif
 
 typedef enum _ODM_RF_RADIO_PATH {
     ODM_RF_PATH_A = 0,   //Radio Path A

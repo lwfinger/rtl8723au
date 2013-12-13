@@ -378,14 +378,7 @@ _InitTxBufferBoundary(
 	rtw_write8(Adapter, REG_TXPKTBUF_MGQ_BDNY, txpktbuf_bndy);
 	rtw_write8(Adapter, REG_TXPKTBUF_WMAC_LBK_BF_HD, txpktbuf_bndy);
 	rtw_write8(Adapter, REG_TRXFF_BNDY, txpktbuf_bndy);
-#if 1
 	rtw_write8(Adapter, REG_TDECTRL+1, txpktbuf_bndy);
-#else
-	txdmactrl = PlatformIORead2Byte(Adapter, REG_TDECTRL);
-	txdmactrl &= ~BCN_HEAD_MASK;
-	txdmactrl |= BCN_HEAD(txpktbuf_bndy);
-	PlatformIOWrite2Byte(Adapter, REG_TDECTRL, txdmactrl);
-#endif
 }
 
 static void
@@ -1513,7 +1506,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 	rtw_write8(Adapter, 0xfe41, 0x8d);
 	rtw_write8(Adapter, 0xfe42, 0x80);
 	rtw_write32(Adapter,0x20c,0xfd0320);
-#if 1
 	//2011/01/07 ,suggest by Johnny,for solved the problem that too many protocol error on USB bus
 	if(!IS_81xxC_VENDOR_UMC_A_CUT(pHalData->VersionID) )//&& !IS_92C_SERIAL(pHalData->VersionID))// TSMC , 8188
 	{
@@ -1539,7 +1531,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 
 	}
 
-#endif
 #endif //USB_INTERFERENCE_ISSUE
 
 //HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS);
@@ -2488,26 +2479,13 @@ Hal_EfuseParseMACAddr_8723AU(
 	u8			sMacAddr[6] = {0x00, 0xE0, 0x4C, 0x87, 0x23, 0x00};
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
 
-	if (AutoLoadFail)
-	{
-//		sMacAddr[5] = (u8)GetRandomNumber(1, 254);
+	if (AutoLoadFail) {
 		for (i=0; i<6; i++)
 			pEEPROM->mac_addr[i] = sMacAddr[i];
-	}
-	else
-	{
+	} else {
 		//Read Permanent MAC address
-#if 1
 		memcpy(pEEPROM->mac_addr, &hwinfo[EEPROM_MAC_ADDR_8723AU], ETH_ALEN);
-#else
-		for(i=0; i<6; i+=2)
-		{
-			usValue = *(u16*)&hwinfo[EEPROM_MAC_ADDR_8723S+i];
-			*((u16*)(&pEEPROM->mac_addr[i])) = usValue;
-		}
-#endif
 	}
-//	NicIFSetMacAddress(pAdapter, pAdapter->PermanentAddress);
 
 	RT_TRACE(_module_hci_hal_init_c_, _drv_notice_,
 		 ("Hal_EfuseParseMACAddr_8723AU: Permanent Address=%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -2515,7 +2493,6 @@ Hal_EfuseParseMACAddr_8723AU(
 		  pEEPROM->mac_addr[2], pEEPROM->mac_addr[3],
 		  pEEPROM->mac_addr[4], pEEPROM->mac_addr[5]));
 }
-
 
 #ifdef CONFIG_EFUSE_CONFIG_FILE
 static u32 Hal_readPGDataFromConfigFile(
