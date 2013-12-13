@@ -34,19 +34,8 @@
 #include <usb_ops.h>
 #include <rtw_version.h>
 
-#ifdef CONFIG_RTL8192C
-#include <rtl8192c_hal.h>
-#endif
-#ifdef CONFIG_RTL8192D
-#include <rtl8192d_hal.h>
-#endif
-#ifdef CONFIG_RTL8723A
 #include <rtl8723a_pg.h>
 #include <rtl8723a_hal.h>
-#endif
-#ifdef CONFIG_RTL8188E
-#include <rtl8188e_hal.h>
-#endif
 
 #define RTL_IOCTL_WPA_SUPPLICANT	SIOCIWFIRSTPRIV+30
 

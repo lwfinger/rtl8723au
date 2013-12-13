@@ -20,17 +20,11 @@ EXTRA_CFLAGS += -I$(src)/include
 
 CONFIG_AUTOCFG_CP = y
 
-CONFIG_RTL8192C = n
-CONFIG_RTL8192D = n
-CONFIG_RTL8723A = y
-CONFIG_RTL8188E = n
-
 CONFIG_POWER_SAVING = y
 CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n
 CONFIG_WIFI_TEST = n
 CONFIG_BT_COEXIST = y
-CONFIG_RTL8192CU_REDEFINE_1X1 = n
 CONFIG_INTEL_WIDI = n
 CONFIG_WAPI_SUPPORT = n
 CONFIG_EFUSE_CONFIG_FILE = n
@@ -80,8 +74,6 @@ OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_HWConfig.o\
 		hal/odm.o
 
-ifeq ($(CONFIG_RTL8723A), y)
-
 RTL871X = rtl8723a
 
 HAL_COMM_FILES := hal/$(RTL871X)_xmit.o \
@@ -90,7 +82,6 @@ HAL_COMM_FILES := hal/$(RTL871X)_xmit.o \
 MODULE_NAME = 8723au
 OUTSRC_FILES += hal/Hal8723UHWImg_CE.o
 
-#hal/HalHWImg8723A_FW.o
 OUTSRC_FILES += hal/HalHWImg8723A_BB.o\
 		hal/HalHWImg8723A_MAC.o\
 		hal/HalHWImg8723A_RF.o\
@@ -135,7 +126,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/rtl$(MODULE_NAME)_recv.o
 
 _HAL_INTFS_FILES += hal/$(HCI_NAME)_ops_linux.o
-endif
 
 _HAL_INTFS_FILES += $(CHIP_FILES)
 
@@ -160,10 +150,6 @@ ifeq ($(CONFIG_BT_COEXIST), y)
 EXTRA_CFLAGS += -DCONFIG_BT_COEXIST
 endif
 
-ifeq ($(CONFIG_RTL8192CU_REDEFINE_1X1), y)
-EXTRA_CFLAGS += -DRTL8192C_RECONFIG_TO_1T1R
-endif
-
 ifeq ($(CONFIG_INTEL_WIDI), y)
 EXTRA_CFLAGS += -DCONFIG_INTEL_WIDI
 endif
@@ -184,17 +170,6 @@ ifeq ($(CONFIG_FTP_PROTECT), y)
 EXTRA_CFLAGS += -DCONFIG_FTP_PROTECT
 endif
 
-ifeq ($(CONFIG_RTL8188E), y)
-ifeq ($(CONFIG_WOWLAN), y)
-EXTRA_CFLAGS += -DCONFIG_WOWLAN
-endif
-endif
-
-ifeq ($(CONFIG_RTL8188E), y)
-ifeq ($(CONFIG_EFUSE_CONFIG_FILE), y)
-EXTRA_CFLAGS += -DCONFIG_RF_GAIN_OFFSET
-endif
-endif
 
 ifeq ($(CONFIG_PLATFORM_I386_PC), y)
 SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/ppc/powerpc/)

@@ -2922,49 +2922,31 @@ ODM_ReleaseAllTimers(
 //3 Tx Power Tracking
 //3============================================================
 
-void
-odm_TXPowerTrackingInit(
+void odm_TXPowerTrackingInit(
 	PDM_ODM_T	pDM_Odm
 	)
 {
 	odm_TXPowerTrackingThermalMeterInit(pDM_Odm);
 }
 
-
-void
-odm_TXPowerTrackingThermalMeterInit(
+void odm_TXPowerTrackingThermalMeterInit(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-	#ifdef CONFIG_RTL8188E
-	{
-		pDM_Odm->RFCalibrateInfo.bTXPowerTracking = _TRUE;
-		pDM_Odm->RFCalibrateInfo.TXPowercount = 0;
-		pDM_Odm->RFCalibrateInfo.bTXPowerTrackingInit = _FALSE;
-		pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = _TRUE;
-		MSG_8723A("pDM_Odm TxPowerTrackControl = %d\n", pDM_Odm->RFCalibrateInfo.TxPowerTrackControl);
-	}
-	#else
-	{
-		struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
-		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-		struct dm_priv	*pdmpriv = &pHalData->dmpriv;
+	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
-		pdmpriv->bTXPowerTracking = _TRUE;
-		pdmpriv->TXPowercount = 0;
-		pdmpriv->bTXPowerTrackingInit = _FALSE;
-		pdmpriv->TxPowerTrackControl = _TRUE;
-		MSG_8723A("pdmpriv->TxPowerTrackControl = %d\n", pdmpriv->TxPowerTrackControl);
+	pdmpriv->bTXPowerTracking = _TRUE;
+	pdmpriv->TXPowercount = 0;
+	pdmpriv->bTXPowerTrackingInit = _FALSE;
+	pdmpriv->TxPowerTrackControl = _TRUE;
+	MSG_8723A("pdmpriv->TxPowerTrackControl = %d\n", pdmpriv->TxPowerTrackControl);
 
-	}
-	#endif//endif (CONFIG_RTL8188E==1)
-
-    pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = TRUE;
+	pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = TRUE;
 }
 
-
-void
-ODM_TXPowerTrackingCheck(
+void ODM_TXPowerTrackingCheck(
 		PDM_ODM_T		pDM_Odm
 	)
 {
@@ -2975,37 +2957,27 @@ ODM_TXPowerTrackingCheck(
 	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 
-	//if (!(pDM_Odm->SupportAbility & ODM_RF_TX_PWR_TRACK))
-		//return;
-
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
 	// at the same time. In the stage2/3, we need to prive universal interface and merge all
 	// HW dynamic mechanism.
 	//
-	switch	(pDM_Odm->SupportPlatform)
-	{
-		case	ODM_MP:
-			odm_TXPowerTrackingCheckMP(pDM_Odm);
-			break;
-
-		case	ODM_CE:
-			odm_TXPowerTrackingCheckCE(pDM_Odm);
-			break;
-
-		case	ODM_AP:
-			odm_TXPowerTrackingCheckAP(pDM_Odm);
-			break;
-
-		case	ODM_ADSL:
-			//odm_DIGAP(pDM_Odm);
-			break;
+	switch	(pDM_Odm->SupportPlatform) {
+	case	ODM_MP:
+		odm_TXPowerTrackingCheckMP(pDM_Odm);
+		break;
+	case	ODM_CE:
+		odm_TXPowerTrackingCheckCE(pDM_Odm);
+		break;
+	case	ODM_AP:
+		odm_TXPowerTrackingCheckAP(pDM_Odm);
+		break;
+	case	ODM_ADSL:
+		break;
 	}
-
 }
 
-void
-odm_TXPowerTrackingCheckCE(
+void odm_TXPowerTrackingCheckCE(
 		PDM_ODM_T		pDM_Odm
 	)
 {

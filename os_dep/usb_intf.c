@@ -78,50 +78,6 @@ static struct specific_device_id specific_device_id_tbl[] = {
 	{}
 };
 
-#ifdef CONFIG_RTL8192C
-static struct usb_device_id rtl8192c_usb_id_tbl[] ={
-	RTL8192C_USB_IDS
-	{}	/* Terminating entry */
-};
-
-struct usb_driver rtl8192c_usb_drv = {
-	.name = (char*)"rtl8192cu",
-	.probe = rtw_drv_init,
-	.disconnect = rtw_disconnect,
-	.id_table = rtl8192c_usb_id_tbl,
-	.suspend = rtw_suspend,
-	.resume = rtw_resume,
-	.reset_resume  = rtw_resume,
-#ifdef CONFIG_AUTOSUSPEND
-	.supports_autosuspend = 1,
-#endif
-};
-
-static struct usb_driver *usb_drv = &rtl8192c_usb_drv;
-#endif /* CONFIG_RTL8192C */
-
-#ifdef CONFIG_RTL8192D
-static struct usb_device_id rtl8192d_usb_id_tbl[] ={
-	RTL8192D_USB_IDS
-	{}	/* Terminating entry */
-};
-
-struct usb_driver rtl8192d_usb_drv = {
-	.name = (char*)"rtl8192du",
-	.probe = rtw_drv_init,
-	.disconnect = rtw_disconnect,
-	.id_table = rtl8192d_usb_id_tbl,
-	.suspend = rtw_suspend,
-	.resume = rtw_resume,
-	.reset_resume  = rtw_resume,
-#ifdef CONFIG_AUTOSUSPEND
-	.supports_autosuspend = 1,
-#endif
-};
-static struct usb_driver *usb_drv = &rtl8192d_usb_drv;
-#endif /* CONFIG_RTL8192D */
-
-#ifdef CONFIG_RTL8723A
 static struct usb_device_id rtl8723a_usb_id_tbl[] ={
 	RTL8723A_USB_IDS
 	{}	/* Terminating entry */
@@ -141,29 +97,6 @@ static struct usb_driver rtl8723a_usb_drv = {
 };
 
 static struct usb_driver *usb_drv = &rtl8723a_usb_drv;
-#endif /* CONFIG_RTL8723A */
-
-#ifdef CONFIG_RTL8188E
-static struct usb_device_id rtl8188e_usb_id_tbl[] ={
-	RTL8188E_USB_IDS
-	{}	/* Terminating entry */
-};
-
-struct usb_driver rtl8188e_usb_drv = {
-	.name = (char*)"rtl8188eu",
-	.probe = rtw_drv_init,
-	.disconnect = rtw_disconnect,
-	.id_table = rtl8188e_usb_id_tbl,
-	.suspend =  rtw_suspend,
-	.resume = rtw_resume,
-	.reset_resume   = rtw_resume,
-#ifdef CONFIG_AUTOSUSPEND
-	.supports_autosuspend = 1,
-#endif
-};
-
-static struct usb_driver *usb_drv = &rtl8188e_usb_drv;
-#endif /* CONFIG_RTL8188E */
 
 static inline int RT_usb_endpoint_dir_in(const struct usb_endpoint_descriptor *epd)
 {

@@ -22,15 +22,7 @@
 #include <drv_conf.h>
 #include <osdep_service.h>
 
-#ifndef CONFIG_RTL8711FW
 #include <wlan_bssdef.h>
-#include <linux/semaphore.h>
-#include <linux/sem.h>
-#else
-#include <wlan_bssdef.h>
-#endif//CONFIG_RTL8711FW
-
-
 
 #ifdef CONFIG_H2CLBK
 #include <h2clbk.h>

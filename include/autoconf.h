@@ -29,7 +29,6 @@
 #define RTL871X_MODULE_NAME "8723AS-VAU"
 #define DRV_NAME "rtl8723as-vau"
 
-#define CONFIG_RTL8723A
 #define PLATFORM_LINUX
 
 #define CONFIG_EMBEDDED_FWIMG
