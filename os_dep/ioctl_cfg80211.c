@@ -446,7 +446,6 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 	}
 #endif //CONFIG_P2P
 
-#ifdef CONFIG_LAYER2_ROAMING
 	if (rtw_to_roaming(padapter) > 0) {
 		struct wiphy *wiphy = pwdev->wiphy;
 		struct ieee80211_channel *notify_channel;
@@ -469,13 +468,7 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 			, pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6
 			, pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6
 			, GFP_ATOMIC);
-	}
-	else
-#endif
-	{
-#if 0
-		DBG_8723A("pwdev->sme_state(b)=%d\n", pwdev->sme_state);
-#endif
+	} else {
 		cfg80211_connect_result(padapter->pnetdev,
 					cur_network->network.MacAddress,
 					pmlmepriv->assoc_req+sizeof(struct rtw_ieee80211_hdr_3addr)+2,
@@ -483,9 +476,6 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 					pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6,
 					pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6,
 					WLAN_STATUS_SUCCESS, GFP_ATOMIC);
-#if 0
-		DBG_8723A("pwdev->sme_state(a)=%d\n", pwdev->sme_state);
-#endif
 	}
 }
 

@@ -86,8 +86,6 @@
 //	#define CONFIG_TDLS_AUTOCHECKALIVE
 #endif
 
-#define CONFIG_LAYER2_ROAMING
-
 #define CONFIG_SKB_COPY	//for amsdu
 
 //#define CONFIG_LED

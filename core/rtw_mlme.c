@@ -1063,7 +1063,6 @@ _func_enter_;
 			else
 			{
 				DBG_8723A("try_to_join, but select scanning queue fail, to_roaming:%d\n", rtw_to_roaming(adapter));
-				#ifdef CONFIG_LAYER2_ROAMING
 				if (rtw_to_roaming(adapter) != 0) {
 					if( --pmlmepriv->to_roaming == 0
 						|| _SUCCESS != rtw_sitesurvey_cmd(adapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)
@@ -1075,13 +1074,10 @@ _func_enter_;
 						pmlmepriv->to_join = true;
 					}
 				}
-				#endif
 				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 			}
 		}
 	}
-
-	/* DBG_8723A("scan complete in %dms\n",rtw_get_passing_time_ms(pmlmepriv->scan_start_time)); */
 
 	spin_unlock_bh(&pmlmepriv->lock);
 
@@ -1922,14 +1918,12 @@ _func_enter_;
 
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) )
 	{
-		#ifdef CONFIG_LAYER2_ROAMING
 		if (rtw_to_roaming(adapter) > 0)
 			pmlmepriv->to_roaming--; /* this stadel_event is caused by roaming, decrease to_roaming */
 		else if (rtw_to_roaming(adapter) == 0)
 			rtw_set_roaming(adapter, adapter->registrypriv.max_roaming_times);
 		if(*((unsigned short *)(pstadel->rsvd)) != WLAN_REASON_EXPIRATION_CHK)
 			rtw_set_roaming(adapter, 0); /* don't roam */
-		#endif
 
 		rtw_free_uc_swdec_pending_queue(adapter);
 
@@ -1944,10 +1938,7 @@ _func_enter_;
 		}
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
-		#ifdef CONFIG_LAYER2_ROAMING
 		_rtw_roaming(adapter, tgt_network);
-		#endif /* CONFIG_LAYER2_ROAMING */
-
 	}
 
 	if ( check_fwstate(pmlmepriv,WIFI_ADHOC_MASTER_STATE) ||
@@ -2030,9 +2021,7 @@ _func_exit_;
 void _rtw_join_timeout_handler (struct rtw_adapter *adapter)
 {
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
-#ifdef CONFIG_LAYER2_ROAMING
 	int do_join_r;
-#endif /* CONFIG_LAYER2_ROAMING */
 
 _func_enter_;
 
@@ -2043,7 +2032,6 @@ _func_enter_;
 
 	spin_lock_bh(&pmlmepriv->lock);
 
-	#ifdef CONFIG_LAYER2_ROAMING
 	if (rtw_to_roaming(adapter) > 0) { /* join timeout caused by roaming */
 		while(1) {
 			pmlmepriv->to_roaming--;
@@ -2060,10 +2048,7 @@ _func_enter_;
 				break;
 			}
 		}
-
-	} else
-	#endif
-	{
+	} else {
 		rtw_indicate_disconnect(adapter);
 		free_scanqueue(pmlmepriv);/*  */
 
@@ -2261,23 +2246,19 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 	if(rtw_is_desired_network(adapter, competitor)  == false)
 		goto exit;
 
-#ifdef  CONFIG_LAYER2_ROAMING
 	if(rtw_to_roaming(adapter) > 0) {
 		if(	rtw_get_passing_time_ms((u32)competitor->last_scanned) >= RTW_SCAN_RESULT_EXPIRE
 			|| is_same_ess(&competitor->network, &pmlmepriv->cur_network.network) == false
 		)
 			goto exit;
 	}
-#endif
 
-	if(*candidate == NULL ||(*candidate)->network.Rssi<competitor->network.Rssi )
-	{
+	if(*candidate == NULL ||(*candidate)->network.Rssi<competitor->network.Rssi ) {
 		*candidate = competitor;
 		updated = true;
 	}
 
 	if(updated){
-#ifdef  CONFIG_LAYER2_ROAMING
 		DBG_8723A("[by_bssid:%u][assoc_ssid:%s][to_roaming:%u] new candidate: %s("MAC_FMT") rssi:%d\n",
 			pmlmepriv->assoc_by_bssid,
 			pmlmepriv->assoc_ssid.Ssid,
@@ -2285,15 +2266,6 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 			(*candidate)->network.Ssid.Ssid,
 			MAC_ARG((*candidate)->network.MacAddress),
 			(int)(*candidate)->network.Rssi);
-#else
-		DBG_8723A("[by_bssid:%u][assoc_ssid:%s][to_roaming:%u] new candidate: %s("MAC_FMT") rssi:%d\n",
-			pmlmepriv->assoc_by_bssid,
-			pmlmepriv->assoc_ssid.Ssid,
-			rtw_to_roaming(adapter),
-			(*candidate)->network.Ssid.Ssid,
-			MAC_ARG((*candidate)->network.MacAddress),
-			(int)(*candidate)->network.Rssi);
-#endif
 	}
 
 exit:
@@ -3066,7 +3038,6 @@ void rtw_issue_addbareq_cmd(struct rtw_adapter *padapter, struct xmit_frame *pxm
 
 #endif
 
-#ifdef CONFIG_LAYER2_ROAMING
 inline void rtw_set_roaming(struct rtw_adapter *adapter, u8 to_roaming)
 {
 	if (to_roaming == 0)
@@ -3125,7 +3096,6 @@ void _rtw_roaming(struct rtw_adapter *padapter, struct wlan_network *tgt_network
 		}
 	}
 }
-#endif
 
 int rtw_linked_check(struct rtw_adapter *padapter)
 {
