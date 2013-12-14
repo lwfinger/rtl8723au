@@ -931,17 +931,6 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
 	padapter->iface_id = IFACE_ID0;
 
-#if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
-	//set adapter_type/iface type for primary padapter
-	padapter->isprimary = _TRUE;
-	padapter->adapter_type = PRIMARY_ADAPTER;
-#ifndef CONFIG_HWPORT_SWAP
-	padapter->iface_type = IFACE_PORT0;
-#else
-	padapter->iface_type = IFACE_PORT1;
-#endif
-#endif
-
 #ifndef RTW_DVOBJ_CHIP_HW_TYPE
 	//step 1-1., decide the chip_type via vid/pid
 	padapter->interface_type = RTW_USB;
@@ -1214,12 +1203,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 		goto free_dvobj;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if((if2 = rtw_drv_if2_init(if1, usb_set_intf_ops)) == NULL) {
-		goto free_if1;
-	}
-#endif
-
 #ifdef CONFIG_GLOBAL_UI_PID
 	if(ui_pid[1]!=0) {
 		DBG_8723A("ui_pid[1]:%d\n",ui_pid[1]);
@@ -1241,12 +1224,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 	status = _SUCCESS;
 
 free_if2:
-	if(status != _SUCCESS && if2) {
-		#ifdef CONFIG_CONCURRENT_MODE
-		rtw_drv_if2_stop(if2);
-		rtw_drv_if2_free(if2);
-		#endif
-	}
 free_if1:
 	if (status != _SUCCESS && if1) {
 		rtw_usb_if1_deinit(if1);
@@ -1285,21 +1262,14 @@ static void rtw_disconnect(struct usb_interface *pusb_intf)
 
 	LeaveAllPowerSaveMode(padapter);
 
-#ifdef CONFIG_CONCURRENT_MODE
-	rtw_drv_if2_stop(dvobj->if2);
-#endif
 	rtw_usb_if1_deinit(padapter);
 
-#ifdef CONFIG_CONCURRENT_MODE
-	rtw_drv_if2_free(dvobj->if2);
-#endif
 	usb_dvobj_deinit(pusb_intf);
 
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("-dev_remove()\n"));
 	DBG_8723A("-r871xu_dev_remove, done\n");
 
 	return;
-
 }
 
 extern int console_suspend_enabled;

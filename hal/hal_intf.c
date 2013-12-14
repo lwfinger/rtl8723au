@@ -323,13 +323,7 @@ void	rtw_hal_add_ra_tid(struct rtw_adapter *padapter, u32 bitmap, u8 arg, u8 rss
 	if(padapter->HalFunc.Add_RateATid)
 		padapter->HalFunc.Add_RateATid(padapter, bitmap, arg, rssi_level);
 }
-#ifdef CONFIG_CONCURRENT_MODE
-void	rtw_hal_clone_data(struct rtw_adapter *dst_padapter, _adapter *src_padapter)
-{
-	if(dst_padapter->HalFunc.clone_haldata)
-		dst_padapter->HalFunc.clone_haldata(dst_padapter, src_padapter);
-}
-#endif
+
 /*	Start specifical interface thread		*/
 void	rtw_hal_start_thread(struct rtw_adapter *padapter)
 {
@@ -390,10 +384,6 @@ void	rtw_hal_set_chan(struct rtw_adapter *padapter, u8 channel)
 
 void	rtw_hal_dm_watchdog(struct rtw_adapter *padapter)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
-		return;
-#endif
 	if(padapter->HalFunc.hal_dm_watchdog)
 		padapter->HalFunc.hal_dm_watchdog(padapter);
 }
@@ -450,10 +440,6 @@ void rtw_hal_sreset_reset_value(struct rtw_adapter *padapter)
 
 void rtw_hal_sreset_xmit_status_check(struct rtw_adapter *padapter)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
-		return;
-#endif
 	if(padapter->HalFunc.sreset_xmit_status_check)
 		padapter->HalFunc.sreset_xmit_status_check(padapter);
 }

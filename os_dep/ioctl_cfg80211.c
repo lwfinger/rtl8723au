@@ -1361,27 +1361,7 @@ exit:
 }
 
 extern int netdev_open(struct net_device *pnetdev);
-#ifdef CONFIG_CONCURRENT_MODE
-extern int netdev_if2_open(struct net_device *pnetdev);
-#endif
 
-/*
-enum nl80211_iftype {
-	NL80211_IFTYPE_UNSPECIFIED,
-       NL80211_IFTYPE_ADHOC, //1
-       NL80211_IFTYPE_STATION, //2
-       NL80211_IFTYPE_AP, //3
-       NL80211_IFTYPE_AP_VLAN,
-       NL80211_IFTYPE_WDS,
-       NL80211_IFTYPE_MONITOR, //6
-       NL80211_IFTYPE_MESH_POINT,
-       NL80211_IFTYPE_P2P_CLIENT, //8
-	NL80211_IFTYPE_P2P_GO, //9
-       //keep last
-       NUM_NL80211_IFTYPES,
-       NL80211_IFTYPE_MAX = NUM_NL80211_IFTYPES - 1
-};
-*/
 static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 				     struct net_device *ndev,
 				     enum nl80211_iftype type, u32 *flags,
@@ -1398,23 +1378,10 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 	int ret = 0;
 	u8 change = _FALSE;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type == SECONDARY_ADAPTER)
-	{
-		DBG_8723A(FUNC_NDEV_FMT" call netdev_if2_open\n", FUNC_NDEV_ARG(ndev));
-		if(netdev_if2_open(ndev) != 0) {
-			ret= -EPERM;
-			goto exit;
-		}
-	}
-	else if(padapter->adapter_type == PRIMARY_ADAPTER)
-#endif //CONFIG_CONCURRENT_MODE
-	{
-		DBG_8723A(FUNC_NDEV_FMT" call netdev_open\n", FUNC_NDEV_ARG(ndev));
-		if(netdev_open(ndev) != 0) {
-			ret= -EPERM;
-			goto exit;
-		}
+	DBG_8723A(FUNC_NDEV_FMT" call netdev_open\n", FUNC_NDEV_ARG(ndev));
+	if(netdev_open(ndev) != 0) {
+		ret= -EPERM;
+		goto exit;
 	}
 
 	if(_FAIL == rtw_pwr_wakeup(padapter)) {
@@ -1702,22 +1669,10 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	struct cfg80211_ssid *ssids = request->ssids;
 	int social_channel = 0, j = 0;
 	bool need_indicate_scan_done = _FALSE;
-#ifdef CONFIG_CONCURRENT_MODE
-	PADAPTER pbuddy_adapter = NULL;
-	struct mlme_priv *pbuddy_mlmepriv = NULL;
-#endif //CONFIG_CONCURRENT_MODE
 
 #ifdef CONFIG_DEBUG_CFG80211
 	DBG_8723A(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 #endif
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(padapter))
-	{
-		pbuddy_adapter = padapter->pbuddy_adapter;
-		pbuddy_mlmepriv = &(pbuddy_adapter->mlmepriv);
-	}
-#endif //CONFIG_CONCURRENT_MODE
 
 	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	pwdev_priv->scan_request = request;
@@ -1784,39 +1739,12 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 		goto check_need_indicate_scan_done;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if(pbuddy_mlmepriv && (pbuddy_mlmepriv->LinkDetectInfo.bBusyTraffic == _TRUE))
-	{
-		DBG_8723A("%s, bBusyTraffic == _TRUE at buddy_intf\n", __func__);
-		need_indicate_scan_done = _TRUE;
-		goto check_need_indicate_scan_done;
-	}
-#endif //CONFIG_CONCURRENT_MODE
-
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
 	{
 		DBG_8723A("%s, fwstate=0x%x\n", __func__, pmlmepriv->fw_state);
 		need_indicate_scan_done = _TRUE;
 		goto check_need_indicate_scan_done;
 	}
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_buddy_fwstate(padapter,
-		_FW_UNDER_SURVEY|_FW_UNDER_LINKING|WIFI_UNDER_WPS) == _TRUE)
-	{
-		if(check_buddy_fwstate(padapter, _FW_UNDER_SURVEY))
-		{
-			DBG_8723A("scanning_via_buddy_intf\n");
-			pmlmepriv->scanning_via_buddy_intf = _TRUE;
-		}
-
-		DBG_8723A("buddy_intf's mlme state:0x%x\n", pbuddy_mlmepriv->fw_state);
-
-		need_indicate_scan_done = _TRUE;
-		goto check_need_indicate_scan_done;
-	}
-#endif
-
 
 #ifdef CONFIG_P2P
 	if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE) && !rtw_p2p_chk_state(pwdinfo, P2P_STATE_IDLE))
@@ -2299,17 +2227,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		goto exit;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_buddy_fwstate(padapter, _FW_UNDER_LINKING) == _TRUE) {
-		DBG_8723A("%s, but buddy_intf is under linking\n", __FUNCTION__);
-		ret = -EINVAL;
-		goto exit;
-	}
-	if (check_buddy_fwstate(padapter, _FW_UNDER_SURVEY) == _TRUE) {
-		rtw_scan_abort(padapter->pbuddy_adapter);
-	}
-#endif
-
 	if (!sme->ssid || !sme->ssid_len)
 	{
 		ret = -EINVAL;
@@ -2317,7 +2234,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	}
 
 	if (sme->ssid_len > IW_ESSID_MAX_SIZE){
-
 		ret= -E2BIG;
 		goto exit;
 	}
@@ -3795,10 +3711,6 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 
 		_cancel_timer_ex(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
 
-#ifdef CONFIG_CONCURRENT_MODE
-                atomic_set(&pwdev_priv->ro_ch_to, 1);
-#endif //CONFIG_CONCURRENT_MODE
-
 		p2p_protocol_wk_hdl(padapter, P2P_RO_CH_WK);
 	}
 
@@ -3813,12 +3725,6 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 	pcfg80211_wdinfo->remain_on_ch_cookie= *cookie;
 
 	rtw_scan_abort(padapter);
-#ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(padapter))
-		rtw_scan_abort(padapter->pbuddy_adapter);
-#endif //CONFIG_CONCURRENT_MODE
-
-	//if(!rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT) && !rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 	{
 		rtw_p2p_enable(padapter, P2P_ROLE_DEVICE);
@@ -3839,80 +3745,29 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 	if(duration < 400)
 		duration = duration*3;//extend from exper.
 
-
-#ifdef	CONFIG_CONCURRENT_MODE
-	if(check_buddy_fwstate(padapter, _FW_LINKED) &&
-		(duration<pwdinfo->ext_listen_interval))
-	{
-		duration = duration +	pwdinfo->ext_listen_interval;
-	}
-#endif
-
 	pcfg80211_wdinfo->restore_channel = pmlmeext->cur_channel;
 
 	if(rtw_ch_set_search_ch(pmlmeext->channel_set, remain_ch) >= 0) {
-#ifdef	CONFIG_CONCURRENT_MODE
-		if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
-		{
-			PADAPTER pbuddy_adapter = padapter->pbuddy_adapter;
-			struct mlme_ext_priv *pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
-
-			if(remain_ch != pbuddy_mlmeext->cur_channel)
-			{
-				if(atomic_read(&pwdev_priv->switch_ch_to)==1 ||
-					(remain_ch != pmlmeext->cur_channel))
-				{
-					DBG_8723A("%s, issue nulldata pwrbit=1\n", __func__);
-					issue_nulldata(padapter->pbuddy_adapter, NULL, 1, 3, 500);
-
-					atomic_set(&pwdev_priv->switch_ch_to, 0);
-
-					DBG_8723A("%s, set switch ch timer, duration=%d\n", __func__, duration-pwdinfo->ext_listen_interval);
-					_set_timer(&pwdinfo->ap_p2p_switch_timer, duration-pwdinfo->ext_listen_interval);
-				}
-			}
-
+		if(remain_ch != pmlmeext->cur_channel ) {
 			ready_on_channel = _TRUE;
-			//pmlmeext->cur_channel = remain_ch;
-			//set_channel_bwmode(padapter, remain_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-		}else
-#endif //CONFIG_CONCURRENT_MODE
-		if(remain_ch != pmlmeext->cur_channel )
-		{
-			ready_on_channel = _TRUE;
-			//pmlmeext->cur_channel = remain_ch;
-			//set_channel_bwmode(padapter, remain_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 		}
 	} else {
 		DBG_8723A("%s remain_ch:%u not in channel plan!!!!\n", __FUNCTION__, remain_ch);
 	}
 
-
 	//call this after other things have been done
-#ifdef	CONFIG_CONCURRENT_MODE
-	if(atomic_read(&pwdev_priv->ro_ch_to)==1 ||
-		(remain_ch != pmlmeext->cur_channel))
+	if(ready_on_channel == _TRUE)
 	{
-		u8 co_channel = 0xff;
-		atomic_set(&pwdev_priv->ro_ch_to, 0);
-#endif
-
-		if(ready_on_channel == _TRUE)
+		if ( !check_fwstate(&padapter->mlmepriv, _FW_LINKED ) )
 		{
-			if ( !check_fwstate(&padapter->mlmepriv, _FW_LINKED ) )
-			{
-				pmlmeext->cur_channel = remain_ch;
+			pmlmeext->cur_channel = remain_ch;
 
 
-				set_channel_bwmode(padapter, remain_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-			}
+			set_channel_bwmode(padapter, remain_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 		}
-		DBG_8723A("%s, set ro ch timer, duration=%d\n", __func__, duration);
-		_set_timer( &pcfg80211_wdinfo->remain_on_ch_timer, duration);
-
-#ifdef	CONFIG_CONCURRENT_MODE
 	}
-#endif
+	DBG_8723A("%s, set ro ch timer, duration=%d\n", __func__, duration);
+	_set_timer( &pcfg80211_wdinfo->remain_on_ch_timer, duration);
 
 	rtw_cfg80211_ready_on_channel(padapter, *cookie, channel, channel_type, duration, GFP_KERNEL);
 
@@ -3941,9 +3796,6 @@ static s32 cfg80211_rtw_cancel_remain_on_channel(struct wiphy *wiphy,
 	if (pcfg80211_wdinfo->is_ro_ch == _TRUE) {
 		DBG_8723A("%s, cancel ro ch timer\n", __func__);
 		_cancel_timer_ex(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
-		#ifdef CONFIG_CONCURRENT_MODE
-		atomic_set(&pwdev_priv->ro_ch_to, 1);
-		#endif
 		p2p_protocol_wk_hdl(padapter, P2P_RO_CH_WK);
 	}
 
@@ -3981,52 +3833,7 @@ static int _cfg80211_rtw_mgmt_tx(struct rtw_adapter *padapter, u8 tx_ch, const u
 	rtw_set_scan_deny(padapter, 1000);
 
 	rtw_scan_abort(padapter);
-	#ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(padapter))
-		rtw_scan_abort(padapter->pbuddy_adapter);
-	#endif /* CONFIG_CONCURRENT_MODE */
 
-	if (padapter->cfg80211_wdinfo.is_ro_ch == _TRUE) {
-		//DBG_8723A("%s, cancel ro ch timer\n", __func__);
-		//_cancel_timer_ex(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
-		//padapter->cfg80211_wdinfo.is_ro_ch = _FALSE;
-		#ifdef CONFIG_CONCURRENT_MODE
-		DBG_8723A("%s, extend ro ch time\n", __func__);
-		_set_timer( &padapter->cfg80211_wdinfo.remain_on_ch_timer, pwdinfo->ext_listen_period);
-		#endif //CONFIG_CONCURRENT_MODE
-	}
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_buddy_fwstate(padapter, _FW_LINKED )) {
-		u8 co_channel=0xff;
-		PADAPTER pbuddy_adapter = padapter->pbuddy_adapter;
-		struct mlme_ext_priv *pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
-
-		co_channel = rtw_get_oper_ch(padapter);
-
-		if (tx_ch != pbuddy_mlmeext->cur_channel) {
-			if (atomic_read(&pwdev_priv->switch_ch_to)==1) {
-				DBG_8723A("%s, issue nulldata pwrbit=1\n", __func__);
-				issue_nulldata(padapter->pbuddy_adapter, NULL, 1, 3, 500);
-
-				atomic_set(&pwdev_priv->switch_ch_to, 0);
-
-				//DBG_8723A("%s, set switch ch timer, period=%d\n", __func__, pwdinfo->ext_listen_period);
-				//_set_timer(&pwdinfo->ap_p2p_switch_timer, pwdinfo->ext_listen_period);
-			}
-
-			DBG_8723A("%s, set switch ch timer, period=%d\n", __func__, pwdinfo->ext_listen_period);
-			_set_timer(&pwdinfo->ap_p2p_switch_timer, pwdinfo->ext_listen_period);
-		}
-
-		if (!check_fwstate(&padapter->mlmepriv, _FW_LINKED ))
-			pmlmeext->cur_channel = tx_ch;
-
-		if (tx_ch != co_channel)
-			set_channel_bwmode(padapter, tx_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
-	}else
-#endif //CONFIG_CONCURRENT_MODE
-	//if (tx_ch != pmlmeext->cur_channel) {
 	if(tx_ch != rtw_get_oper_ch(padapter)) {
 		if (!check_fwstate(&padapter->mlmepriv, _FW_LINKED ))
 			pmlmeext->cur_channel = tx_ch;
@@ -4793,21 +4600,13 @@ int rtw_wdev_alloc(struct rtw_adapter *padapter, struct device *dev)
 	else
 		pwdev_priv->power_mgmt = _FALSE;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	atomic_set(&pwdev_priv->switch_ch_to, 1);
-	atomic_set(&pwdev_priv->ro_ch_to, 1);
-#endif
-
 	return ret;
-
-	kfree(wdev);
 unregister_wiphy:
 	wiphy_unregister(wiphy);
  free_wiphy:
 	wiphy_free(wiphy);
 exit:
 	return ret;
-
 }
 
 void rtw_wdev_free(struct wireless_dev *wdev)

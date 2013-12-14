@@ -1771,17 +1771,7 @@ void SetBcnCtrlReg(struct rtw_adapter * padapter, u8 SetBits, u8 ClearBits)
 	pHalData = GET_HAL_DATA(padapter);
 	pRegBcnCtrlVal = (u8*)&pHalData->RegBcnCtrlVal;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-	{
-		addr = REG_BCN_CTRL_1;
-		pRegBcnCtrlVal++;
-	}
-	else
-#endif
-	{
-		addr = REG_BCN_CTRL;
-	}
+	addr = REG_BCN_CTRL;
 
 	*pRegBcnCtrlVal = rtw_read8(padapter, addr);
 	*pRegBcnCtrlVal |= SetBits;
@@ -1947,19 +1937,11 @@ static void rtl8723a_SetHalODMVar(
 		case HAL_ODM_STA_INFO:
 			{
 				struct sta_info *psta = (struct sta_info *)pValue1;
-				#ifdef CONFIG_CONCURRENT_MODE
-				//get Primary adapter's odmpriv
-				if(Adapter->adapter_type > PRIMARY_ADAPTER && Adapter->pbuddy_adapter){
-					pHalData = GET_HAL_DATA(Adapter->pbuddy_adapter);
-					podmpriv = &pHalData->odmpriv;
-				}
-				#endif
 
 				if(bSet){
 					DBG_8723A("Set STA_(%d) info\n",psta->mac_id);
 					ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS,psta->mac_id,psta);
-				}
-				else{
+				} else{
 					DBG_8723A("Clean STA_(%d) info\n",psta->mac_id);
 					ODM_CmnInfoPtrArrayHook(podmpriv, ODM_CMNINFO_STA_STATUS,psta->mac_id,NULL);
 				}
@@ -2064,9 +2046,6 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->SetBeaconRelatedRegistersHandler = &rtl8723a_SetBeaconRelatedRegisters;
 
 	pHalFunc->Add_RateATid = &rtl8192c_Add_RateATid;
-#ifdef CONFIG_CONCURRENT_MODE
-	pHalFunc->clone_haldata = &rtl8723a_clone_haldata;
-#endif
 	pHalFunc->run_thread= &rtl8723a_start_thread;
 	pHalFunc->cancel_thread= &rtl8723a_stop_thread;
 
@@ -3424,27 +3403,6 @@ void rtl8723a_fill_fake_txdesc(
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
 }
 
-#ifdef CONFIG_CONCURRENT_MODE
-int reset_tsf(struct rtw_adapter * Adapter, u8 reset_port )
-{
-	u8 reset_cnt_before = 0, reset_cnt_after = 0, loop_cnt = 0;
-	u32 reg_reset_tsf_cnt = (IFACE_PORT0==reset_port) ?
-				REG_FW_RESET_TSF_CNT_0:REG_FW_RESET_TSF_CNT_1;
-
-	rtw_scan_abort(Adapter->pbuddy_adapter);	/*	site survey will cause reset_tsf fail	*/
-	reset_cnt_after = reset_cnt_before = rtw_read8(Adapter,reg_reset_tsf_cnt);
-	rtl8723c_reset_tsf(Adapter, reset_port);
-
-	while ((reset_cnt_after == reset_cnt_before ) && (loop_cnt < 10)) {
-		msleep(100);
-		loop_cnt++;
-		reset_cnt_after = rtw_read8(Adapter, reg_reset_tsf_cnt);
-	}
-
-	return(loop_cnt >= 10) ? _FAIL : _TRUE;
-}
-#endif
-
 static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	u8 val8;
@@ -3454,12 +3412,7 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 
 	if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_))
 	{
-#ifdef CONFIG_CONCURRENT_MODE
-		if (!check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE))
-#endif
-		{
-			StopTxBeacon(padapter);
-		}
+		StopTxBeacon(padapter);
 
 		// disable atim wnd
 		val8 = DIS_TSF_UDT|EN_BCN_FUNCTION|DIS_ATIM;
@@ -3495,53 +3448,18 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 		// Beacon Control related register for first time
 		rtw_write8(padapter, REG_BCNDMATIM, 0x02); // 2ms
 		rtw_write8(padapter, REG_DRVERLYINT, 0x05); // 5ms
-		//rtw_write8(padapter, REG_BCN_MAX_ERR, 0xFF);
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->iface_type == IFACE_PORT1)
-			rtw_write8(padapter, REG_ATIMWND_1, 0x0a); // 10ms for port1
-		else
-#endif
-		{
-			rtw_write8(padapter, REG_ATIMWND, 0x0a); // 10ms for port0
-		}
+		rtw_write8(padapter, REG_ATIMWND, 0x0a); // 10ms for port0
 		rtw_write16(padapter, REG_BCNTCFG, 0x00);
 		rtw_write16(padapter, REG_TBTT_PROHIBIT, 0xff04);
 		rtw_write16(padapter, REG_TSFTR_SYN_OFFSET, 0x7fff);// +32767 (~32ms)
 
 		// reset TSF
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->iface_type == IFACE_PORT1)
-			rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(1));
-		else
-#endif
-		{
-			rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
-		}
+		rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
 
 		// enable BCN Function
 		// don't enable update TSF (due to TSF update when beacon/probe rsp are received)
 		val8 = DIS_TSF_UDT | EN_BCN_FUNCTION | EN_TXBCN_RPT | DIS_BCNQ_SUB;
 		SetBcnCtrlReg(padapter, val8, ~val8);
-
-		// dis BCN ATIM WND of another port if it is station
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->iface_type == IFACE_PORT1) {
-			if(check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
-				rtw_write8(padapter, REG_BCN_CTRL,
-					rtw_read8(padapter, REG_BCN_CTRL) & ~EN_BCN_FUNCTION);
-		} else {
-			if(check_buddy_fwstate(padapter, WIFI_FW_NULL_STATE))
-				rtw_write8(padapter, REG_BCN_CTRL_1,
-					rtw_read8(padapter, REG_BCN_CTRL_1) & ~EN_BCN_FUNCTION);
-		}
-
-		if (padapter->pbuddy_adapter)
-			SetBcnCtrlReg(padapter->pbuddy_adapter, DIS_ATIM, 0);
-#else
-//		val8 = rtw_read8(padapter, REG_BCN_CTRL_1);
-//		val8 |= DIS_ATIM;
-//		rtw_write8(padapter, REG_BCN_CTRL_1, val8);
-#endif
 
 #ifdef CONFIG_TSF_RESET_OFFLOAD
 		// Reset TSF for STA+AP concurrent mode
@@ -3555,14 +3473,7 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 	}
 
 	val8 = rtw_read8(padapter, MSR);
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-		val8 = (val8 & 0x3) | (mode << 2);
-	else
-#endif
-	{
-		val8 = (val8 & 0xC) | mode;
-	}
+	val8 = (val8 & 0xC) | mode;
 	rtw_write8(padapter, MSR, val8);
 }
 
@@ -3571,21 +3482,10 @@ static void hw_var_set_macaddr(struct rtw_adapter * padapter, u8 variable, u8 *v
 	u8 idx = 0;
 	u32 reg_macid;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-	{
-		reg_macid = REG_MACID1;
-	}
-	else
-#endif
-	{
-		reg_macid = REG_MACID;
-	}
+	reg_macid = REG_MACID;
 
 	for (idx = 0 ; idx < 6; idx++)
-	{
 		rtw_write8(padapter, (reg_macid+idx), val[idx]);
-	}
 }
 
 static void hw_var_set_bssid(struct rtw_adapter * padapter, u8 variable, u8 *val)
@@ -3593,21 +3493,10 @@ static void hw_var_set_bssid(struct rtw_adapter * padapter, u8 variable, u8 *val
 	u8	idx = 0;
 	u32 reg_bssid;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-	{
-		reg_bssid = REG_BSSID1;
-	}
-	else
-#endif
-	{
-		reg_bssid = REG_BSSID;
-	}
+	reg_bssid = REG_BSSID;
 
 	for (idx = 0 ; idx < 6; idx++)
-	{
 		rtw_write8(padapter, (reg_bssid+idx), val[idx]);
-	}
 }
 
 static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u8 *val)
@@ -3629,16 +3518,7 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 		StopTxBeacon(padapter);
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-	{
-		reg_tsftr = REG_TSFTR1;
-	}
-	else
-#endif
-	{
-		reg_tsftr = REG_TSFTR;
-	}
+	reg_tsftr = REG_TSFTR;
 
 	// disable related TSF function
 	SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION);
@@ -3646,32 +3526,6 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 	rtw_write32(padapter, reg_tsftr, tsf);
 	rtw_write32(padapter, reg_tsftr+4, tsf>>32);
 
-#ifdef CONFIG_CONCURRENT_MODE
-
-	// Update buddy port's TSF if it is SoftAP for beacon TX issue!
-	if ( (pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE
-		&& check_buddy_fwstate(padapter, WIFI_AP_STATE)
-	) {
-		//disable related TSF function
-		if (padapter->pbuddy_adapter)
-			SetBcnCtrlReg(padapter->pbuddy_adapter, 0, EN_BCN_FUNCTION);
-		if (padapter->iface_type == IFACE_PORT1)
-		{
-			reg_tsftr = REG_TSFTR;
-		}
-		else
-		{
-			reg_tsftr = REG_TSFTR1;
-		}
-
-		rtw_write32(padapter, reg_tsftr, tsf);
-		rtw_write32(padapter, reg_tsftr+4, tsf>>32);
-
-		//enable related TSF function
-		if (padapter->pbuddy_adapter)
-			SetBcnCtrlReg(padapter->pbuddy_adapter,  EN_BCN_FUNCTION,0);
-	}
-#endif
 	//enable related TSF function
 	SetBcnCtrlReg(padapter, EN_BCN_FUNCTION, 0);
 
@@ -3703,82 +3557,15 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 static void hw_var_set_mlme_disconnect(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_buddy_mlmeinfo_state(padapter, _HW_STATE_NOLINK_))
-#endif
-	{
-		// Set RCR to not to receive data frame when NO LINK state
-		//rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR) & ~RCR_ADF);
-		// reject all data frames
-		rtw_write16(padapter, REG_RXFLTMAP2, 0);
-	}
+	// reject all data frames
+	rtw_write16(padapter, REG_RXFLTMAP2, 0);
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->iface_type == IFACE_PORT1)
-	{
-		// reset TSF1
-		rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(1));
+	// reset TSF
+	rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
 
-		// disable update TSF1
-		SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
-	}
-	else
-#endif
-	{
-		// reset TSF
-		rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
-
-		// disable update TSF
-		SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
-	}
+	// disable update TSF
+	SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
 }
-
-#ifdef CONFIG_CONCURRENT_MODE
-static void hw_var_set_mlme_sitesurvey(struct rtw_adapter * padapter, u8 variable, u8 *val)
-{
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-
-	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
-	u32 v32;
-
-
-	if (*val)//under sitesurvey
-	{
-		// config RCR to receive different BSSID & not to receive data frame
-		v32 = rtw_read32(padapter, REG_RCR);
-		v32 &= ~(RCR_CBSSID_BCN);
-		rtw_write32(padapter, REG_RCR, v32);
-
-		// disable update TSF
-		if ((pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE)
-			SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
-
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-			(check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-		{
-			StopTxBeacon(padapter);
-		}
-	}
-	else//sitesurvey done
-	{
-		// enable to rx data frame
-		//write32(padapter, REG_RCR, read32(padapter, REG_RCR)|RCR_ADF);
-		rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
-
-		// enable update TSF
-		SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
-
-		v32 = rtw_read32(padapter, REG_RCR);
-		v32 |= RCR_CBSSID_BCN;
-		rtw_write32(padapter, REG_RCR, v32);
-
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-		    (check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-			ResumeTxBeacon(padapter);
-	}
-}
-#endif
 
 static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
@@ -3792,27 +3579,12 @@ static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 
 	{
 		u32 v32;
 
-#ifdef CONFIG_CONCURRENT_MODE
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-			(check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-		{
-			StopTxBeacon(padapter);
-		}
-#endif
-
 		// enable to rx data frame.Accept all data frame
 		//rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR)|RCR_ADF);
 		rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
 
 		v32 = rtw_read32(padapter, REG_RCR);
-#ifdef CONFIG_CONCURRENT_MODE
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE))
-			v32 |= RCR_CBSSID_BCN;
-		else
-#endif
-		{
-			v32 |= RCR_CBSSID_DATA | RCR_CBSSID_BCN;
-		}
+		v32 |= RCR_CBSSID_DATA | RCR_CBSSID_BCN;
 		rtw_write32(padapter, REG_RCR, v32);
 
 		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _TRUE)
@@ -3822,25 +3594,8 @@ static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 
 	}
 	else if (type == 1) // joinbss_event callback when join res < 0
 	{
-#ifdef CONFIG_CONCURRENT_MODE
-		if (check_buddy_mlmeinfo_state(padapter, _HW_STATE_NOLINK_))
-			rtw_write16(padapter, REG_RXFLTMAP2, 0);
-
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-			(check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-		{
-			ResumeTxBeacon(padapter);
-
-			// reset TSF 1/2 after ResumeTxBeacon
-			rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(1)|BIT(0));
-		}
-#else
 		// config RCR to receive different BSSID & not to receive data frame during linking
-		//v32 = rtw_read32(padapter, REG_RCR);
-		//v32 &= ~(RCR_CBSSID_DATA | RCR_CBSSID_BCN);//| RCR_ADF
-		//rtw_write32(padapter, REG_RCR, v32);
 		rtw_write16(padapter, REG_RXFLTMAP2, 0);
-#endif
 	}
 	else if (type == 2) // sta add event callback
 	{
@@ -3853,17 +3608,6 @@ static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 
 			rtw_write8(padapter, 0x542, 0x02);
 			RetryLimit = 0x7;
 		}
-
-#ifdef CONFIG_CONCURRENT_MODE
-		if (check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
-			(check_buddy_fwstate(padapter, _FW_LINKED) == _TRUE))
-		{
-			ResumeTxBeacon(padapter);
-
-			// reset TSF 1/2 after ResumeTxBeacon
-			rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(1)|BIT(0));
-		}
-#endif
 	}
 
 	rtw_write16(padapter, REG_RL, RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit << RETRY_LIMIT_LONG_SHIFT);
@@ -3977,9 +3721,6 @@ _func_enter_;
 			break;
 
 		case HW_VAR_MLME_SITESURVEY:
-#ifdef CONFIG_CONCURRENT_MODE
-			hw_var_set_mlme_sitesurvey(padapter, variable,  val);
-#else
 			if (*val)//under sitesurvey
 			{
 				u32 v32;
@@ -4015,7 +3756,6 @@ _func_enter_;
 				v32 |= RCR_CBSSID_BCN;
 				rtw_write32(padapter, REG_RCR, v32);
 			}
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 			BT_WifiScanNotify(padapter, *val?_TRUE:_FALSE);
@@ -4108,24 +3848,17 @@ _func_enter_;
 			break;
 
 		case HW_VAR_SEC_CFG:
-#ifdef CONFIG_CONCURRENT_MODE
-			rtw_write8(padapter, REG_SECCFG, 0x0c|BIT(5));// enable tx enc and rx dec engine, and no key search for MC/BC
-#else
 			rtw_write8(padapter, REG_SECCFG, *val);
-#endif
 			break;
-
 		case HW_VAR_DM_FLAG:
 			pHalData->odmpriv.SupportAbility = *((u32*)val);
 			break;
-
 		case HW_VAR_DM_FUNC_OP:
 			if (*val) // save dm flag
 				pHalData->odmpriv.BK_SupportAbility = pHalData->odmpriv.SupportAbility;
 			else // restore dm flag
 				pHalData->odmpriv.SupportAbility = pHalData->odmpriv.BK_SupportAbility;
 			break;
-
 		case HW_VAR_DM_FUNC_SET:
 			if (*((u32*)val) == DYNAMIC_ALL_FUNC_ENABLE) {
 				pHalData->dmpriv.DMFlag = pHalData->dmpriv.InitDMFlag;
@@ -4429,42 +4162,11 @@ _func_enter_;
 			break;
 
 		case HW_VAR_CHECK_TXBUF:
-#ifdef CONFIG_CONCURRENT_MODE
-			{
-				u16 v16;
-				u32 i;
-				u8 RetryLimit = 0x01;
-
-				//rtw_write16(padapter, REG_RL,0x0101);
-				v16 = RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit << RETRY_LIMIT_LONG_SHIFT;
-				rtw_write16(padapter, REG_RL, v16);
-
-				for (i=0; i<1000; i++)
-				{
-					if (rtw_read32(padapter, 0x200) != rtw_read32(padapter, 0x204))
-					{
-						//DBG_8723A("packet in tx packet buffer - 0x204=%x, 0x200=%x (%d)\n", rtw_read32(padapter, 0x204), rtw_read32(padapter, 0x200), i);
-						msleep(10);
-					}
-					else
-					{
-						DBG_8723A("no packet in tx packet buffer (%d)\n", i);
-						break;
-					}
-				}
-
-				RetryLimit = 0x30;
-				v16 = RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit << RETRY_LIMIT_LONG_SHIFT;
-				rtw_write16(padapter, REG_RL, v16);
-			}
-#endif
 			break;
-
 		case HW_VAR_APFM_ON_MAC:
 			pHalData->bMacPwrCtrlOn = *val;
 			DBG_8723A("%s: bMacPwrCtrlOn=%d\n", __func__, pHalData->bMacPwrCtrlOn);
 			break;
-
 		case HW_VAR_NAV_UPPER:
 			{
 				u32 usNavUpper = *((u32*)val);

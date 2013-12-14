@@ -306,17 +306,7 @@ void update_recvframe_phyinfo(
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 
-	#ifdef CONFIG_CONCURRENT_MODE
-	//get Primary adapter's odmpriv
-	if(padapter->adapter_type > PRIMARY_ADAPTER){
-		pHalData = GET_HAL_DATA(padapter->pbuddy_adapter);
-	}
-	#endif
-
-	//rtl8192c_query_rx_phy_status(precvframe, pphy_status);
-	//spin_lock_bh(&pHalData->odm_stainfo_lock);
-	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
-	//spin_unlock_bh(&pHalData->odm_stainfo_lock);
+	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))

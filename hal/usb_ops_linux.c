@@ -49,18 +49,6 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 	u8 tmp_buf[MAX_USB_IO_CTL_SIZE];
 #endif
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
-	{
-		padapter = padapter->pbuddy_adapter;
-		pdvobjpriv = adapter_to_dvobj(padapter);
-		udev = pdvobjpriv->pusbdev;
-	}
-#endif
-
-
-	//DBG_8723A("%s %s:%d\n",__FUNCTION__, current->comm, current->pid);
-
 	if((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)){
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usbctrl_vendorreq:(padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
 		status = -EPERM;
@@ -886,126 +874,8 @@ _func_exit_;
 static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxstat, struct phy_stat *pphy_info)
 {
 	s32 ret=_SUCCESS;
-#ifdef CONFIG_CONCURRENT_MODE
-	u8 *primary_myid, *secondary_myid, *paddr1;
-	union recv_frame	*precvframe_if2 = NULL;
-	struct rtw_adapter *primary_padapter = precvframe->u.hdr.adapter;
-	struct rtw_adapter *secondary_padapter = primary_padapter->pbuddy_adapter;
-	struct recv_priv *precvpriv = &primary_padapter->recvpriv;
-	_queue *pfree_recv_queue = &precvpriv->free_recv_queue;
-	u8	*pbuf = precvframe->u.hdr.rx_data;
-
-	if(!secondary_padapter)
-		return ret;
-
-	paddr1 = GetAddr1Ptr(precvframe->u.hdr.rx_data);
-
-	if(!is_multicast_ether_addr(paddr1))//unicast packets
-	{
-		//primary_myid = myid(&primary_padapter->eeprompriv);
-		secondary_myid = myid(&secondary_padapter->eeprompriv);
-
-		if (!memcmp(paddr1, secondary_myid, ETH_ALEN))
-		{
-			//change to secondary interface
-			precvframe->u.hdr.adapter = secondary_padapter;
-		}
-
-		//ret = recv_entry(precvframe);
-
-	}
-	else // Handle BC/MC Packets
-	{
-		u8 clone = _TRUE;
-
-		if(_TRUE == clone)
-		{
-			//clone/copy to if2
-			u8 shift_sz = 0;
-			u32 alloc_sz, skb_len;
-			struct sk_buff	 *pkt_copy = NULL;
-			struct rx_pkt_attrib *pattrib = NULL;
-
-			precvframe_if2 = rtw_alloc_recvframe(pfree_recv_queue);
-			if(precvframe_if2)
-			{
-				precvframe_if2->u.hdr.adapter = secondary_padapter;
-
-				INIT_LIST_HEAD(&precvframe_if2->u.hdr.list);
-				precvframe_if2->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
-				precvframe_if2->u.hdr.len=0;
-
-				memcpy(&precvframe_if2->u.hdr.attrib, &precvframe->u.hdr.attrib, sizeof(struct rx_pkt_attrib));
-
-				pattrib = &precvframe_if2->u.hdr.attrib;
-
-				//	Modified by Albert 20101213
-				//	For 8 bytes IP header alignment.
-				if (pattrib->qos)	//	Qos data, wireless lan header length is 26
-				{
-					shift_sz = 6;
-				}
-				else
-				{
-					shift_sz = 0;
-				}
-
-				skb_len = pattrib->pkt_len;
-
-				// for first fragment packet, driver need allocate 1536+drvinfo_sz+RXDESC_SIZE to defrag packet.
-				// modify alloc_sz for recvive crc error packet by thomas 2011-06-02
-				if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)){
-					//alloc_sz = 1664;	//1664 is 128 alignment.
-					if(skb_len <= 1650)
-						alloc_sz = 1664;
-					else
-						alloc_sz = skb_len + 14;
-				}
-				else {
-					alloc_sz = skb_len;
-					//	6 is for IP header 8 bytes alignment in QoS packet case.
-					//	8 is for skb->data 4 bytes alignment.
-					alloc_sz += 14;
-				}
-
-				pkt_copy = netdev_alloc_skb(secondary_padapter->pnetdev, alloc_sz);
-				if(pkt_copy)
-				{
-					pkt_copy->dev = secondary_padapter->pnetdev;
-					precvframe_if2->u.hdr.pkt = pkt_copy;
-					precvframe_if2->u.hdr.rx_head = pkt_copy->data;
-					precvframe_if2->u.hdr.rx_end = pkt_copy->data + alloc_sz;
-					skb_reserve( pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
-					skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
-					memcpy(pkt_copy->data, pbuf, skb_len);
-					precvframe_if2->u.hdr.rx_data = precvframe_if2->u.hdr.rx_tail = pkt_copy->data;
-
-
-					recvframe_put(precvframe_if2, skb_len);
-					//recvframe_pull(precvframe_if2, drvinfo_sz + RXDESC_SIZE);
-					if(pphy_info)
-					update_recvframe_phyinfo(precvframe_if2, pphy_info);
-					//rtl8192c_translate_rx_signal_stuff(precvframe_if2, pphy_info);
-
-					ret = rtw_recv_entry(precvframe_if2);
-
-				} else {
-					rtw_free_recvframe(precvframe_if2, pfree_recv_queue);
-					DBG_8723A("%s()-%d: alloc_skb() failed!\n", __FUNCTION__, __LINE__);
-				}
-
-			}
-
-		}
-
-	}
-
-	ret = rtw_recv_entry(precvframe);
-
-#endif
 
 	return ret;
-
 }
 
 static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
@@ -1162,17 +1032,8 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		}
 #endif
 
-#ifdef CONFIG_CONCURRENT_MODE
-		if(pre_recv_entry(precvframe, prxstat, pphy_info) != _SUCCESS)
-		{
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("recvbuf2recvframe: recv_entry(precvframe) != _SUCCESS\n"));
-		}
-#else
 		if(rtw_recv_entry(precvframe) != _SUCCESS)
-		{
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("recvbuf2recvframe: rtw_recv_entry(precvframe) != _SUCCESS\n"));
-		}
-#endif
 
 		pkt_cnt--;
 		transfer_len -= pkt_offset;

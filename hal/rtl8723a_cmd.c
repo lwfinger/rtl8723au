@@ -221,11 +221,6 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 #ifdef CONFIG_ODM_REFRESH_RAMASK
 	u8 raid = (bitmap>>28) & 0x0f;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if(rtw_buddy_adapter_up(pAdapter) && pAdapter->adapter_type > PRIMARY_ADAPTER)
-		pHalData = GET_HAL_DATA(pAdapter->pbuddy_adapter);
-#endif //CONFIG_CONCURRENT_MODE
-
 	bitmap &=0x0fffffff;
 	if(rssi_level != DM_RATR_STA_INIT)
 		bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv, macid, bitmap, rssi_level);

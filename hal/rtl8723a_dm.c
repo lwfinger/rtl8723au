@@ -288,9 +288,6 @@ rtl8723a_HalDmWatchDog(
 	u8 hw_init_completed = _FALSE;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-#ifdef CONFIG_CONCURRENT_MODE
-	struct rtw_adapter * pbuddy_adapter = Adapter->pbuddy_adapter;
-#endif //CONFIG_CONCURRENT_MODE
 
 	hw_init_completed = Adapter->hw_init_completed;
 
@@ -298,16 +295,8 @@ rtl8723a_HalDmWatchDog(
 		goto skip_dm;
 
 #ifdef CONFIG_LPS
-	#ifdef CONFIG_CONCURRENT_MODE
-	if (Adapter->iface_type != IFACE_PORT0 && pbuddy_adapter) {
-		bFwCurrentInPSMode = pbuddy_adapter->pwrctrlpriv.bFwCurrentInPSMode;
-		rtw_hal_get_hwreg(pbuddy_adapter, HW_VAR_FWLPS_RF_ON, (u8 *)(&bFwPSAwake));
-	} else
-	#endif //CONFIG_CONCURRENT_MODE
-	{
-		bFwCurrentInPSMode = Adapter->pwrctrlpriv.bFwCurrentInPSMode;
-		rtw_hal_get_hwreg(Adapter, HW_VAR_FWLPS_RF_ON, (u8 *)(&bFwPSAwake));
-	}
+	bFwCurrentInPSMode = Adapter->pwrctrlpriv.bFwCurrentInPSMode;
+	rtw_hal_get_hwreg(Adapter, HW_VAR_FWLPS_RF_ON, (u8 *)(&bFwPSAwake));
 #endif
 
 #ifdef CONFIG_P2P_PS
@@ -324,12 +313,6 @@ rtl8723a_HalDmWatchDog(
 		// Calculate Tx/Rx statistics.
 		//
 		dm_CheckStatistics(Adapter);
-
-
-#ifdef CONFIG_CONCURRENT_MODE
-		if(Adapter->adapter_type > PRIMARY_ADAPTER)
-			goto _record_initrate;
-#endif
 
 _record_initrate:
 
@@ -361,14 +344,8 @@ _record_initrate:
 		if(rtw_linked_check(Adapter))
 			bLinked = _TRUE;
 
-#ifdef CONFIG_CONCURRENT_MODE
-		if(pbuddy_adapter && rtw_linked_check(pbuddy_adapter))
-			bLinked = _TRUE;
-#endif //CONFIG_CONCURRENT_MODE
-
 		ODM_CmnInfoUpdate(&pHalData->odmpriv ,ODM_CMNINFO_LINK, bLinked);
 		ODM_DMWatchdog(&pHalData->odmpriv);
-
 	}
 
 skip_dm:

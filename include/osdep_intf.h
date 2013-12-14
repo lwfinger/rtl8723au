@@ -105,13 +105,6 @@ int rtw_ips_pwr_up(struct rtw_adapter *padapter);
 void rtw_ips_pwr_down(struct rtw_adapter *padapter);
 #endif
 
-#ifdef CONFIG_CONCURRENT_MODE
-struct _io_ops;
-_adapter *rtw_drv_if2_init(struct rtw_adapter *primary_padapter, void (*set_intf_ops)(struct _io_ops *pops));
-void rtw_drv_if2_free(struct rtw_adapter *if2);
-void rtw_drv_if2_stop(struct rtw_adapter *if2);
-#endif
-
 int rtw_drv_register_netdev(struct rtw_adapter *padapter);
 void rtw_ndev_destructor(struct net_device *ndev);
 

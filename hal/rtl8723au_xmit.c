@@ -49,11 +49,6 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
 	qsel = pattrib->priority;
 	RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("### do_queue_select priority=%d ,qsel = %d\n",pattrib->priority ,qsel));
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE)
-		qsel = 7;//
-#endif
-
 	pattrib->qsel = qsel;
 }
 
@@ -938,11 +933,6 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 #endif
-#ifdef CONFIG_CONCURRENT_MODE
-	PADAPTER pbuddy_adapter = padapter->pbuddy_adapter;
-	struct mlme_priv *pbuddy_mlmepriv = &(pbuddy_adapter->mlmepriv);
-#endif
-
 	do_queue_select(padapter, pattrib);
 
 	spin_lock_bh(&pxmitpriv->lock);
@@ -995,11 +985,6 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
 		goto enqueue;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (check_fwstate(pbuddy_mlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == _TRUE)
-		goto enqueue;
-#endif
 
 	pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
 	if (pxmitbuf == NULL)

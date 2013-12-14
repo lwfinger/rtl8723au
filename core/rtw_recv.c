@@ -205,16 +205,6 @@ int rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_queue)
 
 _func_enter_;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
-	{
-		padapter = padapter->pbuddy_adapter;/* get primary_padapter */
-		precvpriv = &padapter->recvpriv;
-		pfree_recv_queue = &precvpriv->free_recv_queue;
-		precvframe->u.hdr.adapter = padapter;
-	}
-#endif
-
 	if(precvframe->u.hdr.pkt)
 	{
 #ifdef CONFIG_BSD_RX_USE_MBUF
@@ -558,10 +548,6 @@ _func_enter_;
 
 	if((prxattrib->encrypt>0) && ((prxattrib->bdecrypted==0) ||(psecuritypriv->sw_decrypt==_TRUE)))
 	{
-
-#ifdef CONFIG_CONCURRENT_MODE
-		if(!is_multicast_ether_addr(prxattrib->ra))/* bc/mc packets use sw decryption for concurrent mode */
-#endif
 		psecuritypriv->hw_decrypted=_FALSE;
 
 		#ifdef DBG_RX_DECRYPTOR

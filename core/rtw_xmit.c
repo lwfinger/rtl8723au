@@ -798,13 +798,6 @@ static s32 update_attrib(struct rtw_adapter *padapter, struct sk_buff *pkt, stru
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("update_attrib: bswenc=_FALSE\n"));
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if((pattrib->encrypt && bmcast) || (pattrib->encrypt ==_WEP40_) || (pattrib->encrypt ==_WEP104_))
-	{
-		pattrib->bswenc = _TRUE;/* force using sw enc. */
-	}
-#endif
-
 	rtw_set_tx_chksum_offload(pkt, pattrib);
 
 	update_attrib_phy_info(pattrib, psta);

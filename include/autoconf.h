@@ -90,30 +90,17 @@
 #define CONFIG_LAYER2_ROAMING
 #define CONFIG_LAYER2_ROAMING_RESUME
 
-//#define CONFIG_CONCURRENT_MODE
-#ifdef CONFIG_CONCURRENT_MODE
-	#define CONFIG_TSF_RESET_OFFLOAD			// For 2 PORT TSF SYNC.
-	//#define CONFIG_HWPORT_SWAP				//Port0->Sec , Port1 -> Pri
-#endif	// CONFIG_CONCURRENT_MODE
-
 #define CONFIG_SKB_COPY	//for amsdu
 
 //#define CONFIG_LED
 
 #define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
-//#define CONFIG_ADAPTOR_INFO_CACHING_FILE // now just applied on 8192cu only, should make it general...
-//#define CONFIG_RESUME_IN_WORKQUEUE
-//#define CONFIG_SET_SCAN_DENY_TIMER
 #define CONFIG_LONG_DELAY_ISSUE
 #define CONFIG_NEW_SIGNAL_STAT_PROCESS
 #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable,  */
 
-
-
-//#define CONFIG_ANTENNA_DIVERSITY
 #ifdef CONFIG_ANTENNA_DIVERSITY
 #define CONFIG_SW_ANTENNA_DIVERSITY
-//#define CONFIG_HW_ANTENNA_DIVERSITY
 #endif
 
 

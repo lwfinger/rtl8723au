@@ -303,12 +303,6 @@ _func_enter_;
 
 	cmd_obj->padapter = padapter;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	/* change pcmdpriv to primary's pcmdpriv */
-	if (padapter->adapter_type != PRIMARY_ADAPTER && padapter->pbuddy_adapter)
-		pcmdpriv = &(padapter->pbuddy_adapter->cmdpriv);
-#endif
-
 	if( _FAIL == (res=rtw_cmd_filter(pcmdpriv, cmd_obj)) ) {
 		rtw_free_cmd_obj(cmd_obj);
 		goto exit;
@@ -1603,11 +1597,6 @@ u8 rtw_dynamic_chk_wk_cmd(struct rtw_adapter*padapter)
 
 _func_enter_;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER && padapter->pbuddy_adapter)
-		pcmdpriv = &(padapter->pbuddy_adapter->cmdpriv);
-#endif
-
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
 	if(ph2c==NULL){
 		res= _FAIL;
@@ -2306,11 +2295,6 @@ u8 rtw_ps_cmd(struct rtw_adapter*padapter)
 
 	u8	res = _SUCCESS;
 _func_enter_;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
-		goto exit;
-#endif
 
 	ppscmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
 	if(ppscmd==NULL){

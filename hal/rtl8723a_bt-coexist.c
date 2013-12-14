@@ -17137,15 +17137,6 @@ void BTDM_Coexist(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
-#if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
-	{
-		RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE  !!\n"));
-		RTPRINT(FBT, BT_TRACE, ("[DM][BT], padapter->adapter_type != PRIMARY_ADAPTER  !!\n"));
-		return;
-	}
-#endif
-
 	if (!pHalData->bt_coexist.BluetoothCoexist)
 	{
 		RTPRINT(FBT, BT_TRACE, ("[DM][BT], BT not exists!!\n"));
