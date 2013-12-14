@@ -189,18 +189,16 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int i;
-	pdmpriv->InitODMFlag =	ODM_BB_DIG				|
-#ifdef	CONFIG_ODM_REFRESH_RAMASK
-							ODM_BB_RA_MASK			|
-#endif
-							ODM_BB_DYNAMIC_TXPWR	|
-							ODM_BB_FA_CNT			|
-							ODM_BB_RSSI_MONITOR	|
-							ODM_BB_CCK_PD			|
-							ODM_BB_PWR_SAVE		|
-							ODM_MAC_EDCA_TURBO	|
-							ODM_RF_TX_PWR_TRACK	|
-							ODM_RF_CALIBRATION		;
+	pdmpriv->InitODMFlag =	ODM_BB_DIG		|
+				ODM_BB_RA_MASK		|
+				ODM_BB_DYNAMIC_TXPWR	|
+				ODM_BB_FA_CNT		|
+				ODM_BB_RSSI_MONITOR	|
+				ODM_BB_CCK_PD		|
+				ODM_BB_PWR_SAVE		|
+				ODM_MAC_EDCA_TURBO	|
+				ODM_RF_TX_PWR_TRACK	|
+				ODM_RF_CALIBRATION;
 	//
 	// Pointer reference
 	//

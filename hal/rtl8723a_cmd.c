@@ -215,10 +215,7 @@ _func_exit_;
 void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-
 	u8 macid = arg&0x1f;
-
-#ifdef CONFIG_ODM_REFRESH_RAMASK
 	u8 raid = (bitmap>>28) & 0x0f;
 
 	bitmap &=0x0fffffff;
@@ -226,15 +223,11 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 		bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv, macid, bitmap, rssi_level);
 
 	bitmap |= ((raid<<28)&0xf0000000);
-#endif //CONFIG_ODM_REFRESH_RAMASK
 
 
-	if(pHalData->fw_ractrl == _TRUE)
-	{
+	if(pHalData->fw_ractrl == _TRUE) {
 		rtl8192c_set_raid_cmd(pAdapter, bitmap, arg);
-	}
-	else
-	{
+	} else {
 		u8 init_rate, shortGIrate=_FALSE;
 
 		init_rate = get_highest_rate_idx(bitmap&0x0fffffff)&0x3f;
@@ -247,7 +240,6 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 
 		rtw_write8(pAdapter, (REG_INIDATA_RATE_SEL+macid), (u8)init_rate);
 	}
-
 }
 
 void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)

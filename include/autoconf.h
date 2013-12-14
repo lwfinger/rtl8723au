@@ -17,7 +17,6 @@
  *
  *
  ******************************************************************************/
-#define CONFIG_ODM_REFRESH_RAMASK
 #define CONFIG_PHY_SETTING_WITH_ODM
 
 /*
