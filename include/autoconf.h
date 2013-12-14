@@ -87,7 +87,6 @@
 #endif
 
 #define CONFIG_LAYER2_ROAMING
-#define CONFIG_LAYER2_ROAMING_RESUME
 
 #define CONFIG_SKB_COPY	//for amsdu
 

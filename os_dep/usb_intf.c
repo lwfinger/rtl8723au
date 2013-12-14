@@ -652,10 +652,8 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	}
 #endif //CONFIG_WOWLAN
 
-#ifdef CONFIG_LAYER2_ROAMING_RESUME
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) && check_fwstate(pmlmepriv, _FW_LINKED) )
 	{
-		//DBG_8723A("%s:%d assoc_ssid:%s\n", __FUNCTION__, __LINE__, pmlmepriv->assoc_ssid.Ssid);
 		DBG_8723A("%s:%d %s( %pM ), length:%d assoc_ssid.length:%d\n",__FUNCTION__, __LINE__,
 			  pmlmepriv->cur_network.network.Ssid.Ssid,
 			  pmlmepriv->cur_network.network.MacAddress,
@@ -664,7 +662,6 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 
 		rtw_set_roaming(padapter, 1);
 	}
-#endif
 	//s2-2.  indicate disconnect to os
 	rtw_indicate_disconnect(padapter);
 	//s2-3.
@@ -812,9 +809,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
 	}
 
-	#ifdef CONFIG_LAYER2_ROAMING_RESUME
 	rtw_roaming(padapter, NULL);
-	#endif
 
 	ret = 0;
 exit:
