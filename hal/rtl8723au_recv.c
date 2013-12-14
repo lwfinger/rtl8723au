@@ -119,7 +119,6 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
 
-#ifdef CONFIG_PREALLOC_RECV_SKB
 	{
 		int i;
 		unsigned long tmpaddr = 0;
@@ -128,13 +127,11 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 
 		skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 
-		for(i=0; i<NR_PREALLOC_RECV_SKB; i++)
-		{
+		for(i=0; i<NR_PREALLOC_RECV_SKB; i++) {
 
 			pskb = __netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
 
-			if(pskb)
-			{
+			if(pskb) {
 				pskb->dev = padapter->pnetdev;
 
 				tmpaddr = (unsigned long)pskb->data;
@@ -148,7 +145,6 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 
 		}
 	}
-#endif
 
 exit:
 
@@ -188,17 +184,12 @@ void rtl8192cu_free_recv_priv (struct rtw_adapter *padapter)
 
 	skb_queue_purge(&precvpriv->rx_skb_queue);
 
-#ifdef CONFIG_PREALLOC_RECV_SKB
-
 	if (skb_queue_len(&precvpriv->free_recv_skb_queue)) {
 		DBG_8723A(KERN_WARNING "free_recv_skb_queue not empty, %d\n", skb_queue_len(&precvpriv->free_recv_skb_queue));
 	}
 
 	skb_queue_purge(&precvpriv->free_recv_skb_queue);
-
-#endif
 }
-
 
 void update_recvframe_attrib(
 	union recv_frame *precvframe,
@@ -207,7 +198,6 @@ void update_recvframe_attrib(
 	struct rx_pkt_attrib	*pattrib;
 	struct recv_stat	report;
 	PRXREPORT		prxreport;
-
 
 	report.rxdw0 = le32_to_cpu(prxstat->rxdw0);
 	report.rxdw1 = le32_to_cpu(prxstat->rxdw1);

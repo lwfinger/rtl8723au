@@ -723,10 +723,8 @@ void rtl8192cu_recv_tasklet(void *priv)
 	struct rtw_adapter		*padapter = (struct rtw_adapter*)priv;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
-	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue)))
-	{
-		if ((padapter->bDriverStopped == _TRUE)||(padapter->bSurpriseRemoved== _TRUE))
-		{
+	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {
+		if ((padapter->bDriverStopped == _TRUE)||(padapter->bSurpriseRemoved== _TRUE)) {
 			DBG_8723A("recv_tasklet => bDriverStopped or bSurpriseRemoved \n");
 			dev_kfree_skb_any(pskb);
 			break;
@@ -734,22 +732,13 @@ void rtl8192cu_recv_tasklet(void *priv)
 
 		recvbuf2recvframe(padapter, pskb);
 
-#ifdef CONFIG_PREALLOC_RECV_SKB
-
 		skb_reset_tail_pointer(pskb);
 
 		pskb->len = 0;
 
 		skb_queue_tail(&precvpriv->free_recv_skb_queue, pskb);
-
-#else
-		dev_kfree_skb_any(pskb);
-#endif
-
 	}
-
 }
-
 
 static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 {
@@ -772,14 +761,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	{
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)\n", padapter->bDriverStopped, padapter->bSurpriseRemoved));
 
-	#ifdef CONFIG_PREALLOC_RECV_SKB
 		precvbuf->reuse = _TRUE;
-	#else
-		if(precvbuf->pskb){
-			DBG_8723A("==> free skb(%p)\n",precvbuf->pskb);
-			dev_kfree_skb_any(precvbuf->pskb);
-		}
-	#endif
 		DBG_8723A("%s()-%d: RX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
 		__FUNCTION__, __LINE__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
 		goto exit;
@@ -887,14 +869,10 @@ _func_enter_;
 		return _FAIL;
 	}
 
-#ifdef CONFIG_PREALLOC_RECV_SKB
 	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
 		if (NULL != (precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
 			precvbuf->reuse = _TRUE;
 	}
-#endif
-
-
 	rtl8192cu_init_recvbuf(adapter, precvbuf);
 
 	//re-assign for linux based on skb

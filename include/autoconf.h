@@ -146,7 +146,6 @@
 //#define CONFIG_USB_INTERRUPT_IN_PIPE
 
 
-#define CONFIG_PREALLOC_RECV_SKB
 //#define CONFIG_REDUCE_USB_TX_INT		// Trade-off: Improve performance, but may cause TX URBs blocked by USB Host/Bus driver on few platforms.
 
 /*
