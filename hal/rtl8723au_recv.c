@@ -82,10 +82,6 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
-
 	precvpriv->pallocated_recv_buf = kzalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4, GFP_KERNEL);
 	if(precvpriv->pallocated_recv_buf==NULL){
 		res= _FAIL;
