@@ -34,10 +34,10 @@ void rtw_reset_tdls_info(struct rtw_adapter* padapter)
 {
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
 
-	ptdlsinfo->ap_prohibited = _FALSE;
+	ptdlsinfo->ap_prohibited = false;
 	ptdlsinfo->setup_state = TDLS_STATE_NONE;
 	ptdlsinfo->sta_cnt = 0;
-	ptdlsinfo->sta_maximum = _FALSE;
+	ptdlsinfo->sta_maximum = false;
 	ptdlsinfo->macid_index= 6;
 	ptdlsinfo->clear_cam= 0;
 	ptdlsinfo->ch_sensing = 0;
@@ -212,11 +212,11 @@ s32 update_tdls_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib)
 	}
 
 	if (pattrib->encrypt &&
-	    ((padapter->securitypriv.sw_encrypt == true) || (psecuritypriv->hw_decrypted == _FALSE)))
+	    ((padapter->securitypriv.sw_encrypt == true) || (psecuritypriv->hw_decrypted == false)))
 	{
 		pattrib->bswenc = true;
 	} else {
-		pattrib->bswenc = _FALSE;
+		pattrib->bswenc = false;
 	}
 
 	/* qos_en, ht_en, init rate, ,bw, ch_offset, sgi */
@@ -226,7 +226,7 @@ s32 update_tdls_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib)
 	pattrib->bwmode = psta->htpriv.bwmode;
 	pattrib->ch_offset = psta->htpriv.ch_offset;
 	pattrib->sgi= psta->htpriv.sgi;
-	pattrib->ampdu_en = _FALSE;
+	pattrib->ampdu_en = false;
 
 exit:
 
@@ -246,7 +246,7 @@ void free_tdls_sta(struct rtw_adapter *padapter, struct sta_info *ptdls_sta)
 	spin_unlock_bh(&(pstapriv->sta_hash_lock));
 	if( ptdlsinfo->sta_cnt < (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 	{
-		ptdlsinfo->sta_maximum = _FALSE;
+		ptdlsinfo->sta_maximum = false;
 		memset(&ptdlsinfo->ss_record, 0x00, sizeof(struct tdls_ss_record));
 	}
 	/* ready to clear cam */
@@ -309,7 +309,7 @@ void rtw_tdls_process_ht_cap(struct rtw_adapter *adapter, struct sta_info *ptdls
 		}
 		else
 		{
-			ptdls_sta->htpriv.ht_option = _FALSE;
+			ptdls_sta->htpriv.ht_option = false;
 			ptdls_sta->stat_code = _STATS_FAILURE_;
 		}
 	}
@@ -982,7 +982,7 @@ void issue_tdls_ch_switch_rsp(struct rtw_adapter *padapter, u8 *mac_addr)
 	spin_lock_bh(&pxmitpriv->lock);
 	if(xmitframe_enqueue_for_tdls_sleeping_sta(padapter, pmgntframe)==true){
 		spin_unlock_bh(&pxmitpriv->lock);
-		return _FALSE;
+		return false;
 	}
 */
 	if(rtw_xmit_tdls_coalesce(padapter, pmgntframe, TDLS_CHANNEL_SWITCH_RESPONSE) !=_SUCCESS ){
@@ -1700,7 +1700,7 @@ int On_TDLS_Peer_Traffic_Rsp(struct rtw_adapter *adapter, union recv_frame *prec
 			xmitframe_plist = xmitframe_phead->next;
 
 			/* transmit buffered frames */
-			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
+			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false)
 			{
 				pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
 				xmitframe_plist = xmitframe_plist->next;
@@ -2842,7 +2842,7 @@ int update_sgi_tdls(struct rtw_adapter *padapter, struct sta_info *psta)
 		return psta_ht->sgi;
 	}
 	else
-		return _FALSE;
+		return false;
 }
 
 u32 update_mask_tdls(struct rtw_adapter *padapter, struct sta_info *psta)

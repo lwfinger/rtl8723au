@@ -80,7 +80,7 @@ _func_exit_;
 
 _func_exit_;
 
-	return _FALSE;
+	return false;
 }
 
 void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib)
@@ -240,7 +240,7 @@ _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("+xmit_enry\n"));
 
-	if (rtw_if_up(padapter) == _FALSE) {
+	if (rtw_if_up(padapter) == false) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("rtw_xmit_entry: rtw_if_up fail\n"));
 		#ifdef DBG_TX_DROP_FRAME
 		DBG_8723A("DBG_TX_DROP_FRAME %s if_up fail\n", __FUNCTION__);

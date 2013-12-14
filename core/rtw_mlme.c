@@ -216,7 +216,7 @@ _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("_rtw_alloc_network: ptr=%p\n", plist));
 	pnetwork->network_type = 0;
-	pnetwork->fixed = _FALSE;
+	pnetwork->fixed = false;
 	pnetwork->last_scanned = rtw_get_current_time();
 	pnetwork->aid=0;
 	pnetwork->join_res=0;
@@ -365,7 +365,7 @@ _func_enter_;
 	phead = get_list_head(scanned_queue);
 	plist = phead->next;
 
-	while (rtw_end_of_queue_search(phead, plist) == _FALSE)
+	while (rtw_end_of_queue_search(phead, plist) == false)
 	{
 
 		pnetwork = container_of(plist, struct wlan_network, list);
@@ -387,9 +387,9 @@ int rtw_if_up(struct rtw_adapter *padapter)	{
 _func_enter_;
 
 	if( padapter->bDriverStopped || padapter->bSurpriseRemoved ||
-		(check_fwstate(&padapter->mlmepriv, _FW_LINKED)== _FALSE)){
+		(check_fwstate(&padapter->mlmepriv, _FW_LINKED)== false)){
 		RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_if_up:bDriverStopped(%d) OR bSurpriseRemoved(%d)", padapter->bDriverStopped, padapter->bSurpriseRemoved));
-		res=_FALSE;
+		res=false;
 	}
 	else
 		res=  true;
@@ -530,12 +530,12 @@ int rtw_is_same_ibss(struct rtw_adapter *adapter, struct wlan_network *pnetwork)
 	if ( (psecuritypriv->dot11PrivacyAlgrthm != _NO_PRIVACY_ ) &&
 		    ( pnetwork->network.Privacy == 0 ) )
 	{
-		ret=_FALSE;
+		ret=false;
 	}
 	else if((psecuritypriv->dot11PrivacyAlgrthm == _NO_PRIVACY_ ) &&
 		 ( pnetwork->network.Privacy == 1 ) )
 	{
-		ret=_FALSE;
+		ret=false;
 	}
 	else
 	{
@@ -758,7 +758,7 @@ _func_enter_;
 			memcpy(&(pnetwork->network), target,  get_WLAN_BSSID_EX_sz(target));
 			/* pnetwork->last_scanned = rtw_get_current_time(); */
 			/*  variable initialize */
-			pnetwork->fixed = _FALSE;
+			pnetwork->fixed = false;
 			pnetwork->last_scanned = rtw_get_current_time();
 
 			pnetwork->network_type = 0;
@@ -808,7 +808,7 @@ _func_enter_;
 
 		/* target.Reserved[0]==1, means that scaned network is a bcn frame. */
 		if((pnetwork->network.IELength>target->IELength) && (target->Reserved[0]==1))
-			update_ie = _FALSE;
+			update_ie = false;
 
 		update_network(&(pnetwork->network), target,adapter, update_ie);
 	}
@@ -872,24 +872,24 @@ int rtw_is_desired_network(struct rtw_adapter *adapter, struct wlan_network *pne
 		}
 		else
 		{
-			return _FALSE;
+			return false;
 		}
 	}
 	if (adapter->registrypriv.wifi_spec == 1) /* for  correct flow of 8021X  to do.... */
 	{
 		if ((desired_encmode == Ndis802_11EncryptionDisabled) && (privacy != 0))
-	            bselected = _FALSE;
+	            bselected = false;
 	}
 
 	if ((desired_encmode != Ndis802_11EncryptionDisabled) && (privacy == 0)) {
 		DBG_8723A("desired_encmode: %d, privacy: %d\n", desired_encmode, privacy);
-		bselected = _FALSE;
+		bselected = false;
 	}
 
 	if(check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true)
 	{
 		if(pnetwork->network.InfrastructureMode != pmlmepriv->cur_network.network.InfrastructureMode)
-			bselected = _FALSE;
+			bselected = false;
 	}
 
 	return bselected;
@@ -949,7 +949,7 @@ _func_enter_;
 	}
 
 	/*  lock pmlmepriv->lock when you accessing network_q */
-	if ((check_fwstate(pmlmepriv, _FW_UNDER_LINKING)) == _FALSE)
+	if ((check_fwstate(pmlmepriv, _FW_UNDER_LINKING)) == false)
 	{
 	        if( pnetwork->Ssid.Ssid[0] == 0 )
 		{
@@ -1012,7 +1012,7 @@ _func_enter_;
 	{
 		if((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)==true) )
 		{
-			if(check_fwstate(pmlmepriv, _FW_LINKED)==_FALSE)
+			if(check_fwstate(pmlmepriv, _FW_LINKED)==false)
 			{
 				set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 
@@ -1042,7 +1042,7 @@ _func_enter_;
 					RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("Error=>rtw_createbss_cmd status FAIL\n"));
 					}
 
-					pmlmepriv->to_join = _FALSE;
+					pmlmepriv->to_join = false;
 				}
 			}
 		}
@@ -1050,7 +1050,7 @@ _func_enter_;
 		{
 			int s_ret;
 			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
-			pmlmepriv->to_join = _FALSE;
+			pmlmepriv->to_join = false;
 			if(_SUCCESS == (s_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv)))
 			{
 			     _set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
@@ -1213,7 +1213,7 @@ _func_enter_;
 	pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 	if(pwlan)
 	{
-		pwlan->fixed = _FALSE;
+		pwlan->fixed = false;
 	}
 	else
 	{
@@ -1246,7 +1246,7 @@ _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_, ("+rtw_indicate_connect\n"));
 
-	pmlmepriv->to_join = _FALSE;
+	pmlmepriv->to_join = false;
 
 	if(!check_fwstate(&padapter->mlmepriv, _FW_LINKED))
 	{
@@ -1326,7 +1326,7 @@ _func_enter_;
 
 #ifdef CONFIG_LPS
 #ifdef CONFIG_WOWLAN
-	if(padapter->pwrctrlpriv.wowlan_mode==_FALSE)
+	if(padapter->pwrctrlpriv.wowlan_mode==false)
 #endif /* CONFIG_WOWLAN */
 	rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_DISCONNECT, 1);
 #endif
@@ -1363,7 +1363,7 @@ void rtw_scan_abort(struct rtw_adapter *adapter)
 			DBG_8723A(FUNC_NDEV_FMT"waiting for scan_abort time out!\n", FUNC_NDEV_ARG(adapter->pnetdev));
 		rtw_indicate_scan_done(adapter, true);
 	}
-	pmlmeext->scan_abort = _FALSE;
+	pmlmeext->scan_abort = false;
 }
 
 static struct sta_info *rtw_joinbss_update_stainfo(struct rtw_adapter *padapter, struct wlan_network *pnetwork)
@@ -1391,9 +1391,9 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct rtw_adapter *padapter,
 		/* security related */
 		if(padapter->securitypriv.dot11AuthAlgrthm== dot11AuthAlgrthm_8021X)
 		{
-			padapter->securitypriv.binstallGrpkey=_FALSE;
-			padapter->securitypriv.busetkipkey=_FALSE;
-			padapter->securitypriv.bgrpkey_handshake=_FALSE;
+			padapter->securitypriv.binstallGrpkey=false;
+			padapter->securitypriv.busetkipkey=false;
+			padapter->securitypriv.bgrpkey_handshake=false;
 
 			psta->ieee8021x_blocked=true;
 			psta->dot118021XPrivacy=padapter->securitypriv.dot11PrivacyAlgrthm;
@@ -1423,7 +1423,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct rtw_adapter *padapter,
 		{
 			/* preorder_ctrl = &precvpriv->recvreorder_ctrl[i]; */
 			preorder_ctrl = &psta->recvreorder_ctrl[i];
-			preorder_ctrl->enable = _FALSE;
+			preorder_ctrl->enable = false;
 			preorder_ctrl->indicate_seq = 0xffff;
 			#ifdef DBG_RX_SEQ
 			DBG_8723A("DBG_RX_SEQ %s:%d indicate_seq:%u \n", __FUNCTION__, __LINE__,
@@ -1440,7 +1440,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct rtw_adapter *padapter,
 			{
 				/* preorder_ctrl = &precvpriv->recvreorder_ctrl[i]; */
 				preorder_ctrl = &bmc_sta->recvreorder_ctrl[i];
-				preorder_ctrl->enable = _FALSE;
+				preorder_ctrl->enable = false;
 				preorder_ctrl->indicate_seq = 0xffff;
 				#ifdef DBG_RX_SEQ
 				DBG_8723A("DBG_RX_SEQ %s:%d indicate_seq:%u \n", __FUNCTION__, __LINE__,
@@ -1545,7 +1545,7 @@ void rtw_joinbss_event_prehandle(struct rtw_adapter *adapter, u8 *pbuf)
 	struct wlan_network	*pnetwork	= (struct wlan_network *)pbuf;
 	struct wlan_network	*cur_network = &(pmlmepriv->cur_network);
 	struct wlan_network	*pcur_wlan = NULL, *ptarget_wlan = NULL;
-	unsigned int		the_same_macaddr = _FALSE;
+	unsigned int		the_same_macaddr = false;
 
 _func_enter_;
 
@@ -1565,7 +1565,7 @@ _func_enter_;
 	if (!memcmp(pnetwork->network.MacAddress, cur_network->network.MacAddress, ETH_ALEN))
 		the_same_macaddr = true;
 	else
-		the_same_macaddr = _FALSE;
+		the_same_macaddr = false;
 
 	pnetwork->network.Length = get_WLAN_BSSID_EX_sz(&pnetwork->network);
 	if(pnetwork->network.Length > sizeof(WLAN_BSSID_EX))
@@ -1594,7 +1594,7 @@ _func_enter_;
 				else
 				{
 					pcur_wlan = rtw_find_network(&pmlmepriv->scanned_queue, cur_network->network.MacAddress);
-					if(pcur_wlan)	pcur_wlan->fixed = _FALSE;
+					if(pcur_wlan)	pcur_wlan->fixed = false;
 
 					pcur_sta = rtw_get_stainfo(pstapriv, cur_network->network.MacAddress);
 					if(pcur_sta){
@@ -1807,7 +1807,7 @@ void rtw_stassoc_event_callback(struct rtw_adapter *adapter, u8 *pbuf)
 
 _func_enter_;
 
-	if(rtw_access_ctrl(adapter, pstassoc->macaddr) == _FALSE)
+	if(rtw_access_ctrl(adapter, pstassoc->macaddr) == false)
 		return;
 
 #if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
@@ -1855,7 +1855,7 @@ _func_enter_;
 	if(adapter->securitypriv.dot11AuthAlgrthm==dot11AuthAlgrthm_8021X)
 		psta->dot118021XPrivacy = adapter->securitypriv.dot11PrivacyAlgrthm;
 
-	psta->ieee8021x_blocked = _FALSE;
+	psta->ieee8021x_blocked = false;
 
 	spin_lock_bh(&pmlmepriv->lock);
 
@@ -1939,7 +1939,7 @@ _func_enter_;
 		/*  remove the network entry in scanned_queue */
 		pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 		if (pwlan) {
-			pwlan->fixed = _FALSE;
+			pwlan->fixed = false;
 			rtw_free_network_nolock(pmlmepriv, pwlan);
 		}
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1966,7 +1966,7 @@ _func_enter_;
 			pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 			if(pwlan)
 			{
-				pwlan->fixed = _FALSE;
+				pwlan->fixed = false;
 				rtw_free_network_nolock(pmlmepriv, pwlan);
 			}
 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -2134,7 +2134,7 @@ void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
 	if(adapter->HalFunc.hal_checke_bt_hang)
 		adapter->HalFunc.hal_checke_bt_hang(adapter);
 #endif
-	if(adapter->hw_init_completed == _FALSE)
+	if(adapter->hw_init_completed == false)
 		return;
 
 	if ((adapter->bDriverStopped == true)||(adapter->bSurpriseRemoved== true))
@@ -2196,7 +2196,7 @@ void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
 inline bool rtw_is_scan_deny(struct rtw_adapter *adapter)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
-	return (atomic_read(&mlmepriv->set_scan_deny) != 0) ? true : _FALSE;
+	return (atomic_read(&mlmepriv->set_scan_deny) != 0) ? true : false;
 }
 
 inline void rtw_clear_scan_deny(struct rtw_adapter *adapter)
@@ -2233,12 +2233,12 @@ void rtw_set_scan_deny(struct rtw_adapter *adapter, u32 ms)
 /*
 * Select a new join candidate from the original @param candidate and @param competitor
 * @return true: candidate is updated
-* @return _FALSE: candidate is not updated
+* @return false: candidate is not updated
 */
 static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 	, struct wlan_network **candidate, struct wlan_network *competitor)
 {
-	int updated = _FALSE;
+	int updated = false;
 	struct rtw_adapter *adapter = container_of(pmlmepriv, struct rtw_adapter, mlmepriv);
 
 	/* check bssid, if needed */
@@ -2258,13 +2258,13 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 			goto exit;
 	}
 
-	if(rtw_is_desired_network(adapter, competitor)  == _FALSE)
+	if(rtw_is_desired_network(adapter, competitor)  == false)
 		goto exit;
 
 #ifdef  CONFIG_LAYER2_ROAMING
 	if(rtw_to_roaming(adapter) > 0) {
 		if(	rtw_get_passing_time_ms((u32)competitor->last_scanned) >= RTW_SCAN_RESULT_EXPIRE
-			|| is_same_ess(&competitor->network, &pmlmepriv->cur_network.network) == _FALSE
+			|| is_same_ess(&competitor->network, &pmlmepriv->cur_network.network) == false
 		)
 			goto exit;
 	}
@@ -2318,7 +2318,7 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct	wlan_network	*pnetwork = NULL;
 	struct	wlan_network	*candidate = NULL;
-	u8		bSupportAntDiv = _FALSE;
+	u8		bSupportAntDiv = false;
 
 _func_enter_;
 
@@ -2800,7 +2800,7 @@ void rtw_joinbss_reset(struct rtw_adapter *padapter)
 
 	pmlmepriv->num_sta_no_ht = 0;
 
-	phtpriv->ampdu_enable = _FALSE;/* reset to disabled */
+	phtpriv->ampdu_enable = false;/* reset to disabled */
 
 	/*  TH=1 => means that invalidate usb rx aggregation */
 	/*  TH=0 => means that validate usb rx aggregation, use init value. */
@@ -2835,7 +2835,7 @@ unsigned int rtw_restructure_ht_ie(struct rtw_adapter *padapter, u8 *in_ie, u8 *
 	struct qos_priv		*pqospriv= &pmlmepriv->qospriv;
 	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
 
-	phtpriv->ht_option = _FALSE;
+	phtpriv->ht_option = false;
 
 	p = rtw_get_ie(in_ie+12, _HT_CAPABILITY_IE_, &ielen, in_len-12);
 
@@ -2918,11 +2918,11 @@ void rtw_update_ht_cap(struct rtw_adapter *padapter, u8 *pie, uint ie_len)
 	DBG_8723A("+rtw_update_ht_cap()\n");
 
 	/* maybe needs check if ap supports rx ampdu. */
-	if((phtpriv->ampdu_enable==_FALSE) &&(pregistrypriv->ampdu_enable==1))
+	if((phtpriv->ampdu_enable==false) &&(pregistrypriv->ampdu_enable==1))
 	{
 		if(pregistrypriv->wifi_spec==1)
 		{
-			phtpriv->ampdu_enable = _FALSE;
+			phtpriv->ampdu_enable = false;
 		}
 		else
 		{
@@ -3070,7 +3070,7 @@ void rtw_issue_addbareq_cmd(struct rtw_adapter *padapter, struct xmit_frame *pxm
 inline void rtw_set_roaming(struct rtw_adapter *adapter, u8 to_roaming)
 {
 	if (to_roaming == 0)
-		adapter->mlmepriv.to_join = _FALSE;
+		adapter->mlmepriv.to_join = false;
 	adapter->mlmepriv.to_roaming = to_roaming;
 }
 
@@ -3105,7 +3105,7 @@ void _rtw_roaming(struct rtw_adapter *padapter, struct wlan_network *tgt_network
 				pnetwork->network.Ssid.SsidLength);
 		memcpy(&pmlmepriv->assoc_ssid, &pnetwork->network.Ssid, sizeof(NDIS_802_11_SSID));
 
-		pmlmepriv->assoc_by_bssid = _FALSE;
+		pmlmepriv->assoc_by_bssid = false;
 
 		while(1) {
 			if( _SUCCESS==(do_join_r=rtw_do_join(padapter)) ) {
@@ -3140,5 +3140,5 @@ int rtw_linked_check(struct rtw_adapter *padapter)
 		if(check_fwstate(&padapter->mlmepriv, _FW_LINKED)== true)
 			return true;
 	}
-	return _FALSE;
+	return false;
 }

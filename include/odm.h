@@ -184,7 +184,7 @@ typedef struct _Dynamic_Power_Saving_
 
 }PS_T,*pPS_T;
 
-typedef struct _FALSE_ALARM_STATISTICS{
+typedef struct false_ALARM_STATISTICS{
 	u32	Cnt_Parity_Fail;
 	u32	Cnt_Rate_Illegal;
 	u32	Cnt_Crc8_fail;
@@ -199,7 +199,7 @@ typedef struct _FALSE_ALARM_STATISTICS{
 	u32	Cnt_CCA_all;
 	u32	Cnt_BW_USC;	//Gary
 	u32	Cnt_BW_LSC;	//Gary
-}FALSE_ALARM_STATISTICS, *PFALSE_ALARM_STATISTICS;
+}false_ALARM_STATISTICS, *PFALSE_ALARM_STATISTICS;
 
 typedef struct _Dynamic_Primary_CCA{
 	u8		PriCCA_flag;
@@ -1095,8 +1095,8 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	PS_T		DM_PSTable;
 	Pri_CCA_T	DM_PriCCA;
 	RXHP_T		DM_RXHP_Table;
-	FALSE_ALARM_STATISTICS	FalseAlmCnt;
-	FALSE_ALARM_STATISTICS	FlaseAlmCntBuddyAdapter;
+	false_ALARM_STATISTICS	FalseAlmCnt;
+	false_ALARM_STATISTICS	FlaseAlmCntBuddyAdapter;
 	//#ifdef CONFIG_ANTENNA_DIVERSITY
 	SWAT_T		DM_SWAT_Table;
 	bool		RSSI_test;

@@ -775,7 +775,7 @@ _func_enter_;
 		if (stainfo!=NULL){
 
 			if(is_multicast_ether_addr(prxattrib->ra)) {
-				if(psecuritypriv->binstallGrpkey==_FALSE) {
+				if(psecuritypriv->binstallGrpkey==false) {
 					res=_FAIL;
 					DBG_8723A("%s:rx bc/mc packets,but didn't install group key!!!!!!!!!!\n",__FUNCTION__);
 					goto exit;
@@ -1855,7 +1855,7 @@ _func_enter_;
 				/* in concurrent we should use sw descrypt in group key, so we remove this message */
 				/* DBG_8723A("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
-				if(psecuritypriv->binstallGrpkey==_FALSE)
+				if(psecuritypriv->binstallGrpkey==false)
 				{
 					res=_FAIL;
 					DBG_8723A("%s:rx bc/mc packets,but didn't install group key!!!!!!!!!!\n",__FUNCTION__);

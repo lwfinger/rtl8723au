@@ -460,7 +460,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 	unsigned long irqL;
 	unsigned int pipe;
 	int status;
-	u32 ret = _FAIL, bwritezero = _FALSE;
+	u32 ret = _FAIL, bwritezero = false;
 	struct urb *purb = NULL;
 	struct rtw_adapter *padapter = (struct rtw_adapter *)pintfhdl->padapter;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(padapter);

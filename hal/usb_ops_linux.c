@@ -377,7 +377,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 //	[in] ContentLen -
 //		The length in byte of pContent.
 // Return:
-//	If any interrupt matches the mask (IMR), return true, and return FALSE otherwise.
+//	If any interrupt matches the mask (IMR), return true, and return false otherwise.
 //
 bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
@@ -788,7 +788,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				tasklet_schedule(&precvpriv->recv_tasklet);
 
 			precvbuf->pskb = NULL;
-			precvbuf->reuse = _FALSE;
+			precvbuf->reuse = false;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 		}
 	}
@@ -869,14 +869,14 @@ _func_enter_;
 		return _FAIL;
 	}
 
-	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
+	if((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
 		if (NULL != (precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
 			precvbuf->reuse = true;
 	}
 	rtl8192cu_init_recvbuf(adapter, precvbuf);
 
 	//re-assign for linux based on skb
-	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
+	if((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
 		//precvbuf->pskb = alloc_skb(MAX_RECVBUF_SZ, GFP_ATOMIC);//don't use this after v2.6.25
 		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 		if (precvbuf->pskb == NULL) {
@@ -900,7 +900,7 @@ _func_enter_;
 		precvbuf->pend = skb_end_pointer(precvbuf->pskb);
 	precvbuf->pbuf = precvbuf->pskb->data;
 
-		precvbuf->reuse = _FALSE;
+		precvbuf->reuse = false;
 	}
 
 	precvpriv->rx_pending_cnt++;
@@ -929,7 +929,7 @@ _func_exit_;
 
 void rtl8192cu_xmit_tasklet(void *priv)
 {
-	int ret = _FALSE;
+	int ret = false;
 	struct rtw_adapter *padapter = (struct rtw_adapter*)priv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
@@ -946,7 +946,7 @@ void rtl8192cu_xmit_tasklet(void *priv)
 
 		ret = rtl8192cu_xmitframe_complete(padapter, pxmitpriv, NULL);
 
-		if(ret==_FALSE)
+		if(ret==false)
 			break;
 
 	}

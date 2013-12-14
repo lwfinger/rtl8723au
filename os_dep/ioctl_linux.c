@@ -225,7 +225,7 @@ _func_enter_;
 			{
 				//Jeff: don't disable ieee8021x_blocked while clearing key
 				if (strcmp(param->u.crypt.alg, "none") != 0)
-					psta->ieee8021x_blocked = _FALSE;
+					psta->ieee8021x_blocked = false;
 
 				if((padapter->securitypriv.ndisencryptstatus == Ndis802_11Encryption2Enabled)||
 						(padapter->securitypriv.ndisencryptstatus ==  Ndis802_11Encryption3Enabled))
@@ -243,7 +243,7 @@ _func_enter_;
 						memcpy(psta->dot11tkiptxmickey.skey, &(param->u.crypt.key[16]), 8);
 						memcpy(psta->dot11tkiprxmickey.skey, &(param->u.crypt.key[24]), 8);
 
-						padapter->securitypriv.busetkipkey=_FALSE;
+						padapter->securitypriv.busetkipkey=false;
 						//_set_timer(&padapter->securitypriv.tkip_timer, 50);
 					}
 
@@ -283,7 +283,7 @@ _func_enter_;
 			{
 				//Jeff: don't disable ieee8021x_blocked while clearing key
 				if (strcmp(param->u.crypt.alg, "none") != 0)
-					pbcmc_sta->ieee8021x_blocked = _FALSE;
+					pbcmc_sta->ieee8021x_blocked = false;
 
 				if((padapter->securitypriv.ndisencryptstatus == Ndis802_11Encryption2Enabled)||
 						(padapter->securitypriv.ndisencryptstatus ==  Ndis802_11Encryption3Enabled))
@@ -1067,7 +1067,7 @@ static int rtw_p2p_get_peer_wfd_preferred_connection(struct net_device *dev,
 	DBG_8723A( "[%s] wfd_pc = %d\n", __func__, pwdinfo->wfd_info->wfd_pc );
 
 	wrqu->data.length = strlen( extra );
-	pwdinfo->wfd_info->wfd_pc = _FALSE;	//	Reset the WFD preferred connection to P2P
+	pwdinfo->wfd_info->wfd_pc = false;	//	Reset the WFD preferred connection to P2P
 	return ret;
 
 }
@@ -1552,7 +1552,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	else
 	{
 		//	Reset the content of struct tx_invite_req_info
-		pinvite_req_info->benable = _FALSE;
+		pinvite_req_info->benable = false;
 		memset( pinvite_req_info->go_bssid, 0x00, ETH_ALEN );
 		memset( pinvite_req_info->go_ssid, 0x00, WLAN_SSID_MAXLEN );
 		pinvite_req_info->ssidlen = 0x00;
@@ -1640,12 +1640,12 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 				}
 				else
 				{
-					pwfd_info->peer_session_avail = _FALSE;
+					pwfd_info->peer_session_avail = false;
 				}
 			}
 		}
 
-		if ( _FALSE == pwfd_info->peer_session_avail )
+		if ( false == pwfd_info->peer_session_avail )
 		{
 			DBG_8723A( "[%s] WFD Session not avaiable!\n", __func__ );
 			goto exit;
@@ -1726,7 +1726,7 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	{
 		if ( extra[ 0 ] == '0' )	//	Disable the persistent group function.
 		{
-			pwdinfo->persistent_supported = _FALSE;
+			pwdinfo->persistent_supported = false;
 		}
 		else if ( extra[ 0 ] == '1' )	//	Enable the persistent group function.
 		{
@@ -1734,7 +1734,7 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 		}
 		else
 		{
-			pwdinfo->persistent_supported = _FALSE;
+			pwdinfo->persistent_supported = false;
 		}
 	}
 	printk( "[%s] persistent_supported = %d\n", __func__, pwdinfo->persistent_supported );
@@ -1861,7 +1861,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 				}
 				else
 				{
-					pwfd_info->wfd_pc = _FALSE;
+					pwfd_info->wfd_pc = false;
 				}
 			}
 		}
@@ -1977,7 +1977,7 @@ static int rtw_p2p_set_sa(struct net_device *dev,
 	{
 		if ( extra[ 0 ] == '0' )	//	Disable the session available.
 		{
-			pwdinfo->session_available = _FALSE;
+			pwdinfo->session_available = false;
 		}
 		else if ( extra[ 0 ] == '1' )	//	Enable the session available.
 		{
@@ -1985,7 +1985,7 @@ static int rtw_p2p_set_sa(struct net_device *dev,
 		}
 		else
 		{
-			pwdinfo->session_available = _FALSE;
+			pwdinfo->session_available = false;
 		}
 	}
 	printk( "[%s] session available = %d\n", __func__, pwdinfo->session_available );
@@ -2043,7 +2043,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( NDIS_802_11_SSID ) );
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 0 ] = 0;
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 1 ] = 0;
-		pwdinfo->tx_prov_disc_info.benable = _FALSE;
+		pwdinfo->tx_prov_disc_info.benable = false;
 	}
 
 	for( jj = 0, kk = 0; jj < ETH_ALEN; jj++, kk += 3 )
@@ -2155,12 +2155,12 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 				}
 				else
 				{
-					pwfd_info->peer_session_avail = _FALSE;
+					pwfd_info->peer_session_avail = false;
 				}
 			}
 		}
 
-		if ( _FALSE == pwfd_info->peer_session_avail )
+		if ( false == pwfd_info->peer_session_avail )
 		{
 			DBG_8723A( "[%s] WFD Session not avaiable!\n", __func__ );
 			goto exit;
@@ -2806,7 +2806,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 			pbcmc_sta=rtw_get_bcmc_stainfo(padapter);
 			if(pbcmc_sta)
 			{
-				pbcmc_sta->ieee8021x_blocked = _FALSE;
+				pbcmc_sta->ieee8021x_blocked = false;
 				pbcmc_sta->dot118021XPrivacy= psecuritypriv->dot118021XGrpPrivacy;//rx will use bmc_sta's dot118021XPrivacy
 			}
 
@@ -2864,7 +2864,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 				set_pairwise_key(padapter, psta);
 
-				psta->ieee8021x_blocked = _FALSE;
+				psta->ieee8021x_blocked = false;
 
 			}
 			else//group key???
@@ -2915,7 +2915,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 				pbcmc_sta=rtw_get_bcmc_stainfo(padapter);
 				if(pbcmc_sta)
 				{
-					pbcmc_sta->ieee8021x_blocked = _FALSE;
+					pbcmc_sta->ieee8021x_blocked = false;
 					pbcmc_sta->dot118021XPrivacy= psecuritypriv->dot118021XGrpPrivacy;//rx will use bmc_sta's dot118021XPrivacy
 				}
 
@@ -3046,11 +3046,11 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 		}
 		else
 		{
-			psta->htpriv.ht_option = _FALSE;
+			psta->htpriv.ht_option = false;
 		}
 
-		if(pmlmepriv->htpriv.ht_option == _FALSE)
-			psta->htpriv.ht_option = _FALSE;
+		if(pmlmepriv->htpriv.ht_option == false)
+			psta->htpriv.ht_option = false;
 #endif
 
 
@@ -3468,7 +3468,7 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 	* so, we just check hw_init_completed
 	*/
 
-	if (padapter->hw_init_completed==_FALSE){
+	if (padapter->hw_init_completed==false){
 		ret = -EPERM;
 		goto fail;
 	}

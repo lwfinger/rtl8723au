@@ -192,19 +192,19 @@ enum NETWORK_TYPE
 #define SUPPORTED_24G_NETTYPE_MSK (WIRELESS_11B | WIRELESS_11G | WIRELESS_11_24N)
 #define SUPPORTED_5G_NETTYPE_MSK (WIRELESS_11A | WIRELESS_11_5N)
 
-#define IsSupported24G(NetType) ((NetType) & SUPPORTED_24G_NETTYPE_MSK ? true : _FALSE)
-#define IsSupported5G(NetType) ((NetType) & SUPPORTED_5G_NETTYPE_MSK ? true : _FALSE)
+#define IsSupported24G(NetType) ((NetType) & SUPPORTED_24G_NETTYPE_MSK ? true : false)
+#define IsSupported5G(NetType) ((NetType) & SUPPORTED_5G_NETTYPE_MSK ? true : false)
 
 #define IsEnableHWCCK(NetType) IsSupported24G(NetType)
-#define IsEnableHWOFDM(NetType) ((NetType) & (WIRELESS_11G|WIRELESS_11_24N|SUPPORTED_5G_NETTYPE_MSK) ? true : _FALSE)
+#define IsEnableHWOFDM(NetType) ((NetType) & (WIRELESS_11G|WIRELESS_11_24N|SUPPORTED_5G_NETTYPE_MSK) ? true : false)
 
 #define IsSupportedRxCCK(NetType) IsEnableHWCCK(NetType)
 #define IsSupportedRxOFDM(NetType) IsEnableHWOFDM(NetType)
 #define IsSupportedRxMCS(NetType) IsEnableHWOFDM(NetType)
 
-#define IsSupportedTxCCK(NetType) ((NetType) & (WIRELESS_11B) ? true : _FALSE)
-#define IsSupportedTxOFDM(NetType) ((NetType) & (WIRELESS_11G|WIRELESS_11A) ? true : _FALSE)
-#define IsSupportedTxMCS(NetType) ((NetType) & (WIRELESS_11_24N|WIRELESS_11_5N) ? true : _FALSE)
+#define IsSupportedTxCCK(NetType) ((NetType) & (WIRELESS_11B) ? true : false)
+#define IsSupportedTxOFDM(NetType) ((NetType) & (WIRELESS_11G|WIRELESS_11A) ? true : false)
+#define IsSupportedTxMCS(NetType) ((NetType) & (WIRELESS_11_24N|WIRELESS_11_5N) ? true : false)
 
 
 typedef struct ieee_param {

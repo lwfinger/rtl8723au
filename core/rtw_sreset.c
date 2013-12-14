@@ -27,7 +27,7 @@ void sreset_init_value(struct rtw_adapter *padapter)
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
 	mutex_init(&psrtpriv->silentreset_mutex);
-	psrtpriv->silent_reset_inprogress = _FALSE;
+	psrtpriv->silent_reset_inprogress = false;
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 	psrtpriv->last_tx_time =0;
 	psrtpriv->last_tx_complete_time =0;
@@ -39,7 +39,7 @@ void sreset_reset_value(struct rtw_adapter *padapter)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
-	psrtpriv->silent_reset_inprogress = _FALSE;
+	psrtpriv->silent_reset_inprogress = false;
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 	psrtpriv->last_tx_time =0;
 	psrtpriv->last_tx_complete_time =0;
@@ -105,7 +105,7 @@ bool sreset_inprogress(struct rtw_adapter *padapter)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	return pHalData->srestpriv.silent_reset_inprogress;
 #else
-	return _FALSE;
+	return false;
 #endif
 }
 
@@ -173,7 +173,7 @@ static void sreset_restore_network_station(struct rtw_adapter *padapter)
 	set_channel_bwmode(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
 
 	/* disable dynamic functions, such as high power, DIG */
-	/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, _FALSE); */
+	/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, false); */
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_BSSID, pmlmeinfo->network.MacAddress);
 
@@ -283,7 +283,7 @@ void sreset_reset(struct rtw_adapter *padapter)
 	#endif
 
 	sreset_start_adapter(padapter);
-	psrtpriv->silent_reset_inprogress = _FALSE;
+	psrtpriv->silent_reset_inprogress = false;
 	mutex_unlock(&psrtpriv->silentreset_mutex);
 
 	DBG_8723A("%s done in %d ms\n", __FUNCTION__, rtw_get_passing_time_ms(start));

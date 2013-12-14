@@ -61,7 +61,7 @@ _func_enter_;
 
 	psta->capability = 0;
 
-	psta->bpairwise_key_installed = _FALSE;
+	psta->bpairwise_key_installed = false;
 
 #ifdef CONFIG_NATIVEAP_MLME
 	psta->nonerp_set = 0;
@@ -178,7 +178,7 @@ _func_enter_;
 	phead = get_list_head(&pstapriv->free_sta_queue);
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		psta = container_of(plist, struct sta_info ,list);
 		plist = plist->next;
@@ -216,7 +216,7 @@ _func_enter_;
 			phead = &(pstapriv->sta_hash[index]);
 			plist = phead->next;
 
-			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+			while ((rtw_end_of_queue_search(phead, plist)) == false)
 			{
 				int i;
 				psta = container_of(plist, struct sta_info ,hash_list);
@@ -335,7 +335,7 @@ _func_enter_;
 
 			preorder_ctrl->padapter = pstapriv->padapter;
 
-			preorder_ctrl->enable = _FALSE;
+			preorder_ctrl->enable = false;
 
 			preorder_ctrl->indicate_seq = 0xffff;
 			#ifdef DBG_RX_SEQ
@@ -493,7 +493,7 @@ _func_enter_;
 	}
 
 	if (!(psta->state & WIFI_AP_STATE))
-		rtw_hal_set_odm_var(padapter, HAL_ODM_STA_INFO, psta, _FALSE);
+		rtw_hal_set_odm_var(padapter, HAL_ODM_STA_INFO, psta, false);
 
 #ifdef CONFIG_AP_MODE
 
@@ -571,7 +571,7 @@ _func_enter_;
 		phead = &(pstapriv->sta_hash[index]);
 		plist = phead->next;
 
-		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+		while ((rtw_end_of_queue_search(phead, plist)) == false)
 		{
 			psta = container_of(plist, struct sta_info ,hash_list);
 
@@ -620,7 +620,7 @@ _func_enter_;
 	phead = &(pstapriv->sta_hash[index]);
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 
 		psta = container_of(plist, struct sta_info, hash_list);
@@ -695,7 +695,7 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 #ifdef  CONFIG_AP_MODE
 	struct list_head	*plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
-	u8 match = _FALSE;
+	u8 match = false;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 	_queue	*pacl_node_q =&pacl_list->acl_node_q;
@@ -703,7 +703,7 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 	spin_lock_bh(&(pacl_node_q->lock));
 	phead = get_list_head(pacl_node_q);
 	plist = phead->next;
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
@@ -721,11 +721,11 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 
 	if(pacl_list->mode == 1)/* accept unless in deny list */
 	{
-		res = (match == true) ?  _FALSE:true;
+		res = (match == true) ?  false:true;
 	}
 	else if(pacl_list->mode == 2)/* deny unless in accept list */
 	{
-		res = (match == true) ?  true:_FALSE;
+		res = (match == true) ?  true:false;
 	}
 	else
 	{

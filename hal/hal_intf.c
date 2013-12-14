@@ -90,7 +90,7 @@ uint	 rtw_hal_init(struct rtw_adapter *padapter)
 {
 	uint	status = _SUCCESS;
 
-	padapter->hw_init_completed=_FALSE;
+	padapter->hw_init_completed=false;
 
 	status = padapter->HalFunc.hal_init(padapter);
 
@@ -103,7 +103,7 @@ uint	 rtw_hal_init(struct rtw_adapter *padapter)
 		rtw_hal_reset_security_engine(padapter);
 	}
 	else{
-		padapter->hw_init_completed = _FALSE;
+		padapter->hw_init_completed = false;
 		DBG_8723A("rtw_hal_init: hal__init fail\n");
 	}
 
@@ -121,7 +121,7 @@ _func_enter_;
 	status = padapter->HalFunc.hal_deinit(padapter);
 
 	if(status == _SUCCESS){
-		padapter->hw_init_completed = _FALSE;
+		padapter->hw_init_completed = false;
 	}
 	else
 	{
@@ -219,7 +219,7 @@ s32	rtw_hal_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *p
 	if(padapter->HalFunc.hal_xmitframe_enqueue)
 		return padapter->HalFunc.hal_xmitframe_enqueue(padapter, pxmitframe);
 
-	return _FALSE;
+	return false;
 }
 
 s32	rtw_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
@@ -227,7 +227,7 @@ s32	rtw_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 	if(padapter->HalFunc.hal_xmit)
 		return padapter->HalFunc.hal_xmit(padapter, pxmitframe);
 
-	return _FALSE;
+	return false;
 }
 
 s32	rtw_hal_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe)
@@ -368,7 +368,7 @@ u8	rtw_hal_antdiv_before_linked(struct rtw_adapter *padapter)
 {
 	if(padapter->HalFunc.AntDivBeforeLinkHandler)
 		return padapter->HalFunc.AntDivBeforeLinkHandler(padapter);
-	return _FALSE;
+	return false;
 }
 void	rtw_hal_antdiv_rssi_compared(struct rtw_adapter *padapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src)
 {
@@ -426,7 +426,7 @@ u8   rtw_hal_sreset_get_wifi_status(struct rtw_adapter *padapter)
 
 bool rtw_hal_sreset_inprogress(struct rtw_adapter *padapter)
 {
-	bool inprogress = _FALSE;
+	bool inprogress = false;
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 

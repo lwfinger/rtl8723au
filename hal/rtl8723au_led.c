@@ -114,7 +114,7 @@ SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
 
 	}
 exit:
-	pLed->bLedOn = _FALSE;
+	pLed->bLedOn = false;
 
 }
 

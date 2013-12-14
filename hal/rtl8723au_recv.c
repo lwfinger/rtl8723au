@@ -258,9 +258,9 @@ void update_recvframe_phyinfo(
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
 
-	pkt_info.bPacketMatchBSSID =_FALSE;
-	pkt_info.bPacketToSelf = _FALSE;
-	pkt_info.bPacketBeacon = _FALSE;
+	pkt_info.bPacketMatchBSSID =false;
+	pkt_info.bPacketToSelf = false;
+	pkt_info.bPacketBeacon = false;
 
 	wlanhdr = get_recvframe_data(precvframe);
 

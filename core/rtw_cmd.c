@@ -120,7 +120,7 @@ exit:
 
 #ifdef CONFIG_C2H_WK
 	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
-	pevtpriv->c2h_wk_alive = _FALSE;
+	pevtpriv->c2h_wk_alive = false;
 	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN+1);
 #endif
 
@@ -264,7 +264,7 @@ _func_exit_;
 int rtw_cmd_filter(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj);
 int rtw_cmd_filter(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
 {
-	u8 bAllow = _FALSE; /* set to true to allow enqueuing cmd when hw_init_completed is _FALSE */
+	u8 bAllow = false; /* set to true to allow enqueuing cmd when hw_init_completed is false */
 
 	#ifdef SUPPORT_HW_RFOFF_DETECTED
 	/* To decide allow or not */
@@ -284,8 +284,8 @@ int rtw_cmd_filter(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
 	if(cmd_obj->cmdcode == GEN_CMD_CODE(_SetChannelPlan))
 		bAllow = true;
 
-	if ((pcmdpriv->padapter->hw_init_completed ==_FALSE && bAllow == _FALSE) ||
-	     pcmdpriv->cmdthd_running== _FALSE)	/* com_thread not running */
+	if ((pcmdpriv->padapter->hw_init_completed ==false && bAllow == false) ||
+	     pcmdpriv->cmdthd_running== false)	/* com_thread not running */
 		return _FAIL;
 	return _SUCCESS;
 }
@@ -481,7 +481,7 @@ post_process:
 		goto _next;
 
 	}
-	pcmdpriv->cmdthd_running=_FALSE;
+	pcmdpriv->cmdthd_running=false;
 
 	/*  free all cmd_obj resources */
 	do{
@@ -655,7 +655,7 @@ _func_enter_;
 		return _FAIL;
 	}
 
-	rtw_free_network_queue(padapter, _FALSE);
+	rtw_free_network_queue(padapter, false);
 
 	RT_TRACE(_module_rtl871x_cmd_c_, _drv_info_, ("%s: flush network queue\n", __FUNCTION__));
 
@@ -1151,7 +1151,7 @@ _func_enter_;
 	/*  If not,  we have to copy the connecting AP's MAC address to it so that */
 	/*  the driver just has the bssid information for PMKIDList searching. */
 
-	if ( pmlmepriv->assoc_by_bssid == _FALSE )
+	if ( pmlmepriv->assoc_by_bssid == false )
 	{
 		memcpy(&pmlmepriv->assoc_bssid[ 0 ], &pnetwork->network.MacAddress[ 0 ], ETH_ALEN );
 	}
@@ -1178,7 +1178,7 @@ _func_enter_;
 	}
 
 #ifdef CONFIG_80211N_HT
-	phtpriv->ht_option = _FALSE;
+	phtpriv->ht_option = false;
 	if(pregistrypriv->ht_enable)
 	{
 		/*	Added by Albert 2010/06/23 */
@@ -1277,14 +1277,14 @@ _func_enter_;
 
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
 	if(ph2c==NULL){
-		res= _FALSE;
+		res= false;
 		goto exit;
 	}
 	psetop = (struct setopmode_parm*)rtw_zmalloc(sizeof(struct setopmode_parm));
 
 	if(psetop==NULL){
 		rtw_mfree((u8 *) ph2c, sizeof(struct	cmd_obj));
-		res=_FALSE;
+		res=false;
 		goto exit;
 	}
 
@@ -1349,7 +1349,7 @@ _func_enter_;
 #endif /* CONFIG_TDLS */
 		psetstakey_para->algorithm =(unsigned char) psecuritypriv->dot11PrivacyAlgrthm;
 	}else{
-		GET_ENCRY_ALGO(psecuritypriv, sta, psetstakey_para->algorithm, _FALSE);
+		GET_ENCRY_ALGO(psecuritypriv, sta, psetstakey_para->algorithm, false);
 	}
 
 	if (unicast_key == true) {
@@ -1864,8 +1864,8 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 	u8	bEnterPS;
 #endif
 	u16	BusyThreshold = 100;
-	u8	bBusyTraffic = _FALSE, bTxBusyTraffic = _FALSE, bRxBusyTraffic = _FALSE;
-	u8	bHigherBusyTraffic = _FALSE, bHigherBusyRxTraffic = _FALSE, bHigherBusyTxTraffic = _FALSE;
+	u8	bBusyTraffic = false, bTxBusyTraffic = false, bRxBusyTraffic = false;
+	u8	bHigherBusyTraffic = false, bHigherBusyRxTraffic = false, bHigherBusyTxTraffic = false;
 #ifdef CONFIG_FTP_PROTECT
 	u16	bPktCount = 0;
 #endif
@@ -1938,14 +1938,14 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 
 #ifdef CONFIG_LPS
 #ifdef CONFIG_BT_COEXIST
-		if (BT_1Ant(padapter) == _FALSE)
+		if (BT_1Ant(padapter) == false)
 #endif
 		{
 		/*  check traffic for  powersaving. */
 		if( ((pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod + pmlmepriv->LinkDetectInfo.NumTxOkInPeriod) > 8 ) ||
 			(pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 2) )
 		{
-			bEnterPS= _FALSE;
+			bEnterPS= false;
 		}
 		else
 		{
@@ -2038,7 +2038,7 @@ _func_enter_;
 		case LPS_CTRL_SCAN:
 #ifdef CONFIG_BT_COEXIST
 			BT_WifiScanNotify(padapter, true);
-			if (BT_1Ant(padapter) == _FALSE)
+			if (BT_1Ant(padapter) == false)
 #endif
 			{
 				if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
@@ -2063,7 +2063,7 @@ _func_enter_;
 			mstatus = 0;/* disconnect */
 #ifdef CONFIG_BT_COEXIST
 			BT_WifiMediaStatusNotify(padapter, mstatus);
-			if (BT_1Ant(padapter) == _FALSE)
+			if (BT_1Ant(padapter) == false)
 #endif
 			{
 				LPS_Leave(padapter);
@@ -2074,7 +2074,7 @@ _func_enter_;
 			pwrpriv->DelayLPSLastTimeStamp = rtw_get_current_time();
 #ifdef CONFIG_BT_COEXIST
 			BT_SpecialPacketNotify(padapter);
-			if (BT_1Ant(padapter) == _FALSE)
+			if (BT_1Ant(padapter) == false)
 #endif
 			{
 				LPS_Leave(padapter);
@@ -2083,7 +2083,7 @@ _func_enter_;
 		case LPS_CTRL_LEAVE:
 #ifdef CONFIG_BT_COEXIST
 			BT_LpsLeave(padapter);
-			if (BT_1Ant(padapter) == _FALSE)
+			if (BT_1Ant(padapter) == false)
 #endif
 			{
 				LPS_Leave(padapter);
@@ -2196,12 +2196,12 @@ u8 rtw_antenna_select_cmd(struct rtw_adapter*padapter, u8 antenna,u8 enqueue)
 	struct cmd_obj		*ph2c;
 	struct drvextra_cmd_parm	*pdrvextra_cmd_parm;
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
-	u8	bSupportAntDiv = _FALSE;
+	u8	bSupportAntDiv = false;
 	u8	res = _SUCCESS;
 
 _func_enter_;
 	rtw_hal_get_def_var(padapter, HAL_DEF_IS_SUPPORT_ANT_DIV, &(bSupportAntDiv));
-	if(_FALSE == bSupportAntDiv )	return res;
+	if(false == bSupportAntDiv )	return res;
 
 	if(true == enqueue)
 	{
@@ -2340,7 +2340,7 @@ static void rtw_chk_hi_queue_hdl(struct rtw_adapter *padapter)
 
 		rtw_hal_get_hwreg(padapter, HW_VAR_CHK_HI_QUEUE_EMPTY, &val);
 
-		while(_FALSE == val)
+		while(false == val)
 		{
 			msleep(100);
 
@@ -2357,7 +2357,7 @@ static void rtw_chk_hi_queue_hdl(struct rtw_adapter *padapter)
 			pstapriv->tim_bitmap &= ~BIT(0);
 			pstapriv->sta_dz_bitmap &= ~BIT(0);
 
-			update_beacon(padapter, _TIM_IE_, NULL, _FALSE);
+			update_beacon(padapter, _TIM_IE_, NULL, false);
 		}
 		else /* re check again */
 		{
@@ -2444,14 +2444,14 @@ s32 c2h_evt_hdl(struct rtw_adapter *adapter, struct c2h_evt_hdr *c2h_evt, c2h_id
 		if (c2h_evt_read(adapter, buf) == _SUCCESS) {
 			c2h_evt = (struct c2h_evt_hdr *)buf;
 
-			if (filter && filter(c2h_evt->id) == _FALSE)
+			if (filter && filter(c2h_evt->id) == false)
 				goto exit;
 
 			ret = rtw_hal_c2h_handler(adapter, c2h_evt);
 		}
 	} else {
 
-		if (filter && filter(c2h_evt->id) == _FALSE)
+		if (filter && filter(c2h_evt->id) == false)
 			goto exit;
 
 		ret = rtw_hal_c2h_handler(adapter, c2h_evt);
@@ -2499,7 +2499,7 @@ static void c2h_wk_callback(struct work_struct *work)
 		}
 	}
 
-	evtpriv->c2h_wk_alive = _FALSE;
+	evtpriv->c2h_wk_alive = false;
 }
 #endif
 

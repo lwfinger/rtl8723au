@@ -108,7 +108,7 @@ u32	  _rtw_queue_empty(_queue *pqueue)
 	if (list_empty(&(pqueue->queue)))
 		return true;
 	else
-		return _FALSE;
+		return false;
 }
 
 
@@ -117,7 +117,7 @@ u32 rtw_end_of_queue_search(struct list_head *head, struct list_head *plist)
 	if (head == plist)
 		return true;
 	else
-		return _FALSE;
+		return false;
 }
 
 
@@ -425,14 +425,14 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 /*
 * Test if the specifi @param path is a file and readable
 * @param path the path of the file to test
-* @return true or _FALSE
+* @return true or false
 */
 int rtw_is_file_readable(char *path)
 {
 	if(isFileReadable(path) == 0)
 		return true;
 	else
-		return _FALSE;
+		return false;
 }
 
 /*
@@ -530,7 +530,7 @@ keep_ori:
  */
 inline bool rtw_cbuf_full(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read-1)? true : _FALSE;
+	return (cbuf->write == cbuf->read-1)? true : false;
 }
 
 /**
@@ -541,7 +541,7 @@ inline bool rtw_cbuf_full(struct rtw_cbuf *cbuf)
  */
 inline bool rtw_cbuf_empty(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read)? true : _FALSE;
+	return (cbuf->write == cbuf->read)? true : false;
 }
 
 /**

@@ -57,7 +57,7 @@ dm_CheckStatistics(
 static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 {
 	u8	tmp1byte;
-	u8	bPbcPressed = _FALSE;
+	u8	bPbcPressed = false;
 
 	if(!padapter->registrypriv.hw_wps_pbc)
 		return;
@@ -281,15 +281,15 @@ rtl8723a_HalDmWatchDog(
 	struct rtw_adapter *	Adapter
 	)
 {
-	bool		bFwCurrentInPSMode = _FALSE;
+	bool		bFwCurrentInPSMode = false;
 	bool		bFwPSAwake = true;
-	u8 hw_init_completed = _FALSE;
+	u8 hw_init_completed = false;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 	hw_init_completed = Adapter->hw_init_completed;
 
-	if (hw_init_completed == _FALSE)
+	if (hw_init_completed == false)
 		goto skip_dm;
 
 #ifdef CONFIG_LPS
@@ -301,7 +301,7 @@ rtl8723a_HalDmWatchDog(
 	// Fw is under p2p powersaving mode, driver should stop dynamic mechanism.
 	// modifed by thomas. 2011.06.11.
 	if(Adapter->wdinfo.p2p_ps_mode)
-		bFwPSAwake = _FALSE;
+		bFwPSAwake = false;
 #endif //CONFIG_P2P_PS
 
 	if( (hw_init_completed == true)
@@ -333,7 +333,7 @@ _record_initrate:
 	//ODM
 	if (hw_init_completed == true)
 	{
-		u8	bLinked=_FALSE;
+		u8	bLinked=false;
 
 		#ifdef CONFIG_DISABLE_ODM
 		pHalData->odmpriv.SupportAbility = 0;

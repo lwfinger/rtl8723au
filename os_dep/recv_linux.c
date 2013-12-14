@@ -65,7 +65,7 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter, struct recv_buf 
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
-	precvbuf->irp_pending = _FALSE;
+	precvbuf->irp_pending = false;
 	precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
 	if(precvbuf->purb == NULL){
 		res = _FAIL;
@@ -73,7 +73,7 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter, struct recv_buf 
 
 	precvbuf->pskb = NULL;
 
-	precvbuf->reuse = _FALSE;
+	precvbuf->reuse = false;
 
 	precvbuf->pallocated_buf  = precvbuf->pbuf = NULL;
 
@@ -352,9 +352,9 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 	dev_kfree_skb_any(precvbuf->pskb);
 
 	precvbuf->pskb = NULL;
-	precvbuf->reuse = _FALSE;
+	precvbuf->reuse = false;
 
-	if(precvbuf->irp_pending == _FALSE)
+	if(precvbuf->irp_pending == false)
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 }
 

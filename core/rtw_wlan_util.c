@@ -75,7 +75,7 @@ int cckrates_included(unsigned char *rate, int ratelen)
 		return true;
 	}
 
-	return _FALSE;
+	return false;
 }
 
 int cckratesonly_included(unsigned char *rate, int ratelen)
@@ -86,7 +86,7 @@ int cckratesonly_included(unsigned char *rate, int ratelen)
 	{
 		if  ( (((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
 			   (((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
-		return _FALSE;
+		return false;
 	}
 
 	return true;
@@ -247,7 +247,7 @@ int is_basicrate(struct rtw_adapter *padapter, unsigned char rate)
 		}
 	}
 
-	return _FALSE;
+	return false;
 }
 
 unsigned int ratetbl2rateset(struct rtw_adapter *padapter, unsigned char *rateset);
@@ -348,7 +348,7 @@ void Save_DM_Func_Flag(struct rtw_adapter *padapter)
 
 void Restore_DM_Func_Flag(struct rtw_adapter *padapter)
 {
-	u8	bSaveFlag = _FALSE;
+	u8	bSaveFlag = false;
 	rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_OP, (u8 *)(&bSaveFlag));
 }
 
@@ -828,7 +828,7 @@ void WMMOnAssocRsp(struct rtw_adapter *padapter)
 					inx[i] = inx[j];
 					inx[j] = tmp;
 
-					change_inx = _FALSE;
+					change_inx = false;
 				}
 			}
 		}
@@ -857,7 +857,7 @@ static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIA
 	if(!pIE)
 		return;
 
-	if(phtpriv->ht_option == _FALSE)	return;
+	if(phtpriv->ht_option == false)	return;
 
 	if(pIE->Length > sizeof(struct HT_info_element))
 		return;
@@ -901,7 +901,7 @@ static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIA
 	}
 	else
 	{
-		pmlmeinfo->bwmode_updated = _FALSE;
+		pmlmeinfo->bwmode_updated = false;
 	}
 
 	if(true == pmlmeinfo->bwmode_updated)
@@ -949,7 +949,7 @@ void HT_caps_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 
 	if(pIE==NULL) return;
 
-	if(phtpriv->ht_option == _FALSE)	return;
+	if(phtpriv->ht_option == false)	return;
 
 	pmlmeinfo->HT_caps_enable = 1;
 
@@ -1025,7 +1025,7 @@ void HT_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 
 	if(pIE==NULL) return;
 
-	if(phtpriv->ht_option == _FALSE)	return;
+	if(phtpriv->ht_option == false)	return;
 
 	if(pIE->Length > sizeof(struct HT_info_element))
 		return;
@@ -1140,14 +1140,14 @@ int check_ap_tdls_prohibited(u8 *pframe, u8 pkt_len)
 
 	if(pkt_len < 5)
 	{
-		return _FALSE;
+		return false;
 	}
 
 	pframe += 4;
 	if( (*pframe) & tdls_prohibited_bit )
 		return true;
 
-	return _FALSE;
+	return false;
 }
 #endif /* CONFIG_TDLS */
 
@@ -1173,7 +1173,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	unsigned short	ht_cap_info;
 	unsigned char	ht_info_infos_0;
 
-	if (is_client_associated_to_ap(Adapter) == _FALSE)
+	if (is_client_associated_to_ap(Adapter) == false)
 		return true;
 
 	len = packet_len - sizeof(struct rtw_ieee80211_hdr_3addr);
@@ -1259,10 +1259,10 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 		DBG_8723A("%s marc: cannot find SSID for survey event\n", __func__);
 		hidden_ssid = true;
 	} else {
-		hidden_ssid = _FALSE;
+		hidden_ssid = false;
 	}
 
-	if((NULL != p) && (_FALSE == hidden_ssid && (*(p + 1)))) {
+	if((NULL != p) && (false == hidden_ssid && (*(p + 1)))) {
 		memcpy(bssid->Ssid.Ssid, (p + 2), *(p + 1));
 		bssid->Ssid.SsidLength = *(p + 1);
 	} else {
@@ -1470,11 +1470,11 @@ unsigned int is_ap_in_tkip(struct rtw_adapter *padapter)
 			i += (pIE->Length + 2);
 		}
 
-		return _FALSE;
+		return false;
 	}
 	else
 	{
-		return _FALSE;
+		return false;
 	}
 }
 
@@ -1497,13 +1497,13 @@ unsigned int should_forbid_n_rate(struct rtw_adapter * padapter)
 					if (!memcmp(pIE->data, RTW_WPA_OUI, 4) &&
 						((!memcmp((pIE->data + 12), WPA_CIPHER_SUITE_CCMP, 4)) ||
 						  (!memcmp((pIE->data + 16), WPA_CIPHER_SUITE_CCMP, 4))))
-						return _FALSE;
+						return false;
 					break;
 
 				case _RSN_IE_2_:
 					if  ((!memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
 					       (!memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
-					return _FALSE;
+					return false;
 
 				default:
 					break;
@@ -1516,7 +1516,7 @@ unsigned int should_forbid_n_rate(struct rtw_adapter * padapter)
 	}
 	else
 	{
-		return _FALSE;
+		return false;
 	}
 }
 
@@ -1538,11 +1538,11 @@ unsigned int is_ap_in_wep(struct rtw_adapter *padapter)
 			{
 				case _VENDOR_SPECIFIC_IE_:
 					if (!memcmp(pIE->data, RTW_WPA_OUI, 4))
-						return _FALSE;
+						return false;
 					break;
 
 				case _RSN_IE_2_:
-					return _FALSE;
+					return false;
 
 				default:
 					break;
@@ -1555,7 +1555,7 @@ unsigned int is_ap_in_wep(struct rtw_adapter *padapter)
 	}
 	else
 	{
-		return _FALSE;
+		return false;
 	}
 }
 
@@ -1875,13 +1875,13 @@ void update_IOT_info(struct rtw_adapter *padapter)
 			pmlmeinfo->turboMode_cts2self = 0;
 			pmlmeinfo->turboMode_rtsen = 1;
 			/* disable high power */
-			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), _FALSE);
+			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
 			break;
 		case HT_IOT_PEER_REALTEK:
 			/* rtw_write16(padapter, 0x4cc, 0xffff); */
 			/* rtw_write16(padapter, 0x546, 0x01c0); */
 			/* disable high power */
-			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), _FALSE);
+			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
 			break;
 		default:
 			pmlmeinfo->turboMode_cts2self = 0;
@@ -1914,7 +1914,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 		{ /*  Long Preamble */
 			if(pmlmeinfo->preamble_mode != PREAMBLE_LONG)  /*  PREAMBLE_SHORT or PREAMBLE_AUTO */
 			{
-				ShortPreamble = _FALSE;
+				ShortPreamble = false;
 				pmlmeinfo->preamble_mode = PREAMBLE_LONG;
 				rtw_hal_set_hwreg( Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
 			}
@@ -2091,7 +2091,7 @@ void process_addba_req(struct rtw_adapter *padapter, u8 *paddba_req, u8 *addr)
 		preorder_ctrl->indicate_seq = 0xffff;
 		#endif
 
-		preorder_ctrl->enable =(pmlmeinfo->bAcceptAddbaReq == true)? true :_FALSE;
+		preorder_ctrl->enable =(pmlmeinfo->bAcceptAddbaReq == true)? true :false;
 	}
 }
 

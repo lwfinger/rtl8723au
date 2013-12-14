@@ -38,7 +38,7 @@ _func_enter_;
 
 	if (ssid->SsidLength > 32) {
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_, ("ssid length >32\n"));
-		ret= _FALSE;
+		ret= false;
 		goto exit;
 	}
 
@@ -47,7 +47,7 @@ _func_enter_;
 		/* wifi, printable ascii code must be supported */
 		if(!( (ssid->Ssid[i] >= 0x20) && (ssid->Ssid[i] <= 0x7e) )){
 			RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_, ("ssid has nonprintabl ascii\n"));
-			ret= _FALSE;
+			ret= false;
 			break;
 		}
 	}
@@ -92,20 +92,20 @@ _func_enter_;
 		/* when set_ssid/set_bssid for rtw_do_join(), but scanning queue is empty */
 		/* we try to issue sitesurvey firstly */
 
-		if (pmlmepriv->LinkDetectInfo.bBusyTraffic ==_FALSE
+		if (pmlmepriv->LinkDetectInfo.bBusyTraffic ==false
 			|| rtw_to_roaming(padapter) > 0
 		)
 		{
 			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("rtw_do_join(): site survey if scanned_queue is empty\n."));
 			/*  submit site_survey_cmd */
 			if(_SUCCESS!=(ret=rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)) ) {
-				pmlmepriv->to_join = _FALSE;
+				pmlmepriv->to_join = false;
 				RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("rtw_do_join(): site survey return error\n."));
 			}
 		}
 		else
 		{
-			pmlmepriv->to_join = _FALSE;
+			pmlmepriv->to_join = false;
 			ret = _FAIL;
 		}
 
@@ -117,7 +117,7 @@ _func_enter_;
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 		if((select_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv))==_SUCCESS)
 		{
-			pmlmepriv->to_join = _FALSE;
+			pmlmepriv->to_join = false;
 			_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
 		}
 		else
@@ -142,11 +142,11 @@ _func_enter_;
 				if(rtw_createbss_cmd(padapter)!=_SUCCESS)
 				{
 					RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("***Error=>do_goin: rtw_createbss_cmd status FAIL*** \n "));
-					ret =  _FALSE;
+					ret =  false;
 					goto exit;
 				}
 
-				pmlmepriv->to_join = _FALSE;
+				pmlmepriv->to_join = false;
 
 				RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("***Error=> rtw_select_and_join_from_scanned_queue FAIL under STA_Mode*** \n "));
 
@@ -158,20 +158,20 @@ _func_enter_;
 
 				/* when set_ssid/set_bssid for rtw_do_join(), but there are no desired bss in scanning queue */
 				/* we try to issue sitesurvey firstly */
-				if(pmlmepriv->LinkDetectInfo.bBusyTraffic==_FALSE
+				if(pmlmepriv->LinkDetectInfo.bBusyTraffic==false
 					|| rtw_to_roaming(padapter) > 0
 				)
 				{
 					/* DBG_8723A("rtw_do_join() when   no desired bss in scanning queue \n"); */
 					if( _SUCCESS!=(ret=rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)) ){
-						pmlmepriv->to_join = _FALSE;
+						pmlmepriv->to_join = false;
 						RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("do_join(): site survey return error\n."));
 					}
 				}
 				else
 				{
 					ret = _FAIL;
-					pmlmepriv->to_join = _FALSE;
+					pmlmepriv->to_join = false;
 				}
 			}
 
@@ -219,7 +219,7 @@ _func_enter_;
 		if (!memcmp(&pmlmepriv->cur_network.network.MacAddress,
 			    bssid, ETH_ALEN))
 		{
-			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _FALSE)
+			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == false)
 				goto release_mlme_lock;/* it means driver is in WIFI_ADHOC_MASTER_STATE, we needn't create bss again. */
 		} else {
 			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("Set BSSID not the same bssid\n"));
@@ -248,7 +248,7 @@ handle_tkip_countermeasure:
 
 		if( (cur_time - padapter->securitypriv.btkip_countermeasure_time) > 60 * HZ )
 		{
-			padapter->securitypriv.btkip_countermeasure = _FALSE;
+			padapter->securitypriv.btkip_countermeasure = false;
 			padapter->securitypriv.btkip_countermeasure_time = 0;
 		}
 		else
@@ -293,9 +293,9 @@ _func_enter_;
 	DBG_8723A_LEVEL(_drv_always_, "set ssid [%s] fw_state=0x%08x\n",
 			ssid->Ssid, get_fwstate(pmlmepriv));
 
-	if(padapter->hw_init_completed==_FALSE){
+	if(padapter->hw_init_completed==false){
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
-			 ("set_ssid: hw_init_completed==_FALSE=>exit!!!\n"));
+			 ("set_ssid: hw_init_completed==false=>exit!!!\n"));
 		status = _FAIL;
 		goto exit;
 	}
@@ -317,13 +317,13 @@ _func_enter_;
 		if ((pmlmepriv->assoc_ssid.SsidLength == ssid->SsidLength) &&
 		    !memcmp(&pmlmepriv->assoc_ssid.Ssid, ssid->Ssid, ssid->SsidLength))
 		{
-			if((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _FALSE))
+			if((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == false))
 			{
 				RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 					 ("Set SSID is the same ssid, fw_state=0x%08x\n",
 					  get_fwstate(pmlmepriv)));
 
-				if(rtw_is_same_ibss(padapter, pnetwork) == _FALSE)
+				if(rtw_is_same_ibss(padapter, pnetwork) == false)
 				{
 					/* if in WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE, create bss or rejoin again */
 					rtw_disassoc_cmd(padapter, 0, true);
@@ -376,7 +376,7 @@ handle_tkip_countermeasure:
 
 		if( (cur_time - padapter->securitypriv.btkip_countermeasure_time) > 60 * HZ )
 		{
-			padapter->securitypriv.btkip_countermeasure = _FALSE;
+			padapter->securitypriv.btkip_countermeasure = false;
 			padapter->securitypriv.btkip_countermeasure_time = 0;
 		}
 		else
@@ -387,14 +387,14 @@ handle_tkip_countermeasure:
 	}
 
 	#ifdef CONFIG_VALIDATE_SSID
-	if (rtw_validate_ssid(ssid) == _FALSE) {
+	if (rtw_validate_ssid(ssid) == false) {
 		status = _FAIL;
 		goto release_mlme_lock;
 	}
 	#endif
 
 	memcpy(&pmlmepriv->assoc_ssid, ssid, sizeof(NDIS_802_11_SSID));
-	pmlmepriv->assoc_by_bssid=_FALSE;
+	pmlmepriv->assoc_by_bssid=false;
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true) {
 		pmlmepriv->to_join = true;
@@ -536,12 +536,12 @@ _func_enter_;
 	RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("+rtw_set_802_11_bssid_list_scan(), fw_state=%x\n", get_fwstate(pmlmepriv)));
 
 	if (padapter == NULL) {
-		res=_FALSE;
+		res=false;
 		goto exit;
 	}
-	if (padapter->hw_init_completed==_FALSE){
-		res = _FALSE;
-		RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("\n===rtw_set_802_11_bssid_list_scan:hw_init_completed==_FALSE===\n"));
+	if (padapter->hw_init_completed==false){
+		res = false;
+		RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("\n===rtw_set_802_11_bssid_list_scan:hw_init_completed==false===\n"));
 		goto exit;
 	}
 
@@ -598,7 +598,7 @@ _func_enter_;
 	if(res==_SUCCESS)
 		ret=true;
 	else
-		ret=_FALSE;
+		ret=false;
 
 _func_exit_;
 
@@ -615,13 +615,13 @@ u8 rtw_set_802_11_add_wep(struct rtw_adapter* padapter, NDIS_802_11_WEP *wep){
 
 _func_enter_;
 
-	bdefaultkey=(wep->KeyIndex & 0x40000000) > 0 ? _FALSE : true;   /* for ??? */
-	btransmitkey= (wep->KeyIndex & 0x80000000) > 0 ? true  : _FALSE;	/* for ??? */
+	bdefaultkey=(wep->KeyIndex & 0x40000000) > 0 ? false : true;   /* for ??? */
+	btransmitkey= (wep->KeyIndex & 0x80000000) > 0 ? true  : false;	/* for ??? */
 	keyid=wep->KeyIndex & 0x3fffffff;
 
 	if(keyid >= 4) {
 		RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("MgntActrtw_set_802_11_add_wep:keyid>4=>fail\n"));
-		ret=_FALSE;
+		ret=false;
 		goto exit;
 	}
 
@@ -659,7 +659,7 @@ _func_enter_;
 	res=rtw_set_key(padapter,psecuritypriv, keyid, 1);
 
 	if(res==_FAIL)
-		ret= _FALSE;
+		ret= false;
 exit:
 
 _func_exit_;
@@ -675,7 +675,7 @@ _func_enter_;
 
 	if (keyindex >= 0x80000000 || padapter == NULL){
 
-		ret=_FALSE;
+		ret=false;
 		goto exit;
 
 	}
@@ -714,8 +714,8 @@ u8 rtw_set_802_11_add_key(struct rtw_adapter* padapter, NDIS_802_11_KEY *key){
 	uint	encryptionalgo;
 	u8 * pbssid;
 	struct sta_info *stainfo;
-	u8	bgroup = _FALSE;
-	u8	bgrouptkey = _FALSE;/* can be remove later */
+	u8	bgroup = false;
+	u8	bgrouptkey = false;/* can be remove later */
 	u8	ret=_SUCCESS;
 
 _func_enter_;
@@ -770,7 +770,7 @@ _func_enter_;
 		if (is_broadcast_ether_addr(key->BSSID)) {
 
 			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("is_broadcast_ether_addr(key->BSSID)\n"));
-			ret= _FALSE;
+			ret= false;
 			goto exit;
 		}
 
@@ -801,7 +801,7 @@ _func_enter_;
 			goto exit;
 		}
 
-		bgroup = _FALSE;
+		bgroup = false;
 
 		/*  Check the pairwise key. Added by Annie, 2005-07-06. */
 		RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("------------------------------------------\n"));
@@ -997,7 +997,7 @@ _func_enter_;
 
 		padapter->securitypriv.binstallGrpkey=true;
 
-		padapter->securitypriv.bcheck_grpkey=_FALSE;
+		padapter->securitypriv.bcheck_grpkey=false;
 
 		RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("reset group key"));
 
@@ -1022,7 +1022,7 @@ _func_enter_;
 
 			if(encryptionalgo== _TKIP_)
 			{
-				padapter->securitypriv.busetkipkey=_FALSE;
+				padapter->securitypriv.busetkipkey=false;
 
 				/* _set_timer(&padapter->securitypriv.tkip_timer, 50); */
 
@@ -1048,7 +1048,7 @@ _func_enter_;
 			/* Set key to CAM through H2C command */
 			if(bgrouptkey)/* never go to here */
 			{
-				res=rtw_setstakey_cmd(padapter, (unsigned char *)stainfo, _FALSE);
+				res=rtw_setstakey_cmd(padapter, (unsigned char *)stainfo, false);
 				RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("\n rtw_set_802_11_add_key:rtw_setstakey_cmd(group)\n"));
 			}
 			else{
@@ -1056,7 +1056,7 @@ _func_enter_;
 				RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("\n rtw_set_802_11_add_key:rtw_setstakey_cmd(unicast)\n"));
 			}
 
-			if(res ==_FALSE)
+			if(res ==false)
 				ret= _FAIL;
 
 		}

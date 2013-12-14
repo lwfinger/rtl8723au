@@ -168,7 +168,7 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 	struct mlme_ext_priv		*pmlmeext = &Adapter->mlmeextpriv;
 	//PMGNT_INFO		pMgntInfo=&Adapter->MgntInfo;
 	u32			TxAGC[2]={0, 0}, tmpval=0;
-	bool		TurboScanOff = _FALSE;
+	bool		TurboScanOff = false;
 	u8			idx1, idx2;
 	u8*			ptr;
 

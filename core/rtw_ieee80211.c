@@ -92,7 +92,7 @@ uint	rtw_is_cckrates_included(u8 *rate)
 			i++;
 		}
 
-		return _FALSE;
+		return false;
 }
 
 uint	rtw_is_cckratesonly_included(u8 *rate)
@@ -104,7 +104,7 @@ uint	rtw_is_cckratesonly_included(u8 *rate)
 			if  (  (((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
 				(((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
 
-			return _FALSE;
+			return false;
 
 			i++;
 	}
@@ -795,7 +795,7 @@ _func_exit_;
 
 u8 rtw_is_wps_ie(u8 *ie_ptr, uint *wps_ielen)
 {
-	u8 match = _FALSE;
+	u8 match = false;
 	u8 eid, wps_oui[4]={0x0,0x50,0xf2,0x04};
 
 	if(ie_ptr == NULL) return match;
@@ -1538,7 +1538,7 @@ int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 	uint cnt = 0;
 	u8 eid, wfd_oui[4]={0x50,0x6F,0x9A,0x0A};
 
-	match=_FALSE;
+	match=false;
 
 	if ( in_len < 0 )
 	{
@@ -1598,7 +1598,7 @@ int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id ,u8 *
 	uint cnt = 0;
 	u8 attr_id, wfd_oui[4]={0x50,0x6F,0x9A,0x0A};
 
-	match=_FALSE;
+	match=false;
 
 	if ((wfd_ie[0] != _VENDOR_SPECIFIC_IE_) ||
 	    memcmp( wfd_ie + 2, wfd_oui , 4))
@@ -1861,7 +1861,7 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8* category, u8 *act
 		!= (RTW_IEEE80211_FTYPE_MGMT|RTW_IEEE80211_STYPE_ACTION)
 	)
 	{
-		return _FALSE;
+		return false;
 	}
 
 	c = frame_body[0];

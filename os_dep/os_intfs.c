@@ -818,7 +818,7 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct sockaddr *addr = p;
 
-	if(padapter->bup == _FALSE)
+	if(padapter->bup == false)
 	{
 		//DBG_8723A("r8711_net_set_mac_address(), MAC=%x:%x:%x:%x:%x:%x\n", addr->sa_data[0], addr->sa_data[1], addr->sa_data[2], addr->sa_data[3],
 		//addr->sa_data[4], addr->sa_data[5]);
@@ -1091,7 +1091,7 @@ u8 rtw_init_default_value(struct rtw_adapter *padapter)
 
 	//ht_priv
 #ifdef CONFIG_80211N_HT
-	pmlmepriv->htpriv.ampdu_enable = _FALSE;//set to disabled
+	pmlmepriv->htpriv.ampdu_enable = false;//set to disabled
 #endif
 
 	//security_priv
@@ -1124,8 +1124,8 @@ u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	rtw_hal_def_value_init(padapter);
 
 	//misc.
-	padapter->bReadPortCancel = _FALSE;
-	padapter->bWritePortCancel = _FALSE;
+	padapter->bReadPortCancel = false;
+	padapter->bWritePortCancel = false;
 	padapter->bRxRSSIDisplay = 0;
 	padapter->bNotifyChannelChange = 0;
 #ifdef CONFIG_P2P
@@ -1143,15 +1143,15 @@ u8 rtw_reset_drv_sw(struct rtw_adapter *padapter)
 
 	//hal_priv
 	rtw_hal_def_value_init(padapter);
-	padapter->bReadPortCancel = _FALSE;
-	padapter->bWritePortCancel = _FALSE;
+	padapter->bReadPortCancel = false;
+	padapter->bWritePortCancel = false;
 	padapter->bRxRSSIDisplay = 0;
 	pmlmepriv->scan_interval = SCAN_INTERVAL;// 30*2 sec = 60sec
 
 	padapter->xmitpriv.tx_pkts = 0;
 	padapter->recvpriv.rx_pkts = 0;
 
-	pmlmepriv->LinkDetectInfo.bBusyTraffic = _FALSE;
+	pmlmepriv->LinkDetectInfo.bBusyTraffic = false;
 
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY |_FW_UNDER_LINKING);
 
@@ -1522,15 +1522,15 @@ int _netdev_open(struct net_device *pnetdev)
 	DBG_8723A("+871x_drv - drv_open, bup=%d\n", padapter->bup);
 
 	if(pwrctrlpriv->ps_flag == true){
-		padapter->net_closed = _FALSE;
+		padapter->net_closed = false;
 		goto netdev_open_normal_process;
 	}
 
-	if(padapter->bup == _FALSE)
+	if(padapter->bup == false)
 	{
-		padapter->bDriverStopped = _FALSE;
-		padapter->bSurpriseRemoved = _FALSE;
-		padapter->bCardDisableWOHSM = _FALSE;
+		padapter->bDriverStopped = false;
+		padapter->bSurpriseRemoved = false;
+		padapter->bCardDisableWOHSM = false;
 
 		status = rtw_hal_init(padapter);
 		if (status ==_FAIL)
@@ -1575,11 +1575,11 @@ int _netdev_open(struct net_device *pnetdev)
 
 		padapter->bup = true;
 	}
-	padapter->net_closed = _FALSE;
+	padapter->net_closed = false;
 
 	_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 2000);
 
-	padapter->pwrctrlpriv.bips_processing = _FALSE;
+	padapter->pwrctrlpriv.bips_processing = false;
 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
 
 	//netif_carrier_on(pnetdev);//call this func when rtw_joinbss_event_callback return success
@@ -1601,7 +1601,7 @@ netdev_open_normal_process:
 
 netdev_open_error:
 
-	padapter->bup = _FALSE;
+	padapter->bup = false;
 
 	netif_carrier_off(pnetdev);
 	rtw_netif_stop_queue(pnetdev);
@@ -1629,13 +1629,13 @@ int netdev_open(struct net_device *pnetdev)
 static int  ips_netdrv_open(struct rtw_adapter *padapter)
 {
 	int status = _SUCCESS;
-	padapter->net_closed = _FALSE;
+	padapter->net_closed = false;
 	DBG_8723A("===> %s.........\n",__FUNCTION__);
 
 
-	padapter->bDriverStopped = _FALSE;
-	padapter->bSurpriseRemoved = _FALSE;
-	padapter->bCardDisableWOHSM = _FALSE;
+	padapter->bDriverStopped = false;
+	padapter->bSurpriseRemoved = false;
+	padapter->bCardDisableWOHSM = false;
 	//padapter->bup = true;
 
 	status = rtw_hal_init(padapter);
@@ -1656,7 +1656,7 @@ static int  ips_netdrv_open(struct rtw_adapter *padapter)
 	 return _SUCCESS;
 
 netdev_open_error:
-	//padapter->bup = _FALSE;
+	//padapter->bup = false;
 	DBG_8723A("-ips_netdrv_open - drv_open failure, bup=%d\n", padapter->bup);
 
 	return _FAIL;
@@ -1690,7 +1690,7 @@ void rtw_ips_pwr_down(struct rtw_adapter *padapter)
 	rtw_led_control(padapter, LED_CTL_POWER_OFF);
 
 	rtw_ips_dev_unload(padapter);
-	padapter->bCardDisableWOHSM = _FALSE;
+	padapter->bCardDisableWOHSM = false;
 	DBG_8723A("<=== rtw_ips_pwr_down..................... in %dms\n", rtw_get_passing_time_ms(start_time));
 }
 #endif
@@ -1708,7 +1708,7 @@ void rtw_ips_dev_unload(struct rtw_adapter *padapter)
 	}
 
 	//s5.
-	if(padapter->bSurpriseRemoved == _FALSE)
+	if(padapter->bSurpriseRemoved == false)
 	{
 		rtw_hal_deinit(padapter);
 	}
@@ -1786,7 +1786,7 @@ static int netdev_close(struct net_device *pnetdev)
 
 		//s2.
 		LeaveAllPowerSaveMode(padapter);
-		rtw_disassoc_cmd(padapter, 500, _FALSE);
+		rtw_disassoc_cmd(padapter, 500, false);
 		//s2-2.  indicate disconnect to os
 		rtw_indicate_disconnect(padapter);
 		//s2-3.
@@ -1807,12 +1807,12 @@ static int netdev_close(struct net_device *pnetdev)
 
 #ifdef CONFIG_P2P
 	if(wdev_to_priv(padapter->rtw_wdev)->p2p_enabled == true)
-		wdev_to_priv(padapter->rtw_wdev)->p2p_enabled = _FALSE;
+		wdev_to_priv(padapter->rtw_wdev)->p2p_enabled = false;
 	rtw_p2p_enable(padapter, P2P_ROLE_DISABLE);
 #endif //CONFIG_P2P
 
 	rtw_scan_abort(padapter);
-	wdev_to_priv(padapter->rtw_wdev)->bandroid_scan = _FALSE;
+	wdev_to_priv(padapter->rtw_wdev)->bandroid_scan = false;
 	padapter->rtw_wdev->iftype = NL80211_IFTYPE_MONITOR; //set this at the end
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("-871x_drv - drv_close\n"));

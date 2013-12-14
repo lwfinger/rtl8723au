@@ -56,8 +56,8 @@ void free_mlme_ap_info(struct rtw_adapter *padapter)
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	pmlmepriv->update_bcn = _FALSE;
-	pmlmeext->bstart_bss = _FALSE;
+	pmlmepriv->update_bcn = false;
+	pmlmeext->bstart_bss = false;
 
 	rtw_sta_flush(padapter);
 
@@ -173,7 +173,7 @@ static void update_BCNTIM(struct rtw_adapter *padapter)
 void rtw_add_bcn_ie(struct rtw_adapter *padapter, WLAN_BSSID_EX *pnetwork, u8 index, u8 *data, u8 len)
 {
 	PNDIS_802_11_VARIABLE_IEs	pIE;
-	u8	bmatch = _FALSE;
+	u8	bmatch = false;
 	u8	*pie = pnetwork->IEs;
 	u8	*p, *dst_ie, *premainder_ie=NULL, *pbackup_remainder_ie=NULL;
 	u32	i, offset, ielen, ie_offset, remainder_ielen = 0;
@@ -281,7 +281,7 @@ void rtw_remove_bcn_ie(struct rtw_adapter *padapter, WLAN_BSSID_EX *pnetwork, u8
 
 u8 chk_sta_is_alive(struct sta_info *psta)
 {
-	u8 ret = _FALSE;
+	u8 ret = false;
 	#ifdef DBG_EXPIRATION_CHK
 	DBG_8723A("sta:"MAC_FMT", rssi:%d, rx:"STA_PKTS_FMT", expire_to:%u, %s%ssq_len:%u\n"
 		, MAC_ARG(psta->hwaddr)
@@ -319,12 +319,12 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 	/* check auth_queue */
 	#ifdef DBG_EXPIRATION_CHK
-	if (rtw_end_of_queue_search(phead, plist) == _FALSE) {
+	if (rtw_end_of_queue_search(phead, plist) == false) {
 		DBG_8723A(FUNC_NDEV_FMT" auth_list, cnt:%u\n"
 			, FUNC_NDEV_ARG(padapter->pnetdev), pstapriv->auth_list_cnt);
 	}
 	#endif
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		psta = container_of(plist, struct sta_info, auth_list);
 		plist = plist->next;
@@ -363,12 +363,12 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 	/* check asoc_queue */
 	#ifdef DBG_EXPIRATION_CHK
-	if (rtw_end_of_queue_search(phead, plist) == _FALSE) {
+	if (rtw_end_of_queue_search(phead, plist) == false) {
 		DBG_8723A(FUNC_NDEV_FMT" asoc_list, cnt:%u\n"
 			, FUNC_NDEV_ARG(padapter->pnetdev), pstapriv->asoc_list_cnt);
 	}
 	#endif
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
@@ -399,7 +399,7 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 					/* to update bcn with tim_bitmap for this station */
 					pstapriv->tim_bitmap |= BIT(psta->aid);
-					update_beacon(padapter, _TIM_IE_, NULL, _FALSE);
+					update_beacon(padapter, _TIM_IE_, NULL, false);
 
 					if(!pmlmeext->active_keep_alive_check)
 						continue;
@@ -422,7 +422,7 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 			pstapriv->asoc_list_cnt--;
 
 			DBG_8723A("asoc expire "MAC_FMT", state=0x%x\n", MAC_ARG(psta->hwaddr), psta->state);
-			updated = ap_free_sta(padapter, psta, _FALSE, WLAN_REASON_DEAUTH_LEAVING);
+			updated = ap_free_sta(padapter, psta, false, WLAN_REASON_DEAUTH_LEAVING);
 		}
 		else
 		{
@@ -487,7 +487,7 @@ if (chk_alive_num) {
 		if (!list_empty(&psta->asoc_list)) {
 			list_del_init(&psta->asoc_list);
 			pstapriv->asoc_list_cnt--;
-			updated = ap_free_sta(padapter, psta, _FALSE, WLAN_REASON_DEAUTH_LEAVING);
+			updated = ap_free_sta(padapter, psta, false, WLAN_REASON_DEAUTH_LEAVING);
 		}
 		spin_unlock_bh(&pstapriv->asoc_list_lock);
 
@@ -506,7 +506,7 @@ void add_RATid(struct rtw_adapter *padapter, struct sta_info *psta, u8 rssi_leve
 	int i;
 	u8 rf_type;
 	u32 init_rate=0;
-	unsigned char sta_band = 0, raid, shortGIrate = _FALSE;
+	unsigned char sta_band = 0, raid, shortGIrate = false;
 	unsigned char limit;
 	unsigned int tx_ra_bitmap=0;
 	struct ht_priv	*psta_ht = NULL;
@@ -622,7 +622,7 @@ static void update_bmc_sta(struct rtw_adapter *padapter)
 
 		psta->qos_option = 0;
 #ifdef CONFIG_80211N_HT
-		psta->htpriv.ht_option = _FALSE;
+		psta->htpriv.ht_option = false;
 #endif /* CONFIG_80211N_HT */
 
 		psta->ieee8021x_blocked = 0;
@@ -722,7 +722,7 @@ void update_sta_info_apmode(struct rtw_adapter *padapter, struct sta_info *psta)
 	if(psecuritypriv->dot11AuthAlgrthm==dot11AuthAlgrthm_8021X)
 		psta->ieee8021x_blocked = true;
 	else
-		psta->ieee8021x_blocked = _FALSE;
+		psta->ieee8021x_blocked = false;
 
 	/* update sta's cap */
 
@@ -752,9 +752,9 @@ void update_sta_info_apmode(struct rtw_adapter *padapter, struct sta_info *psta)
 	}
 	else
 	{
-		phtpriv_sta->ampdu_enable = _FALSE;
+		phtpriv_sta->ampdu_enable = false;
 
-		phtpriv_sta->sgi = _FALSE;
+		phtpriv_sta->sgi = false;
 		phtpriv_sta->bwmode = HT_CHANNEL_WIDTH_20;
 		phtpriv_sta->ch_offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
 	}
@@ -901,7 +901,7 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 
 		/* disable dynamic functions, such as high power, DIG */
 		/* Save_DM_Func_Flag(padapter); */
-		/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, _FALSE); */
+		/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, false); */
 
 		/* turn on all dynamic functions */
 		Switch_DM_Func(padapter, DYNAMIC_ALL_FUNC_ENABLE, true);
@@ -970,7 +970,7 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 
 	if(true == pmlmeext->bstart_bss)
 	{
-		update_beacon(padapter, _TIM_IE_, NULL, _FALSE);
+		update_beacon(padapter, _TIM_IE_, NULL, false);
 
 #ifndef CONFIG_INTERRUPT_BASED_TXBCN /* other case will  tx beacon when bcn interrupt coming in. */
 		/* issue beacon frame */
@@ -995,7 +995,7 @@ int rtw_check_beacon_data(struct rtw_adapter *padapter, u8 *pbuf,  int len)
 	u8 *pHT_caps_ie=NULL;
 	u8 *pHT_info_ie=NULL;
 	struct sta_info *psta = NULL;
-	u16 cap, ht_cap=_FALSE;
+	u16 cap, ht_cap=false;
 	uint ie_len = 0;
 	int group_cipher, pairwise_cipher;
 	u8	channel, network_type, supportRate[NDIS_802_11_LENGTH_RATES_EX];
@@ -1254,13 +1254,13 @@ int rtw_check_beacon_data(struct rtw_adapter *padapter, u8 *pbuf,  int len)
 	pmlmepriv->cur_network.network_type = network_type;
 
 #ifdef CONFIG_80211N_HT
-	pmlmepriv->htpriv.ht_option = _FALSE;
+	pmlmepriv->htpriv.ht_option = false;
 
 	if( (psecuritypriv->wpa2_pairwise_cipher&WPA_CIPHER_TKIP) ||
 		      (psecuritypriv->wpa_pairwise_cipher&WPA_CIPHER_TKIP))
 	{
 		/* todo: */
-		/* ht_cap = _FALSE; */
+		/* ht_cap = false; */
 	}
 
 	/* ht_cap */
@@ -1319,7 +1319,7 @@ void rtw_set_macaddr_acl(struct rtw_adapter *padapter, int mode)
 int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr)
 {
 	struct list_head	*plist, *phead;
-	u8 added = _FALSE;
+	u8 added = false;
 	int i, ret=0;
 	struct rtw_wlan_acl_node *paclnode;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -1336,7 +1336,7 @@ int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr)
 	phead = get_list_head(pacl_node_q);
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
@@ -1363,7 +1363,7 @@ int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr)
 	{
 		paclnode = &pacl_list->aclnode[i];
 
-		if(paclnode->valid == _FALSE)
+		if(paclnode->valid == false)
 		{
 			INIT_LIST_HEAD(&paclnode->list);
 
@@ -1402,7 +1402,7 @@ int rtw_acl_remove_sta(struct rtw_adapter *padapter, u8 *addr)
 	phead = get_list_head(pacl_node_q);
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
@@ -1411,7 +1411,7 @@ int rtw_acl_remove_sta(struct rtw_adapter *padapter, u8 *addr)
 		{
 			if(paclnode->valid == true)
 			{
-				paclnode->valid = _FALSE;
+				paclnode->valid = false;
 
 				list_del_init(&paclnode->list);
 
@@ -1590,7 +1590,7 @@ void update_beacon(struct rtw_adapter *padapter, u8 ie_id, u8 *oui, u8 tx)
 	pmlmeext = &(padapter->mlmeextpriv);
 	/* pmlmeinfo = &(pmlmeext->mlmext_info); */
 
-	if(_FALSE == pmlmeext->bstart_bss)
+	if(false == pmlmeext->bstart_bss)
 		return;
 
 	spin_lock_bh(&pmlmepriv->bcn_update_lock);
@@ -1754,7 +1754,7 @@ void associated_clients_update(struct rtw_adapter *padapter, u8 updated)
 		plist = phead->next;
 
 		/* check asoc_queue */
-		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+		while ((rtw_end_of_queue_search(phead, plist)) == false)
 		{
 			psta = container_of(plist, struct sta_info, asoc_list);
 
@@ -1771,7 +1771,7 @@ void associated_clients_update(struct rtw_adapter *padapter, u8 updated)
 /* called > TSR LEVEL for USB or SDIO Interface*/
 void bss_cap_update_on_sta_join(struct rtw_adapter *padapter, struct sta_info *psta)
 {
-	u8 beacon_updated = _FALSE;
+	u8 beacon_updated = false;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &(padapter->mlmeextpriv);
 
@@ -1930,7 +1930,7 @@ void bss_cap_update_on_sta_join(struct rtw_adapter *padapter, struct sta_info *p
 
 	if (rtw_ht_operation_update(padapter) > 0)
 	{
-		update_beacon(padapter, _HT_CAPABILITY_IE_, NULL, _FALSE);
+		update_beacon(padapter, _HT_CAPABILITY_IE_, NULL, false);
 		update_beacon(padapter, _HT_ADD_INFO_IE_, NULL, true);
 	}
 
@@ -1944,7 +1944,7 @@ void bss_cap_update_on_sta_join(struct rtw_adapter *padapter, struct sta_info *p
 
 u8 bss_cap_update_on_sta_leave(struct rtw_adapter *padapter, struct sta_info *psta)
 {
-	u8 beacon_updated = _FALSE;
+	u8 beacon_updated = false;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &(padapter->mlmeextpriv);
 
@@ -2002,7 +2002,7 @@ u8 bss_cap_update_on_sta_leave(struct rtw_adapter *padapter, struct sta_info *ps
 
 	if (rtw_ht_operation_update(padapter) > 0)
 	{
-		update_beacon(padapter, _HT_CAPABILITY_IE_, NULL, _FALSE);
+		update_beacon(padapter, _HT_CAPABILITY_IE_, NULL, false);
 		update_beacon(padapter, _HT_ADD_INFO_IE_, NULL, true);
 	}
 
@@ -2017,7 +2017,7 @@ u8 bss_cap_update_on_sta_leave(struct rtw_adapter *padapter, struct sta_info *ps
 
 u8 ap_free_sta(struct rtw_adapter *padapter, struct sta_info *psta, bool active, u16 reason)
 {
-	u8 beacon_updated = _FALSE;
+	u8 beacon_updated = false;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -2086,7 +2086,7 @@ int rtw_ap_inform_ch_switch(struct rtw_adapter *padapter, u8 new_ch, u8 ch_offse
 	plist = phead->next;
 
 	/* for each sta in asoc_queue */
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		psta = container_of(plist, struct sta_info, asoc_list);
 		plist = plist->next;
@@ -2123,7 +2123,7 @@ int rtw_sta_flush(struct rtw_adapter *padapter)
 	phead = &pstapriv->asoc_list;
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
+	while ((rtw_end_of_queue_search(phead, plist)) == false) {
 		int stainfo_offset;
 
 		psta = container_of(plist, struct sta_info, asoc_list);
@@ -2178,11 +2178,11 @@ void sta_info_update(struct rtw_adapter *padapter, struct sta_info *psta)
 	}
 	else
 	{
-		psta->htpriv.ht_option = _FALSE;
+		psta->htpriv.ht_option = false;
 	}
 
-	if(pmlmepriv->htpriv.ht_option == _FALSE)
-		psta->htpriv.ht_option = _FALSE;
+	if(pmlmepriv->htpriv.ht_option == false)
+		psta->htpriv.ht_option = false;
 #endif
 
 	update_sta_info_apmode(padapter, psta);
@@ -2236,7 +2236,7 @@ void rtw_ap_restore_network(struct rtw_adapter *padapter)
 	phead = &pstapriv->asoc_list;
 	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
+	while ((rtw_end_of_queue_search(phead, plist)) == false) {
 		int stainfo_offset;
 
 		psta = container_of(plist, struct sta_info, asoc_list);
@@ -2273,10 +2273,10 @@ void start_ap_mode(struct rtw_adapter *padapter)
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 
-	pmlmepriv->update_bcn = _FALSE;
+	pmlmepriv->update_bcn = false;
 
 	/* init_mlme_ap_info(padapter); */
-	pmlmeext->bstart_bss = _FALSE;
+	pmlmeext->bstart_bss = false;
 
 	pmlmepriv->num_sta_non_erp = 0;
 
@@ -2290,9 +2290,9 @@ void start_ap_mode(struct rtw_adapter *padapter)
 #endif /* CONFIG_80211N_HT */
 	pmlmepriv->num_sta_ht_20mhz = 0;
 
-	pmlmepriv->olbc = _FALSE;
+	pmlmepriv->olbc = false;
 
-	pmlmepriv->olbc_ht = _FALSE;
+	pmlmepriv->olbc_ht = false;
 
 #ifdef CONFIG_80211N_HT
 	pmlmepriv->ht_op_mode = 0;
@@ -2314,7 +2314,7 @@ void start_ap_mode(struct rtw_adapter *padapter)
 	pacl_list->mode = 0;
 	for(i = 0; i < NUM_ACL; i++) {
 		INIT_LIST_HEAD(&pacl_list->aclnode[i].list);
-		pacl_list->aclnode[i].valid = _FALSE;
+		pacl_list->aclnode[i].valid = false;
 	}
 }
 
@@ -2329,8 +2329,8 @@ void stop_ap_mode(struct rtw_adapter *padapter)
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 	_queue	*pacl_node_q =&pacl_list->acl_node_q;
 
-	pmlmepriv->update_bcn = _FALSE;
-	pmlmeext->bstart_bss = _FALSE;
+	pmlmepriv->update_bcn = false;
+	pmlmeext->bstart_bss = false;
 
 	/* reset and init security priv , this can refine with rtw_reset_securitypriv */
 	memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
@@ -2341,14 +2341,14 @@ void stop_ap_mode(struct rtw_adapter *padapter)
 	spin_lock_bh(&(pacl_node_q->lock));
 	phead = get_list_head(pacl_node_q);
 	plist = phead->next;
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
+	while ((rtw_end_of_queue_search(phead, plist)) == false)
 	{
 		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
 		plist = plist->next;
 
 		if(paclnode->valid == true)
 		{
-			paclnode->valid = _FALSE;
+			paclnode->valid = false;
 
 			list_del_init(&paclnode->list);
 

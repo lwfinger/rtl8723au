@@ -202,7 +202,7 @@ phy_FwRFSerialRead(
 	u32				Offset	)
 {
 	u32		retValue = 0;
-	//RT_ASSERT(FALSE,("deprecate!\n"));
+	//RT_ASSERT(false,("deprecate!\n"));
 	return	(retValue);
 
 }	/* phy_FwRFSerialRead */
@@ -231,7 +231,7 @@ phy_FwRFSerialWrite(
 	u32				Offset,
 	u32				Data	)
 {
-	//RT_ASSERT(FALSE,("deprecate!\n"));
+	//RT_ASSERT(false,("deprecate!\n"));
 }
 
 
@@ -1182,7 +1182,7 @@ phy_BB8190_Config_HardCode(
 	struct rtw_adapter *	Adapter
 	)
 {
-	//RT_ASSERT(FALSE, ("This function is not implement yet!! \n"));
+	//RT_ASSERT(false, ("This function is not implement yet!! \n"));
 	return _SUCCESS;
 }
 
@@ -1244,7 +1244,7 @@ phy_BB8723a_Config_ParaFile(
 	//
 	// 2. If EEPROM or EFUSE autoload OK, We must config by PHY_REG_PG.txt
 	//
-	if (pEEPROM->bautoload_fail_flag == _FALSE)
+	if (pEEPROM->bautoload_fail_flag == false)
 	{
 		pHalData->pwrGroupCnt = 0;
 
@@ -1657,7 +1657,7 @@ PHY_CheckBBAndRFOK(
 		switch(CheckBlock)
 		{
 		case HW90_BLOCK_MAC:
-			//RT_ASSERT(FALSE, ("PHY_CheckBBRFOK(): Never Write 0x100 here!"));
+			//RT_ASSERT(false, ("PHY_CheckBBRFOK(): Never Write 0x100 here!"));
 			//RT_TRACE(COMP_INIT, DBG_LOUD, ("PHY_CheckBBRFOK(): Never Write 0x100 here!\n"));
 			break;
 
@@ -1940,7 +1940,7 @@ PHY_SetTxPowerLevel8192C(
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	u8	cckPowerLevel[2], ofdmPowerLevel[2];	// [0]:RF-A, [1]:RF-B
 
-	if(pHalData->bTXPowerDataReadFromEEPORM == _FALSE)
+	if(pHalData->bTXPowerDataReadFromEEPORM == false)
 		return;
 
 	getTxPowerIndex(Adapter, channel, &cckPowerLevel[0], &ofdmPowerLevel[0]);
@@ -2062,7 +2062,7 @@ _PHY_SetBWMode92C(
 
 	if(pHalData->rf_chip == RF_PSEUDO_11N)
 	{
-		//pHalData->SetBWModeInProgress= _FALSE;
+		//pHalData->SetBWModeInProgress= false;
 		return;
 	}
 
@@ -2180,11 +2180,11 @@ _PHY_SetBWMode92C(
 			break;
 
 		default:
-			//RT_ASSERT(FALSE, ("Unknown RFChipID: %d\n", pHalData->RFChipID));
+			//RT_ASSERT(false, ("Unknown RFChipID: %d\n", pHalData->RFChipID));
 			break;
 	}
 
-	//pHalData->SetBWModeInProgress= FALSE;
+	//pHalData->SetBWModeInProgress= false;
 
 	//RT_TRACE(COMP_SCAN, DBG_LOUD, ("<==PHY_SetBWModeCallback8192C() \n" ));
 }
@@ -2250,8 +2250,8 @@ PHY_SetBWMode8192C(
 	}
 	else
 	{
-		//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8192C() SetBWModeInProgress FALSE driver sleep or unload\n"));
-		//pHalData->SetBWModeInProgress= FALSE;
+		//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8192C() SetBWModeInProgress false driver sleep or unload\n"));
+		//pHalData->SetBWModeInProgress= false;
 		pHalData->CurrentChannelBW = tmpBW;
 	}
 
@@ -2299,7 +2299,7 @@ PHY_SwChnl8192C(	// Call after initialization
 
 	if(pHalData->rf_chip == RF_PSEUDO_11N)
 	{
-		//pHalData->SwChnlInProgress=FALSE;
+		//pHalData->SwChnlInProgress=false;
 		return;									//return immediately if it is peudo-phy
 	}
 
@@ -2327,7 +2327,7 @@ PHY_SwChnl8192C(	// Call after initialization
 			break;
 
 		default:
-			//RT_ASSERT(FALSE, ("Invalid WirelessMode(%#x)!!\n", pHalData->CurrentWirelessMode));
+			//RT_ASSERT(false, ("Invalid WirelessMode(%#x)!!\n", pHalData->CurrentWirelessMode));
 			break;
 	}
 	//--------------------------------------------
@@ -2388,15 +2388,15 @@ phy_SetSwChnlCmdArray(
 
 	if(CmdTable == NULL)
 	{
-		//RT_ASSERT(FALSE, ("phy_SetSwChnlCmdArray(): CmdTable cannot be NULL.\n"));
-		return _FALSE;
+		//RT_ASSERT(false, ("phy_SetSwChnlCmdArray(): CmdTable cannot be NULL.\n"));
+		return false;
 	}
 	if(CmdTableIdx >= CmdTableSz)
 	{
-		//RT_ASSERT(FALSE,
+		//RT_ASSERT(false,
 		//		("phy_SetSwChnlCmdArray(): Access invalid index, please check size of the table, CmdTableIdx:%ld, CmdTableSz:%ld\n",
 		//		CmdTableIdx, CmdTableSz));
-		return _FALSE;
+		return false;
 	}
 
 	pCmd = CmdTable + CmdTableIdx;
@@ -2449,7 +2449,7 @@ PHY_SwChnlPhy8192C(	// Only called during initialize
 	//return immediately if it is peudo-phy
 	if(pHalData->rf_chip == RF_PSEUDO_11N)
 	{
-		//pHalData->SwChnlInProgress=FALSE;
+		//pHalData->SwChnlInProgress=false;
 		return;
 	}
 
@@ -2464,7 +2464,7 @@ PHY_SwChnlPhy8192C(	// Only called during initialize
 
 	phy_FinishSwChnlNow(Adapter,channel);
 
-	//pHalData->SwChnlInProgress = FALSE;
+	//pHalData->SwChnlInProgress = false;
 }
 
 
@@ -2547,7 +2547,7 @@ static void _PHY_SetRFPathSwitch(
 
 }
 
-//return value true => Main; FALSE => Aux
+//return value true => Main; false => Aux
 
 static bool _PHY_QueryRFPathSwitch(
 	struct rtw_adapter *	pAdapter,
@@ -2568,14 +2568,14 @@ static bool _PHY_QueryRFPathSwitch(
 		if(PHY_QueryBBReg(pAdapter, rFPGA0_XB_RFInterfaceOE, BIT5|BIT6) == 0x01)
 			return true;
 		else
-			return _FALSE;
+			return false;
 	}
 	else
 	{
 		if(PHY_QueryBBReg(pAdapter, rFPGA0_XA_RFInterfaceOE, 0x300) == 0x02)
 			return true;
 		else
-			return _FALSE;
+			return false;
 	}
 }
 
@@ -2611,7 +2611,7 @@ void rtl8192c_PHY_SetRFPathSwitch(
 	}
 	else{
 		// For 88C 1T1R
-		_PHY_SetRFPathSwitch(pAdapter, bMain, _FALSE);
+		_PHY_SetRFPathSwitch(pAdapter, bMain, false);
 	}
 }
 

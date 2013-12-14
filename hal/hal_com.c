@@ -83,9 +83,9 @@ hal_com_get_channel_plan(
 	if (!AutoLoadFail)
 	{
 		if (!rtw_is_channel_plan_valid(sw_channel_plan))
-			swConfig = _FALSE;
+			swConfig = false;
 		if (hw_channel_plan & EEPROM_CHANNEL_PLAN_BY_HW_MASK)
-			swConfig = _FALSE;
+			swConfig = false;
 	}
 
 	if (swConfig == true)
@@ -279,7 +279,7 @@ Hal_MappingOutPipe(
 {
 	struct registry_priv *pregistrypriv = &pAdapter->registrypriv;
 
-	bool	 bWIFICfg = (pregistrypriv->wifi_spec) ?true:_FALSE;
+	bool	 bWIFICfg = (pregistrypriv->wifi_spec) ?true:false;
 
 	bool result = true;
 
@@ -295,7 +295,7 @@ Hal_MappingOutPipe(
 			_OneOutPipeMapping(pAdapter);
 			break;
 		default:
-			result = _FALSE;
+			result = false;
 			break;
 	}
 

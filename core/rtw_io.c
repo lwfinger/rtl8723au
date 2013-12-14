@@ -286,7 +286,7 @@ bool match_read_sniff_ranges(u16 addr, u16 len)
 			return true;
 	}
 
-	return _FALSE;
+	return false;
 }
 
 bool match_write_sniff_ranges(u16 addr, u16 len)
@@ -297,7 +297,7 @@ bool match_write_sniff_ranges(u16 addr, u16 len)
 			return true;
 	}
 
-	return _FALSE;
+	return false;
 }
 
 u8 dbg_rtw_read8(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line)

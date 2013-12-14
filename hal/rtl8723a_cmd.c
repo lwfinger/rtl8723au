@@ -38,7 +38,7 @@
 
 static u8 _is_fw_read_cmd_down(struct rtw_adapter* padapter, u8 msgbox_num)
 {
-	u8	read_down = _FALSE;
+	u8	read_down = false;
 	int	retry_cnts = 100;
 
 	u8 valid;
@@ -65,7 +65,7 @@ static u8 _is_fw_read_cmd_down(struct rtw_adapter* padapter, u8 msgbox_num)
 ******************************************/
 s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 {
-	u8 bcmd_down = _FALSE;
+	u8 bcmd_down = false;
 	s32 retry_cnts = 100;
 	u8 h2c_box_num;
 	u32	msgbox_addr;
@@ -228,12 +228,12 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 	if(pHalData->fw_ractrl == true) {
 		rtl8192c_set_raid_cmd(pAdapter, bitmap, arg);
 	} else {
-		u8 init_rate, shortGIrate=_FALSE;
+		u8 init_rate, shortGIrate=false;
 
 		init_rate = get_highest_rate_idx(bitmap&0x0fffffff)&0x3f;
 
 
-		shortGIrate = (arg&BIT(5)) ? true:_FALSE;
+		shortGIrate = (arg&BIT(5)) ? true:false;
 
 		if (shortGIrate==true)
 			init_rate |= BIT(6);
@@ -531,7 +531,7 @@ CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 //			Now we just send 4 types packet to rsvd page.
 //			(1)Beacon, (2)Ps-poll, (3)Null data, (4)ProbeRsp.
 //	Input:
-//	    bDLFinished - FALSE: At the first time we will send all the packets as a large packet to Hw,
+//	    bDLFinished - false: At the first time we will send all the packets as a large packet to Hw,
 //						so we need to set the packet length to total lengh.
 //			      true: At the second time, we should send the first packet (default:beacon)
 //						to Hw again and set the lengh in descriptor to the real beacon lengh.
@@ -587,7 +587,7 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 	//3 (2) ps-poll
 	RsvdPageLoc.LocPsPoll = PageNum;
 	ConstructPSPoll(padapter, &ReservedPagePacket[BufIndex], &PSPollLength);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], PSPollLength, true, _FALSE);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], PSPollLength, true, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + PSPollLength);
 	PageNum += PageNeed;
@@ -601,8 +601,8 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&NullDataLength,
 		get_my_bssid(&pmlmeinfo->network),
-		_FALSE, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], NullDataLength, _FALSE, _FALSE);
+		false, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], NullDataLength, false, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + NullDataLength);
 	PageNum += PageNeed;
@@ -616,8 +616,8 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&ProbeRspLength,
 		get_my_bssid(&pmlmeinfo->network),
-		_FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], ProbeRspLength, _FALSE, _FALSE);
+		false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], ProbeRspLength, false, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + ProbeRspLength);
 	PageNum += PageNeed;
@@ -631,8 +631,8 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&QosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
-		true, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], QosNullLength, _FALSE, _FALSE);
+		true, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], QosNullLength, false, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + QosNullLength);
 	PageNum += PageNeed;
@@ -646,8 +646,8 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
-		true, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, true);
+		true, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, false, true);
 
 	TotalPacketLen = BufIndex + BTQosNullLength;
 
@@ -684,7 +684,7 @@ _func_enter_;
 
 	if(mstatus == 1)
 	{
-		bool bRecover = _FALSE;
+		bool bRecover = false;
 		u8 v8;
 
 		// We should set AID, correct TSF, HW seq enable before set JoinBssReport to Fw in 88/92C.
@@ -799,8 +799,8 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 		&ReservedPagePacket[BufIndex],
 		&NullDataLength,
 		fakemac,
-		_FALSE, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], NullDataLength, _FALSE, _FALSE);
+		false, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], NullDataLength, false, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + NullDataLength);
 	PageNum += PageNeed;
@@ -814,8 +814,8 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		fakemac,
-		true, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, true);
+		true, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, false, true);
 
 	TotalPacketLen = BufIndex + BTQosNullLength;
 
@@ -842,7 +842,7 @@ exit:
 void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 {
 	PHAL_DATA_TYPE pHalData;
-	u8 bRecover = _FALSE;
+	u8 bRecover = false;
 
 
 	DBG_8723A("+%s\n", __FUNCTION__);

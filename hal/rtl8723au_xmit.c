@@ -197,7 +197,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 #endif //CONFIG_P2P
 
-	if((_FALSE == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0)) {
+	if((false == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0)) {
 		ptxdesc = (struct tx_desc *)(pmem+PACKET_OFFSET_SZ);
 		pull = 1;
 		pxmitframe->pkt_offset --;
@@ -424,7 +424,7 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 		return _FAIL;
 	}
 
-	if(check_pending_xmitbuf(pxmitpriv) == _FALSE)
+	if(check_pending_xmitbuf(pxmitpriv) == false)
 		return _SUCCESS;
 
 #ifdef CONFIG_LPS_LCLK
@@ -494,7 +494,7 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 			sz = pattrib->last_txcmdsz;
 		}
 
-		pull = update_txdesc(pxmitframe, mem_addr, sz, _FALSE);
+		pull = update_txdesc(pxmitframe, mem_addr, sz, false);
 
 		if(pull)
 		{
@@ -592,7 +592,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 	// check xmitbuffer is ok
 	if (pxmitbuf == NULL) {
 		pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
-		if (pxmitbuf == NULL) return _FALSE;
+		if (pxmitbuf == NULL) return false;
 	}
 
 
@@ -604,7 +604,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 		if (pxmitframe == NULL) {
 			// no more xmit frame, release xmit buffer
 			rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
-			return _FALSE;
+			return false;
 		}
 
 
@@ -639,7 +639,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 		rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
 #else
 		res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
-		if (res == _FALSE) {
+		if (res == false) {
 //			rtw_free_xmitframe(pxmitpriv, pxmitframe);
 			continue;
 		}
@@ -700,7 +700,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 
 	xmitframe_phead = get_list_head(&ptxservq->sta_pending);
 	xmitframe_plist = xmitframe_phead->next;
-	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == _FALSE)
+	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == false)
 	{
 		pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
 		xmitframe_plist = xmitframe_plist->next;
@@ -743,7 +743,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 		rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
 #else
 		res = rtw_xmitframe_coalesce(padapter, pxmitframe->pkt, pxmitframe);
-		if (res == _FALSE) {
+		if (res == false) {
 			rtw_free_xmitframe(pxmitpriv, pxmitframe);
 			continue;
 		}
@@ -834,7 +834,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 		pxmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
 		if(!pxmitbuf)
 		{
-			return _FALSE;
+			return false;
 		}
 	}
 
@@ -881,7 +881,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 		else
 		{
 			rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
-			return _FALSE;
+			return false;
 		}
 
 		break;
@@ -911,7 +911,7 @@ static s32 xmitframe_direct(struct rtw_adapter *padapter, struct xmit_frame *pxm
 /*
  * Return
  *	true	dump packet directly
- *	_FALSE	enqueue packet
+ *	false	enqueue packet
  */
 static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
@@ -956,7 +956,7 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 			}
 		}
 
-		return _FALSE;
+		return false;
 	}
 #endif
 //else CONFIG_TDLS, process as TDLS Buffer STA
@@ -965,7 +965,7 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 		res = xmit_tdls_enqueue_for_sleeping_sta(padapter, pxmitframe);
 		if(res==true){
 			spin_unlock_bh(&pxmitpriv->lock);
-			return _FALSE;
+			return false;
 		}else if(res==2){
 			goto enqueue;
 		}
@@ -1009,7 +1009,7 @@ enqueue:
 		return true;
 	}
 
-	return _FALSE;
+	return false;
 }
 
 s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe)
@@ -1020,7 +1020,7 @@ s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntfr
 /*
  * Return
  *	true	dump packet directly ok
- *	_FALSE	temporary can't transmit packets to hardware
+ *	false	temporary can't transmit packets to hardware
  */
 s32 rtl8192cu_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {

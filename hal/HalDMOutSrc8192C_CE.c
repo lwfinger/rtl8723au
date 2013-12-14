@@ -56,7 +56,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	if(pHalData->CurrentChannel == 14 && !pdmpriv->bCCKinCH14)
 		pdmpriv->bCCKinCH14 = true;
 	else if(pHalData->CurrentChannel != 14 && pdmpriv->bCCKinCH14)
-		pdmpriv->bCCKinCH14 = _FALSE;
+		pdmpriv->bCCKinCH14 = false;
 
 	ThermalValue = (u8)PHY_QueryRFReg(Adapter, RF_PATH_A, RF_T_METER, 0x1f);	/*  0x24: RF Reg[4:0]	 */
 
@@ -355,7 +355,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 		if(delta_IQK > 3)
 		{
 			pdmpriv->ThermalValue_IQK = ThermalValue;
-			rtl8192c_PHY_IQCalibrate(Adapter,_FALSE);
+			rtl8192c_PHY_IQCalibrate(Adapter,false);
 		}
 
 		/* update thermal meter value */
@@ -458,13 +458,13 @@ u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter )
 	if(IS_92C_SERIAL(pHalData->VersionID) ||(pHalData->AntDivCfg==0))
 	{
 		/* DBG_8723A("odm_AntDivBeforeLink8192C(): No AntDiv Mechanism.\n"); */
-		return _FALSE;
+		return false;
 	}
 
 	if(check_fwstate(pmlmepriv, _FW_LINKED) == true)
 	{
 		pDM_SWAT_Table->SWAS_NoLink_State = 0;
-		return _FALSE;
+		return false;
 	}
 
 	if(pDM_SWAT_Table->SWAS_NoLink_State == 0){
@@ -472,13 +472,13 @@ u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter )
 		pDM_SWAT_Table->SWAS_NoLink_State = 1;
 		pDM_SWAT_Table->CurAntenna = (pDM_SWAT_Table->CurAntenna==Antenna_A)?Antenna_B:Antenna_A;
 
-		rtw_antenna_select_cmd(Adapter, pDM_SWAT_Table->CurAntenna, _FALSE);
+		rtw_antenna_select_cmd(Adapter, pDM_SWAT_Table->CurAntenna, false);
 		return true;
 	}
 	else
 	{
 		pDM_SWAT_Table->SWAS_NoLink_State = 0;
-		return _FALSE;
+		return false;
 	}
 
 }
@@ -766,7 +766,7 @@ _PHY_PathADDAOn(
 	u32	i;
 
 	pathOn = isPathAOn ? 0x04db25a4 : 0x0b1b25a4;
-	if(_FALSE == is2T){
+	if(false == is2T){
 		pathOn = 0x0bdb25a0;
 		PHY_SetBBReg(pAdapter, ADDAReg[0], bMaskDWord, 0x0b1b25a0);
 	}
@@ -821,7 +821,7 @@ _PHY_PIModeSwitch(
 }
 
 /*
-return _FALSE => do IQK again
+return false => do IQK again
 */
 static bool
 _PHY_SimularityCompare(
@@ -870,7 +870,7 @@ _PHY_SimularityCompare(
 			{
 				for( j = i*4; j < (i+1)*4-2; j++)
 					result[3][j] = result[final_candidate[i]][j];
-				bResult = _FALSE;
+				bResult = false;
 			}
 		}
 		return bResult;
@@ -879,16 +879,16 @@ _PHY_SimularityCompare(
 	{
 		for(i = 0; i < 4; i++)
 			result[3][i] = result[c1][i];
-		return _FALSE;
+		return false;
 	}
 	else if (!(SimularityBitMap & 0xF0) && is2T)	/* path B OK */
 	{
 		for(i = 4; i < 8; i++)
 			result[3][i] = result[c1][i];
-		return _FALSE;
+		return false;
 	}
 	else
-		return _FALSE;
+		return false;
 
 }
 
@@ -1011,7 +1011,7 @@ _PHY_IQCalibrate(
 		_PHY_PathAStandBy(pAdapter);
 
 		/*  Turn Path B ADDA on */
-		_PHY_PathADDAOn(pAdapter, ADDA_REG, _FALSE, is2T);
+		_PHY_PathADDAOn(pAdapter, ADDA_REG, false, is2T);
 
 		for(i = 0 ; i < retryCount ; i++){
 			PathBOK = _PHY_PathB_IQK(pAdapter);
@@ -1043,7 +1043,7 @@ _PHY_IQCalibrate(
 	{
 		if(!pdmpriv->bRfPiEnable){
 			/*  Switch back BB to SI mode after finish IQ Calibration. */
-			_PHY_PIModeSwitch(pAdapter, _FALSE);
+			_PHY_PIModeSwitch(pAdapter, false);
 		}
 
 		/*  Reload ADDA power saving parameters */
@@ -1266,7 +1266,7 @@ rtl8192c_PHY_IQCalibrate(
 	bool		bPathAOK, bPathBOK;
 	s32			RegE94, RegE9C, RegEA4, RegEAC, RegEB4, RegEBC, RegEC4, RegECC, RegTmp = 0;
 	bool		is12simular, is13simular, is23simular;
-	bool	bStartContTx = _FALSE, bSingleTone = _FALSE, bCarrierSuppression = _FALSE;
+	bool	bStartContTx = false, bSingleTone = false, bCarrierSuppression = false;
 	u32			IQK_BB_REG_92C[IQK_BB_REG_NUM] = {
 					rOFDM0_XARxIQImbalance,		rOFDM0_XBRxIQImbalance,
 					rOFDM0_ECCAThreshold,	rOFDM0_AGCRSSITable,
@@ -1297,11 +1297,11 @@ rtl8192c_PHY_IQCalibrate(
 		result[3][i] = 0;
 	}
 	final_candidate = 0xff;
-	bPathAOK = _FALSE;
-	bPathBOK = _FALSE;
-	is12simular = _FALSE;
-	is23simular = _FALSE;
-	is13simular = _FALSE;
+	bPathAOK = false;
+	bPathBOK = false;
+	is12simular = false;
+	is23simular = false;
+	is13simular = false;
 
 	for (i=0; i<3; i++)
 	{
@@ -1310,7 +1310,7 @@ rtl8192c_PHY_IQCalibrate(
 		}
 		else{
 			/*  For 88C 1T1R */
-			_PHY_IQCalibrate(pAdapter, result, i, _FALSE);
+			_PHY_IQCalibrate(pAdapter, result, i, false);
 		}
 
 		if(i == 1)
@@ -1398,7 +1398,7 @@ rtl8192c_PHY_LCCalibrate(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	struct mlme_ext_priv	*pmlmeext = &pAdapter->mlmeextpriv;
-	bool	bStartContTx = _FALSE, bSingleTone = _FALSE, bCarrierSuppression = _FALSE;
+	bool	bStartContTx = false, bSingleTone = false, bCarrierSuppression = false;
 
 #if DISABLE_BB_RF
 	return;
@@ -1416,7 +1416,7 @@ rtl8192c_PHY_LCCalibrate(
 	}
 	else{
 		/*  For 88C 1T1R */
-		_PHY_LCCalibrate(pAdapter, _FALSE);
+		_PHY_LCCalibrate(pAdapter, false);
 	}
 }
 

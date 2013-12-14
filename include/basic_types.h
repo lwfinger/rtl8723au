@@ -26,12 +26,6 @@
 #define SUCCESS	0
 #define FAIL	(-1)
 
-#ifndef FALSE
-	#define _FALSE	0
-#else
-	#define _FALSE	FALSE
-#endif
-
 #include <linux/types.h>
 #define NDIS_OID uint
 #define NDIS_STATUS uint

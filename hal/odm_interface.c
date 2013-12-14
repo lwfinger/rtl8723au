@@ -633,7 +633,7 @@ ODM_FillH2CCmd(
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	//FillH2CCmd(pH2CBuffer, H2CBufferLen, CmdNum, pElementID, pCmdLen, pCmbBuffer, CmdStartSeq);
-	return	FALSE;
+	return	false;
 #endif
 
 	return	true;

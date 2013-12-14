@@ -52,7 +52,7 @@ u8 HalPwrSeqCmdParsing(
 	WLAN_PWR_CFG	PwrSeqCmd[])
 {
 	WLAN_PWR_CFG	PwrCfgCmd = {0};
-	u8				bPollingBit = _FALSE;
+	u8				bPollingBit = false;
 	u32				AryIdx = 0;
 	u8				value = 0;
 	u32				offset = 0;
@@ -103,7 +103,7 @@ u8 HalPwrSeqCmdParsing(
 				case PWR_CMD_POLLING:
 					RT_TRACE(_module_hal_init_c_ , _drv_info_, ("HalPwrSeqCmdParsing: PWR_CMD_POLLING\n"));
 
-					bPollingBit = _FALSE;
+					bPollingBit = false;
 					offset = GET_PWR_CFG_OFFSET(PwrCfgCmd);
 					do {
 						value = rtw_read8(padapter, offset);
@@ -116,7 +116,7 @@ u8 HalPwrSeqCmdParsing(
 
 						if (pollingCount++ > maxPollingCnt) {
 							DBG_8723A("Fail to polling Offset[%#x]\n", offset);
-							return _FALSE;
+							return false;
 						}
 					} while (!bPollingBit);
 

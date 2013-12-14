@@ -37,17 +37,17 @@ CheckCondition(
 
     cond = Condition & 0x000000FF;
     if ( (_board == cond) && cond != 0x00)
-        return FALSE;
+        return false;
 
     cond = Condition & 0x0000FF00;
     cond = cond >> 8;
     if ( (_interface & cond) == 0 && cond != 0x07)
-        return FALSE;
+        return false;
 
     cond = Condition & 0x00FF0000;
     cond = cond >> 16;
     if ( (_platform & cond) == 0 && cond != 0x0F)
-        return FALSE;
+        return false;
     return true;
 }
 

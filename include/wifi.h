@@ -416,7 +416,7 @@ static inline int IsFrameTypeCtrl(unsigned char *pframe)
 	if(WIFI_CTRL_TYPE == GetFrameType(pframe))
 		return true;
 	else
-		return _FALSE;
+		return false;
 }
 /*-----------------------------------------------------------------------------
 			Below is for the security related definition
