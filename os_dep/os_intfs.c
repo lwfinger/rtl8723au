@@ -153,10 +153,6 @@ static int rtw_hwpwrp_detect; //HW power  ping detect 0:disable , 1:enable
 
 static int rtw_hw_wps_pbc = 1;
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-static int rtw_dmsp = 0;
-#endif	// CONFIG_DUALMAC_CONCURRENT
-
 #ifdef CONFIG_80211D
 static int rtw_80211d = 0;
 #endif
@@ -241,10 +237,6 @@ char *rtw_fw_file_path= "";
 module_param(rtw_fw_file_path, charp, 0644);
 MODULE_PARM_DESC(rtw_fw_file_path, "The path of fw image");
 #endif //CONFIG_FILE_FWIMG
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-module_param(rtw_dmsp, int, 0644);
-#endif	// CONFIG_DUALMAC_CONCURRENT
 
 #ifdef CONFIG_80211D
 module_param(rtw_80211d, int, 0644);
@@ -803,10 +795,6 @@ _func_enter_;
 
 #ifdef CONFIG_IOL
 	registry_par->fw_iol = rtw_fw_iol;
-#endif
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	registry_par->dmsp= (u8)rtw_dmsp;
 #endif
 
 #ifdef CONFIG_80211D

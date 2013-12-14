@@ -739,22 +739,6 @@ extern void process_addba_req(struct rtw_adapter *padapter, u8 *paddba_req, u8 *
 extern void update_TSF(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len);
 extern void correct_TSF(struct rtw_adapter *padapter, struct mlme_ext_priv *pmlmeext);
 
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-void	dc_SelectChannel(struct rtw_adapter *padapter, unsigned char channel);
-void	dc_SetBWMode(struct rtw_adapter *padapter, unsigned short bwmode, unsigned char channel_offset);
-void	dc_set_channel_bwmode_disconnect(struct rtw_adapter *padapter);
-u8	dc_handle_join_request(struct rtw_adapter *padapter);
-void	dc_handle_join_done(struct rtw_adapter *padapter, u8 join_res);
-int	dc_check_fwstate(struct rtw_adapter *padapter, int fw_state);
-u8	dc_handle_site_survey(struct rtw_adapter *padapter);
-void	dc_report_survey_event(struct rtw_adapter *padapter, union recv_frame *precv_frame);
-void	dc_set_channel_bwmode_survey_done(struct rtw_adapter *padapter);
-void	dc_set_ap_channel_bandwidth(struct rtw_adapter *padapter, u8 channel, u8 channel_offset, u8 bwmode);
-void	dc_resume_xmit(struct rtw_adapter *padapter);
-u8	dc_check_xmit(struct rtw_adapter *padapter);
-#endif
-
 struct cmd_hdl {
 	uint	parmsize;
 	u8 (*h2cfuns)(struct rtw_adapter *padapter, u8 *pbuf);

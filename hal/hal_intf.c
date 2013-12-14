@@ -90,37 +90,6 @@ uint	 rtw_hal_init(struct rtw_adapter *padapter)
 {
 	uint	status = _SUCCESS;
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	if(padapter->hw_init_completed == _TRUE)
-	{
-		DBG_8723A("rtw_hal_init: hw_init_completed == _TRUE\n");
-		return status;
-	}
-
-	// before init mac0, driver must init mac1 first to avoid usb rx error.
-	if((padapter->pbuddy_adapter != NULL) && (padapter->DualMacConcurrent == _TRUE)
-		&& (padapter->adapter_type == PRIMARY_ADAPTER))
-	{
-		if(padapter->pbuddy_adapter->hw_init_completed == _TRUE)
-		{
-			DBG_8723A("rtw_hal_init: pbuddy_adapter hw_init_completed == _TRUE\n");
-		}
-		else
-		{
-			status =	padapter->HalFunc.hal_init(padapter->pbuddy_adapter);
-			if(status == _SUCCESS){
-				padapter->pbuddy_adapter->hw_init_completed = _TRUE;
-			}
-			else{
-				padapter->pbuddy_adapter->hw_init_completed = _FALSE;
-				RT_TRACE(_module_hal_init_c_,_drv_err_,("rtw_hal_init: hal__init fail(pbuddy_adapter)\n"));
-				DBG_8723A("rtw_hal_init: hal__init fail(pbuddy_adapter)\n");
-				return status;
-			}
-		}
-	}
-#endif
-
 	padapter->hw_init_completed=_FALSE;
 
 	status = padapter->HalFunc.hal_init(padapter);
@@ -141,7 +110,6 @@ uint	 rtw_hal_init(struct rtw_adapter *padapter)
 	RT_TRACE(_module_hal_init_c_,_drv_err_,("-rtl871x_hal_init:status=0x%x\n",status));
 
 	return status;
-
 }
 
 uint rtw_hal_deinit(struct rtw_adapter *padapter)

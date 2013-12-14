@@ -409,12 +409,6 @@ void SelectChannel(struct rtw_adapter *padapter, unsigned char channel)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	/* saved channel info */
-	rtw_set_oper_ch(padapter, channel);
-	dc_SelectChannel(padapter, channel);
-#else /* CONFIG_DUALMAC_CONCURRENT */
-
 	mutex_lock(&(adapter_to_dvobj(padapter)->setch_mutex));
 
 	/* saved channel info */
@@ -423,20 +417,11 @@ void SelectChannel(struct rtw_adapter *padapter, unsigned char channel)
 	rtw_hal_set_chan(padapter, channel);
 
 	mutex_unlock(&(adapter_to_dvobj(padapter)->setch_mutex));
-
-#endif /*  CONFIG_DUALMAC_CONCURRENT */
 }
 
 void SetBWMode(struct rtw_adapter *padapter, unsigned short bwmode, unsigned char channel_offset)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	/* saved bw info */
-	rtw_set_oper_bw(padapter, bwmode);
-	rtw_set_oper_choffset(padapter, channel_offset);
-	dc_SetBWMode(padapter, bwmode, channel_offset);
-#else /* CONFIG_DUALMAC_CONCURRENT */
 
 	mutex_lock(&(adapter_to_dvobj(padapter)->setbw_mutex));
 
@@ -447,8 +432,6 @@ void SetBWMode(struct rtw_adapter *padapter, unsigned short bwmode, unsigned cha
 	rtw_hal_set_bwmode(padapter, (HT_CHANNEL_WIDTH)bwmode, channel_offset);
 
 	mutex_unlock(&(adapter_to_dvobj(padapter)->setbw_mutex));
-
-#endif /*  CONFIG_DUALMAC_CONCURRENT */
 }
 
 void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel, unsigned char channel_offset, unsigned short bwmode)
@@ -482,14 +465,6 @@ void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel, uns
 	}
 
 	/* set Channel */
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	/* saved channel/bw info */
-	rtw_set_oper_ch(padapter, channel);
-	rtw_set_oper_bw(padapter, bwmode);
-	rtw_set_oper_choffset(padapter, channel_offset);
-	dc_SelectChannel(padapter, center_ch);/*  set center channel */
-#else /* CONFIG_DUALMAC_CONCURRENT */
-
 	mutex_lock(&(adapter_to_dvobj(padapter)->setch_mutex));
 
 	/* saved channel/bw info */
@@ -500,8 +475,6 @@ void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel, uns
 	rtw_hal_set_chan(padapter, center_ch); /*  set center channel */
 
         mutex_unlock(&(adapter_to_dvobj(padapter)->setch_mutex));
-
-#endif /*  CONFIG_DUALMAC_CONCURRENT */
 
 	SetBWMode(padapter, bwmode, channel_offset);
 }
@@ -2172,21 +2145,6 @@ int rtw_handle_dualmac(struct rtw_adapter *adapter, bool init)
 			pbuddy_padapter = NULL;
 			DBG_8723A("%s(): pbuddy_padapter exist, Exchange Information\n",__FUNCTION__);
 		}
-#ifdef CONFIG_DUALMAC_CONCURRENT
-		if (dvobj->InterfaceNumber == 0) {
-			/* set adapter_type/iface type */
-			adapter->isprimary = _TRUE;
-			adapter->adapter_type = PRIMARY_ADAPTER;
-			adapter->iface_type = IFACE_PORT0;
-			DBG_8723A("%s(): PRIMARY_ADAPTER\n",__FUNCTION__);
-		} else {
-			/* set adapter_type/iface type */
-			adapter->isprimary = _FALSE;
-			adapter->adapter_type = SECONDARY_ADAPTER;
-			adapter->iface_type = IFACE_PORT1;
-			DBG_8723A("%s(): SECONDARY_ADAPTER\n",__FUNCTION__);
-		}
-#endif
 	}else {
 		pbuddy_padapter = NULL;
 	}
