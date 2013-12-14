@@ -376,35 +376,9 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 		if (chk_sta_is_alive(psta) || !psta->expire_to) {
 			psta->expire_to = pstapriv->expire_to;
 			psta->keep_alive_trycnt = 0;
-			#ifdef CONFIG_TX_MCAST2UNI
-			psta->under_exist_checking = 0;
-			#endif	/*  CONFIG_TX_MCAST2UNI */
 		} else {
 			psta->expire_to--;
 		}
-
-#ifndef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
-#ifdef CONFIG_TX_MCAST2UNI
-#ifdef CONFIG_80211N_HT
-		if ( (psta->flags & WLAN_STA_HT) && (psta->htpriv.agg_enable_bitmap || psta->under_exist_checking) ) {
-			/*  check sta by delba(addba) for 11n STA */
-			/*  ToDo: use CCX report to check for all STAs */
-			if ( psta->expire_to <= (pstapriv->expire_to - 50 ) ) {
-				DBG_8723A("asoc expire by DELBA/ADDBA! (%d s)\n", (pstapriv->expire_to-psta->expire_to)*2);
-				psta->under_exist_checking = 0;
-				psta->expire_to = 0;
-			} else if ( psta->expire_to <= (pstapriv->expire_to - 3) && (psta->under_exist_checking==0)) {
-				DBG_8723A("asoc check by DELBA/ADDBA! (%d s)\n", (pstapriv->expire_to-psta->expire_to)*2);
-				psta->under_exist_checking = 1;
-				/* tear down TX AMPDU */
-				send_delba(padapter, 1, psta->hwaddr);/*  originator */
-				psta->htpriv.agg_enable_bitmap = 0x0;/* reset */
-				psta->htpriv.candidate_tid_bitmap = 0x0;/* reset */
-			}
-		}
-#endif /* CONFIG_80211N_HT */
-#endif /*  CONFIG_TX_MCAST2UNI */
-#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
 
 		if (psta->expire_to <= 0)
 		{

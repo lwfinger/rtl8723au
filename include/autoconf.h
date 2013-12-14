@@ -135,9 +135,6 @@
 #define CONFIG_BR_EXT_BRNAME	"br0"
 #endif	// CONFIG_BR_EXT
 
-//#define CONFIG_TX_MCAST2UNI		// Support IP multicast->unicast
-
-
 #if defined(CONFIG_BT_COEXIST) || defined(CONFIG_POWER_SAVING)
 #ifndef CONFIG_USB_INTERRUPT_IN_PIPE
 #define CONFIG_USB_INTERRUPT_IN_PIPE

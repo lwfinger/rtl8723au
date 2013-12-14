@@ -251,83 +251,10 @@ static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff
 	}
 }
 
-#ifdef CONFIG_TX_MCAST2UNI
-int rtw_mlcst2unicst(struct rtw_adapter *padapter, struct sk_buff *skb)
-{
-	struct	sta_priv *pstapriv = &padapter->stapriv;
-	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	_list	*phead, *plist;
-	struct sk_buff *newskb;
-	struct sta_info *psta = NULL;
-	u8 chk_alive_num = 0;
-	char chk_alive_list[NUM_STA];
-	u8 bc_addr[6]={0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	u8 null_addr[6]={0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-	int i;
-	s32	res;
-
-	spin_lock_bh(&pstapriv->asoc_list_lock);
-	phead = &pstapriv->asoc_list;
-	plist = phead->next;
-
-	//free sta asoc_queue
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
-		int stainfo_offset;
-		psta = container_of(plist, struct sta_info, asoc_list);
-		plist = plist->next;
-
-		stainfo_offset = rtw_stainfo_offset(pstapriv, psta);
-		if (stainfo_offset_valid(stainfo_offset)) {
-			chk_alive_list[chk_alive_num++] = stainfo_offset;
-		}
-	}
-	spin_unlock_bh(&pstapriv->asoc_list_lock);
-
-	for (i = 0; i < chk_alive_num; i++) {
-		psta = rtw_get_stainfo_by_offset(pstapriv, chk_alive_list[i]);
-		if(!(psta->state &_FW_LINKED))
-			continue;
-
-		/* avoid come from STA1 and send back STA1 */
-		if (!memcmp(psta->hwaddr, &skb->data[6], 6) ||
-		    !memcmp(psta->hwaddr, null_addr, 6) ||
-		    !memcmp(psta->hwaddr, bc_addr, 6))
-			continue;
-
-		newskb = skb_copy(skb, GFP_ATOMIC);
-
-		if (newskb) {
-			memcpy(newskb->data, psta->hwaddr, 6);
-			res = rtw_xmit(padapter, &newskb);
-			if (res < 0) {
-				DBG_8723A("%s()-%d: rtw_xmit() return error!\n", __FUNCTION__, __LINE__);
-				pxmitpriv->tx_drop++;
-				dev_kfree_skb_any(newskb);
-			} else
-				pxmitpriv->tx_pkts++;
-		} else {
-			DBG_8723A("%s-%d: skb_copy() failed!\n", __FUNCTION__, __LINE__);
-			pxmitpriv->tx_drop++;
-			//dev_kfree_skb_any(skb);
-			return _FALSE;	// Caller shall tx this multicast frame via normal way.
-		}
-	}
-
-	dev_kfree_skb_any(skb);
-	return _TRUE;
-}
-#endif	// CONFIG_TX_MCAST2UNI
-
-
 int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev)
 {
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-#ifdef CONFIG_TX_MCAST2UNI
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	extern int rtw_mc2u_disable;
-#endif	// CONFIG_TX_MCAST2UNI
 	s32 res = 0;
 	u16 queue;
 
@@ -344,26 +271,6 @@ _func_enter_;
 	}
 
 	rtw_check_xmit_resource(padapter, pkt);
-
-#ifdef CONFIG_TX_MCAST2UNI
-	if ( !rtw_mc2u_disable
-		&& check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE
-		&& ( IP_MCAST_MAC(pkt->data)
-			|| ICMPV6_MCAST_MAC(pkt->data) )
-		&& (padapter->registrypriv.wifi_spec == 0)
-                )
-	{
-		if ( pxmitpriv->free_xmitframe_cnt > (NR_XMITFRAME/4) ) {
-			res = rtw_mlcst2unicst(padapter, pkt);
-			if (res == _TRUE) {
-				goto exit;
-			}
-		} else {
-			//DBG_8723A("Stop M2U(%d, %d)! ", pxmitpriv->free_xmitframe_cnt, pxmitpriv->free_xmitbuf_cnt);
-			//DBG_8723A("!m2u );
-		}
-	}
-#endif	// CONFIG_TX_MCAST2UNI
 
 	res = rtw_xmit(padapter, &pkt);
 	if (res < 0) {
