@@ -274,7 +274,7 @@ void update_recvframe_phyinfo(
 
 	pkt_info.StationID = 0xFF;
 	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
+		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true){
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 		}
 		//to do Ad-hoc
@@ -295,7 +295,7 @@ void update_recvframe_phyinfo(
 	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
-		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))
+		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true))
 	{
 		if (psta)
 		{
@@ -305,7 +305,7 @@ void update_recvframe_phyinfo(
 	}
 	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
 	{
-		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == _TRUE)
+		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == true)
 		{
 			if (psta)
 			{

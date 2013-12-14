@@ -383,7 +383,7 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 
 	PPHY_STATUS_RPT_8192CD_T pPhyStaRpt = (PPHY_STATUS_RPT_8192CD_T)pPhyStatus;
 
-	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? TRUE : FALSE;
+	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? true : FALSE;
 
 	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_A] = -1;
 	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_B] = -1;
@@ -754,7 +754,7 @@ static void odm_Process_RSSIForDM(
 	if((!pPktinfo->bPacketMatchBSSID) )
 		return;
 
-	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? TRUE : FALSE;
+	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? true : FALSE;
 
 #if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 #if ((RTL8192C_SUPPORT == 1) ||(RTL8192D_SUPPORT == 1))
@@ -956,7 +956,7 @@ static void ODM_PhyStatusQuery_92CSeries(
 							pPhyStatus,
 							pPktinfo);
 
-	if( pDM_Odm->RSSI_test == TRUE)
+	if( pDM_Odm->RSSI_test == true)
 	{
 		// Select the packets to do RSSI checking for antenna switching.
 		if(pPktinfo->bPacketToSelf || pPktinfo->bPacketBeacon )

@@ -161,7 +161,7 @@ s32 update_tdls_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib)
 		pattrib->priority = 0;
 	}
 
-	if (psta->ieee8021x_blocked == _TRUE)
+	if (psta->ieee8021x_blocked == true)
 	{
 		pattrib->encrypt = 0;
 	}
@@ -212,9 +212,9 @@ s32 update_tdls_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib)
 	}
 
 	if (pattrib->encrypt &&
-	    ((padapter->securitypriv.sw_encrypt == _TRUE) || (psecuritypriv->hw_decrypted == _FALSE)))
+	    ((padapter->securitypriv.sw_encrypt == true) || (psecuritypriv->hw_decrypted == _FALSE)))
 	{
-		pattrib->bswenc = _TRUE;
+		pattrib->bswenc = true;
 	} else {
 		pattrib->bswenc = _FALSE;
 	}
@@ -252,7 +252,7 @@ void free_tdls_sta(struct rtw_adapter *padapter, struct sta_info *ptdls_sta)
 	/* ready to clear cam */
 	if(ptdls_sta->mac_id!=0){
 		ptdlsinfo->clear_cam=ptdls_sta->mac_id;
-		rtw_setstakey_cmd(padapter, (u8 *)ptdls_sta, _TRUE);
+		rtw_setstakey_cmd(padapter, (u8 *)ptdls_sta, true);
 	}
 
 	if(ptdlsinfo->sta_cnt==0){
@@ -282,7 +282,7 @@ void rtw_tdls_set_key(struct rtw_adapter *adapter, struct rx_pkt_attrib *prx_pkt
 	if(prx_pkt_attrib->encrypt)
 	{
 		ptdls_sta->dot118021XPrivacy=_AES_;
-		rtw_setstakey_cmd(adapter, (u8*)ptdls_sta, _TRUE);
+		rtw_setstakey_cmd(adapter, (u8*)ptdls_sta, true);
 	}
 }
 
@@ -303,9 +303,9 @@ void rtw_tdls_process_ht_cap(struct rtw_adapter *adapter, struct sta_info *ptdls
 
 	if(ptdls_sta->flags & WLAN_STA_HT)
 	{
-		if(adapter->registrypriv.ht_enable == _TRUE)
+		if(adapter->registrypriv.ht_enable == true)
 		{
-			ptdls_sta->htpriv.ht_option = _TRUE;
+			ptdls_sta->htpriv.ht_option = true;
 		}
 		else
 		{
@@ -319,12 +319,12 @@ void rtw_tdls_process_ht_cap(struct rtw_adapter *adapter, struct sta_info *ptdls
 	{
 		/* check if sta supports rx ampdu */
 		if(adapter->registrypriv.ampdu_enable==1)
-			ptdls_sta->htpriv.ampdu_enable = _TRUE;
+			ptdls_sta->htpriv.ampdu_enable = true;
 
 		/* check if sta support s Short GI */
 		if(ptdls_sta->htpriv.ht_cap.cap_info & cpu_to_le16(IEEE80211_HT_CAP_SGI_20|IEEE80211_HT_CAP_SGI_40))
 		{
-			ptdls_sta->htpriv.sgi = _TRUE;
+			ptdls_sta->htpriv.sgi = true;
 		}
 
 		/*  bwmode would still followed AP's setting */
@@ -541,7 +541,7 @@ void issue_tdls_setup_req(struct rtw_adapter *padapter, u8 *mac_addr)
 	static u8 dialogtoken = 0;
 	u32 timeout_interval= TPK_RESEND_COUNT * 1000;	/* retry timer should set at least 301 sec, using TPK_count counting 301 times. */
 
-	if(ptdlsinfo->ap_prohibited == _TRUE)
+	if(ptdlsinfo->ap_prohibited == true)
 		goto exit;
 
 	if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL)
@@ -577,7 +577,7 @@ void issue_tdls_setup_req(struct rtw_adapter *padapter, u8 *mac_addr)
 			spin_unlock_bh(&(pstapriv->sta_hash_lock));
 			if( ptdlsinfo->sta_cnt == (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 			{
-				ptdlsinfo->sta_maximum  = _TRUE;
+				ptdlsinfo->sta_maximum  = true;
 			}
 		}
 		else
@@ -980,7 +980,7 @@ void issue_tdls_ch_switch_rsp(struct rtw_adapter *padapter, u8 *mac_addr)
 	pattrib->qsel=pattrib->priority;
 /*
 	spin_lock_bh(&pxmitpriv->lock);
-	if(xmitframe_enqueue_for_tdls_sleeping_sta(padapter, pmgntframe)==_TRUE){
+	if(xmitframe_enqueue_for_tdls_sleeping_sta(padapter, pmgntframe)==true){
 		spin_unlock_bh(&pxmitpriv->lock);
 		return _FALSE;
 	}
@@ -1019,7 +1019,7 @@ int On_TDLS_Dis_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 		ptdls_sta->tdls_sta_state |= TDLS_ALIVE_STATE;
 
 		/* Record the tdls sta with lowest signal strength */
-		if( (ptdlsinfo->sta_maximum == _TRUE) && (ptdls_sta->alive_count >= 1) )
+		if( (ptdlsinfo->sta_maximum == true) && (ptdls_sta->alive_count >= 1) )
 		{
 			if (!memcmp(ptdlsinfo->ss_record.macaddr,
 				    empty_addr, ETH_ALEN))
@@ -1040,7 +1040,7 @@ int On_TDLS_Dis_Rsp(struct rtw_adapter *adapter, union recv_frame *precv_frame)
 	}
 	else
 	{
-		if( ptdlsinfo->sta_maximum == _TRUE)
+		if( ptdlsinfo->sta_maximum == true)
 		{
 			if (!memcmp(ptdlsinfo->ss_record.macaddr,
 				    empty_addr, ETH_ALEN)) {
@@ -1110,7 +1110,7 @@ int On_TDLS_Setup_Req(struct rtw_adapter *adapter, union recv_frame *precv_frame
 			-PAYLOAD_TYPE_LEN
 			-FIXED_IE;
 
-	if(ptdlsinfo->ap_prohibited == _TRUE)
+	if(ptdlsinfo->ap_prohibited == true)
 	{
 		goto exit;
 	}
@@ -1263,7 +1263,7 @@ int On_TDLS_Setup_Req(struct rtw_adapter *adapter, union recv_frame *precv_frame
 		spin_unlock_bh(&(pstapriv->sta_hash_lock));
 		if( ptdlsinfo->sta_cnt == (NUM_STA - 2) )	/*  -2: AP + BC/MC sta */
 		{
-			ptdlsinfo->sta_maximum = _TRUE;
+			ptdlsinfo->sta_maximum = true;
 		}
 
 #ifdef CONFIG_WFD
@@ -1714,7 +1714,7 @@ int On_TDLS_Peer_Traffic_Rsp(struct rtw_adapter *adapter, union recv_frame *prec
 					pxmitframe->attrib.mdata = 0;
 					pxmitframe->attrib.eosp = 1;
 				}
-				if(adapter->HalFunc.hal_xmit(adapter, pxmitframe) == _TRUE)
+				if(adapter->HalFunc.hal_xmit(adapter, pxmitframe) == true)
 					rtw_os_xmit_complete(adapter, pxmitframe);
 
 			}
@@ -1968,14 +1968,10 @@ void wfd_ie_tdls(struct rtw_adapter * padapter, u8 *pframe, u32 *pktlen )
 
 	/*	Value: */
 	/*	Associated BSSID */
-	if ( check_fwstate( pmlmepriv, _FW_LINKED) == _TRUE )
-	{
+	if ( check_fwstate( pmlmepriv, _FW_LINKED) == true )
 		memcpy(wfdie + wfdielen, &pmlmepriv->assoc_bssid[ 0 ], ETH_ALEN );
-	}
 	else
-	{
 		memset(wfdie + wfdielen, 0x00, ETH_ALEN);
-	}
 
 	/*	Local IP Address ATTR */
 	wfdie[ wfdielen++ ] = WFD_ATTR_LOCAL_IP_ADDR;

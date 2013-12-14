@@ -72,7 +72,7 @@ int cckrates_included(unsigned char *rate, int ratelen)
 	{
 		if  (  (((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
 			   (((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
-		return _TRUE;
+		return true;
 	}
 
 	return _FALSE;
@@ -89,7 +89,7 @@ int cckratesonly_included(unsigned char *rate, int ratelen)
 		return _FALSE;
 	}
 
-	return _TRUE;
+	return true;
 }
 
 unsigned char networktype_to_raid(unsigned char network_type)
@@ -150,11 +150,11 @@ u8 judge_network_type(struct rtw_adapter *padapter, unsigned char *rate, int rat
 			network_type = WIRELESS_11_24N;
 		}
 
-		if ((cckratesonly_included(rate, ratelen)) == _TRUE)
+		if ((cckratesonly_included(rate, ratelen)) == true)
 		{
 			network_type |= WIRELESS_11B;
 		}
-		else if((cckrates_included(rate, ratelen)) == _TRUE)
+		else if((cckrates_included(rate, ratelen)) == true)
 		{
 			network_type |= WIRELESS_11BG;
 		}
@@ -242,7 +242,7 @@ int is_basicrate(struct rtw_adapter *padapter, unsigned char rate)
 		{
 			if (rate == ratetbl_val_2wifirate(val))
 			{
-				return _TRUE;
+				return true;
 			}
 		}
 	}
@@ -273,7 +273,7 @@ unsigned int ratetbl2rateset(struct rtw_adapter *padapter, unsigned char *ratese
 			default:
 				rate = ratetbl_val_2wifirate(rate);
 
-				if (is_basicrate(padapter, rate) == _TRUE)
+				if (is_basicrate(padapter, rate) == true)
 				{
 					rate |= IEEE80211_BASIC_RATE_MASK;
 				}
@@ -341,7 +341,7 @@ void UpdateBrateTblForSoftAP(u8 *bssrateset, u32 bssratelen)
 
 void Save_DM_Func_Flag(struct rtw_adapter *padapter)
 {
-	u8	bSaveFlag = _TRUE;
+	u8	bSaveFlag = true;
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_OP, (u8 *)(&bSaveFlag));
 }
@@ -354,7 +354,7 @@ void Restore_DM_Func_Flag(struct rtw_adapter *padapter)
 
 void Switch_DM_Func(struct rtw_adapter *padapter, u32 mode, u8 enable)
 {
-	if(enable == _TRUE)
+	if(enable == true)
 		rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_SET, (u8 *)(&mode));
 	else
 		rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_CLR, (u8 *)(&mode));
@@ -521,7 +521,7 @@ int is_client_associated_to_ap(struct rtw_adapter *padapter)
 
 	if ((pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS) && ((pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE))
 	{
-		return _TRUE;
+		return true;
 	}
 	else
 	{
@@ -536,7 +536,7 @@ int is_client_associated_to_ibss(struct rtw_adapter *padapter)
 
 	if ((pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS) && ((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE))
 	{
-		return _TRUE;
+		return true;
 	}
 	else
 	{
@@ -558,7 +558,7 @@ int is_IBSS_empty(struct rtw_adapter *padapter)
 		}
 	}
 
-	return _TRUE;
+	return true;
 }
 
 unsigned int decide_wait_for_beacon_timeout(unsigned int bcn_interval)
@@ -691,7 +691,7 @@ int WFD_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE
 		{
 			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16( attr_content + 2 );
 			DBG_8723A( "[%s] Peer PORT NUM = %d\n", __FUNCTION__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
-			return( _TRUE );
+			return( true );
 		}
 	}
 	else
@@ -718,7 +718,7 @@ int WMM_param_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pI
 
 	pmlmeinfo->WMM_enable = 1;
 	memcpy(&(pmlmeinfo->WMM_param), (pIE->data + 6), sizeof(struct WMM_para_element));
-	return _TRUE;
+	return true;
 }
 
 void WMMOnAssocRsp(struct rtw_adapter *padapter)
@@ -809,13 +809,13 @@ void WMMOnAssocRsp(struct rtw_adapter *padapter)
 				/* compare CW and AIFS */
 				if((edca[j] & 0xFFFF) < (edca[i] & 0xFFFF))
 				{
-					change_inx = _TRUE;
+					change_inx = true;
 				}
 				else if((edca[j] & 0xFFFF) == (edca[i] & 0xFFFF))
 				{
 					/* compare TXOP */
 					if((edca[j] >> 16) > (edca[i] >> 16))
-						change_inx = _TRUE;
+						change_inx = true;
 				}
 
 				if(change_inx)
@@ -891,7 +891,7 @@ static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIA
 
 	if((new_bwmode!= pmlmeext->cur_bwmode) || (new_ch_offset!=pmlmeext->cur_ch_offset))
 	{
-		pmlmeinfo->bwmode_updated = _TRUE;
+		pmlmeinfo->bwmode_updated = true;
 
 		pmlmeext->cur_bwmode = new_bwmode;
 		pmlmeext->cur_ch_offset = new_ch_offset;
@@ -904,7 +904,7 @@ static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIA
 		pmlmeinfo->bwmode_updated = _FALSE;
 	}
 
-	if(_TRUE == pmlmeinfo->bwmode_updated)
+	if(true == pmlmeinfo->bwmode_updated)
 	{
 		struct sta_info *psta;
 		WLAN_BSSID_EX	*cur_network = &(pmlmeinfo->network);
@@ -1145,7 +1145,7 @@ int check_ap_tdls_prohibited(u8 *pframe, u8 pkt_len)
 
 	pframe += 4;
 	if( (*pframe) & tdls_prohibited_bit )
-		return _TRUE;
+		return true;
 
 	return _FALSE;
 }
@@ -1174,7 +1174,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	unsigned char	ht_info_infos_0;
 
 	if (is_client_associated_to_ap(Adapter) == _FALSE)
-		return _TRUE;
+		return true;
 
 	len = packet_len - sizeof(struct rtw_ieee80211_hdr_3addr);
 
@@ -1186,7 +1186,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	if (memcmp(cur_network->network.MacAddress, pbssid, 6)) {
 		DBG_8723A("Oops: rtw_check_network_encrypt linked but recv other bssid bcn\n" MAC_FMT MAC_FMT,
 				MAC_ARG(pbssid), MAC_ARG(cur_network->network.MacAddress));
-		return _TRUE;
+		return true;
 	}
 
 	bssid = (WLAN_BSSID_EX *)rtw_zmalloc(sizeof(WLAN_BSSID_EX));
@@ -1257,7 +1257,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	/* checking SSID */
 	if ((p = rtw_get_ie(bssid->IEs + _FIXED_IE_LENGTH_, _SSID_IE_, &len, bssid->IELength - _FIXED_IE_LENGTH_)) == NULL) {
 		DBG_8723A("%s marc: cannot find SSID for survey event\n", __func__);
-		hidden_ssid = _TRUE;
+		hidden_ssid = true;
 	} else {
 		hidden_ssid = _FALSE;
 	}
@@ -1392,8 +1392,8 @@ void update_beacon_info(struct rtw_adapter *padapter, u8 *pframe, uint pkt_len, 
 
 #ifdef CONFIG_TDLS
 			case _EXT_CAP_IE_:
-				if( check_ap_tdls_prohibited(pIE->data, pIE->Length) == _TRUE )
-					ptdlsinfo->ap_prohibited = _TRUE;
+				if( check_ap_tdls_prohibited(pIE->data, pIE->Length) == true )
+					ptdlsinfo->ap_prohibited = true;
 				break;
 #endif /* CONFIG_TDLS */
 			default:
@@ -1453,14 +1453,14 @@ unsigned int is_ap_in_tkip(struct rtw_adapter *padapter)
 				case _VENDOR_SPECIFIC_IE_:
 					if ((!memcmp(pIE->data, RTW_WPA_OUI, 4)) && (!memcmp((pIE->data + 12), WPA_TKIP_CIPHER, 4)))
 					{
-						return _TRUE;
+						return true;
 					}
 					break;
 
 				case _RSN_IE_2_:
 					if (!memcmp((pIE->data + 8), RSN_TKIP_CIPHER, 4))
 					{
-						return _TRUE;
+						return true;
 					}
 
 				default:
@@ -1512,7 +1512,7 @@ unsigned int should_forbid_n_rate(struct rtw_adapter * padapter)
 			i += (pIE->Length + 2);
 		}
 
-		return _TRUE;
+		return true;
 	}
 	else
 	{
@@ -1551,7 +1551,7 @@ unsigned int is_ap_in_wep(struct rtw_adapter *padapter)
 			i += (pIE->Length + 2);
 		}
 
-		return _TRUE;
+		return true;
 	}
 	else
 	{
@@ -1905,7 +1905,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 		{ /*  Short Preamble */
 			if(pmlmeinfo->preamble_mode != PREAMBLE_SHORT) /*  PREAMBLE_LONG or PREAMBLE_AUTO */
 			{
-				ShortPreamble = _TRUE;
+				ShortPreamble = true;
 				pmlmeinfo->preamble_mode = PREAMBLE_SHORT;
 				rtw_hal_set_hwreg( Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
 			}
@@ -1991,11 +1991,11 @@ void update_wireless_mode(struct rtw_adapter *padapter)
 			network_type = WIRELESS_11_24N;
 		}
 
-		if ((cckratesonly_included(rate, ratelen)) == _TRUE)
+		if ((cckratesonly_included(rate, ratelen)) == true)
 		{
 			network_type |= WIRELESS_11B;
 		}
-		else if((cckrates_included(rate, ratelen)) == _TRUE)
+		else if((cckrates_included(rate, ratelen)) == true)
 		{
 			network_type |= WIRELESS_11BG;
 		}
@@ -2091,7 +2091,7 @@ void process_addba_req(struct rtw_adapter *padapter, u8 *paddba_req, u8 *addr)
 		preorder_ctrl->indicate_seq = 0xffff;
 		#endif
 
-		preorder_ctrl->enable =(pmlmeinfo->bAcceptAddbaReq == _TRUE)? _TRUE :_FALSE;
+		preorder_ctrl->enable =(pmlmeinfo->bAcceptAddbaReq == true)? true :_FALSE;
 	}
 }
 

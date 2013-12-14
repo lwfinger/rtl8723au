@@ -88,7 +88,7 @@ uint	rtw_is_cckrates_included(u8 *rate)
 		{
 			if  (  (((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
 			(((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
-			return _TRUE;
+			return true;
 			i++;
 		}
 
@@ -109,23 +109,23 @@ uint	rtw_is_cckratesonly_included(u8 *rate)
 			i++;
 	}
 
-	return _TRUE;
+	return true;
 }
 
 int rtw_check_network_type(unsigned char *rate, int ratelen, int channel)
 {
 	if (channel > 14)
 	{
-		if ((rtw_is_cckrates_included(rate)) == _TRUE)
+		if ((rtw_is_cckrates_included(rate)) == true)
 			return WIRELESS_INVALID;
 		else
 			return WIRELESS_11A;
 	}
 	else  /*  could be pure B, pure G, or B/G */
 	{
-		if ((rtw_is_cckratesonly_included(rate)) == _TRUE)
+		if ((rtw_is_cckratesonly_included(rate)) == true)
 			return WIRELESS_11B;
-		else if((rtw_is_cckrates_included(rate)) == _TRUE)
+		else if((rtw_is_cckrates_included(rate)) == true)
 			return	WIRELESS_11BG;
 		else
 			return WIRELESS_11G;
@@ -806,7 +806,7 @@ u8 rtw_is_wps_ie(u8 *ie_ptr, uint *wps_ielen)
 	{
 		/* DBG_8723A("==> found WPS_IE.....\n"); */
 		*wps_ielen = ie_ptr[1]+2;
-		match=_TRUE;
+		match=true;
 	}
 	return match;
 }
@@ -1572,7 +1572,7 @@ int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 
 			cnt += in_ie[ cnt + 1 ] + 2;
 
-			match = _TRUE;
+			match = true;
 			break;
 		}
 		else
@@ -1582,7 +1582,7 @@ int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 
 	}
 
-	if ( match == _TRUE )
+	if ( match == true )
 	{
 		match = cnt;
 	}
@@ -1624,7 +1624,7 @@ int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id ,u8 *
 
 			cnt += attrlen + 3;
 
-			match = _TRUE;
+			match = true;
 			break;
 		}
 		else
@@ -1878,7 +1878,7 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8* category, u8 *act
 	if (action)
 		*action = a;
 
-	return _TRUE;
+	return true;
 }
 
 static const char *_action_public_str[] = {

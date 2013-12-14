@@ -285,11 +285,11 @@ void usb_read_port_cancel(struct intf_hdl *pintfhdl)
 
 	DBG_8723A("%s\n", __func__);
 
-	padapter->bReadPortCancel = _TRUE;
+	padapter->bReadPortCancel = true;
 
 	for (i=0; i < NR_RECVBUFF ; i++) {
 
-		precvbuf->reuse = _TRUE;
+		precvbuf->reuse = true;
 		if (precvbuf->purb)	 {
 			//DBG_8723A("usb_read_port_cancel : usb_kill_urb \n");
 			usb_kill_urb(precvbuf->purb);
@@ -415,17 +415,17 @@ _func_enter_;
 
 		} else if (purb->status == -ESHUTDOWN) {
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete: ESHUTDOWN\n"));
-			padapter->bDriverStopped=_TRUE;
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bDriverStopped=TRUE\n"));
+			padapter->bDriverStopped=true;
+			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bDriverStopped=true\n"));
 
 			goto check_completion;
 		}
 		else
 		{
-			padapter->bSurpriseRemoved=_TRUE;
-			DBG_8723A("bSurpriseRemoved=TRUE\n");
+			padapter->bSurpriseRemoved=true;
+			DBG_8723A("bSurpriseRemoved=true\n");
 			//rtl8192cu_trigger_gpio_0(padapter);
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bSurpriseRemoved=TRUE\n"));
+			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bSurpriseRemoved=true\n"));
 
 			goto check_completion;
 		}
@@ -521,7 +521,7 @@ _func_enter_;
 
 #ifdef CONFIG_REDUCE_USB_TX_INT
 	if ( (pxmitpriv->free_xmitbuf_cnt%NR_XMITBUFF == 0)
-		|| (pxmitbuf->ext_tag == _TRUE) )
+		|| (pxmitbuf->ext_tag == true) )
 	{
 		purb->transfer_flags  &=  (~URB_NO_INTERRUPT);
 	} else {
@@ -552,7 +552,7 @@ _func_enter_;
 
 		switch (status) {
 		case -ENODEV:
-			padapter->bDriverStopped=_TRUE;
+			padapter->bDriverStopped=true;
 			break;
 		default:
 			break;
@@ -565,7 +565,7 @@ _func_enter_;
 //   Commented by Albert 2009/10/13
 //   We add the URB_ZERO_PACKET flag to urb so that the host will send the zero packet automatically.
 /*
-	if(bwritezero == _TRUE)
+	if(bwritezero == true)
 	{
 		usb_bulkout_zero(pintfhdl, addr);
 	}
@@ -589,7 +589,7 @@ void usb_write_port_cancel(struct intf_hdl *pintfhdl)
 
 	DBG_8723A("%s \n", __func__);
 
-	padapter->bWritePortCancel = _TRUE;
+	padapter->bWritePortCancel = true;
 
 	for (i=0; i<NR_XMITBUFF; i++) {
 		for (j=0; j<8; j++) {

@@ -83,10 +83,10 @@ int rtw_IOL_append_cmds(struct xmit_frame *xmit_frame, u8 *IOL_cmds, u32 cmd_len
 bool rtw_IOL_applied(ADAPTER *adapter)
 {
 	if(1 == adapter->registrypriv.fw_iol)
-		return _TRUE;
+		return true;
 
 	if((2 == adapter->registrypriv.fw_iol) && (!adapter_to_dvobj(adapter)->ishighspeed))
-		return _TRUE;
+		return true;
 
 	return _FALSE;
 }
@@ -218,7 +218,7 @@ u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame)
 
 		/* printk("==> %s, pktlen(%d)\n",__FUNCTION__,pxmit_frame->attrib.pktlen); */
 		pxmit_frame->attrib.last_txcmdsz = pxmit_frame->attrib.pktlen;
-		is_cmd_bndy = _TRUE;
+		is_cmd_bndy = true;
 	}
 	return is_cmd_bndy;
 }

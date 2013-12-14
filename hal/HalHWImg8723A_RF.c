@@ -33,7 +33,7 @@ CheckCondition(
     u32 cond = Condition;
 
     if ( Condition == 0xCDCDCDCD )
-        return TRUE;
+        return true;
 
     cond = Condition & 0x000000FF;
     if ( (_board == cond) && cond != 0x00)
@@ -48,7 +48,7 @@ CheckCondition(
     cond = cond >> 16;
     if ( (_platform & cond) == 0 && cond != 0x0F)
         return FALSE;
-    return TRUE;
+    return true;
 }
 
 

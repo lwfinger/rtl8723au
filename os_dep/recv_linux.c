@@ -118,7 +118,7 @@ void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter,u8 bgroup)
 
 		if( cur_time - psecuritypriv->last_mic_err_time < 60*HZ )
 		{
-			psecuritypriv->btkip_countermeasure = _TRUE;
+			psecuritypriv->btkip_countermeasure = true;
 			psecuritypriv->last_mic_err_time = 0;
 			psecuritypriv->btkip_countermeasure_time = cur_time;
 		}
@@ -242,7 +242,7 @@ _func_enter_;
 		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p skb->len=%d\n",
 		 skb->head, skb->data, skb_tail_pointer(skb), skb_end_pointer(skb), skb->len));
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		struct sk_buff *pskb2=NULL;
 		struct sta_info *psta = NULL;
@@ -297,7 +297,7 @@ _func_enter_;
 	br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
 	rcu_read_unlock();
 
-	if( br_port	&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
+	if( br_port	&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true) )
 		int nat25_handle_frame(struct rtw_adapter *priv, struct sk_buff *skb);
 
 #endif	// CONFIG_BR_EXT

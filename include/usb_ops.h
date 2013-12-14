@@ -56,7 +56,7 @@ void rtl8192cu_xmit_tasklet(void *priv);
 
 /*
 * Increase and check if the continual_urb_error of this @param dvobjprive is larger than MAX_CONTINUAL_URB_ERR
-* @return _TRUE:
+* @return true:
 * @return _FALSE:
 */
 static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
@@ -65,7 +65,7 @@ static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
 	int value;
 	if( (value=atomic_inc_return(&dvobj->continual_urb_error)) > MAX_CONTINUAL_URB_ERR) {
 		DBG_8723A("[dvobj:%p][ERROR] continual_urb_error:%d > %d\n", dvobj, value, MAX_CONTINUAL_URB_ERR);
-		ret = _TRUE;
+		ret = true;
 	} else {
 		//DBG_8723A("[dvobj:%p] continual_urb_error:%d\n", dvobj, value);
 	}
@@ -85,13 +85,13 @@ static inline void rtw_reset_continual_urb_error(struct dvobj_priv *dvobj)
 
 static inline u8 rtw_usb_bulk_size_boundary(struct rtw_adapter *padapter,int buf_len)
 {
-	u8 rst = _TRUE;
+	u8 rst = true;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 
-	if (pdvobjpriv->ishighspeed == _TRUE)
-		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE)?_TRUE:_FALSE;
+	if (pdvobjpriv->ishighspeed == true)
+		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE)?true:_FALSE;
 	else
-		rst = (0 == (buf_len) % USB_FULL_SPEED_BULK_SIZE)?_TRUE:_FALSE;
+		rst = (0 == (buf_len) % USB_FULL_SPEED_BULK_SIZE)?true:_FALSE;
 	return rst;
 }
 

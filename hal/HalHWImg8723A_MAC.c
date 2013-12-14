@@ -21,8 +21,7 @@
 #include "odm_precomp.h"
 
 #if (RTL8723A_SUPPORT == 1)
-static bool
-CheckCondition(
+static bool CheckCondition(
     const u32  Condition,
     const u32  Hex
     )
@@ -33,7 +32,7 @@ CheckCondition(
     u32 cond = Condition;
 
     if ( Condition == 0xCDCDCDCD )
-        return TRUE;
+        return true;
 
     cond = Condition & 0x000000FF;
     if ( (_board == cond) && cond != 0x00)
@@ -48,7 +47,7 @@ CheckCondition(
     cond = cond >> 16;
     if ( (_platform & cond) == 0 && cond != 0x0F)
         return FALSE;
-    return TRUE;
+    return true;
 }
 
 

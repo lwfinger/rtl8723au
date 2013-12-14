@@ -1995,7 +1995,7 @@ PHY_UpdateTxPowerDbm8192C(
 
 	//Adapter->HalFunc.SetTxPowerLevelHandler(Adapter, pHalData->CurrentChannel);//gtest:todo
 
-	return _TRUE;
+	return true;
 }
 
 
@@ -2238,7 +2238,7 @@ PHY_SetBWMode8192C(
 	//if(pHalData->SetBWModeInProgress)
 	//	return;
 
-	//pHalData->SetBWModeInProgress= TRUE;
+	//pHalData->SetBWModeInProgress= true;
 
 	pHalData->CurrentChannelBW = Bandwidth;
 
@@ -2292,10 +2292,10 @@ PHY_SwChnl8192C(	// Call after initialization
 	u8		channel
 	)
 {
-	//struct rtw_adapter * Adapter =  ADJUST_TO_ADAPTIVE_ADAPTER(pAdapter, _TRUE);
+	//struct rtw_adapter * Adapter =  ADJUST_TO_ADAPTIVE_ADAPTER(pAdapter, true);
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8	tmpchannel = pHalData->CurrentChannel;
-	bool  bResult = _TRUE;
+	bool  bResult = true;
 
 	if(pHalData->rf_chip == RF_PSEUDO_11N)
 	{
@@ -2332,7 +2332,7 @@ PHY_SwChnl8192C(	// Call after initialization
 	}
 	//--------------------------------------------
 
-	//pHalData->SwChnlInProgress = TRUE;
+	//pHalData->SwChnlInProgress = true;
 	if(channel == 0)
 		channel = 1;
 
@@ -2347,7 +2347,7 @@ PHY_SwChnl8192C(	// Call after initialization
 
 		if(bResult)
 		{
-			//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SwChnl8192C SwChnlInProgress TRUE schdule workitem done\n"));
+			//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SwChnl8192C SwChnlInProgress true schdule workitem done\n"));
 		}
 		else
 		{
@@ -2369,7 +2369,7 @@ phy_SwChnlStepByStep(
  u32		*delay
 	)
 {
-	return _TRUE;
+	return true;
 }
 
 
@@ -2405,7 +2405,7 @@ phy_SetSwChnlCmdArray(
 	pCmd->Para2 = Para2;
 	pCmd->msDelay = msDelay;
 
-	return _TRUE;
+	return true;
 }
 
 
@@ -2453,7 +2453,7 @@ PHY_SwChnlPhy8192C(	// Only called during initialize
 		return;
 	}
 
-	//pHalData->SwChnlInProgress = TRUE;
+	//pHalData->SwChnlInProgress = true;
 	if( channel == 0)
 		channel = 1;
 
@@ -2506,7 +2506,7 @@ PHY_CheckIsLegalRfPath8192C(
 	u32	eRFPath)
 {
 //	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	bool				rtValue = _TRUE;
+	bool				rtValue = true;
 
 	// NOt check RF Path now.!
 	return	rtValue;
@@ -2547,7 +2547,7 @@ static void _PHY_SetRFPathSwitch(
 
 }
 
-//return value TRUE => Main; FALSE => Aux
+//return value true => Main; FALSE => Aux
 
 static bool _PHY_QueryRFPathSwitch(
 	struct rtw_adapter *	pAdapter,
@@ -2555,7 +2555,7 @@ static bool _PHY_QueryRFPathSwitch(
 	)
 {
 //	if(is2T)
-//		return _TRUE;
+//		return true;
 
 	if(!pAdapter->hw_init_completed)
 	{
@@ -2566,14 +2566,14 @@ static bool _PHY_QueryRFPathSwitch(
 	if(is2T)
 	{
 		if(PHY_QueryBBReg(pAdapter, rFPGA0_XB_RFInterfaceOE, BIT5|BIT6) == 0x01)
-			return _TRUE;
+			return true;
 		else
 			return _FALSE;
 	}
 	else
 	{
 		if(PHY_QueryBBReg(pAdapter, rFPGA0_XA_RFInterfaceOE, 0x300) == 0x02)
-			return _TRUE;
+			return true;
 		else
 			return _FALSE;
 	}
@@ -2607,7 +2607,7 @@ void rtl8192c_PHY_SetRFPathSwitch(
 #endif
 
 	if(IS_92C_SERIAL( pHalData->VersionID)){
-		_PHY_SetRFPathSwitch(pAdapter, bMain, _TRUE);
+		_PHY_SetRFPathSwitch(pAdapter, bMain, true);
 	}
 	else{
 		// For 88C 1T1R

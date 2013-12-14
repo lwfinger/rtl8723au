@@ -106,7 +106,7 @@ void	_rtw_init_queue(_queue	*pqueue)
 u32	  _rtw_queue_empty(_queue *pqueue)
 {
 	if (list_empty(&(pqueue->queue)))
-		return _TRUE;
+		return true;
 	else
 		return _FALSE;
 }
@@ -115,7 +115,7 @@ u32	  _rtw_queue_empty(_queue *pqueue)
 u32 rtw_end_of_queue_search(struct list_head *head, struct list_head *plist)
 {
 	if (head == plist)
-		return _TRUE;
+		return true;
 	else
 		return _FALSE;
 }
@@ -425,12 +425,12 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 /*
 * Test if the specifi @param path is a file and readable
 * @param path the path of the file to test
-* @return _TRUE or _FALSE
+* @return true or _FALSE
 */
 int rtw_is_file_readable(char *path)
 {
 	if(isFileReadable(path) == 0)
-		return _TRUE;
+		return true;
 	else
 		return _FALSE;
 }
@@ -526,22 +526,22 @@ keep_ori:
  * rtw_cbuf_full - test if cbuf is full
  * @cbuf: pointer of struct rtw_cbuf
  *
- * Returns: _TRUE if cbuf is full
+ * Returns: true if cbuf is full
  */
 inline bool rtw_cbuf_full(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read-1)? _TRUE : _FALSE;
+	return (cbuf->write == cbuf->read-1)? true : _FALSE;
 }
 
 /**
  * rtw_cbuf_empty - test if cbuf is empty
  * @cbuf: pointer of struct rtw_cbuf
  *
- * Returns: _TRUE if cbuf is empty
+ * Returns: true if cbuf is empty
  */
 inline bool rtw_cbuf_empty(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read)? _TRUE : _FALSE;
+	return (cbuf->write == cbuf->read)? true : _FALSE;
 }
 
 /**
@@ -550,7 +550,7 @@ inline bool rtw_cbuf_empty(struct rtw_cbuf *cbuf)
  * @buf: pointer to push in
  *
  * Lock free operation, be careful of the use scheme
- * Returns: _TRUE push success
+ * Returns: true push success
  */
 bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf)
 {

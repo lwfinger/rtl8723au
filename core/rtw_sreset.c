@@ -54,7 +54,7 @@ u8 sreset_get_wifi_status(struct rtw_adapter *padapter)
 
 	u8 status = WIFI_STATUS_SUCCESS;
 	u32 val32 = 0;
-	if(psrtpriv->silent_reset_inprogress == _TRUE)
+	if(psrtpriv->silent_reset_inprogress == true)
         {
 		return status;
 	}
@@ -139,7 +139,7 @@ static void sreset_restore_security_station(struct rtw_adapter *padapter)
 		else
 		{
 			/* pairwise key */
-			rtw_setstakey_cmd(padapter, (unsigned char *)psta, _TRUE);
+			rtw_setstakey_cmd(padapter, (unsigned char *)psta, true);
 			/* group key */
 			rtw_set_key(padapter,&padapter->securitypriv,padapter->securitypriv.dot118021XGrpKeyid, 0);
 		}
@@ -273,7 +273,7 @@ void sreset_reset(struct rtw_adapter *padapter)
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
 	mutex_lock(&psrtpriv->silentreset_mutex);
-	psrtpriv->silent_reset_inprogress = _TRUE;
+	psrtpriv->silent_reset_inprogress = true;
 	pwrpriv->change_rfpwrstate = rf_off;
 
 	sreset_stop_adapter(padapter);

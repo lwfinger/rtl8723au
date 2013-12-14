@@ -338,7 +338,7 @@ struct wifidirect_info{
 struct tdls_ss_record{	//signal strength record
 	u8		macaddr[ETH_ALEN];
 	u8		RxPWDBAll;
-	u8		is_tdls_sta;	// _TRUE: direct link sta, _FALSE: else
+	u8		is_tdls_sta;	// true: direct link sta, _FALSE: else
 };
 
 struct tdls_info{
@@ -580,7 +580,7 @@ static inline u8 *get_bssid(struct mlme_priv *pmlmepriv)
 static inline int check_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	if (pmlmepriv->fw_state & state)
-		return _TRUE;
+		return true;
 
 	return _FALSE;
 }
@@ -602,7 +602,7 @@ static inline void set_fwstate(struct mlme_priv *pmlmepriv, int state)
 	pmlmepriv->fw_state |= state;
 	//FOR HW integration
 	if(_FW_UNDER_SURVEY==state){
-		pmlmepriv->bScanInProcess = _TRUE;
+		pmlmepriv->bScanInProcess = true;
 	}
 }
 
@@ -622,7 +622,7 @@ static inline void _clr_fwstate_(struct mlme_priv *pmlmepriv, int state)
 static inline void clr_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	spin_lock_bh(&pmlmepriv->lock);
-	if (check_fwstate(pmlmepriv, state) == _TRUE)
+	if (check_fwstate(pmlmepriv, state) == true)
 		pmlmepriv->fw_state ^= state;
 	spin_unlock_bh(&pmlmepriv->lock);
 }

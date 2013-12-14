@@ -2776,7 +2776,7 @@ _func_enter_;
 	}
 	*/
 
-	padapter->securitypriv.busetkipkey=_TRUE;
+	padapter->securitypriv.busetkipkey=true;
 
 	RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("^^^rtw_use_tkipkey_handler padapter->securitypriv.busetkipkey=%d^^^\n",padapter->securitypriv.busetkipkey));
 

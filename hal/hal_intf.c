@@ -95,7 +95,7 @@ uint	 rtw_hal_init(struct rtw_adapter *padapter)
 	status = padapter->HalFunc.hal_init(padapter);
 
 	if(status == _SUCCESS){
-		padapter->hw_init_completed = _TRUE;
+		padapter->hw_init_completed = true;
 
 		if (padapter->registrypriv.notch_filter == 1)
 			rtw_hal_notch_filter(padapter, 1);
@@ -275,7 +275,7 @@ void rtw_hal_update_ra_mask(struct sta_info *psta, u8 rssi_level)
 
 	pmlmepriv = &(padapter->mlmepriv);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		add_RATid(padapter, psta, rssi_level);
 	}

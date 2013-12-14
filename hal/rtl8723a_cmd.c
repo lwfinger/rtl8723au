@@ -48,7 +48,7 @@ static u8 _is_fw_read_cmd_down(struct rtw_adapter* padapter, u8 msgbox_num)
 	do{
 		valid = rtw_read8(padapter,REG_HMETFR) & BIT(msgbox_num);
 		if(0 == valid ){
-			read_down = _TRUE;
+			read_down = true;
 		}
 	}while( (!read_down) && (retry_cnts--));
 
@@ -88,7 +88,7 @@ _func_enter_;
 	if (CmdLen > RTL92C_MAX_CMD_LEN) {
 		goto exit;
 	}
-	if (padapter->bSurpriseRemoved == _TRUE)
+	if (padapter->bSurpriseRemoved == true)
 		goto exit;
 
 	//pay attention to if  race condition happened in  H2C cmd setting.
@@ -121,7 +121,7 @@ _func_enter_;
 		h2c_cmd = le32_to_cpu( h2c_cmd );
 		rtw_write32(padapter,msgbox_addr, h2c_cmd);
 
-		bcmd_down = _TRUE;
+		bcmd_down = true;
 
 	//	DBG_8723A("MSG_BOX:%d,CmdLen(%d), reg:0x%x =>h2c_cmd:0x%x, reg:0x%x =>h2c_cmd_ex:0x%x ..\n"
 	//		,pHalData->LastHMEBoxNum ,CmdLen,msgbox_addr,h2c_cmd,msgbox_ex_addr,h2c_cmd_ex);
@@ -167,7 +167,7 @@ u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter *padapter ,u8 bfwpoll, u1
 	struct H2C_SS_RFOFF_PARAM param;
 	DBG_8723A("==>%s bfwpoll(%x)\n",__FUNCTION__,bfwpoll);
 	param.gpio_period = period;//Polling GPIO_11 period time
-	param.ROFOn = (_TRUE == bfwpoll)?1:0;
+	param.ROFOn = (true == bfwpoll)?1:0;
 	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));
 	return res;
 }
@@ -225,7 +225,7 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 	bitmap |= ((raid<<28)&0xf0000000);
 
 
-	if(pHalData->fw_ractrl == _TRUE) {
+	if(pHalData->fw_ractrl == true) {
 		rtl8192c_set_raid_cmd(pAdapter, bitmap, arg);
 	} else {
 		u8 init_rate, shortGIrate=_FALSE;
@@ -233,9 +233,9 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 		init_rate = get_highest_rate_idx(bitmap&0x0fffffff)&0x3f;
 
 
-		shortGIrate = (arg&BIT(5)) ? _TRUE:_FALSE;
+		shortGIrate = (arg&BIT(5)) ? true:_FALSE;
 
-		if (shortGIrate==_TRUE)
+		if (shortGIrate==true)
 			init_rate |= BIT(6);
 
 		rtw_write8(pAdapter, (REG_INIDATA_RATE_SEL+macid), (u8)init_rate);
@@ -449,7 +449,7 @@ static void ConstructNullFunctionData(
 
 	SetSeqNum(pwlanhdr, 0);
 
-	if (bQoS == _TRUE) {
+	if (bQoS == true) {
 		struct rtw_ieee80211_hdr_3addr_qos *pwlanqoshdr;
 
 		SetFrameSubType(pframe, WIFI_QOS_DATA_NULL);
@@ -533,7 +533,7 @@ CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 //	Input:
 //	    bDLFinished - FALSE: At the first time we will send all the packets as a large packet to Hw,
 //						so we need to set the packet length to total lengh.
-//			      TRUE: At the second time, we should send the first packet (default:beacon)
+//			      true: At the second time, we should send the first packet (default:beacon)
 //						to Hw again and set the lengh in descriptor to the real beacon lengh.
 // 2009.10.15 by tynli.
 static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
@@ -587,7 +587,7 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 	//3 (2) ps-poll
 	RsvdPageLoc.LocPsPoll = PageNum;
 	ConstructPSPoll(padapter, &ReservedPagePacket[BufIndex], &PSPollLength);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], PSPollLength, _TRUE, _FALSE);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], PSPollLength, true, _FALSE);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + PSPollLength);
 	PageNum += PageNeed;
@@ -631,7 +631,7 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&QosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
-		_TRUE, 0, 0, _FALSE);
+		true, 0, 0, _FALSE);
 	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], QosNullLength, _FALSE, _FALSE);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + QosNullLength);
@@ -646,8 +646,8 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
-		_TRUE, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, _TRUE);
+		true, 0, 0, _FALSE);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, true);
 
 	TotalPacketLen = BufIndex + BTQosNullLength;
 
@@ -710,7 +710,7 @@ _func_enter_;
 
 		// Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame.
 		if (pHalData->RegFwHwTxQCtrl & BIT(6))
-			bRecover = _TRUE;
+			bRecover = true;
 
 		// To tell Hw the packet is not a real beacon frame.
 		//U1bTmp = rtw_read8(padapter, REG_FWHW_TXQ_CTRL+2);
@@ -814,8 +814,8 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		fakemac,
-		_TRUE, 0, 0, _FALSE);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, _TRUE);
+		true, 0, 0, _FALSE);
+	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], BTQosNullLength, _FALSE, true);
 
 	TotalPacketLen = BufIndex + BTQosNullLength;
 
@@ -851,7 +851,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 
 	// Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame.
 	if (pHalData->RegFwHwTxQCtrl & BIT(6))
-		bRecover = _TRUE;
+		bRecover = true;
 
 	// To tell Hw the packet is not a real beacon frame.
 	pHalData->RegFwHwTxQCtrl &= ~BIT(6);

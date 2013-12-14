@@ -131,7 +131,7 @@ static int rtw_bt_sco = 3;// 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter, 4.Busy, 
 static int rtw_bt_ampdu =1 ;// 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU.
 #endif
 
-static int rtw_AcceptAddbaReq = _TRUE;// 0:Reject AP's Add BA req, 1:Accept AP's Add BA req.
+static int rtw_AcceptAddbaReq = true;// 0:Reject AP's Add BA req, 1:Accept AP's Add BA req.
 
 static int rtw_antdiv_cfg = 2; // 0:OFF , 1:ON, 2:decide by Efuse config
 static int rtw_antdiv_type = 0 ; //0:decide by efuse  1: for 88EE, 1Tx and 1RxCG are diversity.(2 Ant with SPDT), 2:  for 88EE, 1Tx and 2Rx are diversity.( 2 Ant, Tx and RxCG are both on aux port, RxCS is on main port ), 3: for 88EE, 1Tx and 1RxCG are fixed.(1Ant, Tx and RxCG are both on aux port)
@@ -824,7 +824,7 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 		//addr->sa_data[4], addr->sa_data[5]);
 		memcpy(padapter->eeprompriv.mac_addr, addr->sa_data, ETH_ALEN);
 		//memcpy(pnetdev->dev_addr, addr->sa_data, ETH_ALEN);
-		//padapter->bset_hwaddr = _TRUE;
+		//padapter->bset_hwaddr = true;
 	}
 
 	return 0;
@@ -1421,7 +1421,7 @@ void netdev_br_init(struct net_device *netdev)
 
 	rcu_read_lock();
 
-	//if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)
+	//if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true)
 	{
 		//struct net_bridge	*br = netdev->br_port->br;//->dev->dev_addr;
 		if (rcu_dereference(adapter->pnetdev->rx_handler_data))
@@ -1521,7 +1521,7 @@ int _netdev_open(struct net_device *pnetdev)
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+871x_drv - dev_open\n"));
 	DBG_8723A("+871x_drv - drv_open, bup=%d\n", padapter->bup);
 
-	if(pwrctrlpriv->ps_flag == _TRUE){
+	if(pwrctrlpriv->ps_flag == true){
 		padapter->net_closed = _FALSE;
 		goto netdev_open_normal_process;
 	}
@@ -1573,7 +1573,7 @@ int _netdev_open(struct net_device *pnetdev)
 
 		rtw_led_control(padapter, LED_CTL_NO_LINK);
 
-		padapter->bup = _TRUE;
+		padapter->bup = true;
 	}
 	padapter->net_closed = _FALSE;
 
@@ -1636,7 +1636,7 @@ static int  ips_netdrv_open(struct rtw_adapter *padapter)
 	padapter->bDriverStopped = _FALSE;
 	padapter->bSurpriseRemoved = _FALSE;
 	padapter->bCardDisableWOHSM = _FALSE;
-	//padapter->bup = _TRUE;
+	//padapter->bup = true;
 
 	status = rtw_hal_init(padapter);
 	if (status ==_FAIL)
@@ -1684,8 +1684,8 @@ void rtw_ips_pwr_down(struct rtw_adapter *padapter)
 	u32 start_time = rtw_get_current_time();
 	DBG_8723A("===> rtw_ips_pwr_down...................\n");
 
-	padapter->bCardDisableWOHSM = _TRUE;
-	padapter->net_closed = _TRUE;
+	padapter->bCardDisableWOHSM = true;
+	padapter->net_closed = true;
 
 	rtw_led_control(padapter, LED_CTL_POWER_OFF);
 
@@ -1741,7 +1741,7 @@ int pm_netdev_open(struct net_device *pnetdev,u8 bnormal)
 	int status;
 
 
-	if (_TRUE == bnormal)
+	if (true == bnormal)
 		status = netdev_open(pnetdev);
 #ifdef CONFIG_IPS
 	else
@@ -1757,19 +1757,19 @@ static int netdev_close(struct net_device *pnetdev)
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+871x_drv - drv_close\n"));
 
-	if(padapter->pwrctrlpriv.bInternalAutoSuspend == _TRUE)
+	if(padapter->pwrctrlpriv.bInternalAutoSuspend == true)
 	{
 		//rtw_pwr_wakeup(padapter);
 		if(padapter->pwrctrlpriv.rf_pwrstate == rf_off)
-			padapter->pwrctrlpriv.ps_flag = _TRUE;
+			padapter->pwrctrlpriv.ps_flag = true;
 	}
-	padapter->net_closed = _TRUE;
+	padapter->net_closed = true;
 
 /*	if(!padapter->hw_init_completed)
 	{
 		DBG_8723A("(1)871x_drv - drv_close, bup=%d, hw_init_completed=%d\n", padapter->bup, padapter->hw_init_completed);
 
-		padapter->bDriverStopped = _TRUE;
+		padapter->bDriverStopped = true;
 
 		rtw_dev_unload(padapter);
 	}
@@ -1792,7 +1792,7 @@ static int netdev_close(struct net_device *pnetdev)
 		//s2-3.
 		rtw_free_assoc_resources(padapter, 1);
 		//s2-4.
-		rtw_free_network_queue(padapter,_TRUE);
+		rtw_free_network_queue(padapter,true);
 		// Close LED
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 	}
@@ -1806,7 +1806,7 @@ static int netdev_close(struct net_device *pnetdev)
 #endif	// CONFIG_BR_EXT
 
 #ifdef CONFIG_P2P
-	if(wdev_to_priv(padapter->rtw_wdev)->p2p_enabled == _TRUE)
+	if(wdev_to_priv(padapter->rtw_wdev)->p2p_enabled == true)
 		wdev_to_priv(padapter->rtw_wdev)->p2p_enabled = _FALSE;
 	rtw_p2p_enable(padapter, P2P_ROLE_DISABLE);
 #endif //CONFIG_P2P

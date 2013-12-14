@@ -262,7 +262,7 @@ _func_enter_;
 	/* spin_lock_bh(&(pfree_sta_queue->lock)); */
 	spin_lock_bh(&(pstapriv->sta_hash_lock));
 
-	if (_rtw_queue_empty(pfree_sta_queue) == _TRUE)
+	if (_rtw_queue_empty(pfree_sta_queue) == true)
 	{
 		/* spin_unlock_bh(&(pfree_sta_queue->lock)); */
 		spin_unlock_bh(&(pstapriv->sta_hash_lock));
@@ -691,7 +691,7 @@ _func_exit_;
 
 u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 {
-	u8 res = _TRUE;
+	u8 res = true;
 #ifdef  CONFIG_AP_MODE
 	struct list_head	*plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
@@ -710,9 +710,9 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 
 		if (!memcmp(paclnode->addr, mac_addr, ETH_ALEN))
 		{
-			if (paclnode->valid == _TRUE)
+			if (paclnode->valid == true)
 			{
-				match = _TRUE;
+				match = true;
 				break;
 			}
 		}
@@ -721,15 +721,15 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 
 	if(pacl_list->mode == 1)/* accept unless in deny list */
 	{
-		res = (match == _TRUE) ?  _FALSE:_TRUE;
+		res = (match == true) ?  _FALSE:true;
 	}
 	else if(pacl_list->mode == 2)/* deny unless in accept list */
 	{
-		res = (match == _TRUE) ?  _TRUE:_FALSE;
+		res = (match == true) ?  true:_FALSE;
 	}
 	else
 	{
-		 res = _TRUE;
+		 res = true;
 	}
 
 #endif

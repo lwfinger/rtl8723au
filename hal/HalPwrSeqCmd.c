@@ -110,7 +110,7 @@ u8 HalPwrSeqCmdParsing(
 
 						value &= GET_PWR_CFG_MASK(PwrCfgCmd);
 						if (value == (GET_PWR_CFG_VALUE(PwrCfgCmd) & GET_PWR_CFG_MASK(PwrCfgCmd)))
-							bPollingBit = _TRUE;
+							bPollingBit = true;
 						else
 							rtw_udelay_os(10);
 
@@ -133,7 +133,7 @@ u8 HalPwrSeqCmdParsing(
 				case PWR_CMD_END:
 					// When this command is parsed, end the process
 					RT_TRACE(_module_hal_init_c_ , _drv_info_, ("HalPwrSeqCmdParsing: PWR_CMD_END\n"));
-					return _TRUE;
+					return true;
 					break;
 
 				default:
@@ -145,5 +145,5 @@ u8 HalPwrSeqCmdParsing(
 		AryIdx++;//Add Array Index
 	}while(1);
 
-	return _TRUE;
+	return true;
 }

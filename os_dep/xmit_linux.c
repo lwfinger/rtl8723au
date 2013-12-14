@@ -75,7 +75,7 @@ _func_enter_;
 
 	if (pfile->pkt_len == 0) {
 _func_exit_;
-		return _TRUE;
+		return true;
 	}
 
 _func_exit_;

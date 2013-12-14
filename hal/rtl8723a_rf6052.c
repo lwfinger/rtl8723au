@@ -176,7 +176,7 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 	// Otherwise, external PA will be broken if power index > 0x20.
 	if (pHalData->EEPROMRegulatory != 0 || pHalData->ExternalPA) {
 		//DbgPrint("TurboScanOff=1 EEPROMRegulatory=%d ExternalPA=%d\n", pHalData->EEPROMRegulatory, pHalData->ExternalPA);
-		TurboScanOff = _TRUE;
+		TurboScanOff = true;
 	}
 
 	if(pmlmeext->sitesurvey_res.state == SCAN_PROCESS)
@@ -184,7 +184,7 @@ rtl8192c_PHY_RF6052SetCckTxPower(
 		TxAGC[RF_PATH_A] = 0x3f3f3f3f;
 		TxAGC[RF_PATH_B] = 0x3f3f3f3f;
 
-		TurboScanOff = _TRUE;//disable turbo scan
+		TurboScanOff = true;//disable turbo scan
 
 		if(TurboScanOff) {
 			for(idx1=RF_PATH_A; idx1<=RF_PATH_B; idx1++) {

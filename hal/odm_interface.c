@@ -636,6 +636,6 @@ ODM_FillH2CCmd(
 	return	FALSE;
 #endif
 
-	return	TRUE;
+	return	true;
 }
 #endif

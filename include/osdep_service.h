@@ -28,9 +28,6 @@
 #define RTW_RX_HANDLED 2
 //#define RTW_STATUS_TIMEDOUT -110
 
-#undef _TRUE
-#define _TRUE		1
-
 #undef _FALSE
 #define _FALSE		0
 
@@ -123,7 +120,7 @@ static inline void _set_timer(_timer *ptimer,u32 delay_time)
 static inline void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 {
 	del_timer_sync(ptimer);
-	*bcancelled=  _TRUE;//TRUE ==1; FALSE==0
+	*bcancelled=  true;
 }
 
 #define RTW_TIMER_HDL_ARGS void *FunctionContext

@@ -80,10 +80,10 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 
 	if (tmp1byte&HAL_8192C_HW_GPIO_WPS_BIT)
 	{
-		bPbcPressed = _TRUE;
+		bPbcPressed = true;
 	}
 
-	if( _TRUE == bPbcPressed)
+	if( true == bPbcPressed)
 	{
 		// Here we only set bPbcPressed to true
 		// After trigger PBC, the variable will be set to false
@@ -162,8 +162,8 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
 	if(pHalData->BoardType == BOARD_USB_High_PA){
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,_TRUE);
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,_TRUE);
+		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,true);
+		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
 	}
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
 	//	ODM_CMNINFO_BINHCT_TEST only for MP Team
@@ -282,7 +282,7 @@ rtl8723a_HalDmWatchDog(
 	)
 {
 	bool		bFwCurrentInPSMode = _FALSE;
-	bool		bFwPSAwake = _TRUE;
+	bool		bFwPSAwake = true;
 	u8 hw_init_completed = _FALSE;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -304,7 +304,7 @@ rtl8723a_HalDmWatchDog(
 		bFwPSAwake = _FALSE;
 #endif //CONFIG_P2P_PS
 
-	if( (hw_init_completed == _TRUE)
+	if( (hw_init_completed == true)
 		&& ((!bFwCurrentInPSMode) && bFwPSAwake))
 	{
 		//
@@ -315,7 +315,7 @@ rtl8723a_HalDmWatchDog(
 _record_initrate:
 
 		// Read REG_INIDATA_RATE_SEL value for TXDESC.
-		if(check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE) == _TRUE)
+		if(check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE) == true)
 		{
 			pdmpriv->INIDATA_RATE[0] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL) & 0x3f;
 		}
@@ -331,7 +331,7 @@ _record_initrate:
 
 
 	//ODM
-	if (hw_init_completed == _TRUE)
+	if (hw_init_completed == true)
 	{
 		u8	bLinked=_FALSE;
 
@@ -340,7 +340,7 @@ _record_initrate:
 		#endif
 
 		if(rtw_linked_check(Adapter))
-			bLinked = _TRUE;
+			bLinked = true;
 
 		ODM_CmnInfoUpdate(&pHalData->odmpriv ,ODM_CMNINFO_LINK, bLinked);
 		ODM_DMWatchdog(&pHalData->odmpriv);

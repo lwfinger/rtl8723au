@@ -215,7 +215,7 @@ _func_enter_;
 		struct sta_info * psta,*pbcmc_sta;
 		struct sta_priv * pstapriv = &padapter->stapriv;
 
-		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_MP_STATE) == _TRUE) //sta mode
+		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_MP_STATE) == true) //sta mode
 		{
 			psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 			if (psta == NULL) {
@@ -250,14 +250,14 @@ _func_enter_;
 					//DEBUG_ERR((" param->u.crypt.key_len=%d\n",param->u.crypt.key_len));
 					DBG_8723A(" ~~~~set sta key:unicastkey\n");
 
-					rtw_setstakey_cmd(padapter, (unsigned char *)psta, _TRUE);
+					rtw_setstakey_cmd(padapter, (unsigned char *)psta, true);
 				}
 				else//group key
 				{
 					memcpy(padapter->securitypriv.dot118021XGrpKey[param->u.crypt.idx].skey,  param->u.crypt.key,(param->u.crypt.key_len>16 ?16:param->u.crypt.key_len));
 					memcpy(padapter->securitypriv.dot118021XGrptxmickey[param->u.crypt.idx].skey,&(param->u.crypt.key[16]),8);
 					memcpy(padapter->securitypriv.dot118021XGrprxmickey[param->u.crypt.idx].skey,&(param->u.crypt.key[24]),8);
-                                        padapter->securitypriv.binstallGrpkey = _TRUE;
+                                        padapter->securitypriv.binstallGrpkey = true;
 					//DEBUG_ERR((" param->u.crypt.key_len=%d\n", param->u.crypt.key_len));
 					DBG_8723A(" ~~~~set sta key:groupkey\n");
 
@@ -463,7 +463,7 @@ static int rtw_set_wpa_ie(struct rtw_adapter *padapter, char *pie, unsigned shor
                 || padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_WTMIC_
                 || padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)
                 //WPS open need to enable multicast
-                //|| check_fwstate(&padapter->mlmepriv, WIFI_UNDER_WPS) == _TRUE)
+                //|| check_fwstate(&padapter->mlmepriv, WIFI_UNDER_WPS) == true)
                 rtw_hal_set_hwreg(padapter, HW_VAR_OFF_RCR_AM, null_addr);
 
 	RT_TRACE(_module_rtl871x_ioctl_os_c, _drv_info_,
@@ -990,7 +990,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 
 	while (1)
 	{
-		if (rtw_end_of_queue_search(phead, plist) == _TRUE) break;
+		if (rtw_end_of_queue_search(phead, plist) == true) break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
@@ -1086,7 +1086,7 @@ static int rtw_p2p_get_peer_wfd_session_available(struct net_device *dev,
 	DBG_8723A( "[%s] wfd_sa = %d\n", __func__, pwdinfo->wfd_info->peer_session_avail );
 
 	wrqu->data.length = strlen( extra );
-	pwdinfo->wfd_info->peer_session_avail = _TRUE;	//	Reset the WFD session available
+	pwdinfo->wfd_info->peer_session_avail = true;	//	Reset the WFD session available
 	return ret;
 
 }
@@ -1126,7 +1126,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 
 	while (1)
 	{
-		if (rtw_end_of_queue_search(phead, plist) == _TRUE) break;
+		if (rtw_end_of_queue_search(phead, plist) == true) break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
@@ -1217,7 +1217,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 
 	while (1)
 	{
-		if (rtw_end_of_queue_search(phead, plist) == _TRUE) break;
+		if (rtw_end_of_queue_search(phead, plist) == true) break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
@@ -1294,7 +1294,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 
 	while (1)
 	{
-		if (rtw_end_of_queue_search(phead, plist) == _TRUE) break;
+		if (rtw_end_of_queue_search(phead, plist) == true) break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
@@ -1366,7 +1366,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	plist = phead->next;
 
 	while (1) {
-		if (rtw_end_of_queue_search(phead, plist) == _TRUE)
+		if (rtw_end_of_queue_search(phead, plist) == true)
 			break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
@@ -1458,7 +1458,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 
 	while(1)
 	{
-		if (rtw_end_of_queue_search(phead,plist)== _TRUE)
+		if (rtw_end_of_queue_search(phead,plist)== true)
 			break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
@@ -1481,7 +1481,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 
 		pwdinfo->nego_req_info.peer_channel_num[ 0 ] = uintPeerChannel;
 		memcpy(pwdinfo->nego_req_info.peerDevAddr, pnetwork->network.MacAddress, ETH_ALEN );
-		pwdinfo->nego_req_info.benable = _TRUE;
+		pwdinfo->nego_req_info.benable = true;
 
 		_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
 		if ( rtw_p2p_state(pwdinfo) != P2P_STATE_GONEGO_OK )
@@ -1573,7 +1573,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 
 	while(1)
 	{
-		if (rtw_end_of_queue_search(phead,plist)== _TRUE)
+		if (rtw_end_of_queue_search(phead,plist)== true)
 			break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
@@ -1636,7 +1636,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_SESSION_AVAIL )
 				{
-					pwfd_info->peer_session_avail = _TRUE;
+					pwfd_info->peer_session_avail = true;
 				}
 				else
 				{
@@ -1663,7 +1663,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 		//	Store the GO's ssid
 		pinvite_req_info->ssidlen = wrqu->data.length - 36;
 		memcpy(pinvite_req_info->go_ssid, &extra[ 36 ], (u32) pinvite_req_info->ssidlen );
-		pinvite_req_info->benable = _TRUE;
+		pinvite_req_info->benable = true;
 		pinvite_req_info->peer_ch = uintPeerChannel;
 
 		rtw_p2p_set_pre_state(pwdinfo, rtw_p2p_state(pwdinfo));
@@ -1730,7 +1730,7 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 		}
 		else if ( extra[ 0 ] == '1' )	//	Enable the persistent group function.
 		{
-			pwdinfo->persistent_supported = _TRUE;
+			pwdinfo->persistent_supported = true;
 		}
 		else
 		{
@@ -1792,7 +1792,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 
 	while(1)
 	{
-		if (rtw_end_of_queue_search(phead,plist)== _TRUE)
+		if (rtw_end_of_queue_search(phead,plist)== true)
 			break;
 
 		pnetwork = container_of(plist, struct wlan_network, list);
@@ -1857,7 +1857,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_PC_TDLS )
 				{
-					pwfd_info->wfd_pc = _TRUE;
+					pwfd_info->wfd_pc = true;
 				}
 				else
 				{
@@ -1981,7 +1981,7 @@ static int rtw_p2p_set_sa(struct net_device *dev,
 		}
 		else if ( extra[ 0 ] == '1' )	//	Enable the session available.
 		{
-			pwdinfo->session_available = _TRUE;
+			pwdinfo->session_available = true;
 		}
 		else
 		{
@@ -2080,7 +2080,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 	while(1)
 	{
-		if (rtw_end_of_queue_search(phead,plist)== _TRUE)
+		if (rtw_end_of_queue_search(phead,plist)== true)
 			break;
 
 		if( uintPeerChannel != 0 )
@@ -2151,7 +2151,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_SESSION_AVAIL )
 				{
-					pwfd_info->peer_session_avail = _TRUE;
+					pwfd_info->peer_session_avail = true;
 				}
 				else
 				{
@@ -2175,7 +2175,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		memcpy(pwdinfo->tx_prov_disc_info.peerIFAddr, pnetwork->network.MacAddress, ETH_ALEN );
 		memcpy(pwdinfo->tx_prov_disc_info.peerDevAddr, peerMAC, ETH_ALEN );
 		pwdinfo->tx_prov_disc_info.peer_channel_num[0] = ( u16 ) uintPeerChannel;
-		pwdinfo->tx_prov_disc_info.benable = _TRUE;
+		pwdinfo->tx_prov_disc_info.benable = true;
 		rtw_p2p_set_pre_state(pwdinfo, rtw_p2p_state(pwdinfo));
 		rtw_p2p_set_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ);
 
@@ -2777,7 +2777,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 				memcpy(psecuritypriv->dot118021XGrptxmickey[param->u.crypt.idx].skey, &(param->u.crypt.key[16]), 8);
 				memcpy(psecuritypriv->dot118021XGrprxmickey[param->u.crypt.idx].skey, &(param->u.crypt.key[24]), 8);
 
-				psecuritypriv->busetkipkey = _TRUE;
+				psecuritypriv->busetkipkey = true;
 
 			}
 			else if(strcmp(param->u.crypt.alg, "CCMP") == 0)
@@ -2797,7 +2797,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 			psecuritypriv->dot118021XGrpKeyid = param->u.crypt.idx;
 
-			psecuritypriv->binstallGrpkey = _TRUE;
+			psecuritypriv->binstallGrpkey = true;
 
 			psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy;//!!!
 
@@ -2845,7 +2845,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 					memcpy(psta->dot11tkiptxmickey.skey, &(param->u.crypt.key[16]), 8);
 					memcpy(psta->dot11tkiprxmickey.skey, &(param->u.crypt.key[24]), 8);
 
-					psecuritypriv->busetkipkey = _TRUE;
+					psecuritypriv->busetkipkey = true;
 
 				}
 				else if(strcmp(param->u.crypt.alg, "CCMP") == 0)
@@ -2890,7 +2890,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 					memcpy(psecuritypriv->dot118021XGrptxmickey[param->u.crypt.idx].skey, &(param->u.crypt.key[16]), 8);
 					memcpy(psecuritypriv->dot118021XGrprxmickey[param->u.crypt.idx].skey, &(param->u.crypt.key[24]), 8);
 
-					psecuritypriv->busetkipkey = _TRUE;
+					psecuritypriv->busetkipkey = true;
 
 				}
 				else if(strcmp(param->u.crypt.alg, "CCMP") == 0)
@@ -2906,7 +2906,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 				psecuritypriv->dot118021XGrpKeyid = param->u.crypt.idx;
 
-				psecuritypriv->binstallGrpkey = _TRUE;
+				psecuritypriv->binstallGrpkey = true;
 
 				psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy;//!!!
 
@@ -2946,7 +2946,7 @@ static int rtw_set_beacon(struct net_device *dev, struct ieee_param *param, int 
 
 	DBG_8723A("%s, len=%d\n", __func__, len);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	memcpy(&pstapriv->max_num_sta, param->u.bcn_ie.reserved, 2);
@@ -2993,7 +2993,7 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 
 	DBG_8723A("rtw_add_sta(aid=%d)=" MAC_FMT "\n", param->u.add_sta.aid, MAC_ARG(param->sta_addr));
 
-	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != _TRUE)
+	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != true)
 	{
 		return -EINVAL;
 	}
@@ -3040,7 +3040,7 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 		//chec 802.11n ht cap.
 		if(WLAN_STA_HT&flags)
 		{
-			psta->htpriv.ht_option = _TRUE;
+			psta->htpriv.ht_option = true;
 			psta->qos_option = 1;
 			memcpy((void*)&psta->htpriv.ht_cap, (void*)&param->u.add_sta.ht_cap, sizeof(struct ieee80211_ht_cap));
 		}
@@ -3077,7 +3077,7 @@ static int rtw_del_sta(struct net_device *dev, struct ieee_param *param)
 
 	DBG_8723A("rtw_del_sta=" MAC_FMT "\n", MAC_ARG(param->sta_addr));
 
-	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != _TRUE)
+	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != true)
 	{
 		return -EINVAL;
 	}
@@ -3096,7 +3096,7 @@ static int rtw_del_sta(struct net_device *dev, struct ieee_param *param)
 		if (!list_empty(&psta->asoc_list)) {
 			list_del_init(&psta->asoc_list);
 			pstapriv->asoc_list_cnt--;
-			updated = ap_free_sta(padapter, psta, _TRUE,
+			updated = ap_free_sta(padapter, psta, true,
 					      WLAN_REASON_DEAUTH_LEAVING);
 		}
 		spin_unlock_bh(&pstapriv->asoc_list_lock);
@@ -3130,7 +3130,7 @@ static int rtw_ioctl_get_sta_data(struct net_device *dev, struct ieee_param *par
 
 	DBG_8723A("rtw_ioctl_get_sta_info, sta_addr: " MAC_FMT "\n", MAC_ARG(param_ex->sta_addr));
 
-	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != _TRUE)
+	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != true)
 	{
 		return -EINVAL;
 	}
@@ -3195,7 +3195,7 @@ static int rtw_get_sta_wpaie(struct net_device *dev, struct ieee_param *param)
 
 	DBG_8723A("rtw_get_sta_wpaie, sta_addr: " MAC_FMT "\n", MAC_ARG(param->sta_addr));
 
-	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != _TRUE)
+	if(check_fwstate(pmlmepriv, (_FW_LINKED|WIFI_AP_STATE)) != true)
 	{
 		return -EINVAL;
 	}
@@ -3246,7 +3246,7 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 
 	DBG_8723A("%s, len=%d\n", __func__, len);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
@@ -3269,9 +3269,9 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 
 		memcpy(pmlmepriv->wps_beacon_ie, param->u.bcn_ie.buf, ie_len);
 
-		update_beacon(padapter, _VENDOR_SPECIFIC_IE_, wps_oui, _TRUE);
+		update_beacon(padapter, _VENDOR_SPECIFIC_IE_, wps_oui, true);
 
-		pmlmeext->bstart_bss = _TRUE;
+		pmlmeext->bstart_bss = true;
 	}
 
 	return ret;
@@ -3286,7 +3286,7 @@ static int rtw_set_wps_probe_resp(struct net_device *dev, struct ieee_param *par
 
 	DBG_8723A("%s, len=%d\n", __func__, len);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
@@ -3323,7 +3323,7 @@ static int rtw_set_wps_assoc_resp(struct net_device *dev, struct ieee_param *par
 
 	DBG_8723A("%s, len=%d\n", __func__, len);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
@@ -3365,7 +3365,7 @@ static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param,
 	int ssid_len;
 	u8 ignore_broadcast_ssid;
 
-	if(check_fwstate(mlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(mlmepriv, WIFI_AP_STATE) != true)
 		return -EPERM;
 
 	if (param->u.bcn_ie.reserved[0] != 0xea)
@@ -3412,7 +3412,7 @@ static int rtw_ioctl_acl_remove_sta(struct net_device *dev, struct ieee_param *p
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	if (is_broadcast_ether_addr(param->sta_addr))
@@ -3429,7 +3429,7 @@ static int rtw_ioctl_acl_add_sta(struct net_device *dev, struct ieee_param *para
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	if (is_broadcast_ether_addr(param->sta_addr))
@@ -3447,7 +3447,7 @@ static int rtw_ioctl_set_macaddr_acl(struct net_device *dev, struct ieee_param *
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != _TRUE)
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	rtw_set_macaddr_acl(padapter, param->u.mlme.command);

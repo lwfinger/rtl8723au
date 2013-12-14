@@ -122,7 +122,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 			if (status < 0) {
 				if(status == (-ESHUTDOWN)	|| status == -ENODEV	)
 				{
-					padapter->bSurpriseRemoved = _TRUE;
+					padapter->bSurpriseRemoved = true;
 				} else {
 					#ifdef DBG_CONFIG_ERROR_DETECT
 					{
@@ -142,8 +142,8 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 				}
 			}
 
-			if(rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == _TRUE ){
-				padapter->bSurpriseRemoved = _TRUE;
+			if(rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == true ){
+				padapter->bSurpriseRemoved = true;
 				break;
 			}
 
@@ -377,7 +377,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 //	[in] ContentLen -
 //		The length in byte of pContent.
 // Return:
-//	If any interrupt matches the mask (IMR), return TRUE, and return FALSE otherwise.
+//	If any interrupt matches the mask (IMR), return true, and return FALSE otherwise.
 //
 bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
@@ -485,11 +485,11 @@ urb_submit:
 			case -EPIPE:
 			case -ENODEV:
 			case -ESHUTDOWN:
-				//padapter->bSurpriseRemoved = _TRUE;
-				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bSurpriseRemoved=TRUE\n"));
+				//padapter->bSurpriseRemoved = true;
+				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bSurpriseRemoved=true\n"));
 			case -ENOENT:
-				padapter->bDriverStopped = _TRUE;
-				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bDriverStopped=TRUE\n"));
+				padapter->bDriverStopped = true;
+				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bDriverStopped=true\n"));
 				break;
 			case -EPROTO:
 				break;
@@ -724,7 +724,7 @@ void rtl8192cu_recv_tasklet(void *priv)
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {
-		if ((padapter->bDriverStopped == _TRUE)||(padapter->bSurpriseRemoved== _TRUE)) {
+		if ((padapter->bDriverStopped == true)||(padapter->bSurpriseRemoved== true)) {
 			DBG_8723A("recv_tasklet => bDriverStopped or bSurpriseRemoved \n");
 			dev_kfree_skb_any(pskb);
 			break;
@@ -761,7 +761,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	{
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)\n", padapter->bDriverStopped, padapter->bSurpriseRemoved));
 
-		precvbuf->reuse = _TRUE;
+		precvbuf->reuse = true;
 		DBG_8723A("%s()-%d: RX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
 		__FUNCTION__, __LINE__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
 		goto exit;
@@ -772,7 +772,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		if ((purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE))
 		{
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete: (purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE)\n"));
-			precvbuf->reuse = _TRUE;
+			precvbuf->reuse = true;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 			DBG_8723A("%s()-%d: RX Warning!\n", __FUNCTION__, __LINE__);
 		}
@@ -800,8 +800,8 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 
 		DBG_8723A("###=> usb_read_port_complete => urb status(%d)\n", purb->status);
 
-		if(rtw_inc_and_chk_continual_urb_error(adapter_to_dvobj(padapter)) == _TRUE ){
-			padapter->bSurpriseRemoved = _TRUE;
+		if(rtw_inc_and_chk_continual_urb_error(adapter_to_dvobj(padapter)) == true ){
+			padapter->bSurpriseRemoved = true;
 		}
 
 		switch(purb->status) {
@@ -809,11 +809,11 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			case -EPIPE:
 			case -ENODEV:
 			case -ESHUTDOWN:
-				//padapter->bSurpriseRemoved=_TRUE;
-				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bSurpriseRemoved=TRUE\n"));
+				//padapter->bSurpriseRemoved=true;
+				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bSurpriseRemoved=true\n"));
 			case -ENOENT:
-				padapter->bDriverStopped=_TRUE;
-				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bDriverStopped=TRUE\n"));
+				padapter->bDriverStopped=true;
+				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bDriverStopped=true\n"));
 				break;
 			case -EPROTO:
 			case -EOVERFLOW:
@@ -823,7 +823,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 					pHalData->srestpriv.Wifi_Error_Status = USB_READ_PORT_FAIL;
 				}
 				#endif
-				precvbuf->reuse = _TRUE;
+				precvbuf->reuse = true;
 				rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 				break;
 			case -EINPROGRESS:
@@ -871,7 +871,7 @@ _func_enter_;
 
 	if((precvbuf->reuse == _FALSE) || (precvbuf->pskb == NULL)) {
 		if (NULL != (precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
-			precvbuf->reuse = _TRUE;
+			precvbuf->reuse = true;
 	}
 	rtl8192cu_init_recvbuf(adapter, precvbuf);
 
@@ -933,12 +933,12 @@ void rtl8192cu_xmit_tasklet(void *priv)
 	struct rtw_adapter *padapter = (struct rtw_adapter*)priv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
-	if(check_fwstate(&padapter->mlmepriv, _FW_UNDER_SURVEY) == _TRUE)
+	if(check_fwstate(&padapter->mlmepriv, _FW_UNDER_SURVEY) == true)
 		return;
 
 	while(1)
 	{
-		if ((padapter->bDriverStopped == _TRUE)||(padapter->bSurpriseRemoved== _TRUE) || (padapter->bWritePortCancel == _TRUE))
+		if ((padapter->bDriverStopped == true)||(padapter->bSurpriseRemoved== true) || (padapter->bWritePortCancel == true))
 		{
 			DBG_8723A("xmit_tasklet => bDriverStopped or bSurpriseRemoved or bWritePortCancel\n");
 			break;
