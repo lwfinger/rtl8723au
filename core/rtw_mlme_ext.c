@@ -112,15 +112,8 @@ unsigned char RSN_TKIP_CIPHER[4] = {0x00, 0x0f, 0xac, 0x02};
 /********************************************************
 MCS rate definitions
 *********************************************************/
-#ifdef CONFIG_DISABLE_MCS13TO15
-unsigned char MCS_rate_2R_MCS13TO15_OFF[16] = {
-	0xff, 0x1f, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 unsigned char MCS_rate_2R[16] = {
 	0xff, 0xff, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-#else /* CONFIG_DISABLE_MCS13TO15 */
-unsigned char MCS_rate_2R[16] = {
-	0xff, 0xff, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-#endif /* CONFIG_DISABLE_MCS13TO15 */
 unsigned char MCS_rate_1R[16] = {
 	0xff, 0x00, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 
@@ -6624,14 +6617,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 						DBG_8723A("declare supporting RX STBC\n");
 						pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= cpu_to_le16(0x0200);/* RX STBC two spatial stream */
 					}
-					#ifdef CONFIG_DISABLE_MCS13TO15
-					if(pmlmeext->cur_bwmode == HT_CHANNEL_WIDTH_40 && (pregpriv->wifi_spec!=1))
-						memcpy(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_rate_2R_MCS13TO15_OFF, 16);
-					else
 					memcpy(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_rate_2R, 16);
-					#else /* CONFIG_DISABLE_MCS13TO15 */
-					memcpy(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_rate_2R, 16);
-					#endif /* CONFIG_DISABLE_MCS13TO15 */
 					break;
 			}
 #ifdef RTL8192C_RECONFIG_TO_1T1R
