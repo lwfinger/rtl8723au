@@ -1155,9 +1155,6 @@ void rtw_free_assoc_resources(struct rtw_adapter *adapter, int lock_scanned_queu
 	struct	sta_priv *pstapriv = &adapter->stapriv;
 	struct wlan_network *tgt_network = &pmlmepriv->cur_network;
 
-#ifdef CONFIG_TDLS
-	struct tdls_info *ptdlsinfo = &adapter->tdlsinfo;
-#endif /* CONFIG_TDLS */
 _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_, ("+rtw_free_assoc_resources\n"));
@@ -1170,16 +1167,6 @@ _func_enter_;
 
 		psta = rtw_get_stainfo(&adapter->stapriv, tgt_network->network.MacAddress);
 
-#ifdef CONFIG_TDLS
-		if(ptdlsinfo->setup_state != TDLS_STATE_NONE)
-		{
-			rtw_tdls_cmd(adapter, myid(&(adapter->eeprompriv)), TDLS_RS_RCR);
-			rtw_reset_tdls_info(adapter);
-			rtw_free_all_stainfo(adapter);
-			spin_lock_bh(&(pstapriv->sta_hash_lock));
-		}
-		else
-#endif /* CONFIG_TDLS */
 		{
 			spin_lock_bh(&(pstapriv->sta_hash_lock));
 			rtw_free_stainfo(adapter,  psta);

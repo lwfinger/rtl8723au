@@ -77,14 +77,9 @@
 #endif
 
 //	Added by Kurt 20110511
-//#define CONFIG_TDLS
-#ifdef CONFIG_TDLS
 //	#ifndef CONFIG_WFD
 //		#define CONFIG_WFD
 //	#endif
-//	#define CONFIG_TDLS_AUTOSETUP
-//	#define CONFIG_TDLS_AUTOCHECKALIVE
-#endif
 
 #define CONFIG_SKB_COPY	//for amsdu
 

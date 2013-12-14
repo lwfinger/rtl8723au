@@ -450,9 +450,6 @@ extern s32 rtw_xmit_classifier(struct rtw_adapter *padapter, struct xmit_frame *
 extern u32 rtw_calculate_wlan_pkt_size_by_attribue(struct pkt_attrib *pattrib);
 #define rtw_wlan_pkt_size(f) rtw_calculate_wlan_pkt_size_by_attribue(&f->attrib)
 extern s32 rtw_xmitframe_coalesce(struct rtw_adapter *padapter, struct sk_buff *pkt, struct xmit_frame *pxmitframe);
-#ifdef CONFIG_TDLS
-s32 rtw_xmit_tdls_coalesce(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe, u8 action);
-#endif
 s32 _rtw_init_hw_txqueue(struct hw_txqueue* phw_txqueue, u8 ac_tag);
 void _rtw_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv);
 
@@ -472,7 +469,7 @@ void rtw_free_hwxmits(struct rtw_adapter *padapter);
 
 s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **pkt);
 
-#if defined(CONFIG_AP_MODE) || defined(CONFIG_TDLS)
+#if defined(CONFIG_AP_MODE)
 int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 void stop_sta_xmit(struct rtw_adapter *padapter, struct sta_info *psta);
 void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta);

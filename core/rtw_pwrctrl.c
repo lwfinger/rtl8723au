@@ -463,13 +463,6 @@ void rtw_set_ps_mode(struct rtw_adapter *padapter, u8 ps_mode, u8 smart_ps, u8 b
 #ifdef CONFIG_P2P
 	struct wifidirect_info	*pwdinfo = &( padapter->wdinfo );
 #endif /* CONFIG_P2P */
-#ifdef CONFIG_TDLS
-	struct sta_priv *pstapriv = &padapter->stapriv;
-	_irqL irqL;
-	int i, j;
-	_list	*plist, *phead;
-	struct sta_info *ptdls_sta;
-#endif /* CONFIG_TDLS */
 
 _func_enter_;
 
@@ -506,27 +499,6 @@ _func_enter_;
 		{
 			DBG_8723A("rtw_set_ps_mode: Leave 802.11 power save\n");
 
-#ifdef CONFIG_TDLS
-			spin_lock_bh(&pstapriv->sta_hash_lock);
-
-			for(i=0; i< NUM_STA; i++)
-			{
-				phead = &(pstapriv->sta_hash[i]);
-				plist = phead->next;
-
-				while ((rtw_end_of_queue_search(phead, plist)) == false)
-				{
-					ptdls_sta = container_of(plist, struct sta_info, hash_list);
-
-					if( ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE )
-						issue_nulldata_to_TDLS_peer_STA(padapter, ptdls_sta, 0);
-					plist = plist->next;
-				}
-			}
-
-			spin_unlock_bh(&pstapriv->sta_hash_lock);
-#endif /* CONFIG_TDLS */
-
 			pwrpriv->pwr_mode = ps_mode;
 			rtw_set_rpwm(padapter, PS_STATE_S4);
 			rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)(&ps_mode));
@@ -542,27 +514,6 @@ _func_enter_;
 			)
 		{
 			DBG_8723A("%s: Enter 802.11 power save\n", __FUNCTION__);
-
-#ifdef CONFIG_TDLS
-			spin_lock_bh(&pstapriv->sta_hash_lock);
-
-			for(i=0; i< NUM_STA; i++)
-			{
-				phead = &(pstapriv->sta_hash[i]);
-				plist = phead->next;
-
-				while ((rtw_end_of_queue_search(phead, plist)) == false)
-				{
-					ptdls_sta = container_of(plist, struct sta_info, hash_list);
-
-					if( ptdls_sta->tdls_sta_state & TDLS_LINKED_STATE )
-						issue_nulldata_to_TDLS_peer_STA(padapter, ptdls_sta, 1);
-					plist = plist->next;
-				}
-			}
-
-			spin_unlock_bh(&pstapriv->sta_hash_lock);
-#endif /* CONFIG_TDLS */
 
 			pwrpriv->bFwCurrentInPSMode = true;
 			pwrpriv->pwr_mode = ps_mode;

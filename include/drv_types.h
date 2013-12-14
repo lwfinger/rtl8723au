@@ -65,7 +65,6 @@ enum _NIC_VERSION {
 #include <rtw_led.h>
 #include <rtw_mlme_ext.h>
 #include <rtw_p2p.h>
-#include <rtw_tdls.h>
 #include <rtw_ap.h>
 
 #ifdef CONFIG_DRVEXT_MODULE
@@ -339,10 +338,6 @@ struct rtw_adapter {
 #ifdef CONFIG_P2P
 	struct wifidirect_info	wdinfo;
 #endif //CONFIG_P2P
-
-#ifdef CONFIG_TDLS
-	struct tdls_info	tdlsinfo;
-#endif //CONFIG_TDLS
 
 #ifdef CONFIG_WFD
 	struct wifi_display_info wfd_info;

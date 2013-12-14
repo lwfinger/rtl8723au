@@ -1218,15 +1218,6 @@ _func_enter_;
 		goto exit;
 	}
 
-#ifdef CONFIG_TDLS
-	if(rtw_init_tdls_info(padapter) == _FAIL)
-	{
-		DBG_8723A("Can't rtw_init_tdls_info\n");
-		ret8=_FAIL;
-		goto exit;
-	}
-#endif //CONFIG_TDLS
-
 	if(_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL)
 	{
 		DBG_8723A("Can't _rtw_init_xmit_priv\n");
@@ -1241,13 +1232,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	// We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc().
-	//memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
-
-	//_init_timer(&(padapter->securitypriv.tkip_timer), padapter->pifp, rtw_use_tkipkey_handler, padapter);
-
-	if(_rtw_init_sta_priv(&padapter->stapriv) == _FAIL)
-	{
+	if(_rtw_init_sta_priv(&padapter->stapriv) == _FAIL) {
 		DBG_8723A("Can't _rtw_init_sta_priv\n");
 		ret8=_FAIL;
 		goto exit;
@@ -1359,10 +1344,6 @@ u8 rtw_free_drv_sw(struct rtw_adapter *padapter)
 	#endif
 
 	free_mlme_ext_priv(&padapter->mlmeextpriv);
-
-#ifdef CONFIG_TDLS
-	//rtw_free_tdls_info(&padapter->tdlsinfo);
-#endif //CONFIG_TDLS
 
 	rtw_free_cmd_priv(&padapter->cmdpriv);
 

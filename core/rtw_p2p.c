@@ -2530,9 +2530,6 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 #ifdef CONFIG_WFD
 	u8	wfd_ie[ 128 ] = { 0x00 };
 	u32	wfd_ielen = 0;
-#ifdef CONFIG_TDLS
-	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
-#endif /*  CONFIG_TDLS */
 #endif /*  CONFIG_WFD */
 
 	if ( (wpsie=rtw_get_wps_ie( pframe + _PUBLIC_ACTION_IE_OFFSET_, len - _PUBLIC_ACTION_IE_OFFSET_, NULL, &wps_ielen)) )
@@ -2602,14 +2599,7 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 
 		/* Check P2P Capability ATTR */
 		if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_CAPABILITY, (u8*)&cap_attr, (uint*)&attr_contentlen) )
-		{
 			cap_attr = le16_to_cpu(cap_attr);
-
-#if defined(CONFIG_WFD) && defined(CONFIG_TDLS)
-			if(!(cap_attr & P2P_GRPCAP_INTRABSS) )
-				ptdlsinfo->ap_prohibited = true;
-#endif /* defined(CONFIG_WFD) && defined(CONFIG_TDLS) */
-		}
 
 		if ( rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GO_INTENT , &attr_content, &attr_contentlen) )
 		{
@@ -2746,9 +2736,6 @@ u8 process_p2p_group_negotation_resp( struct wifidirect_info *pwdinfo, u8 *pfram
 #ifdef CONFIG_WFD
 	u8	wfd_ie[ 128 ] = { 0x00 };
 	u32	wfd_ielen = 0;
-#ifdef CONFIG_TDLS
-	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;
-#endif /*  CONFIG_TDLS */
 #endif /*  CONFIG_WFD */
 
 	ies = pframe + _PUBLIC_ACTION_IE_OFFSET_;
@@ -2794,13 +2781,7 @@ u8 process_p2p_group_negotation_resp( struct wifidirect_info *pwdinfo, u8 *pfram
 
 			/* Check P2P Capability ATTR */
 			if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_CAPABILITY, (u8*)&cap_attr, (uint*)&attr_contentlen) )
-			{
 				cap_attr = le16_to_cpu(cap_attr);
-#ifdef CONFIG_TDLS
-				if(!(cap_attr & P2P_GRPCAP_INTRABSS) )
-					ptdlsinfo->ap_prohibited = true;
-#endif /*  CONFIG_TDLS */
-			}
 
 			rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_STATUS, &attr_content, &attr_contentlen);
 			if ( attr_contentlen == 1 )

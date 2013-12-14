@@ -920,16 +920,10 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-#ifdef CONFIG_TDLS
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-#endif
-	do_queue_select(padapter, pattrib);
 
+	do_queue_select(padapter, pattrib);
 	spin_lock_bh(&pxmitpriv->lock);
 
-#ifndef CONFIG_TDLS
 #ifdef CONFIG_AP_MODE
 	if(xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe) == true)
 	{
@@ -957,18 +951,6 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 		}
 
 		return false;
-	}
-#endif
-//else CONFIG_TDLS, process as TDLS Buffer STA
-#else
-	if(pmlmeinfo->tdls_setup_state&TDLS_LINKED_STATE ){	//&& pattrib->ether_type!=0x0806)
-		res = xmit_tdls_enqueue_for_sleeping_sta(padapter, pxmitframe);
-		if(res==true){
-			spin_unlock_bh(&pxmitpriv->lock);
-			return false;
-		}else if(res==2){
-			goto enqueue;
-		}
 	}
 #endif
 
