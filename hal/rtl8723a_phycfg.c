@@ -540,61 +540,6 @@ phy_ConfigMACWithParaFile(
 }
 
 /*-----------------------------------------------------------------------------
- * Function:    phy_ConfigMACWithHeaderFile()
- *
- * Overview:    This function read BB parameters from Header file we gen, and do register
- *			  Read/Write
- *
- * Input:	struct rtw_adapter *		Adapter
- *			s8 *				pFileName
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *
- * Note:		The format of MACPHY_REG.txt is different from PHY and RF.
- *			[Register][Mask][Value]
- *---------------------------------------------------------------------------*/
-#ifndef CONFIG_PHY_SETTING_WITH_ODM
-static	int
-phy_ConfigMACWithHeaderFile(
-	struct rtw_adapter *		Adapter
-)
-{
-	u32					i = 0;
-	u32					ArrayLength = 0;
-	u32*				ptrArray;
-	//HAL_DATA_TYPE			*pHalData = GET_HAL_DATA(Adapter);
-
-	//2008.11.06 Modified by tynli.
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Read Rtl819XMACPHY_Array\n"));
-	ArrayLength = Rtl8723_MAC_ArrayLength;
-	ptrArray = (u32*)Rtl8723_MAC_Array;
-
-#ifdef CONFIG_IOL_MAC
-	{
-		struct xmit_frame	*xmit_frame;
-		if((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL)
-			return _FAIL;
-
-		for(i = 0 ;i < ArrayLength;i=i+2){ // Add by tynli for 2 column
-			rtw_IOL_append_WB_cmd(xmit_frame, ptrArray[i], (u8)ptrArray[i+1]);
-		}
-
-		return rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
-	}
-#else
-	for(i = 0 ;i < ArrayLength;i=i+2){ // Add by tynli for 2 column
-		rtw_write8(Adapter, ptrArray[i], (u8)ptrArray[i+1]);
-	}
-#endif
-
-	return _SUCCESS;
-
-}
-#endif//#ifndef CONFIG_PHY_SETTING_WITH_ODM
-
-/*-----------------------------------------------------------------------------
  * Function:    PHY_MACConfig8192C
  *
  * Overview:	Condig MAC by header file or parameter file.
@@ -625,12 +570,8 @@ s32 PHY_MACConfig8723A(struct rtw_adapter * Adapter)
 	// Config MAC
 	//
 #ifdef CONFIG_EMBEDDED_FWIMG
-	#ifdef CONFIG_PHY_SETTING_WITH_ODM
 	if(HAL_STATUS_FAILURE == ODM_ConfigMACWithHeaderFile(&pHalData->odmpriv))
 		rtStatus = _FAIL;
-	#else
-		rtStatus = phy_ConfigMACWithHeaderFile(Adapter);
-	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM
 #else
 
 	// Not make sure EEPROM, add later
@@ -821,147 +762,6 @@ phy_ConfigBBExternalPA(
 	// same code as SU. It is already updated in PHY_REG_1T_HP.txt.
 }
 
-/*-----------------------------------------------------------------------------
- * Function:    phy_ConfigBBWithHeaderFile()
- *
- * Overview:    This function read BB parameters from general file format, and do register
- *			  Read/Write
- *
- * Input:	struct rtw_adapter *		Adapter
- *			u8			ConfigType     0 => PHY_CONFIG
- *										 1 =>AGC_TAB
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *
- *---------------------------------------------------------------------------*/
-#ifndef CONFIG_PHY_SETTING_WITH_ODM
-static	int
-phy_ConfigBBWithHeaderFile(
-	struct rtw_adapter *		Adapter,
-	u8			ConfigType
-)
-{
-	int i;
-	u32*	Rtl819XPHY_REGArray_Table;
-	u32*	Rtl819XAGCTAB_Array_Table;
-	u16	PHY_REGArrayLen, AGCTAB_ArrayLen;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	int ret = _SUCCESS;
-
-
-	AGCTAB_ArrayLen = Rtl8723_AGCTAB_1TArrayLength;
-	Rtl819XAGCTAB_Array_Table = (u32*)Rtl8723_AGCTAB_1TArray;
-	PHY_REGArrayLen = Rtl8723_PHY_REG_1TArrayLength;
-	Rtl819XPHY_REGArray_Table = (u32*)Rtl8723_PHY_REG_1TArray;
-//	RT_TRACE(COMP_INIT, DBG_LOUD, (" ===> phy_ConfigBBWithHeaderFile() phy:Rtl8723AGCTAB_1TArray\n"));
-//	RT_TRACE(COMP_INIT, DBG_LOUD, (" ===> phy_ConfigBBWithHeaderFile() agc:Rtl8723PHY_REG_1TArray\n"));
-
-	if(ConfigType == BaseBand_Config_PHY_REG)
-	{
-		#ifdef CONFIG_IOL_BB_PHY_REG
-		{
-			struct xmit_frame	*xmit_frame;
-			u32 tmp_value;
-
-			if((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL) {
-				ret = _FAIL;
-				goto exit;
-			}
-
-			for(i=0;i<PHY_REGArrayLen;i=i+2)
-			{
-				tmp_value=Rtl819XPHY_REGArray_Table[i+1];
-
-				if (Rtl819XPHY_REGArray_Table[i] == 0xfe)
-					rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 50);
-				else if (Rtl819XPHY_REGArray_Table[i] == 0xfd)
-					rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 5);
-				else if (Rtl819XPHY_REGArray_Table[i] == 0xfc)
-					rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 1);
-				else if (Rtl819XPHY_REGArray_Table[i] == 0xfb)
-					rtw_IOL_append_DELAY_US_cmd(xmit_frame, 50);
-				else if (Rtl819XPHY_REGArray_Table[i] == 0xfa)
-					rtw_IOL_append_DELAY_US_cmd(xmit_frame, 5);
-				else if (Rtl819XPHY_REGArray_Table[i] == 0xf9)
-					rtw_IOL_append_DELAY_US_cmd(xmit_frame, 1);
-
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XPHY_REGArray_Table[i], tmp_value);
-				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XPHY_REGArray_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XPHY_REGArray_Table[i], Rtl819XPHY_REGArray_Table[i+1]));
-			}
-
-			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
-		}
-		#else
-		for(i=0;i<PHY_REGArrayLen;i=i+2)
-		{
-			if (Rtl819XPHY_REGArray_Table[i] == 0xfe){
-				#ifdef CONFIG_LONG_DELAY_ISSUE
-				msleep(50);
-				#else
-				rtw_mdelay_os(50);
-				#endif
-			}
-			else if (Rtl819XPHY_REGArray_Table[i] == 0xfd)
-				rtw_mdelay_os(5);
-			else if (Rtl819XPHY_REGArray_Table[i] == 0xfc)
-				rtw_mdelay_os(1);
-			else if (Rtl819XPHY_REGArray_Table[i] == 0xfb)
-				rtw_udelay_os(50);
-			else if (Rtl819XPHY_REGArray_Table[i] == 0xfa)
-				rtw_udelay_os(5);
-			else if (Rtl819XPHY_REGArray_Table[i] == 0xf9)
-				rtw_udelay_os(1);
-
-			PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table[i], bMaskDWord, Rtl819XPHY_REGArray_Table[i+1]);
-
-			// Add 1us delay between BB/RF register setting.
-			rtw_udelay_os(1);
-
-			//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XPHY_REGArray_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XPHY_REGArray_Table[i], Rtl819XPHY_REGArray_Table[i+1]));
-		}
-		#endif
-		// for External PA
-		phy_ConfigBBExternalPA(Adapter);
-	}
-	else if(ConfigType == BaseBand_Config_AGC_TAB)
-	{
-		#ifdef CONFIG_IOL_BB_AGC_TAB
-		{
-			struct xmit_frame	*xmit_frame;
-
-			if((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL) {
-				ret = _FAIL;
-				goto exit;
-			}
-
-			for(i=0;i<AGCTAB_ArrayLen;i=i+2)
-			{
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]);
-				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XAGCTAB_Array_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]));
-			}
-
-			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
-		}
-		#else
-		for(i=0;i<AGCTAB_ArrayLen;i=i+2)
-		{
-			PHY_SetBBReg(Adapter, Rtl819XAGCTAB_Array_Table[i], bMaskDWord, Rtl819XAGCTAB_Array_Table[i+1]);
-
-			// Add 1us delay between BB/RF register setting.
-			rtw_udelay_os(1);
-
-			//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XAGCTAB_Array_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]));
-		}
-		#endif
-	}
-
-exit:
-	return ret;
-}
-
-#endif
 void
 storePwrIndexDiffRateOffset(
 	struct rtw_adapter *	Adapter,
@@ -1215,12 +1015,8 @@ phy_BB8723a_Config_ParaFile(
 	// We will seperate as 88C / 92C according to chip version
 	//
 #ifdef CONFIG_EMBEDDED_FWIMG
-	#ifdef CONFIG_PHY_SETTING_WITH_ODM
 	if(HAL_STATUS_FAILURE ==ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG))
 		rtStatus = _FAIL;
-	#else
-	rtStatus = phy_ConfigBBWithHeaderFile(Adapter, BaseBand_Config_PHY_REG);
-	#endif
 #else
 	// No matter what kind of CHIP we always read PHY_REG.txt. We must copy different
 	// type of parameter files to phy_reg.txt at first.
@@ -1264,12 +1060,8 @@ phy_BB8723a_Config_ParaFile(
 	// 3. BB AGC table Initialization
 	//
 #ifdef CONFIG_EMBEDDED_FWIMG
-	#ifdef CONFIG_PHY_SETTING_WITH_ODM
 	if(HAL_STATUS_FAILURE ==ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,  CONFIG_BB_AGC_TAB))
 		rtStatus = _FAIL;
-	#else
-	rtStatus = phy_ConfigBBWithHeaderFile(Adapter, BaseBand_Config_AGC_TAB);
-	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM
 #else
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("phy_BB8192S_Config_ParaFile AGC_TAB.txt\n"));
 	rtStatus = phy_ConfigBBWithParaFile(Adapter, pszAGCTableFile);
@@ -1426,191 +1218,6 @@ PHY_ConfigRFExternalPA(
 	// same code as SU. It is already updated in radio_a_1T_HP.txt.
 	return rtStatus;
 }
-//****************************************
-/*-----------------------------------------------------------------------------
- * Function:    PHY_ConfigRFWithHeaderFile()
- *
- * Overview:    This function read RF parameters from general file format, and do RF 3-wire
- *
- * Input:	struct rtw_adapter *			Adapter
- *			s8 *					pFileName
- *			RF_RADIO_PATH_E	eRFPath
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *
- * Note:		Delay may be required for RF configuration
- *---------------------------------------------------------------------------*/
-#ifndef CONFIG_PHY_SETTING_WITH_ODM
-int
-rtl8723a_PHY_ConfigRFWithHeaderFile(
-	struct rtw_adapter *			Adapter,
-	RF_RADIO_PATH_E		eRFPath
-)
-{
-
-	int			i;
-	int			rtStatus = _SUCCESS;
-	u32*		Rtl819XRadioA_Array_Table;
-	u32*		Rtl819XRadioB_Array_Table;
-	u16		RadioA_ArrayLen,RadioB_ArrayLen;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
-
-	RadioA_ArrayLen = Rtl8723_RadioA_1TArrayLength;
-	Rtl819XRadioA_Array_Table = (u32*)Rtl8723_RadioA_1TArray;
-	RadioB_ArrayLen = Rtl8723_RadioB_1TArrayLength;
-	Rtl819XRadioB_Array_Table = (u32*)Rtl8723_RadioB_1TArray;
-//	RT_TRACE(COMP_INIT, DBG_LOUD, (" ===> PHY_ConfigRFWithHeaderFile() Radio_A:Rtl8723RadioA_1TArray\n"));
-//	RT_TRACE(COMP_INIT, DBG_LOUD, (" ===> PHY_ConfigRFWithHeaderFile() Radio_B:Rtl8723RadioB_1TArray\n"));
-
-	switch (eRFPath)
-	{
-		case RF_PATH_A:
-			#ifdef CONFIG_IOL_RF_RF90_PATH_A
-			{
-				struct xmit_frame	*xmit_frame;
-				if((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL) {
-					rtStatus = _FAIL;
-					goto exit;
-				}
-
-				for(i = 0;i<RadioA_ArrayLen; i=i+2)
-				{
-					if(Rtl819XRadioA_Array_Table[i] == 0xfe)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 50);
-					else if (Rtl819XRadioA_Array_Table[i] == 0xfd)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 5);
-					else if (Rtl819XRadioA_Array_Table[i] == 0xfc)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 1);
-					else if (Rtl819XRadioA_Array_Table[i] == 0xfb)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 50);
-					else if (Rtl819XRadioA_Array_Table[i] == 0xfa)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 5);
-					else if (Rtl819XRadioA_Array_Table[i] == 0xf9)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 1);
-					else
-					{
-						BB_REGISTER_DEFINITION_T	*pPhyReg = &pHalData->PHYRegDef[eRFPath];
-						u32	NewOffset = 0;
-						u32	DataAndAddr = 0;
-
-						NewOffset = Rtl819XRadioA_Array_Table[i] & 0x3f;
-						DataAndAddr = ((NewOffset<<20) | (Rtl819XRadioA_Array_Table[i+1]&0x000fffff)) & 0x0fffffff;	// T65 RF
-						rtw_IOL_append_WD_cmd(xmit_frame, pPhyReg->rf3wireOffset, DataAndAddr);
-					}
-				}
-				rtStatus = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
-			}
-			#else
-			for(i = 0;i<RadioA_ArrayLen; i=i+2)
-			{
-				if(Rtl819XRadioA_Array_Table[i] == 0xfe) {
-					#ifdef CONFIG_LONG_DELAY_ISSUE
-					msleep(50);
-					#else
-					rtw_mdelay_os(50);
-					#endif
-				}
-				else if (Rtl819XRadioA_Array_Table[i] == 0xfd)
-					rtw_mdelay_os(5);
-				else if (Rtl819XRadioA_Array_Table[i] == 0xfc)
-					rtw_mdelay_os(1);
-				else if (Rtl819XRadioA_Array_Table[i] == 0xfb)
-					rtw_udelay_os(50);
-				else if (Rtl819XRadioA_Array_Table[i] == 0xfa)
-					rtw_udelay_os(5);
-				else if (Rtl819XRadioA_Array_Table[i] == 0xf9)
-					rtw_udelay_os(1);
-				else
-				{
-					PHY_SetRFReg(Adapter, eRFPath, Rtl819XRadioA_Array_Table[i], bRFRegOffsetMask, Rtl819XRadioA_Array_Table[i+1]);
-					// Add 1us delay between BB/RF register setting.
-					rtw_udelay_os(1);
-				}
-			}
-			#endif
-			//Add for High Power PA
-			PHY_ConfigRFExternalPA(Adapter, eRFPath);
-			break;
-		case RF_PATH_B:
-			#ifdef CONFIG_IOL_RF_RF_PATH_B
-			{
-				struct xmit_frame	*xmit_frame;
-				if((xmit_frame=rtw_IOL_accquire_xmit_frame(Adapter)) == NULL) {
-					rtStatus = _FAIL;
-					goto exit;
-				}
-
-				for(i = 0;i<RadioB_ArrayLen; i=i+2)
-				{
-					if(Rtl819XRadioB_Array_Table[i] == 0xfe)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 50);
-					else if (Rtl819XRadioB_Array_Table[i] == 0xfd)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 5);
-					else if (Rtl819XRadioB_Array_Table[i] == 0xfc)
-						rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 1);
-					else if (Rtl819XRadioB_Array_Table[i] == 0xfb)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 50);
-					else if (Rtl819XRadioB_Array_Table[i] == 0xfa)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 5);
-					else if (Rtl819XRadioB_Array_Table[i] == 0xf9)
-						rtw_IOL_append_DELAY_US_cmd(xmit_frame, 1);
-					else
-					{
-						BB_REGISTER_DEFINITION_T	*pPhyReg = &pHalData->PHYRegDef[eRFPath];
-						u32	NewOffset = 0;
-						u32	DataAndAddr = 0;
-
-						NewOffset = Rtl819XRadioB_Array_Table[i] & 0x3f;
-						DataAndAddr = ((NewOffset<<20) | (Rtl819XRadioB_Array_Table[i+1]&0x000fffff)) & 0x0fffffff;	// T65 RF
-						rtw_IOL_append_WD_cmd(xmit_frame, pPhyReg->rf3wireOffset, DataAndAddr);
-					}
-				}
-				rtStatus = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
-			}
-			#else
-			for(i = 0;i<RadioB_ArrayLen; i=i+2)
-			{
-				if(Rtl819XRadioB_Array_Table[i] == 0xfe)
-				{ // Deay specific ms. Only RF configuration require delay.
-					#ifdef CONFIG_LONG_DELAY_ISSUE
-					msleep(50);
-					#else
-					rtw_mdelay_os(50);
-					#endif
-				}
-				else if (Rtl819XRadioB_Array_Table[i] == 0xfd)
-					rtw_mdelay_os(5);
-				else if (Rtl819XRadioB_Array_Table[i] == 0xfc)
-					rtw_mdelay_os(1);
-				else if (Rtl819XRadioB_Array_Table[i] == 0xfb)
-					rtw_udelay_os(50);
-				else if (Rtl819XRadioB_Array_Table[i] == 0xfa)
-					rtw_udelay_os(5);
-				else if (Rtl819XRadioB_Array_Table[i] == 0xf9)
-					rtw_udelay_os(1);
-				else
-				{
-					PHY_SetRFReg(Adapter, eRFPath, Rtl819XRadioB_Array_Table[i], bRFRegOffsetMask, Rtl819XRadioB_Array_Table[i+1]);
-					// Add 1us delay between BB/RF register setting.
-					rtw_udelay_os(1);
-				}
-			}
-			#endif
-			break;
-		case RF_PATH_C:
-			break;
-		case RF_PATH_D:
-			break;
-	}
-
-exit:
-	return rtStatus;
-
-}
-#endif
 
 /*-----------------------------------------------------------------------------
  * Function:    PHY_CheckBBAndRFOK()

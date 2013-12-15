@@ -74,31 +74,6 @@
 #define Rtl8723_FwUMCBCutMPImageArray		Rtl8723SFwUMCBCutMPImgAr
 #define Rtl8723_UMCBCutMPImgArrayLength		Rtl8723SUMCBCutMPImgArrayLength
 
-#ifndef CONFIG_PHY_SETTING_WITH_ODM
-	// MAC/BB/PHY Array
-	#define Rtl8723_MAC_Array					Rtl8723UMAC_2T_Array
-	//#define Rtl8723_AGCTAB_2TArray				Rtl8723UAGCTAB_2TArray
-	#define Rtl8723_AGCTAB_1TArray				Rtl8723UAGCTAB_1TArray
-	//#define Rtl8723_PHY_REG_2TArray				Rtl8723UPHY_REG_2TArray
-	#define Rtl8723_PHY_REG_1TArray				Rtl8723UPHY_REG_1TArray
-	//#define Rtl8723_RadioA_2TArray				Rtl8723URadioA_2TArray
-	#define Rtl8723_RadioA_1TArray				Rtl8723URadioA_1TArray
-	//#define Rtl8723_RadioB_2TArray				Rtl8723URadioB_2TArray
-	#define Rtl8723_RadioB_1TArray				Rtl8723URadioB_1TArray
-
-
-
-	// Array length
-
-	#define Rtl8723_MAC_ArrayLength				Rtl8723UMAC_2T_ArrayLength
-	#define Rtl8723_AGCTAB_1TArrayLength			Rtl8723UAGCTAB_1TArrayLength
-	#define Rtl8723_PHY_REG_1TArrayLength			Rtl8723UPHY_REG_1TArrayLength
-
-
-	#define Rtl8723_RadioA_1TArrayLength			Rtl8723URadioA_1TArrayLength
-	#define Rtl8723_RadioB_1TArrayLength			Rtl8723URadioB_1TArrayLength
-#endif
-
 #define DRVINFO_SZ				4 // unit is 8bytes
 #define PageNum_128(_Len)		(u32)(((_Len)>>7) + ((_Len)&0x7F ? 1:0))
 

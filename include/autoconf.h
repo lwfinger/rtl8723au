@@ -17,7 +17,6 @@
  *
  *
  ******************************************************************************/
-#define CONFIG_PHY_SETTING_WITH_ODM
 
 /*
  * Public  General Config
