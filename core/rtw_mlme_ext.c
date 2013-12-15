@@ -19,6 +19,7 @@
  ******************************************************************************/
 #define _RTW_MLME_EXT_C_
 
+#include <linux/ieee80211.h>
 #include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
@@ -27,7 +28,6 @@
 #include <wlan_bssdef.h>
 #include <mlme_osdep.h>
 #include <recv_osdep.h>
-#include <linux/ieee80211.h>
 
 #ifdef CONFIG_BT_COEXIST
 #include <rtl8723a_hal.h>
