@@ -52,7 +52,10 @@
 
 #ifndef WLAN_EID_SECONDARY_CHANNEL_OFFSET
 #define WLAN_EID_SECONDARY_CHANNEL_OFFSET 62
-#define WLAN_EID_SECONDARY_CHANNEL_OFFSET 61
+#endif
+
+#ifndef WLAN_EID_HT_OPERATION
+#define WLAN_EID_HT_OPERATION 61
 #endif
 
 // This value is tested by WiFi 11n Test Plan 5.2.3.
