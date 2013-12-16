@@ -28,11 +28,9 @@
 #define	ODM_CE			0x04	//BIT2
 #define	ODM_MP			0x08	//BIT3
 
-#define	DM_ODM_SUPPORT_TYPE			ODM_CE
-
-#define		RT_PCI_INTERFACE				1
-#define		RT_USB_INTERFACE				2
-#define		RT_SDIO_INTERFACE				3
+#define		RT_PCI_INTERFACE	1
+#define		RT_USB_INTERFACE	2
+#define		RT_SDIO_INTERFACE	3
 
 typedef enum _HAL_STATUS{
 	HAL_STATUS_SUCCESS,

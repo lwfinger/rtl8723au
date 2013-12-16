@@ -3086,7 +3086,6 @@ odm_SwAntDivInit_NIC(
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 // Init SW ANT DIV mechanism for 8723AE/AU/AS// Neil Chen--2012--07--17---
 // CE/AP/ADSL no using SW ANT DIV for 8723A Series IC
-//#if (DM_ODM_SUPPORT_TYPE==ODM_MP)
 #if (RTL8723A_SUPPORT==1)
 	if(pDM_Odm->SupportICType == ODM_RTL8723A)
 	{
