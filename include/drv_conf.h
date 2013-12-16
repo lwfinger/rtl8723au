@@ -21,17 +21,6 @@
 #define __DRV_CONF_H__
 #include "autoconf.h"
 
-#ifdef CONFIG_ANDROID
-//Some Android build will restart the UI while non-printable ascii is passed
-//between java and c/c++ layer (JNI). We force CONFIG_VALIDATE_SSID
-//for Android here. If you are sure there is no risk on your system about this,
-//mask this macro define to support non-printable ascii ssid.
-//#define CONFIG_VALIDATE_SSID
-
-//Android expect dbm as the rx signal strength unit
-#define CONFIG_SIGNAL_DISPLAY_DBM
-#endif
-
 #ifdef CONFIG_RESUME_IN_WORKQUEUE //this can be removed, because there is no case for this...
 	#if !defined( CONFIG_WAKELOCK) && !defined(CONFIG_ANDROID_POWER)
 	#error "enable CONFIG_RESUME_IN_WORKQUEUE without CONFIG_WAKELOCK or CONFIG_ANDROID_POWER will suffer from the danger of wifi's unfunctionality..."
