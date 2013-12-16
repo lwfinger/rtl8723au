@@ -7809,6 +7809,59 @@ fail:
 #endif
 
 #include <rtw_android.h>
+#ifdef CONFIG_ANDROID
+static const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
+	"START",
+	"STOP",
+	"SCAN-ACTIVE",
+	"SCAN-PASSIVE",
+	"RSSI",
+	"LINKSPEED",
+	"RXFILTER-START",
+	"RXFILTER-STOP",
+	"RXFILTER-ADD",
+	"RXFILTER-REMOVE",
+	"BTCOEXSCAN-START",
+	"BTCOEXSCAN-STOP",
+	"BTCOEXMODE",
+	"SETSUSPENDOPT",
+	"P2P_DEV_ADDR",
+	"SETFWPATH",
+	"SETBAND",
+	"GETBAND",
+	"COUNTRY",
+	"P2P_SET_NOA",
+	"P2P_GET_NOA",
+	"P2P_SET_PS",
+	"SET_AP_WPS_P2P_IE",
+#ifdef PNO_SUPPORT
+	"PNOSSIDCLR",
+	"PNOSETUP ",
+	"PNOFORCE",
+	"PNODEBUG",
+#endif
+
+	"MACADDR",
+
+	"BLOCK",
+	"WFD-ENABLE",
+	"WFD-DISABLE",
+	"WFD-SET-TCPPORT",
+	"WFD-SET-MAXTPUT",
+	"WFD-SET-DEVTYPE",	
+};
+
+static int rtw_android_cmdstr_to_num(char *cmdstr)
+{
+	int cmd_num;
+	for(cmd_num=0 ; cmd_num<ANDROID_WIFI_CMD_MAX; cmd_num++)
+		if(0 == strnicmp(cmdstr , android_wifi_cmd_str[cmd_num], strlen(android_wifi_cmd_str[cmd_num])) )
+			break;
+		
+	return cmd_num;
+}
+#endif
+
 static int rtw_wx_set_priv(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *awrq,
