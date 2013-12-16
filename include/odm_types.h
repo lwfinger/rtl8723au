@@ -23,24 +23,10 @@
 //
 // Define Different SW team support
 //
-#define	ODM_AP			0x01	 //BIT0
-#define	ODM_ADSL		0x02	//BIT1
-#define	ODM_CE			0x04	//BIT2
-#define	ODM_MP			0x08	//BIT3
-
-#define		RT_PCI_INTERFACE	1
-#define		RT_USB_INTERFACE	2
-#define		RT_SDIO_INTERFACE	3
 
 typedef enum _HAL_STATUS{
 	HAL_STATUS_SUCCESS,
 	HAL_STATUS_FAILURE,
-	/*RT_STATUS_PENDING,
-	RT_STATUS_RESOURCE,
-	RT_STATUS_INVALID_CONTEXT,
-	RT_STATUS_INVALID_PARAMETER,
-	RT_STATUS_NOT_SUPPORT,
-	RT_STATUS_OS_API_FAILED,*/
 }HAL_STATUS,*PHAL_STATUS;
 
 typedef enum _RT_SPINLOCK_TYPE{
@@ -49,8 +35,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 
 
 	#include <basic_types.h>
-
-	#define DEV_BUS_TYPE	RT_USB_INTERFACE
 
 	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
 	typedef  void *				RT_TIMER_CALL_BACK;

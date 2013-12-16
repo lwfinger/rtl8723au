@@ -131,7 +131,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	memset(pDM_Odm, 0, sizeof(*pDM_Odm));
 
 	pDM_Odm->Adapter = Adapter;
-	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PLATFORM,ODM_CE);
+	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PLATFORM, 0x04);
 	if(Adapter->interface_type == RTW_GSPI )
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,ODM_ITRF_SDIO);
 	else

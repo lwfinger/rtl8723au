@@ -156,7 +156,7 @@ ODM_ReadAndConfig_MAC_REG_8723A(
 	u32     i           = 0;
 	u16     count       = 0;
 	u32 *    ptr_array   = NULL;
-	u8     platform    = pDM_Odm->SupportPlatform;
+	u8     platform    = 0x04;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
 	u8     board       = pDM_Odm->BoardType;
 	u32     ArrayLen    = sizeof(Array_MAC_REG_8723A)/sizeof(u32);

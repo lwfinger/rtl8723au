@@ -966,8 +966,6 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	// Init Value
 	//
 //-----------HOOK BEFORE REG INIT-----------//
-	// ODM Platform info AP/ADSL/CE/MP = 1/2/3/4
-	u8			SupportPlatform;
 	// ODM Support Ability DIG/RATR/TX_PWR_TRACK/ ¡K¡K = 1/2/3/¡K
 	u32			SupportAbility;
 	// ODM PCIE/USB/SDIO/GSPI = 0/1/2/3

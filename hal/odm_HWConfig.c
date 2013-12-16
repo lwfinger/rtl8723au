@@ -82,111 +82,31 @@ odm_SignalScaleMapping_92CSeries(
 )
 {
 	s32 RetSig;
-#if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	if(pDM_Odm->SupportInterface  == ODM_ITRF_PCIE)
-	{
-		// Step 1. Scale mapping.
-		if(CurrSig >= 61 && CurrSig <= 100)
-		{
-			RetSig = 90 + ((CurrSig - 60) / 4);
-		}
-		else if(CurrSig >= 41 && CurrSig <= 60)
-		{
-			RetSig = 78 + ((CurrSig - 40) / 2);
-		}
-		else if(CurrSig >= 31 && CurrSig <= 40)
-		{
-			RetSig = 66 + (CurrSig - 30);
-		}
-		else if(CurrSig >= 21 && CurrSig <= 30)
-		{
-			RetSig = 54 + (CurrSig - 20);
-		}
-		else if(CurrSig >= 5 && CurrSig <= 20)
-		{
-			RetSig = 42 + (((CurrSig - 5) * 2) / 3);
-		}
-		else if(CurrSig == 4)
-		{
-			RetSig = 36;
-		}
-		else if(CurrSig == 3)
-		{
-			RetSig = 27;
-		}
-		else if(CurrSig == 2)
-		{
-			RetSig = 18;
-		}
-		else if(CurrSig == 1)
-		{
-			RetSig = 9;
-		}
-		else
-		{
-			RetSig = CurrSig;
-		}
-	}
-#endif
 
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) ||(DEV_BUS_TYPE == RT_SDIO_INTERFACE))
-	if((pDM_Odm->SupportInterface  == ODM_ITRF_USB) || (pDM_Odm->SupportInterface  == ODM_ITRF_SDIO) )
-	{
+	if((pDM_Odm->SupportInterface  == ODM_ITRF_USB) || (pDM_Odm->SupportInterface  == ODM_ITRF_SDIO) ) {
 		if(CurrSig >= 51 && CurrSig <= 100)
-		{
 			RetSig = 100;
-		}
 		else if(CurrSig >= 41 && CurrSig <= 50)
-		{
 			RetSig = 80 + ((CurrSig - 40)*2);
-		}
 		else if(CurrSig >= 31 && CurrSig <= 40)
-		{
 			RetSig = 66 + (CurrSig - 30);
-		}
 		else if(CurrSig >= 21 && CurrSig <= 30)
-		{
 			RetSig = 54 + (CurrSig - 20);
-		}
 		else if(CurrSig >= 10 && CurrSig <= 20)
-		{
 			RetSig = 42 + (((CurrSig - 10) * 2) / 3);
-		}
 		else if(CurrSig >= 5 && CurrSig <= 9)
-		{
 			RetSig = 22 + (((CurrSig - 5) * 3) / 2);
-		}
 		else if(CurrSig >= 1 && CurrSig <= 4)
-		{
 			RetSig = 6 + (((CurrSig - 1) * 3) / 2);
-		}
 		else
-		{
 			RetSig = CurrSig;
-		}
 	}
-#endif
 	return RetSig;
 }
 
 static s32 odm_SignalScaleMapping(PDM_ODM_T pDM_Odm, s32 CurrSig)
 {
-	if(	(pDM_Odm->SupportPlatform == ODM_MP) &&
-		(pDM_Odm->SupportInterface  != ODM_ITRF_PCIE) && //USB & SDIO
-		(pDM_Odm->PatchID==10))//pMgntInfo->CustomerID == RT_CID_819x_Netcore
-	{
-		return odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(pDM_Odm,CurrSig);
-	}
-	else if(	(pDM_Odm->SupportPlatform == ODM_MP) &&
-			(pDM_Odm->SupportInterface  == ODM_ITRF_PCIE) &&
-			(pDM_Odm->PatchID==19))//pMgntInfo->CustomerID == RT_CID_819x_Lenovo)
-	{
-		return odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(pDM_Odm, CurrSig);
-	}
-	else{
-		return odm_SignalScaleMapping_92CSeries(pDM_Odm,CurrSig);
-	}
-
+	return odm_SignalScaleMapping_92CSeries(pDM_Odm,CurrSig);
 }
 
 //pMgntInfo->CustomerID == RT_CID_819x_Lenovo
@@ -419,25 +339,15 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 		{
 			u8	SQ,SQ_rpt;
 
-			if((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)){//pMgntInfo->CustomerID == RT_CID_819x_Lenovo
-				SQ = odm_SQ_process_patch_RT_CID_819x_Lenovo(pDM_Odm,isCCKrate,PWDB_ALL,0,0);
-			}
-			else if(pPhyInfo->RxPWDBAll > 40 && !pDM_Odm->bInHctTest){
+			SQ_rpt = pPhyStaRpt->cck_sig_qual_ofdm_pwdb_all;
+
+			if(SQ_rpt > 64)
+				SQ = 0;
+			else if (SQ_rpt < 20)
 				SQ = 100;
-			}
-			else{
-				SQ_rpt = pPhyStaRpt->cck_sig_qual_ofdm_pwdb_all;
+			else
+				SQ = ((64-SQ_rpt) * 100) / 44;
 
-				if(SQ_rpt > 64)
-					SQ = 0;
-				else if (SQ_rpt < 20)
-					SQ = 100;
-				else
-					SQ = ((64-SQ_rpt) * 100) / 44;
-
-			}
-
-			//DbgPrint("cck SQ = %d\n", SQ);
 			pPhyInfo->SignalQuality = SQ;
 			pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_A] = SQ;
 			pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_B] = -1;
@@ -484,20 +394,7 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 
 			//Get Rx snr value in DB
 			pPhyInfo->RxSNR[i] = pDM_Odm->PhyDbgInfo.RxSNRdB[i] = (s32)(pPhyStaRpt->path_rxsnr[i]/2);
-
-			/* Record Signal Strength for next packet */
-			if(pPktinfo->bPacketMatchBSSID)
-			{
-				if((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19))
-				{
-					if(i==ODM_RF_PATH_A)
-						pPhyInfo->SignalQuality = odm_SQ_process_patch_RT_CID_819x_Lenovo(pDM_Odm,isCCKrate,PWDB_ALL,i,RSSI);
-
-				}
-
-			}
 		}
-
 
 		//
 		// (2)PWDB, Average PWDB cacluated by hardware (for rate adaptive)
@@ -514,36 +411,26 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 		pPhyInfo->RxPower = rx_pwr_all;
 		pPhyInfo->RecvSignalPower = rx_pwr_all;
 
-		if((pDM_Odm->SupportPlatform == ODM_MP) &&(pDM_Odm->PatchID==19)){
-			//do nothing
-		}
-		else{//pMgntInfo->CustomerID != RT_CID_819x_Lenovo
-			//
-			// (3)EVM of HT rate
-			//
-			if(pPktinfo->Rate >=DESC92C_RATEMCS8 && pPktinfo->Rate <=DESC92C_RATEMCS15)
-				Max_spatial_stream = 2; //both spatial stream make sense
-			else
-				Max_spatial_stream = 1; //only spatial stream 1 makes sense
+		//
+		// (3)EVM of HT rate
+		//
+		if(pPktinfo->Rate >=DESC92C_RATEMCS8 && pPktinfo->Rate <=DESC92C_RATEMCS15)
+			Max_spatial_stream = 2; //both spatial stream make sense
+		else
+			Max_spatial_stream = 1; //only spatial stream 1 makes sense
 
-			for(i=0; i<Max_spatial_stream; i++)
-			{
-				// Do not use shift operation like "rx_evmX >>= 1" because the compilor of free build environment
-				// fill most significant bit to "zero" when doing shifting operation which may change a negative
-				// value to positive one, then the dbm value (which is supposed to be negative)  is not correct anymore.
-				EVM = odm_EVMdbToPercentage( (pPhyStaRpt->stream_rxevm[i] ));	//dbm
+		for(i=0; i<Max_spatial_stream; i++) {
+			// Do not use shift operation like "rx_evmX >>= 1" because the compilor of free build environment
+			// fill most significant bit to "zero" when doing shifting operation which may change a negative
+			// value to positive one, then the dbm value (which is supposed to be negative)  is not correct anymore.
+			EVM = odm_EVMdbToPercentage( (pPhyStaRpt->stream_rxevm[i] ));	//dbm
 
-				//RTPRINT(FRX, RX_PHY_SQ, ("RXRATE=%x RXEVM=%x EVM=%s%d\n",
-				//GET_RX_STATUS_DESC_RX_MCS(pDesc), pDrvInfo->rxevm[i], "%", EVM));
-
-				if(pPktinfo->bPacketMatchBSSID)
+			if(pPktinfo->bPacketMatchBSSID) {
+				if(i==ODM_RF_PATH_A) // Fill value in RFD, Get the first spatial stream only
 				{
-					if(i==ODM_RF_PATH_A) // Fill value in RFD, Get the first spatial stream only
-					{
-						pPhyInfo->SignalQuality = (u8)(EVM & 0xff);
-					}
-					pPhyInfo->RxMIMOSignalQuality[i] = (u8)(EVM & 0xff);
+					pPhyInfo->SignalQuality = (u8)(EVM & 0xff);
 				}
+				pPhyInfo->RxMIMOSignalQuality[i] = (u8)(EVM & 0xff);
 			}
 		}
 
