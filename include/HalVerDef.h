@@ -20,9 +20,7 @@
 #ifndef __HAL_VERSION_DEF_H__
 #define __HAL_VERSION_DEF_H__
 
-// HAL_IC_TYPE_E
-typedef enum tag_HAL_IC_Type_Definition
-{
+enum hal_ic_type {
 	CHIP_8192S		=	0,
 	CHIP_8188C	=	1,
 	CHIP_8192C	=	2,
@@ -34,7 +32,7 @@ typedef enum tag_HAL_IC_Type_Definition
 	CHIP_8821A	=	8,
 	CHIP_8723B	=	9,
 	CHIP_8192E		=	10,
-}HAL_IC_TYPE_E;
+};
 
 //HAL_CHIP_TYPE_E
 typedef enum tag_HAL_CHIP_Type_Definition
@@ -77,7 +75,7 @@ typedef enum tag_HAL_RF_Type_Definition
 
 typedef	struct tag_HAL_VERSION
 {
-	HAL_IC_TYPE_E		ICType;
+	enum hal_ic_type	ICType;
 	HAL_CHIP_TYPE_E		ChipType;
 	HAL_CUT_VERSION_E	CUTVersion;
 	HAL_VENDOR_E		VendorType;
@@ -89,7 +87,7 @@ typedef	struct tag_HAL_VERSION
 //HAL_VERSION			VersionID;
 
 // Get element
-#define GET_CVID_IC_TYPE(version)			((HAL_IC_TYPE_E)(((HAL_VERSION)version).ICType)	)
+#define GET_CVID_IC_TYPE(version)			((enum hal_ic_type)(((HAL_VERSION)version).ICType)	)
 #define GET_CVID_CHIP_TYPE(version)			((HAL_CHIP_TYPE_E)(((HAL_VERSION)version).ChipType)	)
 #define GET_CVID_RF_TYPE(version)			((HAL_RF_TYPE_E)(((HAL_VERSION)version).RFType))
 #define GET_CVID_MANUFACTUER(version)		((HAL_VENDOR_E)(((HAL_VERSION)version).VendorType))
@@ -101,7 +99,6 @@ typedef	struct tag_HAL_VERSION
 //----------------------------------------------------------------------------
 //HAL_VERSION VersionID
 
-// HAL_IC_TYPE_E
 #define IS_81XXC(version)				(((GET_CVID_IC_TYPE(version) == CHIP_8192C)||(GET_CVID_IC_TYPE(version) == CHIP_8188C))? true : false)
 #define IS_8723_SERIES(version)			((GET_CVID_IC_TYPE(version) == CHIP_8723A)? true : false)
 #define IS_92D(version)					((GET_CVID_IC_TYPE(version) == CHIP_8192D)? true : false)
