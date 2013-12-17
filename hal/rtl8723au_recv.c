@@ -197,7 +197,7 @@ void update_recvframe_attrib(
 {
 	struct rx_pkt_attrib	*pattrib;
 	struct recv_stat	report;
-	PRXREPORT		prxreport;
+	struct rxreport_8723a *prxreport;
 
 	report.rxdw0 = le32_to_cpu(prxstat->rxdw0);
 	report.rxdw1 = le32_to_cpu(prxstat->rxdw1);
@@ -206,7 +206,7 @@ void update_recvframe_attrib(
 	report.rxdw4 = le32_to_cpu(prxstat->rxdw4);
 	report.rxdw5 = le32_to_cpu(prxstat->rxdw5);
 
-	prxreport = (PRXREPORT)&report;
+	prxreport = (struct rxreport_8723a *)&report;
 
 	pattrib = &precvframe->u.hdr.attrib;
 	memset(pattrib, 0, sizeof(struct rx_pkt_attrib));

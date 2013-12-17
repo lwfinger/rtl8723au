@@ -518,8 +518,7 @@ struct hal_data_8723a {
 #define INCLUDE_MULTI_FUNC_BT(_Adapter)		(GET_HAL_DATA(_Adapter)->MultiFunc & RT_MULTI_FUNC_BT)
 #define INCLUDE_MULTI_FUNC_GPS(_Adapter)	(GET_HAL_DATA(_Adapter)->MultiFunc & RT_MULTI_FUNC_GPS)
 
-typedef struct rxreport_8723a
-{
+struct rxreport_8723a {
 	u32 pktlen:14;
 	u32 crc32:1;
 	u32 icverr:1;
@@ -588,7 +587,7 @@ typedef struct rxreport_8723a
 	u32 bassn:12;
 	u32 bavld:1;
 	u32 rsvd2413:19;
-} RXREPORT, *PRXREPORT;
+};
 
 typedef struct phystatus_8723a
 {
