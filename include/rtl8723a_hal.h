@@ -297,7 +297,7 @@ enum {
 };
 
 struct hal_data_8723a {
-	HAL_VERSION			VersionID;
+	struct hal_version		VersionID;
 	RT_CUSTOMER_ID	CustomerID;
 
 	u16	FirmwareVersion;

@@ -28,23 +28,19 @@
 
 #define _HAL_INIT_C_
 
-void dump_chip_info(HAL_VERSION	ChipVersion)
+void dump_chip_info(struct hal_version	ChipVersion)
 {
 	int cnt = 0;
 	u8 buf[128];
 
-	if(IS_81XXC(ChipVersion)){
+	if(IS_81XXC(ChipVersion))
 		cnt += sprintf((buf+cnt), "Chip Version Info: %s_", IS_92C_SERIAL(ChipVersion)?"CHIP_8192C":"CHIP_8188C");
-	}
-	else if(IS_92D(ChipVersion)){
+	else if(IS_92D(ChipVersion))
 		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8192D_");
-	}
-	else if(IS_8723_SERIES(ChipVersion)){
+	else if(IS_8723_SERIES(ChipVersion))
 		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8723A_");
-	}
-	else if(IS_8188E(ChipVersion)){
+	else if(IS_8188E(ChipVersion))
 		cnt += sprintf((buf+cnt), "Chip Version Info: CHIP_8188E_");
-	}
 
 	cnt += sprintf((buf+cnt), "%s_", IS_NORMAL_CHIP(ChipVersion)?"Normal_Chip":"Test_Chip");
 	cnt += sprintf((buf+cnt), "%s_", IS_CHIP_VENDOR_TSMC(ChipVersion)?"TSMC":"UMC");

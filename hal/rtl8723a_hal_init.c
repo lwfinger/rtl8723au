@@ -1699,13 +1699,13 @@ Hal_EfusePgPacketWrite_BT(struct rtw_adapter *pAdapter,
 	return true;
 }
 
-static HAL_VERSION
+static struct hal_version
 ReadChipVersion8723A(
 	struct rtw_adapter *	padapter
 	)
 {
 	u32				value32;
-	HAL_VERSION		ChipVersion;
+	struct hal_version		ChipVersion;
 	struct hal_data_8723a	*pHalData;
 
 
