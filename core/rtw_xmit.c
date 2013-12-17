@@ -2922,22 +2922,18 @@ void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 void xmit_delivery_enabled_frames(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	u8 wmmps_ac=0;
-	struct list_head	*xmitframe_plist, *xmitframe_phead;
-	struct xmit_frame *pxmitframe=NULL;
+	struct list_head *plist, *phead, *ptmp;
+	struct xmit_frame *pxmitframe;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	/* spin_lock_bh(&psta->sleep_q.lock); */
 	spin_lock_bh(&pxmitpriv->lock);
 
-	xmitframe_phead = get_list_head(&psta->sleep_q);
-	xmitframe_plist = xmitframe_phead->next;
+	phead = get_list_head(&psta->sleep_q);
 
-	while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false)
-	{
-		pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
-
-		xmitframe_plist = xmitframe_plist->next;
+	list_for_each_safe(plist, ptmp, phead) {
+		pxmitframe = container_of(plist, struct xmit_frame, list);
 
 		switch(pxmitframe->attrib.priority)
 		{
