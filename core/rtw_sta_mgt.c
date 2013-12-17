@@ -168,20 +168,18 @@ inline struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int 
 void rtw_mfree_all_stainfo(struct sta_priv *pstapriv );
 void rtw_mfree_all_stainfo(struct sta_priv *pstapriv )
 {
-	struct list_head	*plist, *phead;
-	struct sta_info *psta = NULL;
+	struct list_head *plist, *phead;
+	struct sta_info *psta;
 
 _func_enter_;
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);
 
 	phead = get_list_head(&pstapriv->free_sta_queue);
-	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == false)
-	{
+	/* we really achieve a lot in this loop .... */
+	list_for_each(plist, phead) {
 		psta = container_of(plist, struct sta_info ,list);
-		plist = plist->next;
 	}
 
 	spin_unlock_bh(&pstapriv->sta_hash_lock);
@@ -201,8 +199,8 @@ void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv)
 
 u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
 {
-	struct list_head	*phead, *plist;
-	struct sta_info *psta = NULL;
+	struct list_head *phead, *plist, *ptmp;
+	struct sta_info *psta;
 	struct recv_reorder_ctrl *preorder_ctrl;
 	int	index;
 
@@ -214,15 +212,11 @@ _func_enter_;
 		for(index = 0; index < NUM_STA; index++)
 		{
 			phead = &(pstapriv->sta_hash[index]);
-			plist = phead->next;
 
-			while ((rtw_end_of_queue_search(phead, plist)) == false)
-			{
+			list_for_each_safe(plist, ptmp, phead) {
 				int i;
 				psta = container_of(plist, struct sta_info ,hash_list);
-				plist = plist->next;
-
-				for(i=0; i < 16 ; i++)
+				for (i = 0; i < 16 ; i++)
 				{
 					preorder_ctrl = &psta->recvreorder_ctrl[i];
 					_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
@@ -534,9 +528,9 @@ _func_exit_;
 /*  free all stainfo which in sta_hash[all] */
 void rtw_free_all_stainfo(struct rtw_adapter *padapter)
 {
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	s32	index;
-	struct sta_info *psta = NULL;
+	struct sta_info *psta;
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info* pbcmc_stainfo =rtw_get_bcmc_stainfo( padapter);
 
@@ -547,20 +541,14 @@ _func_enter_;
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);
 
-	for(index=0; index< NUM_STA; index++)
-	{
+	for (index = 0; index < NUM_STA; index++) {
 		phead = &(pstapriv->sta_hash[index]);
-		plist = phead->next;
 
-		while ((rtw_end_of_queue_search(phead, plist)) == false)
-		{
+		list_for_each_safe(plist, ptmp, phead) {
 			psta = container_of(plist, struct sta_info ,hash_list);
-
-			plist = plist->next;
 
 			if(pbcmc_stainfo!=psta)
 				rtw_free_stainfo(padapter , psta);
-
 		}
 	}
 
@@ -574,7 +562,7 @@ _func_exit_;
 /* any station allocated can be searched by hash list */
 struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead;
 
 	struct sta_info *psta = NULL;
 
@@ -599,19 +587,15 @@ _func_enter_;
 	spin_lock_bh(&pstapriv->sta_hash_lock);
 
 	phead = &(pstapriv->sta_hash[index]);
-	plist = phead->next;
 
-	while ((rtw_end_of_queue_search(phead, plist)) == false)
-	{
-
+	list_for_each(plist, phead) {
 		psta = container_of(plist, struct sta_info, hash_list);
 
 		if (!memcmp(psta->hwaddr, addr, ETH_ALEN))
 		{ /*  if found the matched address */
 			break;
 		}
-		psta=NULL;
-		plist = plist->next;
+		psta = NULL;
 	}
 
 	spin_unlock_bh(&pstapriv->sta_hash_lock);
@@ -674,7 +658,7 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	u8 res = true;
 #ifdef  CONFIG_AP_MODE
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
 	u8 match = false;
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -683,11 +667,9 @@ u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 
 	spin_lock_bh(&(pacl_node_q->lock));
 	phead = get_list_head(pacl_node_q);
-	plist = phead->next;
-	while ((rtw_end_of_queue_search(phead, plist)) == false)
-	{
+
+	list_for_each(plist, phead) {
 		paclnode = container_of(plist, struct rtw_wlan_acl_node, list);
-		plist = plist->next;
 
 		if (!memcmp(paclnode->addr, mac_addr, ETH_ALEN))
 		{
