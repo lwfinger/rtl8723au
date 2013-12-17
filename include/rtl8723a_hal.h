@@ -281,8 +281,7 @@ enum RT_REGULATOR_MODE {
 
 // Description: Determine the types of C2H events that are the same in driver and Fw.
 // Fisrt constructed by tynli. 2009.10.09.
-typedef enum _RTL8192C_C2H_EVT
-{
+enum {
 	C2H_DBG = 0,
 	C2H_TSF = 1,
 	C2H_AP_RPT_RSP = 2,
@@ -295,7 +294,7 @@ typedef enum _RTL8192C_C2H_EVT
 	C2H_BT_INFO = 12,
 	C2H_BT_MP_INFO = 15,
 	MAX_C2HEVENT
-} RTL8192C_C2H_EVT;
+};
 
 struct hal_data_8723a {
 	HAL_VERSION			VersionID;
