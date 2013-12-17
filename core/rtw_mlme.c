@@ -353,7 +353,7 @@ _func_exit_;
 
 void _rtw_free_network_queue(struct rtw_adapter *padapter, u8 isfreeall)
 {
-	struct list_head *phead, *plist;
+	struct list_head *phead, *plist, *ptmp;
 	struct wlan_network *pnetwork;
 	struct mlme_priv* pmlmepriv = &padapter->mlmepriv;
 	_queue *scanned_queue = &pmlmepriv->scanned_queue;
@@ -363,17 +363,11 @@ _func_enter_;
 	spin_lock_bh(&scanned_queue->lock);
 
 	phead = get_list_head(scanned_queue);
-	plist = phead->next;
 
-	while (rtw_end_of_queue_search(phead, plist) == false)
-	{
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
-		plist = plist->next;
-
 		_rtw_free_network(pmlmepriv,pnetwork, isfreeall);
-
 	}
 
 	spin_unlock_bh(&scanned_queue->lock);
@@ -578,32 +572,23 @@ _func_exit_;
 		 (d_cap & WLAN_CAPABILITY_ESS)));
 }
 
-struct	wlan_network	* rtw_get_oldest_wlan_network(_queue *scanned_queue)
+struct wlan_network *rtw_get_oldest_wlan_network(_queue *scanned_queue)
 {
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead;
 
-	struct	wlan_network	*pwlan = NULL;
-	struct	wlan_network	*oldest = NULL;
+	struct wlan_network *pwlan;
+	struct wlan_network *oldest = NULL;
 _func_enter_;
 	phead = get_list_head(scanned_queue);
 
-	plist = phead->next;
-
-	while(1)
-	{
-
-		if (rtw_end_of_queue_search(phead,plist)== true)
-			break;
-
+	list_for_each(plist, phead) {
 		pwlan= container_of(plist, struct wlan_network, list);
 
-		if(pwlan->fixed!=true)
-		{
-			if (oldest == NULL ||time_after(oldest->last_scanned, pwlan->last_scanned))
+		if (pwlan->fixed != true) {
+			if (!oldest || time_after(oldest->last_scanned,
+						  pwlan->last_scanned))
 				oldest = pwlan;
 		}
-
-		plist = plist->next;
 	}
 _func_exit_;
 	return oldest;
@@ -712,41 +697,34 @@ Caller must hold pmlmepriv->lock first.
 */
 void rtw_update_scanned_network(struct rtw_adapter *adapter, WLAN_BSSID_EX *target)
 {
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead;
 	u32	bssid_ex_sz;
 	struct mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct wlan_network	*pnetwork = NULL;
 	struct wlan_network	*oldest = NULL;
+	int found = 0;
 
 _func_enter_;
 
 	spin_lock_bh(&queue->lock);
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while(1)
-	{
-		if (rtw_end_of_queue_search(phead,plist)== true)
+	list_for_each(plist, phead) {
+		pnetwork = container_of(plist, struct wlan_network, list);
+
+		if (is_same_network(&(pnetwork->network), target)) {
+			found = 1;
 			break;
-
-		pnetwork	= container_of(plist, struct wlan_network, list);
-
-		if (is_same_network(&(pnetwork->network), target))
-			break;
-
-		if ((oldest == ((struct wlan_network *)0)) ||
-		time_after(oldest->last_scanned, pnetwork->last_scanned))
+		}
+		if (!oldest || time_after(oldest->last_scanned,
+					  pnetwork->last_scanned))
 			oldest = pnetwork;
-
-		plist = plist->next;
-
 	}
 
 	/* If we didn't find a match, then get a new network slot to initialize
 	 * with this beacon's information */
-	if (rtw_end_of_queue_search(phead,plist)== true) {
-
+	if (!found) {
 		if (_rtw_queue_empty(&(pmlmepriv->free_bss_pool)) == true) {
 			/* If there are no more slots, expire the oldest */
 			/* list_del_init(&oldest->list); */
@@ -768,8 +746,7 @@ _func_enter_;
 			/* bss info not receving from the right channel */
 			if (pnetwork->network.PhyInfo.SignalQuality == 101)
 				pnetwork->network.PhyInfo.SignalQuality = 0;
-		}
-		else {
+		} else {
 			/* Otherwise just pull from the free list */
 
 			pnetwork = rtw_alloc_network(pmlmepriv); /*  will update scan_time */
@@ -2272,7 +2249,7 @@ pmlmepriv->lock
 int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 {
 	int ret;
-	struct list_head	*phead;
+	struct list_head *phead, *ptmp;
 	struct rtw_adapter *adapter;
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct	wlan_network	*pnetwork = NULL;
@@ -2285,18 +2262,16 @@ _func_enter_;
 	phead = get_list_head(queue);
 	adapter = (struct rtw_adapter *)pmlmepriv->nic_hdl;
 
-	pmlmepriv->pscanned = phead->next;
-
-	while (!rtw_end_of_queue_search(phead, pmlmepriv->pscanned)) {
-
-		pnetwork = container_of(pmlmepriv->pscanned, struct wlan_network, list);
-		if(pnetwork==NULL){
-			RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("%s return _FAIL:(pnetwork==NULL)\n", __FUNCTION__));
+	list_for_each_safe(pmlmepriv->pscanned, ptmp, phead) {
+		pnetwork = container_of(pmlmepriv->pscanned,
+					struct wlan_network, list);
+		if (!pnetwork){
+			RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_,
+				 ("%s return _FAIL:(pnetwork==NULL)\n",
+				  __FUNCTION__));
 			ret = _FAIL;
 			goto exit;
 		}
-
-		pmlmepriv->pscanned = pmlmepriv->pscanned->next;
 
 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
 	}
