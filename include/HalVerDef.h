@@ -40,9 +40,7 @@ enum hal_chip_type {
 	FPGA			=	2,
 };
 
-//HAL_CUT_VERSION_E
-typedef enum tag_HAL_Cut_Version_Definition
-{
+enum hal_cut_version {
 	A_CUT_VERSION		=	0,
 	B_CUT_VERSION		=	1,
 	C_CUT_VERSION		=	2,
@@ -50,7 +48,7 @@ typedef enum tag_HAL_Cut_Version_Definition
 	E_CUT_VERSION		=	4,
 	F_CUT_VERSION		=	5,
 	G_CUT_VERSION		=	6,
-}HAL_CUT_VERSION_E;
+};
 
 // HAL_Manufacturer
 typedef enum tag_HAL_Manufacturer_Version_Definition
@@ -75,7 +73,7 @@ typedef	struct tag_HAL_VERSION
 {
 	enum hal_ic_type	ICType;
 	enum hal_chip_type	ChipType;
-	HAL_CUT_VERSION_E	CUTVersion;
+	enum hal_cut_version	CUTVersion;
 	HAL_VENDOR_E		VendorType;
 	HAL_RF_TYPE_E		RFType;
 	u8					ROMVer;
@@ -89,7 +87,7 @@ typedef	struct tag_HAL_VERSION
 #define GET_CVID_CHIP_TYPE(version)			((enum hal_chip_type)(((HAL_VERSION)version).ChipType)	)
 #define GET_CVID_RF_TYPE(version)			((HAL_RF_TYPE_E)(((HAL_VERSION)version).RFType))
 #define GET_CVID_MANUFACTUER(version)		((HAL_VENDOR_E)(((HAL_VERSION)version).VendorType))
-#define GET_CVID_CUT_VERSION(version)		((HAL_CUT_VERSION_E)(((HAL_VERSION)version).CUTVersion))
+#define GET_CVID_CUT_VERSION(version)		((enum hal_cut_version)(((HAL_VERSION)version).CUTVersion))
 #define GET_CVID_ROM_VERSION(version)		((((HAL_VERSION)version).ROMVer) & ROM_VERSION_MASK)
 
 //----------------------------------------------------------------------------
@@ -105,7 +103,6 @@ typedef	struct tag_HAL_VERSION
 #define IS_TEST_CHIP(version)			((GET_CVID_CHIP_TYPE(version)==TEST_CHIP)? true: false)
 #define IS_NORMAL_CHIP(version)			((GET_CVID_CHIP_TYPE(version)==NORMAL_CHIP)? true: false)
 
-//HAL_CUT_VERSION_E
 #define IS_A_CUT(version)				((GET_CVID_CUT_VERSION(version) == A_CUT_VERSION) ? true : false)
 #define IS_B_CUT(version)				((GET_CVID_CUT_VERSION(version) == B_CUT_VERSION) ? true : false)
 #define IS_C_CUT(version)				((GET_CVID_CUT_VERSION(version) == C_CUT_VERSION) ? true : false)
