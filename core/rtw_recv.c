@@ -1272,8 +1272,8 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter, union recv_frame *pre
 
 		if((psta->state&WIFI_SLEEP_STATE) && (pstapriv->sta_dz_bitmap&BIT(psta->aid)))
 		{
-			struct list_head	*xmitframe_plist, *xmitframe_phead;
-			struct xmit_frame *pxmitframe=NULL;
+			struct list_head *xmitframe_plist, *xmitframe_phead;
+			struct xmit_frame *pxmitframe;
 			struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 			/* spin_lock_bh(&psta->sleep_q.lock); */
@@ -1282,8 +1282,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter, union recv_frame *pre
 			xmitframe_phead = get_list_head(&psta->sleep_q);
 			xmitframe_plist = xmitframe_phead->next;
 
-			if ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false)
-			{
+			if (!list_empty(xmitframe_phead)) {
 				pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
 
 				xmitframe_plist = xmitframe_plist->next;
@@ -1762,7 +1761,7 @@ _func_exit_;
 union recv_frame * recvframe_defrag(struct rtw_adapter *adapter,_queue *defrag_q);
 union recv_frame * recvframe_defrag(struct rtw_adapter *adapter,_queue *defrag_q)
 {
-	struct list_head	 *plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	u8	*data,wlanhdr_offset;
 	u8	curfragnum;
 	struct recv_frame_hdr *pfhdr,*pnfhdr;
@@ -1792,14 +1791,11 @@ _func_enter_;
 
 	curfragnum++;
 
-	plist= get_list_head(defrag_q);
-
-	plist = plist->next;
+	phead = get_list_head(defrag_q);
 
 	data=get_recvframe_data(prframe);
 
-	while(rtw_end_of_queue_search(phead, plist) == false)
-	{
+	list_for_each_safe(plist, ptmp, phead) {
 		pnfhdr = container_of(plist, struct recv_frame_hdr , list);
 		pnextrframe = (union recv_frame *)pnfhdr;
 		/* check the fragment sequence  (2nd ~n fragment frame) */
@@ -1831,8 +1827,6 @@ _func_enter_;
 		recvframe_put(prframe, pnfhdr->len);
 
 		pfhdr->attrib.icv_len=pnfhdr->attrib.icv_len;
-		plist = plist->next;
-
 	};
 
 	/* free the defrag_q queue and return the prframe */
@@ -2208,7 +2202,7 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 {
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
-	struct list_head	*phead, *plist;
+	struct list_head *phead, *plist, *ptmp;
 	struct recv_frame_hdr *hdr;
 	struct rx_pkt_attrib *pnextattrib;
 
@@ -2218,28 +2212,20 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 	/* spin_lock_ex(&ppending_recvframe_queue->lock); */
 
 	phead = get_list_head(ppending_recvframe_queue);
-	plist = phead->next;
 
-	while(rtw_end_of_queue_search(phead, plist) == false)
-	{
+	list_for_each_safe(plist, ptmp, phead) {
 		hdr = container_of(plist, struct recv_frame_hdr, list);
 		pnextattrib = &hdr->attrib;
 
-		if(SN_LESS(pnextattrib->seq_num, pattrib->seq_num))
-		{
-			plist = plist->next;
-		}
-		else if( SN_EQUAL(pnextattrib->seq_num, pattrib->seq_num))
-		{
+		if (SN_LESS(pnextattrib->seq_num, pattrib->seq_num)) {
+			continue;
+		} else if(SN_EQUAL(pnextattrib->seq_num, pattrib->seq_num)) {
 			/* Duplicate entry is found!! Do not insert current entry. */
 			/* RT_TRACE(COMP_RX_REORDER, DBG_TRACE, ("InsertRxReorderList(): Duplicate packet is dropped!! IndicateSeq: %d, NewSeq: %d\n", pTS->RxIndicateSeq, SeqNum)); */
 
 			/* spin_unlock_irqrestore(&ppending_recvframe_queue->lock); */
-
 			return false;
-		}
-		else
-		{
+		} else {
 			break;
 		}
 
