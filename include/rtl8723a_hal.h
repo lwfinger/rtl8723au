@@ -258,26 +258,26 @@ enum ChannelPlan
 //
 // <Roger_Notes> For RTL8723 WiFi/BT/GPS multi-function configuration. 2010.10.06.
 //
-typedef enum _RT_MULTI_FUNC {
+enum RT_MULTI_FUNC {
 	RT_MULTI_FUNC_NONE = 0x00,
 	RT_MULTI_FUNC_WIFI = 0x01,
 	RT_MULTI_FUNC_BT = 0x02,
 	RT_MULTI_FUNC_GPS = 0x04,
-} RT_MULTI_FUNC, *PRT_MULTI_FUNC;
+};
 
 //
 // <Roger_Notes> For RTL8723 WiFi PDn/GPIO polarity control configuration. 2010.10.08.
 //
-typedef enum _RT_POLARITY_CTL {
+enum RT_POLARITY_CTL {
 	RT_POLARITY_LOW_ACT = 0,
 	RT_POLARITY_HIGH_ACT = 1,
-} RT_POLARITY_CTL, *PRT_POLARITY_CTL;
+};
 
 // For RTL8723 regulator mode. by tynli. 2011.01.14.
-typedef enum _RT_REGULATOR_MODE {
+enum RT_REGULATOR_MODE {
 	RT_SWITCHING_REGULATOR = 0,
 	RT_LDO_REGULATOR = 1,
-} RT_REGULATOR_MODE, *PRT_REGULATOR_MODE;
+};
 
 // Description: Determine the types of C2H events that are the same in driver and Fw.
 // Fisrt constructed by tynli. 2009.10.09.
@@ -480,9 +480,9 @@ typedef struct hal_data_8723a
 	// independent file in the future.
 	//
 	//------------------------8723-----------------------------------------//
-	RT_MULTI_FUNC			MultiFunc; // For multi-function consideration.
-	RT_POLARITY_CTL			PolarityCtl; // For Wifi PDn Polarity control.
-	RT_REGULATOR_MODE		RegulatorMode; // switching regulator or LDO
+	enum RT_MULTI_FUNC	MultiFunc; // For multi-function consideration.
+	enum RT_POLARITY_CTL	PolarityCtl; // For Wifi PDn Polarity control.
+	enum RT_REGULATOR_MODE	RegulatorMode; // switching regulator or LDO
 	//------------------------8723-----------------------------------------//
 	//
 	// 2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an
