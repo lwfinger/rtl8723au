@@ -945,7 +945,7 @@ int proc_get_all_sta_info(char *page, char **start,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	int i, j;
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead;
 	struct recv_reorder_ctrl *preorder_ctrl;
 	int len = 0;
 
@@ -956,13 +956,10 @@ int proc_get_all_sta_info(char *page, char **start,
 	for(i=0; i< NUM_STA; i++)
 	{
 		phead = &(pstapriv->sta_hash[i]);
-		plist = phead->next;
 
-		while ((rtw_end_of_queue_search(phead, plist)) == false)
-		{
+		list_for_each(plist, phead) {
 			psta = container_of(plist, struct sta_info, hash_list);
 
-			plist = plist->next;
 			len += snprintf(page + len, count - len, "sta's macaddr:" MAC_FMT "\n", MAC_ARG(psta->hwaddr));
 			len += snprintf(page + len, count - len, "rtsen=%d, cts2slef=%d\n", psta->rtsen, psta->cts2self);
 			len += snprintf(page + len, count - len, "state=0x%x, aid=%d, macid=%d, raid=%d\n", psta->state, psta->aid, psta->mac_id, psta->raid);
