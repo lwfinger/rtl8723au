@@ -106,7 +106,7 @@ dm_InitGPIOSetting(
 	struct rtw_adapter *	Adapter
 	)
 {
-	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *		pHalData = GET_HAL_DATA(Adapter);
 
 	u8	tmp1byte;
 
@@ -121,7 +121,7 @@ dm_InitGPIOSetting(
 static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 	u8	cut_ver,fab_ver;
 
@@ -185,7 +185,7 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
 	struct mlme_priv		*pmlmepriv = &Adapter->mlmepriv;
 	struct pwrctrl_priv *pwrctrlpriv = &Adapter->pwrctrlpriv;
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int i;
@@ -251,7 +251,7 @@ rtl8723a_InitHalDm(
 	struct rtw_adapter *	Adapter
 	)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 
@@ -284,7 +284,7 @@ rtl8723a_HalDmWatchDog(
 	bool		bFwCurrentInPSMode = false;
 	bool		bFwPSAwake = true;
 	u8 hw_init_completed = false;
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 	hw_init_completed = Adapter->hw_init_completed;
@@ -356,7 +356,7 @@ skip_dm:
 
 void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
 	memset(pdmpriv, 0, sizeof(struct dm_priv));
@@ -369,7 +369,7 @@ void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 
 void rtl8723a_deinit_dm_priv(struct rtw_adapter *Adapter)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY

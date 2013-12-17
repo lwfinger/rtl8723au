@@ -42,7 +42,7 @@ void
 SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 
 	if( (padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{
@@ -84,7 +84,7 @@ void
 SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 
 	if((padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{

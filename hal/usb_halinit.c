@@ -59,7 +59,7 @@ static void
 _ConfigChipOutEP(struct rtw_adapter *pAdapter, u8 NumOutPipe)
 {
 	u8			value8;
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(pAdapter);
 
 	pHalData->OutEpQueueSel = 0;
 	pHalData->OutEpNumber	= 0;
@@ -95,7 +95,7 @@ static bool HalUsbSetQueuePipeMapping8192CUsb(
 	u8		NumOutPipe
 	)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(pAdapter);
 	bool			result		= false;
 
 	_ConfigChipOutEP(pAdapter, NumOutPipe);
@@ -115,7 +115,7 @@ static bool HalUsbSetQueuePipeMapping8192CUsb(
 
 static void rtl8192cu_interface_configure(struct rtw_adapter *padapter)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(padapter);
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 
 	if (pdvobjpriv->ishighspeed == true)
@@ -307,7 +307,7 @@ _InitQueueReservedPage(
   struct rtw_adapter *Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 	struct registry_priv *pregistrypriv = &Adapter->registrypriv;
 
 	u32			outEPNum	= (u32)pHalData->OutEpNumber;
@@ -353,7 +353,7 @@ _InitTxBufferBoundary(
 	)
 {
 	struct registry_priv *pregistrypriv = &Adapter->registrypriv;
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 
 	u8	txpktbuf_bndy;
 
@@ -411,7 +411,7 @@ _InitNormalChipOneOutEpPriority(
 	struct rtw_adapter *Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 
 	u16	value = 0;
 	switch(pHalData->OutEpQueueSel)
@@ -446,7 +446,7 @@ _InitNormalChipTwoOutEpPriority(
 	struct rtw_adapter *Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 	struct registry_priv *pregistrypriv = &Adapter->registrypriv;
 	u16			beQ,bkQ,viQ,voQ,mgtQ,hiQ;
 
@@ -526,7 +526,7 @@ _InitNormalChipQueuePriority(
 	struct rtw_adapter *Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 
 	switch(pHalData->OutEpNumber)
 	{
@@ -612,7 +612,7 @@ _InitWMACSetting(
 {
 	//u32			value32;
 	//u16			value16;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	//pHalData->ReceiveConfig = AAP | APM | AM | AB | APP_ICV | ADF | AMF | APP_FCS | HTC_LOC_CTRL | APP_MIC | APP_PHYSTS;
 	//pHalData->ReceiveConfig = RCR_AAP | RCR_APM | RCR_AM | RCR_AB |RCR_CBSSID_DATA| RCR_CBSSID_BCN| RCR_APP_ICV | RCR_AMF | RCR_HTC_LOC_CTRL | RCR_APP_MIC | RCR_APP_PHYSTS;
@@ -782,7 +782,7 @@ usb_AggSettingTxUpdate(
 	)
 {
 #ifdef CONFIG_USB_TX_AGGREGATION
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	u32			value32;
 
@@ -822,7 +822,7 @@ usb_AggSettingRxUpdate(
 	)
 {
 #ifdef CONFIG_USB_RX_AGGREGATION
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	u8			valueDMA;
 	u8			valueUSB;
@@ -905,7 +905,7 @@ InitUsbAggregationSetting(
   struct rtw_adapter *Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	// Tx aggregation setting
 	usb_AggSettingTxUpdate(Adapter);
@@ -955,7 +955,7 @@ _InitRFType(
 	)
 {
 	struct registry_priv	 *pregpriv = &Adapter->registrypriv;
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 	bool			is92CU		= IS_92C_SERIAL(pHalData->VersionID);
 
 #if	DISABLE_BB_RF
@@ -981,7 +981,7 @@ _InitRFType(
 static void _InitAdhocWorkaroundParams(struct rtw_adapter *Adapter)
 {
 #ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	pHalData->RegBcnCtrlVal = rtw_read8(Adapter, REG_BCN_CTRL);
 	pHalData->RegTxPause = rtw_read8(Adapter, REG_TXPAUSE);
 	pHalData->RegFwHwTxQCtrl = rtw_read8(Adapter, REG_FWHW_TXQ_CTRL+2);
@@ -1021,7 +1021,7 @@ HalDetectPwrDownMode(
 	)
 {
 	u8	tmpvalue;
-	HAL_DATA_TYPE		*pHalData	= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData	= GET_HAL_DATA(Adapter);
 	struct pwrctrl_priv		*pwrctrlpriv = &Adapter->pwrctrlpriv;
 
 	EFUSE_ShadowRead(Adapter, 1, EEPROM_RF_OPT3, (u32 *)&tmpvalue);
@@ -1053,7 +1053,7 @@ HalDetectSelectiveSuspendMode(
 	)
 {
 	u8	tmpvalue;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(Adapter);
 
 	// If support HW radio detect, we need to enable WOL ability, otherwise, we
@@ -1109,7 +1109,7 @@ HwSuspendModeEnable92Cu(
 
 rt_rf_power_state RfOnOffDetect(struct rtw_adapter *pAdapter )
 {
-	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(pAdapter);
+	//struct hal_data_8723a		*pHalData = GET_HAL_DATA(pAdapter);
 	u8	val8;
 	rt_rf_power_state rfpowerstate = rf_off;
 
@@ -1135,7 +1135,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 {
 	u8	val8 = 0;
 	u32	boundary, status = _SUCCESS;
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	struct pwrctrl_priv		*pwrctrlpriv = &Adapter->pwrctrlpriv;
 	struct registry_priv	*pregistrypriv = &Adapter->registrypriv;
 	u8	is92C = IS_92C_SERIAL(pHalData->VersionID);
@@ -1570,7 +1570,7 @@ static void phy_SsPwrSwitch92CU(
 	int bRegSSPwrLvl
 	)
 {
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8				value8;
 
 	switch( eRFPowerState )
@@ -2051,7 +2051,7 @@ static void CardDisableRTL8723U(struct rtw_adapter * Adapter)
 
 static u32 rtl8723au_hal_deinit(struct rtw_adapter *padapter)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(padapter);
 
 
 	DBG_8723A("==> %s\n", __FUNCTION__);
@@ -2079,7 +2079,7 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
-	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
 _func_enter_;
@@ -2134,7 +2134,7 @@ static unsigned int rtl8723au_inirp_deinit(struct rtw_adapter *Adapter)
 {
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
-	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n ===> usb_rx_deinit \n"));
 
@@ -2180,7 +2180,7 @@ _ReadIDs(
 	bool		AutoloadFail
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	if(false == AutoloadFail){
 		// VID, PID
@@ -2262,7 +2262,7 @@ _ReadBoardType(
 	bool		AutoloadFail
 	)
 {
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u32			value32;
 	u8			boardType = BOARD_USB_DONGLE;
 
@@ -2296,7 +2296,7 @@ _ReadLEDSetting(
 	)
 {
 	struct led_priv *pledpriv = &(Adapter->ledpriv);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 #ifdef CONFIG_SW_LED
 	pledpriv->bRegUseLed = true;
 
@@ -2336,7 +2336,7 @@ _ReadThermalMeter(
 	bool		AutoloadFail
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	u8	tempval;
 
@@ -2406,7 +2406,7 @@ static void Hal_EfuseParsePIDVID_8723AU(
 	bool			AutoLoadFail
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 
 	if(AutoLoadFail)
 	{
@@ -2574,7 +2574,7 @@ readAdapterInfo(
 	)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
-	//PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
+	//struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
 	u8			hwinfo[HWSET_MAX_SIZE];
 
 #ifdef CONFIG_EFUSE_CONFIG_FILE
@@ -2623,7 +2623,7 @@ static void _ReadPROMContent(
 	)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8			PROMContent[HWSET_MAX_SIZE]={0};
 	u8			eeValue;
 	u32			i;
@@ -2647,7 +2647,7 @@ _InitOtherVariable(
  struct rtw_adapter *		Adapter
 	)
 {
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 
 	//if(Adapter->bInHctTest){
@@ -2665,7 +2665,7 @@ _ReadRFType(
 	struct rtw_adapter *	Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 #if DISABLE_BB_RF
 	pHalData->rf_chip = RF_PSEUDO_11N;
@@ -2676,7 +2676,7 @@ _ReadRFType(
 
 static void _ReadSilmComboMode(struct rtw_adapter *Adapter)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	pHalData->SlimComboDbg = false;	// Default is not debug mode.
 }
@@ -2703,7 +2703,7 @@ static void hal_EfuseCellSel(
 
 static int _ReadAdapterInfo8723AU(struct rtw_adapter *	Adapter)
 {
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u32 start=rtw_get_current_time();
 
 	MSG_8723A("====> _ReadAdapterInfo8723AU\n");
@@ -2759,7 +2759,7 @@ static void rtl8192cu_trigger_gpio_0(struct rtw_adapter *padapter)
  */
 static void SetHwReg8723AU(struct rtw_adapter *Adapter, u8 variable, u8* val)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 
 _func_enter_;
 
@@ -2798,7 +2798,7 @@ _func_exit_;
  */
 static void GetHwReg8723AU(struct rtw_adapter *Adapter, u8 variable, u8* val)
 {
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 
 _func_enter_;
 
@@ -2822,7 +2822,7 @@ static u8 GetHalDefVar8192CUsb(
 	void *					pValue
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8			bResult = _SUCCESS;
 
 	switch(eVariable)
@@ -2884,7 +2884,7 @@ static u8 GetHalDefVar8192CUsb(
 static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 		     HAL_DEF_VARIABLE eVariable, void *pValue)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8			bResult = _SUCCESS;
 
 	switch(eVariable)
@@ -2961,7 +2961,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 /*
 u32  _update_92cu_basic_rate(struct rtw_adapter *padapter, unsigned int mask)
 {
-	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *		pHalData = GET_HAL_DATA(padapter);
 	unsigned int BrateCfg = 0;
 
 
@@ -2999,7 +2999,7 @@ void UpdateHalRAMask8192CUsb(struct rtw_adapter *padapter, u32 mac_id,u8 rssi_le
 	u8	shortGIrate = false;
 	int	supportRateNum = 0;
 	struct sta_info	*psta;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
@@ -3134,12 +3134,12 @@ void rtl8723au_set_hal_ops(struct rtw_adapter * padapter)
 
 _func_enter_;
 
-	padapter->HalData = kzalloc(sizeof(HAL_DATA_TYPE), GFP_KERNEL);
+	padapter->HalData = kzalloc(sizeof(struct hal_data_8723a), GFP_KERNEL);
 	if(padapter->HalData == NULL){
 		DBG_8723A("cant not alloc memory for HAL DATA \n");
 	}
-	//memset(padapter->HalData, 0, sizeof(HAL_DATA_TYPE));
-	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
+	//memset(padapter->HalData, 0, sizeof(struct hal_data_8723a));
+	padapter->hal_data_sz = sizeof(struct hal_data_8723a);
 
 	pHalFunc->hal_init = &rtl8723au_hal_init;
 	pHalFunc->hal_deinit = &rtl8723au_hal_deinit;

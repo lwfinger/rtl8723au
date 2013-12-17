@@ -249,7 +249,7 @@ void update_recvframe_phyinfo(
 {
 	struct rtw_adapter *	padapter = precvframe->u.hdr.adapter;
 	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
-	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter);
+	struct hal_data_8723a		*pHalData= GET_HAL_DATA(padapter);
 	PODM_PHY_INFO_T		pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);
 	u8					*wlanhdr;
 	ODM_PACKET_INFO_T	pkt_info;

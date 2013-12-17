@@ -433,7 +433,7 @@ _func_enter_;
 
 	#ifdef DBG_CONFIG_ERROR_DETECT
 	{
-		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+		struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 		pHalData->srestpriv.last_tx_complete_time = rtw_get_current_time();
 	}
 	#endif
@@ -541,7 +541,7 @@ _func_enter_;
 	if (!status) {
 		#ifdef DBG_CONFIG_ERROR_DETECT
 		{
-			HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+			struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 			pHalData->srestpriv.last_tx_time = rtw_get_current_time();
 		}
 		#endif

@@ -70,7 +70,7 @@ s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdB
 	u8 h2c_box_num;
 	u32	msgbox_addr;
 	u32 msgbox_ex_addr;
-	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	u32	h2c_cmd = 0;
 	u16	h2c_cmd_ex = 0;
 	s32 ret = _FAIL;
@@ -214,7 +214,7 @@ _func_exit_;
 //arg[5] = Short GI
 void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	u8 macid = arg&0x1f;
 	u8 raid = (bitmap>>28) & 0x0f;
 
@@ -513,7 +513,7 @@ static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLe
 void
 CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 {
-	HAL_DATA_TYPE*	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a*	pHalData = GET_HAL_DATA(Adapter);
 	u32	MaxBcnPageNum;
 
 	if(pHalData->FwRsvdPageStartOffset != 0)
@@ -538,7 +538,7 @@ CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 // 2009.10.15 by tynli.
 static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 {
-	PHAL_DATA_TYPE pHalData;
+	struct hal_data_8723a * pHalData;
 	struct xmit_frame	*pmgntframe;
 	struct pkt_attrib	*pattrib;
 	struct xmit_priv	*pxmitpriv;
@@ -674,7 +674,7 @@ exit:
 void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 {
 	JOINBSSRPT_PARM	JoinBssRptParm;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
@@ -750,7 +750,7 @@ _func_exit_;
 #ifdef CONFIG_BT_COEXIST
 static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 {
-	PHAL_DATA_TYPE pHalData;
+	struct hal_data_8723a * pHalData;
 	struct xmit_frame	*pmgntframe;
 	struct pkt_attrib	*pattrib;
 	struct xmit_priv	*pxmitpriv;
@@ -841,7 +841,7 @@ exit:
 
 void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 {
-	PHAL_DATA_TYPE pHalData;
+	struct hal_data_8723a * pHalData;
 	u8 bRecover = false;
 
 
@@ -874,7 +874,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 #ifdef CONFIG_P2P_PS
 void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct pwrctrl_priv		*pwrpriv = &padapter->pwrctrlpriv;
 	struct wifidirect_info	*pwdinfo = &( padapter->wdinfo );
 	struct P2P_PS_Offload_t	*p2p_ps_offload = &pHalData->p2p_ps_offload;

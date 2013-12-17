@@ -297,8 +297,7 @@ typedef enum _RTL8192C_C2H_EVT
 	MAX_C2HEVENT
 } RTL8192C_C2H_EVT;
 
-typedef struct hal_data_8723a
-{
+struct hal_data_8723a {
 	HAL_VERSION			VersionID;
 	RT_CUSTOMER_ID	CustomerID;
 
@@ -511,11 +510,9 @@ typedef struct hal_data_8723a
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8			bMacPwrCtrlOn;
 
-} HAL_DATA_8723A, *PHAL_DATA_8723A;
+};
 
-typedef struct hal_data_8723a HAL_DATA_TYPE, *PHAL_DATA_TYPE;
-
-#define GET_HAL_DATA(__pAdapter)	((HAL_DATA_TYPE *)((__pAdapter)->HalData))
+#define GET_HAL_DATA(__pAdapter)	((struct hal_data_8723a *)((__pAdapter)->HalData))
 #define GET_RF_TYPE(priv)			(GET_HAL_DATA(priv)->rf_type)
 
 #define INCLUDE_MULTI_FUNC_BT(_Adapter)		(GET_HAL_DATA(_Adapter)->MultiFunc & RT_MULTI_FUNC_BT)

@@ -151,7 +151,7 @@ rtl8192c_PHY_SetBBReg(
 	u32		Data
 	)
 {
-	HAL_DATA_TYPE	*pHalData		= GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData		= GET_HAL_DATA(Adapter);
 	//u16			BBWaitCounter	= 0;
 	u32			OriginalValue, BitShift;
 
@@ -262,7 +262,7 @@ phy_RFSerialRead(
 	)
 {
 	u32						retValue = 0;
-	HAL_DATA_TYPE				*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a				*pHalData = GET_HAL_DATA(Adapter);
 	BB_REGISTER_DEFINITION_T	*pPhyReg = &pHalData->PHYRegDef[eRFPath];
 	u32						NewOffset;
 	u32						tmplong,tmplong2;
@@ -379,7 +379,7 @@ phy_RFSerialWrite(
 	)
 {
 	u32						DataAndAddr = 0;
-	HAL_DATA_TYPE				*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a				*pHalData = GET_HAL_DATA(Adapter);
 	BB_REGISTER_DEFINITION_T	*pPhyReg = &pHalData->PHYRegDef[eRFPath];
 	u32						NewOffset;
 
@@ -443,7 +443,7 @@ rtl8192c_PHY_QueryRFReg(
 	)
 {
 	u32 Original_Value, Readback_Value, BitShift;
-	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	//u8	RFWaitCounter = 0;
 	//_irqL	irqL;
 
@@ -486,7 +486,7 @@ rtl8192c_PHY_SetRFReg(
 	)
 {
 
-	//HAL_DATA_TYPE	*pHalData		= GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData		= GET_HAL_DATA(Adapter);
 	//u8			RFWaitCounter	= 0;
 	u32		Original_Value, BitShift;
 	//_irqL	irqL;
@@ -532,7 +532,7 @@ phy_ConfigMACWithParaFile(
 	u8*			pFileName
 )
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	int		rtStatus = _SUCCESS;
 
@@ -558,7 +558,7 @@ phy_ConfigMACWithParaFile(
 s32 PHY_MACConfig8723A(struct rtw_adapter * Adapter)
 {
 	int		rtStatus = _SUCCESS;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	s8			*pszMACRegFile;
 	s8			sz8723MACRegFile[] = RTL8723_PHY_MACREG;
 	bool		is92C = IS_92C_SERIAL(pHalData->VersionID);
@@ -607,7 +607,7 @@ phy_InitBBRFRegisterDefinition(
 	struct rtw_adapter *		Adapter
 )
 {
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 
 	// RF Interface Sowrtware Control
 	pHalData->PHYRegDef[RF_PATH_A].rfintfs = rFPGA0_XAB_RFInterfaceSW; // 16 LSBs if read 32-bit from 0x870
@@ -732,7 +732,7 @@ phy_ConfigBBWithParaFile(
 	u8*			pFileName
 )
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	int		rtStatus = _SUCCESS;
 
@@ -749,7 +749,7 @@ phy_ConfigBBExternalPA(
 	struct rtw_adapter *			Adapter
 )
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u16 i=0;
 	u32 temp=0;
 
@@ -770,7 +770,7 @@ storePwrIndexDiffRateOffset(
 	u32		Data
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	if(RegAddr == rTxAGC_A_Rate18_06)
 	{
@@ -891,7 +891,7 @@ phy_ConfigBBWithPgParaFile(
 	struct rtw_adapter *		Adapter,
 	u8*			pFileName)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	int		rtStatus = _SUCCESS;
 
@@ -925,7 +925,7 @@ phy_ConfigBBWithPgHeaderFile(
 	int i;
 	u32*	Rtl819XPHY_REGArray_Table_PG;
 	u16	PHY_REGArrayPGLen;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 
 	PHY_REGArrayPGLen = Rtl8723_PHY_REG_Array_PGLength;
@@ -992,7 +992,7 @@ phy_BB8723a_Config_ParaFile(
 	)
 {
 	EEPROM_EFUSE_PRIV	*pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	int			rtStatus = _SUCCESS;
 
 	u8	sz8723BBRegFile[] = RTL8723_PHY_REG;
@@ -1084,7 +1084,7 @@ PHY_BBConfig8723A(
 	)
 {
 	int	rtStatus = _SUCCESS;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u32	RegVal;
 	u8	TmpU1B=0;
 	u8	value8,CrystalCap;
@@ -1138,7 +1138,7 @@ PHY_RFConfig8723A(
 	struct rtw_adapter *	Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	int		rtStatus = _SUCCESS;
 
 	//
@@ -1171,7 +1171,7 @@ rtl8192c_PHY_ConfigRFWithParaFile(
 	RF_RADIO_PATH_E		eRFPath
 )
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	int	rtStatus = _SUCCESS;
 
@@ -1206,7 +1206,7 @@ PHY_ConfigRFExternalPA(
 )
 {
 	int	rtStatus = _SUCCESS;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u16 i=0;
 
 	if(!pHalData->ExternalPA)
@@ -1315,7 +1315,7 @@ rtl8192c_PHY_GetHWRegOriginalValue(
 	struct rtw_adapter *		Adapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	// read rx initial gain
 	pHalData->DefaultInitialGain[0] = (u8)PHY_QueryBBReg(Adapter, rOFDM0_XAAGCCore1, bMaskByte0);
@@ -1452,7 +1452,7 @@ PHY_GetTxPowerLevel8192C(
  u32*		powerlevel
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8			TxPwrLevel = 0;
 	int			TxPwrDbm;
 
@@ -1490,7 +1490,7 @@ static void getTxPowerIndex(
 	u8*		ofdmPowerLevel
 	)
 {
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8				index = (channel -1);
 	// 1. CCK
 	cckPowerLevel[RF_PATH_A] = pHalData->TxPwrLevelCck[RF_PATH_A][index];	//RF-A
@@ -1544,7 +1544,7 @@ PHY_SetTxPowerLevel8192C(
 	u8			channel
 	)
 {
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8	cckPowerLevel[2], ofdmPowerLevel[2];	// [0]:RF-A, [1]:RF-B
 
 	if(pHalData->bTXPowerDataReadFromEEPORM == false)
@@ -1575,7 +1575,7 @@ PHY_UpdateTxPowerDbm8192C(
 	int		powerInDbm
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8				idx;
 	u8			rf_path;
 
@@ -1654,7 +1654,7 @@ _PHY_SetBWMode92C(
 )
 {
 //	struct rtw_adapter *			Adapter = (struct rtw_adapter *)pTimer->Adapter;
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8				regBwOpMode;
 	u8				regRRSR_RSC;
 
@@ -1818,7 +1818,7 @@ PHY_SetBWMode8192C(
 	unsigned char	Offset		// Upper, Lower, or Don't care
 )
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	HT_CHANNEL_WIDTH	tmpBW= pHalData->CurrentChannelBW;
 	// Modified it for 20/40 mhz switch by guangan 070531
 	//PMGNT_INFO	pMgntInfo=&Adapter->MgntInfo;
@@ -1869,7 +1869,7 @@ static void _PHY_SwChnl8192C(struct rtw_adapter * Adapter, u8 channel)
 {
 	u8 eRFPath;
 	u32 param1, param2;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	if ( Adapter->bNotifyChannelChange )
 	{
@@ -1900,7 +1900,7 @@ PHY_SwChnl8192C(	// Call after initialization
 	)
 {
 	//struct rtw_adapter * Adapter =  ADJUST_TO_ADAPTIVE_ADAPTER(pAdapter, true);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8	tmpchannel = pHalData->CurrentChannel;
 	bool  bResult = true;
 
@@ -2041,7 +2041,7 @@ PHY_SwChnlPhy8192C(	// Only called during initialize
 	u8		channel
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
 	//RT_TRACE(COMP_SCAN | COMP_RM, DBG_LOUD, ("==>PHY_SwChnlPhy8192S(), switch from channel %d to channel %d.\n", pHalData->CurrentChannel, channel));
 
@@ -2112,7 +2112,7 @@ PHY_CheckIsLegalRfPath8192C(
 	struct rtw_adapter *	pAdapter,
 	u32	eRFPath)
 {
-//	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+//	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	bool				rtValue = true;
 
 	// NOt check RF Path now.!
@@ -2207,7 +2207,7 @@ void rtl8192c_PHY_SetRFPathSwitch(
 	bool		bMain
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 
 #if DISABLE_BB_RF
 	return;

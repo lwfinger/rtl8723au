@@ -31,7 +31,7 @@ static	void
 odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	struct rtw_adapter *Adapter)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	u8			ThermalValue = 0, delta, delta_LCK, delta_IQK, delta_HP, TimeOut = 100;
 	int			ele_A, ele_D, TempCCk, X, value32;
@@ -389,7 +389,7 @@ static void
 odm_CheckTXPowerTracking_ThermalMeter(
 	struct rtw_adapter *		Adapter)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	DM_ODM_T		*podmpriv = &pHalData->odmpriv;
 
@@ -432,7 +432,7 @@ void odm_SwAntDivResetBeforeLink8192C(PDM_ODM_T pDM_Odm)
 void	odm_AntDivCompare8192C(struct rtw_adapter *Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src)
 {
 
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T pDM_Odm = &pHalData->odmpriv;
 	if((0 != pHalData->AntDivCfg) && (!IS_92C_SERIAL(pHalData->VersionID)) )
 	{
@@ -449,7 +449,7 @@ void	odm_AntDivCompare8192C(struct rtw_adapter *Adapter, WLAN_BSSID_EX *dst, WLA
 u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter )
 {
 
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T	pDM_Odm =&pHalData->odmpriv;
 	SWAT_T		*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
@@ -500,7 +500,7 @@ _PHY_PathA_IQK(
 {
 	u32 regEAC, regE94, regE9C, regEA4;
 	u8 result = 0x00;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 
 	/* path-A IQK setting */
 	PHY_SetBBReg(pAdapter, rTx_IQK_Tone_A, bMaskDWord, 0x10008c1f);
@@ -832,7 +832,7 @@ _PHY_SimularityCompare(
 	)
 {
 	u32		i, j, diff, SimularityBitMap, bound = 0;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	u8		final_candidate[2] = {0xFF, 0xFF};	/* for path A and path B */
 	bool		bResult = true, is2T = IS_92C_SERIAL( pHalData->VersionID);
 
@@ -900,7 +900,7 @@ _PHY_IQCalibrate(
 	bool		is2T
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	u32			i;
 	u8			PathAOK, PathBOK;
@@ -1146,7 +1146,7 @@ _PHY_APCalibrate(
 	bool		is2T
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 	u32			regD[PATH_NUM];
@@ -1259,7 +1259,7 @@ rtl8192c_PHY_IQCalibrate(
 	bool	bReCovery
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	s32			result[4][8];	/* last is final result */
 	u8			i, final_candidate;
@@ -1396,7 +1396,7 @@ rtl8192c_PHY_LCCalibrate(
 	struct rtw_adapter *	pAdapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct mlme_ext_priv	*pmlmeext = &pAdapter->mlmeextpriv;
 	bool	bStartContTx = false, bSingleTone = false, bCarrierSuppression = false;
 

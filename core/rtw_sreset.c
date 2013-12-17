@@ -23,7 +23,7 @@
 void sreset_init_value(struct rtw_adapter *padapter)
 {
 #if defined(DBG_CONFIG_ERROR_DETECT)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
 	mutex_init(&psrtpriv->silentreset_mutex);
@@ -36,7 +36,7 @@ void sreset_init_value(struct rtw_adapter *padapter)
 void sreset_reset_value(struct rtw_adapter *padapter)
 {
 #if defined(DBG_CONFIG_ERROR_DETECT)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
 	psrtpriv->silent_reset_inprogress = false;
@@ -49,7 +49,7 @@ void sreset_reset_value(struct rtw_adapter *padapter)
 u8 sreset_get_wifi_status(struct rtw_adapter *padapter)
 {
 #if defined(DBG_CONFIG_ERROR_DETECT)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
 	u8 status = WIFI_STATUS_SUCCESS;
@@ -86,7 +86,7 @@ u8 sreset_get_wifi_status(struct rtw_adapter *padapter)
 void sreset_set_wifi_error_status(struct rtw_adapter *padapter, u32 status)
 {
 #if defined(DBG_CONFIG_ERROR_DETECT)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	pHalData->srestpriv.Wifi_Error_Status = status;
 #endif
 }
@@ -94,7 +94,7 @@ void sreset_set_wifi_error_status(struct rtw_adapter *padapter, u32 status)
 void sreset_set_trigger_point(struct rtw_adapter *padapter, s32 tgp)
 {
 #if defined(DBG_CONFIG_ERROR_DETECT)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	pHalData->srestpriv.dbg_trigger_point = tgp;
 #endif
 }
@@ -102,7 +102,7 @@ void sreset_set_trigger_point(struct rtw_adapter *padapter, s32 tgp)
 bool sreset_inprogress(struct rtw_adapter *padapter)
 {
 #if defined(DBG_CONFIG_ERROR_RESET)
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	return pHalData->srestpriv.silent_reset_inprogress;
 #else
 	return false;
@@ -261,7 +261,7 @@ static void sreset_start_adapter(struct rtw_adapter *padapter)
 void sreset_reset(struct rtw_adapter *padapter)
 {
 #ifdef DBG_CONFIG_ERROR_RESET
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);

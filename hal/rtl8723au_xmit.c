@@ -186,7 +186,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	struct rtw_adapter	*padapter = pxmitframe->padapter;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct tx_desc	*ptxdesc = (struct tx_desc *)pmem;
 	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
@@ -401,7 +401,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
  */
 s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
 {
-	//PHAL_DATA_TYPE phal;
+	//struct hal_data_8723a * phal;
 	struct xmit_priv *pxmitpriv;
 	struct xmit_buf *pxmitbuf;
 	s32 ret;
@@ -560,7 +560,7 @@ static u32 xmitframe_need_length(struct xmit_frame *pxmitframe)
 #define IDEA_CONDITION 1	// check all packets before enqueue
 s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct xmit_frame *pxmitframe = NULL;
 	struct xmit_frame *pfirstframe = NULL;
 
@@ -1053,7 +1053,7 @@ s32 rtl8192cu_hostap_mgnt_xmit_entry(struct rtw_adapter *padapter, _pkt *pkt)
 	struct ieee80211_hdr *tx_hdr;
 	struct hostapd_priv *phostapdpriv = padapter->phostapdpriv;
 	struct net_device *pnetdev = padapter->pnetdev;
-	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	struct dvobj_priv *pdvobj = adapter_to_dvobj(padapter);
 
 

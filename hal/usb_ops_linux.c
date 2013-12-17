@@ -126,7 +126,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 				} else {
 					#ifdef DBG_CONFIG_ERROR_DETECT
 					{
-						HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+						struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 						pHalData->srestpriv.Wifi_Error_Status = USB_VEN_REQ_CMD_FAIL;
 					}
 					#endif
@@ -383,7 +383,7 @@ bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 			  u32 ContentLen)
 {
-	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
 	u8 *			buffer = (u8 *)pContent;
 //	RT_PRINT_DATA(COMP_RECV, DBG_LOUD, ("InterruptRecognized8723AU Interrupt buffer \n"), buffer, MAX_RECEIVE_INTERRUPT_BUFFER_SIZE(Adapter));
 
@@ -556,7 +556,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 	struct sk_buff		*pkt_copy = NULL;
 	union recv_frame	*precvframe = NULL;
 	struct rx_pkt_attrib	*pattrib = NULL;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 	_queue			*pfree_recv_queue = &precvpriv->free_recv_queue;
 
@@ -819,7 +819,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			case -EOVERFLOW:
 				#ifdef DBG_CONFIG_ERROR_DETECT
 				{
-					HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+					struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 					pHalData->srestpriv.Wifi_Error_Status = USB_READ_PORT_FAIL;
 				}
 				#endif

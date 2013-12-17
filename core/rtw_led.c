@@ -246,7 +246,7 @@ static void SwLedBlink1(
 {
 	struct rtw_adapter				*padapter = pLed->padapter;
 #ifndef CONFIG_LED_REMOVE_HAL
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(padapter);
 #endif
 	struct led_priv		*ledpriv = &(padapter->ledpriv);
 	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
@@ -1188,7 +1188,7 @@ SwLedControlMode1(
 )
 {
 #ifndef CONFIG_LED_REMOVE_HAL
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(padapter);
 #endif
 	struct led_priv		*ledpriv = &(padapter->ledpriv);
 	PLED_871x			pLed = &(ledpriv->SwLed0);
@@ -2135,7 +2135,7 @@ SwLedControlMode5(
 )
 {
 #ifndef CONFIG_LED_REMOVE_HAL
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 #endif
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;

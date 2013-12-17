@@ -2231,7 +2231,7 @@ odm_DynamicTxPowerInit(
 	)
 {
 	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	pdmpriv->bDynamicTxPowerEnable = false;
 
@@ -2259,7 +2259,7 @@ odm_DynamicTxPowerSavePowerIndex(
 	u32		Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 
 	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	for(index = 0; index< 6; index++)
 		pdmpriv->PowerIndex_backup[index] = rtw_read8(Adapter, Power_Index_REG[index]);
@@ -2273,7 +2273,7 @@ odm_DynamicTxPowerRestorePowerIndex(
 	u8			index;
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u32			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	for(index = 0; index< 6; index++)
@@ -2366,7 +2366,7 @@ odm_DynamicTxPower_92C(
 {
 #if (RTL8192C_SUPPORT==1)
 	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
@@ -2427,7 +2427,7 @@ odm_DynamicTxPower_92D(
 {
 #if (RTL8192D_SUPPORT==1)
 	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -2628,7 +2628,7 @@ FindMinimumRSSI(
 	struct rtw_adapter *	pAdapter
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 
@@ -2655,7 +2655,7 @@ odm_RSSIMonitorCheckCE(
 	)
 {
 	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int	i;
 	int	tmpEntryMaxPWDB=0, tmpEntryMinPWDB=0xff;
@@ -2794,7 +2794,7 @@ void odm_TXPowerTrackingThermalMeterInit(
 	)
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 	pdmpriv->bTXPowerTracking = true;
@@ -3082,7 +3082,7 @@ odm_SwAntDivChkAntSwitchNIC(
 {
 #if ((RTL8192C_SUPPORT==1)||(RTL8723A_SUPPORT==1))
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	s32			curRSSI=100, RSSI_A, RSSI_B;
 	u8			nextAntenna=Antenna_B;
@@ -3387,7 +3387,7 @@ odm_SwAntDivChkAntSwitchNIC(
 	//1 6.Set next timer
 	{
 		struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-		HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
+		struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 
 
 	if(pDM_SWAT_Table->RSSI_Trying == 0)
@@ -3893,7 +3893,7 @@ odm_EdcaTurboCheckCE(
 	u64	cur_tx_bytes = 0;
 	u64	cur_rx_bytes = 0;
 	u8	bbtchange = false;
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	struct xmit_priv		*pxmitpriv = &(Adapter->xmitpriv);
 	struct recv_priv		*precvpriv = &(Adapter->recvpriv);
 	struct registry_priv	*pregpriv = &Adapter->registrypriv;
@@ -3995,7 +3995,7 @@ GetPSDData(
 	//int	psd_report;
 	u32	psd_report;
 
-	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	//Debug Message
 	//val = PHY_QueryBBReg(Adapter,0x908, bMaskDWord);
 	//DbgPrint("Reg908 = 0x%x\n",val);
@@ -4134,7 +4134,7 @@ ODM_SingleDualAntennaDetection(
 	)
 {
 
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	//PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	u32		CurrentChannel,RfLoopReg;
