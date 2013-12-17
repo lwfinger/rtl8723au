@@ -47,11 +47,11 @@ static int is_any_client_associated(struct rtw_adapter *padapter)
 
 static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 {
-	struct list_head	*phead, *plist;
+	struct list_head *phead, *plist;
 	u32 len=0;
 	u16 attr_len = 0;
 	u8 tmplen, *pdata_attr, *pstart, *pcur;
-	struct sta_info *psta = NULL;
+	struct sta_info *psta;
 	struct rtw_adapter *padapter = pwdinfo->padapter;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 
@@ -64,14 +64,9 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 	phead = &pstapriv->asoc_list;
-	plist = phead->next;
 
-	/* look up sta asoc_queue */
-	while ((rtw_end_of_queue_search(phead, plist)) == false)
-	{
+	list_for_each(plist, phead) {
 		psta = container_of(plist, struct sta_info, asoc_list);
-
-		plist = plist->next;
 
 		if(psta->is_p2p_device)
 		{
@@ -2344,18 +2339,13 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 				attr_contentlen=0;
 				if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_ID, dev_addr, &attr_contentlen))
 				{
-					struct list_head	*phead, *plist;
+					struct list_head *phead, *plist, *ptmp;
 
 					spin_lock_bh(&pstapriv->asoc_list_lock);
 					phead = &pstapriv->asoc_list;
-					plist = phead->next;
 
-					/* look up sta asoc_queue */
-					while ((rtw_end_of_queue_search(phead, plist)) == false)
-					{
+					list_for_each_safe(plist, ptmp, phead) {
 						psta = container_of(plist, struct sta_info, asoc_list);
-
-						plist = plist->next;
 
 						if(psta->is_p2p_device && (psta->dev_cap&P2P_DEVCAP_CLIENT_DISCOVERABILITY) &&
 						   !memcmp(psta->dev_addr, dev_addr, ETH_ALEN))
