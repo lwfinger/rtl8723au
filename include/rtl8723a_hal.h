@@ -113,8 +113,7 @@ typedef struct _RT_FIRMWARE {
 // This structure must be cared byte-ordering
 //
 // Added by tynli. 2009.12.04.
-typedef struct _RT_8723A_FIRMWARE_HDR
-{
+struct rt_8723a_firmware_hdr {
 	// 8-byte alinment required
 
 	//--- LONG WORD 0 ----
@@ -141,7 +140,7 @@ typedef struct _RT_8723A_FIRMWARE_HDR
 	//--- LONG WORD 3 ----
 	u32		Rsvd4;
 	u32		Rsvd5;
-}RT_8723A_FIRMWARE_HDR, *PRT_8723A_FIRMWARE_HDR;
+};
 
 #define DRIVER_EARLY_INT_TIME		0x05
 #define BCN_DMA_ATIME_INT_TIME		0x02

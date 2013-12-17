@@ -311,7 +311,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	u8			*pucMappedFile = NULL;
 	PRT_FIRMWARE_8723A	pFirmware = NULL;
 	PRT_FIRMWARE_8723A	pBTFirmware = NULL;
-	PRT_8723A_FIRMWARE_HDR		pFwHdr = NULL;
+	struct rt_8723a_firmware_hdr *		pFwHdr = NULL;
 	u8			*pFirmwareBuf;
 	u32			FirmwareLen;
 
@@ -410,7 +410,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	FirmwareLen = pFirmware->ulFwLength;
 
 	// To Check Fw header. Added by tynli. 2009.12.04.
-	pFwHdr = (PRT_8723A_FIRMWARE_HDR)pFirmware->szFwBuffer;
+	pFwHdr = (struct rt_8723a_firmware_hdr *)pFirmware->szFwBuffer;
 
 	pHalData->FirmwareVersion =  le16_to_cpu(pFwHdr->Version);
 	pHalData->FirmwareSubVersion = pFwHdr->Subversion;
