@@ -289,7 +289,7 @@ using spinlock to protect
 void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue)
 {
 	struct recv_frame_hdr *hdr;
-	struct list_head	*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 
 _func_enter_;
 	spin_lock(&pframequeue->lock);
@@ -297,9 +297,8 @@ _func_enter_;
 	phead = get_list_head(pframequeue);
 	plist = phead->next;
 
-	while(rtw_end_of_queue_search(phead, plist) == false) {
+	list_for_each_safe(plist, ptmp, phead) {
 		hdr = container_of(plist, struct recv_frame_hdr, list);
-		plist = plist->next;
 		rtw_free_recvframe((union recv_frame *)hdr, pfree_recv_queue);
 	}
 

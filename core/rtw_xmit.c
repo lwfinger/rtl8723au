@@ -1939,25 +1939,19 @@ _func_exit_;
 
 void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, _queue *pframequeue)
 {
-	struct list_head	*plist, *phead;
-	struct	xmit_frame	*pxmitframe;
+	struct list_head *plist, *phead, *ptmp;
+	struct	xmit_frame *pxmitframe;
 
 _func_enter_;
 
 	spin_lock_bh(&(pframequeue->lock));
 
 	phead = get_list_head(pframequeue);
-	plist = phead->next;
 
-	while (rtw_end_of_queue_search(phead, plist) == false)
-	{
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pxmitframe = container_of(plist, struct xmit_frame, list);
 
-		plist = plist->next;
-
 		rtw_free_xmitframe(pxmitpriv,pxmitframe);
-
 	}
 	spin_unlock_bh(&(pframequeue->lock));
 
@@ -1979,24 +1973,24 @@ s32 rtw_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmit
 
 static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit, struct tx_servq *ptxservq, _queue *pframe_queue)
 {
-	struct list_head	*xmitframe_plist, *xmitframe_phead;
-	struct	xmit_frame	*pxmitframe=NULL;
+	struct list_head *phead, *plist, *ptmp;
+	struct xmit_frame *pxmitframe;
 
-	xmitframe_phead = get_list_head(pframe_queue);
-	xmitframe_plist = xmitframe_phead->next;
+	phead = get_list_head(pframe_queue);
 
-	if ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false) {
-		pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
-		xmitframe_plist = xmitframe_plist->next;
+	list_for_each_safe(plist, ptmp, phead) {
+		pxmitframe = container_of(plist, struct xmit_frame, list);
 		list_del_init(&pxmitframe->list);
 		ptxservq->qcnt--;
 	}
 	return pxmitframe;
 }
 
-struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit_i, int entry)
+struct xmit_frame *
+rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit_i,
+		   int entry)
 {
-	struct list_head *sta_plist, *sta_phead;
+	struct list_head *sta_plist, *sta_phead, *ptmp;
 	struct hw_xmit *phwxmit;
 	struct tx_servq *ptxservq = NULL;
 	_queue *pframe_queue = NULL;
@@ -2017,16 +2011,14 @@ _func_enter_;
 
 	spin_lock_bh(&pxmitpriv->lock);
 
-	for(i = 0; i < entry; i++) {
+	for (i = 0; i < entry; i++) {
 		phwxmit = phwxmit_i + inx[i];
 
 		sta_phead = get_list_head(phwxmit->sta_queue);
-		sta_plist = sta_phead->next;
 
-		while ((rtw_end_of_queue_search(sta_phead, sta_plist)) == false)
-		{
-
-			ptxservq= container_of(sta_plist, struct tx_servq, tx_pending);
+		list_for_each_safe(sta_plist, ptmp, sta_phead) {
+			ptxservq = container_of(sta_plist, struct tx_servq,
+						tx_pending);
 
 			pframe_queue = &ptxservq->sta_pending;
 
@@ -2044,9 +2036,6 @@ _func_enter_;
 
 				goto exit;
 			}
-
-			sta_plist = sta_plist->next;
-
 		}
 
 		/* _exit_critical_ex(&phwxmit->sta_queue->lock); */
