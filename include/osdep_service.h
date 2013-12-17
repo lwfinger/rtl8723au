@@ -224,7 +224,6 @@ extern unsigned char	MCS_rate_1R[16];
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);
-extern u32	rtw_end_of_queue_search(struct list_head *queue, struct list_head *pelement);
 
 extern u32	rtw_get_current_time(void);
 extern u32	rtw_systime_to_ms(u32 systime);

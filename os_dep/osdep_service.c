@@ -111,16 +111,6 @@ u32	  _rtw_queue_empty(_queue *pqueue)
 		return false;
 }
 
-
-u32 rtw_end_of_queue_search(struct list_head *head, struct list_head *plist)
-{
-	if (head == plist)
-		return true;
-	else
-		return false;
-}
-
-
 u32	rtw_get_current_time(void)
 {
 	return jiffies;
