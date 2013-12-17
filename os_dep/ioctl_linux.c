@@ -966,9 +966,9 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct list_head * plist,*phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue *queue = &(pmlmepriv->scanned_queue);
-	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u16	attr_content = 0;
 	uint attr_contentlen = 0;
@@ -986,12 +986,8 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while (1)
-	{
-		if (rtw_end_of_queue_search(phead, plist) == true) break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
@@ -1013,9 +1009,6 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 
 			break;
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1102,9 +1095,9 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct list_head *plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue *queue	= &(pmlmepriv->scanned_queue);
-	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 *p2pie;
 	uint p2pielen = 0, attr_contentlen = 0;
@@ -1122,12 +1115,8 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while (1)
-	{
-		if (rtw_end_of_queue_search(phead, plist) == true) break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
@@ -1161,9 +1150,6 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 				}
 			}
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1193,9 +1179,9 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct list_head *plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue *queue = &(pmlmepriv->scanned_queue);
-	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 dev_type[8] = { 0x00 };
 	uint dev_type_len = 0;
@@ -1213,12 +1199,8 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while (1)
-	{
-		if (rtw_end_of_queue_search(phead, plist) == true) break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
@@ -1242,9 +1224,6 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 			}
 			break;
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1270,9 +1249,9 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct list_head *plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue *queue = &(pmlmepriv->scanned_queue);
-	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 dev_name[WPS_MAX_DEVICE_NAME_LEN] = { 0x00 };
 	uint dev_len = 0;
@@ -1290,12 +1269,8 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while (1)
-	{
-		if (rtw_end_of_queue_search(phead, plist) == true) break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
@@ -1315,9 +1290,6 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 			}
 			break;
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1343,9 +1315,9 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct list_head *plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue *queue	= &(pmlmepriv->scanned_queue);
-	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 *p2pie;
 	uint p2pielen = 0, attr_contentlen = 0;
@@ -1363,12 +1335,8 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while (1) {
-		if (rtw_end_of_queue_search(phead, plist) == true)
-			break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN)) {
 			//	Commented by Albert 20121226
@@ -1389,7 +1357,6 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 				}
 			}
 		}
-		plist = plist->next;
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1421,9 +1388,9 @@ static int rtw_p2p_connect(struct net_device *dev,
 	int					jj,kk;
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-	struct list_head					*plist, *phead;
+	struct list_head *plist, *phead;
 	_queue				*queue	= &(pmlmepriv->scanned_queue);
-	struct	wlan_network	*pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	uint					uintPeerChannel = 0;
 
 	//	Commented by Albert 20110304
@@ -1454,22 +1421,14 @@ static int rtw_p2p_connect(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while(1)
-	{
-		if (rtw_end_of_queue_search(phead,plist)== true)
-			break;
-
+	list_for_each(plist, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp( pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
 			uintPeerChannel = pnetwork->network.Configuration.DSConfig;
 			break;
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1516,9 +1475,9 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	int						jj,kk;
 	u8						peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
-	struct list_head						*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue					*queue	= &(pmlmepriv->scanned_queue);
-	struct	wlan_network		*pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	uint						uintPeerChannel = 0;
 	u8						attr_content[50] = { 0x00 }, _status = 0;
 	u8						*p2pie;
@@ -1569,13 +1528,8 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while(1)
-	{
-		if (rtw_end_of_queue_search(phead,plist)== true)
-			break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
 		//	Commented by Albert 2011/05/18
@@ -1607,9 +1561,6 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 			}
 
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -1699,7 +1650,7 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
 	struct list_head						*plist, *phead;
 	_queue					*queue	= &(pmlmepriv->scanned_queue);
-	struct	wlan_network		*pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	uint						uintPeerChannel = 0;
 	u8						attr_content[50] = { 0x00 }, _status = 0;
 	u8						*p2pie;
@@ -1759,9 +1710,9 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	int					jj,kk;
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-	struct list_head					*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue				*queue	= &(pmlmepriv->scanned_queue);
-	struct	wlan_network	*pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	u8					attr_content[50] = { 0x00 }, _status = 0;
 	u8 *p2pie;
 	uint					p2pielen = 0, attr_contentlen = 0;
@@ -1788,13 +1739,8 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while(1)
-	{
-		if (rtw_end_of_queue_search(phead,plist)== true)
-			break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
 		//	Commented by Albert 2011/05/18
@@ -1828,9 +1774,6 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 			}
 
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
@@ -2008,9 +1951,9 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	int					jj,kk;
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-	struct list_head					*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	_queue				*queue	= &(pmlmepriv->scanned_queue);
-	struct	wlan_network	*pnetwork = NULL;
+	struct wlan_network *pnetwork;
 	uint					uintPeerChannel = 0;
 	u8					attr_content[100] = { 0x00 }, _status = 0;
 	u8 *p2pie;
@@ -2076,13 +2019,8 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 
 	phead = get_list_head(queue);
-	plist = phead->next;
 
-	while(1)
-	{
-		if (rtw_end_of_queue_search(phead,plist)== true)
-			break;
-
+	list_for_each_safe(plist, ptmp, phead) {
 		if( uintPeerChannel != 0 )
 			break;
 
@@ -2123,9 +2061,6 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 			}
 
 		}
-
-		plist = plist->next;
-
 	}
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
