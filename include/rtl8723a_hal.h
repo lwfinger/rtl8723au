@@ -589,52 +589,6 @@ struct rxreport_8723a {
 	u32 rsvd2413:19;
 };
 
-typedef struct phystatus_8723a
-{
-	u32 rxgain_a:7;
-	u32 trsw_a:1;
-	u32 rxgain_b:7;
-	u32 trsw_b:1;
-	u32 chcorr_l:16;
-
-	u32 sigqualcck:8;
-	u32 cfo_a:8;
-	u32 cfo_b:8;
-	u32 chcorr_h:8;
-
-	u32 noisepwrdb_h:8;
-	u32 cfo_tail_a:8;
-	u32 cfo_tail_b:8;
-	u32 rsvd0824:8;
-
-	u32 rsvd1200:8;
-	u32 rxevm_a:8;
-	u32 rxevm_b:8;
-	u32 rxsnr_a:8;
-
-	u32 rxsnr_b:8;
-	u32 noisepwrdb_l:8;
-	u32 rsvd1616:8;
-	u32 postsnr_a:8;
-
-	u32 postsnr_b:8;
-	u32 csi_a:8;
-	u32 csi_b:8;
-	u32 targetcsi_a:8;
-
-	u32 targetcsi_b:8;
-	u32 sigevm:8;
-	u32 maxexpwr:8;
-	u32 exintflag:1;
-	u32 sgien:1;
-	u32 rxsc:2;
-	u32 idlelong:1;
-	u32 anttrainen:1;
-	u32 antselb:1;
-	u32 antsel:1;
-} PHYSTATUS, *PPHYSTATUS;
-
-
 // rtl8723a_hal_init.c
 int FirmwareDownloadBT(struct rtw_adapter *Adapter, PRT_FIRMWARE_8723A pFirmware);
 s32 rtl8723a_FirmwareDownload(struct rtw_adapter *padapter);
