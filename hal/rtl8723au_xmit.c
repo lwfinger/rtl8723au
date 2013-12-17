@@ -475,7 +475,7 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 
 	mem_addr = pxmitframe->buf_addr;
 
-       RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_dump_xframe()\n"));
+	RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_dump_xframe()\n"));
 
 	for (t = 0; t < pattrib->nr_frags; t++)
 	{
@@ -569,7 +569,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 	struct sta_info *psta = NULL;
 	struct tx_servq *ptxservq = NULL;
 
-	_list *xmitframe_plist = NULL, *xmitframe_phead = NULL;
+	struct list_head *xmitframe_plist = NULL, *xmitframe_phead = NULL;
 
 	u32	pbuf;	// next pkt address
 	u32	pbuf_tail;	// last pkt tail
@@ -821,7 +821,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 
 	struct hw_xmit *phwxmits;
 	int hwentry;
-	struct xmit_frame *pxmitframe=NULL;
+	struct xmit_frame *pxmitframe;
 	int res=_SUCCESS, xcnt = 0;
 
 	phwxmits = pxmitpriv->hwxmits;
