@@ -569,7 +569,7 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 	struct sta_info *psta = NULL;
 	struct tx_servq *ptxservq = NULL;
 
-	struct list_head *xmitframe_plist = NULL, *xmitframe_phead = NULL;
+	struct list_head *plist, *phead, *ptmp;
 
 	u32	pbuf;	// next pkt address
 	u32	pbuf_tail;	// last pkt tail
@@ -698,12 +698,10 @@ s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv 
 
 	spin_lock_bh(&pxmitpriv->lock);
 
-	xmitframe_phead = get_list_head(&ptxservq->sta_pending);
-	xmitframe_plist = xmitframe_phead->next;
-	while (rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist) == false)
-	{
-		pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
-		xmitframe_plist = xmitframe_plist->next;
+	phead = get_list_head(&ptxservq->sta_pending);
+	list_for_each_safe(plist, ptmp, phead) {
+		pxmitframe = container_of(xmitframe_plist, struct xmit_frame,
+					  list);
 
 		len = xmitframe_need_length(pxmitframe) + TXDESC_SIZE; // no offset
 		if (pbuf + len > MAX_XMITBUF_SZ) break;
