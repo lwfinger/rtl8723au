@@ -7457,7 +7457,7 @@ void issue_action_BA(struct rtw_adapter *padapter, unsigned char *raddr, unsigne
 
 static void issue_action_BSSCoexistPacket(struct rtw_adapter *padapter)
 {
-	struct list_head		*plist, *phead;
+	struct list_head *plist, *phead, *ptmp;
 	unsigned char category, action;
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
@@ -7537,18 +7537,13 @@ static void issue_action_BSSCoexistPacket(struct rtw_adapter *padapter)
 		phead = get_list_head(queue);
 		plist = phead->next;
 
-		while(1)
-		{
+		list_for_each_safe(plist, ptmp, phead) {
 			int len;
 			u8 *p;
 			WLAN_BSSID_EX *pbss_network;
 
-			if (rtw_end_of_queue_search(phead,plist)== true)
-				break;
-
-			pnetwork = container_of(plist, struct wlan_network, list);
-
-			plist = plist->next;
+			pnetwork = container_of(plist, struct wlan_network,
+						list);
 
 			pbss_network = (WLAN_BSSID_EX *)&pnetwork->network;
 
@@ -10210,8 +10205,8 @@ u8 tx_beacon_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	else /* tx bc/mc frames after update TIM */
 	{
 		struct sta_info *psta_bmc;
-		struct list_head	*xmitframe_plist, *xmitframe_phead;
-		struct xmit_frame *pxmitframe=NULL;
+		struct list_head *plist, *phead, *ptmp;
+		struct xmit_frame *pxmitframe;
 		struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 		struct sta_priv  *pstapriv = &padapter->stapriv;
 
@@ -10226,14 +10221,12 @@ u8 tx_beacon_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 			/* spin_lock_bh(&psta_bmc->sleep_q.lock); */
 			spin_lock_bh(&pxmitpriv->lock);
 
-			xmitframe_phead = get_list_head(&psta_bmc->sleep_q);
-			xmitframe_plist = xmitframe_phead->next;
+			phead = get_list_head(&psta_bmc->sleep_q);
 
-			while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == false)
-			{
-				pxmitframe = container_of(xmitframe_plist, struct xmit_frame, list);
-
-				xmitframe_plist = xmitframe_plist->next;
+			list_for_each_safe(plist, ptmp, phead) {
+				pxmitframe = container_of(plist,
+							  struct xmit_frame,
+							  list);
 
 				list_del_init(&pxmitframe->list);
 
