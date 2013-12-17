@@ -56,8 +56,7 @@ enum hal_vendor {
 	CHIP_VENDOR_UMC		=	1,
 };
 
-typedef enum tag_HAL_RF_Type_Definition
-{
+enum hal_rf_type {
 	RF_TYPE_1T1R	=	0,
 	RF_TYPE_1T2R	=	1,
 	RF_TYPE_2T2R	=	2,
@@ -66,7 +65,7 @@ typedef enum tag_HAL_RF_Type_Definition
 	RF_TYPE_3T3R	=	5,
 	RF_TYPE_3T4R	=	6,
 	RF_TYPE_4T4R	=	7,
-}HAL_RF_TYPE_E;
+};
 
 typedef	struct tag_HAL_VERSION
 {
@@ -74,7 +73,7 @@ typedef	struct tag_HAL_VERSION
 	enum hal_chip_type	ChipType;
 	enum hal_cut_version	CUTVersion;
 	enum hal_vendor		VendorType;
-	HAL_RF_TYPE_E		RFType;
+	enum hal_rf_type		RFType;
 	u8					ROMVer;
 }HAL_VERSION,*PHAL_VERSION;
 
@@ -84,7 +83,7 @@ typedef	struct tag_HAL_VERSION
 // Get element
 #define GET_CVID_IC_TYPE(version)			((enum hal_ic_type)(((HAL_VERSION)version).ICType)	)
 #define GET_CVID_CHIP_TYPE(version)			((enum hal_chip_type)(((HAL_VERSION)version).ChipType)	)
-#define GET_CVID_RF_TYPE(version)			((HAL_RF_TYPE_E)(((HAL_VERSION)version).RFType))
+#define GET_CVID_RF_TYPE(version)			((enum hal_rf_type)(((HAL_VERSION)version).RFType))
 #define GET_CVID_MANUFACTUER(version)		((enum hal_vendor)(((HAL_VERSION)version).VendorType))
 #define GET_CVID_CUT_VERSION(version)		((enum hal_cut_version)(((HAL_VERSION)version).CUTVersion))
 #define GET_CVID_ROM_VERSION(version)		((((HAL_VERSION)version).ROMVer) & ROM_VERSION_MASK)
@@ -112,7 +111,6 @@ typedef	struct tag_HAL_VERSION
 #define IS_CHIP_VENDOR_TSMC(version)	((GET_CVID_MANUFACTUER(version) == CHIP_VENDOR_TSMC)? true: false)
 #define IS_CHIP_VENDOR_UMC(version)	((GET_CVID_MANUFACTUER(version) == CHIP_VENDOR_UMC)? true: false)
 
-//HAL_RF_TYPE_E
 #define IS_1T1R(version)					((GET_CVID_RF_TYPE(version) == RF_TYPE_1T1R)? true : false )
 #define IS_1T2R(version)					((GET_CVID_RF_TYPE(version) == RF_TYPE_1T2R)? true : false)
 #define IS_2T2R(version)					((GET_CVID_RF_TYPE(version) == RF_TYPE_2T2R)? true : false)
