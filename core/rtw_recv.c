@@ -32,7 +32,7 @@
 #include <circ_buf.h>
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
+void rtw_signal_stat_timer_hdl(unsigned long data);
 #endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */
 
 void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
@@ -54,11 +54,9 @@ _func_exit_;
 
 int _rtw_init_recv_priv(struct recv_priv *precvpriv, struct rtw_adapter *padapter)
 {
-	int i;
-
 	union recv_frame *precvframe;
-
-	int	res=_SUCCESS;
+	int i;
+	int res=_SUCCESS;
 
 _func_enter_;
 
@@ -111,7 +109,8 @@ _func_enter_;
 	res = rtw_hal_init_recv_priv(padapter);
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-	_init_timer(&precvpriv->signal_stat_timer, padapter->pnetdev, RTW_TIMER_HDL_NAME(signal_stat), padapter);
+	setup_timer(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl,
+		    (unsigned long)padapter);
 
 	precvpriv->signal_stat_sampling_interval = 1000; /* ms */
 
@@ -2793,8 +2792,9 @@ _func_exit_;
 }
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+void rtw_signal_stat_timer_hdl(unsigned long data)
+{
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct recv_priv *recvpriv = &adapter->recvpriv;
 
 	u32 tmp_s, tmp_q;
