@@ -500,7 +500,7 @@ post_process:
 
 _func_exit_;
 
-	thread_exit();
+	complete_and_exit(NULL, 0);
 }
 
 #ifdef CONFIG_EVENT_THREAD_MODE

@@ -88,8 +88,6 @@ struct	__queue	{
 
 typedef struct	__queue	_queue;
 
-#define thread_exit() complete_and_exit(NULL, 0)
-
 typedef void timer_hdl_return;
 typedef void* timer_hdl_context;
 

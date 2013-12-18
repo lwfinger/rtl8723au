@@ -3104,7 +3104,7 @@ int rtw_xmit_thread(void *context)
 
 	up(&padapter->xmitpriv.terminate_xmitthread_sema);
 
-	thread_exit();
+	complete_and_exit(NULL, 0);
 }
 #endif
 
