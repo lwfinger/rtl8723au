@@ -222,16 +222,6 @@ void ODM_InitializeWorkItem(
 //
 // ODM Timer relative API.
 //
-void ODM_delay_ms(u32	ms)
-{
-	rtw_mdelay_os(ms);
-}
-
-void ODM_delay_us(u32	us)
-{
-	udelay(us);
-}
-
 void ODM_sleep_ms(u32	ms)
 {
 	msleep(ms);

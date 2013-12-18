@@ -485,9 +485,6 @@ void rtl8723a_InitializeFirmwareVars(struct rtw_adapter * padapter)
 
 	// Init H2C counter. by tynli. 2009.12.09.
 	pHalData->LastHMEBoxNum = 0;
-//	pHalData->H2CQueueHead = 0;
-//	pHalData->H2CQueueTail = 0;
-//	pHalData->H2CStopInsertQueue = false;
 }
 
 static void rtl8723a_free_hal_data(struct rtw_adapter * padapter)
@@ -766,16 +763,13 @@ hal_ReadEFuse_WiFi(
 			DBG_8723A("%s: data end at address=%#x\n", __FUNCTION__, eFuse_Addr);
 			break;
 		}
-//		DBG_8723A("%s: efuse[0x%X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseHeader);
 
 		// Check PG header for section num.
 		if (EXT_HEADER(efuseHeader))		//extended header
 		{
 			offset = GET_HDR_OFFSET_2_0(efuseHeader);
-//			DBG_8723A("%s: extended header offset_2_0=0x%X\n", __FUNCTION__, offset_2_0);
 
 			ReadEFuseByte(padapter, eFuse_Addr++, &efuseExtHdr, bPseudoTest);
-//			DBG_8723A("%s: efuse[0x%X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseExtHdr);
 			if (ALL_WORDS_DISABLED(efuseExtHdr))
 			{
 				continue;
@@ -794,7 +788,6 @@ hal_ReadEFuse_WiFi(
 		{
 			u16 addr;
 			// Get word enable value from PG header
-//			DBG_8723A("%s: Offset=%d Worden=0x%X\n", __FUNCTION__, offset, wden);
 
 			addr = offset * PGPKT_DATA_SIZE;
 			for (i=0; i<EFUSE_MAX_WORD_UNIT; i++)
@@ -803,11 +796,9 @@ hal_ReadEFuse_WiFi(
 				if (!(wden & (0x01<<i)))
 				{
 					ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
-//					DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseData);
 					efuseTbl[addr] = efuseData;
 
 					ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
-//					DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseData);
 					efuseTbl[addr+1] = efuseData;
 				}
 				addr += 2;
@@ -901,16 +892,13 @@ hal_ReadEFuse_BT(
 		{
 			ReadEFuseByte(padapter, eFuse_Addr++, &efuseHeader, bPseudoTest);
 			if (efuseHeader == 0xFF) break;
-//			DBG_8723A("%s: efuse[%#X]=0x%02x (header)\n", __FUNCTION__, (((bank-1)*EFUSE_REAL_CONTENT_LEN)+eFuse_Addr-1), efuseHeader);
 
 			// Check PG header for section num.
 			if (EXT_HEADER(efuseHeader))		//extended header
 			{
 				offset = GET_HDR_OFFSET_2_0(efuseHeader);
-//				DBG_8723A("%s: extended header offset_2_0=0x%X\n", __FUNCTION__, offset_2_0);
 
 				ReadEFuseByte(padapter, eFuse_Addr++, &efuseExtHdr, bPseudoTest);
-//				DBG_8723A("%s: efuse[%#X]=0x%02x (ext header)\n", __FUNCTION__, (((bank-1)*EFUSE_REAL_CONTENT_LEN)+eFuse_Addr-1), efuseExtHdr);
 				if (ALL_WORDS_DISABLED(efuseExtHdr))
 				{
 					continue;
@@ -930,7 +918,6 @@ hal_ReadEFuse_BT(
 				u16 addr;
 
 				// Get word enable value from PG header
-//				DBG_8723A("%s: Offset=%d Worden=%#X\n", __FUNCTION__, offset, wden);
 
 				addr = offset * PGPKT_DATA_SIZE;
 				for (i=0; i<EFUSE_MAX_WORD_UNIT; i++)
@@ -939,11 +926,9 @@ hal_ReadEFuse_BT(
 					if (!(wden & (0x01<<i)))
 					{
 						ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
-//						DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseData);
 						efuseTbl[addr] = efuseData;
 
 						ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
-//						DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, eFuse_Addr-1, efuseData);
 						efuseTbl[addr+1] = efuseData;
 					}
 					addr += 2;
@@ -1230,7 +1215,6 @@ Hal_EfuseWordEnableDataWrite(
 	u8	tmpdata[PGPKT_DATA_SIZE];
 
 
-//	DBG_8723A("%s: efuse_addr=%#x word_en=%#x\n", __FUNCTION__, efuse_addr, word_en);
 	memset(tmpdata, 0xFF, PGPKT_DATA_SIZE);
 
 	if (!(word_en & BIT(0)))
@@ -1356,11 +1340,9 @@ Hal_EfusePgPacketRead(
 				if (!(hworden & (0x01<<i)))
 				{
 					ReadEFuseByte(padapter, efuse_addr++, &efuse_data, bPseudoTest);
-//					DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, efuse_addr+tmpidx, efuse_data);
 					data[i*2] = efuse_data;
 
 					ReadEFuseByte(padapter, efuse_addr++, &efuse_data, bPseudoTest);
-//					DBG_8723A("%s: efuse[%#X]=0x%02X\n", __FUNCTION__, efuse_addr+tmpidx, efuse_data);
 					data[(i*2)+1] = efuse_data;
 				}
 			}
@@ -1386,7 +1368,6 @@ hal_EfusePgCheckAvailableAddr(
 
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &max_available, bPseudoTest);
-//	DBG_8723A("%s: max_available=%d\n", __FUNCTION__, max_available);
 
 	current_size = Efuse_GetCurrentSize(pAdapter, efuseType, bPseudoTest);
 	if (current_size >= max_available)
@@ -1459,7 +1440,6 @@ hal_EfusePartialWriteCheck(
 		}
 	}
 	startAddr %= efuse_max;
-//	DBG_8723A("%s: startAddr=%#X\n", __FUNCTION__, startAddr);
 
 	while (1)
 	{
@@ -1482,7 +1462,6 @@ hal_EfusePartialWriteCheck(
 		{
 			// not used header, 0xff
 			*pAddr = startAddr;
-//			DBG_8723A("%s: Started from unused header offset=%d\n", __FUNCTION__, startAddr));
 			bRet = true;
 			break;
 		}
@@ -1505,7 +1484,6 @@ hal_EfusePgPacketWrite1ByteHeader(
 	u8	repeatcnt=0;
 
 
-//	DBG_8723A("%s\n", __FUNCTION__);
 	pg_header = ((pTargetPkt->offset << 4) & 0xf0) | pTargetPkt->word_en;
 
 	do {
@@ -1543,7 +1521,6 @@ hal_EfusePgPacketWrite2ByteHeader(
 	u8	repeatcnt=0;
 
 
-//	DBG_8723A("%s\n", __FUNCTION__);
 	EFUSE_GetEfuseDefinition(padapter, efuseType, TYPE_AVAILABLE_EFUSE_BYTES_BANK, &efuse_max_available_len, bPseudoTest);
 
 	efuse_addr = *pAddr;
@@ -1554,7 +1531,6 @@ hal_EfusePgPacketWrite2ByteHeader(
 	}
 
 	pg_header = ((pTargetPkt->offset & 0x07) << 5) | 0x0F;
-//	DBG_8723A("%s: pg_header=0x%x\n", __FUNCTION__, pg_header);
 
 	do {
 		efuse_OneByteWrite(padapter, efuse_addr, pg_header, bPseudoTest);
@@ -1641,7 +1617,6 @@ hal_EfusePgPacketWriteData(
 		return false;
 	}
 
-//	DBG_8723A("%s: ok\n", __FUNCTION__);
 	return true;
 }
 
@@ -1805,8 +1780,6 @@ void rtl8723a_InitBeaconMaxError(struct rtw_adapter * padapter, u8 InfraMode)
 {
 #ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
 	rtw_write8(padapter, REG_BCN_MAX_ERR, 0xFF);
-#else
-	//rtw_write8(Adapter, REG_BCN_MAX_ERR, (InfraMode ? 0xFF : 0x10));
 #endif
 }
 
@@ -2436,7 +2409,7 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWit
 						//						0x00010100);
 						// 2010/08/31 MH According to Filen's info, if 8051 reset fail, reset MAC directly.
 						rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x50);	//Reset MAC and Enable 8051
-						rtw_mdelay_os(10);
+						mdelay(10);
 					}
 //					else
 //					RT_TRACE(COMP_INIT, DBG_LOUD, ("=====> 8051 reset success (%d) .\n",retry_cnts));
@@ -3139,8 +3112,6 @@ static void fill_txdesc_vcs(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 
 static void fill_txdesc_phy(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 {
-	//DBG_8723A("bwmode=%d, ch_off=%d\n", pattrib->bwmode, pattrib->ch_offset);
-
 	if (pattrib->ht_en)
 	{
 		if (pattrib->bwmode & HT_CHANNEL_WIDTH_40)
@@ -4141,7 +4112,7 @@ _func_enter_;
 					// RQPN Load 0
 					rtw_write16(padapter, REG_RQPN_NPQ, 0);
 					rtw_write32(padapter, REG_RQPN, 0x80000000);
-					rtw_mdelay_os(10);
+					mdelay(10);
 				}
 			}
 			break;

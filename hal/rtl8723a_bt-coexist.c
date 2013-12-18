@@ -5710,7 +5710,7 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 			while (check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE|WIFI_SITE_MONITOR) == true)
 			{
 				RTPRINT(FIOCTL, IOCTL_STATE, ("Scan/Roaming/Wifi Link is in Progress, wait 200 ms\n"));
-				rtw_mdelay_os(200);
+				mdelay(200);
 			}
 			// 2. MAC already in selected channel
 			{
@@ -5937,7 +5937,7 @@ static u8 bthci_WaitForRfReady(struct rtw_adapter *padapter)
 
 		if ((RfState != rf_on) || (ppwrctrl->bips_processing))
 		{
-			rtw_mdelay_os(10);
+			mdelay(10);
 			if (waitcnt++ >= 200)
 			{
 				bRet = false;
@@ -9030,15 +9030,11 @@ btdm_2AntDacSwing(struct rtw_adapter *padapter,
 	pBtdm8723->bCurDacSwingOn = bDacSwingOn;
 	pBtdm8723->curDacSwingLvl = dacSwingLvl;
 
-	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreDacSwingOn=%d, preDacSwingLvl=0x%x, bCurDacSwingOn=%d, curDacSwingLvl=0x%x\n",
-	//	pBtdm8723->bPreDacSwingOn, pBtdm8723->preDacSwingLvl,
-	//	pBtdm8723->bCurDacSwingOn, pBtdm8723->curDacSwingLvl));
-
 	if ((pBtdm8723->bPreDacSwingOn == pBtdm8723->bCurDacSwingOn) &&
 	    (pBtdm8723->preDacSwingLvl == pBtdm8723->curDacSwingLvl))
 		return;
 
-	rtw_mdelay_os(30);
+	mdelay(30);
 	btdm_SetSwFullTimeDacSwing(padapter, bDacSwingOn, dacSwingLvl);
 
 	pBtdm8723->bPreDacSwingOn = pBtdm8723->bCurDacSwingOn;
@@ -9052,9 +9048,6 @@ static void btdm_2AntAdcBackOff(struct rtw_adapter *padapter, u8 bAdcBackOff)
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], turn AdcBackOff = %s\n",  ((bAdcBackOff)? "ON":"OFF")));
 	pBtdm8723->bCurAdcBackOff = bAdcBackOff;
-
-	//RTPRINT(FBT, BT_TRACE, ("[BTCoex], bPreAdcBackOff=%d, bCurAdcBackOff=%d\n",
-	//	pBtdm8723->bPreAdcBackOff, pBtdm8723->bCurAdcBackOff));
 
 	if (pBtdm8723->bPreAdcBackOff == pBtdm8723->bCurAdcBackOff)
 		return;

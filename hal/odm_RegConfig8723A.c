@@ -36,34 +36,34 @@ odm_ConfigRFReg_8723A(
 		#ifdef CONFIG_LONG_DELAY_ISSUE
 		ODM_sleep_ms(50);
 		#else
-		ODM_delay_ms(50);
+		mdelay(50);
 		#endif
 	}
 	else if (Addr == 0xfd)
 	{
-		ODM_delay_ms(5);
+		mdelay(5);
 	}
 	else if (Addr == 0xfc)
 	{
-		ODM_delay_ms(1);
+		mdelay(1);
 	}
 	else if (Addr == 0xfb)
 	{
-		ODM_delay_us(50);
+		udelay(50);
 	}
 	else if (Addr == 0xfa)
 	{
-		ODM_delay_us(5);
+		udelay(5);
 	}
 	else if (Addr == 0xf9)
 	{
-		ODM_delay_us(1);
+		udelay(1);
 	}
 	else
 	{
 		ODM_SetRFReg(pDM_Odm, RF_PATH, RegAddr, bRFRegOffsetMask, Data);
 		// Add 1us delay between BB/RF register setting.
-		ODM_delay_us(1);
+		udelay(1);
 	}
 }
 
@@ -120,7 +120,7 @@ odm_ConfigBB_AGC_8723A(
 {
 	ODM_SetBBReg(pDM_Odm, Addr, Bitmask, Data);
 	// Add 1us delay between BB/RF register setting.
-	ODM_delay_us(1);
+	udelay(1);
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [AGC_TAB] %08X %08X\n", Addr, Data));
 }
@@ -137,18 +137,18 @@ odm_ConfigBB_PHY_REG_PG_8723A(
 		#ifdef CONFIG_LONG_DELAY_ISSUE
 		ODM_sleep_ms(50);
 		#else
-		ODM_delay_ms(50);
+		mdelay(50);
 		#endif
 	else if (Addr == 0xfd)
-		ODM_delay_ms(5);
+		mdelay(5);
 	else if (Addr == 0xfc)
-		ODM_delay_ms(1);
+		mdelay(1);
 	else if (Addr == 0xfb)
-		ODM_delay_us(50);
+		udelay(50);
 	else if (Addr == 0xfa)
-		ODM_delay_us(5);
+		udelay(5);
 	else if (Addr == 0xf9)
-		ODM_delay_us(1);
+		udelay(1);
     // TODO: ODM_StorePwrIndexDiffRateOffset(...)
 	// storePwrIndexDiffRateOffset(Adapter, Addr, Bitmask, Data);
 
@@ -167,24 +167,24 @@ odm_ConfigBB_PHY_8723A(
 		#ifdef CONFIG_LONG_DELAY_ISSUE
 		ODM_sleep_ms(50);
 		#else
-		ODM_delay_ms(50);
+		mdelay(50);
 		#endif
 	else if (Addr == 0xfd)
-		ODM_delay_ms(5);
+		mdelay(5);
 	else if (Addr == 0xfc)
-		ODM_delay_ms(1);
+		mdelay(1);
 	else if (Addr == 0xfb)
-		ODM_delay_us(50);
+		udelay(50);
 	else if (Addr == 0xfa)
-		ODM_delay_us(5);
+		udelay(5);
 	else if (Addr == 0xf9)
-		ODM_delay_us(1);
+		udelay(1);
 	else if (Addr == 0xa24)
 		pDM_Odm->RFCalibrateInfo.RegA24 = Data;
 	ODM_SetBBReg(pDM_Odm, Addr, Bitmask, Data);
 
 	// Add 1us delay between BB/RF register setting.
-	ODM_delay_us(1);
+	udelay(1);
 
     ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [PHY_REG] %08X %08X\n", Addr, Data));
 }

@@ -1113,7 +1113,7 @@ _PHY_LCCalibrate(
 	#ifdef CONFIG_LONG_DELAY_ISSUE
 	msleep(100);
 	#else
-	rtw_mdelay_os(100);
+	mdelay(100);
 	#endif
 
 	/* Restore original situation */

@@ -1618,7 +1618,7 @@ static void phy_SsPwrSwitch92CU(
 
 				// i.	AFE_XTAL_CTRL 0x24[15:0] = 0x880F		//gated AFE DIG_CLOCK
 				rtw_write16(Adapter, REG_AFE_XTAL_CTRL, 0x800F);
-				rtw_mdelay_os(1);
+				mdelay(1);
 
 				// 1. Enable MAC Clock. Can not be enabled now.
 				//WriteXBYTE(REG_SYS_CLKR+1, ReadXBYTE(REG_SYS_CLKR+1) | BIT(3));
@@ -1665,7 +1665,7 @@ static void phy_SsPwrSwitch92CU(
 					bytetmp = rtw_read8(Adapter, REG_APSD_CTRL);
 					rtw_write8(Adapter, REG_APSD_CTRL, bytetmp & ~BIT6);
 
-					rtw_mdelay_os(10);
+					mdelay(10);
 
 					// Set BB reset at first
 					rtw_write8(Adapter, REG_SYS_FUNC_EN, 0x17 );//0x16
@@ -1744,7 +1744,7 @@ static void phy_SsPwrSwitch92CU(
 						rtw_write8(Adapter, REG_APSD_CTRL, value8);//0x40
 
 						// After switch APSD, we need to delay for stability
-						rtw_mdelay_os(10);
+						mdelay(10);
 
 						// Set BB reset at first
 						value8 = 0 ;
@@ -1793,7 +1793,7 @@ static void phy_SsPwrSwitch92CU(
 					// 2010/10/13 MH/Isaachsu exchange sequence.
 					//h.	AFE_PLL_CTRL 0x28[7:0] = 0x80			//disable AFE PLL
 					rtw_write8(Adapter, REG_AFE_PLL_CTRL, 0x80);
-					rtw_mdelay_os(1);
+					mdelay(1);
 
 					// i.	AFE_XTAL_CTRL 0x24[15:0] = 0x880F		//gated AFE DIG_CLOCK
 					rtw_write16(Adapter, REG_AFE_XTAL_CTRL, 0xA80F);
