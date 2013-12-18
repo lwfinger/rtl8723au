@@ -96,13 +96,6 @@ static inline struct list_head	*get_list_head(_queue	*queue)
 	return (&(queue->queue));
 }
 
-
-static inline void _set_timer(_timer *ptimer,u32 delay_time)
-{
-	mod_timer(ptimer, (jiffies+msecs_to_jiffies(delay_time)));
-}
-
-
 static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
 {
 	return (netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 0)) &&
