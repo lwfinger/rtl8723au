@@ -94,8 +94,6 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 		backupTKIPcountermeasure_time = adapter->securitypriv.btkip_countermeasure_time;
 
 		memset((unsigned char *)&adapter->securitypriv, 0, sizeof (struct security_priv));
-		//_init_timer(&(adapter->securitypriv.tkip_timer),adapter->pnetdev, rtw_use_tkipkey_handler, adapter);
-
 		// Added by Albert 2009/02/18
 		// Restore the PMK information to securitypriv structure for the following connection.
 		memcpy(&adapter->securitypriv.PMKIDList[ 0 ], &backupPMKIDList[ 0 ], sizeof( RT_PMKID_LIST ) * NUM_PMKID_CACHE );

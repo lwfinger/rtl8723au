@@ -244,7 +244,6 @@ _func_enter_;
 						memcpy(psta->dot11tkiprxmickey.skey, &(param->u.crypt.key[24]), 8);
 
 						padapter->securitypriv.busetkipkey=false;
-						//_set_timer(&padapter->securitypriv.tkip_timer, 50);
 					}
 
 					//DEBUG_ERR((" param->u.crypt.key_len=%d\n",param->u.crypt.key_len));

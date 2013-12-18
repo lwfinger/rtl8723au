@@ -148,7 +148,6 @@ struct security_priv
 
 	u8	binstallGrpkey;
 	u8	busetkipkey;
-	//_timer tkip_timer;
 	u8	bcheck_grpkey;
 	u8	bgrpkey_handshake;
 

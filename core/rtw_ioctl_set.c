@@ -1024,10 +1024,6 @@ _func_enter_;
 			{
 				padapter->securitypriv.busetkipkey=false;
 
-				/* _set_timer(&padapter->securitypriv.tkip_timer, 50); */
-
-				RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_err_,("\n ==========_set_timer\n"));
-
 				/*  if TKIP, save the Receive/Transmit MIC key in KeyMaterial[128-255] */
 				if((key->KeyIndex & 0x10000000)){
 					memcpy(&stainfo->dot11tkiptxmickey, key->KeyMaterial + 16, 8);
