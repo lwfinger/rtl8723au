@@ -27,18 +27,6 @@
 #include <mlme_osdep.h>
 #include <rtw_ioctl_set.h>
 
-/*
-void sitesurvey_ctrl_handler(void *FunctionContext)
-{
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-
-	_sitesurvey_ctrl_handler(adapter);
-
-	_set_timer(&adapter->mlmepriv.sitesurveyctrl.sitesurvey_ctrl_timer, 3000);
-}
-*/
-
-
 void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -46,7 +34,6 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 	setup_timer(&pmlmepriv->assoc_timer, rtw_join_timeout_handler,
 		    (unsigned long)padapter);
 
-	//_init_timer(&(pmlmepriv->sitesurveyctrl.sitesurvey_ctrl_timer), padapter->pnetdev, sitesurvey_ctrl_handler, padapter);
 	setup_timer(&pmlmepriv->scan_to_timer, rtw_scan_timeout_handler,
 		    (unsigned long)padapter);
 
