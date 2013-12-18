@@ -232,7 +232,7 @@ static void sreset_stop_adapter(struct rtw_adapter *padapter)
 		rtw_scan_abort(padapter);
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
-		_rtw_join_timeout_handler(padapter);
+		rtw_join_timeout_handler((unsigned long)padapter);
 }
 
 static void sreset_start_adapter(struct rtw_adapter *padapter)

@@ -556,8 +556,7 @@ void rtw_cpwm_event_callback(struct rtw_adapter *adapter, u8 *pbuf);
 
 
 int event_thread(void *context);
-void rtw_join_timeout_handler(void* FunctionContext);
-void _rtw_scan_timeout_handler(void* FunctionContext);
+void rtw_join_timeout_handler(unsigned long);
 
 void rtw_free_network_queue(struct rtw_adapter *adapter,u8 isfreeall);
 int rtw_init_mlme_priv(struct rtw_adapter *adapter);// (struct mlme_priv *pmlmepriv);
@@ -673,7 +672,6 @@ void rtw_update_registrypriv_dev_network(struct rtw_adapter *adapter);
 
 void rtw_get_encrypt_decrypt_from_registrypriv(struct rtw_adapter *adapter);
 
-void _rtw_join_timeout_handler(struct rtw_adapter *adapter);
 void rtw_scan_timeout_handler(struct rtw_adapter *adapter);
 
 void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter);

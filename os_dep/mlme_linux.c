@@ -38,12 +38,6 @@ void sitesurvey_ctrl_handler(void *FunctionContext)
 }
 */
 
-void rtw_join_timeout_handler (void *FunctionContext)
-{
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-	_rtw_join_timeout_handler(adapter);
-}
-
 
 void _rtw_scan_timeout_handler (void *FunctionContext)
 {
@@ -74,7 +68,9 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-	_init_timer(&(pmlmepriv->assoc_timer), padapter->pnetdev, rtw_join_timeout_handler, padapter);
+	setup_timer(&pmlmepriv->assoc_timer, rtw_join_timeout_handler,
+		    (unsigned long)padapter);
+
 	//_init_timer(&(pmlmepriv->sitesurveyctrl.sitesurvey_ctrl_timer), padapter->pnetdev, sitesurvey_ctrl_handler, padapter);
 	_init_timer(&(pmlmepriv->scan_to_timer), padapter->pnetdev, _rtw_scan_timeout_handler, padapter);
 

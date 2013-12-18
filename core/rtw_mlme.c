@@ -1974,11 +1974,12 @@ _func_exit_;
 }
 
 /*
-* _rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
+* rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
 * @adapter: pointer to _adapter structure
 */
-void _rtw_join_timeout_handler (struct rtw_adapter *adapter)
+void rtw_join_timeout_handler (unsigned long data)
 {
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 	int do_join_r;
 
