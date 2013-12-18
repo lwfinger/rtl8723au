@@ -179,7 +179,6 @@ struct led_priv{
 #define rtw_led_control(adapter, LedAction)
 #endif //CONFIG_SW_LED
 
-void BlinkTimerCallback(void *data);
 void BlinkWorkItemCallback(struct work_struct *work);
 
 void ResetLedStatus(PLED_871x pLed);

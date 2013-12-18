@@ -25,10 +25,10 @@
 /*		Callback function of LED BlinkTimer, */
 /*		it just schedules to corresponding BlinkWorkItem/led_blink_hdl */
 /*  */
-void BlinkTimerCallback(void *data)
+static void BlinkTimerCallback(unsigned long data)
 {
-	PLED_871x	 pLed = (PLED_871x)data;
-	struct rtw_adapter		*padapter = pLed->padapter;
+	struct _LED_871x *pLed = (struct _LED_871x *)data;
+	struct rtw_adapter *padapter = pLed->padapter;
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
@@ -82,18 +82,14 @@ void ResetLedStatus(PLED_871x pLed) {
 /*		Initialize an LED_871x object. */
 /*  */
 void
-InitLed871x(
-	struct rtw_adapter			*padapter,
-	PLED_871x		pLed,
-	LED_PIN_871x	LedPin
-	)
+InitLed871x(struct rtw_adapter *padapter, struct _LED_871x *pLed, LED_PIN_871x LedPin)
 {
 	pLed->padapter = padapter;
 	pLed->LedPin = LedPin;
 
 	ResetLedStatus(pLed);
 
-	_init_timer(&(pLed->BlinkTimer), padapter->pnetdev, BlinkTimerCallback, pLed);
+	setup_timer(&pLed->BlinkTimer, BlinkTimerCallback, (unsigned long)pLed);
 
 	INIT_WORK(&(pLed->BlinkWorkItem), BlinkWorkItemCallback);
 }
