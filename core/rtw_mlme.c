@@ -2147,7 +2147,7 @@ inline bool rtw_is_scan_deny(struct rtw_adapter *adapter)
 	return (atomic_read(&mlmepriv->set_scan_deny) != 0) ? true : false;
 }
 
-inline void rtw_clear_scan_deny(struct rtw_adapter *adapter)
+void rtw_clear_scan_deny(struct rtw_adapter *adapter)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
 	atomic_set(&mlmepriv->set_scan_deny, 0);
