@@ -679,9 +679,6 @@ void mlmeext_sta_add_event_callback(struct rtw_adapter *padapter, struct sta_inf
 
 void linked_status_chk(struct rtw_adapter *padapter);
 
-void survey_timer_hdl(unsigned long data);
-void link_timer_hdl (unsigned long data);
-
 #define set_survey_timer(mlmeext, ms) \
 	do { \
 		/*DBG_8723A("%s set_survey_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \

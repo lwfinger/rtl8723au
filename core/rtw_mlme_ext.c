@@ -9345,7 +9345,7 @@ void linked_status_chk(struct rtw_adapter *padapter)
 	}
 }
 
-void survey_timer_hdl(unsigned long data)
+static void survey_timer_hdl(unsigned long data)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	struct cmd_obj *ph2c;
@@ -9411,7 +9411,7 @@ exit_survey_timer_hdl:
 	return;
 }
 
-void link_timer_hdl(unsigned long data)
+static void link_timer_hdl(unsigned long data)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	/* static unsigned int		rx_pkt = 0; */
@@ -9492,6 +9492,17 @@ void init_addba_retry_timer(struct sta_info *psta)
 {
 	setup_timer(&psta->addba_retry_timer, addba_timer_hdl,
 		    (unsigned long)psta);
+}
+
+void init_mlme_ext_timer(struct rtw_adapter *padapter)
+{
+	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+
+	setup_timer(&pmlmeext->survey_timer, survey_timer_hdl,
+		    (unsigned long)padapter);
+
+	setup_timer(&pmlmeext->link_timer, link_timer_hdl,
+		    (unsigned long)padapter);
 }
 
 u8 NULL_hdl(struct rtw_adapter *padapter, u8 *pbuf)
