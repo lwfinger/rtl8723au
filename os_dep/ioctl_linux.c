@@ -1452,8 +1452,10 @@ static int rtw_p2p_connect(struct net_device *dev,
 		rtw_p2p_set_state(pwdinfo, P2P_STATE_GONEGO_ING);
 
 		DBG_8723A( "[%s] Start PreTx Procedure!\n", __func__ );
-		_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-		_set_timer( &pwdinfo->restore_p2p_state_timer, P2P_GO_NEGO_TIMEOUT );
+		mod_timer(&pwdinfo->pre_tx_scan_timer,
+			  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
+		mod_timer(&pwdinfo->restore_p2p_state_timer,
+			  jiffies + msecs_to_jiffies(P2P_GO_NEGO_TIMEOUT));
 	} else {
 		DBG_8723A( "[%s] Not Found in Scanning Queue~\n", __func__ );
 		ret = -1;
@@ -1621,9 +1623,11 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 
 		set_channel_bwmode(padapter, uintPeerChannel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 
-		_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+		mod_timer(&pwdinfo->pre_tx_scan_timer,
+			  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
 
-		_set_timer( &pwdinfo->restore_p2p_state_timer, P2P_INVITE_TIMEOUT );
+		mod_timer(&pwdinfo->restore_p2p_state_timer,
+			  jiffies + msecs_to_jiffies(P2P_INVITE_TIMEOUT));
 	}
 	else
 	{
@@ -2125,9 +2129,11 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 		set_channel_bwmode(padapter, uintPeerChannel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 
-		_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+		mod_timer(&pwdinfo->pre_tx_scan_timer,
+			  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
 
-		_set_timer( &pwdinfo->restore_p2p_state_timer, P2P_PROVISION_TIMEOUT );
+		mod_timer(&pwdinfo->restore_p2p_state_timer,
+			  jiffies + msecs_to_jiffies(P2P_PROVISION_TIMEOUT));
 	} else {
 		DBG_8723A( "[%s] NOT Found in the Scanning Queue!\n", __func__ );
 	}
