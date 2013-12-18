@@ -1989,8 +1989,8 @@ unsigned int OnDeAuth(struct rtw_adapter *padapter, union recv_frame *precv_fram
 #ifdef CONFIG_P2P
 	if ( pwdinfo->rx_invitereq_info.scan_op_ch_only )
 	{
-		del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
-		_set_timer( &pwdinfo->reset_ch_sitesurvey, 10 );
+		mod_timer(&pwdinfo->reset_ch_sitesurvey,
+			  jiffies + msecs_to_jiffies(10));
 	}
 #endif /* CONFIG_P2P */
 
@@ -2060,8 +2060,8 @@ unsigned int OnDisassoc(struct rtw_adapter *padapter, union recv_frame *precv_fr
 #ifdef CONFIG_P2P
 	if ( pwdinfo->rx_invitereq_info.scan_op_ch_only )
 	{
-		del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
-		_set_timer( &pwdinfo->reset_ch_sitesurvey, 10 );
+		mod_timer(&pwdinfo->reset_ch_sitesurvey,
+			  jiffies + msecs_to_jiffies(10));
 	}
 #endif /* CONFIG_P2P */
 
@@ -4758,7 +4758,8 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 
 				/*	Commented by Albert 20110718 */
 				/*	No matter negotiating or negotiation failure, the driver should set up the restore P2P state timer. */
-				_set_timer( &pwdinfo->restore_p2p_state_timer, 5000 );
+				mod_timer(&pwdinfo->restore_p2p_state_timer,
+					  jiffies + msecs_to_jiffies(5000));
 				break;
 			}
 			case P2P_GO_NEGO_RESP:
@@ -4779,7 +4780,7 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 						{
 							pwdinfo->p2p_info.operation_ch[ 0 ] = pwdinfo->peer_operating_ch;
 							pwdinfo->p2p_info.scan_op_ch_only = 1;
-							_set_timer( &pwdinfo->reset_ch_sitesurvey2, P2P_RESET_SCAN_CH );
+							mod_timer(&pwdinfo->reset_ch_sitesurvey2, jiffies + msecs_to_jiffies(P2P_RESET_SCAN_CH));
 						}
 					}
 
@@ -4788,11 +4789,9 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 
 					if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_FAIL))
 					{
-						_set_timer( &pwdinfo->restore_p2p_state_timer, 5000 );
+						mod_timer(&pwdinfo->restore_p2p_state_timer, jiffies + msecs_to_jiffies(5000));
 					}
-				}
-				else
-				{
+				} else {
 					DBG_8723A( "[%s] Skipped GO Nego Resp Frame (p2p_state != P2P_STATE_GONEGO_ING)\n", __FUNCTION__);
 				}
 
@@ -4808,7 +4807,7 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 					{
 						pwdinfo->p2p_info.operation_ch[ 0 ] = pwdinfo->peer_operating_ch;
 						pwdinfo->p2p_info.scan_op_ch_only = 1;
-						_set_timer( &pwdinfo->reset_ch_sitesurvey2, P2P_RESET_SCAN_CH );
+						mod_timer(&pwdinfo->reset_ch_sitesurvey2, jiffies + msecs_to_jiffies(P2P_RESET_SCAN_CH));
 					}
 				}
 				break;
@@ -4868,14 +4867,14 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 									if ( is_matched_in_profilelist( pwdinfo->p2p_peer_interface_addr, &pwdinfo->profileinfo[ 0 ] ) )
 									{
 										u8 operatingch_info[5] = { 0x00 };
-										if ( rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_OPERATING_CH, operatingch_info, &attr_contentlen) )
+										if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_OPERATING_CH, operatingch_info, &attr_contentlen))
 										{
 											if( rtw_ch_set_search_ch(padapter->mlmeextpriv.channel_set, (u32)operatingch_info[4] ) )
 											{
 												/*	The operating channel is acceptable for this device. */
 												pwdinfo->rx_invitereq_info.operation_ch[0]= operatingch_info[4];
 												pwdinfo->rx_invitereq_info.scan_op_ch_only = 1;
-												_set_timer( &pwdinfo->reset_ch_sitesurvey, P2P_RESET_SCAN_CH );
+												mod_timer(&pwdinfo->reset_ch_sitesurvey, jiffies + msecs_to_jiffies(P2P_RESET_SCAN_CH));
 												rtw_p2p_set_state(pwdinfo, P2P_STATE_RECV_INVITE_REQ_MATCH );
 												rtw_p2p_set_role( pwdinfo, P2P_ROLE_CLIENT );
 												status_code = P2P_STATUS_SUCCESS;
@@ -4886,7 +4885,7 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 												rtw_p2p_set_state(pwdinfo, P2P_STATE_RECV_INVITE_REQ_DISMATCH );
 												rtw_p2p_set_role( pwdinfo, P2P_ROLE_DEVICE );
 												status_code = P2P_STATUS_FAIL_NO_COMMON_CH;
-												_set_timer( &pwdinfo->restore_p2p_state_timer, 3000 );
+												mod_timer(&pwdinfo->restore_p2p_state_timer, jiffies + msecs_to_jiffies(3000));
 											}
 										}
 										else {
@@ -5006,9 +5005,8 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 					rtw_p2p_set_state( pwdinfo, P2P_STATE_RX_INVITE_RESP_FAIL );
 				}
 
-				if ( rtw_p2p_chk_state( pwdinfo, P2P_STATE_RX_INVITE_RESP_FAIL ) )
-				{
-					_set_timer( &pwdinfo->restore_p2p_state_timer, 5000 );
+				if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_RX_INVITE_RESP_FAIL)) {
+					mod_timer(&pwdinfo->restore_p2p_state_timer, jiffies + msecs_to_jiffies(5000));
 				}
 				break;
 			}
@@ -5035,7 +5033,8 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 					rtw_p2p_set_pre_state(pwdinfo, rtw_p2p_state(pwdinfo));
 
 				rtw_p2p_set_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_REQ);
-				_set_timer( &pwdinfo->restore_p2p_state_timer, P2P_PROVISION_TIMEOUT );
+				mod_timer(&pwdinfo->restore_p2p_state_timer,
+					  jiffies + msecs_to_jiffies(P2P_PROVISION_TIMEOUT));
 				break;
 
 			case P2P_PROVISION_DISC_RESP:
@@ -5047,7 +5046,8 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 				del_timer_sync(&pwdinfo->restore_p2p_state_timer);
 				rtw_p2p_set_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_RSP);
 				process_p2p_provdisc_resp(pwdinfo, pframe);
-				_set_timer( &pwdinfo->restore_p2p_state_timer, P2P_PROVISION_TIMEOUT );
+				mod_timer(&pwdinfo->restore_p2p_state_timer,
+					  jiffies + msecs_to_jiffies(P2P_PROVISION_TIMEOUT));
 				break;
 
 		}
@@ -7122,10 +7122,9 @@ static int _issue_deauth(struct rtw_adapter *padapter, unsigned char *da, unsign
 	/* DBG_8723A("%s to "MAC_FMT"\n", __func__, MAC_ARG(da)); */
 
 #ifdef CONFIG_P2P
-	if ( !( rtw_p2p_chk_state( pwdinfo, P2P_STATE_NONE ) ) && ( pwdinfo->rx_invitereq_info.scan_op_ch_only ) )
-	{
-		del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
-		_set_timer( &pwdinfo->reset_ch_sitesurvey, 10 );
+	if (!(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)) && (pwdinfo->rx_invitereq_info.scan_op_ch_only)) {
+		mod_timer(&pwdinfo->reset_ch_sitesurvey,
+			  jiffies + msecs_to_jiffies(10));
 	}
 #endif /* CONFIG_P2P */
 
@@ -7898,9 +7897,9 @@ void site_survey(struct rtw_adapter *padapter)
 			Restore_DM_Func_Flag(padapter);
 			/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DIG|DYNAMIC_FUNC_HP|DYNAMIC_FUNC_SS, true); */
 
-			_set_timer( &pwdinfo->find_phase_timer, ( u32 ) ( ( u32 ) ( pwdinfo->listen_dwell ) * 100 ) );
-		}
-		else
+			mod_timer(&pwdinfo->find_phase_timer, jiffies +
+				  msecs_to_jiffies(pwdinfo->listen_dwell * 100));
+		} else
 #endif /* CONFIG_P2P */
 		{
 
@@ -8278,9 +8277,8 @@ void start_clnt_join(struct rtw_adapter* padapter)
 		/* and enable a timer */
 		beacon_timeout = decide_wait_for_beacon_timeout(pmlmeinfo->bcn_interval);
 		set_link_timer(pmlmeext, beacon_timeout);
-		_set_timer( &padapter->mlmepriv.assoc_timer,
-			(REAUTH_TO * REAUTH_LIMIT) + (REASSOC_TO*REASSOC_LIMIT) +beacon_timeout);
-
+		mod_timer(&padapter->mlmepriv.assoc_timer, jiffies +
+			  msecs_to_jiffies((REAUTH_TO * REAUTH_LIMIT) + (REASSOC_TO*REASSOC_LIMIT) + beacon_timeout));
 		pmlmeinfo->state = WIFI_FW_AUTH_NULL | WIFI_FW_STATION_STATE;
 	}
 	else if (caps&cap_IBSS) /* adhoc client */
@@ -10098,7 +10096,8 @@ u8 add_ba_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 		/* psta->htpriv.candidate_tid_bitmap |= BIT(pparm->tid); */
 		issue_action_BA(padapter, pparm->addr, RTW_WLAN_ACTION_ADDBA_REQ, (u16)pparm->tid);
 		/* _set_timer(&pmlmeext->ADDBA_timer, ADDBA_TO); */
-		_set_timer(&psta->addba_retry_timer, ADDBA_TO);
+		mod_timer(&psta->addba_retry_timer,
+			  jiffies + msecs_to_jiffies(ADDBA_TO));
 	} else {
 		psta->htpriv.candidate_tid_bitmap &= ~BIT(pparm->tid);
 	}
