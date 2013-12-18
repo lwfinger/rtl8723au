@@ -499,9 +499,9 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 #ifdef CONFIG_P2P
 	if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 	{
-		_cancel_timer_ex( &pwdinfo->find_phase_timer );
-		_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
-		_cancel_timer_ex( &pwdinfo->pre_tx_scan_timer);
+		del_timer_sync(&pwdinfo->find_phase_timer);
+		del_timer_sync(&pwdinfo->restore_p2p_state_timer);
+		del_timer_sync(&pwdinfo->pre_tx_scan_timer);
 
 		rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
 		rtw_p2p_set_role(pwdinfo, P2P_ROLE_DEVICE);
@@ -1398,9 +1398,9 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 		#ifdef CONFIG_P2P
 		if(change && rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 		{
-			_cancel_timer_ex( &pwdinfo->find_phase_timer );
-			_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
-			_cancel_timer_ex( &pwdinfo->pre_tx_scan_timer);
+			del_timer_sync(&pwdinfo->find_phase_timer);
+			del_timer_sync(&pwdinfo->restore_p2p_state_timer);
+			del_timer_sync(&pwdinfo->pre_tx_scan_timer);
 
 			//it means remove GO and change mode from AP(GO) to station(P2P DEVICE)
 			rtw_p2p_set_role(pwdinfo, P2P_ROLE_DEVICE);
@@ -3107,9 +3107,9 @@ static int rtw_add_beacon(struct rtw_adapter *adapter, const u8 *head, size_t he
 			}
 			else
 			{
-				_cancel_timer_ex( &pwdinfo->find_phase_timer );
-				_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
-				_cancel_timer_ex( &pwdinfo->pre_tx_scan_timer);
+				del_timer_sync(&pwdinfo->find_phase_timer);
+				del_timer_sync(&pwdinfo->restore_p2p_state_timer);
+				del_timer_sync(&pwdinfo->pre_tx_scan_timer);
 
 				DBG_8723A("enter GO Mode, p2p_ielen=%d\n", p2p_ielen);
 
@@ -3683,7 +3683,7 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 	{
 		DBG_8723A("%s, cancel ro ch timer\n", __func__);
 
-		_cancel_timer_ex(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
+		del_timer_sync(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
 
 		p2p_protocol_wk_hdl(padapter, P2P_RO_CH_WK);
 	}
@@ -3769,7 +3769,7 @@ static s32 cfg80211_rtw_cancel_remain_on_channel(struct wiphy *wiphy,
 
 	if (pcfg80211_wdinfo->is_ro_ch == true) {
 		DBG_8723A("%s, cancel ro ch timer\n", __func__);
-		_cancel_timer_ex(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
+		del_timer_sync(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
 		p2p_protocol_wk_hdl(padapter, P2P_RO_CH_WK);
 	}
 

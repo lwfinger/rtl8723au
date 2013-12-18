@@ -4142,11 +4142,11 @@ int rtw_p2p_enable(struct rtw_adapter *padapter, enum P2P_ROLE role)
 		/* Disable P2P function */
 		if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		{
-			_cancel_timer_ex( &pwdinfo->find_phase_timer );
-			_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
-			_cancel_timer_ex( &pwdinfo->pre_tx_scan_timer);
-			_cancel_timer_ex( &pwdinfo->reset_ch_sitesurvey);
-			_cancel_timer_ex( &pwdinfo->reset_ch_sitesurvey2);
+			del_timer_sync(&pwdinfo->find_phase_timer);
+			del_timer_sync(&pwdinfo->restore_p2p_state_timer);
+			del_timer_sync(&pwdinfo->pre_tx_scan_timer);
+			del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
+			del_timer_sync(&pwdinfo->reset_ch_sitesurvey2);
 			reset_ch_sitesurvey_timer_process( padapter );
 			reset_ch_sitesurvey_timer_process2( padapter );
 			rtw_p2p_set_state(pwdinfo, P2P_STATE_NONE);

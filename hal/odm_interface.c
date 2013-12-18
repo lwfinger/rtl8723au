@@ -244,12 +244,9 @@ void ODM_InitializeTimer(
 	_init_timer(pTimer,Adapter->pnetdev,CallBackFunc,pDM_Odm);
 }
 
-void ODM_CancelTimer(
-	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer
-	)
+void ODM_CancelTimer(PDM_ODM_T pDM_Odm, PRT_TIMER pTimer)
 {
-	_cancel_timer_ex(pTimer);
+	del_timer_sync(pTimer);
 }
 
 void ODM_ReleaseTimer(

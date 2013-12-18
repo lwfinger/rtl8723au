@@ -1442,7 +1442,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 		memcpy(pwdinfo->nego_req_info.peerDevAddr, pnetwork->network.MacAddress, ETH_ALEN );
 		pwdinfo->nego_req_info.benable = true;
 
-		_cancel_timer_ex( &pwdinfo->restore_p2p_state_timer );
+		del_timer_sync(&pwdinfo->restore_p2p_state_timer);
 		if ( rtw_p2p_state(pwdinfo) != P2P_STATE_GONEGO_OK )
 		{
 			//	Restore to the listen state if the current p2p state is not nego OK

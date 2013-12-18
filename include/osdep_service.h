@@ -229,11 +229,6 @@ u32	rtw_ms_to_systime(u32 ms);
 s32	rtw_get_passing_time_ms(u32 start);
 s32	rtw_get_time_interval_ms(u32 start, u32 end);
 
-static inline unsigned char _cancel_timer_ex(_timer *ptimer)
-{
-	return del_timer_sync(ptimer);
-}
-
 static inline void thread_enter(char *name)
 {
 #ifdef daemonize
