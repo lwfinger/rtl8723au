@@ -158,12 +158,6 @@ _func_exit_;
 
 }
 
-void init_addba_retry_timer(struct sta_info *psta)
-{
-	setup_timer(&psta->addba_retry_timer, addba_timer_hdl,
-		    (unsigned long)psta);
-}
-
 void init_mlme_ext_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;

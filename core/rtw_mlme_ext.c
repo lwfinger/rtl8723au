@@ -9468,7 +9468,7 @@ void link_timer_hdl(unsigned long data)
 	return;
 }
 
-void addba_timer_hdl(unsigned long data)
+static void addba_timer_hdl(unsigned long data)
 {
 #ifdef CONFIG_80211N_HT
 	struct sta_info *psta = (struct sta_info *)data;
@@ -9486,6 +9486,12 @@ void addba_timer_hdl(unsigned long data)
 
 	}
 #endif /* CONFIG_80211N_HT */
+}
+
+void init_addba_retry_timer(struct sta_info *psta)
+{
+	setup_timer(&psta->addba_retry_timer, addba_timer_hdl,
+		    (unsigned long)psta);
 }
 
 u8 NULL_hdl(struct rtw_adapter *padapter, u8 *pbuf)
