@@ -39,15 +39,6 @@ void sitesurvey_ctrl_handler(void *FunctionContext)
 */
 
 
-#ifdef CONFIG_SET_SCAN_DENY_TIMER
-void _rtw_set_scan_deny_timer_hdl(void *FunctionContext)
-{
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-	rtw_set_scan_deny_timer_hdl(adapter);
-}
-#endif
-
-
 void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -62,9 +53,10 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 	setup_timer(&pmlmepriv->dynamic_chk_timer,
 		    rtw_dynamic_check_timer_handler, (unsigned long)padapter);
 
-	#ifdef CONFIG_SET_SCAN_DENY_TIMER
-	_init_timer(&(pmlmepriv->set_scan_deny_timer), padapter->pnetdev, _rtw_set_scan_deny_timer_hdl, padapter);
-	#endif
+#ifdef CONFIG_SET_SCAN_DENY_TIMER
+	setup_timer(&pmlmepriv->set_scan_deny_timer,
+		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
+#endif
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
 	if (padapter->HalFunc.hal_init_checkbthang_workqueue)

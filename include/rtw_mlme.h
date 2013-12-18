@@ -678,7 +678,7 @@ void rtw_dynamic_check_timer_handler(unsigned long data);
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 bool rtw_is_scan_deny(struct rtw_adapter *adapter);
 void rtw_clear_scan_deny(struct rtw_adapter *adapter);
-void rtw_set_scan_deny_timer_hdl(struct rtw_adapter *adapter);
+void rtw_set_scan_deny_timer_hdl(unsigned long data);
 void rtw_set_scan_deny(struct rtw_adapter *adapter, u32 ms);
 #else
 #define rtw_is_scan_deny(adapter) false

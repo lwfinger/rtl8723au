@@ -2155,8 +2155,9 @@ inline void rtw_clear_scan_deny(struct rtw_adapter *adapter)
 	DBG_8723A(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 }
 
-void rtw_set_scan_deny_timer_hdl(struct rtw_adapter *adapter)
+void rtw_set_scan_deny_timer_hdl(unsigned long data)
 {
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	rtw_clear_scan_deny(adapter);
 }
 
