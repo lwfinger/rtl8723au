@@ -222,19 +222,12 @@ void ODM_InitializeWorkItem(
 //
 // ODM Timer relative API.
 //
-void ODM_SetTimer(
-	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer,
-	u32			msDelay
-	)
+void ODM_SetTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer, u32 msDelay)
 {
 	_set_timer(pTimer,msDelay ); //ms
 }
 
-void ODM_ReleaseTimer(
-	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer
-	)
+void ODM_ReleaseTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer)
 {
 }
 

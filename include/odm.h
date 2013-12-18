@@ -221,7 +221,7 @@ typedef struct _RX_High_Power_
 	bool		First_time_enter;
 	bool		RXHP_enable;
 	u8		TP_Mode;
-	RT_TIMER	PSDTimer;
+	struct timer_list PSDTimer;
 }RXHP_T, *pRXHP_T;
 
 #define ASSOCIATE_ENTRY_NUM					32 /*  Max size of AsocEntry[]. */
@@ -270,7 +270,7 @@ typedef struct _SW_Antenna_Switch_
 	u64		RXByteCnt_A;
 	u64		RXByteCnt_B;
 	u8		TrafficLoad;
-	RT_TIMER	SwAntennaSwitchTimer;
+	struct timer_list SwAntennaSwitchTimer;
 #ifdef CONFIG_HW_ANTENNA_DIVERSITY
 	/* Hybrid Antenna Diversity */
 	u32		CCK_Ant1_Cnt[ASSOCIATE_ENTRY_NUM];
@@ -892,7 +892,7 @@ typedef enum _ANT_DIV_TYPE
 /*  */
 typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 {
-	/* RT_TIMER	FastAntTrainingTimer; */
+	/* struct timer_list FastAntTrainingTimer; */
 	/*  */
 	/* 	Add for different team use temporarily */
 	/*  */
@@ -1078,7 +1078,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 	/* PSD */
 	bool			bUserAssignLevel;
-	RT_TIMER		PSDTimer;
+	struct timer_list	PSDTimer;
 	u8			RSSI_BT;			/* come from BT */
 	bool			bPSDinProcess;
 	bool			bDMInitialGainEnable;
@@ -1107,10 +1107,10 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  */
 
 	/*  ODM relative time. */
-	RT_TIMER				PathDivSwitchTimer;
+	struct timer_list PathDivSwitchTimer;
 	/* 2011.09.27 add for Path Diversity */
-	RT_TIMER				CCKPathDiversityTimer;
-	RT_TIMER	FastAntTrainingTimer;
+	struct timer_list CCKPathDiversityTimer;
+	struct timer_list FastAntTrainingTimer;
 
 	/*  ODM relative workitem. */
 } DM_ODM_T, *PDM_ODM_T;		/*  DM_Dynamic_Mechanism_Structure */

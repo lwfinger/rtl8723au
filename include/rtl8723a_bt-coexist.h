@@ -1125,24 +1125,24 @@ typedef struct _BT30Info
 
 #if(BT_THREAD == 0)
 	RT_WORK_ITEM		HCICmdWorkItem;
-	RT_TIMER				BTHCICmdTimer;
+	struct timer_list BTHCICmdTimer;
 #endif
 #if (SENDTXMEHTOD==0)
 	RT_WORK_ITEM		HCISendACLDataWorkItem;
-	RT_TIMER				BTHCISendAclDataTimer;
+	struct timer_list BTHCISendAclDataTimer;
 #elif(SENDTXMEHTOD==2)
 	void *			BTTxThread;
 #endif
 	RT_WORK_ITEM		BTPsDisableWorkItem;
 	RT_WORK_ITEM		BTConnectWorkItem;
-	RT_TIMER				BTHCIDiscardAclDataTimer;
-	RT_TIMER				BTHCIJoinTimeoutTimer;
-	RT_TIMER				BTTestSendPacketTimer;
-	RT_TIMER				BTDisconnectPhyLinkTimer;
-	RT_TIMER				BTBeaconTimer;
+	struct timer_list BTHCIDiscardAclDataTimer;
+	struct timer_list BTHCIJoinTimeoutTimer;
+	struct timer_list BTTestSendPacketTimer;
+	struct timer_list BTDisconnectPhyLinkTimer;
+	struct timer_list BTBeaconTimer;
 	u8				BTBeaconTmrOn;
 
-	RT_TIMER				BTPsDisableTimer;
+	struct timer_list BTPsDisableTimer;
 
 	void *				pBtChnlList;
 }BT30Info, *PBT30Info;

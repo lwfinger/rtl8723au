@@ -227,14 +227,14 @@ ODM_InitializeWorkItem(
 void
 ODM_SetTimer(
 	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer,
+	struct timer_list	*pTimer,
 	u32			msDelay
 	);
 
 void
 ODM_ReleaseTimer(
 	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer
+	struct timer_list	*pTimer
 	);
 
 
