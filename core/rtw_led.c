@@ -212,42 +212,40 @@ SwLedBlink(
 		switch( pLed->CurrLedState )
 		{
 		case LED_BLINK_NORMAL:
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 			break;
 
 		case LED_BLINK_SLOWLY:
 		case LED_BLINK_StartToBlink:
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_SLOWLY_INTERVAL));
 			break;
 
 		case LED_BLINK_WPS:
-			{
-				if( pLed->BlinkingLedState == RTW_LED_ON )
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_LONG_INTERVAL);
-				else
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_LONG_INTERVAL);
-			}
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_LONG_INTERVAL));
 			break;
 
 		default:
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_SLOWLY_INTERVAL));
 			break;
 		}
 	}
 }
 
-static void SwLedBlink1(
-	PLED_871x			pLed
-	)
+static void SwLedBlink1(struct _LED_871x *pLed)
 {
-	struct rtw_adapter				*padapter = pLed->padapter;
+	struct rtw_adapter *padapter = pLed->padapter;
 #ifndef CONFIG_LED_REMOVE_HAL
-	struct hal_data_8723a		*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 #endif
-	struct led_priv		*ledpriv = &(padapter->ledpriv);
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
-	PLED_871x			pLed1 = &(ledpriv->SwLed1);
-	u8					bStopBlinking = false;
+	struct led_priv *ledpriv = &(padapter->ledpriv);
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	unsigned long delay = 0;
+	struct _LED_871x *pLed1 = &(ledpriv->SwLed1);
+	u8 bStopBlinking = false;
 
 #ifndef CONFIG_LED_REMOVE_HAL
 	if(pHalData->EEPROMCustomerID == RT_CID_819x_CAMEO)
@@ -305,145 +303,131 @@ static void SwLedBlink1(
 	switch(pLed->CurrLedState)
 	{
 		case LED_BLINK_SLOWLY:
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+			delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 			break;
 
 		case LED_BLINK_NORMAL:
-			if( pLed->bLedOn )
+			if(pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
+			delay = LED_BLINK_LINK_INTERVAL_ALPHA;
 			break;
 
 		case LED_BLINK_SCAN:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = true;
 			}
 
-			if(bStopBlinking)
-			{
-				if(check_fwstate(pmlmepriv, _FW_LINKED)== true)
-				{
+			if (bStopBlinking) {
+				if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 					pLed->bLedLinkBlinkInProgress = true;
 					pLed->CurrLedState = LED_BLINK_NORMAL;
-					if( pLed->bLedOn )
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_LINK_INTERVAL_ALPHA;
 					RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 
-				}
-				else if(check_fwstate(pmlmepriv, _FW_LINKED)== false)
-				{
+				} else if(check_fwstate(pmlmepriv, _FW_LINKED)== false) {
 					pLed->bLedNoLinkBlinkInProgress = true;
 					pLed->CurrLedState = LED_BLINK_SLOWLY;
 					if( pLed->bLedOn )
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 					RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 				}
 				pLed->bLedScanBlinkInProgress = false;
-			}
-			else
-			{
-				if( pLed->bLedOn )
+			} else {
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_BLINK_TXRX:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = true;
 			}
-			if(bStopBlinking)
-			{
-				if(check_fwstate(pmlmepriv, _FW_LINKED)== true)
-				{
+			if (bStopBlinking) {
+				if (check_fwstate(pmlmepriv, _FW_LINKED)== true) {
 					pLed->bLedLinkBlinkInProgress = true;
 					pLed->CurrLedState = LED_BLINK_NORMAL;
-					if( pLed->bLedOn )
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_LINK_INTERVAL_ALPHA;
 					RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
-				}
-				else if(check_fwstate(pmlmepriv, _FW_LINKED)== false)
-				{
+				} else if (check_fwstate(pmlmepriv,
+							 _FW_LINKED)== false) {
 					pLed->bLedNoLinkBlinkInProgress = true;
 					pLed->CurrLedState = LED_BLINK_SLOWLY;
-					if( pLed->bLedOn )
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 					RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 				}
 				pLed->BlinkTimes = 0;
 				pLed->bLedBlinkInProgress = false;
-			}
-			else
-			{
-				if( pLed->bLedOn )
+			} else {
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_BLINK_WPS:
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+			delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			break;
 
 		case LED_BLINK_WPS_STOP:	/* WPS success */
-			if(pLed->BlinkingLedState == RTW_LED_ON)
+			if (pLed->BlinkingLedState == RTW_LED_ON)
 				bStopBlinking = false;
 			else
 				bStopBlinking = true;
 
-			if(bStopBlinking)
-			{
+			if (bStopBlinking) {
 				pLed->bLedLinkBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_NORMAL;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
+				delay = LED_BLINK_LINK_INTERVAL_ALPHA;
 				RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 
 				pLed->bLedWPSBlinkInProgress = false;
-			}
-			else
-			{
+			} else {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA);
+				delay = LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA;
 			}
 			break;
 
 		default:
 			break;
-	}
+				}
+	if (delay)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
 }
 
 static void SwLedBlink2(
@@ -732,24 +716,21 @@ static void SwLedBlink3(
 	}
 }
 
-static void SwLedBlink4(
-	PLED_871x			pLed
-	)
+static void SwLedBlink4(struct _LED_871x *pLed)
 {
-	struct rtw_adapter			*padapter = pLed->padapter;
+	struct rtw_adapter *padapter = pLed->padapter;
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-	PLED_871x		pLed1 = &(ledpriv->SwLed1);
-	u8				bStopBlinking = false;
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	struct _LED_871x *pLed1 = &(ledpriv->SwLed1);
+	u8 bStopBlinking = false;
+	unsigned long delay = 0;
 
 	/*  Change LED according to BlinkingLedState specified. */
-	if( pLed->BlinkingLedState == RTW_LED_ON )
+	if (pLed->BlinkingLedState == RTW_LED_ON)
 	{
 		SwLedOn(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn on\n", pLed->BlinkTimes));
-	}
-	else
-	{
+	} else {
 		SwLedOff(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn off\n", pLed->BlinkTimes));
 	}
@@ -764,185 +745,150 @@ static void SwLedBlink4(
 	switch(pLed->CurrLedState)
 	{
 		case LED_BLINK_SLOWLY:
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+			delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 			break;
 
 		case LED_BLINK_StartToBlink:
-			if( pLed->bLedOn )
-			{
+			if (pLed->bLedOn) {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
-			}
-			else
-			{
+				delay = LED_BLINK_SLOWLY_INTERVAL;
+			} else {
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+				delay = LED_BLINK_NORMAL_INTERVAL;
 			}
 			break;
 
 		case LED_BLINK_SCAN:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = false;
 			}
 
-			if(bStopBlinking)
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			if (bStopBlinking) {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
+				} else {
 					pLed->bLedNoLinkBlinkInProgress = false;
 					pLed->CurrLedState = LED_BLINK_SLOWLY;
-					if( pLed->bLedOn )
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 				}
 				pLed->bLedScanBlinkInProgress = false;
-			}
-			else
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			} else {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
-					 if( pLed->bLedOn )
+				} else {
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+					delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 				}
 			}
 			break;
 
 		case LED_BLINK_TXRX:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = true;
 			}
-			if(bStopBlinking)
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			if (bStopBlinking) {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
+				} else {
 					pLed->bLedNoLinkBlinkInProgress = true;
 					pLed->CurrLedState = LED_BLINK_SLOWLY;
-					if( pLed->bLedOn )
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+					delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 				}
 				pLed->bLedBlinkInProgress = false;
-			}
-			else
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			} else {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
-					 if( pLed->bLedOn )
+				} else {
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+					delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 				}
 			}
 			break;
 
 		case LED_BLINK_WPS:
-			if( pLed->bLedOn )
-			{
+			if (pLed->bLedOn) {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
-			}
-			else
-			{
+				delay = LED_BLINK_SLOWLY_INTERVAL;
+			} else {
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+				delay = LED_BLINK_NORMAL_INTERVAL;
 			}
 			break;
 
 		case LED_BLINK_WPS_STOP:	/* WPS authentication fail */
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
 
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+			delay = LED_BLINK_NORMAL_INTERVAL;
 			break;
 
 		case LED_BLINK_WPS_STOP_OVERLAP:	/* WPS session overlap */
 			pLed->BlinkTimes--;
-			if(pLed->BlinkTimes == 0)
-			{
-				if(pLed->bLedOn)
-				{
+			if (pLed->BlinkTimes == 0) {
+				if (pLed->bLedOn) {
 					pLed->BlinkTimes = 1;
-				}
-				else
-				{
+				} else {
 					bStopBlinking = true;
 				}
 			}
 
-			if(bStopBlinking)
-			{
+			if (bStopBlinking) {
 				pLed->BlinkTimes = 10;
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
-			}
-			else
-			{
-				if( pLed->bLedOn )
+				delay = LED_BLINK_LINK_INTERVAL_ALPHA;
+			} else {
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
 
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+				delay = LED_BLINK_NORMAL_INTERVAL;
 			}
 			break;
 
 		default:
 			break;
 	}
+	if (delay)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
 
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("SwLedBlink4 CurrLedState %d\n", pLed->CurrLedState));
 }
 
-static void SwLedBlink5(
-	PLED_871x			pLed
-	)
+static void SwLedBlink5(struct _LED_871x *pLed)
 {
-	struct rtw_adapter			*padapter = pLed->padapter;
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-	u8				bStopBlinking = false;
+	struct rtw_adapter *padapter = pLed->padapter;
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	u8 bStopBlinking = false;
+	unsigned long delay = 0;
 
 	/*  Change LED according to BlinkingLedState specified. */
-	if( pLed->BlinkingLedState == RTW_LED_ON )
-	{
+	if (pLed->BlinkingLedState == RTW_LED_ON) {
 		SwLedOn(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn on\n", pLed->BlinkTimes));
-	}
-	else
-	{
+	} else {
 		SwLedOff(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn off\n", pLed->BlinkTimes));
 	}
@@ -951,85 +897,66 @@ static void SwLedBlink5(
 	{
 		case LED_BLINK_SCAN:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = true;
 			}
 
-			if(bStopBlinking)
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			if (bStopBlinking) {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					pLed->CurrLedState = RTW_LED_OFF;
 					pLed->BlinkingLedState = RTW_LED_OFF;
-					if(pLed->bLedOn)
+					if (pLed->bLedOn)
 						SwLedOff(padapter, pLed);
-				}
-				else
-				{		pLed->CurrLedState = RTW_LED_ON;
-						pLed->BlinkingLedState = RTW_LED_ON;
-						if(!pLed->bLedOn)
-							_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				} else {
+					pLed->CurrLedState = RTW_LED_ON;
+					pLed->BlinkingLedState = RTW_LED_ON;
+					if (!pLed->bLedOn)
+						delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 				}
 
 				pLed->bLedScanBlinkInProgress = false;
-			}
-			else
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			} else {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
-					if( pLed->bLedOn )
+				} else {
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+					delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 				}
 			}
 			break;
 
 		case LED_BLINK_TXRX:
 			pLed->BlinkTimes--;
-			if( pLed->BlinkTimes == 0 )
-			{
+			if (pLed->BlinkTimes == 0) {
 				bStopBlinking = true;
 			}
 
-			if(bStopBlinking)
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			if (bStopBlinking) {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					pLed->CurrLedState = RTW_LED_OFF;
 					pLed->BlinkingLedState = RTW_LED_OFF;
-					if(pLed->bLedOn)
+					if (pLed->bLedOn)
 						SwLedOff(padapter, pLed);
-				}
-				else
-				{
+				} else {
 					pLed->CurrLedState = RTW_LED_ON;
 					pLed->BlinkingLedState = RTW_LED_ON;
-					if(!pLed->bLedOn)
-						_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+					if (!pLed->bLedOn)
+						delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 				}
 
 				pLed->bLedBlinkInProgress = false;
-			}
-			else
-			{
-				if( padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS)
-				{
+			} else {
+				if (padapter->pwrctrlpriv.rf_pwrstate != rf_on && padapter->pwrctrlpriv.rfoff_reason > RF_CHANGE_BY_PS) {
 					SwLedOff(padapter, pLed);
-				}
-				else
-				{
-					 if( pLed->bLedOn )
+				} else {
+					if (pLed->bLedOn)
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
 						pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+					delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 				}
 			}
 			break;
@@ -1038,25 +965,23 @@ static void SwLedBlink5(
 			break;
 	}
 
+	if (delay)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
+
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("SwLedBlink5 CurrLedState %d\n", pLed->CurrLedState));
 }
 
-static void SwLedBlink6(
-	PLED_871x			pLed
-	)
+static void SwLedBlink6(struct _LED_871x *pLed)
 {
-	struct rtw_adapter			*padapter = pLed->padapter;
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-	u8				bStopBlinking = false;
+	struct rtw_adapter *padapter = pLed->padapter;
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	u8 bStopBlinking = false;
 
 	/*  Change LED according to BlinkingLedState specified. */
-	if( pLed->BlinkingLedState == RTW_LED_ON )
-	{
+	if (pLed->BlinkingLedState == RTW_LED_ON) {
 		SwLedOn(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn on\n", pLed->BlinkTimes));
-	}
-	else
-	{
+	} else {
 		SwLedOff(padapter, pLed);
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn off\n", pLed->BlinkTimes));
 	}
@@ -1085,54 +1010,50 @@ SwLedControlMode0(
 			pLed->CurrLedState = LED_BLINK_NORMAL;
 			pLed->BlinkTimes = 2;
 
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 		}
 		break;
 
 	case LED_CTL_START_TO_LINK:
-		if( pLed->bLedBlinkInProgress == false )
-		{
+		if (pLed->bLedBlinkInProgress == false) {
 			pLed->bLedBlinkInProgress = true;
 
 			pLed->CurrLedState = LED_BLINK_StartToBlink;
 			pLed->BlinkTimes = 24;
 
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
-		}
-		else
-		{
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_SLOWLY_INTERVAL));
+		} else {
 			pLed->CurrLedState = LED_BLINK_StartToBlink;
 		}
 		break;
 
 	case LED_CTL_LINK:
 		pLed->CurrLedState = RTW_LED_ON;
-		if( pLed->bLedBlinkInProgress == false )
-		{
+		if (pLed->bLedBlinkInProgress == false) {
 			SwLedOn(padapter, pLed);
 		}
 		break;
 
 	case LED_CTL_NO_LINK:
 		pLed->CurrLedState = RTW_LED_OFF;
-		if( pLed->bLedBlinkInProgress == false )
-		{
+		if (pLed->bLedBlinkInProgress == false) {
 			SwLedOff(padapter, pLed);
 		}
 		break;
 
 	case LED_CTL_POWER_OFF:
 		pLed->CurrLedState = RTW_LED_OFF;
-		if(pLed->bLedBlinkInProgress)
-		{
+		if (pLed->bLedBlinkInProgress) {
 			del_timer_sync(&(pLed->BlinkTimer));
 			pLed->bLedBlinkInProgress = false;
 		}
@@ -1140,29 +1061,25 @@ SwLedControlMode0(
 		break;
 
 	case LED_CTL_START_WPS:
-		if( pLed->bLedBlinkInProgress == false || pLed->CurrLedState == RTW_LED_ON)
-		{
+		if (pLed->bLedBlinkInProgress == false ||
+		    pLed->CurrLedState == RTW_LED_ON) {
 			pLed->bLedBlinkInProgress = true;
 
 			pLed->CurrLedState = LED_BLINK_WPS;
 			pLed->BlinkTimes = 20;
 
-			if( pLed->bLedOn )
-			{
+			if (pLed->bLedOn) {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_LONG_INTERVAL);
-			}
-			else
-			{
+			} else {
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_LONG_INTERVAL);
 			}
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_LONG_INTERVAL));
 		}
 		break;
 
 	case LED_CTL_STOP_WPS:
-		if(pLed->bLedBlinkInProgress)
-		{
+		if (pLed->bLedBlinkInProgress) {
 			pLed->CurrLedState = RTW_LED_OFF;
 			del_timer_sync(&(pLed->BlinkTimer));
 			pLed->bLedBlinkInProgress = false;
@@ -1178,18 +1095,15 @@ SwLedControlMode0(
 
  /* ALPHA, added by chiyoko, 20090106 */
 static void
-SwLedControlMode1(
-	struct rtw_adapter		*padapter,
-	LED_CTL_MODE		LedAction
-)
+SwLedControlMode1(struct rtw_adapter *padapter, LED_CTL_MODE LedAction)
 {
 #ifndef CONFIG_LED_REMOVE_HAL
-	struct hal_data_8723a		*pHalData = GET_HAL_DATA(padapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 #endif
-	struct led_priv		*ledpriv = &(padapter->ledpriv);
-	PLED_871x			pLed = &(ledpriv->SwLed0);
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
-
+	struct led_priv *ledpriv = &(padapter->ledpriv);
+	struct _LED_871x *pLed = &(ledpriv->SwLed0);
+	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	long delay = -1;
 #ifndef CONFIG_LED_REMOVE_HAL
 	if(pHalData->EEPROMCustomerID == RT_CID_819x_CAMEO)
 		pLed = &(ledpriv->SwLed1);
@@ -1200,241 +1114,208 @@ SwLedControlMode1(
 		case LED_CTL_POWER_ON:
 		case LED_CTL_START_TO_LINK:
 		case LED_CTL_NO_LINK:
-			if( pLed->bLedNoLinkBlinkInProgress == false )
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedNoLinkBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if( pLed->bLedLinkBlinkInProgress == true )
-				{
+				if (pLed->bLedLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 
 				pLed->bLedNoLinkBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SLOWLY;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+				delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_LINK:
-			if( pLed->bLedLinkBlinkInProgress == false )
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedLinkBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 				pLed->bLedLinkBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_NORMAL;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
+				delay = LED_BLINK_LINK_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_SITE_SURVEY:
-			 if((pmlmepriv->LinkDetectInfo.bBusyTraffic) && (check_fwstate(pmlmepriv, _FW_LINKED)== true))
+			 if ((pmlmepriv->LinkDetectInfo.bBusyTraffic) &&
+			     (check_fwstate(pmlmepriv, _FW_LINKED)== true))
 				;
-			 else if(pLed->bLedScanBlinkInProgress ==false)
-			 {
-				if(IS_LED_WPS_BLINKING(pLed))
+			 else if (pLed->bLedScanBlinkInProgress == false) {
+				if (IS_LED_WPS_BLINKING(pLed))
 					return;
 
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if( pLed->bLedLinkBlinkInProgress == true )
-				{
+				if (pLed->bLedLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
-					 pLed->bLedLinkBlinkInProgress = false;
+					pLed->bLedLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 				pLed->bLedScanBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SCAN;
 				pLed->BlinkTimes = 24;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			 }
 			break;
 
 		case LED_CTL_TX:
 		case LED_CTL_RX:
-			if(pLed->bLedBlinkInProgress ==false)
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if( pLed->bLedLinkBlinkInProgress == true )
-				{
+				if (pLed->bLedLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedLinkBlinkInProgress = false;
 				}
 				pLed->bLedBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_TXRX;
 				pLed->BlinkTimes = 2;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_START_WPS: /* wait until xinpin finish */
 		case LED_CTL_START_WPS_BOTTON:
-			 if(pLed->bLedWPSBlinkInProgress ==false)
-			 {
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+			if (pLed->bLedWPSBlinkInProgress == false) {
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if( pLed->bLedLinkBlinkInProgress == true )
-				{
+				if (pLed->bLedLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
-					 pLed->bLedLinkBlinkInProgress = false;
+					pLed->bLedLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
-				if(pLed->bLedScanBlinkInProgress ==true)
-				{
+				if (pLed->bLedScanBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedScanBlinkInProgress = false;
 				}
 				pLed->bLedWPSBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_WPS;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			 }
 			break;
 
 		case LED_CTL_STOP_WPS:
-			if(pLed->bLedNoLinkBlinkInProgress == true)
-			{
+			if (pLed->bLedNoLinkBlinkInProgress == true) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedNoLinkBlinkInProgress = false;
 			}
-			if( pLed->bLedLinkBlinkInProgress == true )
-			{
+			if (pLed->bLedLinkBlinkInProgress == true) {
 				del_timer_sync(&(pLed->BlinkTimer));
-				 pLed->bLedLinkBlinkInProgress = false;
+				pLed->bLedLinkBlinkInProgress = false;
 			}
-			if(pLed->bLedBlinkInProgress ==true)
-			{
+			if (pLed->bLedBlinkInProgress == true) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if(pLed->bLedScanBlinkInProgress ==true)
-			{
+			if (pLed->bLedScanBlinkInProgress == true) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
-			}
-			else
-			{
+			} else {
 				pLed->bLedWPSBlinkInProgress = true;
 			}
 
 			pLed->CurrLedState = LED_BLINK_WPS_STOP;
-			if(pLed->bLedOn)
-			{
+			if (pLed->bLedOn) {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA);
-			}
-			else
-			{
+				delay = LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA;
+			} else {
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 			}
 			break;
 
 		case LED_CTL_STOP_WPS_FAIL:
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
 
 			pLed->bLedNoLinkBlinkInProgress = true;
 			pLed->CurrLedState = LED_BLINK_SLOWLY;
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+			delay = LED_BLINK_NO_LINK_INTERVAL_ALPHA;
 			break;
 
 		case LED_CTL_POWER_OFF:
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
-			if( pLed->bLedNoLinkBlinkInProgress)
-			{
+			if (pLed->bLedNoLinkBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedNoLinkBlinkInProgress = false;
 			}
-			if( pLed->bLedLinkBlinkInProgress)
-			{
+			if (pLed->bLedLinkBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedLinkBlinkInProgress = false;
 			}
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedWPSBlinkInProgress )
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
@@ -1447,130 +1328,118 @@ SwLedControlMode1(
 
 	}
 
+	if (delay != -1)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
+
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Led %d\n", pLed->CurrLedState));
 }
 
  /* Arcadyan/Sitecom , added by chiyoko, 20090216 */
 static void
-SwLedControlMode2(
-	struct rtw_adapter				*padapter,
-	LED_CTL_MODE		LedAction
-)
+SwLedControlMode2(struct rtw_adapter *padapter, LED_CTL_MODE LedAction)
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	PLED_871x		pLed = &(ledpriv->SwLed0);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct _LED_871x *pLed = &(ledpriv->SwLed0);
+	long delay = -1;
 
 	switch(LedAction)
 	{
 		case LED_CTL_SITE_SURVEY:
-			 if(pmlmepriv->LinkDetectInfo.bBusyTraffic)
+			 if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
 				;
-			 else if(pLed->bLedScanBlinkInProgress ==false)
-			 {
-				if(IS_LED_WPS_BLINKING(pLed))
+			 else if (pLed->bLedScanBlinkInProgress == false) {
+				if (IS_LED_WPS_BLINKING(pLed))
 					return;
 
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 				pLed->bLedScanBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SCAN;
 				pLed->BlinkTimes = 24;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			 }
-			break;
+			 break;
 
 		case LED_CTL_TX:
 		case LED_CTL_RX:
-			if((pLed->bLedBlinkInProgress ==false) && (check_fwstate(pmlmepriv, _FW_LINKED)== true))
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if ((pLed->bLedBlinkInProgress == false) &&
+			    (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
 
 				pLed->bLedBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_TXRX;
 				pLed->BlinkTimes = 2;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				delay = LED_BLINK_FASTER_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_LINK:
 			pLed->CurrLedState = RTW_LED_ON;
 			pLed->BlinkingLedState = RTW_LED_ON;
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
 
-			_set_timer(&(pLed->BlinkTimer), 0);
+			delay = 0;
 			break;
 
 		case LED_CTL_START_WPS: /* wait until xinpin finish */
 		case LED_CTL_START_WPS_BOTTON:
-			if(pLed->bLedWPSBlinkInProgress ==false)
-			{
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+			if (pLed->bLedWPSBlinkInProgress == false) {
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
-				if(pLed->bLedScanBlinkInProgress ==true)
-				{
+				if (pLed->bLedScanBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedScanBlinkInProgress = false;
 				}
 				pLed->bLedWPSBlinkInProgress = true;
 				pLed->CurrLedState = RTW_LED_ON;
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 			 }
 			break;
 
 		case LED_CTL_STOP_WPS:
 			pLed->bLedWPSBlinkInProgress = false;
-			if(padapter->pwrctrlpriv.rf_pwrstate != rf_on)
-			{
+			if (padapter->pwrctrlpriv.rf_pwrstate != rf_on) {
 				SwLedOff(padapter, pLed);
-			}
-			else
-			{
+			} else {
 				pLed->CurrLedState = RTW_LED_ON;
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 				RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 			}
 			break;
 
 		case LED_CTL_STOP_WPS_FAIL:
 			pLed->bLedWPSBlinkInProgress = false;
-			if(padapter->pwrctrlpriv.rf_pwrstate != rf_on)
-			{
+			if (padapter->pwrctrlpriv.rf_pwrstate != rf_on) {
 				SwLedOff(padapter, pLed);
-			}
-			else
-			{
+			} else {
 				pLed->CurrLedState = RTW_LED_OFF;
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 				RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 			}
 			break;
@@ -1581,30 +1450,27 @@ SwLedControlMode2(
 			{
 				pLed->CurrLedState = RTW_LED_OFF;
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 			}
 			break;
 
 		case LED_CTL_POWER_OFF:
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
-			if( pLed->bLedWPSBlinkInProgress )
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
 
-			_set_timer(&(pLed->BlinkTimer), 0);
+			delay = 0;
 			break;
 
 		default:
@@ -1612,145 +1478,132 @@ SwLedControlMode2(
 
 	}
 
+	if (delay != -1)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
+
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 }
 
   /* COREGA, added by chiyoko, 20090316 */
- static void
- SwLedControlMode3(
-	struct rtw_adapter				*padapter,
-	LED_CTL_MODE		LedAction
-)
+static void
+SwLedControlMode3(struct rtw_adapter *padapter, LED_CTL_MODE LedAction)
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	PLED_871x		pLed = &(ledpriv->SwLed0);
+	long delay = -1;
 
 	switch(LedAction)
 	{
 		case LED_CTL_SITE_SURVEY:
 			if(pmlmepriv->LinkDetectInfo.bBusyTraffic)
 				;
-			else if(pLed->bLedScanBlinkInProgress ==false)
-			{
-				if(IS_LED_WPS_BLINKING(pLed))
+			else if (pLed->bLedScanBlinkInProgress == false) {
+				if (IS_LED_WPS_BLINKING(pLed))
 					return;
 
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 				pLed->bLedScanBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SCAN;
 				pLed->BlinkTimes = 24;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_TX:
 		case LED_CTL_RX:
-			if((pLed->bLedBlinkInProgress ==false) && (check_fwstate(pmlmepriv, _FW_LINKED)== true))
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if ((pLed->bLedBlinkInProgress == false) &&
+			    (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
 
 				pLed->bLedBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_TXRX;
 				pLed->BlinkTimes = 2;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				delay =  LED_BLINK_FASTER_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_LINK:
-			if(IS_LED_WPS_BLINKING(pLed))
+			if (IS_LED_WPS_BLINKING(pLed))
 				return;
 
 			pLed->CurrLedState = RTW_LED_ON;
 			pLed->BlinkingLedState = RTW_LED_ON;
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
 
-			_set_timer(&(pLed->BlinkTimer), 0);
+			delay = 0;
 			break;
 
 		case LED_CTL_START_WPS: /* wait until xinpin finish */
 		case LED_CTL_START_WPS_BOTTON:
-			if(pLed->bLedWPSBlinkInProgress ==false)
-			{
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+			if (pLed->bLedWPSBlinkInProgress == false) {
+				if(pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
-				if(pLed->bLedScanBlinkInProgress ==true)
-				{
+				if (pLed->bLedScanBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedScanBlinkInProgress = false;
 				}
 				pLed->bLedWPSBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_WPS;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				delay = LED_BLINK_SCAN_INTERVAL_ALPHA;
 			}
 			break;
 
 		case LED_CTL_STOP_WPS:
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
-			}
-			else
-			{
+			} else {
 				pLed->bLedWPSBlinkInProgress = true;
 			}
 
 			pLed->CurrLedState = LED_BLINK_WPS_STOP;
-			if(pLed->bLedOn)
-			{
+			if (pLed->bLedOn) {
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA);
-			}
-			else
-			{
+				delay = LED_BLINK_WPS_SUCESS_INTERVAL_ALPHA;
+			} else {
 				pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 			}
 
 			break;
 
 		case LED_CTL_STOP_WPS_FAIL:
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
 
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
-			_set_timer(&(pLed->BlinkTimer), 0);
+			delay = 0;
 			break;
 
 		case LED_CTL_START_TO_LINK:
@@ -1759,30 +1612,27 @@ SwLedControlMode2(
 			{
 				pLed->CurrLedState = RTW_LED_OFF;
 				pLed->BlinkingLedState = RTW_LED_OFF;
-				_set_timer(&(pLed->BlinkTimer), 0);
+				delay = 0;
 			}
 			break;
 
 		case LED_CTL_POWER_OFF:
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
-			if( pLed->bLedWPSBlinkInProgress )
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
 
-			_set_timer(&(pLed->BlinkTimer), 0);
+			delay = 0;
 			break;
 
 		default:
@@ -1790,15 +1640,15 @@ SwLedControlMode2(
 
 	}
 
+	if (delay != -1)
+		mod_timer(&pLed->BlinkTimer, jiffies + msecs_to_jiffies(delay));
+
 	RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
 }
 
  /* Edimax-Belkin, added by chiyoko, 20090413 */
 static void
-SwLedControlMode4(
-	struct rtw_adapter				*padapter,
-	LED_CTL_MODE		LedAction
-)
+SwLedControlMode4(struct rtw_adapter *padapter, LED_CTL_MODE LedAction)
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
@@ -1808,46 +1658,41 @@ SwLedControlMode4(
 	switch(LedAction)
 	{
 		case LED_CTL_START_TO_LINK:
-			if(pLed1->bLedWPSBlinkInProgress)
-			{
+			if (pLed1->bLedWPSBlinkInProgress) {
 				pLed1->bLedWPSBlinkInProgress = false;
 				del_timer_sync(&(pLed1->BlinkTimer));
 
 				pLed1->BlinkingLedState = RTW_LED_OFF;
 				pLed1->CurrLedState = RTW_LED_OFF;
 
-				if(pLed1->bLedOn)
-					_set_timer(&(pLed->BlinkTimer), 0);
+				if (pLed1->bLedOn)
+					mod_timer(&pLed->BlinkTimer, jiffies);
 			}
 
-			if( pLed->bLedStartToLinkBlinkInProgress == false )
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedStartToLinkBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
-				if(pLed->bLedNoLinkBlinkInProgress ==true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
 
 				pLed->bLedStartToLinkBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_StartToBlink;
-				if( pLed->bLedOn )
-				{
+				if (pLed->bLedOn) {
 					pLed->BlinkingLedState = RTW_LED_OFF;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
-				}
-				else
-				{
+					mod_timer(&pLed->BlinkTimer,
+						  jiffies + msecs_to_jiffies(LED_BLINK_SLOWLY_INTERVAL));
+				} else {
 					pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+					mod_timer(&pLed->BlinkTimer,
+						  jiffies + msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 				}
 			}
 			break;
@@ -1855,162 +1700,150 @@ SwLedControlMode4(
 		case LED_CTL_LINK:
 		case LED_CTL_NO_LINK:
 			/* LED1 settings */
-			if(LedAction == LED_CTL_LINK)
-			{
-				if(pLed1->bLedWPSBlinkInProgress)
-				{
+			if (LedAction == LED_CTL_LINK) {
+				if (pLed1->bLedWPSBlinkInProgress) {
 					pLed1->bLedWPSBlinkInProgress = false;
 					del_timer_sync(&(pLed1->BlinkTimer));
 
 					pLed1->BlinkingLedState = RTW_LED_OFF;
 					pLed1->CurrLedState = RTW_LED_OFF;
 
-					if(pLed1->bLedOn)
-						_set_timer(&(pLed->BlinkTimer), 0);
+					if (pLed1->bLedOn)
+						mod_timer(&pLed->BlinkTimer, jiffies);
 				}
 			}
 
-			if( pLed->bLedNoLinkBlinkInProgress == false )
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedNoLinkBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 
 				pLed->bLedNoLinkBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SLOWLY;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+				mod_timer(&pLed->BlinkTimer, jiffies +
+					  msecs_to_jiffies(LED_BLINK_NO_LINK_INTERVAL_ALPHA));
 			}
 			break;
 
 		case LED_CTL_SITE_SURVEY:
-			if((pmlmepriv->LinkDetectInfo.bBusyTraffic) && (check_fwstate(pmlmepriv, _FW_LINKED)== true))
+			if ((pmlmepriv->LinkDetectInfo.bBusyTraffic) &&
+			    (check_fwstate(pmlmepriv, _FW_LINKED) == true))
 				;
-			else if(pLed->bLedScanBlinkInProgress ==false)
-			{
-				if(IS_LED_WPS_BLINKING(pLed))
+			else if (pLed->bLedScanBlinkInProgress == false) {
+				if (IS_LED_WPS_BLINKING(pLed))
 					return;
 
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress ==true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
 				pLed->bLedScanBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_SCAN;
 				pLed->BlinkTimes = 24;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				mod_timer(&pLed->BlinkTimer, jiffies +
+					  msecs_to_jiffies(LED_BLINK_SCAN_INTERVAL_ALPHA));
 			}
 			break;
 
 		case LED_CTL_TX:
 		case LED_CTL_RX:
-			if(pLed->bLedBlinkInProgress ==false)
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN || IS_LED_WPS_BLINKING(pLed))
-				{
+			if (pLed->bLedBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN ||
+				    IS_LED_WPS_BLINKING(pLed)) {
 					return;
 				}
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
 				pLed->bLedBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_TXRX;
 				pLed->BlinkTimes = 2;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				mod_timer(&(pLed->BlinkTimer), jiffies +
+					  msecs_to_jiffies(LED_BLINK_FASTER_INTERVAL_ALPHA));
 			}
 			break;
 
 		case LED_CTL_START_WPS: /* wait until xinpin finish */
 		case LED_CTL_START_WPS_BOTTON:
-			if(pLed1->bLedWPSBlinkInProgress)
-			{
+			if (pLed1->bLedWPSBlinkInProgress) {
 				pLed1->bLedWPSBlinkInProgress = false;
 				del_timer_sync(&(pLed1->BlinkTimer));
 
 				pLed1->BlinkingLedState = RTW_LED_OFF;
 				pLed1->CurrLedState = RTW_LED_OFF;
 
-				if(pLed1->bLedOn)
-					_set_timer(&(pLed->BlinkTimer), 0);
+				if (pLed1->bLedOn)
+					mod_timer(&pLed->BlinkTimer, jiffies);
 			}
 
-			if(pLed->bLedWPSBlinkInProgress ==false)
-			{
-				if(pLed->bLedNoLinkBlinkInProgress == true)
-				{
+			if (pLed->bLedWPSBlinkInProgress == false) {
+				if (pLed->bLedNoLinkBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedNoLinkBlinkInProgress = false;
 				}
-				if(pLed->bLedBlinkInProgress ==true)
-				{
+				if (pLed->bLedBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedBlinkInProgress = false;
 				}
-				if(pLed->bLedScanBlinkInProgress ==true)
-				{
+				if (pLed->bLedScanBlinkInProgress == true) {
 					del_timer_sync(&(pLed->BlinkTimer));
 					pLed->bLedScanBlinkInProgress = false;
 				}
 				pLed->bLedWPSBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_WPS;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 				{
 					pLed->BlinkingLedState = RTW_LED_OFF;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_SLOWLY_INTERVAL);
-				}
-				else
-				{
+					mod_timer(&pLed->BlinkTimer, jiffies +
+						  msecs_to_jiffies(LED_BLINK_SLOWLY_INTERVAL));
+				} else {
 					pLed->BlinkingLedState = RTW_LED_ON;
-					_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+					mod_timer(&pLed->BlinkTimer, jiffies +
+						  msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 				}
 			}
 			break;
 
 		case LED_CTL_STOP_WPS:	/* WPS connect success */
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
 
 			pLed->bLedNoLinkBlinkInProgress = true;
 			pLed->CurrLedState = LED_BLINK_SLOWLY;
-			if( pLed->bLedOn )
+			if (pLed->bLedOn)
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
-
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NO_LINK_INTERVAL_ALPHA));
 			break;
 
 		case LED_CTL_STOP_WPS_FAIL:		/* WPS authentication fail */
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
@@ -2021,26 +1854,27 @@ SwLedControlMode4(
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+			mod_timer(&(pLed->BlinkTimer), jiffies +
+				  msecs_to_jiffies(LED_BLINK_NO_LINK_INTERVAL_ALPHA));
 
 			/* LED1 settings */
-			if(pLed1->bLedWPSBlinkInProgress)
+			if (pLed1->bLedWPSBlinkInProgress)
 				del_timer_sync(&(pLed1->BlinkTimer));
 			else
 				pLed1->bLedWPSBlinkInProgress = true;
 
 			pLed1->CurrLedState = LED_BLINK_WPS_STOP;
-			if( pLed1->bLedOn )
+			if (pLed1->bLedOn)
 				pLed1->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed1->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 
 			break;
 
 		case LED_CTL_STOP_WPS_FAIL_OVERLAP:	/* WPS session overlap */
-			if(pLed->bLedWPSBlinkInProgress)
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
@@ -2051,21 +1885,23 @@ SwLedControlMode4(
 				pLed->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NO_LINK_INTERVAL_ALPHA);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NO_LINK_INTERVAL_ALPHA));
 
 			/* LED1 settings */
-			if(pLed1->bLedWPSBlinkInProgress)
+			if (pLed1->bLedWPSBlinkInProgress)
 				del_timer_sync(&(pLed1->BlinkTimer));
 			else
 				pLed1->bLedWPSBlinkInProgress = true;
 
 			pLed1->CurrLedState = LED_BLINK_WPS_STOP_OVERLAP;
 			pLed1->BlinkTimes = 10;
-			if( pLed1->bLedOn )
+			if (pLed1->bLedOn)
 				pLed1->BlinkingLedState = RTW_LED_OFF;
 			else
 				pLed1->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
+			mod_timer(&pLed->BlinkTimer, jiffies +
+				  msecs_to_jiffies(LED_BLINK_NORMAL_INTERVAL));
 
 			break;
 
@@ -2073,39 +1909,32 @@ SwLedControlMode4(
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
 
-			if( pLed->bLedNoLinkBlinkInProgress)
-			{
+			if (pLed->bLedNoLinkBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedNoLinkBlinkInProgress = false;
 			}
-			if( pLed->bLedLinkBlinkInProgress)
-			{
+			if (pLed->bLedLinkBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedLinkBlinkInProgress = false;
 			}
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
-			if( pLed->bLedWPSBlinkInProgress )
-			{
+			if (pLed->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedWPSBlinkInProgress = false;
 			}
-			if( pLed->bLedScanBlinkInProgress)
-			{
+			if (pLed->bLedScanBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedScanBlinkInProgress = false;
 			}
-			if( pLed->bLedStartToLinkBlinkInProgress)
-			{
+			if (pLed->bLedStartToLinkBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedStartToLinkBlinkInProgress = false;
 			}
 
-			if( pLed1->bLedWPSBlinkInProgress )
-			{
+			if (pLed1->bLedWPSBlinkInProgress) {
 				del_timer_sync(&(pLed1->BlinkTimer));
 				pLed1->bLedWPSBlinkInProgress = false;
 			}
@@ -2125,10 +1954,7 @@ SwLedControlMode4(
 
  /* Sercomm-Belkin, added by chiyoko, 20090415 */
 static void
-SwLedControlMode5(
-	struct rtw_adapter				*padapter,
-	LED_CTL_MODE		LedAction
-)
+SwLedControlMode5(struct rtw_adapter *padapter, LED_CTL_MODE LedAction)
 {
 #ifndef CONFIG_LED_REMOVE_HAL
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
@@ -2138,7 +1964,7 @@ SwLedControlMode5(
 	PLED_871x		pLed = &(ledpriv->SwLed0);
 
 #ifndef CONFIG_LED_REMOVE_HAL
-	if(pHalData->EEPROMCustomerID == RT_CID_819x_CAMEO)
+	if (pHalData->EEPROMCustomerID == RT_CID_819x_CAMEO)
 		pLed = &(ledpriv->SwLed1);
 #endif
 
@@ -2150,7 +1976,7 @@ SwLedControlMode5(
 			pLed->CurrLedState = RTW_LED_ON;
 			pLed->BlinkingLedState = RTW_LED_ON;
 
-			_set_timer(&(pLed->BlinkTimer), 0);
+			mod_timer(&pLed->BlinkTimer, jiffies);
 			break;
 
 		case LED_CTL_SITE_SURVEY:
@@ -2170,26 +1996,26 @@ SwLedControlMode5(
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_SCAN_INTERVAL_ALPHA);
+				mod_timer(&pLed->BlinkTimer, jiffies +
+					  msecs_to_jiffies(LED_BLINK_SCAN_INTERVAL_ALPHA));
 			}
 			break;
 
 		case LED_CTL_TX:
 		case LED_CTL_RX:
-			if(pLed->bLedBlinkInProgress ==false)
-			{
-				if(pLed->CurrLedState == LED_BLINK_SCAN)
-				{
+			if (pLed->bLedBlinkInProgress == false) {
+				if (pLed->CurrLedState == LED_BLINK_SCAN) {
 					return;
 				}
 				pLed->bLedBlinkInProgress = true;
 				pLed->CurrLedState = LED_BLINK_TXRX;
 				pLed->BlinkTimes = 2;
-				if( pLed->bLedOn )
+				if (pLed->bLedOn)
 					pLed->BlinkingLedState = RTW_LED_OFF;
 				else
 					pLed->BlinkingLedState = RTW_LED_ON;
-				_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+				mod_timer(&pLed->BlinkTimer, jiffies +
+					  msecs_to_jiffies(LED_BLINK_FASTER_INTERVAL_ALPHA));
 			}
 			break;
 
@@ -2197,8 +2023,7 @@ SwLedControlMode5(
 			pLed->CurrLedState = RTW_LED_OFF;
 			pLed->BlinkingLedState = RTW_LED_OFF;
 
-			if( pLed->bLedBlinkInProgress)
-			{
+			if (pLed->bLedBlinkInProgress) {
 				del_timer_sync(&(pLed->BlinkTimer));
 				pLed->bLedBlinkInProgress = false;
 			}
@@ -2233,7 +2058,7 @@ SwLedControlMode6(
 			del_timer_sync(&(pLed0->BlinkTimer));
 			pLed0->CurrLedState = RTW_LED_ON;
 			pLed0->BlinkingLedState = RTW_LED_ON;
-			_set_timer(&(pLed0->BlinkTimer), 0);
+			mod_timer(&pLed0->BlinkTimer, jiffies);
 			break;
 
 		case LED_CTL_POWER_OFF:
