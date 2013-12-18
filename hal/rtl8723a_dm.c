@@ -362,7 +362,6 @@ void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 	memset(pdmpriv, 0, sizeof(struct dm_priv));
 	Init_ODM_ComInfo_8723a(Adapter);
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
-	//_init_timer(&(pdmpriv->SwAntennaSwitchTimer),  Adapter->pnetdev , odm_SW_AntennaSwitchCallback, Adapter);
 	ODM_InitAllTimers(podmpriv );
 #endif
 }
@@ -373,7 +372,6 @@ void rtl8723a_deinit_dm_priv(struct rtw_adapter *Adapter)
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
-	//del_timer_sync(&pdmpriv->SwAntennaSwitchTimer);
 	ODM_CancelAllTimers(podmpriv);
 #endif
 }
