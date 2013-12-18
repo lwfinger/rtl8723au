@@ -398,7 +398,8 @@ _func_enter_;
 
 #ifdef CONFIG_LPS_RPWM_TIMER
 	if (rpwm & PS_ACK)
-		_set_timer(&pwrpriv->pwr_rpwm_timer, LPS_RPWM_WAIT_MS);
+		mod_timer(&pwrpriv->pwr_rpwm_timer,
+			  jiffies + msecs_to_jiffies(LPS_RPWM_WAIT_MS));
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 	rtw_hal_set_hwreg(padapter, HW_VAR_SET_RPWM, (u8 *)(&rpwm));
 
