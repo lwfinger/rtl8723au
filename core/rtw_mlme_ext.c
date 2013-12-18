@@ -9466,9 +9466,10 @@ void link_timer_hdl(struct rtw_adapter *padapter)
 	return;
 }
 
-void addba_timer_hdl(struct sta_info *psta)
+void addba_timer_hdl(unsigned long data)
 {
 #ifdef CONFIG_80211N_HT
+	struct sta_info *psta = (struct sta_info *)data;
 	struct ht_priv	*phtpriv;
 
 	if(!psta)

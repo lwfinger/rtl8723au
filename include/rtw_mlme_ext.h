@@ -505,7 +505,7 @@ int init_mlme_ext_priv(struct rtw_adapter* padapter);
 int init_hw_mlme_ext(struct rtw_adapter *padapter);
 void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
 void init_mlme_ext_timer(struct rtw_adapter *padapter);
-void init_addba_retry_timer(struct rtw_adapter *padapter, struct sta_info *psta);
+void init_addba_retry_timer(struct sta_info *psta);
 struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
 struct xmit_frame *alloc_mgtxmitframe_once(struct xmit_priv *pxmitpriv);
 
@@ -681,7 +681,7 @@ void linked_status_chk(struct rtw_adapter *padapter);
 
 void survey_timer_hdl (struct rtw_adapter *padapter);
 void link_timer_hdl (struct rtw_adapter *padapter);
-void addba_timer_hdl(struct sta_info *psta);
+void addba_timer_hdl(unsigned long data);
 //void reauth_timer_hdl(struct rtw_adapter *padapter);
 //void reassoc_timer_hdl(struct rtw_adapter *padapter);
 

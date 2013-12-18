@@ -310,7 +310,7 @@ _func_enter_;
 		RT_TRACE(_module_rtl871x_sta_mgt_c_,_drv_info_,("alloc number_%d stainfo  with hwaddr = %x %x %x %x %x %x  \n",
 		pstapriv->asoc_sta_count , hwaddr[0], hwaddr[1], hwaddr[2],hwaddr[3],hwaddr[4],hwaddr[5]));
 
-		init_addba_retry_timer(pstapriv->padapter, psta);
+		init_addba_retry_timer(psta);
 
 		/* for A-MPDU Rx reordering buffer control */
 		for(i=0; i < 16 ; i++)

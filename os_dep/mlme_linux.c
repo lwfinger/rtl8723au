@@ -195,16 +195,10 @@ static void _link_timer_hdl (void *FunctionContext)
 	link_timer_hdl(padapter);
 }
 
-static void _addba_timer_hdl(void *FunctionContext)
+void init_addba_retry_timer(struct sta_info *psta)
 {
-	struct sta_info *psta = (struct sta_info *)FunctionContext;
-	addba_timer_hdl(psta);
-}
-
-void init_addba_retry_timer(struct rtw_adapter *padapter, struct sta_info *psta)
-{
-
-	_init_timer(&psta->addba_retry_timer, padapter->pnetdev, _addba_timer_hdl, psta);
+	setup_timer(&psta->addba_retry_timer, addba_timer_hdl,
+		    (unsigned long)psta);
 }
 
 /*
