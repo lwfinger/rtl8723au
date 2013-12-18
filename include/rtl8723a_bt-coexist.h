@@ -1107,7 +1107,6 @@ typedef struct _BT_SECURITY
 	// May need to remove to BTSecInfo ...
 	//BT_STATE_WPA_AUTH BTWPAAuthState;
 	//u8				PMK[PMK_LEN];
-	RT_TIMER			BTWPAAuthTimer;
 	OCTET_STRING		RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
 	u8			bRegNoEncrypt;
@@ -1139,14 +1138,11 @@ typedef struct _BT30Info
 	RT_TIMER				BTHCIDiscardAclDataTimer;
 	RT_TIMER				BTHCIJoinTimeoutTimer;
 	RT_TIMER				BTTestSendPacketTimer;
-	RT_TIMER				BTSupervisionPktTimer;
 	RT_TIMER				BTDisconnectPhyLinkTimer;
 	RT_TIMER				BTBeaconTimer;
 	u8				BTBeaconTmrOn;
 
 	RT_TIMER				BTPsDisableTimer;
-	RT_TIMER				BTAuthTimeoutTimer;
-	RT_TIMER				BTAsocTimeoutTimer;
 
 	void *				pBtChnlList;
 }BT30Info, *PBT30Info;

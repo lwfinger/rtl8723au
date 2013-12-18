@@ -115,10 +115,7 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define PlatformReleaseSpinLock(padapter, type)
 
 // timer
-#define PlatformInitializeTimer(padapter, ptimer, pfunc, cntx, szID) \
-	_init_timer(ptimer, padapter->pnetdev, pfunc, padapter)
 #define PlatformSetTimer(a, ptimer, delay)	_set_timer(ptimer, delay)
-#define PlatformReleaseTimer(...)
 
 #define GET_UNDECORATED_AVERAGE_RSSI(padapter)	\
 			(GET_HAL_DATA(padapter)->dmpriv.EntryMinUndecoratedSmoothedPWDB)
@@ -237,13 +234,9 @@ static void BTPKT_WPAAuthINITIALIZE(struct rtw_adapter *padapter, u8 EntryNum)
 {
 }
 
-static void BTPKT_TimerCallbackWPAAuth(PRT_TIMER pTimer)
+static void BTPKT_TimerCallbackBeacon(unsigned long data)
 {
-}
-
-static void BTPKT_TimerCallbackBeacon(PRT_TIMER pTimer)
-{
-	struct rtw_adapter *	padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTinfo->BtMgnt;
 
@@ -1241,7 +1234,6 @@ bthci_RemoveEntryByEntryNum(
 
 	if (pBtMgnt->BtOperationOn == false)
 	{
-		del_timer_sync(&pBTInfo->BTSupervisionPktTimer);
 #if (SENDTXMEHTOD == 0)
 		del_timer_sync(&pBTInfo->BTHCISendAclDataTimer);
 #endif
@@ -2225,7 +2217,6 @@ static HCI_STATUS bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEven
 
 	pBtMgnt->bCreateSpportQos=true;
 
-	del_timer_sync(&pBTInfo->BTSupervisionPktTimer);
 #if (SENDTXMEHTOD == 0)
 	del_timer_sync(&pBTInfo->BTHCISendAclDataTimer);
 #endif
@@ -5503,7 +5494,6 @@ bthci_StateConnected(struct rtw_adapter *padapter,
 			pBTInfo->BtAsocEntry[EntryNum].b4waySuccess = true;
 			pBtMgnt->bStartSendSupervisionPkt = true;
 
-			PlatformSetTimer(padapter, &pBTInfo->BTSupervisionPktTimer, 10000);
 			// for rate adaptive
 
 			if(padapter->HalFunc.UpdateRAMaskHandler)
@@ -5775,11 +5765,10 @@ bthci_UseFakeData(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 	}
 }
 
-static void bthci_TimerCallbackHCICmd(PRT_TIMER pTimer)
+static void bthci_TimerCallbackHCICmd(unsigned long data)
 {
 #if (BT_THREAD == 0)
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackHCICmd() ==>\n"));
@@ -5790,11 +5779,10 @@ static void bthci_TimerCallbackHCICmd(PRT_TIMER pTimer)
 #endif
 }
 
-static void bthci_TimerCallbackSendAclData(PRT_TIMER pTimer)
+static void bthci_TimerCallbackSendAclData(unsigned long data)
 {
 #if (SENDTXMEHTOD == 0)
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("HCIAclDataTimerCallback() ==>\n"));
@@ -5807,10 +5795,9 @@ static void bthci_TimerCallbackSendAclData(PRT_TIMER pTimer)
 #endif
 }
 
-static void bthci_TimerCallbackDiscardAclData(PRT_TIMER pTimer)
+static void bthci_TimerCallbackDiscardAclData(unsigned long data)
 {
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -5824,10 +5811,9 @@ static void bthci_TimerCallbackDiscardAclData(PRT_TIMER pTimer)
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackDiscardAclData() <==\n"));
 }
 
-static void bthci_TimerCallbackPsDisable(PRT_TIMER pTimer)
+static void bthci_TimerCallbackPsDisable(unsigned long data)
 {
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() ==>\n"));
@@ -5837,10 +5823,9 @@ static void bthci_TimerCallbackPsDisable(PRT_TIMER pTimer)
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() <==\n"));
 }
 
-static void bthci_TimerCallbackJoinTimeout(PRT_TIMER pTimer)
+static void bthci_TimerCallbackJoinTimeout(unsigned long data)
 {
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	u8			CurrentEntry = pBtMgnt->CurrentConnectEntryNum;
@@ -5867,10 +5852,9 @@ static void bthci_TimerCallbackJoinTimeout(PRT_TIMER pTimer)
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackJoinTimeout() <==\n"));
 }
 
-static void bthci_TimerCallbackSendTestPacket(PRT_TIMER pTimer)
+static void bthci_TimerCallbackSendTestPacket(unsigned long data)
 {
-//	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer->padapter;
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -5886,21 +5870,9 @@ static void bthci_TimerCallbackSendTestPacket(PRT_TIMER pTimer)
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackSendTestPacket() <==\n"));
 }
 
-static void bthci_TimerCallbackBTSupervisionPacket(PRT_TIMER pTimer)
+static void bthci_TimerCallbackDisconnectPhysicalLink(unsigned long data)
 {
-}
-
-static void bthci_TimerCallbackBTAuthTimeout(PRT_TIMER pTimer)
-{
-}
-
-static void bthci_TimerCallbackAsocTimeout(PRT_TIMER pTimer)
-{
-}
-
-static void bthci_TimerCallbackDisconnectPhysicalLink(PRT_TIMER pTimer)
-{
-	struct rtw_adapter *		padapter = (struct rtw_adapter *)pTimer;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 
@@ -6215,24 +6187,29 @@ static void BTHCI_InitializeAllTimer(struct rtw_adapter *padapter)
 {
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
+	struct timer_list *timer;
 
 #if (BT_THREAD == 0)
-	PlatformInitializeTimer(padapter, &pBTinfo->BTHCICmdTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackHCICmd, NULL, "BTHCICmdTimer");
+	setup_timer(&pBTinfo->BTHCICmdTimer, bthci_TimerCallbackHCICmd,
+		    (unsigned long)padapter);
 #endif
 #if (SENDTXMEHTOD == 0)
-	PlatformInitializeTimer(padapter, &pBTinfo->BTHCISendAclDataTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackSendAclData, NULL, "BTHCISendAclDataTimer");
+	setup_timer(&pBTinfo->BTHCISendAclDataTimer,
+		    bthci_TimerCallbackSendAclData, (unsigned long)padapter);
 #endif
-	PlatformInitializeTimer(padapter, &pBTinfo->BTHCIDiscardAclDataTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackDiscardAclData, NULL, "BTHCIDiscardAclDataTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTHCIJoinTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackJoinTimeout, NULL, "BTHCIJoinTimeoutTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTTestSendPacketTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackSendTestPacket, NULL, "BTTestSendPacketTimer");
-
-	PlatformInitializeTimer(padapter, &pBTinfo->BTBeaconTimer, (RT_TIMER_CALL_BACK)BTPKT_TimerCallbackBeacon, NULL, "BTBeaconTimer");
-	PlatformInitializeTimer(padapter, &pBtSec->BTWPAAuthTimer, (RT_TIMER_CALL_BACK)BTPKT_TimerCallbackWPAAuth, NULL, "BTWPAAuthTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTSupervisionPktTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackBTSupervisionPacket, NULL, "BTGeneralPurposeTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTDisconnectPhyLinkTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackDisconnectPhysicalLink, NULL, "BTDisconnectPhyLinkTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTPsDisableTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackPsDisable, NULL, "BTPsDisableTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTAuthTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackBTAuthTimeout, NULL, "BTAuthTimeoutTimer");
-	PlatformInitializeTimer(padapter, &pBTinfo->BTAsocTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackAsocTimeout, NULL, "BTAsocTimeoutTimer");
+	setup_timer(&pBTinfo->BTHCIDiscardAclDataTimer,
+		    bthci_TimerCallbackDiscardAclData, (unsigned long)padapter);
+	setup_timer(&pBTinfo->BTHCIJoinTimeoutTimer,
+		    bthci_TimerCallbackJoinTimeout, (unsigned long)padapter);
+	setup_timer(&pBTinfo->BTTestSendPacketTimer,
+		    bthci_TimerCallbackSendTestPacket, (unsigned long)padapter);
+	setup_timer(&pBTinfo->BTBeaconTimer, BTPKT_TimerCallbackBeacon,
+		    (unsigned long)padapter);
+	setup_timer(&pBTinfo->BTDisconnectPhyLinkTimer,
+		    bthci_TimerCallbackDisconnectPhysicalLink,
+		    (unsigned long)padapter);
+	setup_timer(&pBTinfo->BTPsDisableTimer, bthci_TimerCallbackPsDisable,
+		    (unsigned long)padapter);
 }
 
 static void BTHCI_CancelAllTimer(struct rtw_adapter *padapter)
@@ -6250,36 +6227,8 @@ static void BTHCI_CancelAllTimer(struct rtw_adapter *padapter)
 	del_timer_sync(&pBTinfo->BTTestSendPacketTimer);
 
 	del_timer_sync(&pBTinfo->BTBeaconTimer);
-	del_timer_sync(&pBtSec->BTWPAAuthTimer);
-	del_timer_sync(&pBTinfo->BTSupervisionPktTimer);
 	del_timer_sync(&pBTinfo->BTDisconnectPhyLinkTimer);
 	del_timer_sync(&pBTinfo->BTPsDisableTimer);
-	del_timer_sync(&pBTinfo->BTAuthTimeoutTimer);
-	del_timer_sync(&pBTinfo->BTAsocTimeoutTimer);
-}
-
-static void BTHCI_ReleaseAllTimer(struct rtw_adapter *padapter)
-{
-	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
-	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
-
-#if (BT_THREAD == 0)
-	PlatformReleaseTimer(padapter, &pBTinfo->BTHCICmdTimer);
-#endif
-#if (SENDTXMEHTOD == 0)
-	PlatformReleaseTimer(padapter, &pBTinfo->BTHCISendAclDataTimer);
-#endif
-	PlatformReleaseTimer(padapter, &pBTinfo->BTHCIDiscardAclDataTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTHCIJoinTimeoutTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTTestSendPacketTimer);
-
-	PlatformReleaseTimer(padapter, &pBTinfo->BTBeaconTimer);
-	PlatformReleaseTimer(padapter, &pBtSec->BTWPAAuthTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTSupervisionPktTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTDisconnectPhyLinkTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTAuthTimeoutTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTAsocTimeoutTimer);
-	PlatformReleaseTimer(padapter, &pBTinfo->BTPsDisableTimer);
 }
 
 static void BTHCI_InitializeAllWorkItem(struct rtw_adapter *padapter)

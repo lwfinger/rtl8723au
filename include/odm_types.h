@@ -37,7 +37,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#include <basic_types.h>
 
 	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
-	typedef  void *				RT_TIMER_CALL_BACK;
 	#define	STA_INFO_T			struct sta_info
 	#define	PSTA_INFO_T		struct sta_info *
 
