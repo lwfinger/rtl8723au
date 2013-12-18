@@ -252,7 +252,8 @@ static void sreset_start_adapter(struct rtw_adapter *padapter)
 	/* TODO: OS and HCI independent */
 	tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 
-	_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 2000);
+	mod_timer(&padapter->mlmepriv.dynamic_chk_timer,
+		  jiffies + msecs_to_jiffies(2000));
 
 	if (rtw_netif_queue_stopped(padapter->pnetdev))
 		rtw_netif_wake_queue(padapter->pnetdev);
