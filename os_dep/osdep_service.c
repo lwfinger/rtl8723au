@@ -153,21 +153,6 @@ void rtw_sleep_schedulable(int ms)
     return;
 }
 
-
-void rtw_usleep_os(int us)
-{
-      // msleep((unsigned int)us);
-      if ( 1 < (us/1000) )
-                msleep(1);
-      else
-		msleep( (us/1000) + 1);
-}
-
-void rtw_mdelay_os(int ms)
-{
-	mdelay((unsigned long)ms);
-}
-
 #define RTW_SUSPEND_LOCK_NAME "rtw_wifi"
 
 #ifdef CONFIG_WAKELOCK

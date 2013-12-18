@@ -225,12 +225,6 @@ ODM_InitializeWorkItem(
 // ODM Timer relative API.
 //
 void
-ODM_sleep_ms(u32	ms);
-
-void
-ODM_sleep_us(u32	us);
-
-void
 ODM_SetTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer,

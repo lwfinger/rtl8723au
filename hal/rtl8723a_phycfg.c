@@ -1283,9 +1283,9 @@ PHY_CheckBBAndRFOK(
 			WriteData[i] &= 0xfff;
 			PHY_SetRFReg(Adapter, eRFPath, WriteAddr[HW90_BLOCK_RF], bRFRegOffsetMask, WriteData[i]);
 			// TODO: we should not delay for such a long time. Ask SD3
-			rtw_mdelay_os(10);
+			mdelay(10);
 			ulRegRead = PHY_QueryRFReg(Adapter, eRFPath, WriteAddr[HW90_BLOCK_RF], bMaskDWord);
-			rtw_mdelay_os(10);
+			mdelay(10);
 			//cosa PlatformReleaseSpinLock(Adapter, RT_INITIAL_SPINLOCK);
 			break;
 

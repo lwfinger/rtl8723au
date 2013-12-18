@@ -233,10 +233,6 @@ extern s32	rtw_get_time_interval_ms(u32 start, u32 end);
 
 extern void	rtw_sleep_schedulable(int ms);
 
-extern void	rtw_usleep_os(int us);
-
-extern void	rtw_mdelay_os(int ms);
-
 static inline unsigned char _cancel_timer_ex(_timer *ptimer)
 {
 	return del_timer_sync(ptimer);
