@@ -3740,7 +3740,8 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 		}
 	}
 	DBG_8723A("%s, set ro ch timer, duration=%d\n", __func__, duration);
-	_set_timer( &pcfg80211_wdinfo->remain_on_ch_timer, duration);
+	mod_timer(&pcfg80211_wdinfo->remain_on_ch_timer,
+		  jiffies + msecs_to_jiffies(duration));
 
 	rtw_cfg80211_ready_on_channel(padapter, *cookie, channel, channel_type, duration, GFP_KERNEL);
 
