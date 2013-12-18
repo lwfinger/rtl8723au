@@ -224,7 +224,7 @@ void ODM_InitializeWorkItem(
 //
 void ODM_SetTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer, u32 msDelay)
 {
-	_set_timer(pTimer,msDelay ); //ms
+	mod_timer(pTimer, jiffies + msecs_to_jiffies(msDelay)); //ms
 }
 
 void ODM_ReleaseTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer)
