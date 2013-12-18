@@ -138,69 +138,27 @@ inline s32 rtw_get_time_interval_ms(u32 start, u32 end)
 }
 
 
-void rtw_sleep_schedulable(int ms)
-{
-    u32 delta;
-
-    delta = (ms * HZ)/1000;//(ms)
-    if (delta == 0) {
-        delta = 1;// 1 ms
-    }
-    set_current_state(TASK_INTERRUPTIBLE);
-    if (schedule_timeout(delta) != 0) {
-        return ;
-    }
-    return;
-}
-
 #define RTW_SUSPEND_LOCK_NAME "rtw_wifi"
-
-#ifdef CONFIG_WAKELOCK
-static struct wake_lock rtw_suspend_lock;
-#endif
 
 inline void rtw_suspend_lock_init(void)
 {
-#ifdef CONFIG_WAKELOCK
-	wake_lock_init(&rtw_suspend_lock, WAKE_LOCK_SUSPEND, RTW_SUSPEND_LOCK_NAME);
-#endif
 }
 
 inline void rtw_suspend_lock_uninit(void)
 {
-#ifdef CONFIG_WAKELOCK
-	wake_lock_destroy(&rtw_suspend_lock);
-#endif
 }
 
 inline void rtw_lock_suspend(void)
 {
-#ifdef CONFIG_WAKELOCK
-	wake_lock(&rtw_suspend_lock);
-#endif
-
-#if  defined(CONFIG_WAKELOCK)
-	//DBG_8723A("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
-#endif
 }
 
 inline void rtw_unlock_suspend(void)
 {
-#ifdef CONFIG_WAKELOCK
-	wake_unlock(&rtw_suspend_lock);
-#endif
-
-#if  defined(CONFIG_WAKELOCK)
-	//DBG_8723A("####%s: suspend_lock_count:%d####\n", __FUNCTION__, rtw_suspend_lock.stat.count);
-#endif
 }
 
 #ifdef CONFIG_WOWLAN
 inline void rtw_lock_suspend_timeout(long timeout)
 {
-#ifdef CONFIG_WAKELOCK
-	wake_lock_timeout(&rtw_suspend_lock, timeout);
-#endif
 }
 #endif //CONFIG_WOWLAN
 

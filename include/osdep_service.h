@@ -231,8 +231,6 @@ extern u32	rtw_ms_to_systime(u32 ms);
 extern s32	rtw_get_passing_time_ms(u32 start);
 extern s32	rtw_get_time_interval_ms(u32 start, u32 end);
 
-extern void	rtw_sleep_schedulable(int ms);
-
 static inline unsigned char _cancel_timer_ex(_timer *ptimer)
 {
 	return del_timer_sync(ptimer);
@@ -332,11 +330,6 @@ static inline u32 bitshift(u32 bitmask)
 // limitation of path length
 #define PATH_LENGTH_MAX PATH_MAX
 
-// Suspend lock prevent system from going suspend
-#ifdef CONFIG_WAKELOCK
-#include <linux/wakelock.h>
-#endif
-
 extern void rtw_suspend_lock_init(void);
 extern void rtw_suspend_lock_uninit(void);
 extern void rtw_lock_suspend(void);
@@ -349,15 +342,6 @@ extern void rtw_lock_suspend_timeout(long timeout);
 extern int rtw_is_file_readable(char *path);
 extern int rtw_retrive_from_file(char *path, u8* buf, u32 sz);
 extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
-
-
-/*
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
-	pnetdev = alloc_etherdev_mq(sizeof(struct rtw_netdev_priv_indicator), 4);
-#else
-	pnetdev = alloc_etherdev(sizeof(struct rtw_netdev_priv_indicator));
-#endif
-*/
 
 #define NDEV_FMT "%s"
 #define NDEV_ARG(ndev) ndev->name
