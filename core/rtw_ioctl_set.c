@@ -110,20 +110,15 @@ _func_enter_;
 		}
 
 		goto exit;
-	}
-	else
-	{
+	} else {
 		int select_ret;
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
-		if((select_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv))==_SUCCESS)
-		{
+		if((select_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv))==_SUCCESS) {
 			pmlmepriv->to_join = false;
-			_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
-		}
-		else
-		{
-			if(check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)==true)
-			{
+			mod_timer(&pmlmepriv->assoc_timer,
+				  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
+		} else {
+			if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) {
 				/*  submit createbss_cmd to change to a ADHOC_MASTER */
 
 				/* pmlmepriv->lock has been acquired by caller... */
