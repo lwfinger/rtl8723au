@@ -9345,12 +9345,13 @@ void linked_status_chk(struct rtw_adapter *padapter)
 	}
 }
 
-void survey_timer_hdl(struct rtw_adapter *padapter)
+void survey_timer_hdl(unsigned long data)
 {
-	struct cmd_obj	*ph2c;
-	struct sitesurvey_parm	*psurveyPara;
-	struct cmd_priv					*pcmdpriv=&padapter->cmdpriv;
-	struct mlme_ext_priv		*pmlmeext = &padapter->mlmeextpriv;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
+	struct cmd_obj *ph2c;
+	struct sitesurvey_parm *psurveyPara;
+	struct cmd_priv *pcmdpriv=&padapter->cmdpriv;
+	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 #ifdef CONFIG_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 #endif

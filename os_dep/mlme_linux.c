@@ -182,13 +182,6 @@ _func_exit_;
 
 }
 
-static void _survey_timer_hdl (void *FunctionContext)
-{
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
-
-	survey_timer_hdl(padapter);
-}
-
 static void _link_timer_hdl (void *FunctionContext)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
@@ -205,7 +198,9 @@ void init_mlme_ext_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
-	_init_timer(&pmlmeext->survey_timer, padapter->pnetdev, _survey_timer_hdl, padapter);
+	setup_timer(&pmlmeext->survey_timer, survey_timer_hdl,
+		    (unsigned long)padapter);
+
 	_init_timer(&pmlmeext->link_timer, padapter->pnetdev, _link_timer_hdl, padapter);
 }
 
