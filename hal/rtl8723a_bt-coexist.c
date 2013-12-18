@@ -114,9 +114,6 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define PlatformAcquireSpinLock(padapter, type)
 #define PlatformReleaseSpinLock(padapter, type)
 
-// timer
-#define PlatformSetTimer(a, ptimer, delay)	_set_timer(ptimer, delay)
-
 #define GET_UNDECORATED_AVERAGE_RSSI(padapter)	\
 			(GET_HAL_DATA(padapter)->dmpriv.EntryMinUndecoratedSmoothedPWDB)
 #define RT_RF_CHANGE_SOURCE u32
@@ -249,7 +246,8 @@ static void BTPKT_TimerCallbackBeacon(unsigned long data)
 	{
 		RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("btpkt_SendBeacon\n"));
 		btpkt_SendBeacon(GetDefaultAdapter(padapter));
-		PlatformSetTimer(padapter, &pBTinfo->BTBeaconTimer, 100);
+		mod_timer(&pBTinfo->BTBeaconTimer,
+			  jiffies + msecs_to_jiffies(100));
 	}
 	else
 	{
@@ -1021,7 +1019,8 @@ static u8 bthci_CheckRfStateBeforeConnect(struct rtw_adapter *padapter)
 
 	if (RfState != rf_on)
 	{
-		PlatformSetTimer(padapter, &pBTInfo->BTPsDisableTimer, 50);
+		mod_timer(&pBTInfo->BTPsDisableTimer,
+			  jiffies + msecs_to_jiffies(50));
 		return false;
 	}
 
@@ -3797,7 +3796,8 @@ bthci_CmdDisconnectLogicalLink(
 	}
 
 	if (LogLinkCount == 0)
-		PlatformSetTimer(padapter, &pBTinfo->BTDisconnectPhyLinkTimer, 100);
+		mod_timer(&pBTinfo->BTDisconnectPhyLinkTimer,
+			  jiffies + msecs_to_jiffies(100));
 
 	return status;
 }
@@ -4798,7 +4798,8 @@ bthci_CmdAMPTestCommand(struct rtw_adapter *padapter,
 			When in a transmitter test scenario and the frames/bursts count have been
 			transmitted the HCI_AMP_Test_End event shall be sent.
 		*/
-		PlatformSetTimer(padapter, &pBTInfo->BTTestSendPacketTimer, 50);
+		mod_timer(&pBTInfo->BTTestSendPacketTimer,
+			  jiffies + msecs_to_jiffies(50));
 		RTPRINT(FIOCTL, (IOCTL_BT_EVENT|IOCTL_BT_LOGO), ("TX Single Test \n"));
 	}
 	else if (pBtHciInfo->TestScenario == 0x02)
@@ -5661,7 +5662,8 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 			if (!pBtMgnt->BtOperationOn)
 			{
 #if (SENDTXMEHTOD == 0)
-				PlatformSetTimer(padapter, &pBTInfo->BTHCISendAclDataTimer, 1);
+				mod_timer(&pBTInfo->BTHCISendAclDataTimer,
+					  jiffies + msecs_to_jiffies(1));
 #endif
 #if (RTS_CTS_NO_LEN_LIMIT == 1)
 				rtw_write32(padapter, 0x4c8, 0xc140400);
@@ -5699,7 +5701,8 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 			// 2. MAC already in selected channel
 			{
 				RTPRINT(FIOCTL, IOCTL_STATE, ("Channel is Ready\n"));
-				PlatformSetTimer(padapter, &pBTInfo->BTHCIJoinTimeoutTimer, pBtHciInfo->ConnAcceptTimeout);
+				mod_timer(&pBTInfo->BTHCIJoinTimeoutTimer,
+					  jiffies + msecs_to_jiffies(pBtHciInfo->ConnAcceptTimeout));
 
 				pBTInfo->BtAsocEntry[EntryNum].bNeedPhysLinkCompleteEvent = true;
 			}
@@ -5866,7 +5869,8 @@ static void bthci_TimerCallbackSendTestPacket(unsigned long data)
 	}
 
 //	BTPKT_SendTestPacket(padapter); // not porting yet
-	PlatformSetTimer(padapter, &pBTInfo->BTTestSendPacketTimer, 50);
+	mod_timer(&pBTInfo->BTTestSendPacketTimer,
+		  jiffies + msecs_to_jiffies(50));
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackSendTestPacket() <==\n"));
 }
 
