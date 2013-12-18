@@ -1350,8 +1350,6 @@ exit:
 	return ret;
 }
 
-extern int netdev_open(struct net_device *pnetdev);
-
 static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 				     struct net_device *ndev,
 				     enum nl80211_iftype type, u32 *flags,

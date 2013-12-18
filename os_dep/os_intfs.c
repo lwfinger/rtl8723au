@@ -252,11 +252,6 @@ MODULE_PARM_DESC(rtw_notch_filter, "0:Disable, 1:Enable, 2:Enable only for P2P")
 module_param_named(debug, rtw_debug, int, 0444);
 MODULE_PARM_DESC(debug, "Set debug level (1-9) (default 1)");
 
-static uint loadparam(struct rtw_adapter *padapter, struct net_device * pnetdev);
-int _netdev_open(struct net_device *pnetdev);
-int netdev_open (struct net_device *pnetdev);
-static int netdev_close (struct net_device *pnetdev);
-
 #ifdef CONFIG_PROC_DEBUG
 #define RTL8192C_PROC_NAME "rtl819xC"
 #define RTL8192D_PROC_NAME "rtl819xD"
@@ -265,6 +260,8 @@ static struct proc_dir_entry *rtw_proc = NULL;
 static int	rtw_proc_cnt = 0;
 
 #define RTW_PROC_NAME DRV_NAME
+
+static int netdev_close(struct net_device *pnetdev);
 
 #ifndef create_proc_entry
 /* dummy routines */
@@ -939,8 +936,6 @@ int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
 	}
 
 	netif_carrier_off(pnetdev);
-	//rtw_netif_stop_queue(pnetdev);
-
 	return 0;
 }
 
@@ -981,9 +976,7 @@ struct net_device *rtw_init_netdev(struct rtw_adapter *old_padapter)
 
 	//step 2.
 	loadparam(padapter, pnetdev);
-
 	return pnetdev;
-
 }
 
 u32 rtw_start_drv_threads(struct rtw_adapter *padapter)
@@ -1057,7 +1050,6 @@ void rtw_stop_drv_threads (struct rtw_adapter *padapter)
 	rtw_hal_stop_thread(padapter);
 }
 
-u8 rtw_init_default_value(struct rtw_adapter *padapter);
 u8 rtw_init_default_value(struct rtw_adapter *padapter)
 {
 	u8 ret  = _SUCCESS;
@@ -1742,15 +1734,6 @@ static int netdev_close(struct net_device *pnetdev)
 	}
 	padapter->net_closed = true;
 
-/*	if(!padapter->hw_init_completed)
-	{
-		DBG_8723A("(1)871x_drv - drv_close, bup=%d, hw_init_completed=%d\n", padapter->bup, padapter->hw_init_completed);
-
-		padapter->bDriverStopped = true;
-
-		rtw_dev_unload(padapter);
-	}
-	else*/
 	if(padapter->pwrctrlpriv.rf_pwrstate == rf_on){
 		DBG_8723A("(2)871x_drv - drv_close, bup=%d, hw_init_completed=%d\n", padapter->bup, padapter->hw_init_completed);
 
@@ -1775,11 +1758,7 @@ static int netdev_close(struct net_device *pnetdev)
 	}
 
 #ifdef CONFIG_BR_EXT
-	//if (OPMODE & (WIFI_STATION_STATE | WIFI_ADHOC_STATE))
-	{
-		//void nat25_db_cleanup(struct rtw_adapter *priv);
-		nat25_db_cleanup(padapter);
-	}
+	nat25_db_cleanup(padapter);
 #endif	// CONFIG_BR_EXT
 
 #ifdef CONFIG_P2P
@@ -1796,7 +1775,6 @@ static int netdev_close(struct net_device *pnetdev)
 	DBG_8723A("-871x_drv - drv_close, bup=%d\n", padapter->bup);
 
 	return 0;
-
 }
 
 void rtw_ndev_destructor(struct net_device *ndev)

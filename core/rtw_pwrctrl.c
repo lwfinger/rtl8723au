@@ -112,8 +112,8 @@ int ips_leave(struct rtw_adapter * padapter)
 #endif
 
 #ifdef CONFIG_AUTOSUSPEND
-extern void autosuspend_enter(struct rtw_adapter* padapter);
-extern int autoresume_enter(struct rtw_adapter* padapter);
+void autosuspend_enter(struct rtw_adapter* padapter);
+int autoresume_enter(struct rtw_adapter* padapter);
 #endif
 
 #ifdef SUPPORT_HW_RFOFF_DETECTED
@@ -1268,7 +1268,7 @@ _func_exit_;
 }
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
-extern int rtw_resume_process(struct rtw_adapter *padapter);
+int rtw_resume_process(struct rtw_adapter *padapter);
 static void resume_workitem_callback(struct work_struct *work)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(work, struct pwrctrl_priv, resume_work);

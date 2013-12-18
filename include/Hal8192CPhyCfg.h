@@ -256,12 +256,6 @@ int	rtl8192c_PHY_CheckBBAndRFOK(struct rtw_adapter *Adapter,
 void	rtl8192c_PHY_GetHWRegOriginalValue(struct rtw_adapter *Adapter);
 
 //
-// RF Power setting
-//
-//extern	bool	PHY_SetRFPowerState(struct rtw_adapter *Adapter,
-//									RT_RF_POWER_STATE	eRFPowerState);
-
-//
 // BB TX Power R/W
 //
 void	PHY_GetTxPowerLevel8192C(struct rtw_adapter *Adapter, u32 *powerlevel);
@@ -275,27 +269,18 @@ PHY_ScanOperationBackup8192C(struct rtw_adapter	*Adapter, u8 Operation);
 //
 // Switch bandwidth for 8192S
 //
-//extern	void	PHY_SetBWModeCallback8192C(	PRT_TIMER		pTimer	);
 void	PHY_SetBWMode8192C(struct rtw_adapter *pAdapter,
 			   HT_CHANNEL_WIDTH ChnlWidth,
 			   unsigned char Offset);
 
 //
-// Set FW CMD IO for 8192S.
-//
-//extern	bool HalSetIO8192C(struct rtw_adapter *Adapter,
-//									IO_TYPE				IOType);
-
-//
 // Set A2 entry to fw for 8192S
 //
-extern	void FillA2Entry8192C(struct rtw_adapter *Adapter, u8 index, u8 *val);
-
+void FillA2Entry8192C(struct rtw_adapter *Adapter, u8 index, u8 *val);
 
 //
 // channel switch related funciton
 //
-//extern	void	PHY_SwChnlCallback8192C(	PRT_TIMER		pTimer	);
 void	PHY_SwChnl8192C(struct rtw_adapter *pAdapter, u8 channel);
 				// Call after initialization
 void	PHY_SwChnlPhy8192C(struct rtw_adapter *pAdapter, u8 channel);
@@ -319,17 +304,15 @@ void
 rtl8192c_PHY_SetBeaconHwReg(struct rtw_adapter *Adapter, u16 BeaconInterval);
 
 
-extern	void
-PHY_SwitchEphyParameter(struct rtw_adapter *Adapter);
+void PHY_SwitchEphyParameter(struct rtw_adapter *Adapter);
 
-extern	void
-PHY_EnableHostClkReq(struct rtw_adapter *Adapter);
+void PHY_EnableHostClkReq(struct rtw_adapter *Adapter);
 
 bool
 SetAntennaConfig92C(struct rtw_adapter *Adapter, u8 DefaultAnt);
 
 #ifdef RTL8192C_RECONFIG_TO_1T1R
-extern void	PHY_Reconfig_To_1T1R(struct rtw_adapter *padapter);
+void	PHY_Reconfig_To_1T1R(struct rtw_adapter *padapter);
 #endif
 /*--------------------------Exported Function prototype---------------------*/
 

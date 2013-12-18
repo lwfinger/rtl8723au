@@ -197,6 +197,6 @@ DeInitLed871x(
 	);
 
 //hal...
-extern void BlinkHandler(PLED_871x	 pLed);
+void BlinkHandler(PLED_871x	 pLed);
 
 #endif //__RTW_LED_H_

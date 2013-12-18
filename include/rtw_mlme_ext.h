@@ -504,9 +504,9 @@ struct mlme_ext_priv
 int init_mlme_ext_priv(struct rtw_adapter* padapter);
 int init_hw_mlme_ext(struct rtw_adapter *padapter);
 void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
-extern void init_mlme_ext_timer(struct rtw_adapter *padapter);
-extern void init_addba_retry_timer(struct rtw_adapter *padapter, struct sta_info *psta);
-extern struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
+void init_mlme_ext_timer(struct rtw_adapter *padapter);
+void init_addba_retry_timer(struct rtw_adapter *padapter, struct sta_info *psta);
+struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
 struct xmit_frame *alloc_mgtxmitframe_once(struct xmit_priv *pxmitpriv);
 
 //void fill_fwpriv(struct rtw_adapter * padapter, struct fw_priv *pfwpriv);
@@ -612,7 +612,7 @@ void report_del_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, 
 void report_add_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, int cam_idx);
 
 void beacon_timing_control(struct rtw_adapter *padapter);
-extern u8 set_tx_beacon_cmd(struct rtw_adapter*padapter);
+u8 set_tx_beacon_cmd(struct rtw_adapter*padapter);
 unsigned int setup_beacon_frame(struct rtw_adapter *padapter, unsigned char *beacon_frame);
 void update_mgnt_tx_rate(struct rtw_adapter *padapter, u8 rate);
 void update_mgntframe_attrib(struct rtw_adapter *padapter, struct pkt_attrib *pattrib);
@@ -697,13 +697,13 @@ void addba_timer_hdl(struct sta_info *psta);
 		_set_timer(&(mlmeext)->link_timer, (ms)); \
 	} while(0)
 
-extern int cckrates_included(unsigned char *rate, int ratelen);
-extern int cckratesonly_included(unsigned char *rate, int ratelen);
+int cckrates_included(unsigned char *rate, int ratelen);
+int cckratesonly_included(unsigned char *rate, int ratelen);
 
-extern void process_addba_req(struct rtw_adapter *padapter, u8 *paddba_req, u8 *addr);
+void process_addba_req(struct rtw_adapter *padapter, u8 *paddba_req, u8 *addr);
 
-extern void update_TSF(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len);
-extern void correct_TSF(struct rtw_adapter *padapter, struct mlme_ext_priv *pmlmeext);
+void update_TSF(struct mlme_ext_priv *pmlmeext, u8 *pframe, uint len);
+void correct_TSF(struct rtw_adapter *padapter, struct mlme_ext_priv *pmlmeext);
 
 struct cmd_hdl {
 	uint	parmsize;

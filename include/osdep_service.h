@@ -190,16 +190,16 @@ static inline void rtw_netif_stop_queue(struct net_device *pnetdev)
 #define BIT35	0x0800000000
 #define BIT36	0x1000000000
 
-extern int RTW_STATUS_CODE(int error_code);
+int RTW_STATUS_CODE(int error_code);
 
 #define CONFIG_USE_VMALLOC
 
-extern u8*	_rtw_vmalloc(u32 sz);
-extern u8*	_rtw_zvmalloc(u32 sz);
-extern void	_rtw_vmfree(u8 *pbuf, u32 sz);
-extern u8*	_rtw_zmalloc(u32 sz);
-extern u8*	_rtw_malloc(u32 sz);
-extern void	_rtw_mfree(u8 *pbuf, u32 sz);
+u8*	_rtw_vmalloc(u32 sz);
+u8*	_rtw_zvmalloc(u32 sz);
+void	_rtw_vmfree(u8 *pbuf, u32 sz);
+u8*	_rtw_zmalloc(u32 sz);
+u8*	_rtw_malloc(u32 sz);
+void	_rtw_mfree(u8 *pbuf, u32 sz);
 #ifdef CONFIG_USE_VMALLOC
 #define rtw_vmalloc(sz)			_rtw_vmalloc((sz))
 #define rtw_zvmalloc(sz)			_rtw_zvmalloc((sz))
@@ -222,14 +222,14 @@ extern unsigned char RSN_TKIP_CIPHER[4];
 extern unsigned char	MCS_rate_2R[16];
 extern unsigned char	MCS_rate_1R[16];
 
-extern void	_rtw_init_queue(_queue	*pqueue);
-extern u32	_rtw_queue_empty(_queue	*pqueue);
+void	_rtw_init_queue(_queue	*pqueue);
+u32	_rtw_queue_empty(_queue	*pqueue);
 
-extern u32	rtw_get_current_time(void);
-extern u32	rtw_systime_to_ms(u32 systime);
-extern u32	rtw_ms_to_systime(u32 ms);
-extern s32	rtw_get_passing_time_ms(u32 start);
-extern s32	rtw_get_time_interval_ms(u32 start, u32 end);
+u32	rtw_get_current_time(void);
+u32	rtw_systime_to_ms(u32 systime);
+u32	rtw_ms_to_systime(u32 ms);
+s32	rtw_get_passing_time_ms(u32 start);
+s32	rtw_get_time_interval_ms(u32 start, u32 end);
 
 static inline unsigned char _cancel_timer_ex(_timer *ptimer)
 {
@@ -330,18 +330,18 @@ static inline u32 bitshift(u32 bitmask)
 // limitation of path length
 #define PATH_LENGTH_MAX PATH_MAX
 
-extern void rtw_suspend_lock_init(void);
-extern void rtw_suspend_lock_uninit(void);
-extern void rtw_lock_suspend(void);
-extern void rtw_unlock_suspend(void);
+void rtw_suspend_lock_init(void);
+void rtw_suspend_lock_uninit(void);
+void rtw_lock_suspend(void);
+void rtw_unlock_suspend(void);
 #ifdef CONFIG_WOWLAN
-extern void rtw_lock_suspend_timeout(long timeout);
+void rtw_lock_suspend_timeout(long timeout);
 #endif //CONFIG_WOWLAN
 
 //File operation APIs, just for linux now
-extern int rtw_is_file_readable(char *path);
-extern int rtw_retrive_from_file(char *path, u8* buf, u32 sz);
-extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
+int rtw_is_file_readable(char *path);
+int rtw_retrive_from_file(char *path, u8* buf, u32 sz);
+int rtw_store_to_file(char *path, u8* buf, u32 sz);
 
 #define NDEV_FMT "%s"
 #define NDEV_ARG(ndev) ndev->name
@@ -354,8 +354,8 @@ extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
 
 #define rtw_signal_process(pid, sig) kill_pid(find_vpid((pid)),(sig), 1)
 
-extern u64 rtw_modular64(u64 x, u64 y);
-extern u64 rtw_division64(u64 x, u64 y);
+u64 rtw_modular64(u64 x, u64 y);
+u64 rtw_division64(u64 x, u64 y);
 
 
 /* Macros for handling unaligned memory accesses */

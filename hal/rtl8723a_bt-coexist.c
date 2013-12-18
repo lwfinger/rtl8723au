@@ -19,7 +19,7 @@
  ******************************************************************************/
 #include <drv_types.h>
 #include <rtl8723a_hal.h>
-
+#include <rtw_ioctl_set.h>
 
 #ifdef bEnable
 #undef bEnable
@@ -6876,8 +6876,6 @@ static const char *const BtStateString[] =
 	"BT_ACL_INQ_OR_PAG",
 	"BT_STATE_NOT_DEFINED"
 };
-
-extern s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
 // ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.c =====
 

@@ -257,25 +257,25 @@ struct pwrctrl_priv
 #define rtw_set_pwr_state_check_timer(pwrctrlpriv) \
 	_rtw_set_pwr_state_check_timer((pwrctrlpriv), (pwrctrlpriv)->pwr_state_check_interval)
 
-extern void rtw_init_pwrctrl_priv(struct rtw_adapter *adapter);
-extern void rtw_free_pwrctrl_priv(struct rtw_adapter * adapter);
+void rtw_init_pwrctrl_priv(struct rtw_adapter *adapter);
+void rtw_free_pwrctrl_priv(struct rtw_adapter * adapter);
 
 #ifdef CONFIG_LPS_LCLK
-extern s32 rtw_register_tx_alive(struct rtw_adapter * padapter);
-extern void rtw_unregister_tx_alive(struct rtw_adapter * padapter);
-extern s32 rtw_register_rx_alive(struct rtw_adapter * padapter);
-extern void rtw_unregister_rx_alive(struct rtw_adapter * padapter);
-extern s32 rtw_register_cmd_alive(struct rtw_adapter * padapter);
-extern void rtw_unregister_cmd_alive(struct rtw_adapter * padapter);
-extern s32 rtw_register_evt_alive(struct rtw_adapter * padapter);
-extern void rtw_unregister_evt_alive(struct rtw_adapter * padapter);
-extern void cpwm_int_hdl(struct rtw_adapter * padapter, struct reportpwrstate_parm *preportpwrstate);
-extern void LPS_Leave_check(struct rtw_adapter * padapter);
+s32 rtw_register_tx_alive(struct rtw_adapter * padapter);
+void rtw_unregister_tx_alive(struct rtw_adapter * padapter);
+s32 rtw_register_rx_alive(struct rtw_adapter * padapter);
+void rtw_unregister_rx_alive(struct rtw_adapter * padapter);
+s32 rtw_register_cmd_alive(struct rtw_adapter * padapter);
+void rtw_unregister_cmd_alive(struct rtw_adapter * padapter);
+s32 rtw_register_evt_alive(struct rtw_adapter * padapter);
+void rtw_unregister_evt_alive(struct rtw_adapter * padapter);
+void cpwm_int_hdl(struct rtw_adapter * padapter, struct reportpwrstate_parm *preportpwrstate);
+void LPS_Leave_check(struct rtw_adapter * padapter);
 #endif
 
-extern void rtw_set_ps_mode(struct rtw_adapter * padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode);
-extern void rtw_set_rpwm(struct rtw_adapter * padapter, u8 val8);
-extern void LeaveAllPowerSaveMode(struct rtw_adapter * Adapter);
+void rtw_set_ps_mode(struct rtw_adapter * padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode);
+void rtw_set_rpwm(struct rtw_adapter * padapter, u8 val8);
+void LeaveAllPowerSaveMode(struct rtw_adapter * Adapter);
 #ifdef CONFIG_IPS
 void ips_enter(struct rtw_adapter * padapter);
 int ips_leave(struct rtw_adapter * padapter);

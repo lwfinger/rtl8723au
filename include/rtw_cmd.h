@@ -124,25 +124,25 @@ struct c2h_evt_hdr {
 
 #define c2h_evt_exist(c2h_evt) ((c2h_evt)->id || (c2h_evt)->plen)
 
-extern u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *obj);
-extern struct cmd_obj *rtw_dequeue_cmd(struct cmd_priv *pcmdpriv);
-extern void rtw_free_cmd_obj(struct cmd_obj *pcmd);
+u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *obj);
+struct cmd_obj *rtw_dequeue_cmd(struct cmd_priv *pcmdpriv);
+void rtw_free_cmd_obj(struct cmd_obj *pcmd);
 
 #ifdef CONFIG_EVENT_THREAD_MODE
-extern u32 rtw_enqueue_evt(struct evt_priv *pevtpriv, struct evt_obj *obj);
-extern struct evt_obj *rtw_dequeue_evt(_queue *queue);
-extern void rtw_free_evt_obj(struct evt_obj *pcmd);
+u32 rtw_enqueue_evt(struct evt_priv *pevtpriv, struct evt_obj *obj);
+struct evt_obj *rtw_dequeue_evt(_queue *queue);
+void rtw_free_evt_obj(struct evt_obj *pcmd);
 #endif
 
 int rtw_cmd_thread(void *context);
 
-extern u32 rtw_init_cmd_priv (struct cmd_priv *pcmdpriv);
-extern void rtw_free_cmd_priv (struct cmd_priv *pcmdpriv);
+u32 rtw_init_cmd_priv (struct cmd_priv *pcmdpriv);
+void rtw_free_cmd_priv (struct cmd_priv *pcmdpriv);
 
-extern u32 rtw_init_evt_priv (struct evt_priv *pevtpriv);
-extern void rtw_free_evt_priv (struct evt_priv *pevtpriv);
-extern void rtw_cmd_clr_isr(struct cmd_priv *pcmdpriv);
-extern void rtw_evt_notify_isr(struct evt_priv *pevtpriv);
+u32 rtw_init_evt_priv (struct evt_priv *pevtpriv);
+void rtw_free_evt_priv (struct evt_priv *pevtpriv);
+void rtw_cmd_clr_isr(struct cmd_priv *pcmdpriv);
+void rtw_evt_notify_isr(struct evt_priv *pevtpriv);
 #ifdef CONFIG_P2P
 u8 p2p_protocol_wk_cmd(struct rtw_adapter*padapter, int intCmdType );
 #endif //CONFIG_P2P
@@ -886,7 +886,7 @@ u8 rtw_rpt_timer_cfg_cmd(struct rtw_adapter*padapter, u16 minRptTime);
 u8 rtw_antenna_select_cmd(struct rtw_adapter*padapter, u8 antenna,u8 enqueue);
 #endif
 
-extern u8 rtw_ps_cmd(struct rtw_adapter*padapter);
+u8 rtw_ps_cmd(struct rtw_adapter*padapter);
 
 #ifdef CONFIG_AP_MODE
 u8 rtw_chk_hi_queue_cmd(struct rtw_adapter*padapter);
