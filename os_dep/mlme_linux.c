@@ -201,30 +201,12 @@ void init_addba_retry_timer(struct sta_info *psta)
 		    (unsigned long)psta);
 }
 
-/*
-void _reauth_timer_hdl(void *FunctionContext)
-{
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
-	reauth_timer_hdl(padapter);
-}
-
-void _reassoc_timer_hdl(void *FunctionContext)
-{
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
-	reassoc_timer_hdl(padapter);
-}
-*/
-
 void init_mlme_ext_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
 	_init_timer(&pmlmeext->survey_timer, padapter->pnetdev, _survey_timer_hdl, padapter);
 	_init_timer(&pmlmeext->link_timer, padapter->pnetdev, _link_timer_hdl, padapter);
-	//_init_timer(&pmlmeext->ADDBA_timer, padapter->pnetdev, _addba_timer_hdl, padapter);
-
-	//_init_timer(&pmlmeext->reauth_timer, padapter->pnetdev, _reauth_timer_hdl, padapter);
-	//_init_timer(&pmlmeext->reassoc_timer, padapter->pnetdev, _reassoc_timer_hdl, padapter);
 }
 
 #ifdef CONFIG_AP_MODE

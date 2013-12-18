@@ -682,8 +682,6 @@ void linked_status_chk(struct rtw_adapter *padapter);
 void survey_timer_hdl (struct rtw_adapter *padapter);
 void link_timer_hdl (struct rtw_adapter *padapter);
 void addba_timer_hdl(unsigned long data);
-//void reauth_timer_hdl(struct rtw_adapter *padapter);
-//void reassoc_timer_hdl(struct rtw_adapter *padapter);
 
 #define set_survey_timer(mlmeext, ms) \
 	do { \
