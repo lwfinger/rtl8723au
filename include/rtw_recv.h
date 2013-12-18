@@ -284,7 +284,7 @@ struct recv_priv
 };
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-#define rtw_set_signal_stat_timer(recvpriv) _set_timer(&(recvpriv)->signal_stat_timer, (recvpriv)->signal_stat_sampling_interval)
+#define rtw_set_signal_stat_timer(recvpriv) mod_timer(&(recvpriv)->signal_stat_timer, jiffies + msecs_to_jiffies((recvpriv)->signal_stat_sampling_interval))
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 struct sta_recv_priv {

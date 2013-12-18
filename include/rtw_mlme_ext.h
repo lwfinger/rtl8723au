@@ -682,13 +682,13 @@ void linked_status_chk(struct rtw_adapter *padapter);
 #define set_survey_timer(mlmeext, ms) \
 	do { \
 		/*DBG_8723A("%s set_survey_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
-		_set_timer(&(mlmeext)->survey_timer, (ms)); \
+		mod_timer(&mlmeext->survey_timer, jiffies + msecs_to_jiffies(ms)); \
 	} while(0)
 
 #define set_link_timer(mlmeext, ms) \
 	do { \
 		/*DBG_8723A("%s set_link_timer(%p, %d)\n", __FUNCTION__, (mlmeext), (ms));*/ \
-		_set_timer(&(mlmeext)->link_timer, (ms)); \
+		mod_timer(&mlmeext->link_timer, jiffies +msecs_to_jiffies(ms)); \
 	} while(0)
 
 int cckrates_included(unsigned char *rate, int ratelen);

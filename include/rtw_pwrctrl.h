@@ -251,7 +251,7 @@ struct pwrctrl_priv
 #define _rtw_set_pwr_state_check_timer(pwrctrlpriv, ms) \
 	do { \
 		/*DBG_8723A("%s _rtw_set_pwr_state_check_timer(%p, %d)\n", __FUNCTION__, (pwrctrlpriv), (ms));*/ \
-		_set_timer(&(pwrctrlpriv)->pwr_state_check_timer, (ms)); \
+		mod_timer(&pwrctrlpriv->pwr_state_check_timer, jiffies + msecs_to_jiffies(ms)); \
 	} while(0)
 
 #define rtw_set_pwr_state_check_timer(pwrctrlpriv) \
