@@ -341,16 +341,9 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 }
 
-void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
-{
-	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
-	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
-}
-
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 {
-	struct rtw_adapter *padapter = preorder_ctrl->padapter;
-
-	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
-
+	setup_timer(&preorder_ctrl->reordering_ctrl_timer,
+		    rtw_reordering_ctrl_timeout_handler,
+		    (unsigned long)preorder_ctrl);
 }

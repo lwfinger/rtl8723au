@@ -2485,7 +2485,7 @@ _err_exit:
 	return _FAIL;
 }
 
-void rtw_reordering_ctrl_timeout_handler(void *pcontext)
+void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext)
 {
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)pcontext;
 	struct rtw_adapter *padapter = preorder_ctrl->padapter;
