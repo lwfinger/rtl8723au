@@ -3185,12 +3185,12 @@ _func_enter_;
 _func_exit_;
 }
 
-static void ro_ch_timer_process (void *FunctionContext)
+static void ro_ch_timer_process (unsigned long data)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct rtw_wdev_priv *pwdev_priv = wdev_to_priv(adapter->rtw_wdev);
 
-	p2p_protocol_wk_cmd( adapter, P2P_RO_CH_WK);
+	p2p_protocol_wk_cmd(adapter, P2P_RO_CH_WK);
 }
 
 static void rtw_cfg80211_adjust_p2pie_channel(struct rtw_adapter *padapter, const u8 *frame_body, u32 len)
@@ -3508,9 +3508,10 @@ void rtw_init_cfg80211_wifidirect_info(struct rtw_adapter *padapter)
 {
 	struct cfg80211_wifidirect_info *pcfg80211_wdinfo = &padapter->cfg80211_wdinfo;
 
-	memset(pcfg80211_wdinfo, 0x00, sizeof(struct cfg80211_wifidirect_info) );
+	memset(pcfg80211_wdinfo, 0x00, sizeof(struct cfg80211_wifidirect_info));
 
-	_init_timer( &pcfg80211_wdinfo->remain_on_ch_timer, padapter->pnetdev, ro_ch_timer_process, padapter );
+	setup_timer(&pcfg80211_wdinfo->remain_on_ch_timer,
+		    ro_ch_timer_process, (unsigned long)padapter);
 }
 
 void p2p_protocol_wk_hdl(struct rtw_adapter *padapter, int intCmdType)
@@ -3764,12 +3765,12 @@ _func_exit_;
 }
 #endif /*  CONFIG_P2P_PS */
 
-static void reset_ch_sitesurvey_timer_process (void *FunctionContext)
+static void reset_ch_sitesurvey_timer_process(unsigned long data)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
+	struct  wifidirect_info *pwdinfo = &adapter->wdinfo;
 
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
+	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
 	DBG_8723A( "[%s] In\n", __FUNCTION__ );
@@ -3778,12 +3779,12 @@ static void reset_ch_sitesurvey_timer_process (void *FunctionContext)
 	pwdinfo->rx_invitereq_info.scan_op_ch_only = 0;
 }
 
-static void reset_ch_sitesurvey_timer_process2 (void *FunctionContext)
+static void reset_ch_sitesurvey_timer_process2(unsigned long data)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
+	struct wifidirect_info *pwdinfo = &adapter->wdinfo;
 
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
+	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
 	DBG_8723A( "[%s] In\n", __FUNCTION__ );
@@ -3792,9 +3793,9 @@ static void reset_ch_sitesurvey_timer_process2 (void *FunctionContext)
 	pwdinfo->p2p_info.scan_op_ch_only = 0;
 }
 
-static void restore_p2p_state_timer_process (void *FunctionContext)
+static void restore_p2p_state_timer_process (unsigned long data)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
@@ -3803,14 +3804,14 @@ static void restore_p2p_state_timer_process (void *FunctionContext)
 	p2p_protocol_wk_cmd( adapter, P2P_RESTORE_STATE_WK );
 }
 
-static void pre_tx_scan_timer_process (void *FunctionContext)
+static void pre_tx_scan_timer_process (unsigned long data)
 {
-	struct rtw_adapter							*adapter = (struct rtw_adapter *) FunctionContext;
-	struct	wifidirect_info				*pwdinfo = &adapter->wdinfo;
-	struct mlme_priv					*pmlmepriv = &adapter->mlmepriv;
-	u8								_status = 0;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
+	struct wifidirect_info *pwdinfo = &adapter->wdinfo;
+	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
+	u8 _status = 0;
 
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
+	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
 
 	spin_lock_bh(&pmlmepriv->lock);
@@ -3846,9 +3847,9 @@ static void pre_tx_scan_timer_process (void *FunctionContext)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-static void find_phase_timer_process (void *FunctionContext)
+static void find_phase_timer_process (unsigned long data)
 {
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct	wifidirect_info		*pwdinfo = &adapter->wdinfo;
 
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
@@ -3898,11 +3899,17 @@ void rtw_init_wifidirect_timers(struct rtw_adapter* padapter)
 {
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 
-	_init_timer( &pwdinfo->find_phase_timer, padapter->pnetdev, find_phase_timer_process, padapter );
-	_init_timer( &pwdinfo->restore_p2p_state_timer, padapter->pnetdev, restore_p2p_state_timer_process, padapter );
-	_init_timer( &pwdinfo->pre_tx_scan_timer, padapter->pnetdev, pre_tx_scan_timer_process, padapter );
-	_init_timer( &pwdinfo->reset_ch_sitesurvey, padapter->pnetdev, reset_ch_sitesurvey_timer_process, padapter );
-	_init_timer( &pwdinfo->reset_ch_sitesurvey2, padapter->pnetdev, reset_ch_sitesurvey_timer_process2, padapter );
+	setup_timer(&pwdinfo->find_phase_timer, find_phase_timer_process,
+		    (unsigned long)padapter);
+	setup_timer(&pwdinfo->restore_p2p_state_timer,
+		    restore_p2p_state_timer_process, (unsigned long)padapter);
+	setup_timer(&pwdinfo->pre_tx_scan_timer, pre_tx_scan_timer_process,
+		    (unsigned long)padapter);
+	setup_timer(&pwdinfo->reset_ch_sitesurvey,
+		    reset_ch_sitesurvey_timer_process, (unsigned long)padapter);
+	setup_timer(&pwdinfo->reset_ch_sitesurvey2,
+		    reset_ch_sitesurvey_timer_process2,
+		    (unsigned long)padapter);
 }
 
 void rtw_init_wifidirect_addrs(struct rtw_adapter* padapter, u8 *dev_addr, u8 *iface_addr)
@@ -4145,8 +4152,8 @@ int rtw_p2p_enable(struct rtw_adapter *padapter, enum P2P_ROLE role)
 			del_timer_sync(&pwdinfo->pre_tx_scan_timer);
 			del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
 			del_timer_sync(&pwdinfo->reset_ch_sitesurvey2);
-			reset_ch_sitesurvey_timer_process( padapter );
-			reset_ch_sitesurvey_timer_process2( padapter );
+			reset_ch_sitesurvey_timer_process((unsigned long)padapter);
+			reset_ch_sitesurvey_timer_process2((unsigned long)padapter);
 			rtw_p2p_set_state(pwdinfo, P2P_STATE_NONE);
 			rtw_p2p_set_role(pwdinfo, P2P_ROLE_DISABLE);
 			memset(&pwdinfo->rx_prov_disc_info, 0x00, sizeof(struct rx_provdisc_req_info));
