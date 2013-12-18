@@ -111,12 +111,6 @@ static inline void _set_timer(_timer *ptimer,u32 delay_time)
 	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
 }
 
-static inline void _cancel_timer(_timer *ptimer,u8 *bcancelled)
-{
-	del_timer_sync(ptimer);
-	*bcancelled=  true;
-}
-
 #define RTW_TIMER_HDL_ARGS void *FunctionContext
 
 #define RTW_TIMER_HDL_NAME(name) rtw_##name##_timer_hdl

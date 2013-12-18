@@ -118,12 +118,6 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define PlatformInitializeTimer(padapter, ptimer, pfunc, cntx, szID) \
 	_init_timer(ptimer, padapter->pnetdev, pfunc, padapter)
 #define PlatformSetTimer(a, ptimer, delay)	_set_timer(ptimer, delay)
-static u8 PlatformCancelTimer(struct rtw_adapter *a, _timer *ptimer)
-{
-	u8 bcancelled;
-	_cancel_timer(ptimer, &bcancelled);
-	return bcancelled;
-}
 #define PlatformReleaseTimer(...)
 
 #define GET_UNDECORATED_AVERAGE_RSSI(padapter)	\
@@ -1247,12 +1241,12 @@ bthci_RemoveEntryByEntryNum(
 
 	if (pBtMgnt->BtOperationOn == false)
 	{
-		PlatformCancelTimer(padapter, &pBTInfo->BTSupervisionPktTimer);
+		del_timer_sync(&pBTInfo->BTSupervisionPktTimer);
 #if (SENDTXMEHTOD == 0)
-		PlatformCancelTimer(padapter, &pBTInfo->BTHCISendAclDataTimer);
+		del_timer_sync(&pBTInfo->BTHCISendAclDataTimer);
 #endif
-		PlatformCancelTimer(padapter, &pBTInfo->BTHCIDiscardAclDataTimer);
-		PlatformCancelTimer(padapter, &pBTInfo->BTBeaconTimer);
+		del_timer_sync(&pBTInfo->BTHCIDiscardAclDataTimer);
+		del_timer_sync(&pBTInfo->BTBeaconTimer);
 		pBtMgnt->bStartSendSupervisionPkt = false;
 #if (RTS_CTS_NO_LEN_LIMIT == 1)
 		rtw_write32(padapter, 0x4c8, 0xc140402);
@@ -2231,12 +2225,12 @@ static HCI_STATUS bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEven
 
 	pBtMgnt->bCreateSpportQos=true;
 
-	PlatformCancelTimer(padapter, &pBTInfo->BTSupervisionPktTimer);
+	del_timer_sync(&pBTInfo->BTSupervisionPktTimer);
 #if (SENDTXMEHTOD == 0)
-	PlatformCancelTimer(padapter, &pBTInfo->BTHCISendAclDataTimer);
+	del_timer_sync(&pBTInfo->BTHCISendAclDataTimer);
 #endif
-	PlatformCancelTimer(padapter, &pBTInfo->BTHCIDiscardAclDataTimer);
-	PlatformCancelTimer(padapter, &pBTInfo->BTBeaconTimer);
+	del_timer_sync(&pBTInfo->BTHCIDiscardAclDataTimer);
+	del_timer_sync(&pBTInfo->BTBeaconTimer);
 
 	HALBT_SetRtsCtsNoLenLimit(padapter);
 	//
@@ -4701,7 +4695,7 @@ bthci_CmdAMPTestEnd(struct rtw_adapter *padapter,
 
 	pBtHciInfo->bTestIsEnd=true;
 
-	PlatformCancelTimer(padapter,&pBTInfo->BTTestSendPacketTimer);
+	del_timer_sync(&pBTInfo->BTTestSendPacketTimer);
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_CHECK_BSSID, (u8*)(&bFilterOutNonAssociatedBSSID));
 
@@ -5343,7 +5337,7 @@ bthci_StateStarting(struct rtw_adapter *padapter,
 			pBTInfo->BtAsocEntry[EntryNum].PhyLinkDisconnectReason,
 			EntryNum);
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			pBTInfo->BtAsocEntry[EntryNum].PhysLinkCompleteStatus=HCI_STATUS_UNKNOW_CONNECT_ID;
 
@@ -5412,7 +5406,7 @@ bthci_StateConnecting(struct rtw_adapter *padapter,
 
 			pBTInfo->BtAsocEntry[EntryNum].PhysLinkCompleteStatus=HCI_STATUS_UNKNOW_CONNECT_ID;
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			BTHCI_DisconnectPeer(padapter, EntryNum);
 
@@ -5476,7 +5470,7 @@ bthci_StateConnected(struct rtw_adapter *padapter,
 			pBTInfo->BtAsocEntry[EntryNum].PhyLinkDisconnectReason,
 			EntryNum);
 
-			PlatformCancelTimer(padapter, &pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			BTHCI_DisconnectPeer(padapter, EntryNum);
 			break;
@@ -5556,7 +5550,7 @@ bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
 
 			pBTInfo->BtAsocEntry[EntryNum].PhysLinkCompleteStatus=HCI_STATUS_UNKNOW_CONNECT_ID;
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			BTHCI_DisconnectPeer(padapter,EntryNum);
 			break;
@@ -5571,7 +5565,7 @@ bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
 
 			BTHCI_DisconnectPeer(padapter,EntryNum);
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 			break;
 		}
 
@@ -5581,7 +5575,7 @@ bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
 
 			bthci_EventPhysicalLinkComplete(padapter, HCI_STATUS_SUCCESS, EntryNum, INVALID_PL_HANDLE);
 
-			PlatformCancelTimer(padapter, &pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			BTHCI_SM_WITH_INFO(padapter, HCI_STATE_CONNECTED, STATE_CMD_ENTER_STATE, EntryNum);
 			break;
@@ -5632,7 +5626,7 @@ bthci_StateDisconnecting(struct rtw_adapter *padapter,
 			pBTInfo->BtAsocEntry[EntryNum].PhyLinkDisconnectReason,
 			EntryNum);
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			BTHCI_DisconnectPeer(padapter, EntryNum);
 			break;
@@ -5726,7 +5720,7 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 		{
 			RTPRINT(FIOCTL, IOCTL_STATE, ("STATE_CMD_DISCONNECT_PHY_LINK\n"));
 
-			PlatformCancelTimer(padapter,&pBTInfo->BTHCIJoinTimeoutTimer);
+			del_timer_sync(&pBTInfo->BTHCIJoinTimeoutTimer);
 
 			bthci_EventDisconnectPhyLinkComplete(padapter,
 			HCI_STATUS_SUCCESS,
@@ -6249,19 +6243,19 @@ static void BTHCI_CancelAllTimer(struct rtw_adapter *padapter)
 	// Note: don't cancel BTHCICmdTimer, if you cancel this timer, there will
 	// have posibility to cause irp not completed.
 #if (SENDTXMEHTOD == 0)
-	PlatformCancelTimer(padapter, &pBTinfo->BTHCISendAclDataTimer);
+	del_timer_sync(&pBTinfo->BTHCISendAclDataTimer);
 #endif
-	PlatformCancelTimer(padapter, &pBTinfo->BTHCIDiscardAclDataTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTHCIJoinTimeoutTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTTestSendPacketTimer);
+	del_timer_sync(&pBTinfo->BTHCIDiscardAclDataTimer);
+	del_timer_sync(&pBTinfo->BTHCIJoinTimeoutTimer);
+	del_timer_sync(&pBTinfo->BTTestSendPacketTimer);
 
-	PlatformCancelTimer(padapter, &pBTinfo->BTBeaconTimer);
-	PlatformCancelTimer(padapter, &pBtSec->BTWPAAuthTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTSupervisionPktTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTDisconnectPhyLinkTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTPsDisableTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTAuthTimeoutTimer);
-	PlatformCancelTimer(padapter, &pBTinfo->BTAsocTimeoutTimer);
+	del_timer_sync(&pBTinfo->BTBeaconTimer);
+	del_timer_sync(&pBtSec->BTWPAAuthTimer);
+	del_timer_sync(&pBTinfo->BTSupervisionPktTimer);
+	del_timer_sync(&pBTinfo->BTDisconnectPhyLinkTimer);
+	del_timer_sync(&pBTinfo->BTPsDisableTimer);
+	del_timer_sync(&pBTinfo->BTAuthTimeoutTimer);
+	del_timer_sync(&pBTinfo->BTAsocTimeoutTimer);
 }
 
 static void BTHCI_ReleaseAllTimer(struct rtw_adapter *padapter)

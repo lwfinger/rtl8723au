@@ -2592,7 +2592,6 @@ _func_exit_;
 
 void rtw_createbss_cmd_callback(struct rtw_adapter *padapter, struct cmd_obj *pcmd)
 {
-	u8 timer_cancelled;
 	struct sta_info *psta = NULL;
 	struct wlan_network *pwlan = NULL;
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -2607,7 +2606,7 @@ _func_enter_;
 		_set_timer(&pmlmepriv->assoc_timer, 1 );
 	}
 
-	_cancel_timer(&pmlmepriv->assoc_timer, &timer_cancelled);
+	del_timer_sync(&pmlmepriv->assoc_timer);
 
 #ifdef CONFIG_FW_MLMLE
        /* endian_convert */

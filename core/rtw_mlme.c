@@ -970,9 +970,7 @@ _func_enter_;
 
 	if (check_fwstate(pmlmepriv,_FW_UNDER_SURVEY))
 	{
-		u8 timer_cancelled;
-
-		_cancel_timer(&pmlmepriv->scan_to_timer, &timer_cancelled);
+		del_timer_sync(&pmlmepriv->scan_to_timer);
 
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
 	}
@@ -1498,7 +1496,6 @@ static void rtw_joinbss_update_network(struct rtw_adapter *padapter, struct wlan
 void rtw_joinbss_event_prehandle(struct rtw_adapter *adapter, u8 *pbuf)
 {
 	static u8 retry=0;
-	u8 timer_cancelled;
 	struct sta_info *ptarget_sta= NULL, *pcur_sta = NULL;
 	struct	sta_priv *pstapriv = &adapter->stapriv;
 	struct	mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
@@ -1603,18 +1600,16 @@ _func_enter_;
 			}
 
 			/* s4. indicate connect */
-				if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true)
-				{
-					rtw_indicate_connect(adapter);
-				}
-				else
-				{
+			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true)
+			{
+				rtw_indicate_connect(adapter);
+			} else {
 					/* adhoc mode will rtw_indicate_connect when rtw_stassoc_event_callback */
-					RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("adhoc mode, fw_state:%x", get_fwstate(pmlmepriv)));
-				}
+				RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("adhoc mode, fw_state:%x", get_fwstate(pmlmepriv)));
+			}
 
 			/* s5. Cancle assoc_timer */
-			_cancel_timer(&pmlmepriv->assoc_timer, &timer_cancelled);
+			del_timer_sync(&pmlmepriv->assoc_timer);
 
 			RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("Cancle assoc_timer \n"));
 
