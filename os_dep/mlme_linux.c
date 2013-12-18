@@ -27,30 +27,6 @@
 #include <mlme_osdep.h>
 #include <rtw_ioctl_set.h>
 
-void rtw_init_mlme_timer(struct rtw_adapter *padapter)
-{
-	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
-
-	setup_timer(&pmlmepriv->assoc_timer, rtw_join_timeout_handler,
-		    (unsigned long)padapter);
-
-	setup_timer(&pmlmepriv->scan_to_timer, rtw_scan_timeout_handler,
-		    (unsigned long)padapter);
-
-	setup_timer(&pmlmepriv->dynamic_chk_timer,
-		    rtw_dynamic_check_timer_handler, (unsigned long)padapter);
-
-#ifdef CONFIG_SET_SCAN_DENY_TIMER
-	setup_timer(&pmlmepriv->set_scan_deny_timer,
-		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
-#endif
-
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
-	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
-		padapter->HalFunc.hal_init_checkbthang_workqueue(padapter);
-#endif
-}
-
 void rtw_os_indicate_connect(struct rtw_adapter *adapter)
 {
 
