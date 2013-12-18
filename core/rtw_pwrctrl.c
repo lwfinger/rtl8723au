@@ -312,10 +312,9 @@ exit:
 	return;
 }
 
-void pwr_state_check_handler(void *FunctionContext);
-void pwr_state_check_handler(void *FunctionContext)
+static void pwr_state_check_handler(unsigned long data)
 {
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	rtw_ps_cmd(padapter);
 }
 
@@ -852,12 +851,12 @@ exit:
 /*
  * This function is a timer handler, can't do any IO in it.
  */
-static void pwr_rpwm_timeout_handler(void *FunctionContext)
+static void pwr_rpwm_timeout_handler(unsigned long data)
 {
-	PADAPTER padapter;
+	struct rtw_adapter *padapter;
 	struct pwrctrl_priv *pwrpriv;
 
-	padapter = (PADAPTER)FunctionContext;
+	padapter = (struct rtw_adapter *)data;
 	pwrpriv = &padapter->pwrctrlpriv;
 /*	DBG_8723A("+%s: rpwm=0x%02X cpwm=0x%02X\n", __func__, pwrpriv->rpwm, pwrpriv->cpwm); */
 
@@ -1186,6 +1185,7 @@ static void resume_workitem_callback(struct work_struct *work);
 void rtw_init_pwrctrl_priv(struct rtw_adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
+	struct timer_list *timer;
 
 _func_enter_;
 
@@ -1235,11 +1235,14 @@ _func_enter_;
 #ifdef CONFIG_LPS_RPWM_TIMER
 	pwrctrlpriv->brpwmtimeout = false;
 	INIT_WORK(&pwrctrlpriv->rpwmtimeoutwi, rpwmtimeout_workitem_callback);
-	_init_timer(&pwrctrlpriv->pwr_rpwm_timer, padapter->pnetdev, pwr_rpwm_timeout_handler, padapter);
+
+	setup_timer(&pwrctrlpriv->pwr_rpwm_timer, pwr_rpwm_timeout_handler,
+		    (unsigned long)padapter);
 #endif /*  CONFIG_LPS_RPWM_TIMER */
 #endif /*  CONFIG_LPS_LCLK */
 
-	_init_timer(&(pwrctrlpriv->pwr_state_check_timer), padapter->pnetdev, pwr_state_check_handler, (u8 *)padapter);
+	setup_timer(&pwrctrlpriv->pwr_state_check_timer,
+		    pwr_state_check_handler, (unsigned long)padapter);
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 	INIT_WORK(&pwrctrlpriv->resume_work, resume_workitem_callback);
