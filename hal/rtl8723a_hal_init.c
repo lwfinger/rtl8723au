@@ -244,7 +244,7 @@ static s32 _FWFreeToGo(struct rtw_adapter * padapter)
 			RT_TRACE(_module_hal_init_c_, _drv_info_, ("%s: Polling FW ready success!! REG_MCUFWDL:0x%08x\n", __FUNCTION__, value32));
 			return _SUCCESS;
 		}
-		rtw_udelay_os(5);
+		udelay(5);
 	} while (counter++ < POLLING_READY_TIMEOUT_COUNT);
 
 	RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: Polling FW ready fail!! REG_MCUFWDL:0x%08x\n", __FUNCTION__, value32));
@@ -274,7 +274,7 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 			Delay--;
 			if(Delay == 0)
 				break;
-			rtw_udelay_os(50);
+			udelay(50);
 			u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
 		}
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("-%s: 8051 reset success (%d)\n", __FUNCTION__, Delay));
@@ -2422,7 +2422,7 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWit
 
 					while( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(padapter, REG_SYS_FUNC_EN)))
 					{
-						rtw_udelay_os(50);//us
+						udelay(50);//us
 						// 2010/08/25 For test only We keep on reset 5051 to prevent fail.
 						//rtw_write8(padapter, REG_HMETFR+3, 0x20);//8051 reset by self
 					}

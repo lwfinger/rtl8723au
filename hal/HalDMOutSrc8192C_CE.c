@@ -527,7 +527,7 @@ _PHY_PathA_IQK(
 	PHY_SetBBReg(pAdapter, rIQK_AGC_Pts, bMaskDWord, 0xf8000000);
 
 	/*  delay x ms */
-	rtw_udelay_os(IQK_DELAY_TIME*1000);/* PlatformStallExecution(IQK_DELAY_TIME*1000); */
+	udelay(IQK_DELAY_TIME*1000);/* PlatformStallExecution(IQK_DELAY_TIME*1000); */
 
 	/*  Check failed */
 	regEAC = PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_A_2, bMaskDWord);
@@ -566,7 +566,7 @@ _PHY_PathB_IQK(
 	PHY_SetBBReg(pAdapter, rIQK_AGC_Cont, bMaskDWord, 0x00000000);
 
 	/*  delay x ms */
-	rtw_udelay_os(IQK_DELAY_TIME*1000);/* PlatformStallExecution(IQK_DELAY_TIME*1000); */
+	udelay(IQK_DELAY_TIME*1000);
 
 	/*  Check failed */
 	regEAC = PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_A_2, bMaskDWord);

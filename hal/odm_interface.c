@@ -211,7 +211,7 @@ void ODM_ReleaseSpinLock(
 //
 void ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
-	PRT_WORK_ITEM				pRtWorkItem,
+	void *				pRtWorkItem,
 	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
 	void *						pContext,
 	const char*					szID
@@ -219,46 +219,9 @@ void ODM_InitializeWorkItem(
 {
 }
 
-void ODM_StartWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	)
-{
-}
-
-void ODM_StopWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	)
-{
-}
-
-void ODM_FreeWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	)
-{
-}
-
-void ODM_ScheduleWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	)
-{
-}
-
-void ODM_IsWorkItemScheduled(
-	PRT_WORK_ITEM	pRtWorkItem
-	)
-{
-}
-
 //
 // ODM Timer relative API.
 //
-void ODM_StallExecution(
-	u32	usDelay
-	)
-{
-	rtw_udelay_os(usDelay);
-}
-
 void ODM_delay_ms(u32	ms)
 {
 	rtw_mdelay_os(ms);
@@ -266,7 +229,7 @@ void ODM_delay_ms(u32	ms)
 
 void ODM_delay_us(u32	us)
 {
-	rtw_udelay_os(us);
+	udelay(us);
 }
 
 void ODM_sleep_ms(u32	ms)

@@ -66,20 +66,10 @@ ODM_REG(DIG,_pDM_Odm)
 #define ODM_REG(_name, _pDM_Odm)	_cat(_name, _pDM_Odm->SupportICType, _reg)
 #define ODM_BIT(_name, _pDM_Odm)	_cat(_name, _pDM_Odm->SupportICType, _bit)
 
-typedef enum _ODM_H2C_CMD
-{
-	ODM_H2C_RSSI_REPORT = 0,
-	ODM_H2C_PSD_RESULT=1,
-	ODM_H2C_PathDiv = 2,
-	ODM_MAX_H2CCMD
-}ODM_H2C_CMD;
-
-
 //
 // 2012/02/17 MH For non-MP compile pass only. Linux does not support workitem.
 // Suggest HW team to use thread instead of workitem. Windows also support the feature.
 //
-typedef  void *PRT_WORK_ITEM ;
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
 typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct * pContext);
 
@@ -225,45 +215,15 @@ ODM_ReleaseSpinLock(
 void
 ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
-	PRT_WORK_ITEM				pRtWorkItem,
+	void *				pRtWorkItem,
 	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
 	void *						pContext,
 	const char*					szID
 	);
 
-void
-ODM_StartWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	);
-
-void
-ODM_StopWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	);
-
-void
-ODM_FreeWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	);
-
-void
-ODM_ScheduleWorkItem(
-	PRT_WORK_ITEM	pRtWorkItem
-	);
-
-void
-ODM_IsWorkItemScheduled(
-	PRT_WORK_ITEM	pRtWorkItem
-	);
-
 //
 // ODM Timer relative API.
 //
-void
-ODM_StallExecution(
-	u32	usDelay
-	);
-
 void
 ODM_delay_ms(u32	ms);
 

@@ -296,13 +296,13 @@ phy_RFSerialRead(
 	tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset<<23) | bLSSIReadEdge;	//T65 RF
 
 	PHY_SetBBReg(Adapter, rFPGA0_XA_HSSIParameter2, bMaskDWord, tmplong&(~bLSSIReadEdge));
-	rtw_udelay_os(10);// PlatformStallExecution(10);
+	udelay(10);// PlatformStallExecution(10);
 
 	PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, bMaskDWord, tmplong2);
-	rtw_udelay_os(100);//PlatformStallExecution(100);
+	udelay(100);//PlatformStallExecution(100);
 
 	PHY_SetBBReg(Adapter, rFPGA0_XA_HSSIParameter2, bMaskDWord, tmplong|bLSSIReadEdge);
-	rtw_udelay_os(10);//PlatformStallExecution(10);
+	udelay(10);//PlatformStallExecution(10);
 
 	if(eRFPath == RF_PATH_A)
 		RfPiEnable = (u8)PHY_QueryBBReg(Adapter, rFPGA0_XA_HSSIParameter1, BIT8);
@@ -1094,13 +1094,13 @@ PHY_BBConfig8723A(
 	// Suggested by Scott. tynli_test. 2010.12.30.
 	//1. 0x28[1] = 1
 	TmpU1B = rtw_read8(Adapter, REG_AFE_PLL_CTRL);
-	rtw_udelay_os(2);
+	udelay(2);
 	rtw_write8(Adapter, REG_AFE_PLL_CTRL, (TmpU1B|BIT1));
-	rtw_udelay_os(2);
+	udelay(2);
 
 	//2. 0x29[7:0] = 0xFF
 	rtw_write8(Adapter, REG_AFE_PLL_CTRL+1, 0xff);
-	rtw_udelay_os(2);
+	udelay(2);
 
 	//3. 0x02[1:0] = 2b'11
 	TmpU1B = rtw_read8(Adapter, REG_SYS_FUNC_EN);

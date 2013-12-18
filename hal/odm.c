@@ -4011,7 +4011,7 @@ GetPSDData(
 	//Start PSD calculation, Reg808[22]=0->1
 	ODM_SetBBReg(pDM_Odm, 0x808, BIT22, 1);
 	//Need to wait for HW PSD report
-	ODM_StallExecution(30);
+	udelay(30);
 	ODM_SetBBReg(pDM_Odm, 0x808, BIT22, 0);
 	//Read PSD report, Reg8B4[15:0]
 	psd_report = ODM_GetBBReg(pDM_Odm,0x8B4, bMaskDWord) & 0x0000FFFF;
@@ -4178,7 +4178,7 @@ ODM_SingleDualAntennaDetection(
 	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
 	// Step 1: USE IQK to transmitter single tone
 
-	ODM_StallExecution(10);
+	udelay(10);
 
 	//Store A Path Register 88c, c08, 874, c50
 	Reg88c = ODM_GetBBReg(pDM_Odm, rFPGA0_AnalogParameter4, bMaskDWord);
@@ -4240,7 +4240,7 @@ ODM_SingleDualAntennaDetection(
 	//IQK Single tone start
 	ODM_SetBBReg(pDM_Odm, rFPGA0_IQK, bMaskDWord, 0x80800000);
 	ODM_SetBBReg(pDM_Odm, rIQK_AGC_Pts, bMaskDWord, 0xf8000000);
-	ODM_StallExecution(1000);
+	udelay(1000);
 	PSD_report_tmp=0x0;
 
 	for (n=0;n<2;n++)
@@ -4253,7 +4253,7 @@ ODM_SingleDualAntennaDetection(
 	PSD_report_tmp=0x0;
 
 	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, 0x300, Antenna_B);  // change to Antenna B
-	ODM_StallExecution(10);
+	udelay(10);
 
 
 	for (n=0;n<2;n++)
@@ -4265,7 +4265,7 @@ ODM_SingleDualAntennaDetection(
 
 	// change to open case
 	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, 0x300, 0);  // change to Ant A and B all open case
-	ODM_StallExecution(10);
+	udelay(10);
 
 	for (n=0;n<2;n++)
 	{
