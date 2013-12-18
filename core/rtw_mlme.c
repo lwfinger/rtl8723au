@@ -1017,12 +1017,10 @@ _func_enter_;
 			{
 				set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 
-				if(rtw_select_and_join_from_scanned_queue(pmlmepriv)==_SUCCESS)
-				{
-					_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT );
-				}
-				else
-				{
+				if(rtw_select_and_join_from_scanned_queue(pmlmepriv)==_SUCCESS) {
+					mod_timer(&pmlmepriv->assoc_timer,
+						  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
+				} else {
 					WLAN_BSSID_EX    *pdev_network = &(adapter->registrypriv.dev_network);
 					u8 *pibss = adapter->registrypriv.dev_network.MacAddress;
 
@@ -1049,20 +1047,19 @@ _func_enter_;
 		}
 		else
 		{
-			int s_ret;
+			int ret;
 			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 			pmlmepriv->to_join = false;
-			if(_SUCCESS == (s_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv)))
-			{
-			     _set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
-			}
-			else if(s_ret == 2)/* there is no need to wait for join */
+			ret = rtw_select_and_join_from_scanned_queue(pmlmepriv);
+			if (ret == _SUCCESS) {
+				unsigned long e;
+				e = msecs_to_jiffies(MAX_JOIN_TIMEOUT);
+				mod_timer(&pmlmepriv->assoc_timer, jiffies + e);
+			} else if(ret == 2)/* there is no need to wait for join */
 			{
 				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 				rtw_indicate_connect(adapter);
-			}
-			else
-			{
+			} else {
 				DBG_8723A("try_to_join, but select scanning queue fail, to_roaming:%d\n", rtw_to_roaming(adapter));
 				if (rtw_to_roaming(adapter) != 0) {
 					if( --pmlmepriv->to_roaming == 0
@@ -1653,7 +1650,8 @@ _func_enter_;
 	else if(pnetwork->join_res == -4)
 	{
 		rtw_reset_securitypriv(adapter);
-		_set_timer(&pmlmepriv->assoc_timer, 1);
+		mod_timer(&pmlmepriv->assoc_timer,
+			  jiffies + msecs_to_jiffies(1));
 
 		/* rtw_free_assoc_resources(adapter, 1); */
 
@@ -1677,7 +1675,8 @@ _func_enter_;
 		 if(res == _SUCCESS)
 		{
 			/* extend time of assoc_timer */
-			_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
+			mod_timer(&pmlmepriv->assoc_timer,
+				  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
 			retry++;
 		}
 		else if(res == 2)/* there is no need to wait for join */
@@ -1690,7 +1689,8 @@ _func_enter_;
 			RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("Set Assoc_Timer = 1; can't find match ssid in scanned_q \n"));
 		#endif
 
-			_set_timer(&pmlmepriv->assoc_timer, 1);
+			mod_timer(&pmlmepriv->assoc_timer,
+				  jiffies + msecs_to_jiffies(1));
 			/* rtw_free_assoc_resources(adapter, 1); */
 			_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
@@ -2163,7 +2163,8 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 
 #endif	/*  CONFIG_BR_EXT */
 out:
-	_set_timer(&adapter->mlmepriv.dynamic_chk_timer, 2000);
+	mod_timer(&adapter->mlmepriv.dynamic_chk_timer,
+		  jiffies + msecs_to_jiffies(2000));
 }
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
@@ -2194,7 +2195,8 @@ void rtw_set_scan_deny(struct rtw_adapter *adapter, u32 ms)
 	if (0)
 	DBG_8723A(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 	atomic_set(&mlmepriv->set_scan_deny, 1);
-	_set_timer(&mlmepriv->set_scan_deny_timer, ms);
+	mod_timer(&mlmepriv->set_scan_deny_timer,
+		  jiffies + msecs_to_jiffies(ms));
 
 }
 #endif
