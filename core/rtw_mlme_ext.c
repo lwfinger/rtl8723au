@@ -9411,8 +9411,9 @@ exit_survey_timer_hdl:
 	return;
 }
 
-void link_timer_hdl(struct rtw_adapter *padapter)
+void link_timer_hdl(unsigned long data)
 {
+	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	/* static unsigned int		rx_pkt = 0; */
 	/* static u64				tx_cnt = 0; */
 	/* struct xmit_priv		*pxmitpriv = &(padapter->xmitpriv); */

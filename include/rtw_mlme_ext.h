@@ -680,7 +680,7 @@ void mlmeext_sta_add_event_callback(struct rtw_adapter *padapter, struct sta_inf
 void linked_status_chk(struct rtw_adapter *padapter);
 
 void survey_timer_hdl(unsigned long data);
-void link_timer_hdl (struct rtw_adapter *padapter);
+void link_timer_hdl (unsigned long data);
 void addba_timer_hdl(unsigned long data);
 
 #define set_survey_timer(mlmeext, ms) \
