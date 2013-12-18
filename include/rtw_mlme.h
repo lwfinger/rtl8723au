@@ -672,7 +672,7 @@ void rtw_update_registrypriv_dev_network(struct rtw_adapter *adapter);
 
 void rtw_get_encrypt_decrypt_from_registrypriv(struct rtw_adapter *adapter);
 
-void rtw_scan_timeout_handler(struct rtw_adapter *adapter);
+void rtw_scan_timeout_handler(unsigned long data);
 
 void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter);
 #ifdef CONFIG_SET_SCAN_DENY_TIMER

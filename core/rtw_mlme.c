@@ -2027,10 +2027,11 @@ _func_exit_;
 
 /*
 * rtw_scan_timeout_handler - Timeout/Faliure handler for CMD SiteSurvey
-* @adapter: pointer to _adapter structure
+* @data: pointer to _adapter structure
 */
-void rtw_scan_timeout_handler (struct rtw_adapter *adapter)
+void rtw_scan_timeout_handler(unsigned long data)
 {
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
 	DBG_8723A(FUNC_ADPT_FMT" fw_state=%x\n", FUNC_ADPT_ARG(adapter), get_fwstate(pmlmepriv));
