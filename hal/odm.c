@@ -408,7 +408,7 @@ odm_SwAntDivChkAntSwitchNIC(
 	);
 
 
-void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext);
+void odm_SwAntDivChkAntSwitchCallback(unsigned long data);
 
 void
 odm_GlobalAdapterCheck(
@@ -2749,8 +2749,8 @@ ODM_InitAllTimers(
  PDM_ODM_T	pDM_Odm
 	)
 {
-	ODM_InitializeTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer,
-		(RT_TIMER_CALL_BACK)odm_SwAntDivChkAntSwitchCallback, NULL, "SwAntennaSwitchTimer");
+	setup_timer(&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer,
+		    odm_SwAntDivChkAntSwitchCallback, (unsigned long)pDM_Odm);
 }
 
 void
@@ -2758,7 +2758,7 @@ ODM_CancelAllTimers(
  PDM_ODM_T	pDM_Odm
 	)
 {
-	ODM_CancelTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
+	del_timer_sync(&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
 }
 
 
@@ -3442,9 +3442,9 @@ odm_SwAntDivChkAntSwitchNIC(
 // 20100514 Luke/Joseph:
 // Callback function for 500ms antenna test trying.
 //
-void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
+void odm_SwAntDivChkAntSwitchCallback(unsigned long data)
 {
-	PDM_ODM_T	pDM_Odm= (PDM_ODM_T)FunctionContext;
+	PDM_ODM_T pDM_Odm= (PDM_ODM_T)data;
 	struct rtw_adapter *	padapter = pDM_Odm->Adapter;
 	if(padapter->net_closed == true)
 	    return;
@@ -3480,7 +3480,7 @@ void ODM_SwAntDivRestAfterLink(PDM_ODM_T pDM_Odm)
 {
 }
 
-void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
+void odm_SwAntDivChkAntSwitchCallback(unsigned long data)
 {
 }
 

@@ -231,24 +231,6 @@ void ODM_SetTimer(
 	_set_timer(pTimer,msDelay ); //ms
 }
 
-void ODM_InitializeTimer(
-	PDM_ODM_T			pDM_Odm,
-	PRT_TIMER			pTimer,
-	RT_TIMER_CALL_BACK	CallBackFunc,
-	void *				pContext,
-	const char*			szID
-	)
-{
-	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-
-	_init_timer(pTimer,Adapter->pnetdev,CallBackFunc,pDM_Odm);
-}
-
-void ODM_CancelTimer(PDM_ODM_T pDM_Odm, PRT_TIMER pTimer)
-{
-	del_timer_sync(pTimer);
-}
-
 void ODM_ReleaseTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer

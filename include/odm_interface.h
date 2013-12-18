@@ -232,21 +232,6 @@ ODM_SetTimer(
 	);
 
 void
-ODM_InitializeTimer(
-	PDM_ODM_T			pDM_Odm,
-	PRT_TIMER			pTimer,
-	RT_TIMER_CALL_BACK	CallBackFunc,
-	void *				pContext,
-	const char*			szID
-	);
-
-void
-ODM_CancelTimer(
-	PDM_ODM_T		pDM_Odm,
-	PRT_TIMER		pTimer
-	);
-
-void
 ODM_ReleaseTimer(
 	PDM_ODM_T		pDM_Odm,
 	PRT_TIMER		pTimer
