@@ -701,11 +701,13 @@ _func_enter_;
 		pmlmepriv->scan_start_time = rtw_get_current_time();
 
 #ifdef CONFIG_STA_MODE_SCAN_UNDER_AP_MODE
-		if((padapter->pbuddy_adapter->mlmeextpriv.mlmext_info.state&0x03) == WIFI_FW_AP_STATE)
-			_set_timer(&pmlmepriv->scan_to_timer, SURVEY_TO * ( 38 + ( 38 / RTW_SCAN_NUM_OF_CH ) * RTW_STAY_AP_CH_MILLISECOND ) + 1000 );
+		if ((padapter->pbuddy_adapter->mlmeextpriv.mlmext_info.state&0x03) == WIFI_FW_AP_STATE)
+			mod_timer(&pmlmepriv->scan_to_timer, jiffies +
+				  msecs_to_jiffies(SURVEY_TO * (38 + (38 / RTW_SCAN_NUM_OF_CH) * RTW_STAY_AP_CH_MILLISECOND) + 1000));
 		else
 #endif /* CONFIG_STA_MODE_SCAN_UNDER_AP_MODE */
-			_set_timer(&pmlmepriv->scan_to_timer, SCANNING_TIMEOUT);
+			mod_timer(&pmlmepriv->scan_to_timer, jiffies +
+				  msecs_to_jiffies(SCANNING_TIMEOUT));
 
 		rtw_led_control(padapter, LED_CTL_SITE_SURVEY);
 
@@ -2522,14 +2524,14 @@ void rtw_survey_cmd_callback(struct rtw_adapter*	padapter ,  struct cmd_obj *pcm
 
 _func_enter_;
 
-	if(pcmd->res == H2C_DROPPED)
-	{
+if (pcmd->res == H2C_DROPPED) {
 		/* TODO: cancel timer and do timeout handler directly... */
 		/* need to make timeout handlerOS independent */
-		_set_timer(&pmlmepriv->scan_to_timer, 1);
-	}
-	else if (pcmd->res != H2C_SUCCESS) {
-		_set_timer(&pmlmepriv->scan_to_timer, 1);
+		mod_timer(&pmlmepriv->scan_to_timer,
+			  jiffies + msecs_to_jiffies(1));
+	} else if (pcmd->res != H2C_SUCCESS) {
+		mod_timer(&pmlmepriv->scan_to_timer,
+			  jiffies + msecs_to_jiffies(1));
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n ********Error: MgntActrtw_set_802_11_bssid_LIST_SCAN Fail ************\n\n."));
 	}
 
@@ -2577,12 +2579,14 @@ _func_enter_;
 	{
 		/* TODO: cancel timer and do timeout handler directly... */
 		/* need to make timeout handlerOS independent */
-		_set_timer(&pmlmepriv->assoc_timer, 1);
+		mod_timer(&pmlmepriv->assoc_timer,
+			  jiffies + msecs_to_jiffies(1));
 	}
 	else if(pcmd->res != H2C_SUCCESS)
 	{
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("********Error:rtw_select_and_join_from_scanned_queue Wait Sema  Fail ************\n"));
-		_set_timer(&pmlmepriv->assoc_timer, 1);
+		mod_timer(&pmlmepriv->assoc_timer,
+			  jiffies + msecs_to_jiffies(1));
 	}
 
 	rtw_free_cmd_obj(pcmd);
@@ -2603,7 +2607,8 @@ _func_enter_;
 	if((pcmd->res != H2C_SUCCESS))
 	{
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n ********Error: rtw_createbss_cmd_callback  Fail ************\n\n."));
-		_set_timer(&pmlmepriv->assoc_timer, 1 );
+		mod_timer(&pmlmepriv->assoc_timer,
+			  jiffies + msecs_to_jiffies(1));
 	}
 
 	del_timer_sync(&pmlmepriv->assoc_timer);
