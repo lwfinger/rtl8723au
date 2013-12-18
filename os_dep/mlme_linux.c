@@ -39,15 +39,6 @@ void sitesurvey_ctrl_handler(void *FunctionContext)
 */
 
 
-static void _dynamic_check_timer_handler (void *FunctionContext)
-{
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
-
-	rtw_dynamic_check_timer_handler(adapter);
-
-	_set_timer(&adapter->mlmepriv.dynamic_chk_timer, 2000);
-}
-
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 void _rtw_set_scan_deny_timer_hdl(void *FunctionContext)
 {
@@ -68,7 +59,8 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 	setup_timer(&pmlmepriv->scan_to_timer, rtw_scan_timeout_handler,
 		    (unsigned long)padapter);
 
-	_init_timer(&(pmlmepriv->dynamic_chk_timer), padapter->pnetdev, _dynamic_check_timer_handler, padapter);
+	setup_timer(&pmlmepriv->dynamic_chk_timer,
+		    rtw_dynamic_check_timer_handler, (unsigned long)padapter);
 
 	#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	_init_timer(&(pmlmepriv->set_scan_deny_timer), padapter->pnetdev, _rtw_set_scan_deny_timer_hdl, padapter);

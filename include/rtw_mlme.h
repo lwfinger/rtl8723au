@@ -674,7 +674,7 @@ void rtw_get_encrypt_decrypt_from_registrypriv(struct rtw_adapter *adapter);
 
 void rtw_scan_timeout_handler(unsigned long data);
 
-void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter);
+void rtw_dynamic_check_timer_handler(unsigned long data);
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 bool rtw_is_scan_deny(struct rtw_adapter *adapter);
 void rtw_clear_scan_deny(struct rtw_adapter *adapter);

@@ -2067,27 +2067,27 @@ static void rtw_auto_scan_handler(struct rtw_adapter *padapter)
 	}
 }
 
-void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
+void rtw_dynamic_check_timer_handler(unsigned long data)
 {
+	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
+
 #ifdef CONFIG_AP_MODE
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 #endif /* CONFIG_AP_MODE */
 	struct registry_priv *pregistrypriv = &adapter->registrypriv;
 
-	if(!adapter)
-		return;
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
 	if(adapter->HalFunc.hal_checke_bt_hang)
 		adapter->HalFunc.hal_checke_bt_hang(adapter);
 #endif
 	if(adapter->hw_init_completed == false)
-		return;
+		goto out;
 
 	if ((adapter->bDriverStopped == true)||(adapter->bSurpriseRemoved== true))
-		return;
+		goto out;
 
 	if(adapter->net_closed == true)
-		return;
+		goto out;
 
 	rtw_dynamic_chk_wk_cmd(adapter);
 
@@ -2136,6 +2136,8 @@ void rtw_dynamic_check_timer_handler(struct rtw_adapter *adapter)
 	rcu_read_unlock();
 
 #endif	/*  CONFIG_BR_EXT */
+out:
+	_set_timer(&adapter->mlmepriv.dynamic_chk_timer, 2000);
 }
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
