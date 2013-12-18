@@ -3117,7 +3117,8 @@ _func_enter_;
 	set_channel_bwmode(padapter, pwdinfo->invitereq_info.peer_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+	mod_timer(&pwdinfo->pre_tx_scan_timer,
+		  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
 
 _func_exit_;
 }
@@ -3131,7 +3132,8 @@ _func_enter_;
 	set_channel_bwmode(padapter, pwdinfo->tx_prov_disc_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+	mod_timer(&pwdinfo->pre_tx_scan_timer,
+		  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
 
 _func_exit_;
 }
@@ -3145,7 +3147,8 @@ _func_enter_;
 	set_channel_bwmode(padapter, pwdinfo->nego_req_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+	mod_timer(&pwdinfo->pre_tx_scan_timer,
+		  jiffies + msecs_to_jiffies(P2P_TX_PRESCAN_TIMEOUT));
 
 _func_exit_;
 }
