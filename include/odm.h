@@ -180,7 +180,7 @@ struct dynamic_pwr_sav {
 	u32		Reg874,RegC70,Reg85C,RegA74;
 };
 
-typedef struct false_ALARM_STATISTICS{
+struct false_alarm_stats {
 	u32	Cnt_Parity_Fail;
 	u32	Cnt_Rate_Illegal;
 	u32	Cnt_Crc8_fail;
@@ -195,7 +195,7 @@ typedef struct false_ALARM_STATISTICS{
 	u32	Cnt_CCA_all;
 	u32	Cnt_BW_USC;	/* Gary */
 	u32	Cnt_BW_LSC;	/* Gary */
-}false_ALARM_STATISTICS, *PFALSE_ALARM_STATISTICS;
+};
 
 typedef struct _Dynamic_Primary_CCA{
 	u8		PriCCA_flag;
@@ -1053,8 +1053,8 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	struct dynamic_pwr_sav		DM_PSTable;
 	Pri_CCA_T	DM_PriCCA;
 	RXHP_T		DM_RXHP_Table;
-	false_ALARM_STATISTICS	FalseAlmCnt;
-	false_ALARM_STATISTICS	FlaseAlmCntBuddyAdapter;
+	struct false_alarm_stats	FalseAlmCnt;
+	struct false_alarm_stats	FlaseAlmCntBuddyAdapter;
 	/* ifdef CONFIG_ANTENNA_DIVERSITY */
 	SWAT_T		DM_SWAT_Table;
 	bool		RSSI_test;

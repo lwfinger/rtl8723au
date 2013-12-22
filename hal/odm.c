@@ -1120,7 +1120,7 @@ odm_DIGbyRSSI_LPS(
 {
 	struct rtw_adapter *pAdapter =pDM_Odm->Adapter;
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
-	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
+	struct false_alarm_stats *		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 	u8	RSSI_Lower=DM_DIG_MIN_NIC;   //0x1E or 0x1C
 	u8	bFwCurrentInPSMode = false;
 	u8	CurrentIGI=pDM_Odm->RSSI_Min;
@@ -1227,7 +1227,7 @@ odm_DIG(
 {
 
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
-	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
+	struct false_alarm_stats *		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 	pRXHP_T				pRX_HP_Table  = &pDM_Odm->DM_RXHP_Table;
 	u8				DIG_Dynamic_MIN;
 	u8				DIG_MaxOfMin;
@@ -1590,7 +1590,7 @@ odm_FalseAlarmCounterStatistics(
 	)
 {
 	u32 ret_value;
-	PFALSE_ALARM_STATISTICS FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
+	struct false_alarm_stats * FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
 
 	if(!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT))
 		return;
@@ -1727,7 +1727,7 @@ odm_CCKPacketDetectionThresh(
 
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	u8	CurCCK_CCAThres;
-	PFALSE_ALARM_STATISTICS FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
+	struct false_alarm_stats *FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
 
 	if(!(pDM_Odm->SupportAbility & (ODM_BB_CCK_PD|ODM_BB_FA_CNT)))
 		return;
