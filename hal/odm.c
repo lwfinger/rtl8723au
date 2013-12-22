@@ -1790,7 +1790,7 @@ odm_DynamicBBPowerSavingInit(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	pPS_T	pDM_PSTable = &pDM_Odm->DM_PSTable;
+	struct dynamic_pwr_sav *pDM_PSTable = &pDM_Odm->DM_PSTable;
 
 	pDM_PSTable->PreCCAState = CCA_MAX;
 	pDM_PSTable->CurCCAState = CCA_MAX;
@@ -1814,7 +1814,7 @@ odm_1R_CCA(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-	pPS_T	pDM_PSTable = &pDM_Odm->DM_PSTable;
+	struct dynamic_pwr_sav *pDM_PSTable = &pDM_Odm->DM_PSTable;
 
 	if(pDM_Odm->RSSI_Min!= 0xFF)
 	{
@@ -1869,7 +1869,7 @@ ODM_RF_Saving(
 	u8		bForceInNormal
 	)
 {
-	pPS_T	pDM_PSTable = &pDM_Odm->DM_PSTable;
+	struct dynamic_pwr_sav *pDM_PSTable = &pDM_Odm->DM_PSTable;
 	u8	Rssi_Up_bound = 30 ;
 	u8	Rssi_Low_bound = 25;
 	if(pDM_Odm->PatchID == 40 ) //RT_CID_819x_FUNAI_TV

@@ -169,8 +169,7 @@ typedef struct _Dynamic_Initial_Gain_Threshold_
 	u32		RSSI_max;
 }DIG_T,*pDIG_T;
 
-typedef struct _Dynamic_Power_Saving_
-{
+struct dynamic_pwr_sav {
 	u8		PreCCAState;
 	u8		CurCCAState;
 
@@ -181,8 +180,7 @@ typedef struct _Dynamic_Power_Saving_
 
 	u8		initialize;
 	u32		Reg874,RegC70,Reg85C,RegA74;
-
-}PS_T,*pPS_T;
+};
 
 typedef struct false_ALARM_STATISTICS{
 	u32	Cnt_Parity_Fail;
@@ -1054,7 +1052,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  */
 	FAT_T		DM_FatTable;
 	DIG_T		DM_DigTable;
-	PS_T		DM_PSTable;
+	struct dynamic_pwr_sav		DM_PSTable;
 	Pri_CCA_T	DM_PriCCA;
 	RXHP_T		DM_RXHP_Table;
 	false_ALARM_STATISTICS	FalseAlmCnt;

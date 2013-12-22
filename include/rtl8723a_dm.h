@@ -63,21 +63,6 @@ struct dm_priv
 	s32 BT_EntryMaxUndecoratedSmoothedPWDB;
 	#endif
 
-//###### duplicate code,will move to ODM #########
-/*
-	//for DIG
-	u8	bDMInitialGainEnable;
-	u8	binitialized; // for dm_initial_gain_Multi_STA use.
-	DIG_T	DM_DigTable;
-
-	PS_T	DM_PSTable;
-
-	false_ALARM_STATISTICS FalseAlmCnt;
-
-	//for rate adaptive, in fact,  88c/92c fw will handle this
-	u8 bUseRAMask;
-	RATE_ADAPTIVE RateAdaptive;
-*/
 	//for High Power
 	u8 bDynamicTxPowerEnable;
 	u8 LastDTPLvl;
