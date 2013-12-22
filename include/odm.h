@@ -197,13 +197,13 @@ struct false_alarm_stats {
 	u32	Cnt_BW_LSC;	/* Gary */
 };
 
-typedef struct _Dynamic_Primary_CCA{
+struct pri_cca {
 	u8		PriCCA_flag;
 	u8		intf_flag;
 	u8		intf_type;
 	u8		DupRTS_flag;
 	u8		Monitor_flag;
-}Pri_CCA_T, *pPri_CCA_T;
+};
 
 typedef struct _RX_High_Power_
 {
@@ -1051,7 +1051,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	FAT_T		DM_FatTable;
 	struct dig_t	DM_DigTable;
 	struct dynamic_pwr_sav		DM_PSTable;
-	Pri_CCA_T	DM_PriCCA;
+	struct pri_cca	DM_PriCCA;
 	RXHP_T		DM_RXHP_Table;
 	struct false_alarm_stats	FalseAlmCnt;
 	struct false_alarm_stats	FlaseAlmCntBuddyAdapter;
