@@ -4027,7 +4027,7 @@ _func_enter_;
 
 		case HW_VAR_INITIAL_GAIN:
 			{
-				DIG_T *pDigTable = &pHalData->odmpriv.DM_DigTable;
+				struct dig_t *pDigTable = &pHalData->odmpriv.DM_DigTable;
 				u32 rx_gain = *(u32*)val;
 
 				if (rx_gain == 0xff) {//restore rx gain

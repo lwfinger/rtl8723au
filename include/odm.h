@@ -124,13 +124,12 @@ struct rtl8192cd_priv {
 };
 
 
-typedef struct _Dynamic_Initial_Gain_Threshold_
-{
+struct  dig_t {
 	u8		Dig_Enable_Flag;
 	u8		Dig_Ext_Port_Stage;
 
-	int			RssiLowThresh;
-	int			RssiHighThresh;
+	int		RssiLowThresh;
+	int		RssiHighThresh;
 
 	u32		FALowThresh;
 	u32		FAHighThresh;
@@ -166,7 +165,7 @@ typedef struct _Dynamic_Initial_Gain_Threshold_
 
 	u32		AntDiv_RSSI_max;
 	u32		RSSI_max;
-}DIG_T,*pDIG_T;
+};
 
 struct dynamic_pwr_sav {
 	u8		PreCCAState;
@@ -1050,7 +1049,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/* ODM Structure */
 	/*  */
 	FAT_T		DM_FatTable;
-	DIG_T		DM_DigTable;
+	struct dig_t	DM_DigTable;
 	struct dynamic_pwr_sav		DM_PSTable;
 	Pri_CCA_T	DM_PriCCA;
 	RXHP_T		DM_RXHP_Table;
@@ -1166,42 +1165,7 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 	DIG_TYPE_DISABLE		= 6,
 	DIG_OP_TYPE_MAX
 }DM_DIG_OP_E;
-/*
-typedef enum tag_CCK_Packet_Detection_Threshold_Type_Definition
-{
-	CCK_PD_STAGE_LowRssi = 0,
-	CCK_PD_STAGE_HighRssi = 1,
-	CCK_PD_STAGE_MAX = 3,
-}DM_CCK_PDTH_E;
 
-typedef enum tag_DIG_EXT_PORT_ALGO_Definition
-{
-	DIG_EXT_PORT_STAGE_0 = 0,
-	DIG_EXT_PORT_STAGE_1 = 1,
-	DIG_EXT_PORT_STAGE_2 = 2,
-	DIG_EXT_PORT_STAGE_3 = 3,
-	DIG_EXT_PORT_STAGE_MAX = 4,
-}DM_DIG_EXT_PORT_ALG_E;
-
-typedef enum tag_DIG_Connect_Definition
-{
-	DIG_STA_DISCONNECT = 0,
-	DIG_STA_CONNECT = 1,
-	DIG_STA_BEFORE_CONNECT = 2,
-	DIG_MultiSTA_DISCONNECT = 3,
-	DIG_MultiSTA_CONNECT = 4,
-	DIG_CONNECT_MAX
-}DM_DIG_CONNECT_E;
-
-
-#define DM_MultiSTA_InitGainChangeNotify(Event) {DM_DigTable.CurMultiSTAConnectState = Event;}
-
-#define DM_MultiSTA_InitGainChangeNotify_CONNECT(_ADAPTER)	\
-	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_CONNECT)
-
-#define DM_MultiSTA_InitGainChangeNotify_DISCONNECT(_ADAPTER)	\
-	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_DISCONNECT)
-*/
 #define		DM_DIG_THRESH_HIGH			40
 #define		DM_DIG_THRESH_LOW			35
 

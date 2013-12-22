@@ -7509,7 +7509,7 @@ static void btdm_1AntTdmaDurationAdjustForSCO(struct rtw_adapter *padapter)
 	struct hal_data_8723a * pHalData;
 	PBTDM_8723A_1ANT pBtdm8723;
 	PDM_ODM_T podm;
-	pDIG_T pDigTable;
+	struct dig_t *pDigTable;
 	u8 RSSITh_WiFi, RSSITh12_BT, RSSITh23_BT;
 	u8 Type, RSSIOffset;
 	u8 RSSI_WiFi_Now, RSSI_BT_Now;

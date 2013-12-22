@@ -1095,7 +1095,7 @@ void ODM_Write_DIG(
 	u8			CurrentIGI
 	)
 {
-	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("ODM_REG(IGI_A,pDM_Odm)=0x%x, ODM_BIT(IGI,pDM_Odm)=0x%x \n",
 		ODM_REG(IGI_A,pDM_Odm),ODM_BIT(IGI,pDM_Odm)));
@@ -1118,8 +1118,8 @@ odm_DIGbyRSSI_LPS(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	struct rtw_adapter *					pAdapter =pDM_Odm->Adapter;
-	pDIG_T						pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct rtw_adapter *pAdapter =pDM_Odm->Adapter;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 	u8	RSSI_Lower=DM_DIG_MIN_NIC;   //0x1E or 0x1C
 	u8	bFwCurrentInPSMode = false;
@@ -1179,7 +1179,7 @@ odm_DIGInit(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 
 	//pDM_DigTable->Dig_Enable_Flag = true;
 	//pDM_DigTable->Dig_Ext_Port_Stage = DIG_EXT_PORT_STAGE_MAX;
@@ -1226,14 +1226,14 @@ odm_DIG(
 	)
 {
 
-	pDIG_T						pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
-	pRXHP_T						pRX_HP_Table  = &pDM_Odm->DM_RXHP_Table;
-	u8						DIG_Dynamic_MIN;
-	u8						DIG_MaxOfMin;
-	bool						FirstConnect, FirstDisConnect;
-	u8						dm_dig_max, dm_dig_min;
-	u8						CurrentIGI = pDM_DigTable->CurIGValue;
+	pRXHP_T				pRX_HP_Table  = &pDM_Odm->DM_RXHP_Table;
+	u8				DIG_Dynamic_MIN;
+	u8				DIG_MaxOfMin;
+	bool				FirstConnect, FirstDisConnect;
+	u8				dm_dig_max, dm_dig_min;
+	u8				CurrentIGI = pDM_DigTable->CurIGValue;
 
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG()==>\n"));
@@ -1725,7 +1725,7 @@ odm_CCKPacketDetectionThresh(
 	)
 {
 
-	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	u8	CurCCK_CCAThres;
 	PFALSE_ALARM_STATISTICS FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
 
@@ -1771,7 +1771,7 @@ ODM_Write_CCK_CCA_Thres(
 	u8			CurCCK_CCAThres
 	)
 {
-	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
+	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 
 	if(pDM_DigTable->CurCCK_CCAThres!=CurCCK_CCAThres)		//modify by Guo.Mingzhi 2012-01-03
 	{

@@ -2922,7 +2922,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 				else if(dm_func == 6){//turn on all dynamic func
 					if(!(podmpriv->SupportAbility  & DYNAMIC_BB_DIG))
 					{
-						DIG_T	*pDigTable = &podmpriv->DM_DigTable;
+						struct dig_t *pDigTable = &podmpriv->DM_DigTable;
 						pDigTable->CurIGValue= rtw_read8(Adapter,0xc50);
 					}
 					pdmpriv->DMFlag |= DYNAMIC_FUNC_BT;
