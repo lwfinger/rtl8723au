@@ -2301,11 +2301,11 @@ odm_DynamicTxPower(
 	)
 {
 	//
-	// For AP/ADSL use prtl8192cd_priv
+	// For AP/ADSL use struct rtl8192cd_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
-	//struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-//	prtl8192cd_priv	priv		= pDM_Odm->priv;
+	//struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
+	//struct rtl8192cd_priv	*priv	= pDM_Odm->priv;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
 		return;
@@ -2589,11 +2589,11 @@ odm_RSSIMonitorCheck(
 	)
 {
 	//
-	// For AP/ADSL use prtl8192cd_priv
+	// For AP/ADSL use struct rtl8192cd_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
-	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-	prtl8192cd_priv	priv		= pDM_Odm->priv;
+	struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
+	struct rtl8192cd_priv	*priv = pDM_Odm->priv;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_RSSI_MONITOR))
 		return;
@@ -2811,11 +2811,11 @@ void ODM_TXPowerTrackingCheck(
 	)
 {
 	//
-	// For AP/ADSL use prtl8192cd_priv
+	// For AP/ADSL use struct rtl8192cd_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
-	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-	prtl8192cd_priv	priv		= pDM_Odm->priv;
+	struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
+	struct rtl8192cd_priv	*priv = pDM_Odm->priv;
 
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
@@ -3035,11 +3035,11 @@ odm_SwAntDivChkAntSwitch(
 	)
 {
 	//
-	// For AP/ADSL use prtl8192cd_priv
+	// For AP/ADSL use struct rtl8192cd_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
-	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-	prtl8192cd_priv	priv		= pDM_Odm->priv;
+	struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
+	struct rtl8192cd_priv	*priv = pDM_Odm->priv;
 
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
@@ -3860,11 +3860,11 @@ odm_EdcaTurboCheck(
 	)
 {
 	//
-	// For AP/ADSL use prtl8192cd_priv
+	// For AP/ADSL use struct rtl8192cd_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
 	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-	prtl8192cd_priv	priv		= pDM_Odm->priv;
+	struct rtl8192cd_priv	*priv		= pDM_Odm->priv;
 
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
