@@ -682,22 +682,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			update_recvframe_phyinfo(precvframe, pphy_info);
 		}
 
-#ifdef CONFIG_USB_RX_AGGREGATION
-		switch(pHalData->UsbRxAggMode)
-		{
-			case USB_RX_AGG_DMA:
-			case USB_RX_AGG_MIX:
-				pkt_offset = (u16)_RND128(pkt_offset);
-				break;
-				case USB_RX_AGG_USB:
-				pkt_offset = (u16)_RND4(pkt_offset);
-				break;
-			case USB_RX_AGG_DISABLE:
-			default:
-				break;
-		}
-#endif
-
 		if(rtw_recv_entry(precvframe) != _SUCCESS)
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("recvbuf2recvframe: rtw_recv_entry(precvframe) != _SUCCESS\n"));
 

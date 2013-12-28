@@ -145,12 +145,6 @@ struct rt_8723a_firmware_hdr {
 #define DRIVER_EARLY_INT_TIME		0x05
 #define BCN_DMA_ATIME_INT_TIME		0x02
 
-#ifdef CONFIG_USB_RX_AGGREGATION
-
-#define MAX_RX_DMA_BUFFER_SIZE	10240		// 10K for 8192C RX DMA buffer
-
-#endif
-
 
 // BK, BE, VI, VO, HCCA, MANAGEMENT, COMMAND, HIGH, BEACON.
 #define MAX_TX_QUEUE		9

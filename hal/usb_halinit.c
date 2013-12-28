@@ -129,14 +129,6 @@ static void rtl8192cu_interface_configure(struct rtw_adapter *padapter)
 
 	pHalData->interfaceIndex = pdvobjpriv->InterfaceNumber;
 
-#ifdef CONFIG_USB_RX_AGGREGATION
-	pHalData->UsbRxAggMode		= USB_RX_AGG_DMA;// USB_RX_AGG_DMA;
-	pHalData->UsbRxAggBlockCount	= 8; //unit : 512b
-	pHalData->UsbRxAggBlockTimeout	= 0x6;
-	pHalData->UsbRxAggPageCount	= 48; //uint :128 b //0x0A;	// 10 = MAX_RX_DMA_BUFFER_SIZE/2/pHalData->UsbBulkOutSize
-	pHalData->UsbRxAggPageTimeout	= 0x4; //6, absolute time = 34ms/(2^6)
-#endif
-
 	HalUsbSetQueuePipeMapping8192CUsb(padapter,
 				pdvobjpriv->RtNumInPipes, pdvobjpriv->RtNumOutPipes);
 
@@ -799,83 +791,6 @@ usb_AggSettingRxUpdate(
 	struct rtw_adapter *			Adapter
 	)
 {
-#ifdef CONFIG_USB_RX_AGGREGATION
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
-	u8			valueDMA;
-	u8			valueUSB;
-
-	valueDMA = rtw_read8(Adapter, REG_TRXDMA_CTRL);
-	valueUSB = rtw_read8(Adapter, REG_USB_SPECIAL_OPTION);
-
-	switch(pHalData->UsbRxAggMode)
-	{
-		case USB_RX_AGG_DMA:
-			valueDMA |= RXDMA_AGG_EN;
-			valueUSB &= ~USB_AGG_EN;
-			break;
-		case USB_RX_AGG_USB:
-			valueDMA &= ~RXDMA_AGG_EN;
-			valueUSB |= USB_AGG_EN;
-			break;
-		case USB_RX_AGG_MIX:
-			valueDMA |= RXDMA_AGG_EN;
-			valueUSB |= USB_AGG_EN;
-			break;
-		case USB_RX_AGG_DISABLE:
-		default:
-			valueDMA &= ~RXDMA_AGG_EN;
-			valueUSB &= ~USB_AGG_EN;
-			break;
-	}
-
-	rtw_write8(Adapter, REG_TRXDMA_CTRL, valueDMA);
-	rtw_write8(Adapter, REG_USB_SPECIAL_OPTION, valueUSB);
-
-	switch(pHalData->UsbRxAggMode)
-	{
-		case USB_RX_AGG_DMA:
-			rtw_write8(Adapter, REG_RXDMA_AGG_PG_TH, pHalData->UsbRxAggPageCount);
-			rtw_write8(Adapter, REG_USB_DMA_AGG_TO, pHalData->UsbRxAggPageTimeout);
-			break;
-		case USB_RX_AGG_USB:
-			rtw_write8(Adapter, REG_USB_AGG_TH, pHalData->UsbRxAggBlockCount);
-			rtw_write8(Adapter, REG_USB_AGG_TO, pHalData->UsbRxAggBlockTimeout);
-			break;
-		case USB_RX_AGG_MIX:
-			rtw_write8(Adapter, REG_RXDMA_AGG_PG_TH, pHalData->UsbRxAggPageCount);
-			rtw_write8(Adapter, REG_USB_DMA_AGG_TO, pHalData->UsbRxAggPageTimeout);
-			rtw_write8(Adapter, REG_USB_AGG_TH, pHalData->UsbRxAggBlockCount);
-			rtw_write8(Adapter, REG_USB_AGG_TO, pHalData->UsbRxAggBlockTimeout);
-			break;
-		case USB_RX_AGG_DISABLE:
-		default:
-			// TODO:
-			break;
-	}
-
-	switch(PBP_128)
-	{
-		case PBP_128:
-			pHalData->HwRxPageSize = 128;
-			break;
-		case PBP_64:
-			pHalData->HwRxPageSize = 64;
-			break;
-		case PBP_256:
-			pHalData->HwRxPageSize = 256;
-			break;
-		case PBP_512:
-			pHalData->HwRxPageSize = 512;
-			break;
-		case PBP_1024:
-			pHalData->HwRxPageSize = 1024;
-			break;
-		default:
-			//RT_ASSERT(false, ("RX_PAGE_SIZE_REG_VALUE definition is incorrect!\n"));
-			break;
-	}
-#endif
 }	// usb_AggSettingRxUpdate
 
 static void
@@ -2744,14 +2659,6 @@ _func_enter_;
 	switch(variable)
 	{
 		case HW_VAR_RXDMA_AGG_PG_TH:
-#ifdef CONFIG_USB_RX_AGGREGATION
-			{
-				u8 threshold = *val;
-				if (threshold == 0)
-					threshold = pHalData->UsbRxAggPageCount;
-				SetHwReg8723A(Adapter, HW_VAR_RXDMA_AGG_PG_TH, &threshold);
-			}
-#endif
 			break;
 
 		case HW_VAR_SET_RPWM:
