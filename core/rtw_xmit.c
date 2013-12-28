@@ -1973,13 +1973,13 @@ s32 rtw_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmit
 
 static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, struct hw_xmit *phwxmit, struct tx_servq *ptxservq, _queue *pframe_queue)
 {
-	struct list_head *phead, *plist, *ptmp;
-	struct xmit_frame *pxmitframe;
+	struct list_head *phead;
+	struct xmit_frame *pxmitframe = NULL;
 
 	phead = get_list_head(pframe_queue);
 
-	list_for_each_safe(plist, ptmp, phead) {
-		pxmitframe = container_of(plist, struct xmit_frame, list);
+	if (!list_empty(phead)) {
+		pxmitframe = list_first_entry(phead, struct xmit_frame, list);
 		list_del_init(&pxmitframe->list);
 		ptxservq->qcnt--;
 	}
