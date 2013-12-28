@@ -119,11 +119,10 @@ _func_enter_;
 
 	_rtw_init_queue(&(pcmdpriv->cmd_queue));
 
-	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
-
 	pcmdpriv->cmd_seq = 1;
 
-	pcmdpriv->cmd_allocated_buf = rtw_zmalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ);
+	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
+		GFP_KERNEL);
 
 	if (pcmdpriv->cmd_allocated_buf == NULL){
 		res= _FAIL;
@@ -235,7 +234,7 @@ _func_enter_;
 
 	if(pcmdpriv){
 		if (pcmdpriv->cmd_allocated_buf)
-			rtw_mfree(pcmdpriv->cmd_allocated_buf, MAX_CMDSZ + CMDBUFF_ALIGN_SZ);
+			kfree(pcmdpriv->cmd_allocated_buf);
 
 		if (pcmdpriv->rsp_allocated_buf)
 			rtw_mfree(pcmdpriv->rsp_allocated_buf, MAX_RSPSZ + 4);
