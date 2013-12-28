@@ -454,7 +454,7 @@ void rtw_alloc_hwxmits(struct rtw_adapter *padapter);
 void rtw_free_hwxmits(struct rtw_adapter *padapter);
 
 
-s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **pkt);
+s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *pkt);
 
 #if defined(CONFIG_AP_MODE)
 int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);

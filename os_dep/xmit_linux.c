@@ -229,7 +229,7 @@ static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff
 	}
 }
 
-int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev)
+int rtw_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
 {
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -248,9 +248,9 @@ _func_enter_;
 		goto drop_packet;
 	}
 
-	rtw_check_xmit_resource(padapter, pkt);
+	rtw_check_xmit_resource(padapter, skb);
 
-	res = rtw_xmit(padapter, &pkt);
+	res = rtw_xmit(padapter, skb);
 	if (res < 0) {
 		#ifdef DBG_TX_DROP_FRAME
 		DBG_8723A("DBG_TX_DROP_FRAME %s rtw_xmit fail\n", __FUNCTION__);
@@ -264,7 +264,7 @@ _func_enter_;
 
 drop_packet:
 	pxmitpriv->tx_drop++;
-	dev_kfree_skb_any(pkt);
+	dev_kfree_skb_any(skb);
 	RT_TRACE(_module_xmit_osdep_c_, _drv_notice_, ("rtw_xmit_entry: drop, tx_drop=%d\n", (u32)pxmitpriv->tx_drop));
 
 exit:

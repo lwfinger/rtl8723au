@@ -2166,9 +2166,8 @@ _func_exit_;
 }
 
 #ifdef CONFIG_BR_EXT
-int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff **pskb)
+int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff *skb)
 {
-	struct sk_buff *skb = *pskb;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	/* if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true) */
 	{
@@ -2368,7 +2367,7 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
  *	0	success, hardware will handle this xmit frame(packet)
  *	<0	fail
  */
-s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **ppkt)
+s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 {
 	static u32 start = 0;
 	static u32 drop_cnt = 0;
@@ -2407,7 +2406,7 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **ppkt)
 
 	if( br_port && check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true)
 	{
-		res = rtw_br_client_tx(padapter, ppkt);
+		res = rtw_br_client_tx(padapter, skb);
 		if (res == -1)
 		{
 			rtw_free_xmitframe(pxmitpriv, pxmitframe);
@@ -2417,7 +2416,7 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **ppkt)
 
 #endif	/*  CONFIG_BR_EXT */
 
-	res = update_attrib(padapter, *ppkt, &pxmitframe->attrib);
+	res = update_attrib(padapter, skb, &pxmitframe->attrib);
 
 	if (res == _FAIL) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("rtw_xmit: update attrib fail\n"));
@@ -2427,7 +2426,7 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff **ppkt)
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
 		return -1;
 	}
-	pxmitframe->pkt = *ppkt;
+	pxmitframe->pkt = skb;
 
 	rtw_led_control(padapter, LED_CTL_TX);
 
