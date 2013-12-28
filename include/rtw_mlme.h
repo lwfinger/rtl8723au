@@ -375,10 +375,7 @@ struct mlme_priv {
 
 	u8	not_indic_disco;
 	struct list_head	*pscanned;
-	_queue	free_bss_pool;
 	_queue	scanned_queue;
-	u8		*free_bss_buf;
-	u32	num_of_scanned;
 
 	NDIS_802_11_SSID	assoc_ssid;
 	u8	assoc_bssid[6];
@@ -630,27 +627,6 @@ static inline void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-static inline void up_scanned_network(struct mlme_priv *pmlmepriv)
-{
-	spin_lock_bh(&pmlmepriv->lock);
-	pmlmepriv->num_of_scanned++;
-	spin_unlock_bh(&pmlmepriv->lock);
-}
-
-static inline void down_scanned_network(struct mlme_priv *pmlmepriv)
-{
-	spin_lock_bh(&pmlmepriv->lock);
-	pmlmepriv->num_of_scanned--;
-	spin_unlock_bh(&pmlmepriv->lock);
-}
-
-static inline void set_scanned_network_val(struct mlme_priv *pmlmepriv, int val)
-{
-	spin_lock_bh(&pmlmepriv->lock);
-	pmlmepriv->num_of_scanned = val;
-	spin_unlock_bh(&pmlmepriv->lock);
-}
-
 u16 rtw_get_capability(WLAN_BSSID_EX *bss);
 void rtw_update_scanned_network(struct rtw_adapter *adapter, WLAN_BSSID_EX *target);
 void rtw_disconnect_hdl_under_linked(struct rtw_adapter* adapter, struct sta_info *psta, u8 free_assoc);
@@ -698,7 +674,7 @@ int _rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork);
 
 struct wlan_network* _rtw_dequeue_network(_queue *queue);
 
-struct wlan_network* _rtw_alloc_network(struct mlme_priv *pmlmepriv);
+struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv);
 
 void _rtw_free_network(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork, u8 isfreeall);
 void _rtw_free_network_nolock(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork);

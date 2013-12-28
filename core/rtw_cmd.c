@@ -2785,7 +2785,7 @@ _func_enter_;
 	else
 	{
 
-		pwlan = _rtw_alloc_network(pmlmepriv);
+		pwlan = rtw_alloc_network(pmlmepriv);
 		spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 		if ( pwlan == NULL)
 		{

@@ -81,31 +81,9 @@ _func_enter_;
 	pmlmepriv->scan_mode=SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
 
 	spin_lock_init(&(pmlmepriv->lock));
-	_rtw_init_queue(&(pmlmepriv->free_bss_pool));
 	_rtw_init_queue(&(pmlmepriv->scanned_queue));
 
-	set_scanned_network_val(pmlmepriv, 0);
-
 	memset(&pmlmepriv->assoc_ssid,0,sizeof(NDIS_802_11_SSID));
-
-	pbuf = rtw_zvmalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
-
-	if (pbuf == NULL){
-		res=_FAIL;
-		goto exit;
-	}
-	pmlmepriv->free_bss_buf = pbuf;
-
-	pnetwork = (struct wlan_network *)pbuf;
-
-	for(i = 0; i < MAX_BSS_CNT; i++)
-	{
-		INIT_LIST_HEAD(&(pnetwork->list));
-
-		list_add_tail(&(pnetwork->list), &(pmlmepriv->free_bss_pool.queue));
-
-		pnetwork++;
-	}
 
 	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
 
@@ -166,11 +144,6 @@ _func_enter_;
 
 	rtw_free_mlme_priv_ie_data(pmlmepriv);
 
-	if(pmlmepriv){
-		if (pmlmepriv->free_bss_buf) {
-			rtw_vmfree(pmlmepriv->free_bss_buf, MAX_BSS_CNT * sizeof(struct wlan_network));
-		}
-	}
 _func_exit_;
 }
 
@@ -220,52 +193,32 @@ _func_exit_;
 	return pnetwork;
 }
 
-struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv )/* _queue *free_queue) */
+struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
 {
-	struct	wlan_network	*pnetwork;
-	_queue *free_queue = &pmlmepriv->free_bss_pool;
-	struct list_head* plist = NULL;
+	struct wlan_network *pnetwork;
 
-_func_enter_;
-
-	spin_lock_bh(&free_queue->lock);
-
-	if (_rtw_queue_empty(free_queue) == true) {
-		pnetwork=NULL;
-		goto exit;
+	pnetwork = kzalloc(sizeof(struct wlan_network), GFP_ATOMIC);
+	if (pnetwork) {
+		INIT_LIST_HEAD(&pnetwork->list);
+		pnetwork->network_type = 0;
+		pnetwork->fixed = false;
+		pnetwork->last_scanned = rtw_get_current_time();
+		pnetwork->aid = 0;
+		pnetwork->join_res = 0;
 	}
-	plist = free_queue->queue.next;
-
-	pnetwork = container_of(plist , struct wlan_network, list);
-
-	list_del_init(&pnetwork->list);
-
-	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("_rtw_alloc_network: ptr=%p\n", plist));
-	pnetwork->network_type = 0;
-	pnetwork->fixed = false;
-	pnetwork->last_scanned = rtw_get_current_time();
-	pnetwork->aid=0;
-	pnetwork->join_res=0;
-
-	pmlmepriv->num_of_scanned ++;
-
-exit:
-	spin_unlock_bh(&free_queue->lock);
-
-_func_exit_;
 
 	return pnetwork;
 }
 
-void _rtw_free_network(struct	mlme_priv *pmlmepriv ,struct wlan_network *pnetwork, u8 isfreeall)
+void _rtw_free_network(struct mlme_priv *pmlmepriv,
+		       struct wlan_network *pnetwork, u8 isfreeall)
 {
 	u32 curr_time, delta_time;
 	u32 lifetime = SCANQUEUE_LIFETIME;
-	_queue *free_queue = &(pmlmepriv->free_bss_pool);
 
 _func_enter_;
 
-	if (pnetwork == NULL)
+	if (!pnetwork)
 		goto exit;
 
 	if (pnetwork->fixed == true)
@@ -273,41 +226,21 @@ _func_enter_;
 
 	curr_time = rtw_get_current_time();
 
-	if ( (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)==true ) ||
-		(check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)==true ) )
+	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) ||
+	    (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true))
 		lifetime = 1;
-
-	if(!isfreeall)
-	{
-		delta_time = (curr_time -pnetwork->last_scanned)/HZ;
-
-		if(delta_time < lifetime)/*  unit:sec */
-		{
-			goto exit;
-		}
-	}
-
-	spin_lock_bh(&free_queue->lock);
 
 	list_del_init(&(pnetwork->list));
 
-	list_add_tail(&(pnetwork->list),&(free_queue->queue));
-
-	pmlmepriv->num_of_scanned --;
-
-	/* DBG_8723A("_rtw_free_network:SSID=%s\n", pnetwork->network.Ssid.Ssid); */
-
-	spin_unlock_bh(&free_queue->lock);
-
+	kfree(pnetwork);
 exit:
 
 _func_exit_;
 }
 
-void _rtw_free_network_nolock(struct	mlme_priv *pmlmepriv, struct wlan_network *pnetwork)
+void _rtw_free_network_nolock(struct mlme_priv *pmlmepriv,
+			      struct wlan_network *pnetwork)
 {
-
-	_queue *free_queue = &(pmlmepriv->free_bss_pool);
 
 _func_enter_;
 
@@ -317,16 +250,9 @@ _func_enter_;
 	if (pnetwork->fixed == true)
 		goto exit;
 
-	/* spin_lock_irqsave(&free_queue->lock); */
-
 	list_del_init(&(pnetwork->list));
 
-	list_add_tail(&(pnetwork->list), get_list_head(free_queue));
-
-	pmlmepriv->num_of_scanned --;
-
-	/* spin_unlock_irqrestore(&free_queue->lock); */
-
+	kfree(pnetwork);
 exit:
 
 _func_exit_;
@@ -491,16 +417,6 @@ static struct	wlan_network *rtw_dequeue_network(_queue *queue)
 	struct wlan_network *pnetwork;
 _func_enter_;
 	pnetwork = _rtw_dequeue_network(queue);
-_func_exit_;
-	return pnetwork;
-}
-
-struct	wlan_network *rtw_alloc_network(struct	mlme_priv *pmlmepriv );
-struct	wlan_network *rtw_alloc_network(struct	mlme_priv *pmlmepriv )/* _queue	*free_queue) */
-{
-	struct	wlan_network	*pnetwork;
-_func_enter_;
-	pnetwork = _rtw_alloc_network(pmlmepriv);
 _func_exit_;
 	return pnetwork;
 }
@@ -724,11 +640,11 @@ Caller must hold pmlmepriv->lock first.
 void rtw_update_scanned_network(struct rtw_adapter *adapter, WLAN_BSSID_EX *target)
 {
 	struct list_head *plist, *phead;
-	u32	bssid_ex_sz;
-	struct mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
-	_queue	*queue	= &(pmlmepriv->scanned_queue);
-	struct wlan_network	*pnetwork = NULL;
-	struct wlan_network	*oldest = NULL;
+	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
+	struct wlan_network *pnetwork = NULL;
+	struct wlan_network *oldest = NULL;
+	_queue *queue = &pmlmepriv->scanned_queue;
+	u32 bssid_ex_sz;
 	int found = 0;
 
 _func_enter_;
@@ -751,69 +667,56 @@ _func_enter_;
 	/* If we didn't find a match, then get a new network slot to initialize
 	 * with this beacon's information */
 	if (!found) {
-		if (_rtw_queue_empty(&(pmlmepriv->free_bss_pool)) == true) {
-			/* If there are no more slots, expire the oldest */
-			/* list_del_init(&oldest->list); */
-			pnetwork = oldest;
-
-#ifdef CONFIG_ANTENNA_DIVERSITY
-			rtw_hal_get_def_var(adapter, HAL_DEF_CURRENT_ANTENNA, &(target->PhyInfo.Optimum_antenna));
-#endif
-			memcpy(&(pnetwork->network), target,  get_WLAN_BSSID_EX_sz(target));
-			/* pnetwork->last_scanned = rtw_get_current_time(); */
-			/*  variable initialize */
-			pnetwork->fixed = false;
-			pnetwork->last_scanned = rtw_get_current_time();
-
-			pnetwork->network_type = 0;
-			pnetwork->aid=0;
-			pnetwork->join_res=0;
-
-			/* bss info not receving from the right channel */
-			if (pnetwork->network.PhyInfo.SignalQuality == 101)
-				pnetwork->network.PhyInfo.SignalQuality = 0;
-		} else {
-			/* Otherwise just pull from the free list */
-
-			pnetwork = rtw_alloc_network(pmlmepriv); /*  will update scan_time */
-
-			if(pnetwork==NULL){
-				RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n\n\nsomething wrong here\n\n\n"));
+		pnetwork = rtw_alloc_network(pmlmepriv);
+		if (!pnetwork) {
+			if (!oldest) {
+				RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+					 ("\n\n\nsomething wrong here\n\n\n"));
 				goto exit;
 			}
+			pnetwork = oldest;
+		} else
+			list_add_tail(&pnetwork->list, &queue->queue);
 
-			bssid_ex_sz = get_WLAN_BSSID_EX_sz(target);
-			target->Length = bssid_ex_sz;
+		bssid_ex_sz = get_WLAN_BSSID_EX_sz(target);
+		target->Length = bssid_ex_sz;
 #ifdef CONFIG_ANTENNA_DIVERSITY
-			/* target->PhyInfo.Optimum_antenna = pHalData->CurAntenna; */
-			rtw_hal_get_def_var(adapter, HAL_DEF_CURRENT_ANTENNA, &(target->PhyInfo.Optimum_antenna));
+		/* target->PhyInfo.Optimum_antenna = pHalData->CurAntenna; */
+		rtw_hal_get_def_var(adapter, HAL_DEF_CURRENT_ANTENNA,
+				    &target->PhyInfo.Optimum_antenna);
 #endif
-			memcpy(&(pnetwork->network), target, bssid_ex_sz );
+		memcpy(&pnetwork->network, target, bssid_ex_sz);
 
-			pnetwork->last_scanned = rtw_get_current_time();
+		/* pnetwork->last_scanned = rtw_get_current_time(); */
+		/*  variable initialize */
+		pnetwork->fixed = false;
+		pnetwork->last_scanned = rtw_get_current_time();
 
-			/* bss info not receving from the right channel */
-			if (pnetwork->network.PhyInfo.SignalQuality == 101)
-				pnetwork->network.PhyInfo.SignalQuality = 0;
+		pnetwork->network_type = 0;
+		pnetwork->aid = 0;
+		pnetwork->join_res = 0;
 
-			list_add_tail(&(pnetwork->list),&(queue->queue));
-
-		}
-	}
-	else {
-		/* we have an entry and we are going to update it. But this entry may
-		 * be already expired. In this case we do the same as we found a new
-		 * net and call the new_net handler
+		/* bss info not receving from the right channel */
+		if (pnetwork->network.PhyInfo.SignalQuality == 101)
+			pnetwork->network.PhyInfo.SignalQuality = 0;
+	} else {
+		/*
+		 * we have an entry and we are going to update it. But
+		 * this entry may be already expired. In this case we
+		 * do the same as we found a new net and call the
+		 * new_net handler
 		 */
 		bool update_ie = true;
 
 		pnetwork->last_scanned = rtw_get_current_time();
 
-		/* target.Reserved[0]==1, means that scaned network is a bcn frame. */
-		if((pnetwork->network.IELength>target->IELength) && (target->Reserved[0]==1))
+		/* target.Reserved[0]==1, means that scaned network is
+		 * a bcn frame. */
+		if ((pnetwork->network.IELength>target->IELength) &&
+		    (target->Reserved[0] == 1))
 			update_ie = false;
 
-		update_network(&(pnetwork->network), target,adapter, update_ie);
+		update_network(&pnetwork->network, target,adapter, update_ie);
 	}
 
 exit:
@@ -1115,29 +1018,23 @@ void rtw_fwdbg_event_callback(struct rtw_adapter *adapter , u8 *pbuf)
 
 static void free_scanqueue(struct	mlme_priv *pmlmepriv)
 {
-	_queue *free_queue = &pmlmepriv->free_bss_pool;
+	struct wlan_network *pnetwork;
 	_queue *scan_queue = &pmlmepriv->scanned_queue;
-	struct list_head	*plist, *phead, *ptemp;
+	struct list_head *plist, *phead, *ptemp;
 
 _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_, ("+free_scanqueue\n"));
 	spin_lock_bh(&scan_queue->lock);
-	spin_lock_bh(&free_queue->lock);
 
 	phead = get_list_head(scan_queue);
-	plist = phead->next;
 
-	while (plist != phead)
-       {
-		ptemp = plist->next;
+	list_for_each_safe(plist, ptemp, phead) {
 		list_del_init(plist);
-		list_add_tail(plist, &free_queue->queue);
-		plist =ptemp;
-		pmlmepriv->num_of_scanned --;
+		pnetwork = container_of(plist, struct wlan_network, list);
+		kfree(pnetwork);
         }
 
-	spin_unlock_bh(&free_queue->lock);
 	spin_unlock_bh(&scan_queue->lock);
 
 _func_exit_;
