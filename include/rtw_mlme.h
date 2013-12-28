@@ -670,10 +670,6 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv);
 
 void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv);
 
-int _rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork);
-
-struct wlan_network* _rtw_dequeue_network(_queue *queue);
-
 struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv);
 
 void _rtw_free_network(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork, u8 isfreeall);

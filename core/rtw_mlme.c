@@ -147,52 +147,6 @@ _func_enter_;
 _func_exit_;
 }
 
-int	_rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork)
-{
-_func_enter_;
-
-	if (pnetwork == NULL)
-		goto exit;
-
-	spin_lock_bh(&queue->lock);
-
-	list_add_tail(&pnetwork->list, &queue->queue);
-
-	spin_unlock_bh(&queue->lock);
-
-exit:
-
-_func_exit_;
-
-	return _SUCCESS;
-}
-
-struct	wlan_network *_rtw_dequeue_network(_queue *queue)
-{
-	struct wlan_network *pnetwork;
-
-_func_enter_;
-
-	spin_lock_bh(&queue->lock);
-
-	if (_rtw_queue_empty(queue) == true)
-
-		pnetwork = NULL;
-
-	else
-	{
-		pnetwork = container_of((&queue->queue)->next, struct wlan_network, list);
-
-		list_del_init(&(pnetwork->list));
-	}
-
-	spin_unlock_bh(&queue->lock);
-
-_func_exit_;
-
-	return pnetwork;
-}
-
 struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
 {
 	struct wlan_network *pnetwork;
@@ -400,25 +354,6 @@ _func_enter_;
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_free_mlme_priv\n"));
 	_rtw_free_mlme_priv (pmlmepriv);
 _func_exit_;
-}
-
-int	rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork);
-int	rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork)
-{
-	int	res;
-_func_enter_;
-	res = _rtw_enqueue_network(queue, pnetwork);
-_func_exit_;
-	return res;
-}
-
-static struct	wlan_network *rtw_dequeue_network(_queue *queue)
-{
-	struct wlan_network *pnetwork;
-_func_enter_;
-	pnetwork = _rtw_dequeue_network(queue);
-_func_exit_;
-	return pnetwork;
 }
 
 void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork, u8 is_freeall);
