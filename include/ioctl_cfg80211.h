@@ -60,7 +60,6 @@ struct rtw_wdev_priv
 
 	struct rtw_wdev_invit_info invit_info;
 
-	u8 bandroid_scan;
 	bool block;
 	bool power_mgmt;
 };
