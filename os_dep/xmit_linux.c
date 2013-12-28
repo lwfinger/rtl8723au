@@ -233,7 +233,7 @@ int rtw_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
 {
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	s32 res = 0;
+	int res = 0;
 	u16 queue;
 
 _func_enter_;

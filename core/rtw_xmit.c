@@ -2220,7 +2220,7 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
  *	0	success, hardware will handle this xmit frame(packet)
  *	<0	fail
  */
-s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
+int rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 {
 	static u32 start = 0;
 	static u32 drop_cnt = 0;
