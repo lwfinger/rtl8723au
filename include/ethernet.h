@@ -23,14 +23,4 @@
 
 #define LLC_HEADER_SIZE						6		//!< LLC Header Length
 
-#define RT_ETH_IS_MULTICAST(_pAddr)	((((UCHAR *)(_pAddr))[0]&0x01)!=0)		//!< Is Multicast Address?
-#define RT_ETH_IS_BROADCAST(_pAddr)	(										\
-											((UCHAR *)(_pAddr))[0]==0xff	&&		\
-											((UCHAR *)(_pAddr))[1]==0xff	&&		\
-											((UCHAR *)(_pAddr))[2]==0xff	&&		\
-											((UCHAR *)(_pAddr))[3]==0xff	&&		\
-											((UCHAR *)(_pAddr))[4]==0xff	&&		\
-											((UCHAR *)(_pAddr))[5]==0xff		)	//!< Is Broadcast Address?
-
-
 #endif // #ifndef __INC_ETHERNET_H
