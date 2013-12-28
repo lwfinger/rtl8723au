@@ -169,7 +169,7 @@ struct pwrctrl_priv
 #ifdef CONFIG_LPS_RPWM_TIMER
 	u8 brpwmtimeout;
 	struct work_struct rpwmtimeoutwi;
-	_timer pwr_rpwm_timer;
+	struct timer_list pwr_rpwm_timer;
 #endif // CONFIG_LPS_RPWM_TIMER
 	u8	bpower_saving;
 
@@ -217,7 +217,7 @@ struct pwrctrl_priv
 	u8		wowlan_wake_reason;
 	u32		wowlan_pattern_context[8][5];
 #endif // CONFIG_WOWLAN
-	_timer	pwr_state_check_timer;
+	struct timer_list	pwr_state_check_timer;
 	int		pwr_state_check_interval;
 	u8		pwr_state_check_cnts;
 

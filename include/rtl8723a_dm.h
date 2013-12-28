@@ -141,7 +141,7 @@ struct dm_priv
 #endif
 
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
-//	_timer SwAntennaSwitchTimer;
+//	struct timer_list SwAntennaSwitchTimer;
 /*
 	u64	lastTxOkCnt;
 	u64	lastRxOkCnt;

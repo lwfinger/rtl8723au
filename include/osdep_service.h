@@ -79,8 +79,6 @@ struct c2h_evt_hdr;
 
 typedef s32 (*c2h_id_filter)(u8 id);
 
-typedef struct timer_list _timer;
-
 struct	__queue	{
 	struct	list_head	queue;
 	spinlock_t		lock;
