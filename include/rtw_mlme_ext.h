@@ -507,7 +507,6 @@ void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
 void init_mlme_ext_timer(struct rtw_adapter *padapter);
 void init_addba_retry_timer(struct sta_info *psta);
 struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
-struct xmit_frame *alloc_mgtxmitframe_once(struct xmit_priv *pxmitpriv);
 
 //void fill_fwpriv(struct rtw_adapter * padapter, struct fw_priv *pfwpriv);
 

@@ -5262,23 +5262,23 @@ unsigned int DoReserved(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	return _SUCCESS;
 }
 
-static struct xmit_frame *_alloc_mgtxmitframe(struct xmit_priv *pxmitpriv, bool once)
+struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv)
 {
 	struct xmit_frame *pmgntframe;
 	struct xmit_buf *pxmitbuf;
 
-	if (once)
-		pmgntframe = rtw_alloc_xmitframe_once(pxmitpriv);
-	else
-		pmgntframe = rtw_alloc_xmitframe_ext(pxmitpriv);
+	pmgntframe = rtw_alloc_xmitframe_ext(pxmitpriv);
 
-	if (pmgntframe == NULL) {
-		DBG_8723A(FUNC_ADPT_FMT" alloc xmitframe fail, once:%d\n", FUNC_ADPT_ARG(pxmitpriv->adapter), once);
+	if (!pmgntframe) {
+		DBG_8723A(FUNC_ADPT_FMT" alloc xmitframe fail\n",
+			  FUNC_ADPT_ARG(pxmitpriv->adapter));
 		goto exit;
 	}
 
-	if ((pxmitbuf = rtw_alloc_xmitbuf_ext(pxmitpriv)) == NULL) {
-		DBG_8723A(FUNC_ADPT_FMT" alloc xmitbuf fail\n", FUNC_ADPT_ARG(pxmitpriv->adapter));
+	pxmitbuf = rtw_alloc_xmitbuf_ext(pxmitpriv);
+	if (!pxmitbuf) {
+		DBG_8723A(FUNC_ADPT_FMT" alloc xmitbuf fail\n",
+			  FUNC_ADPT_ARG(pxmitpriv->adapter));
 		rtw_free_xmitframe(pxmitpriv, pmgntframe);
 		pmgntframe = NULL;
 		goto exit;
@@ -5291,16 +5291,6 @@ static struct xmit_frame *_alloc_mgtxmitframe(struct xmit_priv *pxmitpriv, bool 
 
 exit:
 	return pmgntframe;
-}
-
-inline struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv)
-{
-	return _alloc_mgtxmitframe(pxmitpriv, false);
-}
-
-inline struct xmit_frame *alloc_mgtxmitframe_once(struct xmit_priv *pxmitpriv)
-{
-	return _alloc_mgtxmitframe(pxmitpriv, true);
 }
 
 /****************************************************************************

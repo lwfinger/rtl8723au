@@ -1773,35 +1773,6 @@ _func_exit_;
 	return pxframe;
 }
 
-struct xmit_frame *rtw_alloc_xmitframe_once(struct xmit_priv *pxmitpriv)
-{
-	struct xmit_frame *pxframe = NULL;
-	u8 *alloc_addr;
-
-	alloc_addr = rtw_zmalloc(sizeof(struct xmit_frame) + 4);
-
-	if (alloc_addr == NULL)
-		goto exit;
-
-	pxframe = (struct xmit_frame *)PTR_ALIGN(alloc_addr, 4);
-	pxframe->alloc_addr = alloc_addr;
-
-	pxframe->padapter = pxmitpriv->adapter;
-	pxframe->frame_tag = NULL_FRAMETAG;
-
-	pxframe->pkt = NULL;
-
-	pxframe->buf_addr = NULL;
-	pxframe->pxmitbuf = NULL;
-
-	rtw_init_xmitframe(pxframe);
-
-	DBG_8723A("################## %s ##################\n", __func__);
-
-exit:
-	return pxframe;
-}
-
 s32 rtw_free_xmitframe(struct xmit_priv *pxmitpriv, struct xmit_frame *pxmitframe)
 {
 	_queue *queue = NULL;
