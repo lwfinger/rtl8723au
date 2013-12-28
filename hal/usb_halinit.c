@@ -129,11 +129,6 @@ static void rtl8192cu_interface_configure(struct rtw_adapter *padapter)
 
 	pHalData->interfaceIndex = pdvobjpriv->InterfaceNumber;
 
-#ifdef CONFIG_USB_TX_AGGREGATION
-	pHalData->UsbTxAggMode		= 1;
-	pHalData->UsbTxAggDescNum	= 0x6;	// only 4 bits
-#endif
-
 #ifdef CONFIG_USB_RX_AGGREGATION
 	pHalData->UsbRxAggMode		= USB_RX_AGG_DMA;// USB_RX_AGG_DMA;
 	pHalData->UsbRxAggBlockCount	= 8; //unit : 512b
@@ -781,23 +776,6 @@ usb_AggSettingTxUpdate(
 	struct rtw_adapter *			Adapter
 	)
 {
-#ifdef CONFIG_USB_TX_AGGREGATION
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
-	u32			value32;
-
-	if(Adapter->registrypriv.wifi_spec)
-		pHalData->UsbTxAggMode = false;
-
-	if(pHalData->UsbTxAggMode){
-		value32 = rtw_read32(Adapter, REG_TDECTRL);
-		value32 = value32 & ~(BLK_DESC_NUM_MASK << BLK_DESC_NUM_SHIFT);
-		value32 |= ((pHalData->UsbTxAggDescNum & BLK_DESC_NUM_MASK) << BLK_DESC_NUM_SHIFT);
-
-		rtw_write32(Adapter, REG_TDECTRL, value32);
-	}
-
-#endif
 }	// usb_AggSettingTxUpdate
 
 

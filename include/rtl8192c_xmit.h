@@ -118,10 +118,6 @@ void handle_txrpt_ccx_8192c(struct rtw_adapter *adapter, void *buf);
 #define handle_txrpt_ccx_8192c(adapter, buf) do {} while(0)
 #endif
 
-#ifdef CONFIG_USB_TX_AGGREGATION
-#define MAX_TX_AGG_PACKET_NUMBER 0xFF
-#endif
-
 s32	rtl8192cu_init_xmit_priv(struct rtw_adapter * padapter);
 
 void	rtl8192cu_free_xmit_priv(struct rtw_adapter * padapter);

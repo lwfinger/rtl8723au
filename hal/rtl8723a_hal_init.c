@@ -3208,9 +3208,6 @@ static void rtl8723a_fill_default_txdesc(
 				ptxdesc->data_short = 1;// DATA_SHORT
 			ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 		}
-#if defined(CONFIG_USB_TX_AGGREGATION)
-		ptxdesc->usb_txagg_num = pxmitframe->agg_num;
-#endif
 	}
 	else if (pxmitframe->frame_tag == MGNT_FRAMETAG)
 	{

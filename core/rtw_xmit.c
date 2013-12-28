@@ -804,14 +804,10 @@ static s32 xmitframe_addmic(struct rtw_adapter *padapter, struct xmit_frame *pxm
 
 _func_enter_;
 
-#ifdef CONFIG_USB_TX_AGGREGATION
-	hw_hdr_offset = TXDESC_SIZE + (pxmitframe->pkt_offset * PACKET_OFFSET_SZ);;
-#else
-	#ifdef CONFIG_TX_EARLY_MODE
+#ifdef CONFIG_TX_EARLY_MODE
 	hw_hdr_offset = TXDESC_OFFSET+ EARLY_MODE_INFO_SIZE;
-	#else
+#else
 	hw_hdr_offset = TXDESC_OFFSET;
-	#endif
 #endif
 
 	if(pattrib->encrypt ==_TKIP_)/* if(psecuritypriv->dot11PrivacyAlgrthm==_TKIP_PRIVACY_) */
@@ -1263,14 +1259,10 @@ _func_enter_;
 
 	pbuf_start = pxmitframe->buf_addr;
 
-#ifdef CONFIG_USB_TX_AGGREGATION
-	hw_hdr_offset =  TXDESC_SIZE + (pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
-#else
-	#ifdef CONFIG_TX_EARLY_MODE /* for SDIO && Tx Agg */
+#ifdef CONFIG_TX_EARLY_MODE /* for SDIO && Tx Agg */
 	hw_hdr_offset = TXDESC_OFFSET + EARLY_MODE_INFO_SIZE;
-	#else
+#else
 	hw_hdr_offset = TXDESC_OFFSET;
-	#endif
 #endif
 
 	mem_start = pbuf_start +	hw_hdr_offset;
@@ -1505,21 +1497,13 @@ void rtw_count_tx_stats(struct rtw_adapter *padapter, struct xmit_frame *pxmitfr
 	if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 	{
 		pxmitpriv->tx_bytes += sz;
-#if defined(CONFIG_USB_TX_AGGREGATION)
-		pmlmepriv->LinkDetectInfo.NumTxOkInPeriod += pxmitframe->agg_num;
-#else
 		pmlmepriv->LinkDetectInfo.NumTxOkInPeriod++;
-#endif
 
 		psta = pxmitframe->attrib.psta;
 		if (psta)
 		{
 			pstats = &psta->sta_stats;
-#if defined(CONFIG_USB_TX_AGGREGATION)
-			pstats->tx_pkts += pxmitframe->agg_num;
-#else
 			pstats->tx_pkts++;
-#endif
 			pstats->tx_bytes += sz;
 		}
 	}
@@ -1700,10 +1684,6 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 
 		pxframe->pkt = NULL;
 		pxframe->pkt_offset = 1;/* default use pkt_offset to fill tx desc */
-
-#ifdef CONFIG_USB_TX_AGGREGATION
-		pxframe->agg_num = 1;
-#endif
 
 #ifdef CONFIG_XMIT_ACK
 		pxframe->ack_report = 0;
