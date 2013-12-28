@@ -2103,30 +2103,11 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, union recv_frame *prframe)
 		}
 
 		/* Indicat the packets to upper layer */
-		{
-#ifdef CONFIG_BR_EXT
-			/*  Insert NAT2.5 RX here! */
-			struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-			void *br_port = NULL;
-			rcu_read_lock();
-			br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
-			rcu_read_unlock();
+		sub_skb->protocol = eth_type_trans(sub_skb, padapter->pnetdev);
+		sub_skb->dev = padapter->pnetdev;
 
-			if (br_port &&
-			    (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true)) {
-				int nat25_handle_frame(struct rtw_adapter *priv, struct sk_buff *skb);
-				if (nat25_handle_frame(padapter, sub_skb) == -1) {
-					/*  bypass this frame to upper layer!! */
-				}
-			}
-#endif	/*  CONFIG_BR_EXT */
-
-			sub_skb->protocol = eth_type_trans(sub_skb, padapter->pnetdev);
-			sub_skb->dev = padapter->pnetdev;
-
-			sub_skb->ip_summed = CHECKSUM_NONE;
-			netif_rx(sub_skb);
-		}
+		sub_skb->ip_summed = CHECKSUM_NONE;
+		netif_rx(sub_skb);
 	}
 
 exit:

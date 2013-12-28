@@ -25,9 +25,6 @@
 #include <recv_osdep.h>
 #include <cmd_osdep.h>
 #include <mlme_osdep.h>
-#ifdef CONFIG_BR_EXT
-#include <rtw_br_ext.h>
-#endif /* CONFIG_BR_EXT */
 
 #ifdef CONFIG_BT_COEXIST
 #include <rtl8723a_hal.h>
@@ -2689,10 +2686,6 @@ _func_enter_;
 
 		goto exit;
 	}
-#ifdef CONFIG_BR_EXT
-	else /* clear bridge database */
-		nat25_db_cleanup(padapter);
-#endif /* CONFIG_BR_EXT */
 
 	/*  free cmd */
 	rtw_free_cmd_obj(pcmd);

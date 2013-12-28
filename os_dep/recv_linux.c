@@ -202,10 +202,6 @@ int rtw_recv_indicatepkt(struct rtw_adapter *padapter, union recv_frame *precv_f
 	struct sk_buff *skb;
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
 
-#ifdef CONFIG_BR_EXT
-	void *br_port = NULL;
-#endif
-
 _func_enter_;
 
 	precvpriv = &(padapter->recvpriv);
@@ -286,18 +282,6 @@ _func_enter_;
 			//DBG_8723A("to APSelf\n");
 		}
 	}
-
-
-#ifdef CONFIG_BR_EXT
-
-	rcu_read_lock();
-	br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
-	rcu_read_unlock();
-
-	if( br_port	&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true) )
-		int nat25_handle_frame(struct rtw_adapter *priv, struct sk_buff *skb);
-
-#endif	// CONFIG_BR_EXT
 
 	skb->ip_summed = CHECKSUM_NONE;
 	skb->dev = padapter->pnetdev;

@@ -2165,151 +2165,6 @@ _func_enter_;
 _func_exit_;
 }
 
-#ifdef CONFIG_BR_EXT
-int rtw_br_client_tx(struct rtw_adapter *padapter, struct sk_buff *skb)
-{
-	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	/* if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true) */
-	{
-		void dhcp_flag_bcast(struct rtw_adapter *priv, struct sk_buff *skb);
-		int res, is_vlan_tag=0, i, do_nat25=1;
-		unsigned short vlan_hdr=0;
-		void *br_port = NULL;
-
-		/* mac_clone_handle_frame(priv, skb); */
-
-		rcu_read_lock();
-		br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
-		rcu_read_unlock();
-		spin_lock_bh(&padapter->br_ext_lock);
-		if (!(skb->data[0] & 1) && br_port &&
-		    memcmp(skb->data+MACADDRLEN, padapter->br_mac, MACADDRLEN) &&
-		    *((unsigned short *)(skb->data+MACADDRLEN*2)) != __constant_htons(ETH_P_8021Q) &&
-		    *((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP) &&
-		    !memcmp(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN) && padapter->scdb_entry) {
-			memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-			padapter->scdb_entry->ageing_timer = jiffies;
-			spin_unlock_bh(&padapter->br_ext_lock);
-		} else
-		/* if (!priv->pmib->ethBrExtInfo.nat25_disable) */
-		{
-			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
-				is_vlan_tag = 1;
-				vlan_hdr = *((unsigned short *)(skb->data+MACADDRLEN*2+2));
-				for (i=0; i<6; i++)
-					*((unsigned short *)(skb->data+MACADDRLEN*2+2-i*2)) = *((unsigned short *)(skb->data+MACADDRLEN*2-2-i*2));
-				skb_pull(skb, 4);
-			}
-			/* if SA == br_mac && skb== IP  => copy SIP to br_ip ?? why */
-			if (!memcmp(skb->data+MACADDRLEN, padapter->br_mac, MACADDRLEN) &&
-				(*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP)))
-				memcpy(padapter->br_ip, skb->data+WLAN_ETHHDR_LEN+12, 4);
-
-			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP)) {
-				if (memcmp(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN)) {
-					void *scdb_findEntry(struct rtw_adapter *priv, unsigned char *macAddr, unsigned char *ipAddr);
-
-					if ((padapter->scdb_entry = (struct nat25_network_db_entry *)scdb_findEntry(padapter,
-								skb->data+MACADDRLEN, skb->data+WLAN_ETHHDR_LEN+12)) != NULL) {
-						memcpy(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN);
-						memcpy(padapter->scdb_ip, skb->data+WLAN_ETHHDR_LEN+12, 4);
-						padapter->scdb_entry->ageing_timer = jiffies;
-						do_nat25 = 0;
-					}
-				}
-				else {
-					if (padapter->scdb_entry) {
-						padapter->scdb_entry->ageing_timer = jiffies;
-						do_nat25 = 0;
-					}
-					else {
-						memset(padapter->scdb_mac, 0, MACADDRLEN);
-						memset(padapter->scdb_ip, 0, 4);
-					}
-				}
-			}
-			spin_unlock_bh(&padapter->br_ext_lock);
-			if (do_nat25)
-			{
-				int nat25_db_handle(struct rtw_adapter *priv, struct sk_buff *skb, int method);
-				if (nat25_db_handle(padapter, skb, NAT25_CHECK) == 0) {
-					struct sk_buff *newskb;
-
-					if (is_vlan_tag) {
-						skb_push(skb, 4);
-						for (i=0; i<6; i++)
-							*((unsigned short *)(skb->data+i*2)) = *((unsigned short *)(skb->data+4+i*2));
-						*((unsigned short *)(skb->data+MACADDRLEN*2)) = __constant_htons(ETH_P_8021Q);
-						*((unsigned short *)(skb->data+MACADDRLEN*2+2)) = vlan_hdr;
-					}
-
-					newskb = skb_copy(skb, GFP_ATOMIC);
-					if (newskb == NULL) {
-						/* priv->ext_stats.tx_drops++; */
-						DEBUG_ERR("TX DROP: skb_copy fail!\n");
-						/* goto stop_proc; */
-						return -1;
-					}
-					dev_kfree_skb_any(skb);
-
-					*pskb = skb = newskb;
-					if (is_vlan_tag) {
-						vlan_hdr = *((unsigned short *)(skb->data+MACADDRLEN*2+2));
-						for (i=0; i<6; i++)
-							*((unsigned short *)(skb->data+MACADDRLEN*2+2-i*2)) = *((unsigned short *)(skb->data+MACADDRLEN*2-2-i*2));
-						skb_pull(skb, 4);
-					}
-				}
-
-				if (skb_is_nonlinear(skb))
-					DEBUG_ERR("%s(): skb_is_nonlinear!!\n", __FUNCTION__);
-
-				res = skb_linearize(skb);
-				if (res < 0) {
-						DEBUG_ERR("TX DROP: skb_linearize fail!\n");
-						/* goto free_and_stop; */
-						return -1;
-				}
-
-				res = nat25_db_handle(padapter, skb, NAT25_INSERT);
-				if (res < 0) {
-					if (res == -2) {
-						/* priv->ext_stats.tx_drops++; */
-						DEBUG_ERR("TX DROP: nat25_db_handle fail!\n");
-						/* goto free_and_stop; */
-						return -1;
-
-					}
-					return 0;
-				}
-			}
-
-			memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-
-			dhcp_flag_bcast(padapter, skb);
-
-			if (is_vlan_tag) {
-				skb_push(skb, 4);
-				for (i=0; i<6; i++)
-					*((unsigned short *)(skb->data+i*2)) = *((unsigned short *)(skb->data+4+i*2));
-				*((unsigned short *)(skb->data+MACADDRLEN*2)) = __constant_htons(ETH_P_8021Q);
-				*((unsigned short *)(skb->data+MACADDRLEN*2+2)) = vlan_hdr;
-			}
-		}
-
-		/*  check if SA is equal to our MAC */
-		if (memcmp(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN)) {
-			/* priv->ext_stats.tx_drops++; */
-			DEBUG_ERR("TX DROP: untransformed frame SA:%02X%02X%02X%02X%02X%02X!\n",
-				skb->data[6],skb->data[7],skb->data[8],skb->data[9],skb->data[10],skb->data[11]);
-			/* goto free_and_stop; */
-			return -1;
-		}
-	}
-	return 0;
-}
-#endif	/*  CONFIG_BR_EXT */
-
 u32 rtw_get_ff_hwaddr(struct xmit_frame *pxmitframe)
 {
 	u32 addr;
@@ -2373,10 +2228,6 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 	static u32 drop_cnt = 0;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct xmit_frame *pxmitframe = NULL;
-#ifdef CONFIG_BR_EXT
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	void *br_port = NULL;
-#endif	/*  CONFIG_BR_EXT */
 
 	s32 res;
 
@@ -2397,24 +2248,6 @@ s32 rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("rtw_xmit: no more pxmitframe\n"));
 		return -1;
 	}
-
-#ifdef CONFIG_BR_EXT
-
-	rcu_read_lock();
-	br_port = rcu_dereference(padapter->pnetdev->rx_handler_data);
-	rcu_read_unlock();
-
-	if( br_port && check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == true)
-	{
-		res = rtw_br_client_tx(padapter, skb);
-		if (res == -1)
-		{
-			rtw_free_xmitframe(pxmitpriv, pxmitframe);
-			return -1;
-		}
-	}
-
-#endif	/*  CONFIG_BR_EXT */
 
 	res = update_attrib(padapter, skb, &pxmitframe->attrib);
 
