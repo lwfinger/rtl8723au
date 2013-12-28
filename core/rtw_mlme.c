@@ -75,7 +75,6 @@ _func_enter_;
 
 	pmlmepriv->nic_hdl = (u8 *)padapter;
 
-	pmlmepriv->pscanned = NULL;
 	pmlmepriv->fw_state = 0;
 	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
 	pmlmepriv->scan_mode=SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
@@ -2109,7 +2108,7 @@ pmlmepriv->lock
 int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 {
 	int ret;
-	struct list_head *phead, *ptmp;
+	struct list_head *phead, *plist, *ptmp;
 	struct rtw_adapter *adapter;
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct	wlan_network	*pnetwork = NULL;
@@ -2122,9 +2121,8 @@ _func_enter_;
 	phead = get_list_head(queue);
 	adapter = (struct rtw_adapter *)pmlmepriv->nic_hdl;
 
-	list_for_each_safe(pmlmepriv->pscanned, ptmp, phead) {
-		pnetwork = container_of(pmlmepriv->pscanned,
-					struct wlan_network, list);
+	list_for_each_safe(plist, ptmp, phead) {
+		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!pnetwork){
 			RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_,
 				 ("%s return _FAIL:(pnetwork==NULL)\n",

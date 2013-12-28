@@ -2170,7 +2170,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 {
 	int ret=0;
 	unsigned long irqL;
-	struct list_head *phead, *ptmp;
+	struct list_head *phead, *plist, *ptmp;
 	struct wlan_network *pnetwork = NULL;
 	NDIS_802_11_AUTHENTICATION_MODE authmode;
 	NDIS_802_11_SSID ndis_ssid;
@@ -2241,10 +2241,9 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	spin_lock_bh(&queue->lock);
 
 	phead = get_list_head(queue);
-	pmlmepriv->pscanned = phead->next;
 
-	list_for_each_safe(pmlmepriv->pscanned, ptmp, phead) {
-		pnetwork = container_of(pmlmepriv->pscanned, struct wlan_network, list);
+	list_for_each_safe(plist, ptmp, phead) {
+		pnetwork = container_of(plist, struct wlan_network, list);
 
 		dst_ssid = pnetwork->network.Ssid.Ssid;
 		dst_bssid = pnetwork->network.MacAddress;
@@ -2275,8 +2274,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 				memcpy(ndis_ssid.Ssid, pnetwork->network.Ssid.Ssid, pnetwork->network.Ssid.SsidLength);
 
 				matched=true;
-				/* Do we need this? Maybe! */
-				pmlmepriv->pscanned = pmlmepriv->pscanned->next;
 				break;
 			}
 
@@ -2288,9 +2285,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 			if ((!memcmp(dst_ssid, src_ssid, ndis_ssid.SsidLength)) &&
 				(pnetwork->network.Ssid.SsidLength==ndis_ssid.SsidLength))
 			{
-				/* Do we need this? Maybe! */
-				pmlmepriv->pscanned = pmlmepriv->pscanned->next;
-
 				DBG_8723A("matched by ssid\n");
 				matched=true;
 				break;
