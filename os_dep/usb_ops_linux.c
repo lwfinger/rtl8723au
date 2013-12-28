@@ -585,28 +585,27 @@ void usb_write_port_cancel(struct intf_hdl *pintfhdl)
 {
 	int i, j;
 	struct rtw_adapter	*padapter = pintfhdl->padapter;
-	struct xmit_buf *pxmitbuf = (struct xmit_buf *)padapter->xmitpriv.pxmitbuf;
+	struct xmit_buf *pxmitbuf;
+	struct list_head *plist;
 
 	DBG_8723A("%s \n", __func__);
 
 	padapter->bWritePortCancel = true;
 
-	for (i=0; i<NR_XMITBUFF; i++) {
-		for (j=0; j<8; j++) {
+	list_for_each(plist, &padapter->xmitpriv.xmitbuf_list) {
+		pxmitbuf = container_of(plist, struct xmit_buf, list2);
+		for (j = 0; j < 8; j++) {
 			if (pxmitbuf->pxmit_urb[j]) {
 				usb_kill_urb(pxmitbuf->pxmit_urb[j]);
 			}
 		}
-		pxmitbuf++;
 	}
-
-	pxmitbuf = (struct xmit_buf*)padapter->xmitpriv.pxmit_extbuf;
-	for (i = 0; i < NR_XMIT_EXTBUFF; i++) {
-		for (j=0; j<8; j++) {
-			if(pxmitbuf->pxmit_urb[j]) {
+	list_for_each(plist, &padapter->xmitpriv.xmitextbuf_list) {
+		pxmitbuf = container_of(plist, struct xmit_buf, list2);
+		for (j = 0; j < 8; j++) {
+			if (pxmitbuf->pxmit_urb[j]) {
 				usb_kill_urb(pxmitbuf->pxmit_urb[j]);
 			}
 		}
-		pxmitbuf++;
 	}
 }

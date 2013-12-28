@@ -136,46 +136,32 @@ _func_enter_;
 
 	/* init xmit_buf */
 	_rtw_init_queue(&pxmitpriv->free_xmitbuf_queue);
+	INIT_LIST_HEAD(&pxmitpriv->xmitbuf_list);
 	_rtw_init_queue(&pxmitpriv->pending_xmitbuf_queue);
 
-	pxmitpriv->pallocated_xmitbuf = rtw_zvmalloc(NR_XMITBUFF * sizeof(struct xmit_buf) + 4);
-
-	if (pxmitpriv->pallocated_xmitbuf  == NULL){
-		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_buf fail!\n"));
-		res= _FAIL;
-		goto exit;
-	}
-
-	pxmitpriv->pxmitbuf = PTR_ALIGN(pxmitpriv->pallocated_xmitbuf, 4);
-
-	pxmitbuf = (struct xmit_buf*)pxmitpriv->pxmitbuf;
-
-	for (i = 0; i < NR_XMITBUFF; i++)
-	{
+	for (i = 0; i < NR_XMITBUFF; i++) {
+		pxmitbuf = kzalloc(sizeof(struct xmit_buf), GFP_KERNEL);
+		if (!pxmitbuf)
+			goto fail;
 		INIT_LIST_HEAD(&pxmitbuf->list);
+		INIT_LIST_HEAD(&pxmitbuf->list2);
 
-		pxmitbuf->priv_data = NULL;
 		pxmitbuf->padapter = padapter;
-		pxmitbuf->ext_tag = false;
 
 		/* Tx buf allocation may fail sometimes, so sleep and retry. */
-		if((res=rtw_os_xmit_resource_alloc(padapter, pxmitbuf,(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ))) == _FAIL) {
-			msleep(10);
-			res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf,(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
-			if (res == _FAIL) {
-				goto exit;
-			}
+		res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf,
+						 (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
+		if (res == _FAIL) {
+			goto fail;
 		}
 
-		pxmitbuf->flags = XMIT_VO_QUEUE;
-
-		list_add_tail(&pxmitbuf->list, &(pxmitpriv->free_xmitbuf_queue.queue));
-		#ifdef DBG_XMIT_BUF
-		pxmitbuf->no=i;
-		#endif
-
-		pxmitbuf++;
-
+		list_add_tail(&pxmitbuf->list,
+			      &pxmitpriv->free_xmitbuf_queue.queue);
+		list_add_tail(&pxmitbuf->list2,
+			      &pxmitpriv->xmitbuf_list);
+#ifdef DBG_XMIT_BUF
+		pxmitbuf->no = i;
+#endif
 	}
 
 	pxmitpriv->free_xmitbuf_cnt = NR_XMITBUFF;
@@ -215,49 +201,31 @@ _func_enter_;
 
 	/*  Init xmit extension buff */
 	_rtw_init_queue(&pxmitpriv->free_xmit_extbuf_queue);
+	INIT_LIST_HEAD(&pxmitpriv->xmitextbuf_list);
 
-	pxmitpriv->pallocated_xmit_extbuf = rtw_zvmalloc(num_xmit_extbuf * sizeof(struct xmit_buf) + 4);
-
-	if (pxmitpriv->pallocated_xmit_extbuf  == NULL){
-		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_extbuf fail!\n"));
-		res= _FAIL;
-		goto exit;
-	}
-
-	pxmitpriv->pxmit_extbuf = PTR_ALIGN(pxmitpriv->pallocated_xmit_extbuf, 4);
-
-	pxmitbuf = (struct xmit_buf*)pxmitpriv->pxmit_extbuf;
-
-	for (i = 0; i < num_xmit_extbuf; i++)
-	{
+	for (i = 0; i < num_xmit_extbuf; i++) {
+		pxmitbuf = kzalloc(sizeof(struct xmit_buf), GFP_KERNEL);
+		if (!pxmitbuf)
+			goto fail;
 		INIT_LIST_HEAD(&pxmitbuf->list);
+		INIT_LIST_HEAD(&pxmitbuf->list2);
 
-		pxmitbuf->priv_data = NULL;
 		pxmitbuf->padapter = padapter;
-		pxmitbuf->ext_tag = true;
 
-/*
-		pxmitbuf->pallocated_buf = rtw_zmalloc(max_xmit_extbuf_size);
-		if (pxmitbuf->pallocated_buf == NULL)
-		{
-			res = _FAIL;
+		/* Tx buf allocation may fail sometimes, so sleep and retry. */
+		res = rtw_os_xmit_resource_alloc(padapter, pxmitbuf,
+						 max_xmit_extbuf_size + XMITBUF_ALIGN_SZ);
+		if (res == _FAIL) {
 			goto exit;
 		}
 
-		pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, 4);
-*/
-
-		if((res=rtw_os_xmit_resource_alloc(padapter, pxmitbuf,max_xmit_extbuf_size + XMITBUF_ALIGN_SZ)) == _FAIL) {
-			res= _FAIL;
-			goto exit;
-		}
-
-		list_add_tail(&pxmitbuf->list, &(pxmitpriv->free_xmit_extbuf_queue.queue));
-		#ifdef DBG_XMIT_BUF_EXT
-		pxmitbuf->no=i;
-		#endif
-		pxmitbuf++;
-
+		list_add_tail(&pxmitbuf->list,
+			      &pxmitpriv->free_xmit_extbuf_queue.queue);
+		list_add_tail(&pxmitbuf->list2,
+			      &pxmitpriv->xmitextbuf_list);
+#ifdef DBG_XMIT_BUF
+		pxmitbuf->no = i;
+#endif
 	}
 
 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
@@ -291,6 +259,8 @@ exit:
 _func_exit_;
 
 	return res;
+fail:
+	goto exit;
 }
 
 void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
@@ -298,7 +268,8 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 	int i;
 	struct rtw_adapter *padapter = pxmitpriv->adapter;
 	struct xmit_frame	*pxmitframe = (struct xmit_frame*) pxmitpriv->pxmit_frame_buf;
-	struct xmit_buf *pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
+	struct xmit_buf *pxmitbuf;
+	struct list_head *plist, *ptmp;
 	u32 max_xmit_extbuf_size = MAX_XMIT_EXTBUF_SZ;
 	u32 num_xmit_extbuf = NR_XMIT_EXTBUFF;
 
@@ -315,22 +286,16 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 		pxmitframe++;
 	}
 
-	for(i=0; i<NR_XMITBUFF; i++)
-	{
-		rtw_os_xmit_resource_free(padapter, pxmitbuf,(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
-
-		/* if(pxmitbuf->pallocated_buf) */
-		/*	rtw_mfree(pxmitbuf->pallocated_buf, MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ); */
-
-		pxmitbuf++;
+	list_for_each_safe(plist, ptmp, &pxmitpriv->xmitbuf_list) {
+		pxmitbuf = container_of(plist, struct xmit_buf, list2);
+		list_del_init(&pxmitbuf->list2);
+		rtw_os_xmit_resource_free(padapter, pxmitbuf,
+					  (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
+		kfree(pxmitbuf);
 	}
 
 	if(pxmitpriv->pallocated_frame_buf) {
 		rtw_vmfree(pxmitpriv->pallocated_frame_buf, NR_XMITFRAME * sizeof(struct xmit_frame) + 4);
-	}
-
-	if(pxmitpriv->pallocated_xmitbuf) {
-		rtw_vmfree(pxmitpriv->pallocated_xmitbuf, NR_XMITBUFF * sizeof(struct xmit_buf) + 4);
 	}
 
 	/* free xframe_ext queue,  the same count as extbuf  */
@@ -344,19 +309,12 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 		rtw_vmfree(pxmitpriv->xframe_ext_alloc_addr, num_xmit_extbuf * sizeof(struct xmit_frame) + 4);
 
 	/*  free xmit extension buff */
-	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
-	for(i=0; i<num_xmit_extbuf; i++)
-	{
-		rtw_os_xmit_resource_free(padapter, pxmitbuf,(max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
-
-		/* if(pxmitbuf->pallocated_buf) */
-		/*	rtw_mfree(pxmitbuf->pallocated_buf, max_xmit_extbuf_size); */
-
-		pxmitbuf++;
-	}
-
-	if(pxmitpriv->pallocated_xmit_extbuf) {
-		rtw_vmfree(pxmitpriv->pallocated_xmit_extbuf, num_xmit_extbuf * sizeof(struct xmit_buf) + 4);
+	list_for_each_safe(plist, ptmp, &pxmitpriv->xmitextbuf_list) {
+		pxmitbuf = container_of(plist, struct xmit_buf, list2);
+		list_del_init(&pxmitbuf->list2);
+		rtw_os_xmit_resource_free(padapter, pxmitbuf,
+					  (max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
+		kfree(pxmitbuf);
 	}
 
 	rtw_free_hwxmits(padapter);
@@ -1592,7 +1550,7 @@ _func_enter_;
 			  pxmitbuf->no, pxmitpriv->free_xmit_extbuf_cnt);
 #endif
 		pxmitbuf->priv_data = NULL;
-		/* pxmitbuf->ext_tag = true; */
+		pxmitbuf->ext_tag = true;
 
 		if (pxmitbuf->sctx) {
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
@@ -1662,6 +1620,9 @@ _func_enter_;
 			  pxmitbuf->no, pxmitpriv->free_xmitbuf_cnt);
 #endif
 		pxmitbuf->priv_data = NULL;
+		pxmitbuf->ext_tag = false;
+		pxmitbuf->flags = XMIT_VO_QUEUE;
+
 		if (pxmitbuf->sctx) {
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);

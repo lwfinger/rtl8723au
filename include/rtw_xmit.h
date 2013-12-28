@@ -237,14 +237,11 @@ void rtw_sctx_done(struct submit_ctx **sctx);
 
 struct xmit_buf
 {
-	struct list_head	list;
-
+	struct list_head list, list2;
 	struct rtw_adapter *padapter;
 
 	u8 *pallocated_buf;
-
 	u8 *pbuf;
-
 	void *priv_data;
 
 	u16 ext_tag; // 0: Normal xmitbuf, 1: extension xmitbuf.
@@ -400,14 +397,12 @@ struct	xmit_priv	{
 	int voq_cnt;
 
 	_queue free_xmitbuf_queue;
+	struct list_head xmitbuf_list;		/* track buffers for cleanup */
 	_queue pending_xmitbuf_queue;
-	u8 *pallocated_xmitbuf;
-	u8 *pxmitbuf;
 	uint free_xmitbuf_cnt;
 
 	_queue free_xmit_extbuf_queue;
-	u8 *pallocated_xmit_extbuf;
-	u8 *pxmit_extbuf;
+	struct list_head xmitextbuf_list;	/* track buffers for cleanup */
 	uint free_xmit_extbuf_cnt;
 
 	u16	nqos_ssn;
