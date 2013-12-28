@@ -47,7 +47,7 @@ int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev);
 void rtw_os_xmit_schedule(struct rtw_adapter *padapter);
 
 int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz);
-void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz);
+void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf);
 
 void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib);
 

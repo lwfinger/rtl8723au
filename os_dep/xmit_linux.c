@@ -139,7 +139,7 @@ int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *px
 	return _SUCCESS;
 }
 
-void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz)
+void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf)
 {
 	int i;
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);

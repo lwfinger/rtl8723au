@@ -289,8 +289,7 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 	list_for_each_safe(plist, ptmp, &pxmitpriv->xmitbuf_list) {
 		pxmitbuf = container_of(plist, struct xmit_buf, list2);
 		list_del_init(&pxmitbuf->list2);
-		rtw_os_xmit_resource_free(padapter, pxmitbuf,
-					  (MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ));
+		rtw_os_xmit_resource_free(padapter, pxmitbuf);
 		kfree(pxmitbuf);
 	}
 
@@ -312,8 +311,7 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 	list_for_each_safe(plist, ptmp, &pxmitpriv->xmitextbuf_list) {
 		pxmitbuf = container_of(plist, struct xmit_buf, list2);
 		list_del_init(&pxmitbuf->list2);
-		rtw_os_xmit_resource_free(padapter, pxmitbuf,
-					  (max_xmit_extbuf_size + XMITBUF_ALIGN_SZ));
+		rtw_os_xmit_resource_free(padapter, pxmitbuf);
 		kfree(pxmitbuf);
 	}
 
