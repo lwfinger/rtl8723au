@@ -1571,33 +1571,26 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 {
 	unsigned long irqL;
 	struct xmit_buf *pxmitbuf =  NULL;
-	struct list_head *plist, *phead;
+	struct list_head *phead;
 	_queue *pfree_queue = &pxmitpriv->free_xmit_extbuf_queue;
 
 _func_enter_;
 
 	spin_lock_irqsave(&pfree_queue->lock, irqL);
 
-	if(_rtw_queue_empty(pfree_queue) == true) {
-		pxmitbuf = NULL;
-	} else {
+	phead = get_list_head(pfree_queue);
 
-		phead = get_list_head(pfree_queue);
-
-		plist = phead->next;
-
-		pxmitbuf = container_of(plist, struct xmit_buf, list);
+	if (!list_empty(phead)) {
+		pxmitbuf = list_first_entry(phead, struct xmit_buf, list);
 
 		list_del_init(&(pxmitbuf->list));
-	}
 
-	if (pxmitbuf !=  NULL)
-	{
 		pxmitpriv->free_xmit_extbuf_cnt--;
-		#ifdef DBG_XMIT_BUF_EXT
-		DBG_8723A("DBG_XMIT_BUF_EXT ALLOC no=%d,  free_xmit_extbuf_cnt=%d\n",pxmitbuf->no, pxmitpriv->free_xmit_extbuf_cnt);
-		#endif
-
+#ifdef DBG_XMIT_BUF_EXT
+		DBG_8723A("DBG_XMIT_BUF_EXT ALLOC no=%d,  "
+			  "free_xmit_extbuf_cnt=%d\n",
+			  pxmitbuf->no, pxmitpriv->free_xmit_extbuf_cnt);
+#endif
 		pxmitbuf->priv_data = NULL;
 		/* pxmitbuf->ext_tag = true; */
 
@@ -1605,7 +1598,6 @@ _func_enter_;
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
 		}
-
 	}
 
 	spin_unlock_irqrestore(&pfree_queue->lock, irqL);
@@ -1648,7 +1640,7 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 {
 	unsigned long irqL;
 	struct xmit_buf *pxmitbuf =  NULL;
-	struct list_head *plist, *phead;
+	struct list_head *phead;
 	_queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
 
 _func_enter_;
@@ -1657,39 +1649,30 @@ _func_enter_;
 
 	spin_lock_irqsave(&pfree_xmitbuf_queue->lock, irqL);
 
-	if(_rtw_queue_empty(pfree_xmitbuf_queue) == true) {
-		pxmitbuf = NULL;
-	} else {
+	phead = get_list_head(pfree_xmitbuf_queue);
 
-		phead = get_list_head(pfree_xmitbuf_queue);
-
-		plist = phead->next;
-
-		pxmitbuf = container_of(plist, struct xmit_buf, list);
+	if (!list_empty(phead)) {
+		pxmitbuf = list_first_entry(phead, struct xmit_buf, list);
 
 		list_del_init(&(pxmitbuf->list));
-	}
 
-	if (pxmitbuf !=  NULL)
-	{
 		pxmitpriv->free_xmitbuf_cnt--;
-		#ifdef DBG_XMIT_BUF
-		DBG_8723A("DBG_XMIT_BUF ALLOC no=%d,  free_xmitbuf_cnt=%d\n",pxmitbuf->no, pxmitpriv->free_xmitbuf_cnt);
-		#endif
-		/* DBG_8723A("alloc, free_xmitbuf_cnt=%d\n", pxmitpriv->free_xmitbuf_cnt); */
-
+#ifdef DBG_XMIT_BUF
+		DBG_8723A("DBG_XMIT_BUF ALLOC no=%d,  free_xmitbuf_cnt=%d\n",
+			  pxmitbuf->no, pxmitpriv->free_xmitbuf_cnt);
+#endif
 		pxmitbuf->priv_data = NULL;
 		if (pxmitbuf->sctx) {
 			DBG_8723A("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
 		}
 	}
-	#ifdef DBG_XMIT_BUF
+#ifdef DBG_XMIT_BUF
 	else
 	{
 		DBG_8723A("DBG_XMIT_BUF rtw_alloc_xmitbuf return NULL\n");
 	}
-	#endif
+#endif
 
 	spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
 
