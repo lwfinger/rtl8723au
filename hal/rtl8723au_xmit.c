@@ -399,7 +399,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
  *	_SUCCESS	ok
  *	_FAIL		something error
  */
-s32 rtl8723au_xmit_buf_handler(PADAPTER padapter)
+s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter)
 {
 	//struct hal_data_8723a * phal;
 	struct xmit_priv *pxmitpriv;
