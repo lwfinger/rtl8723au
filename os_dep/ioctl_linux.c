@@ -3252,42 +3252,41 @@ static int rtw_set_wps_probe_resp(struct net_device *dev,
 	return ret;
 }
 
-static int rtw_set_wps_assoc_resp(struct net_device *dev, struct ieee_param *param, int len)
+static int rtw_set_wps_assoc_resp(struct net_device *dev,
+				  struct ieee_param *param, int len)
 {
-	int ret=0;
+	int ret = 0;
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	int ie_len;
 
 	DBG_8723A("%s, len=%d\n", __func__, len);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
 
 
-	if(pmlmepriv->wps_assoc_resp_ie)
-	{
+	if (pmlmepriv->wps_assoc_resp_ie) {
 		kfree(pmlmepriv->wps_assoc_resp_ie);
 		pmlmepriv->wps_assoc_resp_ie = NULL;
 	}
 
-	if(ie_len>0)
-	{
-		pmlmepriv->wps_assoc_resp_ie = rtw_malloc(ie_len);
+	if (ie_len > 0) {
+		pmlmepriv->wps_assoc_resp_ie = kmalloc(ie_len, GFP_KERNEL);
 		pmlmepriv->wps_assoc_resp_ie_len = ie_len;
-		if ( pmlmepriv->wps_assoc_resp_ie == NULL) {
-			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __func__, __LINE__);
+		if (pmlmepriv->wps_assoc_resp_ie == NULL) {
+			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n",
+				  __func__, __LINE__);
 			return -EINVAL;
 		}
 
-		memcpy(pmlmepriv->wps_assoc_resp_ie, param->u.bcn_ie.buf, ie_len);
+		memcpy(pmlmepriv->wps_assoc_resp_ie, param->u.bcn_ie.buf,
+		       ie_len);
 	}
 
-
 	return ret;
-
 }
 
 static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param, int len)
