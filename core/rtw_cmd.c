@@ -244,11 +244,11 @@ _func_enter_;
 	sema_init(&(pevtpriv->evt_notify), 0);
 	sema_init(&(pevtpriv->terminate_evtthread_sema), 0);
 
-	pevtpriv->evt_allocated_buf = rtw_zmalloc(MAX_EVTSZ + 4);
-	if (pevtpriv->evt_allocated_buf == NULL){
-		res= _FAIL;
+	pevtpriv->evt_allocated_buf = kzalloc(MAX_EVTSZ + 4, GFP_KERNEL);
+	if (!pevtpriv->evt_allocated_buf) {
+		res = _FAIL;
 		goto exit;
-		}
+	}
 	pevtpriv->evt_buf = pevtpriv->evt_allocated_buf  +  4 - ((unsigned int)(pevtpriv->evt_allocated_buf) & 3);
 
 	_rtw_init_queue(&(pevtpriv->evt_queue));
@@ -276,7 +276,7 @@ _func_enter_;
 
 #ifdef CONFIG_EVENT_THREAD_MODE
 	if (pevtpriv->evt_allocated_buf)
-		rtw_mfree(pevtpriv->evt_allocated_buf, MAX_EVTSZ + 4);
+		kfree(pevtpriv->evt_allocated_buf);
 #endif
 
 #ifdef CONFIG_C2H_WK
