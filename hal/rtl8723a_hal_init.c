@@ -19,6 +19,7 @@
  ******************************************************************************/
 #define _HAL_INIT_C_
 
+#include <linux/firmware.h>
 #include <drv_types.h>
 #include <rtw_efuse.h>
 
@@ -288,10 +289,6 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 }
 
 
-#ifdef CONFIG_FILE_FWIMG
-extern char *rtw_fw_file_path;
-u8	fw_buffer_8723a[FW_8723A_SIZE];
-#endif //CONFIG_FILE_FWIMG
 //
 //	Description:
 //		Download 8192C firmware code.
@@ -303,54 +300,36 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	u8 writeFW_retry = 0;
 	u32 fwdl_start_time;
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(padapter);
-	s8			R8723FwImageFileName_UMC[] ={RTL8723_FW_UMC_IMG};
-	s8			R8723FwImageFileName_UMC_B[] ={RTL8723_FW_UMC_B_IMG};
-	u8			*FwImage;
-	u32			FwImageLen;
-	u8			*pFwImageFileName;
-	u8			*pucMappedFile = NULL;
-	PRT_FIRMWARE_8723A	pFirmware = NULL;
-	PRT_FIRMWARE_8723A	pBTFirmware = NULL;
+	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
+	struct device *device = dvobj_to_dev(dvobj);
 	struct rt_8723a_firmware_hdr *		pFwHdr = NULL;
-	u8			*pFirmwareBuf;
-	u32			FirmwareLen;
+	const struct firmware *fw;
+	char *fw_name;
+	u8 *firmware_buf = NULL;
+	u8 *buf;
+	int fw_size;
+	static int log_version;
 
 
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("+%s\n", __FUNCTION__));
-	pFirmware = (PRT_FIRMWARE_8723A)kzalloc(sizeof(RT_FIRMWARE_8723A),
-						GFP_KERNEL);
-	pBTFirmware = (PRT_FIRMWARE_8723A)kzalloc(sizeof(RT_FIRMWARE_8723A),
-						  GFP_KERNEL);
-
-	if(!pFirmware||!pBTFirmware)
-	{
-		rtStatus = _FAIL;
-		goto Exit;
-	}
 
 	if (IS_8723A_A_CUT(pHalData->VersionID)) {
-		pFwImageFileName = R8723FwImageFileName_UMC;
-		FwImage = (u8*)Rtl8723_FwImageArray;
-		FwImageLen = Rtl8723_ImgArrayLength;
+		fw_name = "rtlwifi/rtl8723aufw.bin";
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("rtl8723a_FirmwareDownload: R8723FwImageArray_UMC for RTL8723A A CUT\n"));
 	} else if (IS_8723A_B_CUT(pHalData->VersionID)) {
 	  // WLAN Fw.
 		if (padapter->registrypriv.wifi_spec == 1) {
-			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-			FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+			fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
 		} else {
 #ifdef CONFIG_BT_COEXIST
-			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithBT;
-			FwImageLen = Rtl8723_UMCBCutImgArrayWithBTLength;
+			fw_name = "rtlwifi/rtl8723aufw_B.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
 #else
-			FwImage = (u8*)Rtl8723_FwUMCBCutImageArrayWithoutBT;
-			FwImageLen = Rtl8723_UMCBCutImgArrayWithoutBTLength;
+			fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
 #endif
 		}
-		pFwImageFileName = R8723FwImageFileName_UMC_B;
 	} else {
 		// <Roger_TODO> We should download proper RAM Code here  to match the ROM code.
 		RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: unknow version!\n", __FUNCTION__));
@@ -358,46 +337,26 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 		goto Exit;
 	}
 
-
-#ifdef CONFIG_FILE_FWIMG
-	if(rtw_is_file_readable(rtw_fw_file_path) == true)
-	{
-		DBG_8723A("%s accquire FW from file:%s\n", __FUNCTION__, rtw_fw_file_path);
-		pFirmware->eFWSource = FW_SOURCE_IMG_FILE; // We should decided by Reg.
+	pr_info("rtl8723au: Loading firmware %s\n", fw_name);
+	if (request_firmware(&fw, fw_name, device)) {
+		pr_err("rtl8723au: request_firmware load failed\n");
+		rtStatus = _FAIL;
+		goto Exit;
 	}
-	else
-#endif //CONFIG_FILE_FWIMG
-	{
-		DBG_8723A("%s accquire FW from embedded image\n", __FUNCTION__);
-		pFirmware->eFWSource = FW_SOURCE_HEADER_FILE;
+	if (!fw) {
+		pr_err("rtl8723au: Firmware %s not available\n", fw_name);
+		rtStatus = _FAIL;
+		goto Exit;
 	}
-
-	switch(pFirmware->eFWSource)
-	{
-		case FW_SOURCE_IMG_FILE:
-#ifdef CONFIG_FILE_FWIMG
-			rtStatus = rtw_retrive_from_file(rtw_fw_file_path, fw_buffer_8723a, FW_8723A_SIZE);
-			pFirmware->ulFwLength = rtStatus>=0?rtStatus:0;
-			pFirmware->szFwBuffer = fw_buffer_8723a;
-#endif //CONFIG_FILE_FWIMG
-
-			if(pFirmware->ulFwLength <= 0)
-			{
-				rtStatus = _FAIL;
-				goto Exit;
-			}
-			break;
-		case FW_SOURCE_HEADER_FILE:
-			if (FwImageLen > FW_8723A_SIZE) {
-				rtStatus = _FAIL;
-				RT_TRACE(_module_hal_init_c_, _drv_err_, ("Firmware size exceed 0x%X. Check it.\n", FW_8723A_SIZE) );
-				goto Exit;
-			}
-
-			pFirmware->szFwBuffer = FwImage;
-			pFirmware->ulFwLength = FwImageLen;
-			break;
+	firmware_buf = kzalloc(fw->size, GFP_KERNEL);
+	if (!firmware_buf) {
+		rtStatus = _FAIL;
+		goto Exit;
 	}
+	memcpy(firmware_buf, fw->data, fw->size);
+	buf = firmware_buf;
+	fw_size = fw->size;
+	release_firmware(fw);
 
 #ifdef DBG_FW_STORE_FILE_PATH //used to store firmware to file...
 	if(pFirmware->ulFwLength > 0)
@@ -406,11 +365,8 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	}
 #endif
 
-	pFirmwareBuf = pFirmware->szFwBuffer;
-	FirmwareLen = pFirmware->ulFwLength;
-
 	// To Check Fw header. Added by tynli. 2009.12.04.
-	pFwHdr = (struct rt_8723a_firmware_hdr *)pFirmware->szFwBuffer;
+	pFwHdr = (struct rt_8723a_firmware_hdr *)firmware_buf;
 
 	pHalData->FirmwareVersion =  le16_to_cpu(pFwHdr->Version);
 	pHalData->FirmwareSubVersion = pFwHdr->Subversion;
@@ -419,11 +375,16 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	DBG_8723A("%s: fw_ver=%d fw_subver=%d sig=0x%x\n",
 		  __FUNCTION__, pHalData->FirmwareVersion, pHalData->FirmwareSubVersion, pHalData->FirmwareSignature);
 
+	if (!log_version++)
+		pr_info("%sFirmware Version %d, SubVersion %d, Signature 0x%x\n",
+			DRIVER_PREFIX, pHalData->FirmwareVersion,
+			pHalData->FirmwareSubVersion, pHalData->FirmwareSignature);
+
 	if (IS_FW_HEADER_EXIST(pFwHdr))
 	{
 		// Shift 32 bytes for FW header
-		pFirmwareBuf = pFirmwareBuf + 32;
-		FirmwareLen = FirmwareLen - 32;
+		buf = buf + 32;
+		fw_size = fw_size - 32;
 	}
 
 	// Suggested by Filen. If 8051 is running in RAM code, driver should inform Fw to reset by itself,
@@ -440,7 +401,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 		//reset the FWDL chksum
 		rtw_write8(padapter, REG_MCUFWDL, rtw_read8(padapter, REG_MCUFWDL)|FWDL_ChkSum_rpt);
 
-		rtStatus = _WriteFW(padapter, pFirmwareBuf, FirmwareLen);
+		rtStatus = _WriteFW(padapter, buf, fw_size);
 
 		if(rtStatus == _SUCCESS
 			||(rtw_get_passing_time_ms(fwdl_start_time) > 500 && writeFW_retry++ >= 3)
@@ -466,12 +427,8 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("Firmware is ready to run!\n"));
 
 Exit:
-	DBG_8723A("rtl8723a_FirmwareDownload Exit kfree pFirmware !\n");
-	if (pFirmware)
-		kfree(pFirmware);
-	DBG_8723A("rtl8723a_FirmwareDownload Exit kmfree pBTFirmware !\n");
-	if (pBTFirmware)
-		kfree(pBTFirmware);
+	if (firmware_buf)
+		kfree(firmware_buf);
 	//RT_TRACE(COMP_INIT, DBG_LOUD, (" <=== FirmwareDownload91C()\n"));
 	return rtStatus;
 }

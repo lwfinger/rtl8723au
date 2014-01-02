@@ -87,28 +87,6 @@
 									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
 									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
 
-typedef enum _FIRMWARE_SOURCE {
-	FW_SOURCE_IMG_FILE = 0,
-	FW_SOURCE_HEADER_FILE = 1,		//from header file
-} FIRMWARE_SOURCE, *PFIRMWARE_SOURCE;
-
-typedef struct _RT_FIRMWARE {
-	FIRMWARE_SOURCE	eFWSource;
-#ifdef CONFIG_EMBEDDED_FWIMG
-	u8*			szFwBuffer;
-#else
-	u8			szFwBuffer[FW_8723A_SIZE];
-#endif
-	u32			ulFwLength;
-
-#ifdef CONFIG_EMBEDDED_FWIMG
-	u8*			szBTFwBuffer;
-#else
-	u8			szBTFwBuffer[FW_8723A_SIZE];
-#endif
-	u32			ulBTFwLength;
-} RT_FIRMWARE, *PRT_FIRMWARE, RT_FIRMWARE_8723A, *PRT_FIRMWARE_8723A;
-
 //
 // This structure must be cared byte-ordering
 //
@@ -583,7 +561,6 @@ struct rxreport_8723a {
 };
 
 // rtl8723a_hal_init.c
-int FirmwareDownloadBT(struct rtw_adapter *Adapter, PRT_FIRMWARE_8723A pFirmware);
 s32 rtl8723a_FirmwareDownload(struct rtw_adapter *padapter);
 void rtl8723a_FirmwareSelfReset(struct rtw_adapter *padapter);
 void rtl8723a_InitializeFirmwareVars(struct rtw_adapter *padapter);
