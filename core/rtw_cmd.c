@@ -201,9 +201,9 @@ _func_enter_;
 
 	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf + CMDBUFF_ALIGN_SZ - ((unsigned long)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ-1));
 
-	pcmdpriv->rsp_allocated_buf = rtw_zmalloc(MAX_RSPSZ + 4);
+	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
 
-	if (pcmdpriv->rsp_allocated_buf == NULL){
+	if (!pcmdpriv->rsp_allocated_buf) {
 		res= _FAIL;
 		goto exit;
 	}
@@ -307,7 +307,7 @@ _func_enter_;
 			kfree(pcmdpriv->cmd_allocated_buf);
 
 		if (pcmdpriv->rsp_allocated_buf)
-			rtw_mfree(pcmdpriv->rsp_allocated_buf, MAX_RSPSZ + 4);
+			kfree(pcmdpriv->rsp_allocated_buf);
 	}
 _func_exit_;
 }
