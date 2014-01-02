@@ -2055,15 +2055,16 @@ void rtw_alloc_hwxmits(struct rtw_adapter *padapter)
 {
 	struct hw_xmit *hwxmits;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	int size;
 
 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
 
-	pxmitpriv->hwxmits = (struct hw_xmit *)rtw_zmalloc(sizeof (struct hw_xmit) * pxmitpriv->hwxmit_entry);
+	size = sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry;
+	pxmitpriv->hwxmits = kzalloc(size, GFP_KERNEL);
 
 	hwxmits = pxmitpriv->hwxmits;
 
-	if(pxmitpriv->hwxmit_entry == 5)
-	{
+	if (pxmitpriv->hwxmit_entry == 5) {
 		/* pxmitpriv->bmc_txqueue.head = 0; */
 		/* hwxmits[0] .phwtxqueue = &pxmitpriv->bmc_txqueue; */
 		hwxmits[0] .sta_queue = &pxmitpriv->bm_pending;
@@ -2084,9 +2085,7 @@ void rtw_alloc_hwxmits(struct rtw_adapter *padapter)
 		/* hwxmits[4] .phwtxqueue = &pxmitpriv->be_txqueue; */
 		hwxmits[4] .sta_queue = &pxmitpriv->be_pending;
 
-	}
-	else if(pxmitpriv->hwxmit_entry == 4)
-	{
+	} else if (pxmitpriv->hwxmit_entry == 4) {
 
 		/* pxmitpriv->vo_txqueue.head = 0; */
 		/* hwxmits[0] .phwtxqueue = &pxmitpriv->vo_txqueue; */
@@ -2103,9 +2102,7 @@ void rtw_alloc_hwxmits(struct rtw_adapter *padapter)
 		/* pxmitpriv->bk_txqueue.head = 0; */
 		/* hwxmits[3] .phwtxqueue = &pxmitpriv->bk_txqueue; */
 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
-	}
-	else
-	{
+	} else {
 
 	}
 }
@@ -2116,8 +2113,8 @@ void rtw_free_hwxmits(struct rtw_adapter *padapter)
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	hwxmits = pxmitpriv->hwxmits;
-	if(hwxmits)
-		rtw_mfree((u8 *)hwxmits, (sizeof (struct hw_xmit) * pxmitpriv->hwxmit_entry));
+	if (hwxmits)
+		kfree(hwxmits);
 }
 
 void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry)
