@@ -708,10 +708,9 @@ u8 rtw_efuse_map_write(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *dat
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
 
-	map = rtw_zmalloc(mapLen);
-	if(map == NULL){
+	map = kzalloc(mapLen, GFP_KERNEL);
+	if (!map)
 		return _FAIL;
-	}
 
 	ret = rtw_efuse_map_read(padapter, 0, mapLen, map);
 	if (ret == _FAIL) goto exit;
@@ -784,8 +783,7 @@ u8 rtw_efuse_map_write(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *dat
 	Efuse_PowerSwitch(padapter, true, false);
 
 exit:
-
-	rtw_mfree(map, mapLen);
+	kfree(map);
 
 	return ret;
 }
@@ -805,10 +803,9 @@ u8 rtw_BT_efuse_map_write(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
 
-	map = rtw_zmalloc(mapLen);
-	if(map == NULL){
+	map = kzalloc(mapLen, GFP_KERNEL);
+	if (!map)
 		return _FAIL;
-	}
 
 	ret = rtw_BT_efuse_map_read(padapter, 0, mapLen, map);
 	if (ret == _FAIL) goto exit;
@@ -884,8 +881,7 @@ u8 rtw_BT_efuse_map_write(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *
 	Efuse_PowerSwitch(padapter, true, false);
 
 exit:
-
-	rtw_mfree(map, mapLen);
+	kfree(map);
 
 	return ret;
 }
