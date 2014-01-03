@@ -298,9 +298,7 @@ _func_enter_;
 
 exit:
 
-	if (pwep) {
-		kfree(pwep);
-	}
+	kfree(pwep);
 
 _func_exit_;
 
@@ -471,8 +469,7 @@ static int rtw_set_wpa_ie(struct rtw_adapter *padapter, char *pie, unsigned shor
 
 exit:
 
-	if (buf)
-		kfree(buf);
+	kfree(buf);
 
 	return ret;
 }
@@ -2867,9 +2864,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 exit:
 
-	if(pwep) {
-		kfree(pwep);
-	}
+	kfree(pwep);
 
 	return ret;
 
@@ -3192,11 +3187,8 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
 
 
-	if(pmlmepriv->wps_beacon_ie)
-	{
-		kfree(pmlmepriv->wps_beacon_ie);
-		pmlmepriv->wps_beacon_ie = NULL;
-	}
+	kfree(pmlmepriv->wps_beacon_ie);
+	pmlmepriv->wps_beacon_ie = NULL;
 
 	if(ie_len>0)
 	{
@@ -3232,10 +3224,8 @@ static int rtw_set_wps_probe_resp(struct net_device *dev,
 
 	ie_len = len-12-2;// 12 = param header, 2:no packed
 
-	if (pmlmepriv->wps_probe_resp_ie) {
-		kfree(pmlmepriv->wps_probe_resp_ie);
-		pmlmepriv->wps_probe_resp_ie = NULL;
-	}
+	kfree(pmlmepriv->wps_probe_resp_ie);
+	pmlmepriv->wps_probe_resp_ie = NULL;
 
 	if (ie_len > 0) {
 		pmlmepriv->wps_probe_resp_ie = kmalloc(ie_len, GFP_KERNEL);
@@ -3268,10 +3258,8 @@ static int rtw_set_wps_assoc_resp(struct net_device *dev,
 	ie_len = len-12-2;// 12 = param header, 2:no packed
 
 
-	if (pmlmepriv->wps_assoc_resp_ie) {
-		kfree(pmlmepriv->wps_assoc_resp_ie);
-		pmlmepriv->wps_assoc_resp_ie = NULL;
-	}
+	kfree(pmlmepriv->wps_assoc_resp_ie);
+	pmlmepriv->wps_assoc_resp_ie = NULL;
 
 	if (ie_len > 0) {
 		pmlmepriv->wps_assoc_resp_ie = kmalloc(ie_len, GFP_KERNEL);

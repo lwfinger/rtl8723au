@@ -26,9 +26,7 @@
 static void _usbctrl_vendorreq_async_callback(struct urb *urb, struct pt_regs *regs)
 {
 	if (urb) {
-		if (urb->context) {
-			kfree(urb->context);
-		}
+		kfree(urb->context);
 		usb_free_urb(urb);
 	}
 }
@@ -191,17 +189,11 @@ static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
 
 	//DBG_8723A("+usb_bulkout_zero_complete\n");
 
-	if(pcontext)
-	{
-		if(pcontext->pbuf)
-		{
-			kfree(pcontext->pbuf);
-		}
+	if (pcontext) {
+		kfree(pcontext->pbuf);
 
-		if(pcontext->purb && (pcontext->purb==purb))
-		{
+		if (pcontext->purb && (pcontext->purb == purb))
 			usb_free_urb(pcontext->purb);
-		}
 
 		kfree(pcontext);
 	}

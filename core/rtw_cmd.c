@@ -275,8 +275,7 @@ _func_enter_;
 	RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,("+_rtw_free_evt_priv \n"));
 
 #ifdef CONFIG_EVENT_THREAD_MODE
-	if (pevtpriv->evt_allocated_buf)
-		kfree(pevtpriv->evt_allocated_buf);
+	kfree(pevtpriv->evt_allocated_buf);
 #endif
 
 #ifdef CONFIG_C2H_WK
@@ -303,11 +302,9 @@ void _rtw_free_cmd_priv (struct	cmd_priv *pcmdpriv)
 _func_enter_;
 
 	if(pcmdpriv){
-		if (pcmdpriv->cmd_allocated_buf)
-			kfree(pcmdpriv->cmd_allocated_buf);
+		kfree(pcmdpriv->cmd_allocated_buf);
 
-		if (pcmdpriv->rsp_allocated_buf)
-			kfree(pcmdpriv->rsp_allocated_buf);
+		kfree(pcmdpriv->rsp_allocated_buf);
 	}
 _func_exit_;
 }

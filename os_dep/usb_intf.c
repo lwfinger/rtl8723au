@@ -169,8 +169,7 @@ static u8 rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 	u8 rst = _SUCCESS;
 
 #ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
-	if(dvobj->usb_vendor_req_buf)
-		kfree(dvobj->usb_alloc_vendor_req_buf);
+	kfree(dvobj->usb_alloc_vendor_req_buf);
 #endif
 
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
@@ -1009,7 +1008,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	status = _SUCCESS;
 
 free_hal_data:
-	if(status != _SUCCESS && padapter->HalData)
+	if(status != _SUCCESS)
 		kfree(padapter->HalData);
 free_wdev:
 	if(status != _SUCCESS) {

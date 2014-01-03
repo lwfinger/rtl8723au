@@ -150,8 +150,7 @@ void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *px
 			usb_free_urb(pxmitbuf->pxmit_urb[i]);
 	}
 
-	if(pxmitbuf->pallocated_buf)
-		kfree(pxmitbuf->pallocated_buf);
+	kfree(pxmitbuf->pallocated_buf);
 }
 
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)

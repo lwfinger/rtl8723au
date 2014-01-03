@@ -1209,10 +1209,7 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 	}
 
 addkey_end:
-	if(param)
-	{
-		kfree(param);
-	}
+	kfree(param);
 
 	return ret;
 
@@ -2158,8 +2155,7 @@ static int rtw_cfg80211_set_wpa_ie(struct rtw_adapter *padapter, u8 *pie, size_t
 		pairwise_cipher, padapter->securitypriv.ndisencryptstatus, padapter->securitypriv.ndisauthtype));
 
 exit:
-	if (buf)
-		kfree(buf);
+	kfree(buf);
 	if (ret)
 		_clr_fwstate_(&padapter->mlmepriv, WIFI_UNDER_WPS);
 	return ret;
@@ -2391,9 +2387,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 			ret = -EOPNOTSUPP ;
 		}
 
-		if (pwep) {
-			kfree(pwep);
-		}
+		kfree(pwep);
 
 		if(ret < 0)
 			goto exit;
@@ -2948,7 +2942,7 @@ static int rtw_cfg80211_add_monitor_if(struct rtw_adapter *padapter, char *name,
 	memcpy(pwdev_priv->ifname_mon, name, IFNAMSIZ+1);
 
 out:
-	if (ret && mon_wdev) {
+	if (ret) {
 		kfree(mon_wdev);
 		mon_wdev = NULL;
 	}

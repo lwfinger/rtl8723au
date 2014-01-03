@@ -149,8 +149,7 @@ if (!buff)
 
 		wrqu.data.length = (wrqu.data.length<IW_CUSTOM_MAX) ? wrqu.data.length:IW_CUSTOM_MAX;
 
-		if(buff)
-			kfree(buff);
+		kfree(buff);
 	}
 out:
 

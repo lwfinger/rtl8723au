@@ -427,9 +427,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("Firmware is ready to run!\n"));
 
 Exit:
-	if (firmware_buf)
-		kfree(firmware_buf);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, (" <=== FirmwareDownload91C()\n"));
+	kfree(firmware_buf);
 	return rtStatus;
 }
 
@@ -447,10 +445,8 @@ void rtl8723a_InitializeFirmwareVars(struct rtw_adapter * padapter)
 static void rtl8723a_free_hal_data(struct rtw_adapter * padapter)
 {
 _func_enter_;
-	if (padapter->HalData) {
-		kfree(padapter->HalData);
-		padapter->HalData = NULL;
-	}
+	kfree(padapter->HalData);
+	padapter->HalData = NULL;
 _func_exit_;
 }
 
@@ -790,8 +786,7 @@ hal_ReadEFuse_WiFi(
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_USAGE, (u8*)&efuse_usage);
 	}
 
-	if (efuseTbl)
-		kfree(efuseTbl);
+	kfree(efuseTbl);
 }
 
 static void
@@ -933,8 +928,7 @@ hal_ReadEFuse_BT(
 	}
 
 exit:
-	if (efuseTbl)
-		kfree(efuseTbl);
+	kfree(efuseTbl);
 }
 
 static void

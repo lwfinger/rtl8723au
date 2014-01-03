@@ -166,16 +166,12 @@ void rtl8192cu_free_recv_priv (struct rtw_adapter *padapter)
 		precvbuf++;
 	}
 
-	if(precvpriv->pallocated_recv_buf)
-		kfree(precvpriv->pallocated_recv_buf);
+	kfree(precvpriv->pallocated_recv_buf);
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	if(precvpriv->int_in_urb)
-	{
 		usb_free_urb(precvpriv->int_in_urb);
-	}
-	if(precvpriv->int_in_buf)
-		kfree(precvpriv->int_in_buf);
+	kfree(precvpriv->int_in_buf);
 #endif
 
 	if (skb_queue_len(&precvpriv->rx_skb_queue)) {
