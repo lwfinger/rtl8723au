@@ -720,9 +720,9 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 	struct pwrctrl_priv *pwrpriv;
 	int ret = -1;
 	u32 start_time = rtw_get_current_time();
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	u8 pm_cnt;
-#endif	//#ifdef CONFIG_BT_COEXIST
+#endif	//#ifdef CONFIG_8723_BT_COEXIST
 	_func_enter_;
 
 	DBG_8723A("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
@@ -735,7 +735,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 	}
 
 	down(&pwrpriv->lock);
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 #ifdef CONFIG_AUTOSUSPEND
 	DBG_8723A("%s...pm_usage_cnt(%d)  pwrpriv->bAutoResume=%x.  ....\n",__func__,atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt)),pwrpriv->bAutoResume);
 	pm_cnt=atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt));
@@ -748,7 +748,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 
 	}
 #endif //#ifdef CONFIG_AUTOSUSPEND
-#endif //#ifdef CONFIG_BT_COEXIST
+#endif //#ifdef CONFIG_8723_BT_COEXIST
 	rtw_reset_drv_sw(padapter);
 	pwrpriv->bkeepfwalive = false;
 
@@ -773,7 +773,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 		}
 		#endif
 		#endif
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 		DBG_8723A("pwrpriv->bAutoResume (%x)\n",pwrpriv->bAutoResume );
 		if( true == pwrpriv->bAutoResume ){
 		pwrpriv->bInternalAutoSuspend = false;
@@ -781,9 +781,9 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 			DBG_8723A("pwrpriv->bAutoResume (%x)  pwrpriv->bInternalAutoSuspend(%x)\n",pwrpriv->bAutoResume,pwrpriv->bInternalAutoSuspend );
 		}
 
-#else	//#ifdef CONFIG_BT_COEXIST
+#else	//#ifdef CONFIG_8723_BT_COEXIST
 		pwrpriv->bInternalAutoSuspend = false;
-#endif	//#ifdef CONFIG_BT_COEXIST
+#endif	//#ifdef CONFIG_8723_BT_COEXIST
 		pwrpriv->brfoffbyhw = false;
 		DBG_8723A("enc_algorithm(%x),wepkeymask(%x)\n",
 			padapter->securitypriv.dot11PrivacyAlgrthm,pwrpriv->wepkeymask);
@@ -837,11 +837,11 @@ void autosuspend_enter(struct rtw_adapter* padapter)
 	pwrpriv->bips_processing = true;
 
 	if(rf_off == pwrpriv->change_rfpwrstate ) {
-#ifndef	CONFIG_BT_COEXIST
+#ifndef	CONFIG_8723_BT_COEXIST
 		usb_enable_autosuspend(dvobj->pusbdev);
 
 			usb_autopm_put_interface(dvobj->pusbintf);
-#else	//#ifndef	CONFIG_BT_COEXIST
+#else	//#ifndef	CONFIG_8723_BT_COEXIST
 		if(1==pwrpriv->autopm_cnt){
 		usb_enable_autosuspend(dvobj->pusbdev);
 
@@ -851,7 +851,7 @@ void autosuspend_enter(struct rtw_adapter* padapter)
 		else
 		DBG_8723A("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_put_interface\n", pwrpriv->autopm_cnt);
 
-#endif	//#ifndef	CONFIG_BT_COEXIST
+#endif	//#ifndef	CONFIG_8723_BT_COEXIST
 	}
 	DBG_8723A("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
 }
@@ -869,7 +869,7 @@ int autoresume_enter(struct rtw_adapter* padapter)
 	if(rf_off == pwrpriv->rf_pwrstate )
 	{
 		pwrpriv->ps_flag = false;
-#ifndef	CONFIG_BT_COEXIST
+#ifndef	CONFIG_8723_BT_COEXIST
 			if (usb_autopm_get_interface(dvobj->pusbintf) < 0)
 			{
 				DBG_8723A( "can't get autopm: %d\n", result);
@@ -878,7 +878,7 @@ int autoresume_enter(struct rtw_adapter* padapter)
 			}
 
 		DBG_8723A("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else	//#ifndef	CONFIG_BT_COEXIST
+#else	//#ifndef	CONFIG_8723_BT_COEXIST
 		pwrpriv->bAutoResume=true;
 		if(0==pwrpriv->autopm_cnt){
 			if (usb_autopm_get_interface(dvobj->pusbintf) < 0)
@@ -892,7 +892,7 @@ int autoresume_enter(struct rtw_adapter* padapter)
 		}
 		else
 			DBG_8723A("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_get_interface\n",pwrpriv->autopm_cnt);
-#endif //#ifndef	CONFIG_BT_COEXIST
+#endif //#ifndef	CONFIG_8723_BT_COEXIST
 	}
 	DBG_8723A("<==== autoresume_enter \n");
 error_exit:
@@ -990,7 +990,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	//2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence
 			if (usb_autopm_get_interface(pusb_intf) < 0)
 					DBG_8723A( "can't get autopm: \n");
-#ifdef	CONFIG_BT_COEXIST
+#ifdef	CONFIG_8723_BT_COEXIST
 	padapter->pwrctrlpriv.autopm_cnt=1;
 #endif
 
@@ -1069,7 +1069,7 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 		rtw_wdev_free(if1->rtw_wdev);
 	}
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	if (1 == if1->pwrctrlpriv.autopm_cnt) {
 		usb_autopm_put_interface(adapter_to_dvobj(if1)->pusbintf);
 		if1->pwrctrlpriv.autopm_cnt --;

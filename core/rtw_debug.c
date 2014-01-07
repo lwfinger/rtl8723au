@@ -1074,7 +1074,7 @@ int proc_get_best_channel(char *page, char **start,
 	return len;
 }
 #endif /* CONFIG_FIND_BEST_CHANNEL */
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 #define _bt_dbg_off_		0
 #define _bt_dbg_on_		1
 
@@ -1124,7 +1124,7 @@ int proc_set_btcoex_dbg(struct file *file, const char __user *buffer,
 
 	return count;
 }
-#endif /* CONFIG_BT_COEXIST */
+#endif /* CONFIG_8723_BT_COEXIST */
 
 #if defined(DBG_CONFIG_ERROR_DETECT)
 #include <rtw_sreset.h>

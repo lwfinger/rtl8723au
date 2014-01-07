@@ -3911,7 +3911,7 @@ odm_EdcaTurboCheckCE(
 		goto dm_CheckEdcaTurbo_EXIT;
 	}
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	if (BT_DisableEDCATurbo(Adapter))
 	{
 		goto dm_CheckEdcaTurbo_EXIT;

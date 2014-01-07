@@ -322,7 +322,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 			fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
 		} else {
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			fw_name = "rtlwifi/rtl8723aufw_B.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for RTL8723A B CUT\n");
 #else
@@ -1937,7 +1937,7 @@ static s32 c2h_handler_8723a(struct rtw_adapter *padapter,
 			c2h_evt->payload[0], c2h_evt->payload[1], c2h_evt->payload[2], c2h_evt->payload[3], c2h_evt->payload[4]));
 		break;
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	case C2H_BT_INFO:
 		DBG_8723A("%s ,  Got  C2H_BT_INFO \n",__FUNCTION__);
 		BT_FwC2hBtInfo(padapter, c2h_evt->payload, c2h_evt->plen);
@@ -2013,7 +2013,7 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->c2h_handler = c2h_handler_8723a;
 	pHalFunc->c2h_id_filter_ccx = c2h_id_filter_ccx_8723a;
 
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 	pHalFunc->hal_init_checkbthang_workqueue = &rtl8723a_init_checkbthang_workqueue;
 	pHalFunc->hal_free_checkbthang_workqueue = &rtl8723a_free_checkbthang_workqueue;
 	pHalFunc->hal_cancel_checkbthang_workqueue = &rtl8723a_cancel_checkbthang_workqueue;
@@ -2807,7 +2807,7 @@ Hal_EfuseParseBTCoexistInfo_8723A(
 		pHalData->EEPROMBluetoothAntIsolation = 0;
 		pHalData->EEPROMBluetoothRadioShared = BT_Radio_Shared;
 	}
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	BT_InitHalVars(padapter);
 #endif
 }
@@ -3331,7 +3331,7 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 	}
 	else if (mode == _HW_STATE_AP_)
 	{
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 		// add NULL Data and BT NULL Data Packets to FW RSVD Page
 		rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(padapter);
 #endif
@@ -3661,7 +3661,7 @@ _func_enter_;
 				rtw_write32(padapter, REG_RCR, v32);
 			}
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			BT_WifiScanNotify(padapter, *val?true:false);
 #endif
 			break;
@@ -3669,7 +3669,7 @@ _func_enter_;
 		case HW_VAR_MLME_JOIN:
 			hw_var_set_mlme_join(padapter, variable,  val);
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			switch (*val)
 			{
 				case 0:
@@ -3910,14 +3910,14 @@ _func_enter_;
 				u8 index = 0;
 
 				pRegToSet = RegToSet_Normal; // 0xb972a841;
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 				if ((BT_IsBtDisabled(padapter) == false) &&
 					(BT_1Ant(padapter) == true))
 				{
 					MaxAggNum = 0x8;
 				}
 				else
-#endif // CONFIG_BT_COEXIST
+#endif // CONFIG_8723_BT_COEXIST
 				{
 					MaxAggNum = 0xF;
 				}
@@ -4192,7 +4192,7 @@ void GetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 	}
 }
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 
 void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 {
@@ -4238,7 +4238,7 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 		pHalData->bAntennaDetected = true;
 	}
 }
-#endif // CONFIG_BT_COEXIST
+#endif // CONFIG_8723_BT_COEXIST
 
 void rtl8723a_clone_haldata(struct rtw_adapter* dst_adapter,
 			    struct rtw_adapter* src_adapter)

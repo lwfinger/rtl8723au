@@ -1059,7 +1059,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 		HAL_INIT_STAGES_LCK,
 		HAL_INIT_STAGES_MISC21,
 		//HAL_INIT_STAGES_INIT_PABIAS,
-		#ifdef CONFIG_BT_COEXIST
+		#ifdef CONFIG_8723_BT_COEXIST
 		HAL_INIT_STAGES_BT_COEXIST,
 		#endif
 		//HAL_INIT_STAGES_ANTENNA_SEL,
@@ -1088,7 +1088,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 		"HAL_INIT_STAGES_LCK",
 		"HAL_INIT_STAGES_MISC21",
 		//"HAL_INIT_STAGES_INIT_PABIAS",
-		#ifdef CONFIG_BT_COEXIST
+		#ifdef CONFIG_8723_BT_COEXIST
 		"HAL_INIT_STAGES_BT_COEXIST",
 		#endif
 		//"HAL_INIT_STAGES_ANTENNA_SEL",
@@ -1363,7 +1363,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_LCK);
 			rtl8192c_PHY_LCCalibrate(Adapter);
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			rtl8723a_SingleDualAntennaDetection(Adapter);
 #endif
 		}
@@ -1406,7 +1406,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 //HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS);
 //	_InitPABias(Adapter);
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 	// Init BT hw config.
 	BT_InitHwConfig(Adapter);
@@ -1949,7 +1949,7 @@ static u32 rtl8723au_hal_deinit(struct rtw_adapter *padapter)
 
 	DBG_8723A("==> %s\n", __FUNCTION__);
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	BT_HaltProcess(padapter);
 #endif
 	// 2011/02/18 To Fix RU LNA  power leakage problem. We need to execute below below in

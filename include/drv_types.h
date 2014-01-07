@@ -151,7 +151,7 @@ struct registry_priv
 	u8	wifi_spec;// !turbo_mode
 
 	u8	channel_plan;
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	u8	btcoex;
 	u8	bt_iso;
 	u8	bt_sco;
@@ -317,7 +317,7 @@ struct rtw_adapter {
 	struct	pwrctrl_priv	pwrctrlpriv;
 	struct	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 	//Check BT status for BT Hung.
 	struct workqueue_struct *priv_checkbt_wq;
 	struct delayed_work checkbt_work;

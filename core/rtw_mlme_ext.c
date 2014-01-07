@@ -29,7 +29,7 @@
 #include <recv_osdep.h>
 #include <linux/ieee80211.h>
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 #include <rtl8723a_hal.h>
 #endif
 
@@ -6630,7 +6630,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 #endif
 			pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info = cpu_to_le16(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info);
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			if (BT_1Ant(padapter) == true)
 			{
 				/*  set to 8K */
@@ -7326,7 +7326,7 @@ void issue_action_BA(struct rtw_adapter *padapter, unsigned char *raddr, unsigne
 	struct sta_info		*psta;
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	struct registry_priv		*pregpriv = &padapter->registrypriv;
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	u8 tendaAPMac[] = {0xC8, 0x3A, 0x35};
 #endif
 
@@ -7377,7 +7377,7 @@ void issue_action_BA(struct rtw_adapter *padapter, unsigned char *raddr, unsigne
 				} while (pmlmeinfo->dialogToken == 0);
 				pframe = rtw_set_fixed_ie(pframe, 1, &(pmlmeinfo->dialogToken), &(pattrib->pktlen));
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 				if ((BT_1Ant(padapter) == true) &&
 				    ((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
 				     memcmp(raddr, tendaAPMac, 3)))
@@ -7434,7 +7434,7 @@ void issue_action_BA(struct rtw_adapter *padapter, unsigned char *raddr, unsigne
 				else
 					BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 				if ((BT_1Ant(padapter) == true) &&
 						((pmlmeinfo->assoc_AP_vendor != broadcomAP) ||
 						memcmp(raddr, tendaAPMac, 3)))

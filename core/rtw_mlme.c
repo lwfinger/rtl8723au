@@ -52,7 +52,7 @@ static void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
 #endif
 
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
 		padapter->HalFunc.hal_init_checkbthang_workqueue(padapter);
 #endif
@@ -1933,7 +1933,7 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 #endif /* CONFIG_AP_MODE */
 	struct registry_priv *pregistrypriv = &adapter->registrypriv;
 
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 	if(adapter->HalFunc.hal_checke_bt_hang)
 		adapter->HalFunc.hal_checke_bt_hang(adapter);
 #endif

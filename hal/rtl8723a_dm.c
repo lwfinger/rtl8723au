@@ -260,7 +260,7 @@ rtl8723a_InitHalDm(
 	pdmpriv->DM_Type = DM_Type_ByDriver;
 	pdmpriv->DMFlag = DYNAMIC_FUNC_DISABLE;
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	pdmpriv->DMFlag |= DYNAMIC_FUNC_BT;
 //	btdm_InitBtCoexistDM(Adapter); // Move to BT_CoexistMechanism()
 #endif

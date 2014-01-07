@@ -203,7 +203,7 @@ struct pwrctrl_priv
 
 	u8		bInternalAutoSuspend;
 	u8		bInSuspend;
-#ifdef	CONFIG_BT_COEXIST
+#ifdef	CONFIG_8723_BT_COEXIST
 	u8		bAutoResume;
 	u8		autopm_cnt;
 #endif

@@ -24,7 +24,7 @@
 #include <drv_types.h>
 #include <osdep_intf.h>
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 #include <rtl8723a_hal.h>
 #endif
 
@@ -42,7 +42,7 @@ void ips_enter(struct rtw_adapter * padapter)
 
 	pwrpriv->ips_enter_cnts++;
 	DBG_8723A("==>ips_enter cnts:%d\n",pwrpriv->ips_enter_cnts);
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	BTDM_TurnOffBtCoexistBeforeEnterIPS(padapter);
 #endif
 	if(rf_off == pwrpriv->change_rfpwrstate )
@@ -264,7 +264,7 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 	if((pwrpriv->rf_pwrstate == rf_on) && ((pwrpriv->pwr_state_check_cnts%4)==0))
 	{
 		DBG_8723A("==>%s .fw_state(%x)\n",__FUNCTION__,get_fwstate(pmlmepriv));
-		#if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
+		#if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
 		#else
 		pwrpriv->change_rfpwrstate = rf_off;
 		#endif
@@ -277,7 +277,7 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 			if(padapter->net_closed == true)
 				pwrpriv->ps_flag = true;
 
-			#if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
+			#if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
 			if (true==pwrpriv->bInternalAutoSuspend) {
 				DBG_8723A("<==%s .pwrpriv->bInternalAutoSuspend)(%x)\n",__FUNCTION__,pwrpriv->bInternalAutoSuspend);
 			} else {
@@ -289,7 +289,7 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 			#else
 			padapter->bCardDisableWOHSM = true;
 			autosuspend_enter(padapter);
-			#endif	/* if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
+			#endif	/* if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
 		}
 		else if(pwrpriv->bHWPwrPindetect)
 		{
@@ -297,9 +297,9 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 		else
 		#endif /* CONFIG_AUTOSUSPEND */
 		{
-			#if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
+			#if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
 			pwrpriv->change_rfpwrstate = rf_off;
-			#endif	/* defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
+			#endif	/* defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
 
 			#ifdef CONFIG_IPS
 			ips_enter(padapter);
@@ -508,7 +508,7 @@ _func_enter_;
 	else
 	{
 		if (PS_RDY_CHECK(padapter)
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 			|| (BT_1Ant(padapter) == true)
 #endif
 			)
@@ -904,7 +904,7 @@ _func_enter_;
 
 	res = _SUCCESS;
 	pwrctrl = &padapter->pwrctrlpriv;
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	if (true == padapter->pwrctrlpriv.btcoex_rfon)
 		pslv = PS_STATE_S3;
 	else
@@ -962,7 +962,7 @@ _func_enter_;
 
 	res = _SUCCESS;
 	pwrctrl = &padapter->pwrctrlpriv;
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	if (true == padapter->pwrctrlpriv.btcoex_rfon)
 		pslv = PS_STATE_S3;
 	else
@@ -1372,19 +1372,19 @@ int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char 
 	/* I think this should be check in IPS, LPS, autosuspend functions... */
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 	{
-#if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
+#if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
 		if(true==pwrpriv->bInternalAutoSuspend){
 			if(0==pwrpriv->autopm_cnt){
 				if (usb_autopm_get_interface(adapter_to_dvobj(padapter)->pusbintf) < 0)
 					DBG_8723A( "can't get autopm: \n");
 			pwrpriv->autopm_cnt++;
 		}
-#endif	/* if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
+#endif	/* if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
 		ret = _SUCCESS;
 		goto exit;
-#if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
+#if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND)
 		}
-#endif	/* if defined (CONFIG_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
+#endif	/* if defined (CONFIG_8723_BT_COEXIST)&& defined (CONFIG_AUTOSUSPEND) */
 	}
 
 	if(rf_off == pwrpriv->rf_pwrstate )

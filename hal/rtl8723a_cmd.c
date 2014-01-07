@@ -747,7 +747,7 @@ _func_enter_;
 _func_exit_;
 }
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a * pHalData;

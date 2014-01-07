@@ -25,7 +25,7 @@
 #include "Hal8723APhyReg.h"
 #include "Hal8723APhyCfg.h"
 #include "rtl8723a_rf.h"
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 #include "rtl8723a_bt-coexist.h"
 #endif
 #include "rtl8723a_dm.h"
@@ -391,7 +391,7 @@ struct hal_data_8723a {
 	struct sreset_priv srestpriv;
 #endif
 
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 	u8				bBTMode;
 	// BT only.
 	BT30Info		BtInfo;
@@ -597,7 +597,7 @@ void Hal_InitChannelPlan(struct rtw_adapter *padapter);
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
 void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
 void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
-#ifdef CONFIG_BT_COEXIST
+#ifdef CONFIG_8723_BT_COEXIST
 void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 #endif
 
@@ -613,7 +613,7 @@ void rtl8723a_stop_thread(struct rtw_adapter *padapter);
 s32 c2h_id_filter_ccx_8723a(u8 id);
 
 
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 void rtl8723a_init_checkbthang_workqueue(struct rtw_adapter * padapter);
 void rtl8723a_free_checkbthang_workqueue(struct rtw_adapter * padapter);
 void rtl8723a_cancel_checkbthang_workqueue(struct rtw_adapter * padapter);
