@@ -1037,7 +1037,7 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 		rtw_disassoc_cmd(if1, 0, false);
 
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	free_mlme_ap_info(if1);
 	#ifdef CONFIG_HOSTAPD_MLME
 	hostapd_mode_unload(if1);

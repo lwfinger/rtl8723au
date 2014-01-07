@@ -538,7 +538,7 @@ int	init_mlme_ext_priv(struct rtw_adapter* padapter)
 
 	init_mlme_ext_timer(padapter);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	init_mlme_ap_info(padapter);
 #endif
 
@@ -621,9 +621,9 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
 	int index;
 	struct mlme_handler *ptable;
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-#endif /* CONFIG_AP_MODE */
+#endif /* CONFIG_8723AU_AP_MODE */
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	u8 *pframe = precv_frame->u.hdr.rx_data;
 	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, GetAddr2Ptr(pframe));
@@ -670,7 +670,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 		psta->RxMgmtFrameSeqNum = precv_frame->u.hdr.attrib.seq_num;
 	}
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	switch (GetFrameSubType(pframe))
 	{
 		case WIFI_AUTH:
@@ -1071,7 +1071,7 @@ _END_ONBEACON_:
 
 unsigned int OnAuth(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	unsigned int	auth_mode, seq, ie_len;
 	unsigned char	*sa, *p;
 	u16	algorithm;
@@ -1372,7 +1372,7 @@ authclnt_fail:
 
 unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	u16 capab_info, listen_interval;
 	struct rtw_ieee802_11_elems elems;
 	struct sta_info	*pstat;
@@ -1892,7 +1892,7 @@ OnAssocReqFail:
 		issue_asocrsp(padapter, status, pstat, WIFI_REASSOCRSP);
 #endif
 
-#endif /* CONFIG_AP_MODE */
+#endif /* CONFIG_8723AU_AP_MODE */
 
 	return _FAIL;
 }
@@ -2029,7 +2029,7 @@ unsigned int OnDeAuth(struct rtw_adapter *padapter, union recv_frame *precv_fram
 
 	DBG_8723A("%s Reason code(%d)\n", __FUNCTION__,reason);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		struct sta_info *psta;
@@ -2100,7 +2100,7 @@ unsigned int OnDisassoc(struct rtw_adapter *padapter, union recv_frame *precv_fr
 
         DBG_8723A("%s Reason code(%d)\n", __FUNCTION__,reason);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		struct sta_info *psta;
@@ -5453,9 +5453,9 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 	unsigned short *fctrl;
 	unsigned int	rate_len;
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-#endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
+#endif /* if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
@@ -5471,9 +5471,9 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 		DBG_8723A("%s, alloc mgnt frame fail\n", __FUNCTION__);
 		return;
 	}
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	spin_lock_bh(&pmlmepriv->bcn_update_lock);
-#endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
+#endif /* if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 
 	/* update attribute */
 	pattrib = &pmgntframe->attrib;
@@ -5714,11 +5714,11 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 
 _issue_bcn:
 
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	pmlmepriv->update_bcn = false;
 
 	spin_unlock_bh(&pmlmepriv->bcn_update_lock);
-#endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
+#endif /* if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 
 	if ((pattrib->pktlen + TXDESC_SIZE) > 512)
 	{
@@ -5744,11 +5744,11 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 	unsigned short				*fctrl;
 	unsigned char					*mac, *bssid;
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	u8 *pwps_ie;
 	uint wps_ielen;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-#endif /* if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
+#endif /* if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME) */
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
@@ -5797,7 +5797,7 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 	if(cur_network->IELength>MAX_IE_SZ)
 		return;
 
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	if( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
 	{
 		pwps_ie = rtw_get_wps_ie(cur_network->IEs+_FIXED_IE_LENGTH_, cur_network->IELength-_FIXED_IE_LENGTH_, NULL, &wps_ielen);
@@ -6263,7 +6263,7 @@ void issue_auth(struct rtw_adapter *padapter, struct sta_info *psta, unsigned sh
 
 void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct sta_info *pstat, int pkt_type)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct xmit_frame	*pmgntframe;
 	struct rtw_ieee80211_hdr	*pwlanhdr;
 	struct pkt_attrib *pattrib;
@@ -9575,7 +9575,7 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 
 	if(pparm->network.InfrastructureMode == Ndis802_11APMode)
 	{
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 		if(pmlmeinfo->state == WIFI_FW_AP_STATE)
 		{
@@ -10241,7 +10241,7 @@ u8 tx_beacon_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 		DBG_8723A("issue_beacon, fail!\n");
 		return H2C_PARAMETERS_ERROR;
 	}
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	else /* tx bc/mc frames after update TIM */
 	{
 		struct sta_info *psta_bmc;

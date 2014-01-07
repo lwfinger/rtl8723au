@@ -2230,7 +2230,7 @@ int rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 
 	do_queue_select(padapter, &pxmitframe->attrib);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	spin_lock_bh(&pxmitpriv->lock);
 	if(xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe) == true)
 	{
@@ -2246,7 +2246,7 @@ int rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *skb)
 	return 0;
 }
 
-#if defined(CONFIG_AP_MODE)
+#if defined(CONFIG_8723AU_AP_MODE)
 
 int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {

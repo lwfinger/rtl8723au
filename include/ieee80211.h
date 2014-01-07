@@ -40,7 +40,7 @@
 #define ETH_TYPE_LEN		2
 #define PAYLOAD_TYPE_LEN	1
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 #define RTL_IOCTL_HOSTAPD (SIOCIWFIRSTPRIV + 28)
 
@@ -233,7 +233,7 @@ typedef struct ieee_param {
 			u16 key_len;
 			u8 key[0];
 		} crypt;
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 		struct {
 			u16 aid;
 			u16 capability;
@@ -250,7 +250,7 @@ typedef struct ieee_param {
 	} u;
 }ieee_param;
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 typedef struct ieee_param_ex {
 	u32 cmd;
 	u8 sta_addr[ETH_ALEN];

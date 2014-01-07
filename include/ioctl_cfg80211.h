@@ -78,10 +78,10 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter);
 void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter);
 void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool aborted);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len);
 void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned char *da, unsigned short reason);
-#endif //CONFIG_AP_MODE
+#endif //CONFIG_8723AU_AP_MODE
 
 void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, const u8 *buf, size_t len);
 void rtw_cfg80211_rx_p2p_action_public(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len);

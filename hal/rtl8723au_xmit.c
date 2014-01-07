@@ -640,7 +640,7 @@ static s32 pre_xmitframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitf
 	do_queue_select(padapter, pattrib);
 	spin_lock_bh(&pxmitpriv->lock);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	if(xmitframe_enqueue_for_sleeping_sta(padapter, pxmitframe) == true)
 	{
 		struct sta_info *psta;

@@ -456,7 +456,7 @@ void rtw_free_hwxmits(struct rtw_adapter *padapter);
 
 int rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *pkt);
 
-#if defined(CONFIG_AP_MODE)
+#if defined(CONFIG_8723AU_AP_MODE)
 int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 void stop_sta_xmit(struct rtw_adapter *padapter, struct sta_info *psta);
 void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta);

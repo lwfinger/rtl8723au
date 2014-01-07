@@ -733,7 +733,7 @@ _func_exit_;
 void process_pwrbit_data(struct rtw_adapter *padapter, union recv_frame *precv_frame);
 void process_pwrbit_data(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	unsigned char pwrbit;
 	u8 *ptr = precv_frame->u.hdr.rx_data;
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
@@ -779,7 +779,7 @@ void process_pwrbit_data(struct rtw_adapter *padapter, union recv_frame *precv_f
 void process_wmmps_data(struct rtw_adapter *padapter, union recv_frame *precv_frame);
 void process_wmmps_data(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info *psta=NULL;
@@ -1207,7 +1207,7 @@ _func_exit_;
 int validate_recv_ctrl_frame(struct rtw_adapter *padapter, union recv_frame *precv_frame);
 int validate_recv_ctrl_frame(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 *pframe = precv_frame->u.hdr.rx_data;

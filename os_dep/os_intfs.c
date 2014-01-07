@@ -501,7 +501,7 @@ void rtw_proc_init_one(struct net_device *dev)
 		}
 	}
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 	entry = create_proc_read_entry("all_sta_info", S_IFREG | S_IRUGO,
 				   dir_dev, proc_get_all_sta_info, dev);
@@ -630,7 +630,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 			remove_proc_entry("rf_reg_dump3", dir_dev);
 			remove_proc_entry("rf_reg_dump4", dir_dev);
 		}
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 		remove_proc_entry("all_sta_info", dir_dev);
 #endif
 

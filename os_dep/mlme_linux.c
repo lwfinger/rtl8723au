@@ -158,7 +158,7 @@ _func_exit_;
 }
 
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 void rtw_indicate_sta_assoc_event(struct rtw_adapter *padapter, struct sta_info *psta)
 {

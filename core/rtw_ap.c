@@ -25,7 +25,7 @@
 #include <linux/ieee80211.h>
 #include <wifi.h>
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 extern unsigned char	RTW_WPA_OUI[];
 extern unsigned char	WMM_OUI[];
@@ -2343,4 +2343,4 @@ void stop_ap_mode(struct rtw_adapter *padapter)
 }
 
 #endif /* CONFIG_NATIVEAP_MLME */
-#endif /* CONFIG_AP_MODE */
+#endif /* CONFIG_8723AU_AP_MODE */

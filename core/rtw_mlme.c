@@ -113,7 +113,7 @@ static void rtw_free_mlme_ie_data(u8 **ppie, u32 *plen)
 
 void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv)
 {
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	rtw_buf_free(&pmlmepriv->assoc_req, &pmlmepriv->assoc_req_len);
 	rtw_buf_free(&pmlmepriv->assoc_rsp, &pmlmepriv->assoc_rsp_len);
 	rtw_free_mlme_ie_data(&pmlmepriv->wps_beacon_ie, &pmlmepriv->wps_beacon_ie_len);
@@ -1560,7 +1560,7 @@ static u8 search_max_mac_id(struct rtw_adapter *padapter)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct sta_priv *pstapriv = &padapter->stapriv;
 
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE)){
 
 		for (aid = (pstapriv->max_num_sta); aid > 0; aid--)
@@ -1622,7 +1622,7 @@ _func_enter_;
 	if(rtw_access_ctrl(adapter, pstassoc->macaddr) == false)
 		return;
 
-#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
+#if defined (CONFIG_8723AU_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
 	{
 		psta = rtw_get_stainfo(&adapter->stapriv, pstassoc->macaddr);
@@ -1928,9 +1928,9 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 {
 	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
-#endif /* CONFIG_AP_MODE */
+#endif /* CONFIG_8723AU_AP_MODE */
 	struct registry_priv *pregistrypriv = &adapter->registrypriv;
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
@@ -1961,7 +1961,7 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 	}
 
 #ifndef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		expire_timeout_chk(adapter);

@@ -132,7 +132,7 @@ struct security_priv
 	union pn48		dot11Grptxpn;			// PN48 used for Grp Key xmit.
 	union pn48		dot11Grprxpn;			// PN48 used for Grp Key recv.
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	//extend security capabilities for AP_MODE
 	unsigned int dot8021xalg;//0:disable, 1:psk, 2:802.1x
 	unsigned int wpa_psk;//0:disable, bit(0): WPA, bit(1):WPA2

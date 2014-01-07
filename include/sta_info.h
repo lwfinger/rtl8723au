@@ -154,7 +154,7 @@ struct sta_info {
 	//curr_network(mlme_priv/security_priv/qos/ht) : AP CAP/INFO
 	//sta_info: (AP & STA) CAP/INFO
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 	struct list_head asoc_list;
 	struct list_head auth_list;
@@ -218,7 +218,7 @@ struct sta_info {
 
 	u8 keep_alive_trycnt;
 
-#endif	// CONFIG_AP_MODE
+#endif	// CONFIG_8723AU_AP_MODE
 
 	u8 *passoc_req;
 	u32 assoc_req_len;
@@ -352,7 +352,7 @@ struct	sta_priv {
 	struct rtw_adapter *padapter;
 
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct list_head asoc_list;
 	struct list_head auth_list;
 	spinlock_t asoc_list_lock;

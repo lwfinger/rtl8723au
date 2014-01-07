@@ -523,7 +523,7 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 }
 
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 static u8 set_pairwise_key(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	struct cmd_obj*			ph2c;
@@ -1195,7 +1195,7 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 	}
 	else if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 		if(mac_addr)
 			memcpy(param->sta_addr, (void*)mac_addr, ETH_ALEN);
 
@@ -2598,7 +2598,7 @@ static int cfg80211_rtw_flush_pmksa(struct wiphy *wiphy,
 	return 0;
 }
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len)
 {
 	s32 freq;
@@ -3334,7 +3334,7 @@ static int	cfg80211_rtw_assoc(struct wiphy *wiphy, struct net_device *ndev,
 
 	return 0;
 }
-#endif //CONFIG_AP_MODE
+#endif //CONFIG_8723AU_AP_MODE
 
 void rtw_cfg80211_rx_action_p2p(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len)
 {
@@ -4341,7 +4341,7 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
 	.del_pmksa = cfg80211_rtw_del_pmksa,
 	.flush_pmksa = cfg80211_rtw_flush_pmksa,
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	.add_virtual_intf = cfg80211_rtw_add_virtual_intf,
 	.del_virtual_intf = cfg80211_rtw_del_virtual_intf,
 
@@ -4354,7 +4354,7 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
 	.change_station = cfg80211_rtw_change_station,
 	.dump_station = cfg80211_rtw_dump_station,
 	.change_bss = cfg80211_rtw_change_bss,
-#endif //CONFIG_AP_MODE
+#endif //CONFIG_8723AU_AP_MODE
 
 #ifdef CONFIG_8723AU_P2P
 	.remain_on_channel = cfg80211_rtw_remain_on_channel,
@@ -4460,7 +4460,7 @@ static void rtw_cfg80211_preinit_wiphy(struct rtw_adapter *padapter, struct wiph
 
 	wiphy->interface_modes =	BIT(NL80211_IFTYPE_STATION)
 								| BIT(NL80211_IFTYPE_ADHOC)
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 								| BIT(NL80211_IFTYPE_AP)
 								| BIT(NL80211_IFTYPE_MONITOR)
 #endif
@@ -4470,9 +4470,9 @@ static void rtw_cfg80211_preinit_wiphy(struct rtw_adapter *padapter, struct wiph
 #endif
 								;
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	wiphy->mgmt_stypes = rtw_cfg80211_default_mgmt_stypes;
-#endif //CONFIG_AP_MODE
+#endif //CONFIG_8723AU_AP_MODE
 
 	wiphy->software_iftypes |= BIT(NL80211_IFTYPE_MONITOR);
 

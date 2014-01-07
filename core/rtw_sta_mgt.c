@@ -49,7 +49,7 @@ _func_enter_;
 	_rtw_init_sta_xmit_priv(&psta->sta_xmitpriv);
 	_rtw_init_sta_recv_priv(&psta->sta_recvpriv);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 	INIT_LIST_HEAD(&psta->asoc_list);
 
@@ -74,7 +74,7 @@ _func_enter_;
 
 	psta->keep_alive_trycnt = 0;
 
-#endif	/*  CONFIG_AP_MODE */
+#endif	/*  CONFIG_8723AU_AP_MODE */
 
 _func_exit_;
 }
@@ -116,7 +116,7 @@ _func_enter_;
 		psta++;
 	}
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 	pstapriv->sta_dz_bitmap = 0;
 	pstapriv->tim_bitmap = 0;
@@ -190,7 +190,7 @@ _func_exit_;
 void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv);
 void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv)
 {
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 #endif
 
@@ -470,7 +470,7 @@ _func_enter_;
 	if (!(psta->state & WIFI_AP_STATE))
 		rtw_hal_set_odm_var(padapter, HAL_ODM_STA_INFO, psta, false);
 
-#ifdef CONFIG_AP_MODE
+#ifdef CONFIG_8723AU_AP_MODE
 
 /*
 	spin_lock_bh(&pstapriv->asoc_list_lock);
@@ -512,7 +512,7 @@ _func_enter_;
 
 #endif	/*  CONFIG_NATIVEAP_MLME */
 
-#endif	/*  CONFIG_AP_MODE */
+#endif	/*  CONFIG_8723AU_AP_MODE */
 
 	/* spin_lock_bh(&(pfree_sta_queue->lock)); */
 	list_add_tail(&psta->list, get_list_head(pfree_sta_queue));
@@ -657,7 +657,7 @@ _func_exit_;
 u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	u8 res = true;
-#ifdef  CONFIG_AP_MODE
+#ifdef  CONFIG_8723AU_AP_MODE
 	struct list_head *plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
 	u8 match = false;
