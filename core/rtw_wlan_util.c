@@ -668,7 +668,7 @@ void flush_all_cam_entry(struct rtw_adapter *padapter)
 	memset((u8 *)(pmlmeinfo->FW_sta_info), 0, sizeof(pmlmeinfo->FW_sta_info));
 }
 
-#if defined(CONFIG_P2P) && defined(CONFIG_WFD)
+#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_WFD)
 int WFD_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE)
 {
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
@@ -1704,7 +1704,7 @@ void set_sta_rate(struct rtw_adapter *padapter, struct sta_info *psta)
 void update_tx_basic_rate(struct rtw_adapter *padapter, u8 wirelessmode)
 {
 	NDIS_802_11_RATES_EX	supported_rates;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 
 	/*	Added by Albert 2011/03/22 */
@@ -1712,7 +1712,7 @@ void update_tx_basic_rate(struct rtw_adapter *padapter, u8 wirelessmode)
 	/*	So, the Tx packet shouldn't use the CCK rate */
 	if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 		return;
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	memset(supported_rates, 0, NDIS_802_11_LENGTH_RATES_EX);
 

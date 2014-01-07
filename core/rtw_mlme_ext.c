@@ -719,7 +719,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 #endif
 }
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 static u32 p2p_listen_state_process(struct rtw_adapter *padapter, unsigned char *da)
 {
 	bool response = true;
@@ -739,7 +739,7 @@ static u32 p2p_listen_state_process(struct rtw_adapter *padapter, unsigned char 
 
 	return _SUCCESS;
 }
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 /****************************************************************************
 
@@ -759,7 +759,7 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	uint len = precv_frame->u.hdr.len;
 	u8 is_valid_p2p_probereq = false;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 	struct rx_pkt_attrib	*pattrib = &precv_frame->u.hdr.attrib;
 	u8 wifi_test_chk_rate = 1;
@@ -807,7 +807,7 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	}
 
 _continue:
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE))
 	{
@@ -860,11 +860,11 @@ unsigned int OnProbeRsp(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	u8	*pframe = precv_frame->u.hdr.rx_data;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 #endif
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ))
 	{
 		if ( true == pwdinfo->tx_prov_disc_info.benable )
@@ -1021,9 +1021,9 @@ unsigned int OnBeacon(struct rtw_adapter *padapter, union recv_frame *precv_fram
 				process_csa_ie(padapter, pframe, len);	/* channel switch announcement */
 #endif /* CONFIG_DFS */
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 				process_p2p_ps_ie(padapter, (pframe + WLAN_HDR_A3_LEN), (len - WLAN_HDR_A3_LEN));
-#endif /* CONFIG_P2P_PS */
+#endif /* CONFIG_8723AU_P2P_PS */
 
 			}
 		}
@@ -1391,7 +1391,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 *pframe = precv_frame->u.hdr.rx_data;
 	uint pkt_len = precv_frame->u.hdr.len;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 	u8 p2p_status_code = P2P_STATUS_SUCCESS;
 	u8 *p2pie;
@@ -1400,7 +1400,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	u8	wfd_ie[ 128 ] = { 0x00 };
 	u32	wfd_ielen = 0;
 #endif /*  CONFIG_WFD */
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	if((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
@@ -1766,7 +1766,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	if (status != _STATS_SUCCESSFUL_)
 		goto OnAssocReqFail;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	pstat->is_p2p_device = false;
 	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 	{
@@ -1797,7 +1797,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 #endif
 	}
 	pstat->p2p_status_code = p2p_status_code;
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* TODO: identify_proprietary_vendor_ie(); */
 	/*  Realtek proprietary IE */
@@ -1956,7 +1956,7 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, union recv_frame *precv_fr
 				{
 					WMM_param_handler(padapter, pIE);
 				}
-#if defined(CONFIG_P2P) && defined(CONFIG_WFD)
+#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_WFD)
 				else if (!memcmp(pIE->data, WFD_OUI, 4))/* WFD */
 				{
 					DBG_8723A( "[%s] Found WFD IE\n", __FUNCTION__ );
@@ -2008,22 +2008,22 @@ unsigned int OnDeAuth(struct rtw_adapter *padapter, union recv_frame *precv_fram
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	u8 *pframe = precv_frame->u.hdr.rx_data;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* check A3 */
 	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network),
 		   ETH_ALEN))
 		return _SUCCESS;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if ( pwdinfo->rx_invitereq_info.scan_op_ch_only )
 	{
 		mod_timer(&pwdinfo->reset_ch_sitesurvey,
 			  jiffies + msecs_to_jiffies(10));
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	reason = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN));
 
@@ -2080,21 +2080,21 @@ unsigned int OnDisassoc(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	u8 *pframe = precv_frame->u.hdr.rx_data;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* check A3 */
 	if (memcmp(GetAddr3Ptr(pframe), get_my_bssid(&pmlmeinfo->network), ETH_ALEN))
 		return _SUCCESS;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if ( pwdinfo->rx_invitereq_info.scan_op_ch_only )
 	{
 		mod_timer(&pwdinfo->reset_ch_sitesurvey,
 			  jiffies + msecs_to_jiffies(10));
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	reason = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN));
 
@@ -2352,7 +2352,7 @@ unsigned int OnAction_back(struct rtw_adapter *padapter, union recv_frame *precv
 	return _SUCCESS;
 }
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 
 static int get_reg_classes_full_count(struct p2p_channels channel_list) {
 	int cnt = 0;
@@ -4683,7 +4683,7 @@ exit:
 	return ret;
 }
 
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 static s32 rtw_action_public_decache(union recv_frame *recv_frame, s32 token)
 {
@@ -4726,13 +4726,13 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 	uint len = precv_frame->u.hdr.len;
 	u8 *frame_body;
 	u8 dialogToken=0;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	u8 *p2p_ie;
 	u32	p2p_ielen, wps_ielen;
 	struct	wifidirect_info	*pwdinfo = &( padapter->wdinfo );
 	u8	result = P2P_STATUS_SUCCESS;
 	u8	empty_addr[ETH_ALEN] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	frame_body = (unsigned char *)(pframe + sizeof(struct rtw_ieee80211_hdr_3addr));
 
@@ -4741,7 +4741,7 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 	if (rtw_action_public_decache(precv_frame, dialogToken) == _FAIL)
 		return _FAIL;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	del_timer_sync(&pwdinfo->reset_ch_sitesurvey);
 	if (wdev_to_priv(padapter->rtw_wdev)->p2p_enabled) {
 		rtw_cfg80211_rx_p2p_action_public(padapter, pframe, len);
@@ -5083,7 +5083,7 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 
 		}
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	return _SUCCESS;
 }
@@ -5170,7 +5170,7 @@ unsigned int OnAction_wmm(struct rtw_adapter *padapter, union recv_frame *precv_
 
 unsigned int OnAction_p2p(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	u8 *frame_body;
 	u8 category, OUI_Subtype, dialogToken=0;
 	u8 *pframe = precv_frame->u.hdr.rx_data;
@@ -5226,7 +5226,7 @@ unsigned int OnAction_p2p(struct rtw_adapter *padapter, union recv_frame *precv_
 
 		}
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	return _SUCCESS;
 }
@@ -5460,9 +5460,9 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
@@ -5502,7 +5502,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 	if( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
 	{
 		/* DBG_8723A("ie len=%d\n", cur_network->IELength); */
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 		/*  for P2P : Primary Device Type & Device Name */
 		u32 wpsielen=0, insert_len=0;
 		u8 *wpsie=NULL;
@@ -5597,7 +5597,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 			}
 		}
 		else
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 		{
 			int len_diff;
 			memcpy(pframe, cur_network->IEs, cur_network->IELength);
@@ -5625,7 +5625,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 				_clr_fwstate_(pmlmepriv, WIFI_UNDER_WPS);
 		}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 		if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 		{
 			u32 len;
@@ -5655,7 +5655,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 			pattrib->pktlen += len;
 #endif /* CONFIG_WFD */
 		}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 		goto _issue_bcn;
 
@@ -5753,12 +5753,12 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
 	unsigned int	rate_len;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 #ifdef CONFIG_WFD
 	u32					wfdielen = 0;
 #endif /* CONFIG_WFD */
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
@@ -5931,7 +5931,7 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 
 	}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO) && is_valid_p2p_probereq)
 	{
 		u32 len;
@@ -5963,7 +5963,7 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 #endif /* CONFIG_WFD */
 
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
@@ -6276,13 +6276,13 @@ void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct s
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX *pnetwork = &(pmlmeinfo->network);
 	u8 *ie = pnetwork->IEs;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 #ifdef CONFIG_WFD
 	u32					wfdielen = 0;
 #endif /* CONFIG_WFD */
 
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
@@ -6407,7 +6407,7 @@ void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct s
 		pattrib->pktlen += pmlmepriv->wps_assoc_resp_ie_len;
 	}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 #ifdef CONFIG_WFD
 	if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO) &&
 	    (true == pwdinfo->wfd_info->wfd_enable)) {
@@ -6416,7 +6416,7 @@ void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct s
 		pattrib->pktlen += wfdielen;
 	}
 #endif /* CONFIG_WFD */
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
@@ -6443,14 +6443,14 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	int	bssrate_len = 0, sta_bssrate_len = 0;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 	u8					p2pie[ 255 ] = { 0x00 };
 	u16					p2pielen = 0;
 #ifdef CONFIG_WFD
 	u32					wfdielen = 0;
 #endif /* CONFIG_WFD */
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 #ifdef CONFIG_DFS
 	u16	cap;
@@ -6682,7 +6682,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 		pframe = rtw_set_ie(pframe, _VENDOR_SPECIFIC_IE_, 6 , REALTEK_96B_IE, &(pattrib->pktlen));
 	}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 
 	if (wdev_to_priv(padapter->rtw_wdev)->p2p_enabled) {
 		if (pmlmepriv->p2p_assoc_req_ie &&
@@ -6831,7 +6831,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 		}
 	}
 
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 #ifdef CONFIG_WFD
 	if ( true == pwdinfo->wfd_info->wfd_enable ) {
@@ -7136,18 +7136,18 @@ static int _issue_deauth(struct rtw_adapter *padapter, unsigned char *da, unsign
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	int ret = _FAIL;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	/* DBG_8723A("%s to "MAC_FMT"\n", __func__, MAC_ARG(da)); */
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if (!(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)) && (pwdinfo->rx_invitereq_info.scan_op_ch_only)) {
 		mod_timer(&pwdinfo->reset_ch_sitesurvey,
 			  jiffies + msecs_to_jiffies(10));
 	}
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL)
 	{
@@ -7746,7 +7746,7 @@ void site_survey(struct rtw_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	u32 initialgain = 0;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 	static unsigned char  prev_survey_channel = 0;
 	static unsigned int p2p_scan_count = 0;
@@ -7776,7 +7776,7 @@ void site_survey(struct rtw_adapter *padapter)
 			ScanType = SCAN_ACTIVE;
 	}
 	else
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 	{
 		struct rtw_ieee80211_channel *ch;
 		if (pmlmeext->sitesurvey_res.channel_idx < pmlmeext->sitesurvey_res.ch_num) {
@@ -7846,7 +7846,7 @@ void site_survey(struct rtw_adapter *padapter)
 
 		if(ScanType == SCAN_ACTIVE) /* obey the channel plan setting... */
 		{
-			#ifdef CONFIG_P2P
+			#ifdef CONFIG_8723AU_P2P
 			if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_SCAN) ||
 				rtw_p2p_chk_state(pwdinfo, P2P_STATE_FIND_PHASE_SEARCH)
 			)
@@ -7856,7 +7856,7 @@ void site_survey(struct rtw_adapter *padapter)
 				issue_probereq_p2p(padapter, NULL);
 			}
 			else
-			#endif /* CONFIG_P2P */
+			#endif /* CONFIG_8723AU_P2P */
 			{
 				int i;
 				for(i=0;i<RTW_SSID_SCAN_AMOUNT;i++){
@@ -7891,7 +7891,7 @@ void site_survey(struct rtw_adapter *padapter)
 		/*	channel number is 0 or this channel is not valid. */
 
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_SCAN) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_FIND_PHASE_SEARCH))
 		{
 			if( ( pwdinfo->rx_invitereq_info.scan_op_ch_only ) || ( pwdinfo->p2p_info.scan_op_ch_only ) )
@@ -7921,7 +7921,7 @@ void site_survey(struct rtw_adapter *padapter)
 			mod_timer(&pwdinfo->find_phase_timer, jiffies +
 				  msecs_to_jiffies(pwdinfo->listen_dwell * 100));
 		} else
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 		{
 
 #ifdef CONFIG_STA_MODE_SCAN_UNDER_AP_MODE
@@ -7942,11 +7942,11 @@ void site_survey(struct rtw_adapter *padapter)
 			}
 #endif
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 			if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_SCAN) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_FIND_PHASE_SEARCH))
 				rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
 			rtw_p2p_findphase_ex_set(pwdinfo, P2P_FINDPHASE_EX_NONE);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 			pmlmeext->sitesurvey_res.state = SCAN_COMPLETE;
 
@@ -9244,7 +9244,7 @@ void linked_status_chk(struct rtw_adapter *padapter)
 		if ((psta = rtw_get_stainfo(pstapriv, pmlmeinfo->network.MacAddress)) != NULL)
 		{
 			bool is_p2p_enable = false;
-			#ifdef CONFIG_P2P
+			#ifdef CONFIG_8723AU_P2P
 			is_p2p_enable = !rtw_p2p_chk_state(&padapter->wdinfo, P2P_STATE_NONE);
 			#endif
 
@@ -9371,7 +9371,7 @@ static void survey_timer_hdl(unsigned long data)
 	struct sitesurvey_parm *psurveyPara;
 	struct cmd_priv *pcmdpriv=&padapter->cmdpriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 #endif
 
@@ -9389,7 +9389,7 @@ static void survey_timer_hdl(unsigned long data)
 
 		if(pmlmeext->scan_abort == true)
 		{
-			#ifdef CONFIG_P2P
+			#ifdef CONFIG_8723AU_P2P
 			if(!rtw_p2p_chk_state(&padapter->wdinfo, P2P_STATE_NONE))
 			{
 				rtw_p2p_findphase_ex_set(pwdinfo, P2P_FINDPHASE_EX_MAX);
@@ -9893,7 +9893,7 @@ u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	u32	initialgain;
 	u32	i;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 #endif
 

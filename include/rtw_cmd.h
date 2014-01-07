@@ -143,9 +143,9 @@ u32 rtw_init_evt_priv (struct evt_priv *pevtpriv);
 void rtw_free_evt_priv (struct evt_priv *pevtpriv);
 void rtw_cmd_clr_isr(struct cmd_priv *pcmdpriv);
 void rtw_evt_notify_isr(struct evt_priv *pevtpriv);
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 u8 p2p_protocol_wk_cmd(struct rtw_adapter*padapter, int intCmdType );
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 enum rtw_drvextra_cmd_id
 {

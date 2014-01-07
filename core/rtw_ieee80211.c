@@ -1257,7 +1257,7 @@ void dump_ies(u8 *buf, u32 buf_len) {
 		len = *(pos+1);
 
 		DBG_8723A("%s ID:%u, LEN:%u\n", __FUNCTION__, id, len);
-		#ifdef CONFIG_P2P
+		#ifdef CONFIG_8723AU_P2P
 		dump_p2p_ie(pos, len);
 		#endif
 		dump_wps_ie(pos, len);
@@ -1289,7 +1289,7 @@ void dump_wps_ie(u8 *ie, u32 ie_len) {
 	}
 }
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 void dump_p2p_ie(u8 *ie, u32 ie_len) {
 	u8* pos = (u8*)ie;
 	u8 id;
@@ -1529,7 +1529,7 @@ void rtw_WLAN_BSSID_EX_remove_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 	}
 }
 
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 #ifdef CONFIG_WFD
 int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)

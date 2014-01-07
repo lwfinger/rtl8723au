@@ -3967,11 +3967,11 @@ _func_enter_;
 			rtl8723a_set_FwJoinBssReport_cmd(padapter, *val);
 			break;
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 		case HW_VAR_H2C_FW_P2P_PS_OFFLOAD:
 			rtl8192c_set_p2p_ps_offload_cmd(padapter, *val);
 			break;
-#endif //CONFIG_P2P_PS
+#endif //CONFIG_8723AU_P2P_PS
 
 		case HW_VAR_INITIAL_GAIN:
 			{

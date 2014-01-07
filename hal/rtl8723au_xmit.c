@@ -193,9 +193,9 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	int	bmcst = is_multicast_ether_addr(pattrib->ra);
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 	if((false == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0)) {
 		ptxdesc = (struct tx_desc *)(pmem+PACKET_OFFSET_SZ);

@@ -23,7 +23,7 @@
 #include <rtw_p2p.h>
 #include <wifi.h>
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 
 static int rtw_p2p_is_channel_list_ok( u8 desired_ch, u8* ch_list, u8 ch_cnt )
 {
@@ -3552,7 +3552,7 @@ _func_enter_;
 _func_exit_;
 }
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 void process_p2p_ps_ie(struct rtw_adapter *padapter, u8 *IEs, u32 IELength)
 {
 	u8 * ies;
@@ -3766,7 +3766,7 @@ _func_exit_;
 
 	return res;
 }
-#endif /*  CONFIG_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P_PS */
 
 static void reset_ch_sitesurvey_timer_process(unsigned long data)
 {
@@ -3917,7 +3917,7 @@ void rtw_init_wifidirect_timers(struct rtw_adapter* padapter)
 
 void rtw_init_wifidirect_addrs(struct rtw_adapter* padapter, u8 *dev_addr, u8 *iface_addr)
 {
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 
 	/*init device&interface address */
@@ -4175,4 +4175,4 @@ exit:
 	return ret;
 }
 
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */

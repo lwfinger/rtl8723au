@@ -321,7 +321,7 @@ struct wifidirect_info{
 	uint						channel_list_attr_len;		//	This field will contain the length of body of P2P Channel List attribute of group negotitation response frame.
 	u8						channel_list_attr[100];		//	This field will contain the body of P2P Channel List attribute of group negotitation response frame.
 														//	We will use the channel_cnt and channel_list fields when constructing the group negotitation confirm frame.
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 	enum P2P_PS_MODE		p2p_ps_mode; // indicate p2p ps mode
 	enum P2P_PS_STATE		p2p_ps_state; // indicate p2p ps state
 	u8						noa_index; // Identifies and instance of Notice of Absence timing.
@@ -332,7 +332,7 @@ struct wifidirect_info{
 	u32						noa_duration[P2P_MAX_NOA_NUM]; // Max duration for owner, preferred or min acceptable duration for client.
 	u32						noa_interval[P2P_MAX_NOA_NUM]; // Length of interval for owner, preferred or max acceptable interval of client.
 	u32						noa_start_time[P2P_MAX_NOA_NUM]; // schedule expressed in terms of the lower 4 bytes of the TSF timer.
-#endif // CONFIG_P2P_PS
+#endif // CONFIG_8723AU_P2P_PS
 };
 
 struct tdls_ss_record{	//signal strength record
@@ -484,7 +484,7 @@ struct mlme_priv {
 	u32 p2p_go_probe_resp_ie_len; //for GO
 	u32 p2p_assoc_req_ie_len;
 /*
-#if defined(CONFIG_P2P)
+#if defined(CONFIG_8723AU_P2P)
 	//u8 *wps_p2p_beacon_ie;
 	u8 *p2p_beacon_ie;
 	u8 *wps_p2p_probe_resp_ie;

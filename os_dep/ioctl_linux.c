@@ -104,9 +104,9 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info* pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 _func_enter_;
 
@@ -263,12 +263,12 @@ _func_enter_;
 					padapter->securitypriv.dot118021XGrpKeyid = param->u.crypt.idx;
 
 					rtw_set_key(padapter,&padapter->securitypriv,param->u.crypt.idx, 1);
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 					if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_PROVISIONING_ING))
 					{
 						rtw_p2p_set_state(pwdinfo, P2P_STATE_PROVISIONING_DONE);
 					}
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 				}
 			}
@@ -312,9 +312,9 @@ static int rtw_set_wpa_ie(struct rtw_adapter *padapter, char *pie, unsigned shor
 	int group_cipher = 0, pairwise_cipher = 0;
 	int ret = 0;
 	u8 null_addr[]= {0,0,0,0,0,0};
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info* pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 	if((ielen > MAX_WPA_IE_LEN) || (pie == NULL)){
 		_clr_fwstate_(&padapter->mlmepriv, WIFI_UNDER_WPS);
@@ -439,12 +439,12 @@ static int rtw_set_wpa_ie(struct rtw_adapter *padapter, char *pie, unsigned shor
 
 					set_fwstate(&padapter->mlmepriv, WIFI_UNDER_WPS);
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 					if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_OK))
 					{
 						rtw_p2p_set_state(pwdinfo, P2P_STATE_PROVISIONING_ING);
 					}
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 					cnt += buf[cnt+1]+2;
 
 					break;
@@ -486,7 +486,7 @@ static int dummy(struct net_device *dev, struct iw_request_info *a,
 
 }
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 static int rtw_wext_p2p_enable(struct net_device *dev,
                                struct iw_request_info *info,
                                union iwreq_data *wrqu, char *extra)
@@ -2185,7 +2185,7 @@ static int rtw_p2p_got_wpsinfo(struct net_device *dev,
 
 }
 
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 static void mac_reg_dump(struct rtw_adapter *padapter)
 {

@@ -199,7 +199,7 @@ struct sta_info {
 	u8 has_legacy_ac;
 	unsigned int sleepq_ac_len;
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	//p2p priv data
 	u8 is_p2p_device;
 	u8 p2p_status_code;
@@ -214,7 +214,7 @@ struct sta_info {
 	u8 secdev_types_list[32];// 32/8 == 4;
 	u16 dev_name_len;
 	u8 dev_name[32];
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 	u8 keep_alive_trycnt;
 

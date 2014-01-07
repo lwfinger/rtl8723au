@@ -55,11 +55,11 @@ u8 process_p2p_presence_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 
 void p2p_protocol_wk_hdl(struct rtw_adapter *padapter, int intCmdType);
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 void	process_p2p_ps_ie(struct rtw_adapter *padapter, u8 *IEs, u32 IELength);
 void	p2p_ps_wk_hdl(struct rtw_adapter *padapter, u8 p2p_ps_state);
 u8	p2p_ps_wk_cmd(struct rtw_adapter*padapter, u8 p2p_ps_state, u8 enqueue);
-#endif // CONFIG_P2P_PS
+#endif // CONFIG_8723AU_P2P_PS
 
 void rtw_init_cfg80211_wifidirect_info(struct rtw_adapter *padapter);
 int rtw_p2p_check_frames(struct rtw_adapter *padapter, const u8 *buf, u32 len, u8 tx);

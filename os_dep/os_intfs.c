@@ -1112,7 +1112,7 @@ u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	padapter->bWritePortCancel = false;
 	padapter->bRxRSSIDisplay = 0;
 	padapter->bNotifyChannelChange = 0;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	padapter->bShowGetP2PState = 1;
 #endif
 
@@ -1188,7 +1188,7 @@ _func_enter_;
 		goto exit;
 	}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	rtw_init_wifidirect_timers(padapter);
 	init_wifidirect_info(padapter, P2P_ROLE_DISABLE);
 	reset_global_wifidirect_info(padapter);
@@ -1197,7 +1197,7 @@ _func_enter_;
 	if(rtw_init_wifi_display_info(padapter) == _FAIL)
 		RT_TRACE(_module_os_intfs_c_,_drv_err_,("\n Can't init init_wifi_display_info\n"));
 #endif
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 	if(init_mlme_ext_priv(padapter) == _FAIL)
 	{
@@ -1280,9 +1280,9 @@ void rtw_cancel_all_timer(struct rtw_adapter *padapter)
 
 	del_timer_sync(&padapter->pwrctrlpriv.pwr_state_check_timer);
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	del_timer_sync(&padapter->cfg80211_wdinfo.remain_on_ch_timer);
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
 	del_timer_sync(&padapter->mlmepriv.set_scan_deny_timer);
@@ -1311,7 +1311,7 @@ u8 rtw_free_drv_sw(struct rtw_adapter *padapter)
 	//we can call rtw_p2p_enable here, but:
 	// 1. rtw_p2p_enable may have IO operation
 	// 2. rtw_p2p_enable is bundled with wext interface
-	#ifdef CONFIG_P2P
+	#ifdef CONFIG_8723AU_P2P
 	{
 		struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 		if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
@@ -1712,11 +1712,11 @@ static int netdev_close(struct net_device *pnetdev)
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 	}
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	if(wdev_to_priv(padapter->rtw_wdev)->p2p_enabled == true)
 		wdev_to_priv(padapter->rtw_wdev)->p2p_enabled = false;
 	rtw_p2p_enable(padapter, P2P_ROLE_DISABLE);
-#endif //CONFIG_P2P
+#endif //CONFIG_8723AU_P2P
 
 	rtw_scan_abort(padapter);
 	padapter->rtw_wdev->iftype = NL80211_IFTYPE_MONITOR; //set this at the end

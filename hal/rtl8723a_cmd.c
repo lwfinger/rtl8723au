@@ -871,7 +871,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 }
 #endif
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
@@ -959,7 +959,7 @@ _func_enter_;
 _func_exit_;
 
 }
-#endif //CONFIG_P2P_PS
+#endif //CONFIG_8723AU_P2P_PS
 
 #ifdef CONFIG_IOL
 #include <rtw_iol.h>

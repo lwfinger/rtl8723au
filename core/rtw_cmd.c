@@ -754,9 +754,9 @@ u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, NDIS_802_11_SSID *ssid, int
 	struct sitesurvey_parm	*psurveyPara;
 	struct cmd_priv		*pcmdpriv = &padapter->cmdpriv;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 _func_enter_;
 
@@ -766,11 +766,11 @@ _func_enter_;
 	}
 #endif
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 		p2p_ps_wk_cmd(padapter, P2P_PS_SCAN, 1);
 	}
-#endif /* CONFIG_P2P_PS */
+#endif /* CONFIG_8723AU_P2P_PS */
 
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
 	if (ph2c == NULL)
@@ -2321,7 +2321,7 @@ void power_saving_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 	 rtw_ps_processor(padapter);
 }
 
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 u8 p2p_protocol_wk_cmd(struct rtw_adapter*padapter, int intCmdType )
 {
 	struct cmd_obj	*ph2c;
@@ -2364,7 +2364,7 @@ _func_exit_;
 
 	return res;
 }
-#endif /* CONFIG_P2P */
+#endif /* CONFIG_8723AU_P2P */
 
 u8 rtw_ps_cmd(struct rtw_adapter*padapter)
 {
@@ -2614,11 +2614,11 @@ u8 rtw_drvextra_cmd_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 			antenna_select_wk_hdl(padapter, pdrvextra_cmd->type_size);
 			break;
 #endif
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 		case P2P_PS_WK_CID:
 			p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
 			break;
-#endif /*  CONFIG_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P_PS */
 		case P2P_PROTO_WK_CID:
 			/*	Commented by Albert 2011/07/01 */
 			/*	I used the type_size as the type command */

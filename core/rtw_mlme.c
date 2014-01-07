@@ -669,7 +669,7 @@ _func_enter_;
 
 	/* spin_lock_bh(&queue->lock); */
 
-	#if defined(CONFIG_P2P) && defined(CONFIG_P2P_REMOVE_GROUP_INFO)
+	#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_8723AU_P2P_REMOVE_GROUP_INFO)
 	rtw_WLAN_BSSID_EX_remove_p2p_attr(pnetwork, P2P_ATTR_GROUP_INFO);
 	#endif
 
@@ -916,11 +916,11 @@ _func_enter_;
 
 	spin_unlock_bh(&pmlmepriv->lock);
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 		p2p_ps_wk_cmd(adapter, P2P_PS_SCAN_DONE, 0);
 	}
-#endif /*  CONFIG_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P_PS */
 
 	rtw_os_xmit_schedule(adapter);
 
@@ -1132,9 +1132,9 @@ _func_enter_;
 
 	}
 
-#ifdef CONFIG_P2P_PS
+#ifdef CONFIG_8723AU_P2P_PS
 	p2p_ps_wk_cmd(padapter, P2P_PS_DISABLE, 1);
-#endif /*  CONFIG_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P_PS */
 
 #ifdef CONFIG_LPS
 #ifdef CONFIG_WOWLAN
@@ -1950,7 +1950,7 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 
 	if(pregistrypriv->wifi_spec==1)
 	{
-#ifdef CONFIG_P2P
+#ifdef CONFIG_8723AU_P2P
 		struct wifidirect_info *pwdinfo = &adapter->wdinfo;
 		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 #endif

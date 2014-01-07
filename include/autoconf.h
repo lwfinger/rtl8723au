@@ -59,19 +59,19 @@
 	//#define CONFIG_FIND_BEST_CHANNEL
 #endif
 
-#define CONFIG_P2P
-#ifdef CONFIG_P2P
+#define CONFIG_8723AU_P2P
+#ifdef CONFIG_8723AU_P2P
 	//Added by Albert 20110812
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
 
 	#ifndef CONFIG_WIFI_TEST
-		#define CONFIG_P2P_REMOVE_GROUP_INFO
+		#define CONFIG_8723AU_P2P_REMOVE_GROUP_INFO
 	#endif
 	//#define CONFIG_DBG_P2P
 
-	#define CONFIG_P2P_PS
-	//#define CONFIG_P2P_IPS
+	#define CONFIG_8723AU_P2P_PS
+	//#define CONFIG_8723AU_P2P_IPS
 #endif
 
 //	Added by Kurt 20110511
