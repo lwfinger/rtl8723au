@@ -661,21 +661,12 @@ void rtw_add_network(struct rtw_adapter *adapter, WLAN_BSSID_EX *pnetwork);
 void rtw_add_network(struct rtw_adapter *adapter, WLAN_BSSID_EX *pnetwork)
 {
 	struct	mlme_priv	*pmlmepriv = &(((struct rtw_adapter *)adapter)->mlmepriv);
-	/* _queue	*queue	= &(pmlmepriv->scanned_queue); */
 
 _func_enter_;
-
-	/* spin_lock_bh(&queue->lock); */
-
-	#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_8723AU_P2P_REMOVE_GROUP_INFO)
-	rtw_WLAN_BSSID_EX_remove_p2p_attr(pnetwork, P2P_ATTR_GROUP_INFO);
-	#endif
 
 	update_current_network(adapter, pnetwork);
 
 	rtw_update_scanned_network(adapter, pnetwork);
-
-	/* spin_unlock_bh(&queue->lock); */
 
 _func_exit_;
 }
