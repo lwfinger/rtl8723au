@@ -924,10 +924,6 @@ _func_enter_;
 
 	rtw_os_xmit_schedule(adapter);
 
-#ifdef CONFIG_DRVEXT_MODULE_WSC
-	drvext_surveydone_callback(&adapter->drvextpriv);
-#endif
-
 #ifdef DBG_CONFIG_ERROR_DETECT
 	{
 		struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
@@ -1874,11 +1870,6 @@ _func_enter_;
 	}
 
 	spin_unlock_bh(&pmlmepriv->lock);
-
-#ifdef CONFIG_DRVEXT_MODULE_WSC
-	drvext_assoc_fail_indicate(&adapter->drvextpriv);
-#endif
-
 _func_exit_;
 }
 
