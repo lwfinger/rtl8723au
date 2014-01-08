@@ -373,15 +373,6 @@ InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 	{
 		struct reportpwrstate_parm report;
 		memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
-#ifdef CONFIG_LPS_LCLK
-		if( ((pHalData->IntArray[0])&UHIMR_CPWM)){
-//			DBG_8723A("%s HIMR=0x%x\n",__func__,pHalData->IntArray[0]);
-			//cpwm_int_hdl(Adapter, &report);
-			schedule_work(&Adapter->pwrctrlpriv.cpwm_event);
-			pHalData->IntArray[0]&= ~UHIMR_CPWM;
-//			DBG_8723A("%s HIMR=0x%x\n",__func__,pHalData->IntArray[0]);
-		}
-#endif
 	}
 	return (((pHalData->IntArray[0])&pHalData->IntrMask[0])!=0 ||
 		((pHalData->IntArray[1])&pHalData->IntrMask[1])!=0);

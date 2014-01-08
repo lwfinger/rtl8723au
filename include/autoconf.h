@@ -88,10 +88,6 @@
 #define CONFIG_IPS
 #endif // #ifdef CONFIG_POWER_SAVING
 
-#ifdef CONFIG_LPS_LCLK
-#define CONFIG_XMIT_THREAD_MODE
-#endif
-
 #ifdef CONFIG_BR_EXT
 #define CONFIG_BR_EXT_BRNAME	"br0"
 #endif	// CONFIG_BR_EXT

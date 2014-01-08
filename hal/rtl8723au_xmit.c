@@ -422,15 +422,6 @@ s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter)
 	if(check_pending_xmitbuf(pxmitpriv) == false)
 		return _SUCCESS;
 
-#ifdef CONFIG_LPS_LCLK
-	ret = rtw_register_tx_alive(padapter);
-	if (ret != _SUCCESS) {
-		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
-				 ("%s: wait to leave LPS_LCLK\n", __FUNCTION__));
-		return _SUCCESS;
-	}
-#endif
-
 	do {
 		pxmitbuf = dequeue_pending_xmitbuf(pxmitpriv);
 		if (pxmitbuf == NULL) break;
@@ -438,10 +429,6 @@ s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter)
 		rtw_write_port(padapter, pxmitbuf->ff_hwaddr, pxmitbuf->len, (unsigned char*)pxmitbuf);
 
 	} while (1);
-
-#ifdef CONFIG_LPS_LCLK
-	rtw_unregister_tx_alive(padapter);
-#endif
 
 	return _SUCCESS;
 }

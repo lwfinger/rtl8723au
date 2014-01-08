@@ -260,19 +260,6 @@ struct pwrctrl_priv
 void rtw_init_pwrctrl_priv(struct rtw_adapter *adapter);
 void rtw_free_pwrctrl_priv(struct rtw_adapter * adapter);
 
-#ifdef CONFIG_LPS_LCLK
-s32 rtw_register_tx_alive(struct rtw_adapter * padapter);
-void rtw_unregister_tx_alive(struct rtw_adapter * padapter);
-s32 rtw_register_rx_alive(struct rtw_adapter * padapter);
-void rtw_unregister_rx_alive(struct rtw_adapter * padapter);
-s32 rtw_register_cmd_alive(struct rtw_adapter * padapter);
-void rtw_unregister_cmd_alive(struct rtw_adapter * padapter);
-s32 rtw_register_evt_alive(struct rtw_adapter * padapter);
-void rtw_unregister_evt_alive(struct rtw_adapter * padapter);
-void cpwm_int_hdl(struct rtw_adapter * padapter, struct reportpwrstate_parm *preportpwrstate);
-void LPS_Leave_check(struct rtw_adapter * padapter);
-#endif
-
 void rtw_set_ps_mode(struct rtw_adapter * padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode);
 void rtw_set_rpwm(struct rtw_adapter * padapter, u8 val8);
 void LeaveAllPowerSaveMode(struct rtw_adapter * Adapter);
