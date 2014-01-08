@@ -140,11 +140,7 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 		|| check_fwstate(pmlmepriv, WIFI_UNDER_LINKING|WIFI_UNDER_WPS)
 		|| check_fwstate(pmlmepriv, WIFI_AP_STATE)
 		|| check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE)
-#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_8723AU_P2P_IPS)
-		|| pcfg80211_wdinfo->is_ro_ch
-#elif defined(CONFIG_8723AU_P2P)
 		|| !rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)
-#endif
 	) {
 		goto exit;
 	}
@@ -161,11 +157,7 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 			|| check_fwstate(b_pmlmepriv, WIFI_UNDER_LINKING|WIFI_UNDER_WPS)
 			|| check_fwstate(b_pmlmepriv, WIFI_AP_STATE)
 			|| check_fwstate(b_pmlmepriv, WIFI_ADHOC_MASTER_STATE|WIFI_ADHOC_STATE)
-#if defined(CONFIG_8723AU_P2P) && defined(CONFIG_8723AU_P2P_IPS)
-			|| b_pcfg80211_wdinfo->is_ro_ch
-#elif defined(CONFIG_8723AU_P2P)
 			|| !rtw_p2p_chk_state(b_pwdinfo, P2P_STATE_NONE)
-#endif
 		) {
 			goto exit;
 		}
