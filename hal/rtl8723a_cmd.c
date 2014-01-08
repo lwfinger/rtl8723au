@@ -160,7 +160,7 @@ u8 rtl8192c_h2c_msg_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	return H2C_SUCCESS;
 }
 
-#if defined(CONFIG_AUTOSUSPEND) && defined(SUPPORT_HW_RFOFF_DETECTED)
+#if defined(CONFIG_AUTOSUSPEND)
 u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter *padapter ,u8 bfwpoll, u16 period)
 {
 	u8	res=_SUCCESS;
@@ -171,7 +171,7 @@ u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter *padapter ,u8 bfwpoll, u1
 	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));
 	return res;
 }
-#endif //CONFIG_AUTOSUSPEND && SUPPORT_HW_RFOFF_DETECTED
+#endif //CONFIG_AUTOSUSPEND
 
 u8 rtl8192c_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {

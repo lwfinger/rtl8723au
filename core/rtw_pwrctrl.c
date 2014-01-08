@@ -116,10 +116,8 @@ void autosuspend_enter(struct rtw_adapter* padapter);
 int autoresume_enter(struct rtw_adapter* padapter);
 #endif
 
-#ifdef SUPPORT_HW_RFOFF_DETECTED
 int rtw_hw_suspend(struct rtw_adapter *padapter );
 int rtw_hw_resume(struct rtw_adapter *padapter);
-#endif
 
 static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 {
@@ -184,13 +182,10 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 #endif /* CONFIG_8723AU_P2P */
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-#ifdef SUPPORT_HW_RFOFF_DETECTED
 	rt_rf_power_state rfpwrstate;
-#endif /* SUPPORT_HW_RFOFF_DETECTED */
 
 	pwrpriv->ps_processing = true;
 
-#ifdef SUPPORT_HW_RFOFF_DETECTED
 	if(pwrpriv->bips_processing == true)
 		goto exit;
 
@@ -245,7 +240,6 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 		}
 		pwrpriv->pwr_state_check_cnts ++;
 	}
-#endif /* SUPPORT_HW_RFOFF_DETECTED */
 
 	if (pwrpriv->ips_mode_req == IPS_NONE)
 		goto exit;
@@ -1198,9 +1192,7 @@ _func_enter_;
 	pwrctrlpriv->bkeepfwalive = false;
 
 #ifdef CONFIG_AUTOSUSPEND
-#ifdef SUPPORT_HW_RFOFF_DETECTED
 	pwrctrlpriv->pwr_state_check_interval = (pwrctrlpriv->bHWPwrPindetect) ?1000:2000;
-#endif
 #endif
 
 	pwrctrlpriv->LpsIdleCount = 0;

@@ -2869,14 +2869,14 @@ static u8 rtl8192cu_ps_func(struct rtw_adapter *Adapter,HAL_INTF_PS_FUNC efunc_i
 	u8 bResult = true;
 	switch(efunc_id){
 
-		#if defined(CONFIG_AUTOSUSPEND) && defined(SUPPORT_HW_RFOFF_DETECTED)
+		#if defined(CONFIG_AUTOSUSPEND)
 		case HAL_USB_SELECT_SUSPEND:
 			{
 				u8 bfwpoll = *(( u8*)val);
 				rtl8192c_set_FwSelectSuspend_cmd(Adapter,bfwpoll ,500);//note fw to support hw power down ping detect
 			}
 			break;
-		#endif //CONFIG_AUTOSUSPEND && SUPPORT_HW_RFOFF_DETECTED
+		#endif //CONFIG_AUTOSUSPEND
 
 		default:
 			break;
