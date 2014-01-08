@@ -393,10 +393,8 @@ struct mlme_priv {
 	struct timer_list scan_to_timer; // driver itself handles scan_timeout status.
 	u32 scan_start_time; // used to evaluate the time spent in scanning
 
-	#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	struct timer_list set_scan_deny_timer;
 	atomic_t set_scan_deny; //0: allowed, 1: deny
-	#endif
 
 	struct qos_priv qospriv;
 
@@ -650,18 +648,10 @@ void rtw_get_encrypt_decrypt_from_registrypriv(struct rtw_adapter *adapter);
 void rtw_scan_timeout_handler(unsigned long data);
 
 void rtw_dynamic_check_timer_handler(unsigned long data);
-#ifdef CONFIG_SET_SCAN_DENY_TIMER
 bool rtw_is_scan_deny(struct rtw_adapter *adapter);
 void rtw_clear_scan_deny(struct rtw_adapter *adapter);
 void rtw_set_scan_deny_timer_hdl(unsigned long data);
 void rtw_set_scan_deny(struct rtw_adapter *adapter, u32 ms);
-#else
-#define rtw_is_scan_deny(adapter) false
-#define rtw_clear_scan_deny(adapter) do {} while (0)
-#define rtw_set_scan_deny_timer_hdl(adapter) do {} while (0)
-#define rtw_set_scan_deny(adapter, ms) do {} while (0)
-#endif
-
 
 int _rtw_init_mlme_priv(struct rtw_adapter *padapter);
 

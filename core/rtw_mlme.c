@@ -47,10 +47,8 @@ static void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 	setup_timer(&pmlmepriv->dynamic_chk_timer,
 		    rtw_dynamic_check_timer_handler, (unsigned long)padapter);
 
-#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	setup_timer(&pmlmepriv->set_scan_deny_timer,
 		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
-#endif
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
 	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
@@ -1944,7 +1942,6 @@ out:
 		  jiffies + msecs_to_jiffies(2000));
 }
 
-#ifdef CONFIG_SET_SCAN_DENY_TIMER
 inline bool rtw_is_scan_deny(struct rtw_adapter *adapter)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
@@ -1976,7 +1973,6 @@ void rtw_set_scan_deny(struct rtw_adapter *adapter, u32 ms)
 		  jiffies + msecs_to_jiffies(ms));
 
 }
-#endif
 
 #if defined(IEEE80211_SCAN_RESULT_EXPIRE)
 #define RTW_SCAN_RESULT_EXPIRE IEEE80211_SCAN_RESULT_EXPIRE/HZ*1000 -1000 /* 3000 -1000 */
