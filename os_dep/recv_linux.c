@@ -207,16 +207,8 @@ _func_enter_;
 	precvpriv = &(padapter->recvpriv);
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 
-#ifdef CONFIG_DRVEXT_MODULE
-	if (drvext_rx_handler(padapter, precv_frame->u.hdr.rx_data, precv_frame->u.hdr.len) == _SUCCESS)
-	{
-		goto _recv_indicatepkt_drop;
-	}
-#endif
-
 	skb = precv_frame->u.hdr.pkt;
-	if(skb == NULL)
-	{
+	if(skb == NULL) {
 		RT_TRACE(_module_recv_osdep_c_,_drv_err_,("rtw_recv_indicatepkt():skb==NULL something wrong!!!!\n"));
 		goto _recv_indicatepkt_drop;
 	}
@@ -235,8 +227,7 @@ _func_enter_;
 		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p skb->len=%d\n",
 		 skb->head, skb->data, skb_tail_pointer(skb), skb_end_pointer(skb), skb->len));
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-	{
+	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
 		struct sk_buff *pskb2=NULL;
 		struct sta_info *psta = NULL;
 		struct sta_priv *pstapriv = &padapter->stapriv;

@@ -67,10 +67,6 @@ enum _NIC_VERSION {
 #include <rtw_p2p.h>
 #include <rtw_ap.h>
 
-#ifdef CONFIG_DRVEXT_MODULE
-#include <drvext_api.h>
-#endif
-
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
 #endif	// CONFIG_BR_EXT
@@ -321,10 +317,6 @@ struct rtw_adapter {
 	//Check BT status for BT Hung.
 	struct workqueue_struct *priv_checkbt_wq;
 	struct delayed_work checkbt_work;
-#endif
-
-#ifdef CONFIG_DRVEXT_MODULE
-	struct	drvext_priv	drvextpriv;
 #endif
 
 #ifdef CONFIG_8723AU_AP_MODE

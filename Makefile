@@ -31,8 +31,6 @@ CONFIG_EXT_CLK = n
 CONFIG_FTP_PROTECT = n
 CONFIG_WOWLAN = n
 
-CONFIG_DRVEXT_MODULE = n
-
 export TopDIR ?= $(shell pwd)
 
 

@@ -1335,12 +1335,6 @@ u8 rtw_free_drv_sw(struct rtw_adapter *padapter)
 
 	rtw_free_pwrctrl_priv(padapter);
 
-	//rtw_mfree((void *)padapter, sizeof (padapter));
-
-#ifdef CONFIG_DRVEXT_MODULE
-	free_drvext(&padapter->drvextpriv);
-#endif
-
 	rtw_hal_free_data(padapter);
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("<==rtw_free_drv_sw\n"));
@@ -1461,27 +1455,19 @@ int _netdev_open(struct net_device *pnetdev)
 		rtw_bb_rf_gain_offset(padapter);
 #endif //CONFIG_RF_GAIN_OFFSET
 
-		status=rtw_start_drv_threads(padapter);
-		if(status ==_FAIL)
-		{
+		status = rtw_start_drv_threads(padapter);
+		if(status ==_FAIL) {
 			DBG_8723A("Initialize driver software resource Failed!\n");
 			goto netdev_open_error;
 		}
 
-		if (init_hw_mlme_ext(padapter) == _FAIL)
-		{
+		if (init_hw_mlme_ext(padapter) == _FAIL) {
 			DBG_8723A("can't init mlme_ext_priv\n");
 			goto netdev_open_error;
 		}
 
-#ifdef CONFIG_DRVEXT_MODULE
-		init_drvext(padapter);
-#endif
-
-		if(padapter->intf_start)
-		{
+		if (padapter->intf_start)
 			padapter->intf_start(padapter);
-		}
 
 		rtw_proc_init_one(pnetdev);
 
