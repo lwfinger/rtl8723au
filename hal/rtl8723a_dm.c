@@ -335,10 +335,6 @@ _record_initrate:
 	{
 		u8	bLinked=false;
 
-		#ifdef CONFIG_DISABLE_ODM
-		pHalData->odmpriv.SupportAbility = 0;
-		#endif
-
 		if(rtw_linked_check(Adapter))
 			bLinked = true;
 
