@@ -934,18 +934,23 @@ unsigned int OnBeacon(struct rtw_adapter *padapter, union recv_frame *precv_fram
 	u8 *p = NULL;
 	u32 ielen = 0;
 
-#ifdef CONFIG_ATTEMPT_TO_FIX_AP_BEACON_ERROR
-	p = rtw_get_ie(pframe + sizeof(struct rtw_ieee80211_hdr_3addr) + _BEACON_IE_OFFSET_, _EXT_SUPPORTEDRATES_IE_, &ielen, precv_frame->u.hdr.len -sizeof(struct rtw_ieee80211_hdr_3addr) - _BEACON_IE_OFFSET_);
-	if ((p != NULL) && (ielen > 0))
-	{
-		if ((*(p + 1 + ielen) == 0x2D) && (*(p + 2 + ielen) != 0x2D))
-		{
-			/* Invalid value 0x2D is detected in Extended Supported Rates (ESR) IE. Try to fix the IE length to avoid failed Beacon parsing. */
-			DBG_8723A("[WIFIDBG] Error in ESR IE is detected in Beacon of BSSID:"MAC_FMT". Fix the length of ESR IE to avoid failed Beacon parsing.\n", MAC_ARG(GetAddr3Ptr(pframe)));
+	p = rtw_get_ie(pframe + sizeof(struct rtw_ieee80211_hdr_3addr) +
+		       _BEACON_IE_OFFSET_, _EXT_SUPPORTEDRATES_IE_, &ielen,
+		       precv_frame->u.hdr.len -
+		       sizeof(struct rtw_ieee80211_hdr_3addr) -
+		       _BEACON_IE_OFFSET_);
+	if ((p != NULL) && (ielen > 0)) {
+		if ((*(p + 1 + ielen) == 0x2D) && (*(p + 2 + ielen) != 0x2D)) {
+			/* Invalid value 0x2D is detected in Extended Supported
+			 * Rates (ESR) IE. Try to fix the IE length to avoid
+			 * failed Beacon parsing.
+			 */
+			DBG_8723A("[WIFIDBG] Error in ESR IE is detected in Beacon of BSSID: %pM."
+				  " Fix the length of ESR IE to avoid failed Beacon parsing.\n",
+				  GetAddr3Ptr(pframe));
 			*(p + 1) = ielen - 1;
 		}
 	}
-#endif
 
 	if (pmlmeext->sitesurvey_res.state == SCAN_PROCESS) {
 		report_survey_event(padapter, precv_frame);
