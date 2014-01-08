@@ -80,20 +80,13 @@
 	#define CONFIG_SW_LED
 #endif // CONFIG_LED
 
-#ifdef CONFIG_POWER_SAVING
-
 #define CONFIG_IPS
-#endif // #ifdef CONFIG_POWER_SAVING
 
 #ifdef CONFIG_BR_EXT
 #define CONFIG_BR_EXT_BRNAME	"br0"
 #endif	// CONFIG_BR_EXT
 
-#if defined(CONFIG_8723_BT_COEXIST) || defined(CONFIG_POWER_SAVING)
-#ifndef CONFIG_USB_INTERRUPT_IN_PIPE
 #define CONFIG_USB_INTERRUPT_IN_PIPE
-#endif
-#endif
 
 /*
  * HAL  Related Config
