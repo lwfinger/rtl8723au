@@ -385,56 +385,6 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 }
 
-#ifdef CONFIG_XMIT_THREAD_MODE
-/*
- * Description
- *	Transmit xmitbuf to hardware tx fifo
- *
- * Return
- *	_SUCCESS	ok
- *	_FAIL		something error
- */
-s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter)
-{
-	//struct hal_data_8723a * phal;
-	struct xmit_priv *pxmitpriv;
-	struct xmit_buf *pxmitbuf;
-	s32 ret;
-
-
-	//phal = GET_HAL_DATA(padapter);
-	pxmitpriv = &padapter->xmitpriv;
-
-	if (down_interruptible(&pxmitpriv->xmit_sema))
-		RT_TRACE(_module_hal_xmit_c_, _drv_emerg_,
-				 ("%s: down SdioXmitBufSema fail!\n", __FUNCTION__));
-		return _FAIL;
-	}
-
-	ret = (padapter->bDriverStopped == true) || (padapter->bSurpriseRemoved == true);
-	if (ret) {
-		RT_TRACE(_module_hal_xmit_c_, _drv_notice_,
-				 ("%s: bDriverStopped(%d) bSurpriseRemoved(%d)!\n",
-				  __FUNCTION__, padapter->bDriverStopped, padapter->bSurpriseRemoved));
-		return _FAIL;
-	}
-
-	if(check_pending_xmitbuf(pxmitpriv) == false)
-		return _SUCCESS;
-
-	do {
-		pxmitbuf = dequeue_pending_xmitbuf(pxmitpriv);
-		if (pxmitbuf == NULL) break;
-
-		rtw_write_port(padapter, pxmitbuf->ff_hwaddr, pxmitbuf->len, (unsigned char*)pxmitbuf);
-
-	} while (1);
-
-	return _SUCCESS;
-}
-#endif
-
-
 static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	s32 ret = _SUCCESS;
@@ -493,23 +443,15 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 		}
 
 		ff_hwaddr = rtw_get_ff_hwaddr(pxmitframe);
-#ifdef CONFIG_XMIT_THREAD_MODE
-		pxmitbuf->len = w_sz;
-		pxmitbuf->ff_hwaddr = ff_hwaddr;
-		enqueue_pending_xmitbuf(pxmitpriv, pxmitbuf);
-#else
 		inner_ret = rtw_write_port(padapter, ff_hwaddr, w_sz, (unsigned char*)pxmitbuf);
-#endif
 		rtw_count_tx_stats(padapter, pxmitframe, sz);
 
 
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("rtw_write_port, w_sz=%d\n", w_sz));
-		//DBG_8723A("rtw_write_port, w_sz=%d, sz=%d, txdesc_sz=%d, tid=%d\n", w_sz, sz, w_sz-sz, pattrib->priority);
 
 		mem_addr += w_sz;
 
 		mem_addr = (u8 *)RND4(((unsigned long)(mem_addr)));
-
 	}
 
 	rtw_free_xmitframe(pxmitpriv, pxmitframe);

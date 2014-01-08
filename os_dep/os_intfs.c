@@ -968,12 +968,6 @@ u32 rtw_start_drv_threads(struct rtw_adapter *padapter)
 	u32 _status = _SUCCESS;
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+rtw_start_drv_threads\n"));
-#ifdef CONFIG_XMIT_THREAD_MODE
-	padapter->xmitThread = kthread_run(rtw_xmit_thread, padapter, "RTW_XMIT_THREAD");
-	if(IS_ERR(padapter->xmitThread))
-		_status = _FAIL;
-#endif
-
 	padapter->cmdThread = kthread_run(rtw_cmd_thread, padapter, "RTW_CMD_THREAD");
         if(IS_ERR(padapter->cmdThread))
 		_status = _FAIL;
@@ -1006,15 +1000,6 @@ void rtw_stop_drv_threads (struct rtw_adapter *padapter)
 	if(padapter->evtThread){
 		down_interruptible(&padapter->evtpriv.terminate_evtthread_sema);
 	}
-#endif
-
-#ifdef CONFIG_XMIT_THREAD_MODE
-	// Below is to termindate tx_thread...
-	{
-		up(&padapter->xmitpriv.xmit_sema);
-		down(&padapter->xmitpriv.terminate_xmitthread_sema);
-	}
-	RT_TRACE(_module_os_intfs_c_,_drv_info_,("\n drv_halt: rtw_xmit_thread can be terminated ! \n"));
 #endif
 
 	rtw_hal_stop_thread(padapter);
