@@ -55,13 +55,8 @@
 
 #define CONFIG_8723AU_P2P
 #ifdef CONFIG_8723AU_P2P
-	//Added by Albert 20110812
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
-
-	#ifndef CONFIG_WIFI_TEST
-		#define CONFIG_8723AU_P2P_REMOVE_GROUP_INFO
-	#endif
 
 	#define CONFIG_8723AU_P2P_PS
 #endif

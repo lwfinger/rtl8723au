@@ -771,22 +771,13 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 		!rtw_p2p_chk_state(pwdinfo, P2P_STATE_SCAN)
 	   )
 	{
-		/*	Commented by Albert 2011/03/17 */
 		/*	mcs_rate = 0 -> CCK 1M rate */
 		/*	mcs_rate = 1 -> CCK 2M rate */
 		/*	mcs_rate = 2 -> CCK 5.5M rate */
 		/*	mcs_rate = 3 -> CCK 11M rate */
 		/*	In the P2P mode, the driver should not support the CCK rate */
 
-		/*	Commented by Kurt 2012/10/16 */
 		/*	IOT issue: Google Nexus7 use 1M rate to send p2p_probe_req after GO nego completed and Nexus7 is client */
-#ifdef CONFIG_WIFI_TEST
-		if ( pattrib->mcs_rate <= 3 )
-		{
-			wifi_test_chk_rate = 0;
-		}
-#endif /* CONFIG_WIFI_TEST */
-
 		if( wifi_test_chk_rate == 1 )
 		{
 			if((is_valid_p2p_probereq = process_probe_req_p2p_ie(pwdinfo, pframe, len)) == true)
