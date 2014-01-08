@@ -68,27 +68,12 @@ struct cmd_priv {
 	struct rtw_adapter *padapter;
 };
 
-#ifdef CONFIG_EVENT_THREAD_MODE
-struct evt_obj {
-	u16	evtcode;
-	u8	res;
-	u8	*parmbuf;
-	u32	evtsz;
-	struct list_head	list;
-};
-#endif
+#define C2H_QUEUE_MAX_LEN 10
 
 struct	evt_priv {
-#ifdef CONFIG_EVENT_THREAD_MODE
-	struct semaphore	evt_notify;
-	struct semaphore	terminate_evtthread_sema;
-	_queue	evt_queue;
-#endif
-
 	struct work_struct c2h_wk;
 	bool c2h_wk_alive;
 	struct rtw_cbuf *c2h_queue;
-	#define C2H_QUEUE_MAX_LEN 10
 
 #ifdef CONFIG_H2CLBK
 	struct semaphore	lbkevt_done;
@@ -124,12 +109,6 @@ struct c2h_evt_hdr {
 u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *obj);
 struct cmd_obj *rtw_dequeue_cmd(struct cmd_priv *pcmdpriv);
 void rtw_free_cmd_obj(struct cmd_obj *pcmd);
-
-#ifdef CONFIG_EVENT_THREAD_MODE
-u32 rtw_enqueue_evt(struct evt_priv *pevtpriv, struct evt_obj *obj);
-struct evt_obj *rtw_dequeue_evt(_queue *queue);
-void rtw_free_evt_obj(struct evt_obj *pcmd);
-#endif
 
 int rtw_cmd_thread(void *context);
 
