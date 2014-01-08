@@ -140,9 +140,6 @@ static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
 	mutex_init(&dvobj->usb_vendor_req_mutex);
 #endif
-
-
-#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
 	dvobj->usb_alloc_vendor_req_buf = kzalloc(MAX_USB_IO_CTL_SIZE,
 						  GFP_KERNEL);
 	if (dvobj->usb_alloc_vendor_req_buf == NULL) {
@@ -153,19 +150,14 @@ static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
 	dvobj->usb_vendor_req_buf =
 		PTR_ALIGN(dvobj->usb_alloc_vendor_req_buf, ALIGNMENT_UNIT);
 exit:
-#endif
-
 	return rst;
-
 }
 
 static u8 rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 {
 	u8 rst = _SUCCESS;
 
-#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
 	kfree(dvobj->usb_alloc_vendor_req_buf);
-#endif
 
 #ifdef CONFIG_USB_VENDOR_REQ_MUTEX
 	mutex_destroy(&dvobj->usb_vendor_req_mutex);
