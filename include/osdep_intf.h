@@ -62,12 +62,6 @@ The protection mechanism is through the pending queue.
 	u8 bio_timer_cancel;
 };
 
-
-#ifdef CONFIG_R871X_TEST
-int rtw_start_pseudo_adhoc(struct rtw_adapter *padapter);
-int rtw_stop_pseudo_adhoc(struct rtw_adapter *padapter);
-#endif
-
 u8 rtw_init_drv_sw(struct rtw_adapter *padapter);
 u8 rtw_free_drv_sw(struct rtw_adapter *padapter);
 u8 rtw_reset_drv_sw(struct rtw_adapter *padapter);
