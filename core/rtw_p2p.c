@@ -3351,16 +3351,6 @@ int rtw_p2p_check_frames(struct rtw_adapter *padapter, const u8 *buf, u32 len, u
 				uint cont_len;
 				case P2P_GO_NEGO_REQ:
 					DBG_8723A("RTW_%s:P2P_GO_NEGO_REQ, dialogToken=%d\n", (tx==true)?"Tx":"Rx", dialogToken);
-
-					if(tx)
-					{
-#ifdef CONFIG_DRV_ISSUE_PROV_REQ /*  IOT FOR S2 */
-						if(pwdev_priv->provdisc_req_issued == false)
-							rtw_cfg80211_issue_p2p_provision_request(padapter, buf, len);
-#endif /* CONFIG_DRV_ISSUE_PROV_REQ */
-
-					}
-
 					break;
 				case P2P_GO_NEGO_RESP:
 					cont = rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_STATUS, NULL, &cont_len);
