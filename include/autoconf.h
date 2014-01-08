@@ -29,9 +29,6 @@
 
 #define PLATFORM_LINUX
 
-#define CONFIG_EMBEDDED_FWIMG
-//#define CONFIG_FILE_FWIMG
-
 /*
  * Functions Config
  */
@@ -46,8 +43,6 @@
 
 #define SUPPORT_HW_RFOFF_DETECTED
 
-//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
-//#define CONFIG_DEBUG_CFG80211
 #define CONFIG_SET_SCAN_DENY_TIMER
 
 #define CONFIG_8723AU_AP_MODE
@@ -56,7 +51,6 @@
 	#ifndef CONFIG_NATIVEAP_MLME
 		#define CONFIG_HOSTAPD_MLME
 	#endif
-	//#define CONFIG_FIND_BEST_CHANNEL
 #endif
 
 #define CONFIG_8723AU_P2P
@@ -68,20 +62,11 @@
 	#ifndef CONFIG_WIFI_TEST
 		#define CONFIG_8723AU_P2P_REMOVE_GROUP_INFO
 	#endif
-	//#define CONFIG_DBG_P2P
 
 	#define CONFIG_8723AU_P2P_PS
-	//#define CONFIG_8723AU_P2P_IPS
 #endif
 
-//	Added by Kurt 20110511
-//	#ifndef CONFIG_WFD
-//		#define CONFIG_WFD
-//	#endif
-
 #define CONFIG_SKB_COPY	//for amsdu
-
-//#define CONFIG_LED
 
 #define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
 #define CONFIG_LONG_DELAY_ISSUE
@@ -104,22 +89,17 @@
 
 #ifdef CONFIG_LED
 	#define CONFIG_SW_LED
-	#ifdef CONFIG_SW_LED
-		//#define CONFIG_LED_HANDLED_BY_CMD_THREAD
-	#endif
 #endif // CONFIG_LED
 
 #ifdef CONFIG_POWER_SAVING
 
 #define CONFIG_IPS
-//#define CONFIG_LPS_LCLK
 #endif // #ifdef CONFIG_POWER_SAVING
 
 #ifdef CONFIG_LPS_LCLK
 #define CONFIG_XMIT_THREAD_MODE
 #endif
 
-//#define CONFIG_BR_EXT		// Enable NAT2.5 support for STA mode interface with a L2 Bridge
 #ifdef CONFIG_BR_EXT
 #define CONFIG_BR_EXT_BRNAME	"br0"
 #endif	// CONFIG_BR_EXT
@@ -131,14 +111,6 @@
 #endif
 
 /*
- * Interface  Related Config
- */
-//#define CONFIG_USB_INTERRUPT_IN_PIPE
-
-
-//#define CONFIG_REDUCE_USB_TX_INT		// Trade-off: Improve performance, but may cause TX URBs blocked by USB Host/Bus driver on few platforms.
-
-/*
  * USB VENDOR REQ BUFFER ALLOCATION METHOD
  * if not set we'll use function local variable (stack memory)
  */
@@ -148,9 +120,6 @@
 #define CONFIG_USB_VENDOR_REQ_MUTEX
 #define CONFIG_VENDOR_REQ_RETRY
 
-//#define CONFIG_USB_SUPPORT_ASYNC_VDN_REQ
-
-
 /*
  * HAL  Related Config
  */
@@ -159,11 +128,7 @@
 
 #define SUPPORTED_BLOCK_IO
 
-
-
 #define RTL8192CU_FW_DOWNLOAD_ENABLE	1
-
-//#define CONFIG_ONLY_ONE_OUT_EP_TO_LOW	0
 
 #define CONFIG_OUT_EP_WIFI_MODE	0
 
@@ -178,7 +143,6 @@
 #define RTL8191C_FPGA_NETWORKTYPE_ADHOC 0
 
 #define MP_DRIVER 0
-
 
 /*
  * Outsource  Related Config
@@ -204,10 +168,8 @@
 #define RTL8188ES_SUPPORT				0
 #define RTL8188E_SUPPORT				(RTL8188EE_SUPPORT|RTL8188EU_SUPPORT|RTL8188ES_SUPPORT)
 #define RTL8188E_FOR_TEST_CHIP			0
-//#if (RTL8188E_SUPPORT==1)
 #define RATE_ADAPTIVE_SUPPORT			0
 #define POWER_TRAINING_ACTIVE			0
-//#endif
 
 #define CONFIG_80211D
 
@@ -219,30 +181,9 @@
 #define DBG	1
 
 #define CONFIG_DEBUG /* DBG_8723A, etc... */
-//#define CONFIG_DEBUG_RTL871X /* RT_TRACE, RT_PRINT_DATA, _func_enter_, _func_exit_ */
 
 #define CONFIG_PROC_DEBUG
 
 #define DBG_CONFIG_ERROR_DETECT
 #define DBG_CONFIG_ERROR_RESET
 
-//#define DBG_IO
-//#define DBG_MEM_ALLOC
-//#define DBG_IOCTL
-
-//#define DBG_TX
-//#define DBG_XMIT_BUF
-//#define DBG_TX_DROP_FRAME
-
-//#define DBG_RX_DROP_FRAME
-//#define DBG_RX_SEQ
-
-//#define DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
-//#define DBG_ROAMING_TEST
-
-//#define DBG_HAL_INIT_PROFILING
-
-//TX use 1 urb
-//#define CONFIG_SINGLE_XMIT_BUF
-//RX use 1 urb
-//#define CONFIG_SINGLE_RECV_BUF
