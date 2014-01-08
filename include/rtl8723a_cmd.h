@@ -172,7 +172,3 @@ void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter * padapter, u8 p2p_ps_st
 void CheckFwRsvdPageContent(struct rtw_adapter *padapter);
 
 #endif
-
-#ifdef CONFIG_TSF_RESET_OFFLOAD
-u8 rtl8723c_reset_tsf(struct rtw_adapter *padapter, u8 reset_port);
-#endif	// CONFIG_TSF_RESET_OFFLOAD

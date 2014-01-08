@@ -3364,16 +3364,6 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 		// don't enable update TSF (due to TSF update when beacon/probe rsp are received)
 		val8 = DIS_TSF_UDT | EN_BCN_FUNCTION | EN_TXBCN_RPT | DIS_BCNQ_SUB;
 		SetBcnCtrlReg(padapter, val8, ~val8);
-
-#ifdef CONFIG_TSF_RESET_OFFLOAD
-		// Reset TSF for STA+AP concurrent mode
-		if ( check_buddy_fwstate(padapter, (WIFI_STATION_STATE|WIFI_ASOC_STATE)) ) {
-			if (reset_tsf(padapter, padapter->iface_type) == false)
-				DBG_8723A("ERROR! %s()-%d: Reset port%d TSF fail\n",
-					__FUNCTION__, __LINE__,
-					(padapter->iface_type==IFACE_PORT1)? 1 : 0);
-		}
-#endif	// CONFIG_TSF_RESET_OFFLOAD
 	}
 
 	val8 = rtw_read8(padapter, MSR);
@@ -3433,29 +3423,9 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 	//enable related TSF function
 	SetBcnCtrlReg(padapter, EN_BCN_FUNCTION, 0);
 
-#ifdef CONFIG_TSF_RESET_OFFLOAD
-	// Reset TSF for STA+AP concurrent mode
-	if ( (pmlmeinfo->state&0x03) == WIFI_FW_STATION_STATE
-			&& check_buddy_fwstate(padapter, WIFI_AP_STATE) ) {
-		if (padapter->iface_type == IFACE_PORT1) {
-			if (reset_tsf(padapter, IFACE_PORT0) == false)
-				DBG_8723A("ERROR! %s()-%d: Reset port0 TSF fail\n",
-				__FUNCTION__, __LINE__);
-		} else {
-			if (reset_tsf(padapter, IFACE_PORT1) == false)
-				DBG_8723A("ERROR! %s()-%d: Reset port1 TSF fail\n",
-				__FUNCTION__, __LINE__);
-		}
-	}
-#endif	// CONFIG_TSF_RESET_OFFLOAD
-
 	if (((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE) ||
-		((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE))
-	{
-		//pHalData->RegTxPause &= (~STOP_BCNQ);
-		//rtw_write8(padapter, REG_TXPAUSE, (rtw_read8(padapter, REG_TXPAUSE)&(~BIT(6))));
+	    ((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE))
 		ResumeTxBeacon(padapter);
-	}
 }
 
 static void hw_var_set_mlme_disconnect(struct rtw_adapter * padapter, u8 variable, u8 *val)
