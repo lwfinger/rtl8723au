@@ -143,10 +143,4 @@ void eeprom_read_sz(struct rtw_adapter * padapter, u16 reg,u8* data, u32 sz);
 
 void read_eeprom_content_by_attrib(struct rtw_adapter *padapter);
 
-#ifdef CONFIG_ADAPTOR_INFO_CACHING_FILE
-int isAdaptorInfoFileValid(void);
-int storeAdaptorInfoFile(char *path, struct eeprom_priv * eeprom_priv);
-int retriveAdaptorInfoFile(char *path, struct eeprom_priv * eeprom_priv);
-#endif //CONFIG_ADAPTOR_INFO_CACHING_FILE
-
 #endif  //__RTL871X_EEPROM_H__
