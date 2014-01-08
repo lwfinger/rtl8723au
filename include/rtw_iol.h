@@ -69,13 +69,6 @@ int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr,
 u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame);
 void  rtw_IOL_cmd_buf_dump(struct rtw_adapter *Adapter,int buf_len,u8 *pbuf);
 
-#ifdef CONFIG_IOL_IOREG_CFG_DBG
-	struct cmd_cmp{
-		u16 addr;
-		u32 value;
-	};
-#endif
-
 #else //CONFIG_IOL_NEW_GENERATION
 
 typedef struct _io_offload_cmd {
