@@ -913,11 +913,6 @@ void rtl8723au_set_intf_ops(struct _io_ops	*pops)
 	pops->_write32 = &usb_write32;
 	pops->_writeN = &usb_writeN;
 
-#ifdef CONFIG_USB_SUPPORT_ASYNC_VDN_REQ
-	pops->_write8_async= &usb_async_write8;
-	pops->_write16_async = &usb_async_write16;
-	pops->_write32_async = &usb_async_write32;
-#endif
 	pops->_write_mem = &usb_write_mem;
 	pops->_write_port = &usb_write_port;
 
