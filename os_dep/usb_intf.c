@@ -38,11 +38,6 @@ extern int rtw_cbw40_enable;
 extern int rtw_ampdu_enable;//for enable tx_ampdu
 #endif
 
-#ifdef CONFIG_GLOBAL_UI_PID
-int ui_pid[3] = {0, 0, 0};
-#endif
-
-
 int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 static int rtw_suspend(struct usb_interface *intf, pm_message_t message);
 static int rtw_resume(struct usb_interface *intf);
@@ -1196,13 +1191,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 		DBG_8723A("rtw_init_primary_adapter Failed!\n");
 		goto free_dvobj;
 	}
-
-#ifdef CONFIG_GLOBAL_UI_PID
-	if(ui_pid[1]!=0) {
-		DBG_8723A("ui_pid[1]:%d\n",ui_pid[1]);
-		rtw_signal_process(ui_pid[1], SIGUSR2);
-	}
-#endif
 
 	//dev_alloc_name && register_netdev
 	if((status = rtw_drv_register_netdev(if1)) != _SUCCESS) {
