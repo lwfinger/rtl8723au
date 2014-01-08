@@ -32,14 +32,4 @@
 #define CONFIG_SIGNAL_DISPLAY_DBM
 #endif
 
-//About USB VENDOR REQ
-#define CONFIG_USB_VENDOR_REQ_MUTEX
-#if defined(CONFIG_VENDOR_REQ_RETRY) &&  !defined(CONFIG_USB_VENDOR_REQ_MUTEX)
-	#warning "define CONFIG_USB_VENDOR_REQ_MUTEX for CONFIG_VENDOR_REQ_RETRY automatically"
-	#define CONFIG_USB_VENDOR_REQ_MUTEX
-#endif
-
-
-//#include <rtl871x_byteorder.h>
-
 #endif // __DRV_CONF_H__

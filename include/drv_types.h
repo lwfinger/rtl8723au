@@ -249,9 +249,7 @@ struct dvobj_priv
 
 	struct semaphore usb_suspend_sema;
 
-#ifdef CONFIG_USB_VENDOR_REQ_MUTEX
 	struct mutex  usb_vendor_req_mutex;
-#endif
 
 	u8 *usb_alloc_vendor_req_buf;
 	u8 *usb_vendor_req_buf;
