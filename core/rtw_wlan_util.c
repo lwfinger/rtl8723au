@@ -998,18 +998,9 @@ void HT_caps_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 	for (i = 0; i < 16; i++)
 	{
 		if((rf_type == RF_1T1R) || (rf_type == RF_1T2R))
-		{
 			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_1R[i];
-		}
 		else
-		{
 			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_2R[i];
-		}
-	        #ifdef RTL8192C_RECONFIG_TO_1T1R
-		{
-			pmlmeinfo->HT_caps.HT_cap_element.MCS_rate[i] &= MCS_rate_1R[i];
-		}
-		#endif
 	}
 #endif /* CONFIG_80211N_HT */
 	return;

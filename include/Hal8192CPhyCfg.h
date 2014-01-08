@@ -311,9 +311,6 @@ void PHY_EnableHostClkReq(struct rtw_adapter *Adapter);
 bool
 SetAntennaConfig92C(struct rtw_adapter *Adapter, u8 DefaultAnt);
 
-#ifdef RTL8192C_RECONFIG_TO_1T1R
-void	PHY_Reconfig_To_1T1R(struct rtw_adapter *padapter);
-#endif
 /*--------------------------Exported Function prototype---------------------*/
 
 #define PHY_QueryBBReg(Adapter, RegAddr, BitMask) rtl8192c_PHY_QueryBBReg((Adapter), (RegAddr), (BitMask))
