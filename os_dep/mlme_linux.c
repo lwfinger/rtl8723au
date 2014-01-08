@@ -293,18 +293,8 @@ int hostapd_mode_init(struct rtw_adapter *padapter)
 
 	pnetdev->watchdog_timeo = HZ; /* 1 second timeout */
 
-	//pnetdev->wireless_handlers = NULL;
-
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	pnetdev->features |= NETIF_F_IP_CSUM;
-#endif
-
 	if(dev_alloc_name(pnetdev,"mgnt.wlan%d") < 0)
-	{
 		DBG_8723A("hostapd_mode_init(): dev_alloc_name, fail! \n");
-	}
-
-	//SET_NETDEV_DEV(pnetdev, pintfpriv->udev);
 
 	mac[0]=0x00;
 	mac[1]=0xe0;
@@ -318,18 +308,13 @@ int hostapd_mode_init(struct rtw_adapter *padapter)
 	netif_carrier_off(pnetdev);
 
 	/* Tell the network stack we exist */
-	if (register_netdev(pnetdev) != 0)
-	{
+	if (register_netdev(pnetdev) != 0) {
 		DBG_8723A("hostapd_mode_init(): register_netdev fail!\n");
 
 		if (pnetdev)
-		{
 			free_netdev(pnetdev);
-		}
 	}
-
 	return 0;
-
 }
 
 void hostapd_mode_unload(struct rtw_adapter *padapter)

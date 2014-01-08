@@ -272,20 +272,9 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 			ptxdesc->txdw5 |= cpu_to_le32(MRateToHwRate(pmlmeext->tx_rate));
 		}
-
-		//offset 24
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-		if ( pattrib->hw_tcp_csum == 1 ) {
-			// ptxdesc->txdw6 = 0; // clear TCP_CHECKSUM and IP_CHECKSUM. It's zero already!!
-			u8 ip_hdr_offset = 32 + pattrib->hdrlen + pattrib->iv_len + 8;
-			ptxdesc->txdw7 = (1 << 31) | (ip_hdr_offset << 16);
-			DBG_8723A("ptxdesc->txdw7 = %08x\n", ptxdesc->txdw7);
-		}
-#endif
 	}
 	else if((pxmitframe->frame_tag&0x0f)== MGNT_FRAMETAG)
 	{
-		//DBG_8723A("pxmitframe->frame_tag == MGNT_FRAMETAG\n");
 
 		//offset 4
 		ptxdesc->txdw1 |= cpu_to_le32(pattrib->mac_id&0x1f);

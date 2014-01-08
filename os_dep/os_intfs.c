@@ -941,16 +941,7 @@ struct net_device *rtw_init_netdev(struct rtw_adapter *old_padapter)
 	DBG_8723A("register rtw_netdev_ops to netdev_ops\n");
 	pnetdev->netdev_ops = &rtw_netdev_ops;
 
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	pnetdev->features |= NETIF_F_IP_CSUM;
-#endif
-	//pnetdev->tx_timeout = NULL;
 	pnetdev->watchdog_timeo = HZ*3; /* 3 second timeout */
-
-#ifdef WIRELESS_SPY
-	//priv->wireless_data.spy_data = &priv->spy_data;
-	//pnetdev->wireless_data = &priv->wireless_data;
-#endif
 
 	//step 2.
 	loadparam(padapter, pnetdev);

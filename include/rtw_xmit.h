@@ -183,9 +183,6 @@ struct pkt_attrib
 	u8	rate;
 	u8	retry_ctrl;
 	struct sta_info * psta;
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	u8	hw_tcp_csum;
-#endif
 };
 
 #define WLANHDR_OFFSET	64

@@ -61,12 +61,6 @@
 //	#include <linux/ieee80211.h>
 #include <net/ieee80211_radiotap.h>
 #include <net/cfg80211.h>
-
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-#include <linux/in.h>
-#include <linux/udp.h>
-#endif
-
 #include <linux/usb.h>
 #include <linux/usb/ch9.h>
 

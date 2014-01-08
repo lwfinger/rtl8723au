@@ -85,33 +85,6 @@ _func_exit_;
 
 void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib)
 {
-
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	struct sk_buff *skb = (struct sk_buff *)pkt;
-	pattrib->hw_tcp_csum = 0;
-
-	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-		if (skb_shinfo(skb)->nr_frags == 0)
-		{
-                        const struct iphdr *ip = ip_hdr(skb);
-                        if (ip->protocol == IPPROTO_TCP) {
-                                // TCP checksum offload by HW
-                                DBG_8723A("CHECKSUM_PARTIAL TCP\n");
-                                pattrib->hw_tcp_csum = 1;
-                        } else if (ip->protocol == IPPROTO_UDP) {
-                                skb_checksum_help(skb);
-                        } else {
-				DBG_8723A("%s-%d TCP CSUM offload Error!!\n", __FUNCTION__, __LINE__);
-                                WARN_ON(1);     /* we need a WARN() */
-			    }
-		}
-		else { // IP fragmentation case
-			DBG_8723A("%s-%d nr_frags != 0, using skb_checksum_help(skb);!!\n", __FUNCTION__, __LINE__);
-			skb_checksum_help(skb);
-		}
-	}
-#endif
-
 }
 
 int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz)
