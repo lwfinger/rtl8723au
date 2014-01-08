@@ -63,16 +63,12 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 	     (void(*)(unsigned long))rtl8192cu_recv_tasklet,
 	     (unsigned long)padapter);
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if(precvpriv->int_in_urb == NULL){
+	if(precvpriv->int_in_urb == NULL)
 		DBG_8723A("alloc_urb for interrupt in endpoint fail !!!!\n");
-	}
 	precvpriv->int_in_buf = kzalloc(USB_INTR_CONTENT_LENGTH, GFP_KERNEL);
-	if(precvpriv->int_in_buf == NULL){
+	if (precvpriv->int_in_buf == NULL)
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
-	}
-#endif
 
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
@@ -163,11 +159,9 @@ void rtl8192cu_free_recv_priv (struct rtw_adapter *padapter)
 
 	kfree(precvpriv->pallocated_recv_buf);
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	if(precvpriv->int_in_urb)
 		usb_free_urb(precvpriv->int_in_urb);
 	kfree(precvpriv->int_in_buf);
-#endif
 
 	if (skb_queue_len(&precvpriv->rx_skb_queue)) {
 		DBG_8723A(KERN_WARNING "rx_skb_queue not empty\n");

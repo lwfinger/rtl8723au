@@ -1965,10 +1965,8 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	struct intf_hdl * pintfhdl=&Adapter->iopriv.intf;
 	struct recv_priv *precvpriv = &(Adapter->recvpriv);
 	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
 	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
-#endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
 _func_enter_;
 
@@ -1995,7 +1993,6 @@ _func_enter_;
 		precvpriv->free_recv_buf_queue_cnt--;
 	}
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	_read_interrupt = pintfhdl->io_ops._read_interrupt;
 	if(_read_interrupt(pintfhdl, RECV_INT_IN_ADDR) == false )
 	{
@@ -2006,7 +2003,6 @@ _func_enter_;
 	MSG_8723A("pHalData->IntrMask = 0x%04x\n", pHalData->IntrMask[0]);
 	pHalData->IntrMask[0]|=UHIMR_C2HCMD|UHIMR_CPWM;
 	rtw_write32(Adapter, REG_USB_HIMR,pHalData->IntrMask[0]);
-#endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
 exit:
 
@@ -2020,20 +2016,16 @@ _func_exit_;
 
 static unsigned int rtl8723au_inirp_deinit(struct rtw_adapter *Adapter)
 {
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
 	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
-#endif //CONFIG_USB_INTERRUPT_IN_PIPE
-	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n ===> usb_rx_deinit \n"));
 
+	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n ===> usb_rx_deinit \n"));
 	rtw_read_port_cancel(Adapter);
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	pHalData->IntrMask[0]=rtw_read32(Adapter, REG_USB_HIMR);
 	MSG_8723A("%s pHalData->IntrMask = 0x%04x\n",__FUNCTION__, pHalData->IntrMask[0]);
 	pHalData->IntrMask[0]=0x0;
 	rtw_write32(Adapter, REG_USB_HIMR,pHalData->IntrMask[0]);
 	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n <=== usb_rx_deinit \n"));
-#endif //CONFIG_USB_INTERRUPT_IN_PIPE
 	return _SUCCESS;
 }
 

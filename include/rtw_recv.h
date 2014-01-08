@@ -215,11 +215,9 @@ struct recv_priv
 	uint	ff_hwaddr;
 	u8	rx_pending_cnt;
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	struct urb *int_in_urb;
 
 	u8	*int_in_buf;
-#endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
 	struct tasklet_struct irq_prepare_beacon_tasklet;
 	struct tasklet_struct recv_tasklet;

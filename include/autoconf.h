@@ -86,8 +86,6 @@
 #define CONFIG_BR_EXT_BRNAME	"br0"
 #endif	// CONFIG_BR_EXT
 
-#define CONFIG_USB_INTERRUPT_IN_PIPE
-
 /*
  * HAL  Related Config
  */

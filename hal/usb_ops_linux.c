@@ -330,7 +330,6 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 
 }
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 //
 // Description:
 //	Recognize the interrupt content by reading the interrupt register or content and masking interrupt mask (IMR)
@@ -494,7 +493,6 @@ _func_exit_;
 
 	return ret;
 }
-#endif
 
 static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxstat, struct phy_stat *pphy_info)
 {
@@ -919,12 +917,8 @@ void rtl8723au_set_intf_ops(struct _io_ops	*pops)
 	pops->_read_port_cancel = &usb_read_port_cancel;
 	pops->_write_port_cancel = &usb_write_port_cancel;
 
-#ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	pops->_read_interrupt = &usb_read_interrupt;
-#endif
-
 	_func_exit_;
-
 }
 
 void rtl8723au_set_hw_type(struct rtw_adapter *padapter)
