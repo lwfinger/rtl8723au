@@ -59,11 +59,6 @@ int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
-#ifdef CONFIG_RECV_THREAD_MODE
-	sema_init(&precvpriv->recv_sema, 0);//will be removed
-	sema_init(&precvpriv->terminate_recvthread_sema, 0);//will be removed
-#endif
-
 	tasklet_init(&precvpriv->recv_tasklet,
 	     (void(*)(unsigned long))rtl8192cu_recv_tasklet,
 	     (unsigned long)padapter);
