@@ -37,12 +37,7 @@ static void BlinkTimerCallback(unsigned long data)
 		/* DBG_8723A("%s bSurpriseRemoved:%d, bDriverStopped:%d\n", __FUNCTION__, padapter->bSurpriseRemoved, padapter->bDriverStopped); */
 		return;
 	}
-
-#ifdef CONFIG_LED_HANDLED_BY_CMD_THREAD
-	rtw_led_blink_cmd(padapter, pLed);
-#else
 	schedule_work(&(pLed->BlinkWorkItem));
-#endif
 }
 
 /*  */

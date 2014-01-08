@@ -10334,10 +10334,6 @@ u8 led_blink_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 
 	ledBlink_param = (struct LedBlink_param *)pbuf;
 
-	#ifdef CONFIG_LED_HANDLED_BY_CMD_THREAD
-	BlinkHandler(ledBlink_param->pLed);
-	#endif
-
 	return	H2C_SUCCESS;
 }
 
