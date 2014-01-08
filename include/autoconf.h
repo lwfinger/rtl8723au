@@ -96,13 +96,6 @@
 #endif
 
 /*
- * USB VENDOR REQ BUFFER ALLOCATION METHOD
- * if not set we'll use function local variable (stack memory)
- */
-
-#define CONFIG_VENDOR_REQ_RETRY
-
-/*
  * HAL  Related Config
  */
 
