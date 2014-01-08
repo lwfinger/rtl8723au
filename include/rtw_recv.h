@@ -247,22 +247,14 @@ struct recv_priv
 	s8 RxRssi[2];
 	int FalseAlmCnt_all;
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	struct timer_list signal_stat_timer;
 	u32 signal_stat_sampling_interval;
 	//u32 signal_stat_converging_constant;
 	struct signal_stat signal_qual_data;
 	struct signal_stat signal_strength_data;
-#else //CONFIG_NEW_SIGNAL_STAT_PROCESS
-	struct smooth_rssi_data signal_qual_data;
-	struct smooth_rssi_data signal_strength_data;
-#endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
-
 };
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 #define rtw_set_signal_stat_timer(recvpriv) mod_timer(&(recvpriv)->signal_stat_timer, jiffies + msecs_to_jiffies((recvpriv)->signal_stat_sampling_interval))
-#endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
 
 struct sta_recv_priv {
 

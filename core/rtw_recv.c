@@ -41,9 +41,7 @@ static u8 rtw_rfc1042_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00 };
 /* Bridge-Tunnel header (for EtherTypes ETH_P_AARP and ETH_P_IPX) */
 static u8 rtw_bridge_tunnel_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0xf8 };
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 void rtw_signal_stat_timer_hdl(unsigned long data);
-#endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */
 
 void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
 {
@@ -118,14 +116,12 @@ _func_enter_;
 
 	res = rtw_hal_init_recv_priv(padapter);
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	setup_timer(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl,
 		    (unsigned long)padapter);
 
 	precvpriv->signal_stat_sampling_interval = 1000; /* ms */
 
 	rtw_set_signal_stat_timer(precvpriv);
-#endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */
 
 exit:
 
@@ -2780,7 +2776,6 @@ _func_exit_;
 	return ret;
 }
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 void rtw_signal_stat_timer_hdl(unsigned long data)
 {
 	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
@@ -2850,4 +2845,3 @@ void rtw_signal_stat_timer_hdl(unsigned long data)
 	}
 	rtw_set_signal_stat_timer(recvpriv);
 }
-#endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */

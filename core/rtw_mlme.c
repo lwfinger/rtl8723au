@@ -840,9 +840,7 @@ _func_enter_;
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("nic status =%x, survey done event comes too late!\n", get_fwstate(pmlmepriv)));
 	}
 
-	#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	rtw_set_signal_stat_timer(&adapter->recvpriv);
-	#endif
 
 	if(pmlmepriv->to_join == true)
 	{
@@ -1275,9 +1273,7 @@ static void rtw_joinbss_update_network(struct rtw_adapter *padapter, struct wlan
 
 	cur_network->aid = pnetwork->join_res;
 
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	rtw_set_signal_stat_timer(&padapter->recvpriv);
-#endif
 	padapter->recvpriv.signal_strength = ptarget_wlan->network.PhyInfo.SignalStrength;
 	padapter->recvpriv.signal_qual = ptarget_wlan->network.PhyInfo.SignalQuality;
 	/* the ptarget_wlan->network.Rssi is raw data, we use ptarget_wlan->network.PhyInfo.SignalStrength instead (has scaled) */
@@ -1291,9 +1287,7 @@ static void rtw_joinbss_update_network(struct rtw_adapter *padapter, struct wlan
 			, padapter->recvpriv.signal_qual
 	);
 	#endif
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	rtw_set_signal_stat_timer(&padapter->recvpriv);
-#endif
 
 	/* update fw_state will clr _FW_UNDER_LINKING here indirectly */
 	switch(pnetwork->network.InfrastructureMode)
