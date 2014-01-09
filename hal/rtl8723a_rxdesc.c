@@ -19,7 +19,6 @@
  ******************************************************************************/
 #define _RTL8723A_REDESC_C_
 
-#include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <rtl8723a_hal.h>

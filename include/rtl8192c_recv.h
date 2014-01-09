@@ -20,10 +20,8 @@
 #ifndef _RTL8192C_RECV_H_
 #define _RTL8192C_RECV_H_
 
-#include <drv_conf.h>
 #include <osdep_service.h>
 #include <drv_types.h>
-
 
 #ifdef CONFIG_SINGLE_RECV_BUF
 #define NR_RECVBUFF (1)
