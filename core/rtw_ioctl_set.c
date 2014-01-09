@@ -425,7 +425,7 @@ _func_enter_;
 			/* change to other mode from Ndis802_11APMode */
 			cur_network->join_res = -1;
 
-#ifdef CONFIG_NATIVEAP_MLME
+#ifdef CONFIG_8723AU_AP_MODE
 			stop_ap_mode(padapter);
 #endif
 		}
@@ -461,7 +461,7 @@ _func_enter_;
 
 			case Ndis802_11APMode:
 				set_fwstate(pmlmepriv, WIFI_AP_STATE);
-#ifdef CONFIG_NATIVEAP_MLME
+#ifdef CONFIG_8723AU_AP_MODE
 				start_ap_mode(padapter);
 				/* rtw_indicate_connect(padapter); */
 #endif

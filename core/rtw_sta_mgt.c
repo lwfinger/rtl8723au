@@ -62,14 +62,12 @@ _func_enter_;
 
 	psta->bpairwise_key_installed = false;
 
-#ifdef CONFIG_NATIVEAP_MLME
 	psta->nonerp_set = 0;
 	psta->no_short_slot_time_set = 0;
 	psta->no_short_preamble_set = 0;
 	psta->no_ht_gf_set = 0;
 	psta->no_ht_set = 0;
 	psta->ht_20mhz_set = 0;
-#endif
 
 	psta->keep_alive_trycnt = 0;
 
@@ -492,8 +490,6 @@ _func_enter_;
 
 	psta->has_legacy_ac = 0;
 
-#ifdef CONFIG_NATIVEAP_MLME
-
 	pstapriv->sta_dz_bitmap &=~BIT(psta->aid);
 	pstapriv->tim_bitmap &=~BIT(psta->aid);
 
@@ -504,8 +500,6 @@ _func_enter_;
 		pstapriv->sta_aid[psta->aid - 1] = NULL;
 		psta->aid = 0;
 	}
-
-#endif	/*  CONFIG_NATIVEAP_MLME */
 
 #endif	/*  CONFIG_8723AU_AP_MODE */
 

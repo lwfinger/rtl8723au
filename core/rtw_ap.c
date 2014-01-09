@@ -1400,8 +1400,6 @@ int rtw_acl_remove_sta(struct rtw_adapter *padapter, u8 *addr)
 	return ret;
 }
 
-#ifdef CONFIG_NATIVEAP_MLME
-
 static void update_bcn_fixed_ie(struct rtw_adapter *padapter)
 {
 	DBG_8723A("%s\n", __FUNCTION__);
@@ -2328,5 +2326,4 @@ void stop_ap_mode(struct rtw_adapter *padapter)
 	rtw_free_mlme_priv_ie_data(pmlmepriv);
 }
 
-#endif /* CONFIG_NATIVEAP_MLME */
 #endif /* CONFIG_8723AU_AP_MODE */

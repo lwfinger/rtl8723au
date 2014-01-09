@@ -45,7 +45,6 @@ void rtw_set_macaddr_acl(struct rtw_adapter *padapter, int mode);
 int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr);
 int rtw_acl_remove_sta(struct rtw_adapter *padapter, u8 *addr);
 
-#ifdef CONFIG_NATIVEAP_MLME
 void associated_clients_update(struct rtw_adapter *padapter, u8 updated);
 void bss_cap_update_on_sta_join(struct rtw_adapter *padapter, struct sta_info *psta);
 u8 bss_cap_update_on_sta_leave(struct rtw_adapter *padapter, struct sta_info *psta);
@@ -56,7 +55,6 @@ int rtw_sta_flush(struct rtw_adapter *padapter);
 int rtw_ap_inform_ch_switch(struct rtw_adapter *padapter, u8 new_ch, u8 ch_offset);
 void start_ap_mode(struct rtw_adapter *padapter);
 void stop_ap_mode(struct rtw_adapter *padapter);
-#endif
 #endif //end of CONFIG_8723AU_AP_MODE
 
 #endif
