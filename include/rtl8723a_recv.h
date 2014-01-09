@@ -20,8 +20,60 @@
 #ifndef __RTL8723A_RECV_H__
 #define __RTL8723A_RECV_H__
 
-#include <rtl8192c_recv.h>
+#include <osdep_service.h>
+#include <drv_types.h>
 
+#ifdef CONFIG_SINGLE_RECV_BUF
+#define NR_RECVBUFF (1)
+#else
+#define NR_RECVBUFF (4)
+#endif //CONFIG_SINGLE_RECV_BUF
+
+#define NR_PREALLOC_RECV_SKB (8)
+
+#define RECV_BLK_SZ 512
+#define RECV_BLK_CNT 16
+#define RECV_BLK_TH RECV_BLK_CNT
+
+#define MAX_RECVBUF_SZ (15360) // 15k < 16k
+
+#define RECV_BULK_IN_ADDR		0x80
+#define RECV_INT_IN_ADDR		0x81
+
+#define PHY_RSSI_SLID_WIN_MAX				100
+#define PHY_LINKQUALITY_SLID_WIN_MAX		20
+
+
+struct phy_stat
+{
+	unsigned int phydw0;
+	unsigned int phydw1;
+	unsigned int phydw2;
+	unsigned int phydw3;
+	unsigned int phydw4;
+	unsigned int phydw5;
+	unsigned int phydw6;
+	unsigned int phydw7;
+};
+
+// Rx smooth factor
+#define	Rx_Smooth_Factor (20)
+
+typedef struct _INTERRUPT_MSG_FORMAT_EX{
+	unsigned int C2H_MSG0;
+	unsigned int C2H_MSG1;
+	unsigned int C2H_MSG2;
+	unsigned int C2H_MSG3;
+	unsigned int HISR; // from HISR Reg0x124, read to clear
+	unsigned int HISRE;// from HISRE Reg0x12c, read to clear
+	unsigned int  MSG_EX;
+}INTERRUPT_MSG_FORMAT_EX,*PINTERRUPT_MSG_FORMAT_EX;
+
+void rtl8192cu_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf);
+int	rtl8192cu_init_recv_priv(struct rtw_adapter * padapter);
+void rtl8192cu_free_recv_priv(struct rtw_adapter * padapter);
+void rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy_stat *pphy_status);
+void rtl8192c_query_rx_desc_status(union recv_frame *precvframe, struct recv_stat *pdesc);
 void rtl8192c_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
 void rtl8192c_process_phy_info(struct rtw_adapter *padapter, void *prframe);
 void update_recvframe_attrib(union recv_frame *precvframe, struct recv_stat *prxstat);
