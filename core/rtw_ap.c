@@ -372,7 +372,6 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 		if (psta->expire_to <= 0)
 		{
-			#ifdef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
 			struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
 			if (padapter->registrypriv.wifi_spec == 1)
@@ -406,16 +405,13 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 				continue;
 			}
-			#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
 
 			list_del_init(&psta->asoc_list);
 			pstapriv->asoc_list_cnt--;
 
 			DBG_8723A("asoc expire "MAC_FMT", state=0x%x\n", MAC_ARG(psta->hwaddr), psta->state);
 			updated = ap_free_sta(padapter, psta, false, WLAN_REASON_DEAUTH_LEAVING);
-		}
-		else
-		{
+		} else {
 			/* TODO: Aging mechanism to digest frames in sleep_q to avoid running out of xmitframe */
 			if (psta->sleepq_len > (NR_XMITFRAME/pstapriv->asoc_list_cnt)
 				&& padapter->xmitpriv.free_xmitframe_cnt < ((NR_XMITFRAME/pstapriv->asoc_list_cnt)/2)
@@ -430,15 +426,14 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 
 	spin_unlock_bh(&pstapriv->asoc_list_lock);
 
-#ifdef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
-if (chk_alive_num) {
+	if (chk_alive_num) {
 
-	u8 backup_oper_channel=0;
-	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-	/* switch to correct channel of current network  before issue keep-alive frames */
-	if (rtw_get_oper_ch(padapter) != pmlmeext->cur_channel) {
-		backup_oper_channel = rtw_get_oper_ch(padapter);
-		SelectChannel(padapter, pmlmeext->cur_channel);
+		u8 backup_oper_channel=0;
+		struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+		/* switch to correct channel of current network  before issue keep-alive frames */
+		if (rtw_get_oper_ch(padapter) != pmlmeext->cur_channel) {
+			backup_oper_channel = rtw_get_oper_ch(padapter);
+			SelectChannel(padapter, pmlmeext->cur_channel);
 	}
 
 	/* issue null data to check sta alive*/
@@ -486,7 +481,6 @@ if (chk_alive_num) {
 	if (backup_oper_channel>0) /* back to the original operation channel */
 		SelectChannel(padapter, backup_oper_channel);
 }
-#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
 
 	associated_clients_update(padapter, updated);
 }

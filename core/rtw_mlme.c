@@ -1906,16 +1906,6 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 			rtw_auto_scan_handler(adapter);
 		}
 	}
-
-#ifndef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
-#ifdef CONFIG_8723AU_AP_MODE
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-	{
-		expire_timeout_chk(adapter);
-	}
-#endif
-#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
-
 out:
 	mod_timer(&adapter->mlmepriv.dynamic_chk_timer,
 		  jiffies + msecs_to_jiffies(2000));

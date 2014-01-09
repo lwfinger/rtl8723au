@@ -1941,14 +1941,12 @@ void dynamic_chk_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 	padapter = (struct rtw_adapter *)pbuf;
 	pmlmepriv = &(padapter->mlmepriv);
 
-#ifdef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
 #ifdef CONFIG_8723AU_AP_MODE
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 	{
 		expire_timeout_chk(padapter);
 	}
 #endif
-#endif /* CONFIG_ACTIVE_KEEP_ALIVE_CHECK */
 
 	rtw_hal_sreset_xmit_status_check(padapter);
 
