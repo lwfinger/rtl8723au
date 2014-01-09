@@ -512,12 +512,7 @@ struct mlme_priv {
 	u32 wfd_probe_resp_ie_len;
 	u32 wfd_go_probe_resp_ie_len; //for GO
 	u32 wfd_assoc_req_ie_len;
-
 #endif
-
-#ifdef CONFIG_FTP_PROTECT
-	u8	ftp_lock_flag;
-#endif //CONFIG_FTP_PROTECT
 };
 
 #ifdef CONFIG_8723AU_AP_MODE

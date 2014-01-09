@@ -26,7 +26,6 @@ CONFIG_8723_BT_COEXIST = y
 CONFIG_INTEL_WIDI = n
 CONFIG_WAPI_SUPPORT = n
 CONFIG_EXT_CLK = n
-CONFIG_FTP_PROTECT = n
 CONFIG_WOWLAN = n
 
 export TopDIR ?= $(shell pwd)
@@ -108,11 +107,6 @@ endif
 ifeq ($(CONFIG_EXT_CLK), y)
 EXTRA_CFLAGS += -DCONFIG_EXT_CLK
 endif
-
-ifeq ($(CONFIG_FTP_PROTECT), y)
-EXTRA_CFLAGS += -DCONFIG_FTP_PROTECT
-endif
-
 
 SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/ppc/powerpc/)
 ARCH ?= $(SUBARCH)

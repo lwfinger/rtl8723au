@@ -85,10 +85,6 @@ _func_enter_;
 
 	rtw_clear_scan_deny(padapter);
 
-	#ifdef CONFIG_FTP_PROTECT
-	pmlmepriv->ftp_lock_flag = 0;
-	#endif /* CONFIG_FTP_PROTECT */
-
 	rtw_init_mlme_timer(padapter);
 
 exit:
