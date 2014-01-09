@@ -245,12 +245,9 @@ _func_enter_;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
 
-#ifdef CONFIG_XMIT_ACK
 	pxmitpriv->ack_tx = false;
 	mutex_init(&pxmitpriv->ack_tx_mutex);
 	rtw_sctx_init(&pxmitpriv->ack_tx_ops, 0);
-#endif
-
 	rtw_hal_init_xmit_priv(padapter);
 
 exit:
@@ -315,11 +312,7 @@ void _rtw_free_xmit_priv (struct xmit_priv *pxmitpriv)
 	}
 
 	rtw_free_hwxmits(padapter);
-
-#ifdef CONFIG_XMIT_ACK
 	mutex_destroy(&pxmitpriv->ack_tx_mutex);
-#endif
-
 out:
 
 _func_exit_;
@@ -1682,9 +1675,7 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 		pxframe->pkt = NULL;
 		pxframe->pkt_offset = 1;/* default use pkt_offset to fill tx desc */
 
-#ifdef CONFIG_XMIT_ACK
 		pxframe->ack_report = 0;
-#endif
 	}
 }
 
@@ -2759,8 +2750,6 @@ void rtw_sctx_done(struct submit_ctx **sctx)
 	rtw_sctx_done_err(sctx, RTW_SCTX_DONE_SUCCESS);
 }
 
-#ifdef CONFIG_XMIT_ACK
-
 int rtw_ack_tx_wait(struct xmit_priv *pxmitpriv, u32 timeout_ms)
 {
 	struct submit_ctx *pack_tx_ops = &pxmitpriv->ack_tx_ops;
@@ -2782,4 +2771,3 @@ void rtw_ack_tx_done(struct xmit_priv *pxmitpriv, int status)
 		DBG_8723A("%s ack_tx not set\n", __func__);
 	}
 }
-#endif /* CONFIG_XMIT_ACK */

@@ -23,7 +23,6 @@
 #include <drv_types.h>
 #include <rtl8723a_hal.h>
 
-#ifdef CONFIG_XMIT_ACK
 void dump_txrpt_ccx_8723a(void *buf)
 {
 	struct txrpt_ccx_8723a *txrpt_ccx = buf;
@@ -60,4 +59,3 @@ void handle_txrpt_ccx_8723a(struct rtw_adapter *adapter, void *buf)
 			rtw_ack_tx_done(&adapter->xmitpriv, RTW_SCTX_DONE_CCX_PKT_FAIL);
 	}
 }
-#endif //CONFIG_XMIT_ACK

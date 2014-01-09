@@ -1418,12 +1418,8 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("%s: IQK fail recorver\n", __FUNCTION__));
 	}
 
-#ifdef CONFIG_XMIT_ACK
 	//ack for xmit mgmt frames.
 	rtw_write32(Adapter, REG_FWHW_TXQ_CTRL, rtw_read32(Adapter, REG_FWHW_TXQ_CTRL)|BIT(12));
-#endif //CONFIG_XMIT_ACK
-
-	//_dbg_dump_macreg(padapter);
 
 exit:
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);

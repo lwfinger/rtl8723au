@@ -33,7 +33,6 @@
  * Functions Config
  */
 
-#define CONFIG_XMIT_ACK
 #define CONFIG_80211N_HT
 #define CONFIG_RECV_REORDERING_CTRL
 

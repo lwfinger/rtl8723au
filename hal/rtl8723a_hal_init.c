@@ -3167,7 +3167,6 @@ static void rtl8723a_fill_default_txdesc(
 		ptxdesc->rty_lmt_en = 1; // retry limit enable
 		ptxdesc->data_rt_lmt = 6; // retry limit = 6
 
-#ifdef CONFIG_XMIT_ACK
 		//CCX-TXRPT ack for xmit mgmt frames.
 		if (pxmitframe->ack_report) {
 			#ifdef DBG_CCX
@@ -3178,7 +3177,6 @@ static void rtl8723a_fill_default_txdesc(
 			#endif
 			ptxdesc->ccx = 1;
 		}
-#endif //CONFIG_XMIT_ACK
 
 		ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 	}
