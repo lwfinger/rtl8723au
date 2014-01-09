@@ -794,11 +794,7 @@ static s32 xmitframe_addmic(struct rtw_adapter *padapter, struct xmit_frame *pxm
 
 _func_enter_;
 
-#ifdef CONFIG_TX_EARLY_MODE
-	hw_hdr_offset = TXDESC_OFFSET+ EARLY_MODE_INFO_SIZE;
-#else
 	hw_hdr_offset = TXDESC_OFFSET;
-#endif
 
 	if(pattrib->encrypt ==_TKIP_)/* if(psecuritypriv->dot11PrivacyAlgrthm==_TKIP_PRIVACY_) */
 	{
@@ -1249,11 +1245,7 @@ _func_enter_;
 
 	pbuf_start = pxmitframe->buf_addr;
 
-#ifdef CONFIG_TX_EARLY_MODE /* for SDIO && Tx Agg */
-	hw_hdr_offset = TXDESC_OFFSET + EARLY_MODE_INFO_SIZE;
-#else
 	hw_hdr_offset = TXDESC_OFFSET;
-#endif
 
 	mem_start = pbuf_start +	hw_hdr_offset;
 
