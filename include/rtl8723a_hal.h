@@ -394,18 +394,6 @@ struct hal_data_8723a {
 	BT_COEXIST_STR	bt_coexist;
 #endif
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	u8	CurAntenna;
-
-	// SW Antenna Switch
-	s32	RSSI_sum_A;
-	s32	RSSI_sum_B;
-	s32	RSSI_cnt_A;
-	s32	RSSI_cnt_B;
-	u8	RSSI_test;
-	u8	AntDivCfg;
-#endif
-
 	u8	bDumpRxPkt;//for debug
 	u8	FwRsvdPageStartOffset; //2010.06.23. Added by tynli. Reserve page start offset except beacon in TxQ.
 

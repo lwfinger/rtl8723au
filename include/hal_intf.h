@@ -207,10 +207,6 @@ struct hal_ops {
 	void	(*run_thread)(struct rtw_adapter *padapter);
 	void	(*cancel_thread)(struct rtw_adapter *padapter);
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	u8	(*AntDivBeforeLinkHandler)(struct rtw_adapter *padapter);
-	void	(*AntDivCompareHandler)(struct rtw_adapter *padapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
-#endif
 	u8	(*interface_ps_func)(struct rtw_adapter *padapter,HAL_INTF_PS_FUNC efunc_id, u8* val);
 
 	s32	(*hal_xmit)(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
@@ -391,11 +387,6 @@ s32	rtw_hal_interrupt_handler(struct rtw_adapter *padapter);
 void	rtw_hal_set_bwmode(struct rtw_adapter *padapter, HT_CHANNEL_WIDTH Bandwidth, u8 Offset);
 void	rtw_hal_set_chan(struct rtw_adapter *padapter, u8 channel);
 void	rtw_hal_dm_watchdog(struct rtw_adapter *padapter);
-
-#ifdef CONFIG_ANTENNA_DIVERSITY
-u8	rtw_hal_antdiv_before_linked(struct rtw_adapter *padapter);
-void	rtw_hal_antdiv_rssi_compared(struct rtw_adapter *padapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
-#endif
 
 void rtw_hal_sreset_init(struct rtw_adapter *padapter);
 void rtw_hal_sreset_reset(struct rtw_adapter *padapter);

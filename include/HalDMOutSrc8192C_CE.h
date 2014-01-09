@@ -71,9 +71,4 @@ void rtl8192c_PHY_APCalibrate(struct rtw_adapter *pAdapter, char delta);
 
 void rtl8192c_odm_CheckTXPowerTracking(struct rtw_adapter *Adapter);
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-void	odm_AntDivCompare8192C(struct rtw_adapter *Adapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
-u8 odm_AntDivBeforeLink8192C(struct rtw_adapter *Adapter);
-#endif
-
 #endif	//__HAL8190PCIDM_H__

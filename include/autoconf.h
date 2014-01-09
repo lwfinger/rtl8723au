@@ -46,11 +46,6 @@
 #define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
 #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable,  */
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-#define CONFIG_SW_ANTENNA_DIVERSITY
-#endif
-
-
 /*
  * Auto Config Section
  */

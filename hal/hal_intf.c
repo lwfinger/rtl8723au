@@ -361,21 +361,6 @@ void rtw_hal_bcn_related_reg_setting(struct rtw_adapter *padapter)
 		padapter->HalFunc.SetBeaconRelatedRegistersHandler(padapter);
 }
 
-
-#ifdef CONFIG_ANTENNA_DIVERSITY
-u8	rtw_hal_antdiv_before_linked(struct rtw_adapter *padapter)
-{
-	if(padapter->HalFunc.AntDivBeforeLinkHandler)
-		return padapter->HalFunc.AntDivBeforeLinkHandler(padapter);
-	return false;
-}
-void	rtw_hal_antdiv_rssi_compared(struct rtw_adapter *padapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src)
-{
-	if(padapter->HalFunc.AntDivCompareHandler)
-		padapter->HalFunc.AntDivCompareHandler(padapter, dst, src);
-}
-#endif
-
 void	rtw_hal_sreset_init(struct rtw_adapter *padapter)
 {
 	if(padapter->HalFunc.sreset_init_value)

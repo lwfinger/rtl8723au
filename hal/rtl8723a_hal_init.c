@@ -1973,11 +1973,6 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->run_thread= &rtl8723a_start_thread;
 	pHalFunc->cancel_thread= &rtl8723a_stop_thread;
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	pHalFunc->AntDivBeforeLinkHandler = &odm_AntDivBeforeLink8192C;
-	pHalFunc->AntDivCompareHandler = &odm_AntDivCompare8192C;
-#endif
-
 	pHalFunc->read_bbreg = &rtl8192c_PHY_QueryBBReg;
 	pHalFunc->write_bbreg = &rtl8192c_PHY_SetBBReg;
 	pHalFunc->read_rfreg = &rtl8192c_PHY_QueryRFReg;
@@ -2872,32 +2867,6 @@ Hal_EfuseParseAntennaDiversity(
 	bool			AutoLoadFail
 	)
 {
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
-	struct registry_priv	*registry_par = &padapter->registrypriv;
-
-
-	if(!AutoLoadFail)
-	{
-		// Antenna Diversity setting.
-		if(registry_par->antdiv_cfg == 2) // 2: From Efuse
-			pHalData->AntDivCfg = (hwinfo[RF_OPTION1_8723A]&0x18)>>3;
-		else
-			pHalData->AntDivCfg = registry_par->antdiv_cfg ;  // 0:OFF , 1:ON,
-
-		if(pHalData->EEPROMBluetoothCoexist!=0 && pHalData->EEPROMBluetoothAntNum==Ant_x1)
-			pHalData->AntDivCfg = 0;
-
-		DBG_8723A("### AntDivCfg(%x) EEPROMBluetoothCoexist(%x) EEPROMBluetoothAntNum(%x)\n"
-			,pHalData->AntDivCfg,pHalData->EEPROMBluetoothCoexist,pHalData->EEPROMBluetoothAntNum);
-	}
-	else
-	{
-		pHalData->AntDivCfg = 0;
-	}
-
-	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("SWAS: bHwAntDiv = %x\n", pHalData->AntDivCfg));
-#endif
 }
 
 void
@@ -4117,21 +4086,12 @@ void GetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 				}
 			}
 			break;
-
-#ifdef CONFIG_ANTENNA_DIVERSITY
-		case HW_VAR_CURRENT_ANTENNA:
-			*val = pHalData->CurAntenna;
-			break;
-#endif
-
 		case HW_VAR_EFUSE_USAGE:
 			*val = pHalData->EfuseUsedPercentage;
 			break;
-
 		case HW_VAR_EFUSE_BYTES:
 			*((u16*)val) = pHalData->EfuseUsedBytes;
 			break;
-
 		case HW_VAR_EFUSE_BT_USAGE:
 #ifdef HAL_EFUSE_MEMORY
 			*val = pHalData->EfuseHal.BTEfuseUsedPercentage;

@@ -223,7 +223,6 @@ typedef struct _RX_High_Power_
 #define ASSOCIATE_ENTRY_NUM					32 /*  Max size of AsocEntry[]. */
 #define	ODM_ASSOCIATE_ENTRY_NUM				ASSOCIATE_ENTRY_NUM
 
-/* ifdef CONFIG_ANTENNA_DIVERSITY */
 /*  This indicates two different the steps. */
 /*  In SWAW_STEP_PEAK, driver needs to switch antenna and listen to the signal on the air. */
 /*  In SWAW_STEP_DETERMINE, driver just compares the signal captured in SWAW_STEP_PEAK */
@@ -1041,10 +1040,8 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	RXHP_T		DM_RXHP_Table;
 	struct false_alarm_stats	FalseAlmCnt;
 	struct false_alarm_stats	FlaseAlmCntBuddyAdapter;
-	/* ifdef CONFIG_ANTENNA_DIVERSITY */
 	SWAT_T		DM_SWAT_Table;
 	bool		RSSI_test;
-	/* endif */
 
 	EDCA_T		DM_EDCA_Table;
 	u32		WMMEDCA_BE;

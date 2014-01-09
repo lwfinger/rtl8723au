@@ -127,33 +127,6 @@ struct dm_priv
 
 	u32	prv_traffic_idx; // edca turbo
 
-/*
-	// for dm_RF_Saving
-	u8	initialize;
-	u32	rf_saving_Reg874;
-	u32	rf_saving_RegC70;
-	u32	rf_saving_Reg85C;
-	u32	rf_saving_RegA74;
-*/
-	//for Antenna diversity
-#ifdef CONFIG_ANTENNA_DIVERSITY
-//	SWAT_T DM_SWAT_Table;
-#endif
-
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-//	struct timer_list SwAntennaSwitchTimer;
-/*
-	u64	lastTxOkCnt;
-	u64	lastRxOkCnt;
-	u64	TXByteCnt_A;
-	u64	TXByteCnt_B;
-	u64	RXByteCnt_A;
-	u64	RXByteCnt_B;
-	u8	DoubleComfirm;
-	u8	TrafficLoad;
-*/
-#endif
-
 	s32	OFDM_Pkt_Cnt;
 	u8	RSSI_Select;
 //	u8	DIG_Dynamic_MIN ;

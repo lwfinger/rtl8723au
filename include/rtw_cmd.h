@@ -821,10 +821,6 @@ u8 rtw_lps_ctrl_wk_cmd(struct rtw_adapter*padapter, u8 lps_ctrl_type, u8 enqueue
 u8 rtw_rpt_timer_cfg_cmd(struct rtw_adapter*padapter, u16 minRptTime);
 #endif
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-u8 rtw_antenna_select_cmd(struct rtw_adapter*padapter, u8 antenna,u8 enqueue);
-#endif
-
 u8 rtw_ps_cmd(struct rtw_adapter*padapter);
 
 #ifdef CONFIG_8723AU_AP_MODE
