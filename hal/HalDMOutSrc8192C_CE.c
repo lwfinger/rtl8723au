@@ -1110,11 +1110,7 @@ _PHY_LCCalibrate(
 	/* 4. Set LC calibration begin */
 	PHY_SetRFReg(pAdapter, RF_PATH_A, RF_CHNLBW, bMask12Bits, LC_Cal|0x08000);
 
-	#ifdef CONFIG_LONG_DELAY_ISSUE
 	msleep(100);
-	#else
-	mdelay(100);
-	#endif
 
 	/* Restore original situation */
 	if((tmpReg&0x70) != 0)	/* Deal with contisuous TX case  */

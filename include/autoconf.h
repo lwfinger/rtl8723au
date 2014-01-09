@@ -55,7 +55,6 @@
 #define CONFIG_SKB_COPY	//for amsdu
 
 #define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
-#define CONFIG_LONG_DELAY_ISSUE
 #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable,  */
 
 #ifdef CONFIG_ANTENNA_DIVERSITY

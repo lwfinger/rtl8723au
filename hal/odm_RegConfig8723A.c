@@ -33,11 +33,7 @@ odm_ConfigRFReg_8723A(
 {
 	if(Addr == 0xfe)
 	{
-		#ifdef CONFIG_LONG_DELAY_ISSUE
 		msleep(50);
-		#else
-		mdelay(50);
-		#endif
 	}
 	else if (Addr == 0xfd)
 	{
@@ -134,11 +130,7 @@ odm_ConfigBB_PHY_REG_PG_8723A(
     )
 {
 	if (Addr == 0xfe)
-		#ifdef CONFIG_LONG_DELAY_ISSUE
 		msleep(50);
-		#else
-		mdelay(50);
-		#endif
 	else if (Addr == 0xfd)
 		mdelay(5);
 	else if (Addr == 0xfc)
@@ -164,11 +156,7 @@ odm_ConfigBB_PHY_8723A(
     )
 {
 	if (Addr == 0xfe)
-		#ifdef CONFIG_LONG_DELAY_ISSUE
 		msleep(50);
-		#else
-		mdelay(50);
-		#endif
 	else if (Addr == 0xfd)
 		mdelay(5);
 	else if (Addr == 0xfc)
