@@ -440,23 +440,10 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 	if(isCCKrate)
 	{
 		pPhyInfo->SignalStrength = (u8)(odm_SignalScaleMapping(pDM_Odm, PWDB_ALL));//PWDB_ALL;
-	}
-	else
-	{
+	} else {
 		if (rf_rx_num != 0)
-		{
 			pPhyInfo->SignalStrength = (u8)(odm_SignalScaleMapping(pDM_Odm, total_rssi/=rf_rx_num));
-		}
 	}
-
-	//For 92C/92D HW (Hybrid) Antenna Diversity
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-	pDM_SWAT_Table->antsel = pPhyStaRpt->ant_sel;
-	//For 88E HW Antenna Diversity
-	pDM_Odm->DM_FatTable.antsel_rx_keep_0 = pPhyStaRpt->ant_sel;
-	pDM_Odm->DM_FatTable.antsel_rx_keep_1 = pPhyStaRpt->ant_sel_b;
-	pDM_Odm->DM_FatTable.antsel_rx_keep_2 = pPhyStaRpt->antsel_rx_keep_2;
-#endif
 }
 
 void
@@ -492,58 +479,6 @@ static void odm_Process_RSSIForDM(
 
 	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? true : false;
 
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-#if ((RTL8192C_SUPPORT == 1) ||(RTL8192D_SUPPORT == 1))
-	if(pDM_Odm->SupportICType & ODM_RTL8192C|ODM_RTL8192D)
-	{
-			if(pPktinfo->bPacketToSelf || pPktinfo->bPacketBeacon)
-			{
-				//if(pPktinfo->bPacketBeacon)
-				//{
-				//	DbgPrint("This is beacon, isCCKrate=%d\n", isCCKrate);
-				//}
-				ODM_AntselStatistics_88C(pDM_Odm, pPktinfo->StationID,  pPhyInfo->RxPWDBAll, isCCKrate);
-			}
-	}
-#endif
-	//-----------------Smart Antenna Debug Message------------------//
-#if (RTL8188E_SUPPORT == 1)
-	if(pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-		u8	antsel_tr_mux;
-		pFAT_T	pDM_FatTable = &pDM_Odm->DM_FatTable;
-
-		if(pDM_Odm->AntDivType == CG_TRX_SMART_ANTDIV)
-		{
-			if(pDM_FatTable->FAT_State == FAT_TRAINING_STATE)
-			{
-				if(pPktinfo->bPacketToSelf)	//(pPktinfo->bPacketMatchBSSID && (!pPktinfo->bPacketBeacon))
-				{
-					antsel_tr_mux = (pDM_FatTable->antsel_rx_keep_2<<2) |(pDM_FatTable->antsel_rx_keep_1 <<1) |pDM_FatTable->antsel_rx_keep_0;
-					pDM_FatTable->antSumRSSI[antsel_tr_mux] += pPhyInfo->RxPWDBAll;
-					pDM_FatTable->antRSSIcnt[antsel_tr_mux]++;
-						//ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("isCCKrate=%d, PWDB_ALL=%d\n",isCCKrate, pPhyInfo->RxPWDBAll));
-						//ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("antsel_tr_mux=3'b%d%d%d\n",
-							//pDM_FatTable->antsel_rx_keep_2, pDM_FatTable->antsel_rx_keep_1, pDM_FatTable->antsel_rx_keep_0));
-
-				}
-			}
-		}
-		else if((pDM_Odm->AntDivType == CG_TRX_HW_ANTDIV)||(pDM_Odm->AntDivType == CGCS_RX_HW_ANTDIV))
-		{
-			if(pPktinfo->bPacketToSelf || pPktinfo->bPacketBeacon)
-			{
-				antsel_tr_mux = (pDM_FatTable->antsel_rx_keep_2<<2) |(pDM_FatTable->antsel_rx_keep_1 <<1) |pDM_FatTable->antsel_rx_keep_0;
-				//ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("antsel_tr_mux=3'b%d%d%d\n",
-				//			pDM_FatTable->antsel_rx_keep_2, pDM_FatTable->antsel_rx_keep_1, pDM_FatTable->antsel_rx_keep_0));
-
-				ODM_AntselStatistics_88E(pDM_Odm, antsel_tr_mux, pPktinfo->StationID, pPhyInfo->RxPWDBAll);
-			}
-		}
-
-	}
-#endif
-#endif //#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 	//-----------------Smart Antenna Debug Message------------------//
 
 	UndecoratedSmoothedCCK =  pEntry->rssi_stat.UndecoratedSmoothedCCK;

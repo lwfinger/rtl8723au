@@ -267,20 +267,6 @@ typedef struct _SW_Antenna_Switch_
 	u64		RXByteCnt_B;
 	u8		TrafficLoad;
 	struct timer_list SwAntennaSwitchTimer;
-#ifdef CONFIG_HW_ANTENNA_DIVERSITY
-	/* Hybrid Antenna Diversity */
-	u32		CCK_Ant1_Cnt[ASSOCIATE_ENTRY_NUM];
-	u32		CCK_Ant2_Cnt[ASSOCIATE_ENTRY_NUM];
-	u32		OFDM_Ant1_Cnt[ASSOCIATE_ENTRY_NUM];
-	u32		OFDM_Ant2_Cnt[ASSOCIATE_ENTRY_NUM];
-	u32		RSSI_Ant1_Sum[ASSOCIATE_ENTRY_NUM];
-	u32		RSSI_Ant2_Sum[ASSOCIATE_ENTRY_NUM];
-	u8		TxAnt[ASSOCIATE_ENTRY_NUM];
-	u8		TargetSTA;
-	u8		antsel;
-	u8		RxIdleAnt;
-#endif
-
 }SWAT_T, *pSWAT_T;
 
 typedef struct _EDCA_TURBO_

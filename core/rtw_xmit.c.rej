@@ -1,0 +1,11 @@
+--- core/rtw_xmit.c
++++ core/rtw_xmit.c
+@@ -2041,7 +2041,7 @@
+ 
+ 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
+ 
+-	size = sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry;
++	size = sizeof(struct hw_xmit) * (pxmitpriv->hwxmit_entry + 1);
+ 	pxmitpriv->hwxmits = kzalloc(size, GFP_KERNEL);
+ 
+ 	hwxmits = pxmitpriv->hwxmits;
