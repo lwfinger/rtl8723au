@@ -3455,8 +3455,7 @@ void SetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 
 _func_enter_;
 
-	switch (variable)
-	{
+	switch (variable) {
 		case HW_VAR_MEDIA_STATUS:
 			{
 				u8 val8;
@@ -3918,39 +3917,17 @@ _func_enter_;
 				}
 			}
 			break;
-
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-		case HW_VAR_ANTENNA_DIVERSITY_LINK:
-			//SwAntDivRestAfterLink8192C(padapter);
-			ODM_SwAntDivRestAfterLink(&pHalData->odmpriv);
-			break;
-
-		case HW_VAR_ANTENNA_DIVERSITY_SELECT:
-			{
-				u8 Optimum_antenna = *val;
-
-				//DBG_8723A("==> HW_VAR_ANTENNA_DIVERSITY_SELECT , Ant_(%s)\n",(Optimum_antenna==2)?"A":"B");
-
-				//PHY_SetBBReg(padapter, rFPGA0_XA_RFInterfaceOE, 0x300, Optimum_antenna);
-				ODM_SetAntenna(&pHalData->odmpriv, Optimum_antenna);
-			}
-			break;
-#endif
-
 		case HW_VAR_EFUSE_USAGE:
 			pHalData->EfuseUsedPercentage = *val;
 			break;
-
 		case HW_VAR_EFUSE_BYTES:
 			pHalData->EfuseUsedBytes = *((u16*)val);
 			break;
-
 		case HW_VAR_EFUSE_BT_USAGE:
 #ifdef HAL_EFUSE_MEMORY
 			pHalData->EfuseHal.BTEfuseUsedPercentage = *val;
 #endif
 			break;
-
 		case HW_VAR_EFUSE_BT_BYTES:
 #ifdef HAL_EFUSE_MEMORY
 			pHalData->EfuseHal.BTEfuseUsedBytes = *((u16*)val);
@@ -3958,7 +3935,6 @@ _func_enter_;
 			BTEfuseUsedBytes = *((u16*)val);
 #endif
 			break;
-
 		case HW_VAR_FIFO_CLEARN_UP:
 			{
 				#define RW_RELEASE_EN		BIT(18)
@@ -3996,7 +3972,6 @@ _func_enter_;
 				}
 			}
 			break;
-
 		case HW_VAR_CHECK_TXBUF:
 			break;
 		case HW_VAR_APFM_ON_MAC:
@@ -4019,12 +3994,10 @@ _func_enter_;
 				rtw_write8(padapter, REG_NAV_UPPER, (u8)usNavUpper);
 			}
 			break;
-
 		case HW_VAR_BCN_VALID:
 			//BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2, write 1 to clear, Clear by sw
 			rtw_write8(padapter, REG_TDECTRL+2, rtw_read8(padapter, REG_TDECTRL+2) | BIT0);
 			break;
-
 		default:
 			break;
 	}

@@ -1008,13 +1008,7 @@ _func_enter_;
 
 	pmlmepriv->to_join = false;
 
-	if(!check_fwstate(&padapter->mlmepriv, _FW_LINKED))
-	{
-
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-		rtw_hal_set_hwreg(padapter, HW_VAR_ANTENNA_DIVERSITY_LINK, 0);
-#endif
-
+	if(!check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
 		set_fwstate(pmlmepriv, _FW_LINKED);
 
 		rtw_led_control(padapter, LED_CTL_LINK);
