@@ -2177,45 +2177,7 @@ exit:
 
 unsigned int on_action_spct(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 {
-	unsigned int ret = _FAIL;
-	struct sta_info *psta = NULL;
-	struct sta_priv *pstapriv = &padapter->stapriv;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint frame_len = precv_frame->u.hdr.len;
-	u8 *frame_body = (u8 *)(pframe + sizeof(struct rtw_ieee80211_hdr_3addr));
-	u8 category;
-	u8 action;
-
-	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(padapter->pnetdev));
-
-	psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
-
-	if (!psta)
-		goto exit;
-
-	category = frame_body[0];
-	if(category != RTW_WLAN_CATEGORY_SPECTRUM_MGMT)
-		goto exit;
-
-	action = frame_body[1];
-	switch (action) {
-	case RTW_WLAN_ACTION_SPCT_MSR_REQ:
-	case RTW_WLAN_ACTION_SPCT_MSR_RPRT:
-	case RTW_WLAN_ACTION_SPCT_TPC_REQ:
-	case RTW_WLAN_ACTION_SPCT_TPC_RPRT:
-		break;
-	case RTW_WLAN_ACTION_SPCT_CHL_SWITCH:
-		#ifdef CONFIG_SPCT_CH_SWITCH
-		ret = on_action_spct_ch_switch(padapter, psta, &frame_body[2],
-			frame_len-(frame_body-pframe)-2);
-		#endif
-		break;
-	default:
-		break;
-	}
-
-exit:
-	return ret;
+	return _FAIL;
 }
 
 unsigned int OnAction_qos(struct rtw_adapter *padapter, union recv_frame *precv_frame)
