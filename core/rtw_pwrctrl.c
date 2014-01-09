@@ -326,24 +326,14 @@ _func_enter_;
 			pslv = PS_STATE_S3;
 	}
 
-#ifdef CONFIG_LPS_RPWM_TIMER
-	if (pwrpriv->brpwmtimeout == true)
-	{
-		DBG_8723A("%s: RPWM timeout, force to set RPWM(0x%02X) again!\n", __FUNCTION__, pslv);
-	}
-	else
-#endif /*  CONFIG_LPS_RPWM_TIMER */
-	{
 	if (pwrpriv->rpwm == pslv) {
 		RT_TRACE(_module_rtl871x_pwrctrl_c_,_drv_err_,
 			("%s: Already set rpwm[0x%02X], new=0x%02X!\n", __FUNCTION__, pwrpriv->rpwm, pslv));
 		return;
 	}
-	}
 
 	if ((padapter->bSurpriseRemoved == true) ||
-		(padapter->hw_init_completed == false))
-	{
+	    (padapter->hw_init_completed == false)) {
 		RT_TRACE(_module_rtl871x_pwrctrl_c_, _drv_err_,
 				 ("%s: SurpriseRemoved(%d) hw_init_completed(%d)\n",
 				  __FUNCTION__, padapter->bSurpriseRemoved, padapter->hw_init_completed));
@@ -353,8 +343,7 @@ _func_enter_;
 		return;
 	}
 
-	if (padapter->bDriverStopped == true)
-	{
+	if (padapter->bDriverStopped == true) {
 		RT_TRACE(_module_rtl871x_pwrctrl_c_, _drv_err_,
 				 ("%s: change power state(0x%02X) when DriverStopped\n", __FUNCTION__, pslv));
 
@@ -371,11 +360,6 @@ _func_enter_;
 
 	pwrpriv->rpwm = pslv;
 
-#ifdef CONFIG_LPS_RPWM_TIMER
-	if (rpwm & PS_ACK)
-		mod_timer(&pwrpriv->pwr_rpwm_timer,
-			  jiffies + msecs_to_jiffies(LPS_RPWM_WAIT_MS));
-#endif /*  CONFIG_LPS_RPWM_TIMER */
 	rtw_hal_set_hwreg(padapter, HW_VAR_SET_RPWM, (u8 *)(&rpwm));
 
 	pwrpriv->tog += 0x80;
