@@ -796,18 +796,10 @@ void rtw_surveydone_event_callback(struct rtw_adapter	*adapter, u8 *pbuf)
 	struct	mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
 
-#ifdef CONFIG_MLME_EXT
-
-	mlmeext_surveydone_event_callback(adapter);
-
-#endif
-
 _func_enter_;
-
 	spin_lock_bh(&pmlmepriv->lock);
 
-	if(pmlmepriv->wps_probe_req_ie)
-	{
+	if (pmlmepriv->wps_probe_req_ie) {
 		u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 		pmlmepriv->wps_probe_req_ie_len = 0;
 		rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
@@ -816,25 +808,20 @@ _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("rtw_surveydone_event_callback: fw_state:%x\n\n", get_fwstate(pmlmepriv)));
 
-	if (check_fwstate(pmlmepriv,_FW_UNDER_SURVEY))
-	{
+	if (check_fwstate(pmlmepriv,_FW_UNDER_SURVEY)) {
 		del_timer_sync(&pmlmepriv->scan_to_timer);
 
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
-	}
-	else {
+	} else {
 
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("nic status =%x, survey done event comes too late!\n", get_fwstate(pmlmepriv)));
 	}
 
 	rtw_set_signal_stat_timer(&adapter->recvpriv);
 
-	if(pmlmepriv->to_join == true)
-	{
-		if((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)==true) )
-		{
-			if(check_fwstate(pmlmepriv, _FW_LINKED)==false)
-			{
+	if(pmlmepriv->to_join == true) {
+		if((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)==true) ) {
+			if(check_fwstate(pmlmepriv, _FW_LINKED)==false) {
 				set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 
 				if(rtw_select_and_join_from_scanned_queue(pmlmepriv)==_SUCCESS) {
@@ -864,9 +851,7 @@ _func_enter_;
 					pmlmepriv->to_join = false;
 				}
 			}
-		}
-		else
-		{
+		} else {
 			int ret;
 			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 			pmlmepriv->to_join = false;
@@ -900,9 +885,8 @@ _func_enter_;
 	spin_unlock_bh(&pmlmepriv->lock);
 
 #ifdef CONFIG_8723AU_P2P_PS
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
+	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 		p2p_ps_wk_cmd(adapter, P2P_PS_SCAN_DONE, 0);
-	}
 #endif /*  CONFIG_8723AU_P2P_PS */
 
 	rtw_os_xmit_schedule(adapter);
