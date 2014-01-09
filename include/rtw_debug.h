@@ -382,10 +382,8 @@ do {									\
 
 #endif /* CONFIG_8723_BT_COEXIST */
 
-#if defined(DBG_CONFIG_ERROR_DETECT)
 int proc_get_sreset(char *page, char **start, off_t offset, int count, int *eof, void *data);
 int proc_set_sreset(struct file *file, const char __user *buffer, unsigned long count, void *data);
-#endif /* DBG_CONFIG_ERROR_DETECT */
 #endif /* CONFIG_PROC_DEBUG */
 
 #endif	/* __RTW_DEBUG_H__ */

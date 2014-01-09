@@ -23,7 +23,6 @@
 #include <rtl8723a_hal.h>
 
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 void rtl8723a_sreset_xmit_status_check(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
@@ -82,4 +81,3 @@ void rtl8723a_sreset_linked_status_check(struct rtw_adapter *padapter)
 		return;
 	}
 }
-#endif

@@ -781,7 +781,6 @@ int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char 
 			DBG_8723A("%s wait ps_processing done\n", __func__);
 	}
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 	if (rtw_hal_sreset_inprogress(padapter)) {
 		DBG_8723A("%s wait sreset_inprogress...\n", __func__);
 		while (rtw_hal_sreset_inprogress(padapter) && rtw_get_passing_time_ms(start) <= 4000)
@@ -791,7 +790,6 @@ int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char 
 		else
 			DBG_8723A("%s wait sreset_inprogress done\n", __func__);
 	}
-#endif
 
 	if (pwrpriv->bInternalAutoSuspend == false && pwrpriv->bInSuspend) {
 		DBG_8723A("%s wait bInSuspend...\n", __func__);

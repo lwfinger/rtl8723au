@@ -22,7 +22,6 @@
 
 void sreset_init_value(struct rtw_adapter *padapter)
 {
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
@@ -31,11 +30,9 @@ void sreset_init_value(struct rtw_adapter *padapter)
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 	psrtpriv->last_tx_time =0;
 	psrtpriv->last_tx_complete_time =0;
-#endif
 }
 void sreset_reset_value(struct rtw_adapter *padapter)
 {
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
@@ -43,12 +40,10 @@ void sreset_reset_value(struct rtw_adapter *padapter)
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 	psrtpriv->last_tx_time =0;
 	psrtpriv->last_tx_complete_time =0;
-#endif
 }
 
 u8 sreset_get_wifi_status(struct rtw_adapter *padapter)
 {
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 
@@ -78,25 +73,18 @@ u8 sreset_get_wifi_status(struct rtw_adapter *padapter)
 	psrtpriv->Wifi_Error_Status = WIFI_STATUS_SUCCESS;
 
 	return status;
-#else
-	return WIFI_STATUS_SUCCESS;
-#endif
 }
 
 void sreset_set_wifi_error_status(struct rtw_adapter *padapter, u32 status)
 {
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	pHalData->srestpriv.Wifi_Error_Status = status;
-#endif
 }
 
 void sreset_set_trigger_point(struct rtw_adapter *padapter, s32 tgp)
 {
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	pHalData->srestpriv.dbg_trigger_point = tgp;
-#endif
 }
 
 bool sreset_inprogress(struct rtw_adapter *padapter)

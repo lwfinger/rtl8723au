@@ -559,7 +559,6 @@ void rtw_proc_init_one(struct net_device *dev)
 	entry->write_proc = proc_set_btcoex_dbg;
 #endif /*CONFIG_8723_BT_COEXIST*/
 
-#if defined(DBG_CONFIG_ERROR_DETECT)
 	entry = create_proc_read_entry("sreset", S_IFREG | S_IRUGO,
 				   dir_dev, proc_get_sreset, dev);
 	if (!entry) {
@@ -567,7 +566,6 @@ void rtw_proc_init_one(struct net_device *dev)
 		return;
 	}
 	entry->write_proc = proc_set_sreset;
-#endif /* DBG_CONFIG_ERROR_DETECT */
 
 }
 
@@ -632,9 +630,7 @@ void rtw_proc_remove_one(struct net_device *dev)
 		remove_proc_entry("btcoex_dbg", dir_dev);
 #endif //CONFIG_8723_BT_COEXIST
 
-#if defined(DBG_CONFIG_ERROR_DETECT)
-	remove_proc_entry("sreset", dir_dev);
-#endif /* DBG_CONFIG_ERROR_DETECT */
+		remove_proc_entry("sreset", dir_dev);
 
 		remove_proc_entry(dev->name, rtw_proc);
 		dir_dev = NULL;
@@ -1058,9 +1054,7 @@ u8 rtw_reset_drv_sw(struct rtw_adapter *padapter)
 
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY |_FW_UNDER_LINKING);
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 	rtw_hal_sreset_reset_value(padapter);
-#endif
 	pwrctrlpriv->pwr_state_check_cnts = 0;
 
 	//mlmeextpriv
@@ -1155,9 +1149,7 @@ _func_enter_;
 	rtw_hal_dm_init(padapter);
 	rtw_hal_sw_led_init(padapter);
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 	rtw_hal_sreset_init(padapter);
-#endif
 
 exit:
 

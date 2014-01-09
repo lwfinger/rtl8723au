@@ -283,12 +283,10 @@ _func_enter_;
 		}
 	}
 
-	#ifdef DBG_CONFIG_ERROR_DETECT
 	{
 		struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 		pHalData->srestpriv.last_tx_complete_time = rtw_get_current_time();
 	}
-	#endif
 
 check_completion:
 	spin_lock_irqsave(&pxmitpriv->lock_sctx, irqL);
@@ -391,12 +389,10 @@ _func_enter_;
 
 	status = usb_submit_urb(purb, GFP_ATOMIC);
 	if (!status) {
-		#ifdef DBG_CONFIG_ERROR_DETECT
 		{
 			struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 			pHalData->srestpriv.last_tx_time = rtw_get_current_time();
 		}
-		#endif
 	} else {
 		rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_WRITE_PORT_ERR);
 		DBG_8723A("usb_write_port, status=%d\n", status);

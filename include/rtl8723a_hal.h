@@ -32,9 +32,7 @@
 #include "rtl8723a_recv.h"
 #include "rtl8723a_xmit.h"
 #include "rtl8723a_cmd.h"
-#ifdef DBG_CONFIG_ERROR_DETECT
 #include "rtl8723a_sreset.h"
-#endif
 #include "rtw_efuse.h"
 
 #include "odm_precomp.h"
@@ -386,10 +384,7 @@ struct hal_data_8723a {
 
 	struct dm_priv	dmpriv;
 	DM_ODM_T		odmpriv;
-	//spinlock_t			odm_stainfo_lock;
-#ifdef DBG_CONFIG_ERROR_DETECT
 	struct sreset_priv srestpriv;
-#endif
 
 #ifdef CONFIG_8723_BT_COEXIST
 	u8				bBTMode;

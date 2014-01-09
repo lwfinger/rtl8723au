@@ -798,6 +798,7 @@ _func_exit_;
 void rtw_surveydone_event_callback(struct rtw_adapter	*adapter, u8 *pbuf)
 {
 	struct	mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
+	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
 
 #ifdef CONFIG_MLME_EXT
 
@@ -910,14 +911,8 @@ _func_enter_;
 
 	rtw_os_xmit_schedule(adapter);
 
-#ifdef DBG_CONFIG_ERROR_DETECT
-	{
-		struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
-		if(pmlmeext->sitesurvey_res.bss_cnt == 0){
-			rtw_hal_sreset_reset(adapter);
-		}
-	}
-#endif
+	if(pmlmeext->sitesurvey_res.bss_cnt == 0)
+		rtw_hal_sreset_reset(adapter);
 
 	rtw_cfg80211_surveydone_event_callback(adapter);
 

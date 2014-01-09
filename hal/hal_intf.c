@@ -385,7 +385,6 @@ s32	rtw_hal_hostap_mgnt_xmit_entry(struct rtw_adapter *padapter, _pkt *pkt)
 }
 #endif //CONFIG_HOSTAPD_MLME
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 void	rtw_hal_sreset_init(struct rtw_adapter *padapter)
 {
 	if(padapter->HalFunc.sreset_init_value)
@@ -433,7 +432,6 @@ bool rtw_hal_sreset_inprogress(struct rtw_adapter *padapter)
 		inprogress = padapter->HalFunc.sreset_inprogress(padapter);
 	return inprogress;
 }
-#endif	//DBG_CONFIG_ERROR_DETECT
 
 #ifdef CONFIG_IOL
 int rtw_hal_iol_cmd(ADAPTER *adapter, struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt)

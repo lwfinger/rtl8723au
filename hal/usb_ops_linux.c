@@ -99,12 +99,8 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 				{
 					padapter->bSurpriseRemoved = true;
 				} else {
-					#ifdef DBG_CONFIG_ERROR_DETECT
-					{
-						struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
-						pHalData->srestpriv.Wifi_Error_Status = USB_VEN_REQ_CMD_FAIL;
-					}
-					#endif
+					struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+					pHalData->srestpriv.Wifi_Error_Status = USB_VEN_REQ_CMD_FAIL;
 				}
 			}
 			else // status != len && status >= 0
@@ -757,12 +753,10 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				break;
 			case -EPROTO:
 			case -EOVERFLOW:
-				#ifdef DBG_CONFIG_ERROR_DETECT
 				{
 					struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 					pHalData->srestpriv.Wifi_Error_Status = USB_READ_PORT_FAIL;
 				}
-				#endif
 				precvbuf->reuse = true;
 				rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 				break;

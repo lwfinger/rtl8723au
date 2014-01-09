@@ -235,7 +235,6 @@ struct hal_ops {
 	u8	(*Efuse_WordEnableDataWrite)(struct rtw_adapter *padapter, u16 efuse_addr, u8 word_en, u8 *data, bool bPseudoTest);
 	bool	(*Efuse_PgPacketWrite_BT)(struct rtw_adapter *padapter, u8 offset, u8 word_en, u8 *data, bool bPseudoTest);
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 	void (*sreset_init_value)(struct rtw_adapter *padapter);
 	void (*sreset_reset_value)(struct rtw_adapter *padapter);
 	void (*silentreset)(struct rtw_adapter *padapter);
@@ -243,7 +242,6 @@ struct hal_ops {
 	void (*sreset_linked_status_check) (struct rtw_adapter *padapter);
 	u8 (*sreset_get_wifi_status)(struct rtw_adapter *padapter);
 	bool (*sreset_inprogress)(struct rtw_adapter *padapter);
-#endif
 
 #ifdef CONFIG_IOL
 	int (*IOL_exec_cmds_sync)(struct rtw_adapter *padapter, struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt);
@@ -407,7 +405,6 @@ void	rtw_hal_antdiv_rssi_compared(struct rtw_adapter *padapter, WLAN_BSSID_EX *d
 s32	rtw_hal_hostap_mgnt_xmit_entry(struct rtw_adapter *padapter, struct sk_buff *pkt);
 #endif
 
-#ifdef DBG_CONFIG_ERROR_DETECT
 void rtw_hal_sreset_init(struct rtw_adapter *padapter);
 void rtw_hal_sreset_reset(struct rtw_adapter *padapter);
 void rtw_hal_sreset_reset_value(struct rtw_adapter *padapter);
@@ -415,7 +412,6 @@ void rtw_hal_sreset_xmit_status_check(struct rtw_adapter *padapter);
 void rtw_hal_sreset_linked_status_check (struct rtw_adapter *padapter);
 u8   rtw_hal_sreset_get_wifi_status(struct rtw_adapter *padapter);
 bool rtw_hal_sreset_inprogress(struct rtw_adapter *padapter);
-#endif
 
 #ifdef CONFIG_IOL
 int rtw_hal_iol_cmd(ADAPTER *adapter, struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt);
