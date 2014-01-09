@@ -1531,7 +1531,7 @@ void rtw_WLAN_BSSID_EX_remove_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id)
 
 #endif /* CONFIG_8723AU_P2P */
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen)
 {
 	int match;
@@ -1636,7 +1636,7 @@ int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id ,u8 *
 
 	return match;
 }
-#endif /*  CONFIG_WFD */
+#endif /*  CONFIG_8723AU_P2P */
 
 /* Baron adds to avoid FreeBSD warning */
 int ieee80211_is_empty_essid(const char *essid, int essid_len)

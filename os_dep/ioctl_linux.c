@@ -1015,7 +1015,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 
 }
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 static int rtw_p2p_get_peer_wfd_port(struct net_device *dev,
                                struct iw_request_info *info,
                                union iwreq_data *wrqu, char *extra)
@@ -1074,7 +1074,7 @@ static int rtw_p2p_get_peer_wfd_session_available(struct net_device *dev,
 
 }
 
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 static int rtw_p2p_get_go_device_address(struct net_device *dev,
 										 struct iw_request_info *info,
@@ -1476,9 +1476,9 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	uint						p2pielen = 0, attr_contentlen = 0;
 	struct tx_invite_req_info*	pinvite_req_info = &pwdinfo->invitereq_info;
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 	//	Commented by Albert 20120321
 	//	The input data contains two informations.
@@ -1557,7 +1557,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	if ( uintPeerChannel )
 	{
 		u8	wfd_ie[ 128 ] = { 0x00 };
@@ -1594,7 +1594,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 			goto exit;
 		}
 	}
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 	if ( uintPeerChannel ) {
 		//	Store the GO's bssid
@@ -1651,9 +1651,9 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	uint						p2pielen = 0, attr_contentlen = 0;
 	struct tx_invite_req_info*	pinvite_req_info = &pwdinfo->invitereq_info;
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 	//	Commented by Albert 20120328
 	//	The input data is 0 or 1
@@ -1690,7 +1690,7 @@ exit:
 
 }
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 static int rtw_p2p_set_pc(struct net_device *dev,
                                struct iw_request_info *info,
                                union iwreq_data *wrqu, char *extra)
@@ -1932,7 +1932,7 @@ exit:
 	return ret;
 
 }
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 static int rtw_p2p_prov_disc(struct net_device *dev,
                                struct iw_request_info *info,
@@ -1952,9 +1952,9 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	u8					attr_content[100] = { 0x00 }, _status = 0;
 	u8 *p2pie;
 	uint					p2pielen = 0, attr_contentlen = 0;
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 	//	Commented by Albert 20110301
 	//	The input data contains two informations.
@@ -2059,7 +2059,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	{
 		u8	wfd_ie[ 128 ] = { 0x00 };
 		uint	wfd_ielen = 0;
@@ -2095,7 +2095,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 			goto exit;
 		}
 	}
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 	if ( uintPeerChannel )
 	{

@@ -555,7 +555,7 @@ int is_IBSS_empty(struct rtw_adapter *padapter);
 unsigned char check_assoc_AP(u8 *pframe, uint len);
 
 int WMM_param_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE);
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 int WFD_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE);
 #endif
 void WMMOnAssocRsp(struct rtw_adapter *padapter);

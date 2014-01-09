@@ -38,12 +38,8 @@
 #define CONFIG_8723AU_AP_MODE
 
 #define CONFIG_8723AU_P2P
-#ifdef CONFIG_8723AU_P2P
-	//The CONFIG_WFD is for supporting the Wi-Fi display
-	#define CONFIG_WFD
 
-	#define CONFIG_8723AU_P2P_PS
-#endif
+#define CONFIG_8723AU_P2P
 
 #define CONFIG_SKB_COPY	//for amsdu
 

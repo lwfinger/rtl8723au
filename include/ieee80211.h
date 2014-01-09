@@ -1183,10 +1183,10 @@ u32 rtw_set_p2p_attr_content(u8 *pbuf, u8 attr_id, u16 attr_len, u8 *pdata_attr)
 void rtw_WLAN_BSSID_EX_remove_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id);
 #endif
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen);
 int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id ,u8 *attr_content, uint *attr_contentlen);
-#endif // CONFIG_WFD
+#endif // CONFIG_8723AU_P2P
 
 uint	rtw_get_rateset_len(u8	*rateset);
 

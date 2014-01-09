@@ -121,7 +121,7 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv)
 	rtw_free_mlme_ie_data(&pmlmepriv->p2p_assoc_req_ie, &pmlmepriv->p2p_assoc_req_ie_len);
 #endif
 
-#if defined(CONFIG_WFD)
+#if defined(CONFIG_8723AU_P2P)
 	rtw_free_mlme_ie_data(&pmlmepriv->wfd_beacon_ie, &pmlmepriv->wfd_beacon_ie_len);
 	rtw_free_mlme_ie_data(&pmlmepriv->wfd_probe_req_ie, &pmlmepriv->wfd_probe_req_ie_len);
 	rtw_free_mlme_ie_data(&pmlmepriv->wfd_probe_resp_ie, &pmlmepriv->wfd_probe_resp_ie_len);
@@ -884,10 +884,10 @@ _func_enter_;
 
 	spin_unlock_bh(&pmlmepriv->lock);
 
-#ifdef CONFIG_8723AU_P2P_PS
+#ifdef CONFIG_8723AU_P2P
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 		p2p_ps_wk_cmd(adapter, P2P_PS_SCAN_DONE, 0);
-#endif /*  CONFIG_8723AU_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P */
 
 	rtw_os_xmit_schedule(adapter);
 
@@ -1079,9 +1079,9 @@ _func_enter_;
 
 	}
 
-#ifdef CONFIG_8723AU_P2P_PS
+#ifdef CONFIG_8723AU_P2P
 	p2p_ps_wk_cmd(padapter, P2P_PS_DISABLE, 1);
-#endif /*  CONFIG_8723AU_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P */
 
 #ifdef CONFIG_LPS
 #ifdef CONFIG_WOWLAN

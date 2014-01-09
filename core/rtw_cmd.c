@@ -637,11 +637,11 @@ _func_enter_;
 	}
 #endif
 
-#ifdef CONFIG_8723AU_P2P_PS
+#ifdef CONFIG_8723AU_P2P
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 		p2p_ps_wk_cmd(padapter, P2P_PS_SCAN, 1);
 	}
-#endif /* CONFIG_8723AU_P2P_PS */
+#endif /* CONFIG_8723AU_P2P */
 
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
 	if (ph2c == NULL)
@@ -2454,11 +2454,11 @@ u8 rtw_drvextra_cmd_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 			antenna_select_wk_hdl(padapter, pdrvextra_cmd->type_size);
 			break;
 #endif
-#ifdef CONFIG_8723AU_P2P_PS
+#ifdef CONFIG_8723AU_P2P
 		case P2P_PS_WK_CID:
 			p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
 			break;
-#endif /*  CONFIG_8723AU_P2P_PS */
+#endif /*  CONFIG_8723AU_P2P */
 		case P2P_PROTO_WK_CID:
 			/*	Commented by Albert 2011/07/01 */
 			/*	I used the type_size as the type command */

@@ -318,9 +318,9 @@ struct rtw_adapter {
 	struct wifidirect_info	wdinfo;
 #endif //CONFIG_8723AU_P2P
 
-#ifdef CONFIG_WFD
+#ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info wfd_info;
-#endif //CONFIG_WFD
+#endif //CONFIG_8723AU_P2P
 
 	void *HalData;
 	u32 hal_data_sz;
