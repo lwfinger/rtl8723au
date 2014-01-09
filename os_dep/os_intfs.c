@@ -126,9 +126,7 @@ static int rtw_hwpwrp_detect; //HW power  ping detect 0:disable , 1:enable
 
 static int rtw_hw_wps_pbc = 1;
 
-#ifdef CONFIG_80211D
 static int rtw_80211d = 0;
-#endif
 
 #ifdef CONFIG_REGULATORY_CTRL
 static int rtw_regulatory_id =2;
@@ -194,10 +192,8 @@ module_param(rtw_fw_iol, int, 0644);
 MODULE_PARM_DESC(rtw_fw_iol,"FW IOL");
 #endif //CONFIG_IOL
 
-#ifdef CONFIG_80211D
 module_param(rtw_80211d, int, 0644);
 MODULE_PARM_DESC(rtw_80211d, "Enable 802.11d mechanism");
-#endif
 
 #ifdef CONFIG_8723_BT_COEXIST
 module_param(rtw_btcoex_enable, int, 0644);
@@ -734,9 +730,7 @@ _func_enter_;
 	registry_par->fw_iol = rtw_fw_iol;
 #endif
 
-#ifdef CONFIG_80211D
 	registry_par->enable80211d = (u8)rtw_80211d;
-#endif
 
 	snprintf(registry_par->ifname, 16, "%s", ifname);
 	snprintf(registry_par->if2name, 16, "%s", if2name);

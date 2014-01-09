@@ -125,8 +125,6 @@
 #define RATE_ADAPTIVE_SUPPORT			0
 #define POWER_TRAINING_ACTIVE			0
 
-#define CONFIG_80211D
-
 /*
  * Debug Related Config
  */
