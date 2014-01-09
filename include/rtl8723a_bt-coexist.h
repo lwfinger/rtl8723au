@@ -851,7 +851,7 @@ typedef struct _PACKET_IRP_HCICMD_DATA
     u16		OCF:10;
     u16		OGF:6;
     u8		Length;
-    u8		Data[2];
+    u8		Data[20];
 } PACKET_IRP_HCICMD_DATA, *PPACKET_IRP_HCICMD_DATA;
 
 typedef struct _BT_ASOC_ENTRY
