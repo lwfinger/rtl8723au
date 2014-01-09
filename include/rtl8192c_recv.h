@@ -35,11 +35,7 @@
 #define RECV_BLK_CNT 16
 #define RECV_BLK_TH RECV_BLK_CNT
 
-#ifndef CONFIG_MINIMAL_MEMORY_USAGE
 #define MAX_RECVBUF_SZ (15360) // 15k < 16k
-#else
-#define MAX_RECVBUF_SZ (4000) // about 4K
-#endif
 
 #define RECV_BULK_IN_ADDR		0x80
 #define RECV_INT_IN_ADDR		0x81
