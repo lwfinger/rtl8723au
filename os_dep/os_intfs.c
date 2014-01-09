@@ -58,11 +58,7 @@ static int rtw_scan_mode = 1;//active, passive
 static int rtw_adhoc_tx_pwr = 1;
 static int rtw_soft_ap;
 static int rtw_power_mgnt = 1;
-#ifdef CONFIG_IPS_LEVEL_2
-static int rtw_ips_mode = IPS_LEVEL_2;
-#else
 static int rtw_ips_mode = IPS_NORMAL;
-#endif
 
 static int rtw_smart_ps = 2;
 
