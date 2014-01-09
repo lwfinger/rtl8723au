@@ -147,6 +147,3 @@
 #define CONFIG_DEBUG /* DBG_8723A, etc... */
 
 #define CONFIG_PROC_DEBUG
-
-#define DBG_CONFIG_ERROR_RESET
-

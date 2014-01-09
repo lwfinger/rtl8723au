@@ -89,12 +89,9 @@ void sreset_set_trigger_point(struct rtw_adapter *padapter, s32 tgp)
 
 bool sreset_inprogress(struct rtw_adapter *padapter)
 {
-#if defined(DBG_CONFIG_ERROR_RESET)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+
 	return pHalData->srestpriv.silent_reset_inprogress;
-#else
-	return false;
-#endif
 }
 
 static void sreset_restore_security_station(struct rtw_adapter *padapter)
@@ -249,7 +246,6 @@ static void sreset_start_adapter(struct rtw_adapter *padapter)
 
 void sreset_reset(struct rtw_adapter *padapter)
 {
-#ifdef DBG_CONFIG_ERROR_RESET
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
@@ -276,5 +272,4 @@ void sreset_reset(struct rtw_adapter *padapter)
 	mutex_unlock(&psrtpriv->silentreset_mutex);
 
 	DBG_8723A("%s done in %d ms\n", __FUNCTION__, rtw_get_passing_time_ms(start));
-#endif
 }
