@@ -2925,9 +2925,6 @@ _func_enter_;
 	pHalFunc->mgnt_xmit = &rtl8192cu_mgnt_xmit;
 	pHalFunc->hal_xmitframe_enqueue = &rtl8723au_hal_xmitframe_enqueue;
 
-#ifdef CONFIG_HOSTAPD_MLME
-	pHalFunc->hostap_mgnt_xmit_entry = &rtl8192cu_hostap_mgnt_xmit_entry;
-#endif
 	pHalFunc->interface_ps_func = &rtl8192cu_ps_func;
 
 	rtl8723a_set_hal_ops(pHalFunc);

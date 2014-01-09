@@ -1011,9 +1011,6 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 
 #ifdef CONFIG_8723AU_AP_MODE
 	free_mlme_ap_info(if1);
-	#ifdef CONFIG_HOSTAPD_MLME
-	hostapd_mode_unload(if1);
-	#endif
 #endif
 
 	if(if1->DriverState != DRIVER_DISAPPEAR) {
@@ -1171,18 +1168,12 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 
 	//dev_alloc_name && register_netdev
 	if((status = rtw_drv_register_netdev(if1)) != _SUCCESS) {
-		goto free_if2;
+		goto free_if1;
 	}
-
-#ifdef CONFIG_HOSTAPD_MLME
-	hostapd_mode_init(if1);
-#endif
-
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("-871x_drv - drv_init, success!\n"));
 
 	status = _SUCCESS;
 
-free_if2:
 free_if1:
 	if (status != _SUCCESS && if1) {
 		rtw_usb_if1_deinit(if1);

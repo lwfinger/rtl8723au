@@ -125,8 +125,4 @@ s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntfr
 
 s32 rtl8192cu_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 
-#ifdef CONFIG_HOSTAPD_MLME
-s32 rtl8192cu_hostap_mgnt_xmit_entry(struct rtw_adapter *padapter, struct sk_buff *pkt);
-#endif
-
 #endif
