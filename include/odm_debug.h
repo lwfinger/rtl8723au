@@ -104,36 +104,25 @@
 #endif
 
 #if DBG
-#define ODM_RT_TRACE(pDM_Odm, comp, level, fmt)									\
+#define ODM_RT_TRACE(pDM_Odm, comp, level, fmt)							\
 		if(((comp) & pDM_Odm->DebugComponents) && (level <= pDM_Odm->DebugLevel))	\
-		{																			\
-			if(pDM_Odm->SupportICType == ODM_RTL8192C)								\
-				DbgPrint("[ODM-92C] ");												\
-			else if(pDM_Odm->SupportICType == ODM_RTL8192D)							\
-				DbgPrint("[ODM-92D] ");												\
-			else if(pDM_Odm->SupportICType == ODM_RTL8723A)							\
-				DbgPrint("[ODM-8723A] ");												\
-			else if(pDM_Odm->SupportICType == ODM_RTL8188E)							\
-				DbgPrint("[ODM-8188E] ");												\
-			else if(pDM_Odm->SupportICType == ODM_RTL8812)							\
-				DbgPrint("[ODM-8812] ");												\
-			else if(pDM_Odm->SupportICType == ODM_RTL8821)							\
-				DbgPrint("[ODM-8821] ");												\
-			RT_PRINTK fmt;															\
+		{										\
+			DbgPrint("[ODM-8723A] ");						\
+			RT_PRINTK fmt;								\
 		}
 
-#define ODM_RT_TRACE_F(pDM_Odm, comp, level, fmt)									\
+#define ODM_RT_TRACE_F(pDM_Odm, comp, level, fmt)						\
 		if(((comp) & pDM_Odm->DebugComponents) && (level <= pDM_Odm->DebugLevel))	\
-		{																			\
-			RT_PRINTK fmt;															\
+		{										\
+			RT_PRINTK fmt;								\
 		}
 
-#define ODM_RT_ASSERT(pDM_Odm, expr, fmt)											\
-		if(!(expr)) {																	\
-			DbgPrint( "Assertion failed! %s at ......\n", #expr);								\
-			DbgPrint( "      ......%s,%s,line=%d\n",__FILE__,__FUNCTION__,__LINE__);			\
-			RT_PRINTK fmt;															\
-			ASSERT(false);															\
+#define ODM_RT_ASSERT(pDM_Odm, expr, fmt)							\
+		if(!(expr)) {									\
+			DbgPrint( "Assertion failed! %s at ......\n", #expr);			\
+			DbgPrint( "      ......%s,%s,line=%d\n",__FILE__,__FUNCTION__,__LINE__);\
+			RT_PRINTK fmt;								\
+			ASSERT(false);								\
 		}
 #define ODM_dbg_enter() { DbgPrint("==> %s\n", __FUNCTION__); }
 #define ODM_dbg_exit() { DbgPrint("<== %s\n", __FUNCTION__); }

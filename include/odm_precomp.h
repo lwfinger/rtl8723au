@@ -44,33 +44,16 @@
 #include "odm_RegDefine11AC.h"
 #include "odm_RegDefine11N.h"
 
-#if (RTL8192C_SUPPORT==1)
-#include  "HalDMOutSrc8192C_CE.h"
-#include <rtl8192c_hal.h>
-#elif (RTL8192D_SUPPORT==1)
-#include  "HalDMOutSrc8192D_CE.h"
-#include  "rtl8192d_hal.h"
-#elif (RTL8723A_SUPPORT==1)
 #include "HalDMOutSrc8192C_CE.h" //for IQK,LCK,Power-tracking
 #include "rtl8723a_hal.h"
-#endif
 
 #include "odm_interface.h"
 #include "odm_reg.h"
 
-#if (RTL8192C_SUPPORT==1)
-#include "odm_RTL8192C.h"
-#endif
-#if (RTL8192D_SUPPORT==1)
-#include "odm_RTL8192D.h"
-#endif
-
-#if (RTL8723A_SUPPORT==1)
 #include "HalHWImg8723A_MAC.h"
 #include "HalHWImg8723A_RF.h"
 #include "HalHWImg8723A_BB.h"
 #include "HalHWImg8723A_FW.h"
 #include "odm_RegConfig8723A.h"
-#endif
 
 #endif	// __ODM_PRECOMP_H__
