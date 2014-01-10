@@ -1727,13 +1727,6 @@ void rtl8723a_InitBeaconParameters(struct rtw_adapter * padapter)
 	rtw_write16(padapter, REG_BCNTCFG, 0x660F);
 }
 
-void rtl8723a_InitBeaconMaxError(struct rtw_adapter * padapter, u8 InfraMode)
-{
-#ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
-	rtw_write8(padapter, REG_BCN_MAX_ERR, 0xFF);
-#endif
-}
-
 static void ResumeTxBeacon(struct rtw_adapter * padapter)
 {
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
@@ -1962,21 +1955,21 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 
 	pHalFunc->read_chip_version = &rtl8723a_read_chip_version;
 
-	pHalFunc->set_bwmode_handler = &PHY_SetBWMode8192C;
-	pHalFunc->set_channel_handler = &PHY_SwChnl8192C;
+	pHalFunc->set_bwmode_handler = &PHY_SetBWMode8723A;
+	pHalFunc->set_channel_handler = &PHY_SwChnl8723A;
 
 	pHalFunc->hal_dm_watchdog = &rtl8723a_HalDmWatchDog;
 
 	pHalFunc->SetBeaconRelatedRegistersHandler = &rtl8723a_SetBeaconRelatedRegisters;
 
-	pHalFunc->Add_RateATid = &rtl8192c_Add_RateATid;
+	pHalFunc->Add_RateATid = &rtl8723a_add_rateatid;
 	pHalFunc->run_thread= &rtl8723a_start_thread;
 	pHalFunc->cancel_thread= &rtl8723a_stop_thread;
 
-	pHalFunc->read_bbreg = &rtl8192c_PHY_QueryBBReg;
-	pHalFunc->write_bbreg = &rtl8192c_PHY_SetBBReg;
-	pHalFunc->read_rfreg = &rtl8192c_PHY_QueryRFReg;
-	pHalFunc->write_rfreg = &rtl8192c_PHY_SetRFReg;
+	pHalFunc->read_bbreg = &PHY_QueryBBReg;
+	pHalFunc->write_bbreg = &PHY_SetBBReg;
+	pHalFunc->read_rfreg = &PHY_QueryRFReg;
+	pHalFunc->write_rfreg = &PHY_SetRFReg;
 
 	// Efuse related function
 	pHalFunc->EfusePowerSwitch = &Hal_EfusePowerSwitch;
@@ -3893,7 +3886,7 @@ _func_enter_;
 
 #ifdef CONFIG_8723AU_P2P
 		case HW_VAR_H2C_FW_P2P_PS_OFFLOAD:
-			rtl8192c_set_p2p_ps_offload_cmd(padapter, *val);
+			rtl8723a_set_p2p_ps_offload_cmd(padapter, *val);
 			break;
 #endif //CONFIG_8723AU_P2P
 

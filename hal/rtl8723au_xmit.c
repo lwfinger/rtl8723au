@@ -27,17 +27,17 @@
 //#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
-s32	rtl8192cu_init_xmit_priv(struct rtw_adapter *padapter)
+s32	rtl8723au_init_xmit_priv(struct rtw_adapter *padapter)
 {
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
 	tasklet_init(&pxmitpriv->xmit_tasklet,
-	     (void(*)(unsigned long))rtl8192cu_xmit_tasklet,
+	     (void(*)(unsigned long))rtl8723au_xmit_tasklet,
 	     (unsigned long)padapter);
 	return _SUCCESS;
 }
 
-void	rtl8192cu_free_xmit_priv(struct rtw_adapter *padapter)
+void	rtl8723au_free_xmit_priv(struct rtw_adapter *padapter)
 {
 }
 
@@ -449,7 +449,7 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 }
 
 
-s32 rtl8192cu_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
+s32 rtl8723au_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 {
 
 	struct hw_xmit *phwxmits;
@@ -625,7 +625,7 @@ enqueue:
 	return false;
 }
 
-s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe)
+s32 rtl8723au_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe)
 {
 	return rtw_dump_xframe(padapter, pmgntframe);
 }
@@ -635,7 +635,7 @@ s32 rtl8192cu_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntfr
  *	true	dump packet directly ok
  *	false	temporary can't transmit packets to hardware
  */
-s32 rtl8192cu_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
+s32 rtl8723au_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	return pre_xmitframe(padapter, pxmitframe);
 }

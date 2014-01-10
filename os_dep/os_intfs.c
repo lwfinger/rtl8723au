@@ -193,7 +193,6 @@ module_param_named(debug, rtw_debug, int, 0444);
 MODULE_PARM_DESC(debug, "Set debug level (1-9) (default 1)");
 
 #ifdef CONFIG_PROC_DEBUG
-#define RTL8192C_PROC_NAME "rtl819xC"
 static char rtw_proc_name[IFNAMSIZ];
 static struct proc_dir_entry *rtw_proc = NULL;
 static int	rtw_proc_cnt = 0;

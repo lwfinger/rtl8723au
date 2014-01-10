@@ -246,18 +246,6 @@ void
 odm_CmnInfoUpdate_Debug(
 		PDM_ODM_T		pDM_Odm
 	);
-/*
-void
-odm_FindMinimumRSSI(
-		PDM_ODM_T		pDM_Odm
-	);
-
-void
-odm_IsLinked(
-		PDM_ODM_T		pDM_Odm
-	);
-*/
-//END------------COMMON INFO RELATED---------------//
 
 //START---------------DIG---------------------------//
 void
@@ -325,11 +313,6 @@ odm_DynamicTxPowerRestorePowerIndex(
 	);
 
 void
-odm_DynamicTxPowerNIC(
-	PDM_ODM_T	pDM_Odm
-	);
-
-void
 odm_DynamicTxPowerSavePowerIndex(
 		PDM_ODM_T		pDM_Odm
 	);
@@ -378,12 +361,6 @@ void
 odm_DynamicTxPower(
 		PDM_ODM_T		pDM_Odm
 	);
-
-void
-odm_DynamicTxPowerAP(
-		PDM_ODM_T		pDM_Odm
-	);
-
 
 void
 odm_SwAntDivInit(
@@ -1216,7 +1193,7 @@ odm_DIG(
 	FirstDisConnect = (!pDM_Odm->bLinked) && (pDM_DigTable->bMediaConnect_0 == true);
 
 	//1 Boundary Decision
-	if ((pDM_Odm->SupportICType & (ODM_RTL8192C|ODM_RTL8723A)) &&
+	if ((pDM_Odm->SupportICType & (ODM_RTL8723A)) &&
 	    ((pDM_Odm->BoardType == ODM_BOARD_HIGHPWR) || pDM_Odm->ExtLNA)) {
 		dm_dig_max = DM_DIG_MAX_NIC_HP;
 		dm_dig_min = DM_DIG_MIN_NIC_HP;
@@ -1485,11 +1462,6 @@ odm_FalseAlarmCounterStatistics(
 				FalseAlmCnt->Cnt_Cck_fail);
 
 	FalseAlmCnt->Cnt_CCA_all = FalseAlmCnt->Cnt_OFDM_CCA + FalseAlmCnt->Cnt_CCK_CCA;
-
-#if (RTL8192C_SUPPORT==1)
-	if(pDM_Odm->SupportICType == ODM_RTL8192C)
-		odm_ResetFACounter_92C(pDM_Odm);
-#endif
 
 	if(pDM_Odm->SupportICType >=ODM_RTL8723A) {
 		//reset false alarm counter registers
@@ -2047,18 +2019,8 @@ odm_DynamicTxPowerInit(
 	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
+
 	pdmpriv->bDynamicTxPowerEnable = false;
-
-	#if (RTL8192C_SUPPORT==1)
-
-	if(pHalData->BoardType == BOARD_USB_High_PA)
-	{
-		//odm_SavePowerIndex(Adapter);
-		odm_DynamicTxPowerSavePowerIndex(pDM_Odm);
-		pdmpriv->bDynamicTxPowerEnable = true;
-	}
-	else
-	#endif
 
 	pdmpriv->LastDTPLvl = TxHighPwrLevel_Normal;
 	pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
@@ -2114,112 +2076,14 @@ odm_DynamicTxPower(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	//
-	// For AP/ADSL use struct rtl8192cd_priv *
-	// For CE/NIC use struct rtw_adapter *
-	//
-	//struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
-	//struct rtl8192cd_priv	*priv	= pDM_Odm->priv;
-
-	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
-		return;
-
-	// 2012/01/12 MH According to Luke's suggestion, only high power will support the feature.
-	if (pDM_Odm->ExtPA == false)
-		return;
-
-
-	//
-	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
-	// at the same time. In the stage2/3, we need to prive universal interface and merge all
-	// HW dynamic mechanism.
-	//
-	odm_DynamicTxPowerNIC(pDM_Odm);
 }
-
-void
-odm_DynamicTxPowerNIC(
-		PDM_ODM_T		pDM_Odm
-	)
-{
-	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
-		return;
-
-	if(pDM_Odm->SupportICType == ODM_RTL8192C)
-	{
-		odm_DynamicTxPower_92C(pDM_Odm);
-	}
-}
-
-void
-odm_DynamicTxPowerAP(
-		PDM_ODM_T		pDM_Odm
-
-	)
-{
-}
-
 
 void
 odm_DynamicTxPower_92C(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-#if (RTL8192C_SUPPORT==1)
-	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
-	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
-	int	UndecoratedSmoothedPWDB;
-
-	if (!pdmpriv->bDynamicTxPowerEnable)
-		return;
-
-	// STA not connected and AP not connected
-	if ((check_fwstate(pmlmepriv, _FW_LINKED) != true) &&
-	    (pdmpriv->EntryMinUndecoratedSmoothedPWDB == 0)) {
-		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("Not connected to any \n"));
-		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-
-		//the LastDTPlvl should reset when disconnect,
-		//otherwise the tx power level wouldn't change when disconnect and connect again.
-		// Maddest 20091220.
-		pdmpriv->LastDTPLvl=TxHighPwrLevel_Normal;
-		return;
-	}
-
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {	// Default port
-		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-	} else { // associated entry pwdb
-		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-	}
-
-	if (UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2) {
-		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
-		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x0)\n"));
-	} else if ((UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL2-3)) &&
-		   (UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL1) ) {
-		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level1;
-		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Level1 (TxPwr=0x10)\n"));
-	} else if (UndecoratedSmoothedPWDB < (TX_POWER_NEAR_FIELD_THRESH_LVL1-5)) {
-		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("TxHighPwrLevel_Normal\n"));
-	}
-	if ((pdmpriv->DynamicTxHighPowerLvl != pdmpriv->LastDTPLvl)) {
-		PHY_SetTxPowerLevel8192C(Adapter, pHalData->CurrentChannel);
-		if(pdmpriv->DynamicTxHighPowerLvl == TxHighPwrLevel_Normal) // HP1 -> Normal  or HP2 -> Normal
-			odm_DynamicTxPowerRestorePowerIndex(pDM_Odm);
-		else if(pdmpriv->DynamicTxHighPowerLvl == TxHighPwrLevel_Level1)
-			odm_DynamicTxPowerWritePowerIndex(pDM_Odm, 0x14);
-		else if(pdmpriv->DynamicTxHighPowerLvl == TxHighPwrLevel_Level2)
-			odm_DynamicTxPowerWritePowerIndex(pDM_Odm, 0x10);
-	}
-	pdmpriv->LastDTPLvl = pdmpriv->DynamicTxHighPowerLvl;
-#endif
 }
-
 
 void odm_DynamicTxPower_92D(PDM_ODM_T	pDM_Odm)
 {
@@ -2243,11 +2107,11 @@ odm_RSSIMonitorCheck(
 	)
 {
 	//
-	// For AP/ADSL use struct rtl8192cd_priv *
+	// For AP/ADSL use struct rtl8723a_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
 	struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
-	struct rtl8192cd_priv	*priv = pDM_Odm->priv;
+	struct rtl8723a_priv	*priv = pDM_Odm->priv;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_RSSI_MONITOR))
 		return;
@@ -2336,7 +2200,7 @@ odm_RSSIMonitorCheckCE(
 	for(i=0; i< sta_cnt; i++) {
 		if(PWDB_rssi[i] != (0)){
 			if(pHalData->fw_ractrl == true) // Report every sta's RSSI to FW
-				rtl8192c_set_rssi_cmd(Adapter, (u8*)&PWDB_rssi[i]);
+				rtl8723a_set_rssi_cmd(Adapter, (u8*)&PWDB_rssi[i]);
 		}
 	}
 
@@ -2420,11 +2284,11 @@ void ODM_TXPowerTrackingCheck(
 	)
 {
 	//
-	// For AP/ADSL use struct rtl8192cd_priv *
+	// For AP/ADSL use struct rtl8723a_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
 	struct rtw_adapter *pAdapter = pDM_Odm->Adapter;
-	struct rtl8192cd_priv	*priv = pDM_Odm->priv;
+	struct rtl8723a_priv	*priv = pDM_Odm->priv;
 
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
@@ -2438,10 +2302,6 @@ void odm_TXPowerTrackingCheckCE(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	struct rtw_adapter *	Adapter = pDM_Odm->Adapter;
-	#if( (RTL8192C_SUPPORT==1) ||  (RTL8723A_SUPPORT==1) )
-	rtl8192c_odm_CheckTXPowerTracking(Adapter);
-	#endif
 }
 
 void
@@ -2546,11 +2406,11 @@ odm_EdcaTurboCheck(
 	)
 {
 	//
-	// For AP/ADSL use struct rtl8192cd_priv *
+	// For AP/ADSL use struct rtl8723a_priv *
 	// For CE/NIC use struct rtw_adapter *
 	//
 	struct rtw_adapter *		pAdapter = pDM_Odm->Adapter;
-	struct rtl8192cd_priv	*priv		= pDM_Odm->priv;
+	struct rtl8723a_priv	*priv		= pDM_Odm->priv;
 
 	//
 	// 2011/09/29 MH In HW integration first stage, we provide 4 different handle to operate
@@ -2841,22 +2701,11 @@ ODM_SingleDualAntennaDetection(
 					rSleep,			rPMPD_ANAEN,
 					rFPGA0_XCD_SwitchControl, rBlue_Tooth};
 
-	if(!(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C)))
+	if(!(pDM_Odm->SupportICType & (ODM_RTL8723A)))
 		return bResult;
 
 	if(!(pDM_Odm->SupportAbility&ODM_BB_ANT_DIV))
 		return bResult;
-
-	if(pDM_Odm->SupportICType == ODM_RTL8192C)
-	{
-		//Which path in ADC/DAC is turnned on for PSD: both I/Q
-		ODM_SetBBReg(pDM_Odm, 0x808, BIT10|BIT11, 0x3);
-		//Ageraged number: 8
-		ODM_SetBBReg(pDM_Odm, 0x808, BIT12|BIT13, 0x1);
-		//pts = 128;
-		ODM_SetBBReg(pDM_Odm, 0x808, BIT14|BIT15, 0x0);
-	}
-
 	//1 Backup Current RF/BB Settings
 
 	CurrentChannel = ODM_GetRFReg(pDM_Odm, RF_PATH_A, ODM_CHANNEL, bRFRegOffsetMask);
@@ -2982,96 +2831,45 @@ ODM_SingleDualAntennaDetection(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("psd_report_O[%d]= %d \n", 2416, AntO_report));
 
 
-	if(pDM_Odm->SupportICType == ODM_RTL8723A)
-	{
 	//2 Test Ant B based on Ant A is ON
-	if(mode==ANTTESTB)
-	{
-	if(AntA_report >=	100)
-	{
-		if(AntB_report > (AntA_report+1))
-		{
-			pDM_SWAT_Table->ANTB_ON=false;
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Single Antenna A\n"));
-		}
-		else
-		{
-			pDM_SWAT_Table->ANTB_ON=true;
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Dual Antenna is A and B\n"));
-		}
-	}
-	else
-	{
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Need to check again\n"));
-		pDM_SWAT_Table->ANTB_ON=false; // Set Antenna B off as default
-		bResult = false;
-	}
-	}
-	//2 Test Ant A and B based on DPDT Open
-	else if(mode==ANTTESTALL)
-	{
-		if((AntO_report >=100)&(AntO_report <118))
-		{
-			if(AntA_report > (AntO_report+1))
-			{
-				pDM_SWAT_Table->ANTA_ON=false;
-				//RT_TRACE(COMP_ANTENNA, DBG_LOUD, ("ODM_AntennaDetection(): Antenna A is OFF\n"));
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant A is OFF"));
-			}
-			else
-			{
-				pDM_SWAT_Table->ANTA_ON=true;
-				//RT_TRACE(COMP_ANTENNA, DBG_LOUD, ("ODM_AntennaDetection(): Antenna A is ON\n"));
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant A is ON"));
-			}
-
-				if(AntB_report > (AntO_report+2))
-			{
+	if(mode==ANTTESTB) {
+		if (AntA_report >= 100) {
+			if(AntB_report > (AntA_report+1)) {
 				pDM_SWAT_Table->ANTB_ON=false;
-				//RT_TRACE(COMP_ANTENNA, DBG_LOUD, ("ODM_AntennaDetection(): Antenna B is OFF\n"));
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant B is OFF"));
-			}
-			else
-			{
-				pDM_SWAT_Table->ANTB_ON=true;
-				//RT_TRACE(COMP_ANTENNA, DBG_LOUD, ("ODM_AntennaDetection(): Antenna B is ON\n"));
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant B is ON"));
-			}
-		}
-	}
-	}
-	else if(pDM_Odm->SupportICType == ODM_RTL8192C)
-	{
-		if(AntA_report >=	100)
-		{
-			if(AntB_report > (AntA_report+2))
-			{
-				pDM_SWAT_Table->ANTA_ON=false;
-				pDM_SWAT_Table->ANTB_ON=true;
-				ODM_SetBBReg(pDM_Odm,  rFPGA0_XA_RFInterfaceOE, 0x300, Antenna_B);
-				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Single Antenna B\n"));
-			}
-			else if(AntA_report > (AntB_report+2))
-			{
-				pDM_SWAT_Table->ANTA_ON=true;
-				pDM_SWAT_Table->ANTB_ON=false;
-				ODM_SetBBReg(pDM_Odm,  rFPGA0_XA_RFInterfaceOE, 0x300, Antenna_A);
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Single Antenna A\n"));
-			}
-			else
-			{
-				pDM_SWAT_Table->ANTA_ON=true;
+			} else {
 				pDM_SWAT_Table->ANTB_ON=true;
-				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Dual Antenna \n"));
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Dual Antenna is A and B\n"));
 			}
-		}
-		else
-		{
+		} else {
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Need to check again\n"));
-			pDM_SWAT_Table->ANTA_ON=true; // Set Antenna A on as default
 			pDM_SWAT_Table->ANTB_ON=false; // Set Antenna B off as default
 			bResult = false;
 		}
+	} else if(mode==ANTTESTALL) {
+		//2 Test Ant A and B based on DPDT Open
+		if ((AntO_report >= 100) & (AntO_report < 118)) {
+			if (AntA_report > (AntO_report+1)) {
+				pDM_SWAT_Table->ANTA_ON = false;
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant A is OFF"));
+			} else {
+				pDM_SWAT_Table->ANTA_ON = true;
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant A is ON"));
+			}
+
+			if (AntB_report > (AntO_report+2)) {
+				pDM_SWAT_Table->ANTB_ON = false;
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant B is OFF"));
+			} else {
+				pDM_SWAT_Table->ANTB_ON = true;
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("Ant B is ON"));
+			}
+		}
+	} else {
+		ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Need to check again\n"));
+		pDM_SWAT_Table->ANTA_ON = true; // Set Antenna A on as default
+		pDM_SWAT_Table->ANTB_ON = false; // Set Antenna B off as default
+		bResult = false;
 	}
 	return bResult;
 }

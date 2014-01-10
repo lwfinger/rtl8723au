@@ -159,7 +159,7 @@ u8 rtl8192c_h2c_msg_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 rtl8192c_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
+u8 rtl8723a_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {
 	u8	res=_SUCCESS;
 
@@ -174,7 +174,7 @@ _func_exit_;
 	return res;
 }
 
-u8 rtl8192c_set_raid_cmd(struct rtw_adapter*padapter, u32 mask, u8 arg)
+u8 rtl8723a_set_raid_cmd(struct rtw_adapter*padapter, u32 mask, u8 arg)
 {
 	u8	buf[5];
 	u8	res=_SUCCESS;
@@ -198,7 +198,7 @@ _func_exit_;
 //bitmap[28:31]= Rate Adaptive id
 //arg[0:4] = macid
 //arg[5] = Short GI
-void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
+void rtl8723a_add_rateatid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	u8 macid = arg&0x1f;
@@ -212,7 +212,7 @@ void rtl8192c_Add_RateATid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 
 
 	if(pHalData->fw_ractrl == true) {
-		rtl8192c_set_raid_cmd(pAdapter, bitmap, arg);
+		rtl8723a_set_raid_cmd(pAdapter, bitmap, arg);
 	} else {
 		u8 init_rate, shortGIrate=false;
 
@@ -858,7 +858,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 #endif
 
 #ifdef CONFIG_8723AU_P2P
-void rtl8192c_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
+void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct pwrctrl_priv		*pwrpriv = &padapter->pwrctrlpriv;

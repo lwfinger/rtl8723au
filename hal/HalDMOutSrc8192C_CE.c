@@ -60,7 +60,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 
 	ThermalValue = (u8)PHY_QueryRFReg(Adapter, RF_PATH_A, RF_T_METER, 0x1f);	/*  0x24: RF Reg[4:0]	 */
 
-	rtl8192c_PHY_APCalibrate(Adapter, (ThermalValue - pHalData->EEPROMThermalMeter));
+	rtl8723a_phy_ap_calibrate(Adapter, (ThermalValue - pHalData->EEPROMThermalMeter));
 
 	if(is2T)
 		rf = 2;
@@ -150,7 +150,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 
 		if(delta_LCK > 1) {
 			pdmpriv->ThermalValue_LCK = ThermalValue;
-			rtl8192c_PHY_LCCalibrate(Adapter);
+			rtl8723a_phy_lc_calibrate(Adapter);
 		}
 
 		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl) {
@@ -355,7 +355,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 		if(delta_IQK > 3)
 		{
 			pdmpriv->ThermalValue_IQK = ThermalValue;
-			rtl8192c_PHY_IQCalibrate(Adapter,false);
+			rtl8723a_phy_iq_calibrate(Adapter,false);
 		}
 
 		/* update thermal meter value */
@@ -412,7 +412,7 @@ odm_CheckTXPowerTracking_ThermalMeter(
 }
 
 void
-rtl8192c_odm_CheckTXPowerTracking(
+rtl8723a_odm_check_tx_power_tracking(
 	struct rtw_adapter *		Adapter)
 {
 	odm_CheckTXPowerTracking_ThermalMeter(Adapter);
@@ -1184,7 +1184,7 @@ _PHY_APCalibrate(
 }
 
 void
-rtl8192c_PHY_IQCalibrate(
+rtl8723a_phy_iq_calibrate(
 	struct rtw_adapter *	pAdapter,
 	bool	bReCovery
 	)
@@ -1322,7 +1322,7 @@ rtl8192c_PHY_IQCalibrate(
 }
 
 void
-rtl8192c_PHY_LCCalibrate(
+rtl8723a_phy_lc_calibrate(
 	struct rtw_adapter *	pAdapter
 	)
 {
@@ -1351,6 +1351,6 @@ rtl8192c_PHY_LCCalibrate(
 }
 
 void
-rtl8192c_PHY_APCalibrate(struct rtw_adapter *pAdapter, char delta)
+rtl8723a_phy_ap_calibrate(struct rtw_adapter *pAdapter, char delta)
 {
 }

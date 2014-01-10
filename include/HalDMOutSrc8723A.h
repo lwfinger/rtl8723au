@@ -17,14 +17,8 @@
  *
  *
  ******************************************************************************/
-#ifndef	__RTL8192C_ODM_H__
-#define __RTL8192C_ODM_H__
-//============================================================
-// Description:
-//
-// This file is for 92CE/92CU dynamic mechanism only
-//
-//
+#ifndef	__RTL8723A_ODM_H__
+#define __RTL8723A_ODM_H__
 //============================================================
 
 #define	RSSI_CCK	0
@@ -57,18 +51,18 @@
 //
 // IQ calibrate
 //
-void rtl8192c_PHY_IQCalibrate(struct rtw_adapter *pAdapter, bool bReCovery);
+void rtl8723a_phy_iq_calibrate(struct rtw_adapter *pAdapter, bool bReCovery);
 
 //
 // LC calibrate
 //
-void rtl8192c_PHY_LCCalibrate(struct rtw_adapter *pAdapter);
+void rtl8723a_phy_lc_calibrate(struct rtw_adapter *pAdapter);
 
 //
 // AP calibrate
 //
-void rtl8192c_PHY_APCalibrate(struct rtw_adapter *pAdapter, char delta);
+void rtl8723a_phy_ap_calibrate(struct rtw_adapter *pAdapter, char delta);
 
-void rtl8192c_odm_CheckTXPowerTracking(struct rtw_adapter *Adapter);
+void rtl8723a_odm_check_tx_power_tracking(struct rtw_adapter *Adapter);
 
-#endif	//__HAL8190PCIDM_H__
+#endif

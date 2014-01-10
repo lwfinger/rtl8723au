@@ -20,7 +20,44 @@
 #ifndef __RTL8723A_RF_H__
 #define __RTL8723A_RF_H__
 
-#include "rtl8192c_rf.h"
+/*--------------------------Define Parameters-------------------------------*/
+
+//
+// For RF 6052 Series
+//
+#define		RF6052_MAX_TX_PWR			0x3F
+#define		RF6052_MAX_REG				0x3F
+#define		RF6052_MAX_PATH				2
+/*--------------------------Define Parameters-------------------------------*/
+
+
+/*------------------------------Define structure----------------------------*/
+
+/*------------------------------Define structure----------------------------*/
+
+
+/*------------------------Export global variable----------------------------*/
+/*------------------------Export global variable----------------------------*/
+
+/*------------------------Export Marco Definition---------------------------*/
+
+/*------------------------Export Marco Definition---------------------------*/
+
+
+/*--------------------------Exported Function prototype---------------------*/
+
+//
+// RF RL6052 Series API
+//
+void rtl8723a_phy_rf6052set_bw(struct rtw_adapter *Adapter,
+				     HT_CHANNEL_WIDTH Bandwidth);
+void rtl823a_phy_rf6052setccktxpower(struct rtw_adapter *Adapter,
+				      u8* pPowerlevel);
+void rtl8723a_PHY_RF6052SetOFDMTxPower(struct rtw_adapter *Adapter,
+				       u8* pPowerLevel, u8 Channel);
+
+/*--------------------------Exported Function prototype---------------------*/
+
 int	PHY_RF6052_Config8723A(struct rtw_adapter *Adapter);
 
 #endif

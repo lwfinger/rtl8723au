@@ -18,7 +18,7 @@
  *
  ******************************************************************************/
 /*****************************************************************************
- * Module:	__INC_HAL8192CPHYCFG_H
+ * Module:	__INC_HAL8723APHYCFG_H
  *
  *
  * Note:
@@ -35,8 +35,8 @@
  *
  *****************************************************************************/
  /* Check to see if the file has been included already.  */
-#ifndef __INC_HAL8192CPHYCFG_H
-#define __INC_HAL8192CPHYCFG_H
+#ifndef __INC_HAL8723APHYCFG_H
+#define __INC_HAL8723APHYCFG_H
 
 
 /*--------------------------Define Parameters-------------------------------*/
@@ -223,79 +223,35 @@ typedef struct _R_ANTENNA_SELECT_CCK{
 //
 // BB and RF register read/write
 //
-u32	rtl8192c_PHY_QueryBBReg(struct rtw_adapter *Adapter, u32 RegAddr,
-				u32 BitMask);
-void	rtl8192c_PHY_SetBBReg(struct rtw_adapter *Adapter, u32 RegAddr,
-			      u32 BitMask, u32 Data);
-u32	rtl8192c_PHY_QueryRFReg(struct rtw_adapter *Adapter,
-				RF_RADIO_PATH_E	eRFPath, u32 RegAddr,
-				u32 BitMask);
-void	rtl8192c_PHY_SetRFReg(struct rtw_adapter *Adapter,
-			      RF_RADIO_PATH_E eRFPath, u32 RegAddr,
-			      u32 BitMask,  u32	Data);
-
-//
-// Initialization related function
-//
-/* MAC/BB/RF HAL config */
-int	PHY_MACConfig8192C(struct rtw_adapter *Adapter);
-int	PHY_BBConfig8192C(struct rtw_adapter *Adapter);
-int	PHY_RFConfig8192C(struct rtw_adapter *Adapter);
-/* RF config */
-int	rtl8192c_PHY_ConfigRFWithParaFile(struct rtw_adapter *Adapter,
-					  u8* pFileName,
-					  RF_RADIO_PATH_E eRFPath);
-int	rtl8192c_PHY_ConfigRFWithHeaderFile(struct rtw_adapter *Adapter,
-					    RF_RADIO_PATH_E eRFPath);
-
-/* BB/RF readback check for making sure init OK */
-int	rtl8192c_PHY_CheckBBAndRFOK(struct rtw_adapter *Adapter,
-				    HW90_BLOCK_E CheckBlock,
-				    RF_RADIO_PATH_E eRFPath  );
-/* Read initi reg value for tx power setting. */
-void	rtl8192c_PHY_GetHWRegOriginalValue(struct rtw_adapter *Adapter);
+u32	PHY_QueryBBReg(struct rtw_adapter *Adapter, u32 RegAddr,
+		       u32 BitMask);
+void	PHY_SetBBReg(struct rtw_adapter *Adapter, u32 RegAddr,
+		     u32 BitMask, u32 Data);
+u32	PHY_QueryRFReg(struct rtw_adapter *Adapter,
+		       RF_RADIO_PATH_E	eRFPath, u32 RegAddr,
+		       u32 BitMask);
+void	PHY_SetRFReg(struct rtw_adapter *Adapter,
+		     RF_RADIO_PATH_E eRFPath, u32 RegAddr,
+		     u32 BitMask,  u32	Data);
 
 //
 // BB TX Power R/W
 //
-void	PHY_GetTxPowerLevel8192C(struct rtw_adapter *Adapter, u32 *powerlevel);
-void	PHY_SetTxPowerLevel8192C(struct rtw_adapter *Adapter, u8 channel);
-bool	PHY_UpdateTxPowerDbm8192C(struct rtw_adapter *Adapter, int powerInDbm);
+void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel);
 
 //
-void
-PHY_ScanOperationBackup8192C(struct rtw_adapter	*Adapter, u8 Operation);
-
+// Switch bandwidth for 8723A
 //
-// Switch bandwidth for 8192S
-//
-void	PHY_SetBWMode8192C(struct rtw_adapter *pAdapter,
+void	PHY_SetBWMode8723A(struct rtw_adapter *pAdapter,
 			   HT_CHANNEL_WIDTH ChnlWidth,
 			   unsigned char Offset);
 
 //
-// Set A2 entry to fw for 8192S
-//
-void FillA2Entry8192C(struct rtw_adapter *Adapter, u8 index, u8 *val);
-
-//
 // channel switch related funciton
 //
-void	PHY_SwChnl8192C(struct rtw_adapter *pAdapter, u8 channel);
+void	PHY_SwChnl8723A(struct rtw_adapter *pAdapter, u8 channel);
 				// Call after initialization
-void	PHY_SwChnlPhy8192C(struct rtw_adapter *pAdapter, u8 channel);
-
 void ChkFwCmdIoDone(struct rtw_adapter *Adapter);
-//
-// BB/MAC/RF other monitor API
-//
-void	PHY_SetMonitorMode8192C(struct rtw_adapter *pAdapter,
-				bool bEnableMonitorMode);
-
-bool	PHY_CheckIsLegalRfPath8192C(struct rtw_adapter *pAdapter, u32 eRFPath);
-
-
-void rtl8192c_PHY_SetRFPathSwitch(struct rtw_adapter *pAdapter, bool bMain);
 
 //
 // Modify the value of the hw register when beacon interval be changed.
@@ -313,11 +269,6 @@ SetAntennaConfig92C(struct rtw_adapter *Adapter, u8 DefaultAnt);
 
 /*--------------------------Exported Function prototype---------------------*/
 
-#define PHY_QueryBBReg(Adapter, RegAddr, BitMask) rtl8192c_PHY_QueryBBReg((Adapter), (RegAddr), (BitMask))
-#define PHY_SetBBReg(Adapter, RegAddr, BitMask, Data) rtl8192c_PHY_SetBBReg((Adapter), (RegAddr), (BitMask), (Data))
-#define PHY_QueryRFReg(Adapter, eRFPath, RegAddr, BitMask) rtl8192c_PHY_QueryRFReg((Adapter), (eRFPath), (RegAddr), (BitMask))
-#define PHY_SetRFReg(Adapter, eRFPath, RegAddr, BitMask, Data) rtl8192c_PHY_SetRFReg((Adapter), (eRFPath), (RegAddr), (BitMask), (Data))
-
 #define PHY_SetMacReg	PHY_SetBBReg
 
-#endif	// __INC_HAL8192CPHYCFG_H
+#endif	// __INC_HAL8723APHYCFG_H

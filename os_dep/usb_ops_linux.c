@@ -276,7 +276,6 @@ _func_enter_;
 		{
 			padapter->bSurpriseRemoved=true;
 			DBG_8723A("bSurpriseRemoved=true\n");
-			//rtl8192cu_trigger_gpio_0(padapter);
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bSurpriseRemoved=true\n"));
 
 			goto check_completion;

@@ -97,7 +97,7 @@ phy_CalculateBitShift(
 * Note:		This function is equal to "GetRegSetting" in PHY programming guide
 */
 u32
-rtl8192c_PHY_QueryBBReg(
+PHY_QueryBBReg(
 	struct rtw_adapter *	Adapter,
 	u32		RegAddr,
 	u32		BitMask
@@ -143,7 +143,7 @@ rtl8192c_PHY_QueryBBReg(
 */
 
 void
-rtl8192c_PHY_SetBBReg(
+PHY_SetBBReg(
 	struct rtw_adapter *	Adapter,
 	u32		RegAddr,
 	u32		BitMask,
@@ -434,7 +434,7 @@ phy_RFSerialWrite(
 * Note:		This function is equal to "GetRFRegSetting" in PHY programming guide
 */
 u32
-rtl8192c_PHY_QueryRFReg(
+PHY_QueryRFReg(
 	struct rtw_adapter *			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
 	u32				RegAddr,
@@ -476,7 +476,7 @@ rtl8192c_PHY_QueryRFReg(
 * Note:		This function is equal to "PutRFRegSetting" in PHY programming guide
 */
 void
-rtl8192c_PHY_SetRFReg(
+PHY_SetRFReg(
 	struct rtw_adapter *			Adapter,
 	RF_RADIO_PATH_E	eRFPath,
 	u32				RegAddr,
@@ -539,7 +539,7 @@ phy_ConfigMACWithParaFile(
 }
 
 /*-----------------------------------------------------------------------------
- * Function:    PHY_MACConfig8192C
+ * Function:    PHY_MACConfig8723A
  *
  * Overview:	Condig MAC by header file or parameter file.
  *
@@ -1115,38 +1115,6 @@ PHY_RFConfig8723A(
 	return rtStatus;
 }
 
-
-/*-----------------------------------------------------------------------------
- * Function:    PHY_ConfigRFWithParaFile()
- *
- * Overview:    This function read RF parameters from general file format, and do RF 3-wire
- *
- * Input:	struct rtw_adapter *			Adapter
- *			s8 *					pFileName
- *			RF_RADIO_PATH_E	eRFPath
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *
- * Note:		Delay may be required for RF configuration
- *---------------------------------------------------------------------------*/
-int
-rtl8192c_PHY_ConfigRFWithParaFile(
-	struct rtw_adapter *			Adapter,
-	u8*				pFileName,
-	RF_RADIO_PATH_E		eRFPath
-)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-
-	int	rtStatus = _SUCCESS;
-
-
-	return rtStatus;
-
-}
-
 //****************************************
 // The following is for High Power PA
 //****************************************
@@ -1276,32 +1244,6 @@ PHY_CheckBBAndRFOK(
 	return rtStatus;
 }
 
-
-void
-rtl8192c_PHY_GetHWRegOriginalValue(
-	struct rtw_adapter *		Adapter
-	)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-
-	// read rx initial gain
-	pHalData->DefaultInitialGain[0] = (u8)PHY_QueryBBReg(Adapter, rOFDM0_XAAGCCore1, bMaskByte0);
-	pHalData->DefaultInitialGain[1] = (u8)PHY_QueryBBReg(Adapter, rOFDM0_XBAGCCore1, bMaskByte0);
-	pHalData->DefaultInitialGain[2] = (u8)PHY_QueryBBReg(Adapter, rOFDM0_XCAGCCore1, bMaskByte0);
-	pHalData->DefaultInitialGain[3] = (u8)PHY_QueryBBReg(Adapter, rOFDM0_XDAGCCore1, bMaskByte0);
-	//RT_TRACE(COMP_INIT, DBG_LOUD,
-	//("Default initial gain (c50=0x%x, c58=0x%x, c60=0x%x, c68=0x%x) \n",
-	//pHalData->DefaultInitialGain[0], pHalData->DefaultInitialGain[1],
-	//pHalData->DefaultInitialGain[2], pHalData->DefaultInitialGain[3]));
-
-	// read framesync
-	pHalData->framesync = (u8)PHY_QueryBBReg(Adapter, rOFDM0_RxDetector3, bMaskByte0);
-	pHalData->framesyncC34 = PHY_QueryBBReg(Adapter, rOFDM0_RxDetector2, bMaskDWord);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Default framesync (0x%x) = 0x%x \n",
-	//	rOFDM0_RxDetector3, pHalData->framesync));
-}
-
-
 //
 //	Description:
 //		Map dBm into Tx power index according to
@@ -1399,57 +1341,6 @@ phy_TxPwrIdxToDbm(
 	return PwrOutDbm;
 }
 
-
-/*-----------------------------------------------------------------------------
- * Function:    GetTxPowerLevel8190()
- *
- * Overview:    This function is export to "common" moudule
- *
- * Input:       struct rtw_adapter *		Adapter
- *			psByte			Power Level
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- *---------------------------------------------------------------------------*/
-void
-PHY_GetTxPowerLevel8192C(
-	struct rtw_adapter *		Adapter,
- u32*		powerlevel
-	)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	u8			TxPwrLevel = 0;
-	int			TxPwrDbm;
-
-	//
-	// Because the Tx power indexes are different, we report the maximum of them to
-	// meet the CCX TPC request. By Bruce, 2008-01-31.
-	//
-
-	// CCK
-	TxPwrLevel = pHalData->CurrentCckTxPwrIdx;
-	TxPwrDbm = phy_TxPwrIdxToDbm(Adapter, WIRELESS_MODE_B, TxPwrLevel);
-
-	// Legacy OFDM
-	TxPwrLevel = pHalData->CurrentOfdm24GTxPwrIdx + pHalData->LegacyHTTxPowerDiff;
-
-	// Compare with Legacy OFDM Tx power.
-	if(phy_TxPwrIdxToDbm(Adapter, WIRELESS_MODE_G, TxPwrLevel) > TxPwrDbm)
-		TxPwrDbm = phy_TxPwrIdxToDbm(Adapter, WIRELESS_MODE_G, TxPwrLevel);
-
-	// HT OFDM
-	TxPwrLevel = pHalData->CurrentOfdm24GTxPwrIdx;
-
-	// Compare with HT OFDM Tx power.
-	if(phy_TxPwrIdxToDbm(Adapter, WIRELESS_MODE_N_24G, TxPwrLevel) > TxPwrDbm)
-		TxPwrDbm = phy_TxPwrIdxToDbm(Adapter, WIRELESS_MODE_N_24G, TxPwrLevel);
-
-	*powerlevel = TxPwrDbm;
-}
-
-
 static void getTxPowerIndex(
 	struct rtw_adapter *		Adapter,
 	u8			channel,
@@ -1476,7 +1367,6 @@ static void getTxPowerIndex(
 		ofdmPowerLevel[RF_PATH_A] = pHalData->TxPwrLevelHT40_2S[RF_PATH_A][index];
 		ofdmPowerLevel[RF_PATH_B] = pHalData->TxPwrLevelHT40_2S[RF_PATH_B][index];
 	}
-	//RTPRINT(FPHY, PHY_TXPWR, ("Channel-%d, set tx power index !!\n", channel));
 }
 
 static void ccxPowerIndexCheck(
@@ -1489,7 +1379,7 @@ static void ccxPowerIndexCheck(
 }
 
 /*-----------------------------------------------------------------------------
- * Function:    SetTxPowerLevel8190()
+ * Function:    SetTxPowerLevel8723A()
  *
  * Overview:    This function is export to "HalCommon" moudule
  *			We must consider RF path later!!!!!!!
@@ -1500,16 +1390,9 @@ static void ccxPowerIndexCheck(
  * Output:      NONE
  *
  * Return:      NONE
- *	2008/11/04	MHC		We remove EEPROM_93C56.
- *						We need to move CCX relative code to independet file.
- *	2009/01/21	MHC		Support new EEPROM format from SD3 requirement.
  *
  *---------------------------------------------------------------------------*/
-void
-PHY_SetTxPowerLevel8192C(
-	struct rtw_adapter *		Adapter,
-	u8			channel
-	)
+void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel)
 {
 	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8	cckPowerLevel[2], ofdmPowerLevel[2];	// [0]:RF-A, [1]:RF-B
@@ -1518,86 +1401,11 @@ PHY_SetTxPowerLevel8192C(
 		return;
 
 	getTxPowerIndex(Adapter, channel, &cckPowerLevel[0], &ofdmPowerLevel[0]);
-	//RTPRINT(FPHY, PHY_TXPWR, ("Channel-%d, cckPowerLevel (A / B) = 0x%x / 0x%x,   ofdmPowerLevel (A / B) = 0x%x / 0x%x\n",
-	//	channel, cckPowerLevel[0], cckPowerLevel[1], ofdmPowerLevel[0], ofdmPowerLevel[1]));
 
 	ccxPowerIndexCheck(Adapter, channel, &cckPowerLevel[0], &ofdmPowerLevel[0]);
 
-	rtl8192c_PHY_RF6052SetCckTxPower(Adapter, &cckPowerLevel[0]);
-	rtl8192c_PHY_RF6052SetOFDMTxPower(Adapter, &ofdmPowerLevel[0], channel);
-}
-
-
-//
-//	Description:
-//		Update transmit power level of all channel supported.
-//
-//	TODO:
-//		A mode.
-//	By Bruce, 2008-02-04.
-//
-bool
-PHY_UpdateTxPowerDbm8192C(
-	struct rtw_adapter *	Adapter,
-	int		powerInDbm
-	)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	u8				idx;
-	u8			rf_path;
-
-	// TODO: A mode Tx power.
-	u8	CckTxPwrIdx = phy_DbmToTxPwrIdx(Adapter, WIRELESS_MODE_B, powerInDbm);
-	u8	OfdmTxPwrIdx = phy_DbmToTxPwrIdx(Adapter, WIRELESS_MODE_N_24G, powerInDbm);
-
-	if(OfdmTxPwrIdx - pHalData->LegacyHTTxPowerDiff > 0)
-		OfdmTxPwrIdx -= pHalData->LegacyHTTxPowerDiff;
-	else
-		OfdmTxPwrIdx = 0;
-
-	//RT_TRACE(COMP_TXAGC, DBG_LOUD, ("PHY_UpdateTxPowerDbm8192S(): %ld dBm , CckTxPwrIdx = %d, OfdmTxPwrIdx = %d\n", powerInDbm, CckTxPwrIdx, OfdmTxPwrIdx));
-
-	for(idx = 0; idx < 14; idx++)
-	{
-		for (rf_path = 0; rf_path < 2; rf_path++)
-		{
-			pHalData->TxPwrLevelCck[rf_path][idx] = CckTxPwrIdx;
-			pHalData->TxPwrLevelHT40_1S[rf_path][idx] =
-			pHalData->TxPwrLevelHT40_2S[rf_path][idx] = OfdmTxPwrIdx;
-		}
-	}
-
-	//Adapter->HalFunc.SetTxPowerLevelHandler(Adapter, pHalData->CurrentChannel);//gtest:todo
-
-	return true;
-}
-
-
-/*
-	Description:
-		When beacon interval is changed, the values of the
-		hw registers should be modified.
-	By tynli, 2008.10.24.
-
-*/
-
-
-void
-rtl8192c_PHY_SetBeaconHwReg(
-	struct rtw_adapter *		Adapter,
-	u16			BeaconInterval
-	)
-{
-
-}
-
-
-void
-PHY_ScanOperationBackup8192C(
-	struct rtw_adapter *	Adapter,
-	u8		Operation
-	)
-{
+	rtl823a_phy_rf6052setccktxpower(Adapter, &cckPowerLevel[0]);
+	rtl8723a_PHY_RF6052SetOFDMTxPower(Adapter, &ofdmPowerLevel[0], channel);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1750,7 +1558,7 @@ _PHY_SetBWMode92C(
 			break;
 
 		case RF_6052:
-			rtl8192c_PHY_RF6052SetBandwidth(Adapter, pHalData->CurrentChannelBW);
+			rtl8723a_phy_rf6052set_bw(Adapter, pHalData->CurrentChannelBW);
 			break;
 
 		default:
@@ -1779,7 +1587,7 @@ _PHY_SetBWMode92C(
  * Note:		We do not take j mode into consideration now
  *---------------------------------------------------------------------------*/
 void
-PHY_SetBWMode8192C(
+PHY_SetBWMode8723A(
 	struct rtw_adapter *					Adapter,
 	HT_CHANNEL_WIDTH	Bandwidth,	// 20M or 40M
 	unsigned char	Offset		// Upper, Lower, or Don't care
@@ -1795,7 +1603,7 @@ PHY_SetBWMode8192C(
 	//if(pHalData->SwChnlInProgress)
 //	if(pMgntInfo->bScanInProgress)
 //	{
-//		RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8192C() %s Exit because bScanInProgress!\n",
+//		RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8723A() %s Exit because bScanInProgress!\n",
 //					Bandwidth == HT_CHANNEL_WIDTH_20?"20MHz":"40MHz"));
 //		return;
 //	}
@@ -1803,7 +1611,7 @@ PHY_SetBWMode8192C(
 //	if(pHalData->SetBWModeInProgress)
 //	{
 //		// Modified it for 20/40 mhz switch by guangan 070531
-//		RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8192C() %s cancel last timer because SetBWModeInProgress!\n",
+//		RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8723A() %s cancel last timer because SetBWModeInProgress!\n",
 //					Bandwidth == HT_CHANNEL_WIDTH_20?"20MHz":"40MHz"));
 //		PlatformCancelTimer(Adapter, &pHalData->SetBWModeTimer);
 //		//return;
@@ -1824,7 +1632,7 @@ PHY_SetBWMode8192C(
 	}
 	else
 	{
-		//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8192C() SetBWModeInProgress false driver sleep or unload\n"));
+		//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SetBWMode8723A() SetBWModeInProgress false driver sleep or unload\n"));
 		//pHalData->SetBWModeInProgress= false;
 		pHalData->CurrentChannelBW = tmpBW;
 	}
@@ -1832,7 +1640,7 @@ PHY_SetBWMode8192C(
 }
 
 
-static void _PHY_SwChnl8192C(struct rtw_adapter * Adapter, u8 channel)
+static void _PHY_SwChnl8723A(struct rtw_adapter * Adapter, u8 channel)
 {
 	u8 eRFPath;
 	u32 param1, param2;
@@ -1844,7 +1652,7 @@ static void _PHY_SwChnl8192C(struct rtw_adapter * Adapter, u8 channel)
 	}
 
 	//s1. pre common command - CmdID_SetTxPowerLevel
-	PHY_SetTxPowerLevel8192C(Adapter, channel);
+	PHY_SetTxPowerLevel8723A(Adapter, channel);
 
 	//s2. RF dependent command - CmdID_RF_WriteReg, param1=RF_CHNLBW, param2=channel
 	param1 = RF_CHNLBW;
@@ -1860,8 +1668,7 @@ static void _PHY_SwChnl8192C(struct rtw_adapter * Adapter, u8 channel)
 
 }
 
-void
-PHY_SwChnl8192C(	// Call after initialization
+void PHY_SwChnl8723A(	// Call after initialization
 	struct rtw_adapter *	Adapter,
 	u8		channel
 	)
@@ -1869,73 +1676,31 @@ PHY_SwChnl8192C(	// Call after initialization
 	//struct rtw_adapter * Adapter =  ADJUST_TO_ADAPTIVE_ADAPTER(pAdapter, true);
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8	tmpchannel = pHalData->CurrentChannel;
-	bool  bResult = true;
+	bool  result = true;
 
-	if(pHalData->rf_chip == RF_PSEUDO_11N)
-	{
-		//pHalData->SwChnlInProgress=false;
+	if(pHalData->rf_chip == RF_PSEUDO_11N) {
 		return;									//return immediately if it is peudo-phy
 	}
 
-	//if(pHalData->SwChnlInProgress)
-	//	return;
-
-	//if(pHalData->SetBWModeInProgress)
-	//	return;
-
-	//--------------------------------------------
-	switch(pHalData->CurrentWirelessMode)
-	{
-		case WIRELESS_MODE_A:
-		case WIRELESS_MODE_N_5G:
-			//RT_ASSERT((channel>14), ("WIRELESS_MODE_A but channel<=14"));
-			break;
-
-		case WIRELESS_MODE_B:
-			//RT_ASSERT((channel<=14), ("WIRELESS_MODE_B but channel>14"));
-			break;
-
-		case WIRELESS_MODE_G:
-		case WIRELESS_MODE_N_24G:
-			//RT_ASSERT((channel<=14), ("WIRELESS_MODE_G but channel>14"));
-			break;
-
-		default:
-			//RT_ASSERT(false, ("Invalid WirelessMode(%#x)!!\n", pHalData->CurrentWirelessMode));
-			break;
-	}
 	//--------------------------------------------
 
-	//pHalData->SwChnlInProgress = true;
-	if(channel == 0)
+	if (channel == 0)
 		channel = 1;
 
 	pHalData->CurrentChannel=channel;
 
-	//pHalData->SwChnlStage=0;
-	//pHalData->SwChnlStep=0;
 
-	if((!Adapter->bDriverStopped) && (!Adapter->bSurpriseRemoved))
-	{
-		_PHY_SwChnl8192C(Adapter, channel);
+	if ((!Adapter->bDriverStopped) && (!Adapter->bSurpriseRemoved)) {
+		_PHY_SwChnl8723A(Adapter, channel);
 
-		if(bResult)
-		{
-			//RT_TRACE(COMP_SCAN, DBG_LOUD, ("PHY_SwChnl8192C SwChnlInProgress true schdule workitem done\n"));
-		}
-		else
-		{
+		if (!result)
 			pHalData->CurrentChannel = tmpchannel;
-		}
-
 	} else {
 		pHalData->CurrentChannel = tmpchannel;
 	}
 }
 
-
-static	bool
-phy_SwChnlStepByStep(
+static	bool phy_SwChnlStepByStep(
 	struct rtw_adapter *	Adapter,
 	u8		channel,
 	u8		*stage,
@@ -1991,102 +1756,12 @@ phy_FinishSwChnlNow(	// We should not call this function directly
 {
 }
 
-
-
-//
-// Description:
-//	Switch channel synchronously. Called by SwChnlByDelayHandler.
-//
-// Implemented by Bruce, 2008-02-14.
-// The following procedure is operted according to SwChanlCallback8190Pci().
-// However, this procedure is performed synchronously  which should be running under
-// passive level.
-//
-void
-PHY_SwChnlPhy8192C(	// Only called during initialize
-	struct rtw_adapter *	Adapter,
-	u8		channel
-	)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-
-	//RT_TRACE(COMP_SCAN | COMP_RM, DBG_LOUD, ("==>PHY_SwChnlPhy8192S(), switch from channel %d to channel %d.\n", pHalData->CurrentChannel, channel));
-
-	// Cannot IO.
-	//if(RT_CANNOT_IO(Adapter))
-	//	return;
-
-	// Channel Switching is in progress.
-	//if(pHalData->SwChnlInProgress)
-	//	return;
-
-	//return immediately if it is peudo-phy
-	if(pHalData->rf_chip == RF_PSEUDO_11N)
-	{
-		//pHalData->SwChnlInProgress=false;
-		return;
-	}
-
-	//pHalData->SwChnlInProgress = true;
-	if( channel == 0)
-		channel = 1;
-
-	pHalData->CurrentChannel=channel;
-
-	//pHalData->SwChnlStage = 0;
-	//pHalData->SwChnlStep = 0;
-
-	phy_FinishSwChnlNow(Adapter,channel);
-
-	//pHalData->SwChnlInProgress = false;
-}
-
-
 //
 //	Description:
 //		Configure H/W functionality to enable/disable Monitor mode.
 //		Note, because we possibly need to configure BB and RF in this function,
 //		so caller should in PASSIVE_LEVEL. 080118, by rcnjko.
 //
-void
-PHY_SetMonitorMode8192C(
-	struct rtw_adapter *			pAdapter,
-	bool				bEnableMonitorMode
-	)
-{
-}
-
-
-/*-----------------------------------------------------------------------------
- * Function:	PHYCheckIsLegalRfPath8190Pci()
- *
- * Overview:	Check different RF type to execute legal judgement. If RF Path is illegal
- *			We will return false.
- *
- * Input:		NONE
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who		Remark
- *	11/15/2007	MHC		Create Version 0.
- *
- *---------------------------------------------------------------------------*/
-bool
-PHY_CheckIsLegalRfPath8192C(
-	struct rtw_adapter *	pAdapter,
-	u32	eRFPath)
-{
-//	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
-	bool				rtValue = true;
-
-	// NOt check RF Path now.!
-	return	rtValue;
-
-}	/* PHY_CheckIsLegalRfPath8192C */
-
 static void _PHY_SetRFPathSwitch(
 	struct rtw_adapter *	pAdapter,
 	bool		bMain,
@@ -2166,27 +1841,6 @@ _PHY_DumpRFReg(struct rtw_adapter *	pAdapter)
 		//RTPRINT(FINIT, INIT_RF, (" 0x%02x = 0x%08x\n",rfRegOffset,rfRegValue));
 	}
 	//RTPRINT(FINIT, INIT_RF, ("<===== PHY_DumpRFReg()\n"));
-}
-
-
-void rtl8192c_PHY_SetRFPathSwitch(
-	struct rtw_adapter *	pAdapter,
-	bool		bMain
-	)
-{
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
-
-#if DISABLE_BB_RF
-	return;
-#endif
-
-	if(IS_92C_SERIAL( pHalData->VersionID)){
-		_PHY_SetRFPathSwitch(pAdapter, bMain, true);
-	}
-	else{
-		// For 88C 1T1R
-		_PHY_SetRFPathSwitch(pAdapter, bMain, false);
-	}
 }
 
 //

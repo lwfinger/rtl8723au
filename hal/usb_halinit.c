@@ -83,7 +83,7 @@ _ConfigChipOutEP(struct rtw_adapter *pAdapter, u8 NumOutPipe)
 
 }
 
-static bool HalUsbSetQueuePipeMapping8192CUsb(
+static bool HalUsbSetQueuePipeMapping8723AUsb(
 	struct rtw_adapter *	pAdapter,
 	u8		NumInPipe,
 	u8		NumOutPipe
@@ -107,7 +107,7 @@ static bool HalUsbSetQueuePipeMapping8192CUsb(
 
 }
 
-static void rtl8192cu_interface_configure(struct rtw_adapter *padapter)
+static void rtl8723au_interface_configure(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(padapter);
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -123,7 +123,7 @@ static void rtl8192cu_interface_configure(struct rtw_adapter *padapter)
 
 	pHalData->interfaceIndex = pdvobjpriv->InterfaceNumber;
 
-	HalUsbSetQueuePipeMapping8192CUsb(padapter,
+	HalUsbSetQueuePipeMapping8723AUsb(padapter,
 				pdvobjpriv->RtNumInPipes, pdvobjpriv->RtNumOutPipes);
 
 }
@@ -556,13 +556,8 @@ _InitNetworkType(
 	value32 = rtw_read32(Adapter, REG_CR);
 
 	// TODO: use the other function to set network type
-#if RTL8191C_FPGA_NETWORKTYPE_ADHOC
-	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AD_HOC);
-#else
 	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AP);
-#endif
 	rtw_write32(Adapter, REG_CR, value32);
-//	RASSERT(pIoBase->rtw_read8(REG_CR + 2) == 0x2);
 }
 
 static void
@@ -599,9 +594,6 @@ _InitWMACSetting(
 	//pHalData->ReceiveConfig = RCR_AAP | RCR_APM | RCR_AM | RCR_AB |RCR_CBSSID_DATA| RCR_CBSSID_BCN| RCR_APP_ICV | RCR_AMF | RCR_HTC_LOC_CTRL | RCR_APP_MIC | RCR_APP_PHYSTS;
 	 // don't turn on AAP, it will allow all packets to driver
         pHalData->ReceiveConfig = RCR_APM | RCR_AM | RCR_AB |RCR_CBSSID_DATA| RCR_CBSSID_BCN| RCR_APP_ICV | RCR_AMF | RCR_HTC_LOC_CTRL | RCR_APP_MIC | RCR_APP_PHYSTS;
-#if (1 == RTL8192C_RX_PACKET_INCLUDE_CRC)
-	pHalData->ReceiveConfig |= ACRC32;
-#endif
 
 	// some REG_RCR will be modified later by phy_ConfigMACWithHeaderFile()
 	rtw_write32(Adapter, REG_RCR, pHalData->ReceiveConfig);
@@ -865,17 +857,6 @@ _InitRFType(
 
 }
 
-static void _InitAdhocWorkaroundParams(struct rtw_adapter *Adapter)
-{
-#ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
-	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	pHalData->RegBcnCtrlVal = rtw_read8(Adapter, REG_BCN_CTRL);
-	pHalData->RegTxPause = rtw_read8(Adapter, REG_TXPAUSE);
-	pHalData->RegFwHwTxQCtrl = rtw_read8(Adapter, REG_FWHW_TXQ_CTRL+2);
-	pHalData->RegReg542 = rtw_read8(Adapter, REG_TBTT_PROHIBIT+2);
-#endif
-}
-
 // Set CCK and OFDM Block "ON"
 static void _BBTurnOnBlock(
 	struct rtw_adapter *		Adapter
@@ -949,28 +930,18 @@ HalDetectSelectiveSuspendMode(
 	EFUSE_ShadowRead(Adapter, 1, EEPROM_USB_OPTIONAL1, (u32 *)&tmpvalue);
 
 	DBG_8723A("HalDetectSelectiveSuspendMode(): SS ");
-	if(tmpvalue & BIT1)
-	{
+	if(tmpvalue & BIT1) {
 		DBG_8723A("Enable\n");
-	}
-	else
-	{
+	} else {
 		DBG_8723A("Disable\n");
 		pdvobjpriv->RegUsbSS = false;
 	}
 
 	// 2010/09/01 MH According to Dongle Selective Suspend INF. We can switch SS mode.
 	if (pdvobjpriv->RegUsbSS && !SUPPORT_HW_RADIO_DETECT(pHalData))
-	{
-		//PMGNT_INFO				pMgntInfo = &(Adapter->MgntInfo);
-
-		//if (!pMgntInfo->bRegDongleSS)
-		//{
-		//	RT_TRACE(COMP_INIT, DBG_LOUD, ("Dongle disable SS\n"));
-			pdvobjpriv->RegUsbSS = false;
-		//}
-	}
+		pdvobjpriv->RegUsbSS = false;
 }	// HalDetectSelectiveSuspendMode
+
 /*-----------------------------------------------------------------------------
  * Function:	HwSuspendModeEnable92Cu()
  *
@@ -1112,14 +1083,14 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 		_ps_open_RF(Adapter);
 
 		if(pHalData->bIQKInitialized ){
-			rtl8192c_PHY_IQCalibrate(Adapter,true);
+			rtl8723a_phy_iq_calibrate(Adapter,true);
 		}
 		else{
-			rtl8192c_PHY_IQCalibrate(Adapter,false);
+			rtl8723a_phy_iq_calibrate(Adapter,false);
 			pHalData->bIQKInitialized = true;
 		}
-		rtl8192c_odm_CheckTXPowerTracking(Adapter);
-		rtl8192c_PHY_LCCalibrate(Adapter);
+		rtl8723a_odm_check_tx_power_tracking(Adapter);
+		rtl8723a_phy_lc_calibrate(Adapter);
 
 		goto exit;
 	}
@@ -1294,11 +1265,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	InitUsbAggregationSetting(Adapter);
 	_InitOperationMode(Adapter);//todo
 	rtl8723a_InitBeaconParameters(Adapter);
-	rtl8723a_InitBeaconMaxError(Adapter, true);
-
-#ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
-	_InitAdhocWorkaroundParams(Adapter);
-#endif
 
 #if ENABLE_USB_DROP_INCORRECT_OUT
 	_InitHardwareDropIncorrectBulkOut(Adapter);
@@ -1317,7 +1283,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_SECURITY);
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	// 2010/12/17 MH We need to set TX power according to EFUSE content at first.
-	PHY_SetTxPowerLevel8192C(Adapter, pHalData->CurrentChannel);
+	PHY_SetTxPowerLevel8723A(Adapter, pHalData->CurrentChannel);
 
 	rtl8723a_InitAntenna_Selection(Adapter);
 
@@ -1345,17 +1311,17 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 		if(pwrctrlpriv->rf_pwrstate == rf_on)
 		{
 			if(pHalData->bIQKInitialized ){
-				rtl8192c_PHY_IQCalibrate(Adapter,true);
+				rtl8723a_phy_iq_calibrate(Adapter,true);
 			} else {
-				rtl8192c_PHY_IQCalibrate(Adapter,false);
+				rtl8723a_phy_iq_calibrate(Adapter,false);
 				pHalData->bIQKInitialized = true;
 			}
 
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_PW_TRACK);
-			rtl8192c_odm_CheckTXPowerTracking(Adapter);
+			rtl8723a_odm_check_tx_power_tracking(Adapter);
 
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_LCK);
-			rtl8192c_PHY_LCCalibrate(Adapter);
+			rtl8723a_phy_lc_calibrate(Adapter);
 
 #ifdef CONFIG_8723AU_BT_COEXIST
 			rtl8723a_SingleDualAntennaDetection(Adapter);
@@ -1772,29 +1738,7 @@ _DisableRF_AFE(
 	//disable RF/ AFE AD/DA
 	value8 = APSDOFF;
 	rtw_write8(Adapter, REG_APSD_CTRL, value8);
-
-
-#if (RTL8192CU_ASIC_VERIFICATION)
-
-	do
-	{
-		if(rtw_read8(Adapter, REG_APSD_CTRL) & APSDOFF_STATUS){
-			//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable RF, AFE, AD, DA Done!\n"));
-			break;
-		}
-
-		if(pollingCount++ > POLLING_READY_TIMEOUT_COUNT){
-			//RT_TRACE(COMP_INIT, DBG_SERIOUS, ("Failed to polling APSDOFF_STATUS done!\n"));
-			return _FAIL;
-		}
-
-	}while(true);
-
-#endif
-
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Disable RF, AFE,AD, DA.\n"));
 	return rtStatus;
-
 }
 
 static void
@@ -1808,7 +1752,6 @@ _ResetBB(
 	value16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 	value16 &= ~(FEN_BBRSTB | FEN_BB_GLB_RSTn);
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, value16);
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Reset BB.\n"));
 }
 
 static void
@@ -2489,7 +2432,7 @@ static void ReadAdapterInfo8723AU(struct rtw_adapter *Adapter)
 
 
 #define GPIO_DEBUG_PORT_NUM 0
-static void rtl8192cu_trigger_gpio_0(struct rtw_adapter *padapter)
+static void rtl8723au_trigger_gpio_0(struct rtw_adapter *padapter)
 {
 
 	u32 gpioctrl;
@@ -2524,7 +2467,7 @@ _func_enter_;
 			break;
 
 		case HW_VAR_TRIGGER_GPIO_0:
-			rtl8192cu_trigger_gpio_0(Adapter);
+			rtl8723au_trigger_gpio_0(Adapter);
 			break;
 
 		default:
@@ -2820,7 +2763,7 @@ void UpdateHalRAMask8192CUsb(struct rtw_adapter *padapter, u32 mac_id,u8 rssi_le
 
 		DBG_8723A("update raid entry, mask=0x%x, arg=0x%x\n", mask, arg);
 
-		rtl8192c_set_raid_cmd(padapter, mask, arg);
+		rtl8723a_set_raid_cmd(padapter, mask, arg);
 
 	}
 	else
@@ -2871,11 +2814,11 @@ _func_enter_;
 	pHalFunc->inirp_init = &rtl8723au_inirp_init;
 	pHalFunc->inirp_deinit = &rtl8723au_inirp_deinit;
 
-	pHalFunc->init_xmit_priv = &rtl8192cu_init_xmit_priv;
-	pHalFunc->free_xmit_priv = &rtl8192cu_free_xmit_priv;
+	pHalFunc->init_xmit_priv = &rtl8723au_init_xmit_priv;
+	pHalFunc->free_xmit_priv = &rtl8723au_free_xmit_priv;
 
-	pHalFunc->init_recv_priv = &rtl8192cu_init_recv_priv;
-	pHalFunc->free_recv_priv = &rtl8192cu_free_recv_priv;
+	pHalFunc->init_recv_priv = &rtl8723au_init_recv_priv;
+	pHalFunc->free_recv_priv = &rtl8723au_free_recv_priv;
 #ifdef CONFIG_SW_LED
 	pHalFunc->InitSwLeds = &rtl8723au_InitSwLeds;
 	pHalFunc->DeInitSwLeds = &rtl8723au_DeInitSwLeds;
@@ -2885,11 +2828,11 @@ _func_enter_;
 #endif//CONFIG_SW_LED
 
 	pHalFunc->init_default_value = &rtl8723au_init_default_value;
-	pHalFunc->intf_chip_configure = &rtl8192cu_interface_configure;
+	pHalFunc->intf_chip_configure = &rtl8723au_interface_configure;
 	pHalFunc->read_adapter_info = &ReadAdapterInfo8723AU;
 
-	//pHalFunc->set_bwmode_handler = &PHY_SetBWMode8192C;
-	//pHalFunc->set_channel_handler = &PHY_SwChnl8192C;
+	//pHalFunc->set_bwmode_handler = &PHY_SetBWMode8723A;
+	//pHalFunc->set_channel_handler = &PHY_SwChnl8723A;
 
 	//pHalFunc->hal_dm_watchdog = &rtl8192c_HalDmWatchDog;
 
@@ -2900,8 +2843,8 @@ _func_enter_;
 
 	pHalFunc->UpdateRAMaskHandler = &UpdateHalRAMask8192CUsb;
 
-	pHalFunc->hal_xmit = &rtl8192cu_hal_xmit;
-	pHalFunc->mgnt_xmit = &rtl8192cu_mgnt_xmit;
+	pHalFunc->hal_xmit = &rtl8723au_hal_xmit;
+	pHalFunc->mgnt_xmit = &rtl8723au_mgnt_xmit;
 	pHalFunc->hal_xmitframe_enqueue = &rtl8723au_hal_xmitframe_enqueue;
 
 	pHalFunc->interface_ps_func = &rtl8192cu_ps_func;

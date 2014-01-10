@@ -78,8 +78,8 @@ static void process_link_qual(struct rtw_adapter *padapter,union recv_frame *prf
 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
 }
 
-//void rtl8192c_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe)
-void rtl8192c_process_phy_info(struct rtw_adapter *padapter, void *prframe)
+//void rtl8723a_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe)
+void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe)
 {
 	union recv_frame *precvframe = (union recv_frame *)prframe;
 	//

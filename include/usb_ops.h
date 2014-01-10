@@ -49,9 +49,9 @@ void rtl8723au_set_hw_type(struct rtw_adapter *padapter);
 void rtl8723au_set_intf_ops(struct _io_ops *pops);
 #define usb_set_intf_ops rtl8723au_set_intf_ops
 
-void rtl8192cu_recv_tasklet(void *priv);
+void rtl8723au_recv_tasklet(void *priv);
 
-void rtl8192cu_xmit_tasklet(void *priv);
+void rtl8723au_xmit_tasklet(void *priv);
 
 /*
 * Increase and check if the continual_urb_error of this @param dvobjprive is larger than MAX_CONTINUAL_URB_ERR

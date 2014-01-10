@@ -7818,7 +7818,7 @@ static void btdm_1AntUpdateHalRAMask(struct rtw_adapter *padapter, u32 mac_id, u
 
 		RTPRINT(FBT, BT_TRACE, ("[BTCoex], Update FW RAID entry, MASK=0x%08x, arg=0x%02x\n", mask, arg));
 
-		rtl8192c_set_raid_cmd(padapter, mask, arg);
+		rtl8723a_set_raid_cmd(padapter, mask, arg);
 	}
 	else
 	{

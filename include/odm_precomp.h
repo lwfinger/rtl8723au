@@ -44,7 +44,7 @@
 #include "odm_RegDefine11AC.h"
 #include "odm_RegDefine11N.h"
 
-#include "HalDMOutSrc8192C_CE.h" //for IQK,LCK,Power-tracking
+#include "HalDMOutSrc8723A.h" //for IQK,LCK,Power-tracking
 #include "rtl8723a_hal.h"
 
 #include "odm_interface.h"

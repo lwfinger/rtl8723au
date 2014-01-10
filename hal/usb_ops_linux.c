@@ -538,7 +538,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		precvframe->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
 		precvframe->u.hdr.len=0;
 
-//		rtl8192c_query_rx_desc_status(precvframe, prxstat);
 		update_recvframe_attrib(precvframe, prxstat);
 
 		pattrib = &precvframe->u.hdr.attrib;
@@ -653,7 +652,7 @@ _exit_recvbuf2recvframe:
 	return _SUCCESS;
 }
 
-void rtl8192cu_recv_tasklet(void *priv)
+void rtl8723au_recv_tasklet(void *priv)
 {
 	struct sk_buff		*pskb;
 	struct rtw_adapter		*padapter = (struct rtw_adapter*)priv;
@@ -807,7 +806,7 @@ _func_enter_;
 		if (NULL != (precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
 			precvbuf->reuse = true;
 	}
-	rtl8192cu_init_recvbuf(adapter, precvbuf);
+	rtl8723au_init_recvbuf(adapter, precvbuf);
 
 	//re-assign for linux based on skb
 	if((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
@@ -861,7 +860,7 @@ _func_exit_;
 	return ret;
 }
 
-void rtl8192cu_xmit_tasklet(void *priv)
+void rtl8723au_xmit_tasklet(void *priv)
 {
 	int ret = false;
 	struct rtw_adapter *padapter = (struct rtw_adapter*)priv;
@@ -878,7 +877,7 @@ void rtl8192cu_xmit_tasklet(void *priv)
 			break;
 		}
 
-		ret = rtl8192cu_xmitframe_complete(padapter, pxmitpriv, NULL);
+		ret = rtl8723au_xmitframe_complete(padapter, pxmitpriv, NULL);
 
 		if(ret==false)
 			break;

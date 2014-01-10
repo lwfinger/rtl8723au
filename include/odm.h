@@ -119,7 +119,7 @@
 /*  2011/09/20 MH Add for AP/ADSLpseudo DM structuer requirement. */
 /*  We need to remove to other position??? */
 /*  */
-struct rtl8192cd_priv {
+struct rtl8723a_priv {
 	u8		temp;
 };
 
@@ -874,11 +874,11 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/* 	Add for different team use temporarily */
 	/*  */
 	struct rtw_adapter	*Adapter;		/*  For CE/NIC team */
-	struct rtl8192cd_priv	*priv;			/*  For AP/ADSL team */
+	struct rtl8723a_priv	*priv;			/*  For AP/ADSL team */
 	/*  WHen you use Adapter or priv pointer, you must make sure the pointer is ready. */
 	bool			odm_ready;
 
-	struct rtl8192cd_priv fake_priv;
+	struct rtl8723a_priv fake_priv;
 
 	u64			DebugComponents;
 	u32			DebugLevel;

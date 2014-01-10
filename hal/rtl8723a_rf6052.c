@@ -73,31 +73,6 @@ typedef struct RF_Shadow_Compare_Map {
 static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
 /*------------------------Define local variable------------------------------*/
 
-
-/*-----------------------------------------------------------------------------
- * Function:	RF_ChangeTxPath
- *
- * Overview:	For RL6052, we must change some RF settign for 1T or 2T.
- *
- * Input:		u16 DataRate		// 0x80-8f, 0x90-9f
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- * When			Who		Remark
- * 09/25/2008	MHC		Create Version 0.
- *						Firmwaer support the utility later.
- *
- *---------------------------------------------------------------------------*/
-void rtl8192c_RF_ChangeTxPath(	struct rtw_adapter *	Adapter,
-										u16		DataRate)
-{
-// We do not support gain table change inACUT now !!!! Delete later !!!
-}	/* RF_ChangeTxPath */
-
-
 /*-----------------------------------------------------------------------------
  * Function:    PHY_RF6052SetBandwidth()
  *
@@ -112,8 +87,7 @@ void rtl8192c_RF_ChangeTxPath(	struct rtw_adapter *	Adapter,
  *
  * Note:		For RF type 0222D
  *---------------------------------------------------------------------------*/
-void
-rtl8192c_PHY_RF6052SetBandwidth(
+void rtl8723a_phy_rf6052set_bw(
 	struct rtw_adapter *				Adapter,
 	HT_CHANNEL_WIDTH		Bandwidth)	//20M or 40M
 {
@@ -157,7 +131,7 @@ rtl8192c_PHY_RF6052SetBandwidth(
  *---------------------------------------------------------------------------*/
 
 void
-rtl8192c_PHY_RF6052SetCckTxPower(
+rtl823a_phy_rf6052setccktxpower(
 	struct rtw_adapter *		Adapter,
 	u8*			pPowerlevel)
 {
@@ -518,7 +492,7 @@ static void writeOFDMPowerReg(
  *
  *---------------------------------------------------------------------------*/
 void
-rtl8192c_PHY_RF6052SetOFDMTxPower(
+rtl8723a_PHY_RF6052SetOFDMTxPower(
 	struct rtw_adapter *	Adapter,
 	u8*		pPowerLevel,
 	u8		Channel)

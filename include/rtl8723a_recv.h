@@ -65,13 +65,10 @@ typedef struct _INTERRUPT_MSG_FORMAT_EX{
 	unsigned int  MSG_EX;
 }INTERRUPT_MSG_FORMAT_EX,*PINTERRUPT_MSG_FORMAT_EX;
 
-void rtl8192cu_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf);
-int	rtl8192cu_init_recv_priv(struct rtw_adapter * padapter);
-void rtl8192cu_free_recv_priv(struct rtw_adapter * padapter);
-void rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy_stat *pphy_status);
-void rtl8192c_query_rx_desc_status(union recv_frame *precvframe, struct recv_stat *pdesc);
-void rtl8192c_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
-void rtl8192c_process_phy_info(struct rtw_adapter *padapter, void *prframe);
+void rtl8723au_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf);
+int	rtl8723au_init_recv_priv(struct rtw_adapter * padapter);
+void rtl8723au_free_recv_priv(struct rtw_adapter * padapter);
+void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe);
 void update_recvframe_attrib(union recv_frame *precvframe, struct recv_stat *prxstat);
 void update_recvframe_phyinfo(union recv_frame *precvframe, struct phy_stat *pphy_info);
 

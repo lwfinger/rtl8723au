@@ -35,7 +35,7 @@
 //#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
-void rtl8192cu_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
+void rtl8723au_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 {
 
 	precvbuf->transfer_len = 0;
@@ -52,14 +52,14 @@ void rtl8192cu_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precv
 
 }
 
-int	rtl8192cu_init_recv_priv(struct rtw_adapter *padapter)
+int	rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 {
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
 	tasklet_init(&precvpriv->recv_tasklet,
-	     (void(*)(unsigned long))rtl8192cu_recv_tasklet,
+	     (void(*)(unsigned long))rtl8723au_recv_tasklet,
 	     (unsigned long)padapter);
 
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
@@ -142,7 +142,7 @@ exit:
 
 }
 
-void rtl8192cu_free_recv_priv (struct rtw_adapter *padapter)
+void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 {
 	int	i;
 	struct recv_buf	*precvbuf;
@@ -284,7 +284,7 @@ void update_recvframe_phyinfo(
 		if (psta)
 		{
 			precvframe->u.hdr.psta = psta;
-			rtl8192c_process_phy_info(padapter, precvframe);
+			rtl8723a_process_phy_info(padapter, precvframe);
                 }
 	}
 	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
@@ -297,6 +297,6 @@ void update_recvframe_phyinfo(
 			}
 		}
 
-		rtl8192c_process_phy_info(padapter, precvframe);
+		rtl8723a_process_phy_info(padapter, precvframe);
 	}
 }
