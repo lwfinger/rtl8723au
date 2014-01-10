@@ -318,12 +318,6 @@ do {									\
 
 #endif
 
-#ifdef CONFIG_FIND_BEST_CHANNEL
-	int proc_get_best_channel(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data);
-#endif
-
 	int proc_get_rx_signal(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);

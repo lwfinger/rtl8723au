@@ -1016,64 +1016,6 @@ int proc_get_malloc_cnt(char *page, char **start,
 }
 #endif /* DBG_MEMORY_LEAK */
 
-#ifdef CONFIG_FIND_BEST_CHANNEL
-int proc_get_best_channel(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
-{
-	struct net_device *dev = data;
-	struct rtw_adapter *padapter = netdev_priv(dev);
-	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-	int len = 0;
-	u32 i, best_channel_24G = 1, best_channel_5G = 36, index_24G = 0, index_5G = 0;
-
-	for (i=0; pmlmeext->channel_set[i].ChannelNum !=0; i++) {
-		if ( pmlmeext->channel_set[i].ChannelNum == 1)
-			index_24G = i;
-		if ( pmlmeext->channel_set[i].ChannelNum == 36)
-			index_5G = i;
-	}
-
-	for (i=0; pmlmeext->channel_set[i].ChannelNum !=0; i++) {
-		/*  2.4G */
-		if ( pmlmeext->channel_set[i].ChannelNum == 6 ) {
-			if ( pmlmeext->channel_set[i].rx_count < pmlmeext->channel_set[index_24G].rx_count ) {
-				index_24G = i;
-				best_channel_24G = pmlmeext->channel_set[i].ChannelNum;
-			}
-		}
-
-		/*  5G */
-		if ( pmlmeext->channel_set[i].ChannelNum >= 36
-			&& pmlmeext->channel_set[i].ChannelNum < 140 ) {
-			 /*  Find primary channel */
-			if ( (( pmlmeext->channel_set[i].ChannelNum - 36) % 8 == 0)
-				&& (pmlmeext->channel_set[i].rx_count < pmlmeext->channel_set[index_5G].rx_count) ) {
-				index_5G = i;
-				best_channel_5G = pmlmeext->channel_set[i].ChannelNum;
-			}
-		}
-
-		if ( pmlmeext->channel_set[i].ChannelNum >= 149
-			&& pmlmeext->channel_set[i].ChannelNum < 165) {
-			 /*  find primary channel */
-			if ( (( pmlmeext->channel_set[i].ChannelNum - 149) % 8 == 0)
-				&& (pmlmeext->channel_set[i].rx_count < pmlmeext->channel_set[index_5G].rx_count) ) {
-				index_5G = i;
-				best_channel_5G = pmlmeext->channel_set[i].ChannelNum;
-			}
-		}
-		len += snprintf(page + len, count - len, "The rx cnt of channel %3d = %d\n",
-					pmlmeext->channel_set[i].ChannelNum, pmlmeext->channel_set[i].rx_count);
-	}
-
-	len += snprintf(page + len, count - len, "best_channel_5G = %d\n", best_channel_5G);
-	len += snprintf(page + len, count - len, "best_channel_24G = %d\n", best_channel_24G);
-
-	*eof = 1;
-	return len;
-}
-#endif /* CONFIG_FIND_BEST_CHANNEL */
 #ifdef CONFIG_8723_BT_COEXIST
 #define _bt_dbg_off_		0
 #define _bt_dbg_on_		1
