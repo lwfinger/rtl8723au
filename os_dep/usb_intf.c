@@ -674,15 +674,10 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	int ret = 0;
 
-	if(pwrpriv->bInternalAutoSuspend ){
+	if (pwrpriv->bInternalAutoSuspend)
 		ret = rtw_resume_process(padapter);
-	} else {
-#ifdef CONFIG_RESUME_IN_WORKQUEUE
-		rtw_resume_in_workqueue(pwrpriv);
-#else
+	else
 		ret = rtw_resume_process(padapter);
-#endif /* CONFIG_RESUME_IN_WORKQUEUE */
-	}
 
 	return ret;
 
@@ -784,10 +779,6 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 
 	ret = 0;
 exit:
-	#ifdef CONFIG_RESUME_IN_WORKQUEUE
-	rtw_unlock_suspend();
-	#endif //CONFIG_RESUME_IN_WORKQUEUE
-
 	if (pwrpriv)
 		pwrpriv->bInSuspend = false;
 	DBG_8723A("<===  %s return %d.............. in %dms\n", __FUNCTION__,
