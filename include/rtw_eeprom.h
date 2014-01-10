@@ -111,8 +111,7 @@ typedef enum _RT_CUSTOMER_ID
 	RT_CID_819x_ALPHA_WD=41,
 }RT_CUSTOMER_ID, *PRT_CUSTOMER_ID;
 
-struct eeprom_priv
-{
+struct eeprom_priv {
 	u8		bautoload_fail_flag;
 	u8		bloadfile_fail_flag;
 	u8		bloadmac_fail_flag;
@@ -129,10 +128,6 @@ struct eeprom_priv
 	u8		EepromOrEfuse;
 
 	u8		efuse_eeprom_data[HWSET_MAX_SIZE_512]; //92C:256bytes, 88E:512bytes, we use union set (512bytes)
-
-#ifdef CONFIG_RF_GAIN_OFFSET
-	u8		EEPROMRFGainOffset;
-#endif //CONFIG_RF_GAIN_OFFSET
 };
 
 void eeprom_write16(struct rtw_adapter *padapter, u16 reg, u16 data);
