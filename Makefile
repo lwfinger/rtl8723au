@@ -34,12 +34,9 @@ OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_HWConfig.o\
 		hal/odm.o
 
-RTL871X = rtl8723a
+HAL_COMM_FILES := hal/rtl8723a_xmit.o \
+		  hal/rtl8723a_sreset.o
 
-HAL_COMM_FILES := hal/$(RTL871X)_xmit.o \
-								hal/$(RTL871X)_sreset.o
-
-MODULE_NAME = 8723au
 OUTSRC_FILES += hal/Hal8723UHWImg_CE.o
 
 OUTSRC_FILES += hal/HalHWImg8723A_BB.o\
@@ -60,12 +57,11 @@ ifeq ($(CONFIG_8723AU_BT_COEXIST), y)
 CHIP_FILES += hal/rtl8723a_bt-coexist.o
 endif
 
-HCI_NAME = usb
 
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/os_intfs.o \
-			os_dep/$(HCI_NAME)_intf.o \
-			os_dep/$(HCI_NAME)_ops_linux.o \
+			os_dep/usb_intf.o \
+			os_dep/usb_ops_linux.o \
 			os_dep/ioctl_linux.o \
 			os_dep/xmit_linux.o \
 			os_dep/mlme_linux.o \
@@ -74,18 +70,18 @@ _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 
 _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_com.o \
-			hal/$(RTL871X)_hal_init.o \
-			hal/$(RTL871X)_phycfg.o \
-			hal/$(RTL871X)_rf6052.o \
-			hal/$(RTL871X)_dm.o \
-			hal/$(RTL871X)_rxdesc.o \
-			hal/$(RTL871X)_cmd.o \
-			hal/$(HCI_NAME)_halinit.o \
-			hal/rtl$(MODULE_NAME)_led.o \
-			hal/rtl$(MODULE_NAME)_xmit.o \
-			hal/rtl$(MODULE_NAME)_recv.o
+			hal/rtl8723a_hal_init.o \
+			hal/rtl8723a_phycfg.o \
+			hal/rtl8723a_rf6052.o \
+			hal/rtl8723a_dm.o \
+			hal/rtl8723a_rxdesc.o \
+			hal/rtl8723a_cmd.o \
+			hal/usb_halinit.o \
+			hal/rtl8723au_led.o \
+			hal/rtl8723au_xmit.o \
+			hal/rtl8723au_recv.o
 
-_HAL_INTFS_FILES += hal/$(HCI_NAME)_ops_linux.o
+_HAL_INTFS_FILES += hal/usb_ops_linux.o
 
 _HAL_INTFS_FILES += $(CHIP_FILES)
 
@@ -104,10 +100,6 @@ KVER  := $(shell uname -r)
 KSRC := /lib/modules/$(KVER)/build
 MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
 INSTALL_PREFIX :=
-
-ifneq ($(USER_MODULE_NAME),)
-MODULE_NAME := $(USER_MODULE_NAME)
-endif
 
 ifneq ($(KERNELRELEASE),)
 
@@ -130,16 +122,16 @@ rtk_core :=	core/rtw_cmd.o \
 		core/rtw_led.o \
 		core/rtw_sreset.o
 
-$(MODULE_NAME)-y += $(rtk_core)
+8723au-y += $(rtk_core)
 
-$(MODULE_NAME)-y += core/rtw_efuse.o
+8723au-y += core/rtw_efuse.o
 
-$(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
+8723au-y += $(_HAL_INTFS_FILES)
 
-$(MODULE_NAME)-y += $(_OS_INTFS_FILES)
+8723au-y += $(_OS_INTFS_FILES)
 
 CONFIG_RTL8723AS-VAU := m
-obj-$(CONFIG_RTL8723AS-VAU) := $(MODULE_NAME).o
+obj-$(CONFIG_RTL8723AS-VAU) := 8723au.o
 
 else
 
@@ -151,14 +143,14 @@ modules:
 	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules
 
 strip:
-	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded
+	$(CROSS_COMPILE)strip 8723au.ko --strip-unneeded
 
 install:
-	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
+	install -p -m 644 8723au.ko  $(MODDESTDIR)
 	/sbin/depmod -a ${KVER}
 
 uninstall:
-	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
+	rm -f $(MODDESTDIR)/8723au.ko
 	/sbin/depmod -a ${KVER}
 
 config_r:
