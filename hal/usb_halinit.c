@@ -2847,22 +2847,7 @@ static void rtl8723au_init_default_value(struct rtw_adapter *padapter)
 
 static u8 rtl8192cu_ps_func(struct rtw_adapter *Adapter,HAL_INTF_PS_FUNC efunc_id, u8 *val)
 {
-	u8 bResult = true;
-	switch(efunc_id){
-
-		#if defined(CONFIG_AUTOSUSPEND)
-		case HAL_USB_SELECT_SUSPEND:
-			{
-				u8 bfwpoll = *(( u8*)val);
-				rtl8192c_set_FwSelectSuspend_cmd(Adapter,bfwpoll ,500);//note fw to support hw power down ping detect
-			}
-			break;
-		#endif //CONFIG_AUTOSUSPEND
-
-		default:
-			break;
-	}
-	return bResult;
+	return true;
 }
 
 void rtl8723au_set_hal_ops(struct rtw_adapter * padapter)

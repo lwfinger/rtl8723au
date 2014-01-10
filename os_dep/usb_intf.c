@@ -85,9 +85,6 @@ static struct usb_driver rtl8723a_usb_drv = {
 	.suspend = rtw_suspend,
 	.resume = rtw_resume,
 	.reset_resume  = rtw_resume,
-#ifdef CONFIG_AUTOSUSPEND
-	.supports_autosuspend = 1,
-#endif
 };
 
 static struct usb_driver *usb_drv = &rtl8723a_usb_drv;
@@ -585,19 +582,6 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 			padapter->bup, padapter->bDriverStopped,padapter->bSurpriseRemoved);
 		goto exit;
 	}
-
-	if(pwrpriv->bInternalAutoSuspend )
-	{
-	#ifdef CONFIG_AUTOSUSPEND
-		// The FW command register update must after MAC and FW init ready.
-		if((padapter->bFWReady) && ( padapter->pwrctrlpriv.bHWPwrPindetect ) && (padapter->registrypriv.usbss_enable ))
-		{
-			u8 bOpen = true;
-			rtw_interface_ps_func(padapter,HAL_USB_SELECT_SUSPEND,&bOpen);
-			//rtl8192c_set_FwSelectSuspend_cmd(padapter,true ,500);//note fw to support hw power down ping detect
-		}
-	#endif
-	}
 	pwrpriv->bInSuspend = true;
 	rtw_cancel_all_timer(padapter);
 	LeaveAllPowerSaveMode(padapter);
@@ -639,17 +623,10 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	rtw_indicate_disconnect(padapter);
 	//s2-3.
 	rtw_free_assoc_resources(padapter, 1);
-#ifdef CONFIG_AUTOSUSPEND
-	if(!pwrpriv->bInternalAutoSuspend )
-#endif
 	//s2-4.
 	rtw_free_network_queue(padapter, true);
 
 	rtw_dev_unload(padapter);
-#ifdef CONFIG_AUTOSUSPEND
-	pwrpriv->rf_pwrstate = rf_off;
-	pwrpriv->bips_processing = false;
-#endif
 	up(&pwrpriv->lock);
 
 	if(check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
@@ -704,20 +681,6 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 	}
 
 	down(&pwrpriv->lock);
-#ifdef CONFIG_8723AU_BT_COEXIST
-#ifdef CONFIG_AUTOSUSPEND
-	DBG_8723A("%s...pm_usage_cnt(%d)  pwrpriv->bAutoResume=%x.  ....\n",__func__,atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt)),pwrpriv->bAutoResume);
-	pm_cnt=atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt));
-
-	DBG_8723A("pwrpriv->bAutoResume (%x)\n",pwrpriv->bAutoResume );
-	if( true == pwrpriv->bAutoResume ){
-		pwrpriv->bInternalAutoSuspend = false;
-		pwrpriv->bAutoResume=false;
-		DBG_8723A("pwrpriv->bAutoResume (%x)  pwrpriv->bInternalAutoSuspend(%x)\n",pwrpriv->bAutoResume,pwrpriv->bInternalAutoSuspend );
-
-	}
-#endif //#ifdef CONFIG_AUTOSUSPEND
-#endif //#ifdef CONFIG_8723AU_BT_COEXIST
 	rtw_reset_drv_sw(padapter);
 	pwrpriv->bkeepfwalive = false;
 
@@ -728,46 +691,6 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 	netif_device_attach(pnetdev);
 	netif_carrier_on(pnetdev);
 
-#ifdef CONFIG_AUTOSUSPEND
-	if(pwrpriv->bInternalAutoSuspend )
-	{
-		#ifdef CONFIG_AUTOSUSPEND
-		// The FW command register update must after MAC and FW init ready.
-		if((padapter->bFWReady) && ( padapter->pwrctrlpriv.bHWPwrPindetect ) && (padapter->registrypriv.usbss_enable ))
-		{
-			//rtl8192c_set_FwSelectSuspend_cmd(padapter,false ,500);//note fw to support hw power down ping detect
-			u8 bOpen = false;
-			rtw_interface_ps_func(padapter,HAL_USB_SELECT_SUSPEND,&bOpen);
-		}
-		#endif
-#ifdef CONFIG_8723AU_BT_COEXIST
-		DBG_8723A("pwrpriv->bAutoResume (%x)\n",pwrpriv->bAutoResume );
-		if( true == pwrpriv->bAutoResume ){
-		pwrpriv->bInternalAutoSuspend = false;
-			pwrpriv->bAutoResume=false;
-			DBG_8723A("pwrpriv->bAutoResume (%x)  pwrpriv->bInternalAutoSuspend(%x)\n",pwrpriv->bAutoResume,pwrpriv->bInternalAutoSuspend );
-		}
-
-#else	//#ifdef CONFIG_8723AU_BT_COEXIST
-		pwrpriv->bInternalAutoSuspend = false;
-#endif	//#ifdef CONFIG_8723AU_BT_COEXIST
-		pwrpriv->brfoffbyhw = false;
-		DBG_8723A("enc_algorithm(%x),wepkeymask(%x)\n",
-			padapter->securitypriv.dot11PrivacyAlgrthm,pwrpriv->wepkeymask);
-		if ((_WEP40_ == padapter->securitypriv.dot11PrivacyAlgrthm) ||
-		    (_WEP104_ == padapter->securitypriv.dot11PrivacyAlgrthm)) {
-			int keyid;
-			for (keyid = 0; keyid < 4; keyid++){
-				if(pwrpriv->wepkeymask & BIT(keyid)) {
-					if(keyid == padapter->securitypriv.dot11PrivacyKeyIndex)
-						rtw_set_key(padapter,&padapter->securitypriv, keyid, 1);
-					else
-						rtw_set_key(padapter,&padapter->securitypriv, keyid, 0);
-				}
-			}
-		}
-	}
-#endif
 	up(&pwrpriv->lock);
 
 	if( padapter->pid[1]!=0) {
@@ -787,82 +710,6 @@ exit:
 	_func_exit_;
 	return ret;
 }
-
-#ifdef CONFIG_AUTOSUSPEND
-void autosuspend_enter(struct rtw_adapter* padapter)
-{
-	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-
-	DBG_8723A("==>autosuspend_enter...........\n");
-
-	pwrpriv->bInternalAutoSuspend = true;
-	pwrpriv->bips_processing = true;
-
-	if(rf_off == pwrpriv->change_rfpwrstate ) {
-#ifndef	CONFIG_8723AU_BT_COEXIST
-		usb_enable_autosuspend(dvobj->pusbdev);
-
-			usb_autopm_put_interface(dvobj->pusbintf);
-#else	//#ifndef	CONFIG_8723AU_BT_COEXIST
-		if(1==pwrpriv->autopm_cnt){
-		usb_enable_autosuspend(dvobj->pusbdev);
-
-			usb_autopm_put_interface(dvobj->pusbintf);
-			pwrpriv->autopm_cnt --;
-		}
-		else
-		DBG_8723A("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_put_interface\n", pwrpriv->autopm_cnt);
-
-#endif	//#ifndef	CONFIG_8723AU_BT_COEXIST
-	}
-	DBG_8723A("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-}
-int autoresume_enter(struct rtw_adapter* padapter)
-{
-	int result = _SUCCESS;
-	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct security_priv* psecuritypriv=&(padapter->securitypriv);
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-
-	DBG_8723A("====> autoresume_enter \n");
-
-	if(rf_off == pwrpriv->rf_pwrstate )
-	{
-		pwrpriv->ps_flag = false;
-#ifndef	CONFIG_8723AU_BT_COEXIST
-			if (usb_autopm_get_interface(dvobj->pusbintf) < 0)
-			{
-				DBG_8723A( "can't get autopm: %d\n", result);
-				result = _FAIL;
-				goto error_exit;
-			}
-
-		DBG_8723A("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else	//#ifndef	CONFIG_8723AU_BT_COEXIST
-		pwrpriv->bAutoResume=true;
-		if(0==pwrpriv->autopm_cnt){
-			if (usb_autopm_get_interface(dvobj->pusbintf) < 0)
-			{
-				DBG_8723A( "can't get autopm: %d\n", result);
-				result = _FAIL;
-				goto error_exit;
-			}
-			DBG_8723A("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-			pwrpriv->autopm_cnt++;
-		}
-		else
-			DBG_8723A("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_get_interface\n",pwrpriv->autopm_cnt);
-#endif //#ifndef	CONFIG_8723AU_BT_COEXIST
-	}
-	DBG_8723A("<==== autoresume_enter \n");
-error_exit:
-
-	return result;
-}
-#endif
 
 /*
  * drv_init() - a device potentially for us
@@ -938,18 +785,6 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	}
 #endif
 
-#ifdef CONFIG_AUTOSUSPEND
-	if( padapter->registrypriv.power_mgnt != PS_MODE_ACTIVE )
-	{
-		if(padapter->registrypriv.usbss_enable ){	/* autosuspend (2s delay) */
-			dvobj->pusbdev->dev.power.autosuspend_delay = 0 * HZ;//15 * HZ; idle-delay time
-
-			usb_enable_autosuspend(dvobj->pusbdev);
-
-			DBG_8723A("%s...pm_usage_cnt(%d).....\n",__FUNCTION__,atomic_read(&(dvobj->pusbintf ->pm_usage_cnt)));
-		}
-	}
-#endif
 	//2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence
 			if (usb_autopm_get_interface(pusb_intf) < 0)
 					DBG_8723A( "can't get autopm: \n");

@@ -2105,15 +2105,12 @@ _func_enter_;
 	if (is_wep_enc(psetkeyparm->algorithm))
 		pmlmepriv->key_mask |= BIT(psetkeyparm->keyid);
 
-#ifdef CONFIG_AUTOSUSPEND
-	if( true  == adapter->pwrctrlpriv.bInternalAutoSuspend)
-	{
-		adapter->pwrctrlpriv.wepkeymask = pmlmepriv->key_mask;
-		DBG_8723A("....AutoSuspend pwrctrlpriv.wepkeymask(%x)\n",adapter->pwrctrlpriv.wepkeymask);
-	}
-#endif
-	DBG_8723A("==> rtw_set_key algorithm(%x),keyid(%x),key_mask(%x)\n",psetkeyparm->algorithm,psetkeyparm->keyid,pmlmepriv->key_mask);
-	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n rtw_set_key: psetkeyparm->algorithm=%d psetkeyparm->keyid=(u8)keyid=%d \n",psetkeyparm->algorithm, keyid));
+	DBG_8723A("==> rtw_set_key algorithm(%x),keyid(%x),key_mask(%x)\n",
+		  psetkeyparm->algorithm, psetkeyparm->keyid,
+		  pmlmepriv->key_mask);
+	RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_,
+		 ("\n rtw_set_key: psetkeyparm->algorithm=%d psetkeyparm->keyid=(u8)keyid=%d\n",
+		 psetkeyparm->algorithm, keyid));
 
 	switch(psetkeyparm->algorithm){
 

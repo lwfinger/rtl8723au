@@ -159,19 +159,6 @@ u8 rtl8192c_h2c_msg_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	return H2C_SUCCESS;
 }
 
-#if defined(CONFIG_AUTOSUSPEND)
-u8 rtl8192c_set_FwSelectSuspend_cmd(struct rtw_adapter *padapter ,u8 bfwpoll, u16 period)
-{
-	u8	res=_SUCCESS;
-	struct H2C_SS_RFOFF_PARAM param;
-	DBG_8723A("==>%s bfwpoll(%x)\n",__FUNCTION__,bfwpoll);
-	param.gpio_period = period;//Polling GPIO_11 period time
-	param.ROFOn = (true == bfwpoll)?1:0;
-	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));
-	return res;
-}
-#endif //CONFIG_AUTOSUSPEND
-
 u8 rtl8192c_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {
 	u8	res=_SUCCESS;

@@ -259,9 +259,6 @@ int ips_leave(struct rtw_adapter * padapter);
 
 void rtw_ps_processor(struct rtw_adapter*padapter);
 
-#ifdef CONFIG_AUTOSUSPEND
-int autoresume_enter(struct rtw_adapter* padapter);
-#endif
 rt_rf_power_state RfOnOffDetect(struct rtw_adapter * pAdapter );
 
 #ifdef CONFIG_LPS
