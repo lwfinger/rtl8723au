@@ -2002,13 +2002,6 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 
 	pHalFunc->c2h_handler = c2h_handler_8723a;
 	pHalFunc->c2h_id_filter_ccx = c2h_id_filter_ccx_8723a;
-
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
-	pHalFunc->hal_init_checkbthang_workqueue = &rtl8723a_init_checkbthang_workqueue;
-	pHalFunc->hal_free_checkbthang_workqueue = &rtl8723a_free_checkbthang_workqueue;
-	pHalFunc->hal_cancel_checkbthang_workqueue = &rtl8723a_cancel_checkbthang_workqueue;
-	pHalFunc->hal_checke_bt_hang = &rtl8723a_hal_check_bt_hang;
-#endif
 }
 
 void rtl8723a_InitAntenna_Selection(struct rtw_adapter * padapter)

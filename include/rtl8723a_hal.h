@@ -572,9 +572,6 @@ void Hal_EfuseParseRateIndicationOption(struct rtw_adapter *padapter, u8 *hwinfo
 void Hal_EfuseParseXtal_8723A(struct rtw_adapter *pAdapter, u8 *hwinfo, u8 AutoLoadFail);
 void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, u8 AutoLoadFail);
 
-//RT_CHANNEL_DOMAIN rtl8723a_HalMapChannelPlan(struct rtw_adapter *padapter, u8 HalChannelPlan);
-//VERSION_8192C rtl8723a_ReadChipVersion(struct rtw_adapter *padapter);
-//void rtl8723a_ReadBluetoothCoexistInfo(struct rtw_adapter *padapter, u8 *PROMContent, bool AutoloadFail);
 void Hal_InitChannelPlan(struct rtw_adapter *padapter);
 
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
@@ -595,11 +592,4 @@ void rtl8723a_stop_thread(struct rtw_adapter *padapter);
 
 s32 c2h_id_filter_ccx_8723a(u8 id);
 
-
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
-void rtl8723a_init_checkbthang_workqueue(struct rtw_adapter * padapter);
-void rtl8723a_free_checkbthang_workqueue(struct rtw_adapter * padapter);
-void rtl8723a_cancel_checkbthang_workqueue(struct rtw_adapter * padapter);
-void rtl8723a_hal_check_bt_hang(struct rtw_adapter * padapter);
-#endif
 #endif

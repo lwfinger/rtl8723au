@@ -300,11 +300,6 @@ struct rtw_adapter {
 	struct	pwrctrl_priv	pwrctrlpriv;
 	struct	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
-	//Check BT status for BT Hung.
-	struct workqueue_struct *priv_checkbt_wq;
-	struct delayed_work checkbt_work;
-#endif
 
 #ifdef CONFIG_8723AU_AP_MODE
 	struct	hostapd_priv	*phostapdpriv;

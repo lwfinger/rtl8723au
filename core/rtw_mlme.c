@@ -48,14 +48,7 @@ static void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 
 	setup_timer(&pmlmepriv->set_scan_deny_timer,
 		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
-
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
-	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
-		padapter->HalFunc.hal_init_checkbthang_workqueue(padapter);
-#endif
 }
-
-
 
 int	_rtw_init_mlme_priv (struct rtw_adapter* padapter)
 {
@@ -66,9 +59,6 @@ int	_rtw_init_mlme_priv (struct rtw_adapter* padapter)
 	int	res = _SUCCESS;
 
 _func_enter_;
-
-	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc(). */
-	/* memset((u8 *)pmlmepriv, 0, sizeof(struct mlme_priv)); */
 
 	pmlmepriv->nic_hdl = (u8 *)padapter;
 
@@ -1838,10 +1828,6 @@ void rtw_dynamic_check_timer_handler(unsigned long data)
 #endif /* CONFIG_8723AU_AP_MODE */
 	struct registry_priv *pregistrypriv = &adapter->registrypriv;
 
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
-	if(adapter->HalFunc.hal_checke_bt_hang)
-		adapter->HalFunc.hal_checke_bt_hang(adapter);
-#endif
 	if(adapter->hw_init_completed == false)
 		goto out;
 
