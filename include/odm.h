@@ -37,24 +37,6 @@
 /* define		DM_ODM_SUPPORT_CE			0 */
 /* define		DM_ODM_SUPPORT_MP			1 */
 
-/*  */
-/*  2011/09/28 MH Define ODM SW team support flag. */
-/*  */
-
-
-
-/*  */
-/*  Antenna Switch Relative Definition. */
-/*  */
-
-/*  */
-/*  20100503 Joseph: */
-/*  Add new function SwAntDivCheck8192C(). */
-/*  This is the main function of Antenna diversity function before link. */
-/*  Mainly, it just retains last scan result and scan again. */
-/*  After that, it compares the scan result to see which one gets better RSSI. */
-/*  It selects antenna with better receiving power and returns better scan result. */
-/*  */
 #define	TP_MODE		0
 #define	RSSI_MODE		1
 #define	TRAFFIC_LOW	0
@@ -585,12 +567,6 @@ typedef enum tag_ODM_RF_Type_Definition
 /*  ODM Dynamic common info value definition */
 /*  */
 
-/* typedef enum _MACPHY_MODE_8192D{ */
-/* 	SINGLEMAC_SINGLEPHY, */
-/* 	DUALMAC_DUALPHY, */
-/* 	DUALMAC_SINGLEPHY, */
-/* MACPHY_MODE_8192D,*PMACPHY_MODE_8192D; */
-/*  Above is the original define in MP driver. Please use the same define. THX. */
 typedef enum tag_ODM_MAC_PHY_Mode_Definition
 {
 	ODM_SMSP	= 0,

@@ -2936,7 +2936,7 @@ static void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 	ptxdesc->txdw7 |= cpu_to_le32(checksum & 0x0000ffff);
 }
 
-static void fill_txdesc_sectype(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
+static void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct txdesc_8723a *ptxdesc)
 {
 	if ((pattrib->encrypt > 0) && !pattrib->bswenc)
 	{
@@ -2961,7 +2961,7 @@ static void fill_txdesc_sectype(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 	}
 }
 
-static void fill_txdesc_vcs(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
+static void fill_txdesc_vcs(struct pkt_attrib *pattrib, struct txdesc_8723a *ptxdesc)
 {
 	//DBG_8723A("cvs_mode=%d\n", pattrib->vcs_mode);
 
@@ -3011,7 +3011,7 @@ static void fill_txdesc_vcs(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 	}
 }
 
-static void fill_txdesc_phy(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
+static void fill_txdesc_phy(struct pkt_attrib *pattrib, struct txdesc_8723a *ptxdesc)
 {
 	if (pattrib->ht_en)
 	{
@@ -3039,9 +3039,7 @@ static void fill_txdesc_phy(struct pkt_attrib *pattrib, PTXDESC ptxdesc)
 	}
 }
 
-static void rtl8723a_fill_default_txdesc(
-	struct xmit_frame *pxmitframe,
-	u8 *pbuf)
+static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 {
 	struct rtw_adapter * padapter;
 	struct hal_data_8723a *pHalData;
@@ -3049,9 +3047,8 @@ static void rtl8723a_fill_default_txdesc(
 	struct mlme_ext_priv *pmlmeext;
 	struct mlme_ext_info *pmlmeinfo;
 	struct pkt_attrib *pattrib;
-	PTXDESC ptxdesc;
+	struct txdesc_8723a *ptxdesc;
 	s32 bmcst;
-
 
 	padapter = pxmitframe->padapter;
 	pHalData = GET_HAL_DATA(padapter);
@@ -3062,10 +3059,9 @@ static void rtl8723a_fill_default_txdesc(
 	pattrib = &pxmitframe->attrib;
 	bmcst = is_multicast_ether_addr(pattrib->ra);
 
-	ptxdesc = (PTXDESC)pbuf;
+	ptxdesc = (struct txdesc_8723a *)pbuf;
 
-	if (pxmitframe->frame_tag == DATA_FRAMETAG)
-	{
+	if (pxmitframe->frame_tag == DATA_FRAMETAG) {
 		ptxdesc->macid = pattrib->mac_id; // CAM_ID(MAC_ID)
 
 		if (pattrib->ampdu_en == true)
@@ -3081,9 +3077,8 @@ static void rtl8723a_fill_default_txdesc(
 		ptxdesc->seq = pattrib->seqnum;
 
 		if ((pattrib->ether_type != 0x888e) &&
-			(pattrib->ether_type != 0x0806) &&
-			(pattrib->dhcp_pkt != 1))
-		{
+		    (pattrib->ether_type != 0x0806) &&
+		    (pattrib->dhcp_pkt != 1)) {
 			// Non EAP & ARP & DHCP type data packet
 
 			fill_txdesc_vcs(pattrib, ptxdesc);

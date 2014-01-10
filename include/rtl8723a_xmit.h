@@ -20,15 +20,25 @@
 #ifndef __RTL8723A_XMIT_H__
 #define __RTL8723A_XMIT_H__
 
-#include <rtl8192c_xmit.h>
+/*  */
+/*  Queue Select Value in TxDesc */
+/*  */
+#define QSLT_BK							0x2/* 0x01 */
+#define QSLT_BE							0x0
+#define QSLT_VI							0x5/* 0x4 */
+#define QSLT_VO							0x7/* 0x6 */
+#define QSLT_BEACON						0x10
+#define QSLT_HIGH						0x11
+#define QSLT_MGNT						0x12
+#define QSLT_CMD						0x13
 
-//
-//defined for TX DESC Operation
-//
+/*  */
+/* defined for TX DESC Operation */
+/*  */
 
 #define MAX_TID (15)
 
-//OFFSET 0
+/* OFFSET 0 */
 #define OFFSET_SZ	0
 #define OFFSET_SHT	16
 #define BMC		BIT(24)
@@ -37,7 +47,7 @@
 #define OWN		BIT(31)
 
 
-//OFFSET 4
+/* OFFSET 4 */
 #define PKT_OFFSET_SZ	0
 #define BK		BIT(6)
 #define QSEL_SHT	8
@@ -46,13 +56,13 @@
 #define PKT_OFFSET_SHT	26
 #define HWPC		BIT(31)
 
-//OFFSET 8
+/* OFFSET 8 */
 #define AGG_EN		BIT(29)
 
-//OFFSET 12
+/* OFFSET 12 */
 #define SEQ_SHT		16
 
-//OFFSET 16
+/* OFFSET 16 */
 #define QoS		BIT(6)
 #define HW_SEQ_EN	BIT(7)
 #define USERATE		BIT(8)
@@ -60,11 +70,10 @@
 #define DATA_SHORT	BIT(24)
 #define DATA_BW		BIT(25)
 
-//OFFSET 20
+/* OFFSET 20 */
 #define SGI		BIT(6)
 
-typedef struct txdesc_8723a
-{
+struct txdesc_8723a {
 	u32 pktlen:16;
 	u32 offset:8;
 	u32 bmc:1;
@@ -89,7 +98,7 @@ typedef struct txdesc_8723a
 	u32 en_desc_id:1;
 	u32 sectype:2;
 	u32 rsvd0424:2;
-	u32 pkt_offset:5;	// unit: 8 bytes
+	u32 pkt_offset:5;	/*  unit: 8 bytes */
 	u32 rsvd0431:1;
 
 	u32 rts_rc:6;
@@ -156,12 +165,12 @@ typedef struct txdesc_8723a
 	u32 mcsg3_max_len:4;
 	u32 mcs7_sgi_max_len:4;
 
-	u32 checksum:16;	// TxBuffSize(PCIe)/CheckSum(USB)
+	u32 checksum:16;	/*  TxBuffSize(PCIe)/CheckSum(USB) */
 	u32 mcsg4_max_len:4;
 	u32 mcsg5_max_len:4;
 	u32 mcsg6_max_len:4;
 	u32 mcs15_sgi_max_len:4;
-}TXDESC, *PTXDESC;
+};
 
 #define txdesc_set_ccx_sw_8723a(txdesc, value) \
 	do { \
@@ -215,5 +224,11 @@ void rtl8723a_fill_fake_txdesc(struct rtw_adapter *padapter, u8 *pDesc, u32 Buff
 s32	rtl8723au_hal_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 s32 rtl8723au_xmit_buf_handler(struct rtw_adapter *padapter);
 #define hal_xmit_handler rtl8723au_xmit_buf_handler
+s32	rtl8723au_init_xmit_priv(struct rtw_adapter * padapter);
+void	rtl8723au_free_xmit_priv(struct rtw_adapter * padapter);
+s32 rtl8723au_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
+s32 rtl8723au_mgnt_xmit(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe);
+s32 rtl8723au_xmitframe_complete(struct rtw_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
+
 
 #endif
