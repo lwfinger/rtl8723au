@@ -96,7 +96,7 @@ static int rtw_low_power;
 static int rtw_wifi_spec;
 static int rtw_channel_plan = RT_CHANNEL_DOMAIN_MAX;
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 static int rtw_btcoex_enable = 1;
 static int rtw_bt_iso = 2;// 0:Low, 1:High, 2:From Efuse
 static int rtw_bt_sco = 3;// 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter, 4.Busy, 5.OtherBusy
@@ -187,7 +187,7 @@ MODULE_PARM_DESC(rtw_fw_iol,"FW IOL");
 module_param(rtw_80211d, int, 0644);
 MODULE_PARM_DESC(rtw_80211d, "Enable 802.11d mechanism");
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 module_param(rtw_btcoex_enable, int, 0644);
 MODULE_PARM_DESC(rtw_btcoex_enable, "Enable BT co-existence mechanism");
 #endif
@@ -513,7 +513,7 @@ void rtw_proc_init_one(struct net_device *dev)
 		return;
 	}
 	entry->write_proc = proc_set_rssi_disp;
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 	entry = create_proc_read_entry("btcoex_dbg", S_IFREG | S_IRUGO,
 				   dir_dev, proc_get_btcoex_dbg, dev);
 	if (!entry) {
@@ -521,7 +521,7 @@ void rtw_proc_init_one(struct net_device *dev)
 		return;
 	}
 	entry->write_proc = proc_set_btcoex_dbg;
-#endif /*CONFIG_8723_BT_COEXIST*/
+#endif /*CONFIG_8723AU_BT_COEXIST*/
 
 	entry = create_proc_read_entry("sreset", S_IFREG | S_IRUGO,
 				   dir_dev, proc_get_sreset, dev);
@@ -587,9 +587,9 @@ void rtw_proc_remove_one(struct net_device *dev)
 
 		remove_proc_entry("rssi_disp", dir_dev);
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 		remove_proc_entry("btcoex_dbg", dir_dev);
-#endif //CONFIG_8723_BT_COEXIST
+#endif //CONFIG_8723AU_BT_COEXIST
 
 		remove_proc_entry("sreset", dir_dev);
 
@@ -684,7 +684,7 @@ _func_enter_;
 
 	registry_par->channel_plan = (u8)rtw_channel_plan;
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 	registry_par->btcoex = (u8)rtw_btcoex_enable;
 	registry_par->bt_iso = (u8)rtw_bt_iso;
 	registry_par->bt_sco = (u8)rtw_bt_sco;
@@ -1153,7 +1153,7 @@ void rtw_cancel_all_timer(struct rtw_adapter *padapter)
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("rtw_cancel_all_timer:cancel set_scan_deny_timer! \n"));
 
 	del_timer_sync(&padapter->recvpriv.signal_stat_timer);
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
 	if (padapter->HalFunc.hal_cancel_checkbthang_workqueue)
 		padapter->HalFunc.hal_cancel_checkbthang_workqueue(padapter);
 #endif
@@ -1191,7 +1191,7 @@ u8 rtw_free_drv_sw(struct rtw_adapter *padapter)
 	rtw_free_evt_priv(&padapter->evtpriv);
 
 	rtw_free_mlme_priv(&padapter->mlmepriv);
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
 	if (padapter->HalFunc.hal_free_checkbthang_workqueue)
 		padapter->HalFunc.hal_free_checkbthang_workqueue(padapter);
 #endif

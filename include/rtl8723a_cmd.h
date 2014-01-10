@@ -152,7 +152,7 @@ typedef struct _LOWPWR_LPS_PARM
 // host message to firmware cmd
 void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter * padapter, u8 Mode);
 void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter * padapter, u8 mstatus);
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter * padapter);
 #endif
 u8 rtl8192c_set_rssi_cmd(struct rtw_adapter * padapter, u8 *param);

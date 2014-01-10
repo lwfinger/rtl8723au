@@ -32,7 +32,7 @@
 //#define BTCOEX_DECREASE_WIFI_POWER
 //#define BTCOEX_CMCC_TEST
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 
 u32 BTCoexDbgLevel = _bt_dbg_off_;
 
@@ -16978,7 +16978,7 @@ void BTDM_SignalCompensation(struct rtw_adapter *padapter, u8 *rssi_wifi, u8 *rs
 {
 	BTDM_8723ASignalCompensation(padapter, rssi_wifi, rssi_bt);
 }
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_8723AU_BT_COEXIST)
 /*
 0. write 0xa3 = 0x05
 

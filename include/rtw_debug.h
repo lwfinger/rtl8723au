@@ -366,7 +366,7 @@ do {									\
 	int proc_set_rssi_disp(struct file *file, const char __user *buffer,
 		unsigned long count, void *data);
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 	int proc_get_btcoex_dbg(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
@@ -374,7 +374,7 @@ do {									\
 	int proc_set_btcoex_dbg(struct file *file, const char __user *buffer,
 		unsigned long count, void *data);
 
-#endif /* CONFIG_8723_BT_COEXIST */
+#endif /* CONFIG_8723AU_BT_COEXIST */
 
 int proc_get_sreset(char *page, char **start, off_t offset, int count, int *eof, void *data);
 int proc_set_sreset(struct file *file, const char __user *buffer, unsigned long count, void *data);

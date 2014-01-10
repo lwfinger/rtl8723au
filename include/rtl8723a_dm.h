@@ -58,7 +58,7 @@ struct dm_priv
 	int	LastMinUndecoratedPWDBForDM;
 
 	s32	UndecoratedSmoothedBeacon;
-	#ifdef CONFIG_8723_BT_COEXIST
+	#ifdef CONFIG_8723AU_BT_COEXIST
 	s32 BT_EntryMinUndecoratedSmoothedPWDB;
 	s32 BT_EntryMaxUndecoratedSmoothedPWDB;
 	#endif

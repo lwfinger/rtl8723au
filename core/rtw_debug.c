@@ -1016,7 +1016,7 @@ int proc_get_malloc_cnt(char *page, char **start,
 }
 #endif /* DBG_MEMORY_LEAK */
 
-#ifdef CONFIG_8723_BT_COEXIST
+#ifdef CONFIG_8723AU_BT_COEXIST
 #define _bt_dbg_off_		0
 #define _bt_dbg_on_		1
 
@@ -1066,7 +1066,7 @@ int proc_set_btcoex_dbg(struct file *file, const char __user *buffer,
 
 	return count;
 }
-#endif /* CONFIG_8723_BT_COEXIST */
+#endif /* CONFIG_8723AU_BT_COEXIST */
 
 #include <rtw_sreset.h>
 int proc_get_sreset(char *page, char **start, off_t offset, int count, int *eof, void *data)
