@@ -7754,9 +7754,6 @@ void site_survey(struct rtw_adapter *padapter)
 				/*	This will let the following flow to run the scanning end. */
 				rtw_p2p_findphase_ex_set(pwdinfo, P2P_FINDPHASE_EX_MAX);
 			}
-			#ifdef CONFIG_DBG_P2P
-			DBG_8723A( "[%s] find phase exchange cnt = %d\n", __FUNCTION__, pwdinfo->find_phase_state_exchange_cnt );
-			#endif
 		}
 
 		if(rtw_p2p_findphase_ex_is_needed(pwdinfo))
