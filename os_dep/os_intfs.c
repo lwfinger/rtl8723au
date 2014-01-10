@@ -123,11 +123,8 @@ static int rtw_hw_wps_pbc = 1;
 
 static int rtw_80211d = 0;
 
-#ifdef CONFIG_REGULATORY_CTRL
-static int rtw_regulatory_id =2;
-#else
 static int rtw_regulatory_id = 0xff;// Regulatory tab id, 0xff = follow efuse's setting
-#endif
+
 module_param(rtw_regulatory_id, int, 0644);
 
 
