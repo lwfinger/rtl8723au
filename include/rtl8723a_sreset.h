@@ -17,8 +17,8 @@
  *
  *
  ******************************************************************************/
-#ifndef _RTL8188E_SRESET_H_
-#define _RTL8188E_SRESET_H_
+#ifndef _RTL8723A_SRESET_H_
+#define _RTL8723A_SRESET_H_
 
 #include <osdep_service.h>
 #include <drv_types.h>

@@ -26,7 +26,7 @@ enum hal_ic_type {
 	CHIP_8192C	=	2,
 	CHIP_8192D	=	3,
 	CHIP_8723A	=	4,
-	CHIP_8188E		=	5,
+	CHIP_8188E	=	5,
 	CHIP_8881A	=	6,
 	CHIP_8812A	=	7,
 	CHIP_8821A	=	8,
@@ -36,7 +36,7 @@ enum hal_ic_type {
 
 enum hal_chip_type {
 	TEST_CHIP		=	0,
-	NORMAL_CHIP	=	1,
+	NORMAL_CHIP		=	1,
 	FPGA			=	2,
 };
 
@@ -91,7 +91,6 @@ struct hal_version {
 #define IS_81XXC(version)		(((GET_CVID_IC_TYPE(version) == CHIP_8192C)||(GET_CVID_IC_TYPE(version) == CHIP_8188C))? true : false)
 #define IS_8723_SERIES(version)		((GET_CVID_IC_TYPE(version) == CHIP_8723A)? true : false)
 #define IS_92D(version)			((GET_CVID_IC_TYPE(version) == CHIP_8192D)? true : false)
-#define IS_8188E(version)		((GET_CVID_IC_TYPE(version) == CHIP_8188E)? true : false)
 
 #define IS_TEST_CHIP(version)		((GET_CVID_CHIP_TYPE(version)==TEST_CHIP)? true: false)
 #define IS_NORMAL_CHIP(version)		((GET_CVID_CHIP_TYPE(version)==NORMAL_CHIP)? true: false)

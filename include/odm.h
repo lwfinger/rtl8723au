@@ -390,7 +390,7 @@ typedef		struct _ODM_STA_INFO{
 	/* 1 TX_INFO (may changed by IC) */
 
 	/*  */
-	/* 	Please use compile flag to disabe the strcutrue for other IC except 88E. */
+	/* 	Please use compile flag to disable the structure for other IC except 88E. */
 	/* 	Move To lower layer. */
 	/*  */
 	/*  ODM Write Wilson will handle this part(said by Luke.Lee) */

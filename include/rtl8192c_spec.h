@@ -744,22 +744,22 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 #define EEPROM_HT40_MAX_PWR_OFFSET			0x6F
 #define EEPROM_HT20_MAX_PWR_OFFSET			0x72
 
-#define EEPROM_CHANNEL_PLAN					0x75
-#define EEPROM_TSSI_A							0x76
-#define EEPROM_TSSI_B							0x77
-#define EEPROM_THERMAL_METER					0x78
-#define EEPROM_RF_OPT1							0x79
-#define EEPROM_RF_OPT2							0x7A
-#define EEPROM_RF_OPT3							0x7B
-#define EEPROM_RF_OPT4							0x7C
-#define EEPROM_VERSION							0x7E
-#define EEPROM_CUSTOMER_ID					0x7F
+#define EEPROM_CHANNEL_PLAN				0x75
+#define EEPROM_TSSI_A					0x76
+#define EEPROM_TSSI_B					0x77
+#define EEPROM_THERMAL_METER				0x78
+#define EEPROM_RF_OPT1					0x79
+#define EEPROM_RF_OPT2					0x7A
+#define EEPROM_RF_OPT3					0x7B
+#define EEPROM_RF_OPT4					0x7C
+#define EEPROM_VERSION					0x7E
+#define EEPROM_CUSTOMER_ID				0x7F
 
-#define EEPROM_BoardType						0x54 //0x0: RTL8188SU, 0x1: RTL8191SU, 0x2: RTL8192SU, 0x3: RTL8191GU
-#define EEPROM_TxPwIndex						0x5C //0x5C-0x76, Tx Power index.
-#define EEPROM_PwDiff							0x67 // Difference of gain index between legacy and high throughput OFDM.
+#define EEPROM_BoardType				0x54 //0x0: RTL8188SU, 0x1: RTL8191SU, 0x2: RTL8192SU, 0x3: RTL8191GU
+#define EEPROM_TxPwIndex				0x5C //0x5C-0x76, Tx Power index.
+#define EEPROM_PwDiff					0x67 // Difference of gain index between legacy and high throughput OFDM.
 
-#define EEPROM_TxPowerCCK						0x5A // CCK Tx Power
+#define EEPROM_TxPowerCCK				0x5A // CCK Tx Power
 
 // 2009/02/09 Cosa Add for SD3 requirement
 #define EEPROM_TX_PWR_HT20_DIFF				0x6e// HT20 Tx Power Index Difference

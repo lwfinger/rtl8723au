@@ -106,7 +106,7 @@ static int rtw_bt_ampdu =1 ;// 0:Disable BT control A-MPDU, 1:Enable BT control 
 static int rtw_AcceptAddbaReq = true;// 0:Reject AP's Add BA req, 1:Accept AP's Add BA req.
 
 static int rtw_antdiv_cfg = 2; // 0:OFF , 1:ON, 2:decide by Efuse config
-static int rtw_antdiv_type = 0 ; //0:decide by efuse  1: for 88EE, 1Tx and 1RxCG are diversity.(2 Ant with SPDT), 2:  for 88EE, 1Tx and 2Rx are diversity.( 2 Ant, Tx and RxCG are both on aux port, RxCS is on main port ), 3: for 88EE, 1Tx and 1RxCG are fixed.(1Ant, Tx and RxCG are both on aux port)
+static int rtw_antdiv_type; //0:decide by efuse
 
 static int rtw_enusbss;//0:disable,1:enable
 
@@ -161,7 +161,6 @@ module_param(rtw_low_power, int, 0644);
 module_param(rtw_wifi_spec, int, 0644);
 
 module_param(rtw_antdiv_cfg, int, 0644);
-module_param(rtw_antdiv_type, int, 0644);
 
 module_param(rtw_enusbss, int, 0644);
 module_param(rtw_hwpdn_mode, int, 0644);
@@ -222,29 +221,8 @@ void rtw_proc_init_one(struct net_device *dev)
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	u8 rf_type;
 
-	if(rtw_proc == NULL)
-	{
-		if(padapter->chip_type == RTL8188C_8192C)
-		{
-			memcpy(rtw_proc_name, RTL8192C_PROC_NAME, sizeof(RTL8192C_PROC_NAME));
-		}
-		else if(padapter->chip_type == RTL8192D)
-		{
-			memcpy(rtw_proc_name, RTL8192D_PROC_NAME, sizeof(RTL8192D_PROC_NAME));
-		}
-		else if(padapter->chip_type == RTL8723A)
-		{
-			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
-		}
-		else if(padapter->chip_type == RTL8188E)
-		{
-			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
-		}
-		else
-		{
-			memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
-		}
-
+	if(rtw_proc == NULL) {
+		memcpy(rtw_proc_name, RTW_PROC_NAME, sizeof(RTW_PROC_NAME));
 		rtw_proc=create_proc_entry(rtw_proc_name, S_IFDIR, init_net.proc_net);
 		if (rtw_proc == NULL) {
 			DBG_8723A(KERN_ERR "Unable to create rtw_proc directory\n");
@@ -258,18 +236,14 @@ void rtw_proc_init_one(struct net_device *dev)
 		}
 	}
 
-
-
-	if(padapter->dir_dev == NULL)
-	{
+	if(padapter->dir_dev == NULL) {
 		padapter->dir_dev = create_proc_entry(dev->name,
 					  S_IFDIR | S_IRUGO | S_IXUGO,
 					  rtw_proc);
 
 		dir_dev = padapter->dir_dev;
 
-		if(dir_dev==NULL)
-		{
+		if(dir_dev==NULL) {
 			if(rtw_proc_cnt == 0)
 			{
 				if(rtw_proc){

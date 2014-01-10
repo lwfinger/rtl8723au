@@ -24,18 +24,7 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8188E_FOR_TEST_CHIP > 1)
-    #define READ_AND_CONFIG(ic, txt) do {\
-                                            if (pDM_Odm->bIsMPChip)\
-						    READ_AND_CONFIG_MP(ic,txt);\
-                                            else\
-                                                READ_AND_CONFIG_TC(ic,txt);\
-                                     } while(0)
-#elif (RTL8188E_FOR_TEST_CHIP == 1)
-    #define READ_AND_CONFIG     READ_AND_CONFIG_TC
-#else
-    #define READ_AND_CONFIG     READ_AND_CONFIG_MP
-#endif
+#define READ_AND_CONFIG     READ_AND_CONFIG_MP
 
 #define READ_AND_CONFIG_MP(ic, txt) (ODM_ReadAndConfig##txt##ic(pDM_Odm))
 #define READ_AND_CONFIG_TC(ic, txt) (ODM_ReadAndConfig_TC##txt##ic(pDM_Odm))
@@ -195,138 +184,80 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 
 		cck_agc_rpt =  pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a ;
 
-		//2011.11.28 LukeLee: 88E use different LNA & VGA gain table
 		//The RSSI formula should be modified according to the gain table
-		//In 88E, cck_highpwr is always set to 1
-		if(pDM_Odm->SupportICType & (ODM_RTL8188E|ODM_RTL8812))
+		if(!cck_highpwr)
 		{
-			LNA_idx = ((cck_agc_rpt & 0xE0) >>5);
-			VGA_idx = (cck_agc_rpt & 0x1F);
-			switch(LNA_idx)
+			report =( cck_agc_rpt & 0xc0 )>>6;
+			switch(report)
 			{
-				case 7:
-					if(VGA_idx <= 27)
-						rx_pwr_all = -100 + 2*(27-VGA_idx); //VGA_idx = 27~2
-					else
-						rx_pwr_all = -100;
+				// 03312009 modified by cosa
+				// Modify the RF RNA gain value to -40, -20, -2, 14 by Jenyu's suggestion
+				// Note: different RF with the different RNA gain.
+				case 0x3:
+					rx_pwr_all = -46 - (cck_agc_rpt & 0x3e);
 					break;
-				case 6:
-						rx_pwr_all = -48 + 2*(2-VGA_idx); //VGA_idx = 2~0
+				case 0x2:
+					rx_pwr_all = -26 - (cck_agc_rpt & 0x3e);
 					break;
-				case 5:
-						rx_pwr_all = -42 + 2*(7-VGA_idx); //VGA_idx = 7~5
+				case 0x1:
+					rx_pwr_all = -12 - (cck_agc_rpt & 0x3e);
 					break;
-				case 4:
-						rx_pwr_all = -36 + 2*(7-VGA_idx); //VGA_idx = 7~4
+				case 0x0:
+					rx_pwr_all = 16 - (cck_agc_rpt & 0x3e);
 					break;
-				case 3:
-						//rx_pwr_all = -28 + 2*(7-VGA_idx); //VGA_idx = 7~0
-						rx_pwr_all = -24 + 2*(7-VGA_idx); //VGA_idx = 7~0
-					break;
-				case 2:
-					if(cck_highpwr)
-						rx_pwr_all = -12 + 2*(5-VGA_idx); //VGA_idx = 5~0
-					else
-						rx_pwr_all = -6+ 2*(5-VGA_idx);
-					break;
-				case 1:
-						rx_pwr_all = 8-2*VGA_idx;
-					break;
-				case 0:
-						rx_pwr_all = 14-2*VGA_idx;
-					break;
-				default:
-					//DbgPrint("CCK Exception default\n");
-					break;
-			}
-			rx_pwr_all += 6;
-				PWDB_ALL = odm_QueryRxPwrPercentage(rx_pwr_all);
-			if(cck_highpwr == false)
-			{
-				if(PWDB_ALL >= 80)
-					PWDB_ALL = ((PWDB_ALL-80)<<1)+((PWDB_ALL-80)>>1)+80;
-				else if((PWDB_ALL <= 78) && (PWDB_ALL >= 20))
-					PWDB_ALL += 3;
-				if(PWDB_ALL>100)
-					PWDB_ALL = 100;
 			}
 		}
 		else
 		{
-			if(!cck_highpwr)
+			//report = pDrvInfo->cfosho[0] & 0x60;
+			//report = pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a& 0x60;
+
+			report = (cck_agc_rpt & 0x60)>>5;
+			switch(report)
 			{
-				report =( cck_agc_rpt & 0xc0 )>>6;
-				switch(report)
-				{
-					// 03312009 modified by cosa
-					// Modify the RF RNA gain value to -40, -20, -2, 14 by Jenyu's suggestion
-					// Note: different RF with the different RNA gain.
-					case 0x3:
-						rx_pwr_all = -46 - (cck_agc_rpt & 0x3e);
-						break;
-					case 0x2:
-						rx_pwr_all = -26 - (cck_agc_rpt & 0x3e);
-						break;
-					case 0x1:
-						rx_pwr_all = -12 - (cck_agc_rpt & 0x3e);
-						break;
-					case 0x0:
-						rx_pwr_all = 16 - (cck_agc_rpt & 0x3e);
-						break;
-				}
+				case 0x3:
+					rx_pwr_all = -46 - ((cck_agc_rpt & 0x1f)<<1) ;
+					break;
+				case 0x2:
+					rx_pwr_all = -26 - ((cck_agc_rpt & 0x1f)<<1);
+					break;
+				case 0x1:
+					rx_pwr_all = -12 - ((cck_agc_rpt & 0x1f)<<1) ;
+					break;
+				case 0x0:
+					rx_pwr_all = 16 - ((cck_agc_rpt & 0x1f)<<1) ;
+					break;
+			}
+		}
+
+		PWDB_ALL = odm_QueryRxPwrPercentage(rx_pwr_all);
+
+		//Modification for ext-LNA board
+		if(pDM_Odm->BoardType == ODM_BOARD_HIGHPWR)
+		{
+			if((cck_agc_rpt>>7) == 0){
+				PWDB_ALL = (PWDB_ALL>94)?100:(PWDB_ALL +6);
 			}
 			else
-			{
-				//report = pDrvInfo->cfosho[0] & 0x60;
-				//report = pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a& 0x60;
-
-				report = (cck_agc_rpt & 0x60)>>5;
-				switch(report)
-				{
-					case 0x3:
-						rx_pwr_all = -46 - ((cck_agc_rpt & 0x1f)<<1) ;
-						break;
-					case 0x2:
-						rx_pwr_all = -26 - ((cck_agc_rpt & 0x1f)<<1);
-						break;
-					case 0x1:
-						rx_pwr_all = -12 - ((cck_agc_rpt & 0x1f)<<1) ;
-						break;
-					case 0x0:
-						rx_pwr_all = 16 - ((cck_agc_rpt & 0x1f)<<1) ;
-						break;
-				}
-			}
-
-			PWDB_ALL = odm_QueryRxPwrPercentage(rx_pwr_all);
-
-			//Modification for ext-LNA board
-			if(pDM_Odm->BoardType == ODM_BOARD_HIGHPWR)
-			{
-				if((cck_agc_rpt>>7) == 0){
-					PWDB_ALL = (PWDB_ALL>94)?100:(PWDB_ALL +6);
-				}
+                   {
+				if(PWDB_ALL > 38)
+					PWDB_ALL -= 16;
 				else
-	                   {
-					if(PWDB_ALL > 38)
-						PWDB_ALL -= 16;
-					else
-						PWDB_ALL = (PWDB_ALL<=16)?(PWDB_ALL>>2):(PWDB_ALL -12);
-				}
+					PWDB_ALL = (PWDB_ALL<=16)?(PWDB_ALL>>2):(PWDB_ALL -12);
+			}
 
-				//CCK modification
-				if(PWDB_ALL > 25 && PWDB_ALL <= 60)
-					PWDB_ALL += 6;
-				//else if (PWDB_ALL <= 25)
-				//	PWDB_ALL += 8;
-			}
-			else//Modification for int-LNA board
-			{
-				if(PWDB_ALL > 99)
-					PWDB_ALL -= 8;
-				else if(PWDB_ALL > 50 && PWDB_ALL <= 68)
-					PWDB_ALL += 4;
-			}
+			//CCK modification
+			if(PWDB_ALL > 25 && PWDB_ALL <= 60)
+				PWDB_ALL += 6;
+			//else if (PWDB_ALL <= 25)
+			//	PWDB_ALL += 8;
+		}
+		else//Modification for int-LNA board
+		{
+			if(PWDB_ALL > 99)
+				PWDB_ALL -= 8;
+			else if(PWDB_ALL > 50 && PWDB_ALL <= 68)
+				PWDB_ALL += 4;
 		}
 
 		pPhyInfo->RxPWDBAll = PWDB_ALL;
@@ -706,20 +637,6 @@ ODM_ConfigRFWithHeaderFile(
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, ("ODM_ConfigRFWithHeaderFile: Radio No %x\n", eRFPath));
 	//rtStatus = RT_STATUS_SUCCESS;
 #endif
-#if (RTL8188E_SUPPORT == 1)
-	if (pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-		if(eRFPath == ODM_RF_PATH_A)
-			READ_AND_CONFIG(8188E,_RadioA_1T_);
-		//else if(eRFPath == ODM_RF_PATH_B)
-		//	READ_AND_CONFIG(8188E,_RadioB_1T_);
-		ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, (" ===> ODM_ConfigRFWithHeaderFile() Radio_A:Rtl8188ERadioA_1TArray\n"));
-		ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, (" ===> ODM_ConfigRFWithHeaderFile() Radio_B:Rtl8188ERadioB_1TArray\n"));
-	}
-
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, ("ODM_ConfigRFWithHeaderFile: Radio No %x\n", eRFPath));
-	//rtStatus = RT_STATUS_SUCCESS;
-#endif
 	return HAL_STATUS_SUCCESS;
 }
 
@@ -747,30 +664,6 @@ ODM_ConfigBBWithHeaderFile(
 	}
 #endif
 
-#if (RTL8188E_SUPPORT == 1)
-    if(pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-
-		if(ConfigType == CONFIG_BB_PHY_REG)
-		{
-			READ_AND_CONFIG(8188E,_PHY_REG_1T_);
-		}
-//        else if(ConfigType == ODM_BaseBand_Config_PHY_REG_MP)
-//		{
-			//READ_AND_CONFIG(8188E,_PHY_REG_MP_);
-//		}
-		else if(ConfigType == CONFIG_BB_AGC_TAB)
-		{
-			READ_AND_CONFIG(8188E,_AGC_TAB_1T_);
-		}
-		else if(ConfigType == CONFIG_BB_PHY_REG_PG)
-		{
-			READ_AND_CONFIG(8188E,_PHY_REG_PG_);
-			ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, (" ===> phy_ConfigBBWithHeaderFile() agc:Rtl8188EPHY_REG_PGArray\n"));
-		}
-	}
-#endif
-
 	return HAL_STATUS_SUCCESS;
 }
 
@@ -786,12 +679,5 @@ ODM_ConfigMACWithHeaderFile(
 		READ_AND_CONFIG_MP(8723A,_MAC_REG_);
 	}
 #endif
-#if (RTL8188E_SUPPORT == 1)
-	if (pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-		result = READ_AND_CONFIG(8188E,_MAC_REG_);
-	}
-#endif
-
 	return result;
 }

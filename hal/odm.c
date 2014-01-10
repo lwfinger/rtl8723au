@@ -540,16 +540,10 @@ ODM_DMInit(
 	}
 	else if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
 	{
-		#if (RTL8188E_SUPPORT == 1)
-		odm_PrimaryCCA_Init(pDM_Odm);    // Gary
-		#endif
 		odm_DynamicBBPowerSavingInit(pDM_Odm);
 		odm_DynamicTxPowerInit(pDM_Odm);
 		odm_TXPowerTrackingInit(pDM_Odm);
 		ODM_EdcaTurboInit(pDM_Odm);
-		#if (RTL8188E_SUPPORT == 1)
-		ODM_RAInfo_Init_all(pDM_Odm);
-		#endif
 		if(( pDM_Odm->AntDivType == CG_TRX_HW_ANTDIV )	||
 			( pDM_Odm->AntDivType == CGCS_RX_HW_ANTDIV )	||
 			( pDM_Odm->AntDivType == CG_TRX_SMART_ANTDIV ))
@@ -584,21 +578,12 @@ ODM_DMWatchdog(
 	//8723A or 8189ES platform
 	//NeilChen--2012--08--24--
 	//Fix Leave LPS issue
-	if((pDM_Odm->Adapter->pwrctrlpriv.pwr_mode != PS_MODE_ACTIVE) &&// in LPS mode
-		(
-			(pDM_Odm->SupportICType & (ODM_RTL8723A ) )||
-			(pDM_Odm->SupportICType & (ODM_RTL8188E) &&((pDM_Odm->SupportInterface  == ODM_ITRF_SDIO)) )
-
-		//&&((pDM_Odm->SupportInterface  == ODM_ITRF_SDIO))
-		)
-	)
-	{
+	if ((pDM_Odm->Adapter->pwrctrlpriv.pwr_mode != PS_MODE_ACTIVE) &&// in LPS mode
+	    (pDM_Odm->SupportICType & (ODM_RTL8723A))) {
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("----Step1: odm_DIG is in LPS mode\n"));
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("---Step2: 8723AS is in LPS mode\n"));
 			odm_DIGbyRSSI_LPS(pDM_Odm);
-	}
-	else
-	{
+	} else {
 		odm_DIG(pDM_Odm);
 	}
 
@@ -614,9 +599,6 @@ ODM_DMWatchdog(
 	ODM_DynamicEarlyMode(pDM_Odm);
 	#endif
 	odm_DynamicBBPowerSaving(pDM_Odm);
-	#if (RTL8188E_SUPPORT == 1)
-	odm_DynamicPrimaryCCA(pDM_Odm);
-	#endif
 	if(( pDM_Odm->AntDivType ==  CG_TRX_HW_ANTDIV )	||
 		( pDM_Odm->AntDivType == CGCS_RX_HW_ANTDIV )	||
 		( pDM_Odm->AntDivType == CG_TRX_SMART_ANTDIV ))
@@ -1097,8 +1079,6 @@ void ODM_Write_DIG(
 	if(pDM_DigTable->CurIGValue != CurrentIGI)//if(pDM_DigTable->PreIGValue != CurrentIGI)
 	{
 		ODM_SetBBReg(pDM_Odm, ODM_REG(IGI_A,pDM_Odm), ODM_BIT(IGI,pDM_Odm), CurrentIGI);
-		if(pDM_Odm->SupportICType != ODM_RTL8188E)
-			ODM_SetBBReg(pDM_Odm, ODM_REG(IGI_B,pDM_Odm), ODM_BIT(IGI,pDM_Odm), CurrentIGI);
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("CurrentIGI(0x%02x). \n",CurrentIGI));
 		pDM_DigTable->CurIGValue = CurrentIGI;
 	}
@@ -1119,11 +1099,8 @@ odm_DIGbyRSSI_LPS(
 	u8	bFwCurrentInPSMode = false;
 	u8	CurrentIGI=pDM_Odm->RSSI_Min;
 
-	if(! (pDM_Odm->SupportICType & (ODM_RTL8723A |ODM_RTL8188E)))
+	if(!(pDM_Odm->SupportICType & (ODM_RTL8723A)))
 		return;
-
-	//if((pDM_Odm->SupportInterface==ODM_ITRF_PCIE)||(pDM_Odm->SupportInterface ==ODM_ITRF_USB))
-	//	return;
 
 	CurrentIGI=CurrentIGI+RSSI_OFFSET_DIG;
 #ifdef CONFIG_LPS
@@ -1365,26 +1342,11 @@ odm_DIG(
 					DIG_Dynamic_MIN = pDM_Odm->RSSI_Min;
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() : bOneEntryOnly=true,  DIG_Dynamic_MIN=0x%x\n",DIG_Dynamic_MIN));
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() : pDM_Odm->RSSI_Min=%d\n",pDM_Odm->RSSI_Min));
-			}
-			//1 Lower Bound for 88E AntDiv
-#if (RTL8188E_SUPPORT == 1)
-			else if((pDM_Odm->SupportICType == ODM_RTL8188E)&&(pDM_Odm->SupportAbility & ODM_BB_ANT_DIV))
-			{
-				if(pDM_Odm->AntDivType == CG_TRX_HW_ANTDIV)
-				{
-					DIG_Dynamic_MIN = (u8) pDM_DigTable->AntDiv_RSSI_max;
-					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("odm_DIG(): pDM_DigTable->AntDiv_RSSI_max=%d \n",pDM_DigTable->AntDiv_RSSI_max));
-				}
-			}
-#endif
-			else
-			{
+			} else {
 				DIG_Dynamic_MIN=dm_dig_min;
 			}
 		}
-	}
-	else
-	{
+	} else {
 		pDM_DigTable->rx_gain_range_max = dm_dig_max;
 		DIG_Dynamic_MIN = dm_dig_min;
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() : No Link\n"));
@@ -1612,15 +1574,6 @@ odm_FalseAlarmCounterStatistics(
 	FalseAlmCnt->Cnt_Ofdm_fail =	FalseAlmCnt->Cnt_Parity_Fail + FalseAlmCnt->Cnt_Rate_Illegal +
 								FalseAlmCnt->Cnt_Crc8_fail + FalseAlmCnt->Cnt_Mcs_fail +
 								FalseAlmCnt->Cnt_Fast_Fsync + FalseAlmCnt->Cnt_SB_Search_fail;
-
-#if (RTL8188E_SUPPORT==1)
-	if(pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-			ret_value = ODM_GetBBReg(pDM_Odm, ODM_REG_SC_CNT_11N, bMaskDWord);
-		FalseAlmCnt->Cnt_BW_LSC = (ret_value&0xffff);
-		FalseAlmCnt->Cnt_BW_USC = ((ret_value&0xffff0000)>>16);
-	}
-#endif
 
 #if (RTL8192D_SUPPORT==1)
 	if(pDM_Odm->SupportICType == ODM_RTL8192D)
@@ -2333,15 +2286,6 @@ odm_DynamicTxPowerNIC(
 	{
 		odm_DynamicTxPower_92D(pDM_Odm);
 	}
-	else if (pDM_Odm->SupportICType & ODM_RTL8188E)
-	{
-		// Add Later.
-	}
-	else if (pDM_Odm->SupportICType == ODM_RTL8188E)
-	{
-		// ???
-		// This part need to be redefined.
-	}
 }
 
 void
@@ -2694,12 +2638,6 @@ odm_RSSIMonitorCheckCE(
 					rtl8192c_set_rssi_cmd(Adapter, (u8*)&PWDB_rssi[i]);
 					#endif
 				}
-				else{
-					#if((RTL8188E_SUPPORT==1)&&(RATE_ADAPTIVE_SUPPORT == 1))
-					ODM_RA_SetRSSI_8188E(
-					&(pHalData->odmpriv), (PWDB_rssi[i]&0xFF), (u8)((PWDB_rssi[i]>>16) & 0xFF));
-					#endif
-				}
 			}
 		}
 	}
@@ -2762,14 +2700,7 @@ ODM_ReleaseAllTimers(
 	)
 {
 	ODM_ReleaseTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
-
-#if (RTL8188E_SUPPORT == 1)
-	ODM_ReleaseTimer(pDM_Odm,&pDM_Odm->FastAntTrainingTimer);
-#endif
-
 }
-
-
 
 //#endif
 //3============================================================
@@ -2833,32 +2764,6 @@ void odm_TXPowerTrackingCheckCE(
 	if(!Adapter->bSlaveOfDMSP)
 	#endif
 		rtl8192d_odm_CheckTXPowerTracking(Adapter);
-	#endif
-	#if(RTL8188E_SUPPORT==1)
-
-	//if(!pMgntInfo->bTXPowerTracking /*|| (!pdmpriv->TxPowerTrackControl && pdmpriv->bAPKdone)*/)
-	if(!(pDM_Odm->SupportAbility & ODM_RF_TX_PWR_TRACK))
-	{
-		return;
-	}
-
-	if(!pDM_Odm->RFCalibrateInfo.TM_Trigger)		//at least delay 1 sec
-	{
-		//pHalData->TxPowerCheckCnt++;	//cosa add for debug
-		//ODM_SetRFReg(pDM_Odm, RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
-		PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER_88E, BIT17 | BIT16, 0x03);
-		//DBG_8723A("Trigger 92C Thermal Meter!!\n");
-
-		pDM_Odm->RFCalibrateInfo.TM_Trigger = 1;
-		return;
-
-	}
-	else
-	{
-		//DBG_8723A("Schedule TxPowerTracking direct call!!\n");
-		odm_TXPowerTrackingCallback_ThermalMeter_8188E(Adapter);
-		pDM_Odm->RFCalibrateInfo.TM_Trigger = 0;
-	}
 	#endif
 }
 

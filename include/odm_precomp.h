@@ -53,10 +53,6 @@
 #elif (RTL8723A_SUPPORT==1)
 #include "HalDMOutSrc8192C_CE.h" //for IQK,LCK,Power-tracking
 #include "rtl8723a_hal.h"
-#elif (RTL8188E_SUPPORT==1)
-#include "HalPhyRf_8188e.h"//for IQK,LCK,Power-tracking
-#include "Hal8188ERateAdaptive.h"//for  RA,Power training
-#include "rtl8188e_hal.h"
 #endif
 
 #include "odm_interface.h"
@@ -75,28 +71,6 @@
 #include "HalHWImg8723A_BB.h"
 #include "HalHWImg8723A_FW.h"
 #include "odm_RegConfig8723A.h"
-#endif
-
-#if (RTL8188E_SUPPORT==1)
-#include "HalHWImg8188E_MAC.h"
-#include "HalHWImg8188E_RF.h"
-#include "HalHWImg8188E_BB.h"
-#include "Hal8188EReg.h"
-
-#if (RTL8188E_FOR_TEST_CHIP >= 1)
-#include "HalHWImg8188E_TestChip_MAC.h"
-#include "HalHWImg8188E_TestChip_RF.h"
-#include "HalHWImg8188E_TestChip_BB.h"
-#endif
-
-#ifdef CONFIG_WOWLAN
-#if (RTL8188E_SUPPORT==1)
-#include "HalHWImg8188E_FW.h"
-#endif
-#endif //CONFIG_WOWLAN
-
-#include "odm_RegConfig8188E.h"
-#include "odm_RTL8188E.h"
 #endif
 
 #endif	// __ODM_PRECOMP_H__
