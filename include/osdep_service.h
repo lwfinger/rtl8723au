@@ -63,10 +63,6 @@
 #include <linux/usb.h>
 #include <linux/usb/ch9.h>
 
-#ifdef CONFIG_USB_SUSPEND
-#define CONFIG_AUTOSUSPEND	1
-#endif
-
 struct rtw_adapter;
 struct c2h_evt_hdr;
 
