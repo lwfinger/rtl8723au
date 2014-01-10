@@ -569,9 +569,6 @@ void VCS_update(struct rtw_adapter *padapter, struct sta_info *psta);
 
 void update_beacon_info(struct rtw_adapter *padapter, u8 *pframe, uint len, struct sta_info *psta);
 int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len);
-#ifdef CONFIG_DFS
-void process_csa_ie(struct rtw_adapter *padapter, u8 *pframe, uint len);
-#endif //CONFIG_DFS
 void update_IOT_info(struct rtw_adapter *padapter);
 void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap);
 void update_wireless_mode(struct rtw_adapter * padapter);
