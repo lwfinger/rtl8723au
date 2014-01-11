@@ -42,7 +42,7 @@ OUTSRC_FILES += hal/Hal8723UHWImg_CE.o
 OUTSRC_FILES += hal/HalHWImg8723A_BB.o\
 		hal/HalHWImg8723A_MAC.o\
 		hal/HalHWImg8723A_RF.o\
-		hal/HalDMOutSrc8192C_CE.o\
+		hal/HalDMOutSrc8723A_CE.o\
 		hal/odm_RegConfig8723A.o
 
 clean_more ?=
