@@ -27,6 +27,7 @@
 
 
 #include "ioctl_cfg80211.h"
+#include <linux/version.h>
 
 #define RTW_MAX_MGMT_TX_CNT (8)
 
@@ -3862,12 +3863,16 @@ exit:
 
 static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 	struct wireless_dev *wdev,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0))
 	struct ieee80211_channel *chan,
 	bool offchan,
 	unsigned int wait,
 	const u8 *buf, size_t len,
 	bool no_cck,
 	bool dont_wait_for_ack,
+#else
+	struct cfg80211_mgmt_tx_params *params,
+#endif
 	u64 *cookie)
 {
 	struct rtw_adapter *padapter = (struct rtw_adapter *)wiphy_to_adapter(wiphy);
@@ -3877,10 +3882,15 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 	u32 dump_limit = RTW_MAX_MGMT_TX_CNT;
 	u32 dump_cnt = 0;
 	bool ack = true;
-	u8 tx_ch = (u8)ieee80211_frequency_to_channel(chan->center_freq);
 	u8 category, action;
 	int type = (-1);
 	u32 start = rtw_get_current_time();
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+	size_t len = params->len;
+	struct ieee80211_channel *chan = params->chan;
+	const u8 *buf = params->buf;
+#endif
+	u8 tx_ch = (u8)ieee80211_frequency_to_channel(chan->center_freq);
 
 	/* cookie generation */
 	*cookie = (unsigned long) buf;
