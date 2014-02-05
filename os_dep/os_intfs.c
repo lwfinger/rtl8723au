@@ -34,6 +34,7 @@
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
 #endif //CONFIG_BR_EXT
+#include <linux/version.h>
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 #define		REG_RF_BB_GAIN_OFFSET	0x55
@@ -901,7 +902,11 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 	return dscp >> 5;
 }
 
-static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb)
+static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+			    ,void *unused
+#endif
+)
 {
 	struct rtw_adapter	*padapter = rtw_netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
