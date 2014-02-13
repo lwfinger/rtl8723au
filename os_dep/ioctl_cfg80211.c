@@ -516,8 +516,9 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 						0, NULL, 0,
 						WLAN_STATUS_UNSPECIFIED_FAILURE,
 						GFP_ATOMIC/*GFP_KERNEL*/);
-		} else if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
-			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
+		} else {
+			cfg80211_disconnected(padapter->pnetdev, 0, NULL,
+					      0, GFP_ATOMIC);
 		}
 	}
 }
