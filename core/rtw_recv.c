@@ -616,7 +616,7 @@ _func_enter_;
 
 	auth_alg = adapter->securitypriv.dot11AuthAlgrthm;
 
-	ptr = get_recvframe_data(precv_frame);
+	ptr = precv_frame->rx_data;
 	pfhdr = precv_frame;
 	pattrib = &pfhdr->attrib;
 	psta_addr = pattrib->ta;
@@ -1675,7 +1675,7 @@ static int wlanhdr_to_ethhdr ( struct recv_frame *precvframe)
 	struct rtw_adapter			*adapter =precvframe->adapter;
 	struct mlme_priv	*pmlmepriv = &adapter->mlmepriv;
 
-	u8	*ptr = get_recvframe_data(precvframe) ; /*  point to frame_ctrl field */
+	u8 *ptr = precvframe->rx_data;
 	struct rx_pkt_attrib *pattrib = & precvframe->attrib;
 
 _func_enter_;
@@ -1774,7 +1774,7 @@ _func_enter_;
 
 	phead = get_list_head(defrag_q);
 
-	data=get_recvframe_data(prframe);
+	data = prframe->rx_data;
 
 	list_for_each_safe(plist, ptmp, phead) {
 		pnfhdr = container_of(plist, struct recv_frame, list);
