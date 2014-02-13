@@ -96,9 +96,10 @@ _func_enter_;
 
 	for(i=0; i < NR_RECVFRAME ; i++)
 	{
-		INIT_LIST_HEAD(&(precvframe->u.list));
+		INIT_LIST_HEAD(&(precvframe->u.hdr.list));
 
-		list_add_tail(&(precvframe->u.list), &(precvpriv->free_recv_queue.queue));
+		list_add_tail(&(precvframe->u.hdr.list),
+			      &(precvpriv->free_recv_queue.queue));
 
 		res = rtw_os_recv_resource_alloc(padapter, precvframe);
 
