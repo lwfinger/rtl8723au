@@ -26,18 +26,18 @@
 int _rtw_init_recv_priv(struct recv_priv *precvpriv, struct rtw_adapter *padapter);
 void _rtw_free_recv_priv (struct recv_priv *precvpriv);
 
-s32  rtw_recv_entry(union recv_frame *precv_frame);
-int rtw_recv_indicatepkt(struct rtw_adapter *adapter, union recv_frame *precv_frame);
+s32  rtw_recv_entry(struct recv_frame *precv_frame);
+int rtw_recv_indicatepkt(struct rtw_adapter *adapter, struct recv_frame *precv_frame);
 void rtw_recv_returnpacket(struct net_device *cnxt, struct sk_buff *preturnedpkt);
 
-void rtw_hostapd_mlme_rx(struct rtw_adapter *padapter, union recv_frame *precv_frame);
+void rtw_hostapd_mlme_rx(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
 void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter, u8 bgroup);
 
 int	rtw_init_recv_priv(struct recv_priv *precvpriv, struct rtw_adapter *padapter);
 void rtw_free_recv_priv (struct recv_priv *precvpriv);
 
 int rtw_os_recv_resource_init(struct recv_priv *precvpriv, struct rtw_adapter *padapter);
-int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter, union recv_frame *precvframe);
+int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter, struct recv_frame *precvframe);
 void rtw_os_recv_resource_free(struct recv_priv *precvpriv);
 
 int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter, struct recv_buf *precvbuf);

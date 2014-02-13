@@ -175,9 +175,8 @@ void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 	skb_queue_purge(&precvpriv->free_recv_skb_queue);
 }
 
-void update_recvframe_attrib(
-	union recv_frame *precvframe,
-	struct recv_stat *prxstat)
+void update_recvframe_attrib(struct recv_frame *precvframe,
+			     struct recv_stat *prxstat)
 {
 	struct rx_pkt_attrib	*pattrib;
 	struct recv_stat	report;
@@ -192,7 +191,7 @@ void update_recvframe_attrib(
 
 	prxreport = (struct rxreport_8723a *)&report;
 
-	pattrib = &precvframe->u.hdr.attrib;
+	pattrib = &precvframe->attrib;
 	memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
 
 	// update rx report to recv_frame attribute
@@ -225,14 +224,13 @@ void update_recvframe_attrib(
 /*
  * Notice:
  *	Before calling this function,
- *	precvframe->u.hdr.rx_data should be ready!
+ *	precvframe->rx_data should be ready!
  */
-void update_recvframe_phyinfo(
-	union recv_frame	*precvframe,
-	struct phy_stat *pphy_status)
+void update_recvframe_phyinfo(struct recv_frame *precvframe,
+			      struct phy_stat *pphy_status)
 {
-	struct rtw_adapter *	padapter = precvframe->u.hdr.adapter;
-	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
+	struct rtw_adapter *	padapter = precvframe->adapter;
+	struct rx_pkt_attrib	*pattrib = &precvframe->attrib;
 	struct hal_data_8723a		*pHalData= GET_HAL_DATA(padapter);
 	PODM_PHY_INFO_T		pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);
 	u8					*wlanhdr;
@@ -277,13 +275,13 @@ void update_recvframe_phyinfo(
 	pkt_info.Rate = pattrib->mcs_rate;
 
 	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
-	precvframe->u.hdr.psta = NULL;
+	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true))
 	{
 		if (psta)
 		{
-			precvframe->u.hdr.psta = psta;
+			precvframe->psta = psta;
 			rtl8723a_process_phy_info(padapter, precvframe);
                 }
 	}
@@ -293,7 +291,7 @@ void update_recvframe_phyinfo(
 		{
 			if (psta)
 			{
-				precvframe->u.hdr.psta = psta;
+				precvframe->psta = psta;
 			}
 		}
 

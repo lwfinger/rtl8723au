@@ -69,7 +69,7 @@ void rtl8723au_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precv
 int	rtl8723au_init_recv_priv(struct rtw_adapter * padapter);
 void rtl8723au_free_recv_priv(struct rtw_adapter * padapter);
 void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe);
-void update_recvframe_attrib(union recv_frame *precvframe, struct recv_stat *prxstat);
-void update_recvframe_phyinfo(union recv_frame *precvframe, struct phy_stat *pphy_info);
+void update_recvframe_attrib(struct recv_frame *precvframe, struct recv_stat *prxstat);
+void update_recvframe_phyinfo(struct recv_frame *precvframe, struct phy_stat *pphy_info);
 
 #endif

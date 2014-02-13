@@ -576,10 +576,10 @@ static u8 cmp_pkt_chnl_diff(struct rtw_adapter *padapter,u8* pframe,uint packet_
 	}
 }
 
-static void _mgt_dispatcher(struct rtw_adapter *padapter, struct mlme_handler *ptable, union recv_frame *precv_frame)
+static void _mgt_dispatcher(struct rtw_adapter *padapter, struct mlme_handler *ptable, struct recv_frame *precv_frame)
 {
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 
 	  if(ptable->func)
         {
@@ -595,7 +595,7 @@ static void _mgt_dispatcher(struct rtw_adapter *padapter, struct mlme_handler *p
         }
 }
 
-void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+void mgt_dispatcher(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	int index;
 	struct mlme_handler *ptable;
@@ -603,7 +603,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 #endif /* CONFIG_8723AU_AP_MODE */
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, GetAddr2Ptr(pframe));
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_,
@@ -638,14 +638,14 @@ void mgt_dispatcher(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 	{
 		if (GetRetry(pframe))
 		{
-			if (precv_frame->u.hdr.attrib.seq_num == psta->RxMgmtFrameSeqNum)
+			if (precv_frame->attrib.seq_num == psta->RxMgmtFrameSeqNum)
 			{
 				/* drop the duplicate management frame */
-				DBG_8723A("Drop duplicate management frame with seq_num = %d.\n", precv_frame->u.hdr.attrib.seq_num);
+				DBG_8723A("Drop duplicate management frame with seq_num = %d.\n", precv_frame->attrib.seq_num);
 				return;
 			}
 		}
-		psta->RxMgmtFrameSeqNum = precv_frame->u.hdr.attrib.seq_num;
+		psta->RxMgmtFrameSeqNum = precv_frame->attrib.seq_num;
 	}
 
 #ifdef CONFIG_8723AU_AP_MODE
@@ -715,7 +715,7 @@ Following are the callback functions for each subtype of the management frames
 
 *****************************************************************************/
 
-unsigned int OnProbeReq(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnProbeReq(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned int	ielen;
 	unsigned char	*p;
@@ -723,13 +723,13 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX	*cur = &(pmlmeinfo->network);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint len = precv_frame->len;
 	u8 is_valid_p2p_probereq = false;
 
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
-	struct rx_pkt_attrib	*pattrib = &precv_frame->u.hdr.attrib;
+	struct rx_pkt_attrib	*pattrib = &precv_frame->attrib;
 	u8 wifi_test_chk_rate = 1;
 
 	if (	!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE) &&
@@ -812,13 +812,13 @@ _issue_probersp:
 	return _SUCCESS;
 }
 
-unsigned int OnProbeRsp(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnProbeRsp(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	struct sta_info		*psta;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct sta_priv		*pstapriv = &padapter->stapriv;
-	u8	*pframe = precv_frame->u.hdr.rx_data;
+	u8	*pframe = precv_frame->rx_data;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 #endif
@@ -887,7 +887,7 @@ unsigned int OnProbeRsp(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	return _SUCCESS;
 }
 
-unsigned int OnBeacon(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnBeacon(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	int cam_idx;
 	struct sta_info	*psta;
@@ -895,8 +895,8 @@ unsigned int OnBeacon(struct rtw_adapter *padapter, union recv_frame *precv_fram
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct sta_priv	*pstapriv = &padapter->stapriv;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint len = precv_frame->len;
 	WLAN_BSSID_EX *pbss;
 	int ret = _SUCCESS;
 	u8 *p = NULL;
@@ -904,7 +904,7 @@ unsigned int OnBeacon(struct rtw_adapter *padapter, union recv_frame *precv_fram
 
 	p = rtw_get_ie(pframe + sizeof(struct rtw_ieee80211_hdr_3addr) +
 		       _BEACON_IE_OFFSET_, _EXT_SUPPORTEDRATES_IE_, &ielen,
-		       precv_frame->u.hdr.len -
+		       precv_frame->len -
 		       sizeof(struct rtw_ieee80211_hdr_3addr) -
 		       _BEACON_IE_OFFSET_);
 	if ((p != NULL) && (ielen > 0)) {
@@ -1017,7 +1017,7 @@ _END_ONBEACON_:
 	return _SUCCESS;
 }
 
-unsigned int OnAuth(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	unsigned int	auth_mode, seq, ie_len;
@@ -1030,8 +1030,8 @@ unsigned int OnAuth(struct rtw_adapter *padapter, union recv_frame *precv_frame)
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint len = precv_frame->len;
 
 	if((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
@@ -1214,15 +1214,15 @@ auth_fail:
 	return _FAIL;
 }
 
-unsigned int OnAuthClient(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAuthClient(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned int	seq, len, status, algthm, offset;
 	unsigned char	*p;
 	unsigned int	go2asoc = 0;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint pkt_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint pkt_len = precv_frame->len;
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
@@ -1314,7 +1314,7 @@ authclnt_fail:
 	return _FAIL;
 }
 
-unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	u16 capab_info, listen_interval;
@@ -1333,8 +1333,8 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX	*cur = &(pmlmeinfo->network);
 	struct sta_priv *pstapriv = &padapter->stapriv;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint pkt_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint pkt_len = precv_frame->len;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 	u8 p2p_status_code = P2P_STATUS_SUCCESS;
@@ -1841,7 +1841,7 @@ OnAssocReqFail:
 	return _FAIL;
 }
 
-unsigned int OnAssocRsp(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	uint i;
 	int res;
@@ -1851,8 +1851,8 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	/* WLAN_BSSID_EX			*cur_network = &(pmlmeinfo->network); */
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint pkt_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint pkt_len = precv_frame->len;
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
@@ -1945,13 +1945,13 @@ report_assoc_result:
 	return _SUCCESS;
 }
 
-unsigned int OnDeAuth(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnDeAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned short	reason;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 #endif /* CONFIG_8723AU_P2P */
@@ -2017,13 +2017,13 @@ unsigned int OnDeAuth(struct rtw_adapter *padapter, union recv_frame *precv_fram
 	return _SUCCESS;
 }
 
-unsigned int OnDisassoc(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnDisassoc(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned short	reason;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 #endif /* CONFIG_8723AU_P2P */
@@ -2088,7 +2088,7 @@ unsigned int OnDisassoc(struct rtw_adapter *padapter, union recv_frame *precv_fr
 	return _SUCCESS;
 }
 
-unsigned int OnAtim(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAtim(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	DBG_8723A("%s\n", __FUNCTION__);
 	return _SUCCESS;
@@ -2152,22 +2152,22 @@ exit:
 	return ret;
 }
 
-unsigned int on_action_spct(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int on_action_spct(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _FAIL;
 }
 
-unsigned int OnAction_qos(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_qos(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction_dls(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_dls(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction_back(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_back(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	u8 *addr;
 	struct sta_info *psta=NULL;
@@ -2177,7 +2177,7 @@ unsigned int OnAction_back(struct rtw_adapter *padapter, union recv_frame *precv
 	unsigned short	tid, status, reason_code = 0;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 #ifdef CONFIG_80211N_HT
 	/* check RA matches or not */
@@ -4591,13 +4591,13 @@ exit:
 
 #endif /* CONFIG_8723AU_P2P */
 
-static s32 rtw_action_public_decache(union recv_frame *recv_frame, s32 token)
+static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
 {
-	struct rtw_adapter *adapter = recv_frame->u.hdr.adapter;
+	struct rtw_adapter *adapter = recv_frame->adapter;
 	struct mlme_ext_priv *mlmeext = &(adapter->mlmeextpriv);
-	u8 *frame = recv_frame->u.hdr.rx_data;
-	u16 seq_ctrl = ( (recv_frame->u.hdr.attrib.seq_num&0xffff) << 4) |
-		(recv_frame->u.hdr.attrib.frag_num & 0xf);
+	u8 *frame = recv_frame->rx_data;
+	u16 seq_ctrl = ( (recv_frame->attrib.seq_num&0xffff) << 4) |
+		(recv_frame->attrib.frag_num & 0xf);
 
 	if (GetRetry(frame)) {
 		if (token >= 0) {
@@ -4625,11 +4625,11 @@ static s32 rtw_action_public_decache(union recv_frame *recv_frame, s32 token)
 	return _SUCCESS;
 }
 
-static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
+static unsigned int on_action_public_p2p(struct recv_frame *precv_frame)
 {
-	struct rtw_adapter *padapter = precv_frame->u.hdr.adapter;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint len = precv_frame->u.hdr.len;
+	struct rtw_adapter *padapter = precv_frame->adapter;
+	u8 *pframe = precv_frame->rx_data;
+	uint len = precv_frame->len;
 	u8 *frame_body;
 	u8 dialogToken=0;
 #ifdef CONFIG_8723AU_P2P
@@ -4994,11 +4994,11 @@ static unsigned int on_action_public_p2p(union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-static unsigned int on_action_public_vendor(union recv_frame *precv_frame)
+static unsigned int on_action_public_vendor(struct recv_frame *precv_frame)
 {
 	unsigned int ret = _FAIL;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint frame_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint frame_len = precv_frame->len;
 	u8 *frame_body = pframe + sizeof(struct rtw_ieee80211_hdr_3addr);
 
 	if (!memcmp(frame_body + 2, P2P_OUI, 4)) {
@@ -5008,14 +5008,14 @@ static unsigned int on_action_public_vendor(union recv_frame *precv_frame)
 	return ret;
 }
 
-static unsigned int on_action_public_default(union recv_frame *precv_frame, u8 action)
+static unsigned int on_action_public_default(struct recv_frame *precv_frame, u8 action)
 {
 	unsigned int ret = _FAIL;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint frame_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint frame_len = precv_frame->len;
 	u8 *frame_body = pframe + sizeof(struct rtw_ieee80211_hdr_3addr);
 	u8 token;
-	struct rtw_adapter *adapter = precv_frame->u.hdr.adapter;
+	struct rtw_adapter *adapter = precv_frame->adapter;
 	int cnt = 0;
 	char msg[64];
 
@@ -5033,11 +5033,11 @@ exit:
 	return ret;
 }
 
-unsigned int on_action_public(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int on_action_public(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned int ret = _FAIL;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint frame_len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint frame_len = precv_frame->len;
 	u8 *frame_body = pframe + sizeof(struct rtw_ieee80211_hdr_3addr);
 	u8 category, action;
 
@@ -5064,23 +5064,23 @@ exit:
 	return ret;
 }
 
-unsigned int OnAction_ht(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_ht(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction_wmm(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_wmm(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction_p2p(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction_p2p(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_P2P
 	u8 *frame_body;
 	u8 category, OUI_Subtype, dialogToken=0;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
-	uint len = precv_frame->u.hdr.len;
+	u8 *pframe = precv_frame->rx_data;
+	uint len = precv_frame->len;
 	struct	wifidirect_info	*pwdinfo = &( padapter->wdinfo );
 
 	DBG_8723A("%s\n", __FUNCTION__);
@@ -5137,13 +5137,13 @@ unsigned int OnAction_p2p(struct rtw_adapter *padapter, union recv_frame *precv_
 	return _SUCCESS;
 }
 
-unsigned int OnAction(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int OnAction(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	int i;
 	unsigned char	category;
 	struct action_handler *ptable;
 	unsigned char	*frame_body;
-	u8 *pframe = precv_frame->u.hdr.rx_data;
+	u8 *pframe = precv_frame->rx_data;
 
 	frame_body = (unsigned char *)(pframe + sizeof(struct rtw_ieee80211_hdr_3addr));
 
@@ -5161,7 +5161,7 @@ unsigned int OnAction(struct rtw_adapter *padapter, union recv_frame *precv_fram
 	return _SUCCESS;
 }
 
-unsigned int DoReserved(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+unsigned int DoReserved(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 
 	/* DBG_8723A("rcvd mgt frame(%x, %x)\n", (GetFrameSubType(pframe) >> 4), *(unsigned int *)GetAddr1Ptr(pframe)); */
@@ -7824,14 +7824,14 @@ void site_survey(struct rtw_adapter *padapter)
 }
 
 /* collect bss info from Beacon and Probe request/response frames. */
-u8 collect_bss_info(struct rtw_adapter *padapter, union recv_frame *precv_frame, WLAN_BSSID_EX *bssid)
+u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame, WLAN_BSSID_EX *bssid)
 {
 	int	i;
 	u32	len;
 	u8	*p;
 	u16	val16, subtype;
-	u8	*pframe = precv_frame->u.hdr.rx_data;
-	u32	packet_len = precv_frame->u.hdr.len;
+	u8	*pframe = precv_frame->rx_data;
+	u32	packet_len = precv_frame->len;
 	u8 ie_offset;
 	struct registry_priv	*pregistrypriv = &padapter->registrypriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -7873,9 +7873,9 @@ u8 collect_bss_info(struct rtw_adapter *padapter, union recv_frame *precv_frame,
 	memcpy(bssid->IEs, (pframe + sizeof(struct rtw_ieee80211_hdr_3addr)), bssid->IELength);
 
 	/* get the signal strength */
-	bssid->Rssi = precv_frame->u.hdr.attrib.phy_info.RecvSignalPower; /*  in dBM.raw data */
-	bssid->PhyInfo.SignalQuality = precv_frame->u.hdr.attrib.phy_info.SignalQuality;/* in percentage */
-	bssid->PhyInfo.SignalStrength = precv_frame->u.hdr.attrib.phy_info.SignalStrength;/* in percentage */
+	bssid->Rssi = precv_frame->attrib.phy_info.RecvSignalPower; /*  in dBM.raw data */
+	bssid->PhyInfo.SignalQuality = precv_frame->attrib.phy_info.SignalQuality;/* in percentage */
+	bssid->PhyInfo.SignalStrength = precv_frame->attrib.phy_info.SignalStrength;/* in percentage */
 
 	/*  checking SSID */
 	if ((p = rtw_get_ie(bssid->IEs + ie_offset, _SSID_IE_, &len, bssid->IELength - ie_offset)) == NULL)
@@ -8472,7 +8472,7 @@ Following are the functions to report events
 
 *****************************************************************************/
 
-void report_survey_event(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	struct cmd_obj *pcmd_obj;
 	u8	*pevtcmd;

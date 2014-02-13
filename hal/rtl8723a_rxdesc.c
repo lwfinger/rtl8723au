@@ -35,10 +35,11 @@ static s32  translate2dbm(u8 signal_strength_idx)
 	return signal_power;
 }
 
-static void process_rssi(struct rtw_adapter *padapter,union recv_frame *prframe)
+static void process_rssi(struct rtw_adapter *padapter,
+			 struct recv_frame *prframe)
 {
 	u32	last_rssi, tmp_val;
-	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
+	struct rx_pkt_attrib *pattrib = &prframe->attrib;
 	struct signal_stat * signal_stat = &padapter->recvpriv.signal_strength_data;
 
 
@@ -54,7 +55,8 @@ static void process_rssi(struct rtw_adapter *padapter,union recv_frame *prframe)
 
 }
 
-static void process_link_qual(struct rtw_adapter *padapter,union recv_frame *prframe)
+static void process_link_qual(struct rtw_adapter *padapter,
+			      struct recv_frame *prframe)
 {
 	u32	last_evm=0, tmpVal;
 	struct rx_pkt_attrib *pattrib;
@@ -64,7 +66,7 @@ static void process_link_qual(struct rtw_adapter *padapter,union recv_frame *prf
 		return;
 	}
 
-	pattrib = &prframe->u.hdr.attrib;
+	pattrib = &prframe->attrib;
 	signal_stat = &padapter->recvpriv.signal_qual_data;
 
 	if(signal_stat->update_req) {
@@ -81,7 +83,7 @@ static void process_link_qual(struct rtw_adapter *padapter,union recv_frame *prf
 //void rtl8723a_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe)
 void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe)
 {
-	union recv_frame *precvframe = (union recv_frame *)prframe;
+	struct recv_frame *precvframe = prframe;
 	//
 	// Check RSSI
 	//

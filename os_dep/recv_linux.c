@@ -38,18 +38,19 @@ int rtw_os_recv_resource_init(struct recv_priv *precvpriv, struct rtw_adapter *p
 	return res;
 }
 
-//alloc os related resource in union recv_frame
-int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter, union recv_frame *precvframe)
+//alloc os related resource in struct recv_frame
+int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
+			       struct recv_frame *precvframe)
 {
 	int	res=_SUCCESS;
 
-	precvframe->u.hdr.pkt_newalloc = precvframe->u.hdr.pkt = NULL;
+	precvframe->pkt_newalloc = precvframe->pkt = NULL;
 
 	return res;
 
 }
 
-//free os related resource in union recv_frame
+//free os related resource in struct recv_frame
 void rtw_os_recv_resource_free(struct recv_priv *precvpriv)
 {
 
@@ -153,11 +154,13 @@ void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter,u8 bgroup)
 	wrqu.data.length = sizeof( ev );
 }
 
-void rtw_hostapd_mlme_rx(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+void rtw_hostapd_mlme_rx(struct rtw_adapter *padapter,
+			 struct recv_frame *precv_frame)
 {
 }
 
-int rtw_recv_indicatepkt(struct rtw_adapter *padapter, union recv_frame *precv_frame)
+int rtw_recv_indicatepkt(struct rtw_adapter *padapter,
+			 struct recv_frame *precv_frame)
 {
 	struct recv_priv *precvpriv;
 	_queue	*pfree_recv_queue;
@@ -169,21 +172,21 @@ _func_enter_;
 	precvpriv = &(padapter->recvpriv);
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 
-	skb = precv_frame->u.hdr.pkt;
+	skb = precv_frame->pkt;
 	if(skb == NULL) {
 		RT_TRACE(_module_recv_osdep_c_,_drv_err_,("rtw_recv_indicatepkt():skb==NULL something wrong!!!!\n"));
 		goto _recv_indicatepkt_drop;
 	}
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():skb != NULL !!!\n"));
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():precv_frame->u.hdr.rx_head=%p  precv_frame->hdr.rx_data=%p\n", precv_frame->u.hdr.rx_head, precv_frame->u.hdr.rx_data));
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("precv_frame->hdr.rx_tail=%p precv_frame->u.hdr.rx_end=%p precv_frame->hdr.len=%d \n", precv_frame->u.hdr.rx_tail, precv_frame->u.hdr.rx_end, precv_frame->u.hdr.len));
+	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():precv_frame->rx_head=%p  precv_frame->hdr.rx_data=%p\n", precv_frame->rx_head, precv_frame->rx_data));
+	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("precv_frame->hdr.rx_tail=%p precv_frame->rx_end=%p precv_frame->hdr.len=%d \n", precv_frame->rx_tail, precv_frame->rx_end, precv_frame->len));
 
-	skb->data = precv_frame->u.hdr.rx_data;
+	skb->data = precv_frame->rx_data;
 
-	skb_set_tail_pointer(skb, precv_frame->u.hdr.len);
+	skb_set_tail_pointer(skb, precv_frame->len);
 
-	skb->len = precv_frame->u.hdr.len;
+	skb->len = precv_frame->len;
 
 	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
 		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p skb->len=%d\n",
@@ -193,7 +196,7 @@ _func_enter_;
 		struct sk_buff *pskb2=NULL;
 		struct sta_info *psta = NULL;
 		struct sta_priv *pstapriv = &padapter->stapriv;
-		struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
+		struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 		int bmcast = is_multicast_ether_addr(pattrib->dst);
 
 		//DBG_8723A("bmcast=%d\n", bmcast);
@@ -244,7 +247,7 @@ _func_enter_;
 
 _recv_indicatepkt_end:
 
-	precv_frame->u.hdr.pkt = NULL; // pointers to NULL before rtw_free_recvframe()
+	precv_frame->pkt = NULL; // pointers to NULL before rtw_free_recvframe()
 
 	rtw_free_recvframe(precv_frame, pfree_recv_queue);
 

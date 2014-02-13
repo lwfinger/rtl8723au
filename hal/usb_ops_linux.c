@@ -489,9 +489,10 @@ _func_exit_;
 	return ret;
 }
 
-static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_stat *prxstat, struct phy_stat *pphy_info)
+static s32 pre_recv_entry(struct recv_frame *precvframe,
+			  struct recv_stat *prxstat, struct phy_stat *pphy_info)
 {
-	s32 ret=_SUCCESS;
+	s32 ret = _SUCCESS;
 
 	return ret;
 }
@@ -506,7 +507,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 	struct recv_stat	*prxstat;
 	struct phy_stat	*pphy_info = NULL;
 	struct sk_buff		*pkt_copy = NULL;
-	union recv_frame	*precvframe = NULL;
+	struct recv_frame	*precvframe = NULL;
 	struct rx_pkt_attrib	*pattrib = NULL;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
@@ -534,13 +535,13 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		INIT_LIST_HEAD(&precvframe->u.hdr.list);
-		precvframe->u.hdr.precvbuf = NULL;	//can't access the precvbuf for new arch.
-		precvframe->u.hdr.len=0;
+		INIT_LIST_HEAD(&precvframe->list);
+		precvframe->precvbuf = NULL;	//can't access the precvbuf for new arch.
+		precvframe->len=0;
 
 		update_recvframe_attrib(precvframe, prxstat);
 
-		pattrib = &precvframe->u.hdr.attrib;
+		pattrib = &precvframe->attrib;
 
 		if(pattrib->crc_err){
 			DBG_8723A("%s()-%d: RX Warning! rx CRC ERROR !!\n", __FUNCTION__, __LINE__);
@@ -591,13 +592,13 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		if (pkt_copy)
 		{
 			pkt_copy->dev = padapter->pnetdev;
-			precvframe->u.hdr.pkt = pkt_copy;
-			precvframe->u.hdr.rx_head = pkt_copy->data;
-			precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
+			precvframe->pkt = pkt_copy;
+			precvframe->rx_head = pkt_copy->data;
+			precvframe->rx_end = pkt_copy->data + alloc_sz;
 			skb_reserve( pkt_copy, 8 - ((unsigned long)( pkt_copy->data ) & 7 ));//force pkt_copy->data at 8-byte alignment address
 			skb_reserve( pkt_copy, shift_sz );//force ip_hdr at 8-byte alignment address according to shift_sz.
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
-			precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail = pkt_copy->data;
+			precvframe->rx_data = precvframe->rx_tail = pkt_copy->data;
 		}
 		else
 		{
@@ -608,12 +609,12 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 				goto _exit_recvbuf2recvframe;
 			}
 
-			precvframe->u.hdr.pkt = skb_clone(pskb, GFP_ATOMIC);
-			if(precvframe->u.hdr.pkt)
+			precvframe->pkt = skb_clone(pskb, GFP_ATOMIC);
+			if(precvframe->pkt)
 			{
-				precvframe->u.hdr.rx_head = precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail
+				precvframe->rx_head = precvframe->rx_data = precvframe->rx_tail
 					= pbuf+ pattrib->drvinfo_sz + RXDESC_SIZE;
-				precvframe->u.hdr.rx_end =  pbuf +pattrib->drvinfo_sz + RXDESC_SIZE+ alloc_sz;
+				precvframe->rx_end =  pbuf +pattrib->drvinfo_sz + RXDESC_SIZE+ alloc_sz;
 			}
 			else
 			{

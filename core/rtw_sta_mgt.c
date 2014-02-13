@@ -430,8 +430,7 @@ _func_enter_;
 	for(i=0; i < 16 ; i++)
 	{
 		struct list_head	*phead, *plist;
-		union recv_frame *prframe;
-		struct recv_frame_hdr *prhdr;
+		struct recv_frame *prframe;
 		_queue *ppending_recvframe_queue;
 		_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
@@ -447,11 +446,10 @@ _func_enter_;
 		plist = phead->next;
 
 		while (!list_empty(phead)) {
-			prhdr = container_of(plist, struct recv_frame_hdr, list);
-			prframe = (union recv_frame *)prhdr;
+			prframe = container_of(plist, struct recv_frame, list);
 			plist = plist->next;
 
-			list_del_init(&(prframe->u.hdr.list));
+			list_del_init(&(prframe->list));
 
 			rtw_free_recvframe(prframe, pfree_recv_queue);
 		}
