@@ -68,9 +68,6 @@ static int rtw_busy_thresh = 40;
 //int qos_enable = 0; //*
 static int rtw_ack_policy = NORMAL_ACK;
 
-static int rtw_software_encrypt;
-static int rtw_software_decrypt;
-
 static int rtw_acm_method;// 0:By SW 1:By HW.
 
 static int rtw_wmm_enable = 1;// default is set to enable the wmm.
@@ -622,8 +619,6 @@ _func_enter_;
 	registry_par->busy_thresh = (u16)rtw_busy_thresh;
 	//registry_par->qos_enable = (u8)rtw_qos_enable;
 	registry_par->ack_policy = (u8)rtw_ack_policy;
-	registry_par->software_encrypt = (u8)rtw_software_encrypt;
-	registry_par->software_decrypt = (u8)rtw_software_decrypt;
 
 	registry_par->acm_method = (u8)rtw_acm_method;
 
@@ -921,8 +916,6 @@ u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	//security_priv
 	//rtw_get_encrypt_decrypt_from_registrypriv(padapter);
 	psecuritypriv->binstallGrpkey = _FAIL;
-	psecuritypriv->sw_encrypt=pregistrypriv->software_encrypt;
-	psecuritypriv->sw_decrypt=pregistrypriv->software_decrypt;
 
 	psecuritypriv->dot11AuthAlgrthm = dot11AuthAlgrthm_Open; //open system
 	psecuritypriv->dot11PrivacyAlgrthm = _NO_PRIVACY_;

@@ -731,16 +731,13 @@ static s32 update_attrib(struct rtw_adapter *padapter, struct sk_buff *pkt, stru
 	}
 
 	RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_,
-		 ("update_attrib: encrypt=%d  securitypriv.sw_encrypt=%d\n",
-		  pattrib->encrypt, padapter->securitypriv.sw_encrypt));
+		 ("update_attrib: encrypt=%d\n", pattrib->encrypt));
 
-	if (pattrib->encrypt &&
-	    ((padapter->securitypriv.sw_encrypt == true) || (psecuritypriv->hw_decrypted == false)))
-	{
+	if (pattrib->encrypt && psecuritypriv->hw_decrypted == false) {
 		pattrib->bswenc = true;
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,
-			 ("update_attrib: encrypt=%d securitypriv.hw_decrypted=%d bswenc=true\n",
-			  pattrib->encrypt, padapter->securitypriv.sw_encrypt));
+			 ("update_attrib: encrypt=%d bswenc=true\n",
+			  pattrib->encrypt));
 	} else {
 		pattrib->bswenc = false;
 		RT_TRACE(_module_rtl871x_xmit_c_,_drv_info_,("update_attrib: bswenc=false\n"));

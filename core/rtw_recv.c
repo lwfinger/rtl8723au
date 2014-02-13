@@ -545,16 +545,16 @@ _func_enter_;
 		}
 	}
 
-	if((prxattrib->encrypt>0) && ((prxattrib->bdecrypted==0) ||(psecuritypriv->sw_decrypt==true)))
-	{
-		psecuritypriv->hw_decrypted=false;
+	if ((prxattrib->encrypt > 0) && ((prxattrib->bdecrypted == 0))) {
+		psecuritypriv->hw_decrypted = false;
+#ifdef DBG_RX_DECRYPTOR
+		DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d, "
+			  " Setting psecuritypriv->hw_decrypted = %d\n",
+			  prxattrib->bdecrypted, prxattrib->encrypt,
+			  psecuritypriv->hw_decrypted);
+#endif
 
-		#ifdef DBG_RX_DECRYPTOR
-		DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n"
-			, prxattrib->bdecrypted ,prxattrib->encrypt, psecuritypriv->hw_decrypted);
-		#endif
-
-		switch(prxattrib->encrypt){
+		switch (prxattrib->encrypt){
 		case _WEP40_:
 		case _WEP104_:
 			rtw_wep_decrypt(padapter, (u8 *)precv_frame);
@@ -568,33 +568,26 @@ _func_enter_;
 		default:
 				break;
 		}
-	}
-	else if(prxattrib->bdecrypted==1
-		&& prxattrib->encrypt >0
-		&& (psecuritypriv->busetkipkey==1 || prxattrib->encrypt !=_TKIP_ )
-		)
-	{
-		{
-			psecuritypriv->hw_decrypted=true;
-			#ifdef DBG_RX_DECRYPTOR
-			DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n"
-			, prxattrib->bdecrypted ,prxattrib->encrypt, psecuritypriv->hw_decrypted);
-			#endif
-
-		}
-	}
-	else {
-		#ifdef DBG_RX_DECRYPTOR
-		DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  psecuritypriv->hw_decrypted:%d\n"
-		, prxattrib->bdecrypted ,prxattrib->encrypt, psecuritypriv->hw_decrypted);
-		#endif
+	} else if (prxattrib->bdecrypted == 1 && prxattrib->encrypt > 0 &&
+		   (psecuritypriv->busetkipkey == 1 ||
+		    prxattrib->encrypt != _TKIP_ )) {
+			psecuritypriv->hw_decrypted = true;
+#ifdef DBG_RX_DECRYPTOR
+			DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
+				  prxattrib->bdecrypted, prxattrib->encrypt,
+				  psecuritypriv->hw_decrypted);
+#endif
+	} else {
+#ifdef DBG_RX_DECRYPTOR
+		DBG_8723A("prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  psecuritypriv->hw_decrypted:%d\n",
+			  prxattrib->bdecrypted, prxattrib->encrypt,
+			  psecuritypriv->hw_decrypted);
+#endif
 	}
 
-	if(res == _FAIL)
-	{
+	if (res == _FAIL) {
 		rtw_free_recvframe(return_packet,&padapter->recvpriv.free_recv_queue);
 		return_packet = NULL;
-
 	}
 
 _func_exit_;
@@ -2698,7 +2691,7 @@ int recv_func(struct rtw_adapter *padapter, union recv_frame *rframe)
 		/* check if need to enqueue into uc_swdec_pending_queue*/
 		if (check_fwstate(mlmepriv, WIFI_STATION_STATE) &&
 			!is_multicast_ether_addr(prxattrib->ra) && prxattrib->encrypt>0 &&
-			(prxattrib->bdecrypted == 0 ||psecuritypriv->sw_decrypt == true) &&
+			(prxattrib->bdecrypted == 0) &&
 			!is_wep_enc(psecuritypriv->dot11PrivacyAlgrthm) &&
 			!psecuritypriv->busetkipkey) {
 			rtw_enqueue_recvframe(rframe, &padapter->recvpriv.uc_swdec_pending_queue);

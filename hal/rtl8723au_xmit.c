@@ -405,7 +405,7 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 			RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("pattrib->nr_frags=%d\n", pattrib->nr_frags));
 
 			sz = pxmitpriv->frag_len;
-			sz = sz - 4 - (psecuritypriv->sw_encrypt ? 0 : pattrib->icv_len);
+			sz = sz - 4 - pattrib->icv_len;
 		}
 		else //no frag
 		{
