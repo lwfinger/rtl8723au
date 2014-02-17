@@ -169,7 +169,7 @@ struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue)
 
 		list_del_init(&pframe->list);
 		padapter = pframe->adapter;
-		if (padapter){
+		if (padapter) {
 			precvpriv = &padapter->recvpriv;
 			if (pfree_recv_queue == &precvpriv->free_recv_queue)
 				precvpriv->free_recvframe_cnt--;
@@ -196,8 +196,7 @@ int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue)
 
 _func_enter_;
 
-	if(precvframe->pkt)
-	{
+	if (precvframe->pkt) {
 		dev_kfree_skb_any(precvframe->pkt);/* free skb by driver */
 		precvframe->pkt = NULL;
 	}
@@ -210,12 +209,12 @@ _func_enter_;
 
 	list_add_tail(&(precvframe->list), get_list_head(pfree_recv_queue));
 
-	if(padapter !=NULL){
+	if (padapter){
 		if(pfree_recv_queue == &precvpriv->free_recv_queue)
-				precvpriv->free_recvframe_cnt++;
+			precvpriv->free_recvframe_cnt++;
 	}
 
-      spin_unlock_bh(&pfree_recv_queue->lock);
+	spin_unlock_bh(&pfree_recv_queue->lock);
 
 _func_exit_;
 
@@ -225,7 +224,7 @@ _func_exit_;
 int _rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
 {
 
-	struct rtw_adapter *padapter=precvframe->adapter;
+	struct rtw_adapter *padapter = precvframe->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
 _func_enter_;
@@ -235,7 +234,7 @@ _func_enter_;
 
 	list_add_tail(&(precvframe->list), get_list_head(queue));
 
-	if (padapter != NULL) {
+	if (padapter) {
 		if (queue == &precvpriv->free_recv_queue)
 			precvpriv->free_recvframe_cnt++;
 	}
@@ -2652,33 +2651,34 @@ _recv_data_drop:
 int recv_func(struct rtw_adapter *padapter, struct recv_frame *rframe);
 int recv_func(struct rtw_adapter *padapter, struct recv_frame *rframe)
 {
-	int ret;
+	int ret, r;
 	struct rx_pkt_attrib *prxattrib = &rframe->attrib;
 	struct recv_priv *recvpriv = &padapter->recvpriv;
 	struct security_priv *psecuritypriv=&padapter->securitypriv;
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 
 	/* check if need to handle uc_swdec_pending_queue*/
-	if (check_fwstate(mlmepriv, WIFI_STATION_STATE) && psecuritypriv->busetkipkey)
-	{
+	if (check_fwstate(mlmepriv, WIFI_STATION_STATE) &&
+	    psecuritypriv->busetkipkey)	{
 		struct recv_frame *pending_frame;
 
-		while((pending_frame=rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
-			if (recv_func_posthandle(padapter, pending_frame) == _SUCCESS)
+		while ((pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue))) {
+			r = recv_func_posthandle(padapter, pending_frame);
+			if (r == _SUCCESS)
 				DBG_8723A("%s: dequeue uc_swdec_pending_queue\n", __func__);
 		}
 	}
 
 	ret = recv_func_prehandle(padapter, rframe);
 
-	if(ret == _SUCCESS) {
-
+	if (ret == _SUCCESS) {
 		/* check if need to enqueue into uc_swdec_pending_queue*/
 		if (check_fwstate(mlmepriv, WIFI_STATION_STATE) &&
-			!is_multicast_ether_addr(prxattrib->ra) && prxattrib->encrypt>0 &&
-			(prxattrib->bdecrypted == 0) &&
-			!is_wep_enc(psecuritypriv->dot11PrivacyAlgrthm) &&
-			!psecuritypriv->busetkipkey) {
+		    !is_multicast_ether_addr(prxattrib->ra) &&
+		    prxattrib->encrypt > 0 &&
+		    (prxattrib->bdecrypted == 0) &&
+		    !is_wep_enc(psecuritypriv->dot11PrivacyAlgrthm) &&
+		    !psecuritypriv->busetkipkey) {
 			rtw_enqueue_recvframe(rframe, &padapter->recvpriv.uc_swdec_pending_queue);
 			DBG_8723A("%s: no key, enqueue uc_swdec_pending_queue\n", __func__);
 			goto exit;
@@ -2705,8 +2705,7 @@ _func_enter_;
 
 	precvpriv = &padapter->recvpriv;
 
-	if ((ret = recv_func(padapter, precvframe)) == _FAIL)
-	{
+	if ((ret = recv_func(padapter, precvframe)) == _FAIL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("rtw_recv_entry: recv_func return fail!!!\n"));
 		goto _recv_entry_drop;
 	}
@@ -2736,55 +2735,69 @@ void rtw_signal_stat_timer_hdl(unsigned long data)
 	u8 avg_signal_qual = 0;
 	u32 num_signal_strength = 0;
 	u32 num_signal_qual = 0;
-	u8 _alpha = 3; /*  this value is based on converging_constant = 5000 and sampling_interval = 1000 */
+	u8 _alpha = 3;	/* this value is based on converging_constant = 5000 */
+			/* and sampling_interval = 1000 */
 
-	if(adapter->recvpriv.is_signal_dbg) {
-		/* update the user specific value, signal_strength_dbg, to signal_strength, rssi */
-		adapter->recvpriv.signal_strength= adapter->recvpriv.signal_strength_dbg;
-		adapter->recvpriv.rssi=(s8)translate_percentage_to_dbm((u8)adapter->recvpriv.signal_strength_dbg);
+	if (adapter->recvpriv.is_signal_dbg) {
+		/* update the user specific value, signal_strength_dbg, */
+		/* to signal_strength, rssi */
+		adapter->recvpriv.signal_strength =
+			adapter->recvpriv.signal_strength_dbg;
+		adapter->recvpriv.rssi =
+			(s8)translate_percentage_to_dbm((u8)adapter->recvpriv.signal_strength_dbg);
 	} else {
 
-		if(recvpriv->signal_strength_data.update_req == 0) {/*  update_req is clear, means we got rx */
-			avg_signal_strength = recvpriv->signal_strength_data.avg_val;
-			num_signal_strength = recvpriv->signal_strength_data.total_num;
-			/*  after avg_vals are accquired, we can re-stat the signal values */
+		if (recvpriv->signal_strength_data.update_req == 0) {
+			/*  update_req is clear, means we got rx */
+			avg_signal_strength =
+				recvpriv->signal_strength_data.avg_val;
+			num_signal_strength =
+				recvpriv->signal_strength_data.total_num;
+			/*  after avg_vals are accquired, we can re-stat */
+			/* the signal values */
 			recvpriv->signal_strength_data.update_req = 1;
 		}
 
-		if(recvpriv->signal_qual_data.update_req == 0) {/*  update_req is clear, means we got rx */
+		if (recvpriv->signal_qual_data.update_req == 0) {
+			/*  update_req is clear, means we got rx */
 			avg_signal_qual = recvpriv->signal_qual_data.avg_val;
 			num_signal_qual = recvpriv->signal_qual_data.total_num;
-			/*  after avg_vals are accquired, we can re-stat the signal values */
+			/*  after avg_vals are accquired, we can re-stat */
+			/*the signal values */
 			recvpriv->signal_qual_data.update_req = 1;
 		}
 
 		/* update value of signal_strength, rssi, signal_qual */
-		if(check_fwstate(&adapter->mlmepriv, _FW_UNDER_SURVEY) == false) {
-			tmp_s = (avg_signal_strength+(_alpha-1)*recvpriv->signal_strength);
-			if(tmp_s %_alpha)
-				tmp_s = tmp_s/_alpha + 1;
+		if (check_fwstate(&adapter->mlmepriv, _FW_UNDER_SURVEY) ==
+		    false) {
+			tmp_s = (avg_signal_strength + (_alpha - 1) *
+				 recvpriv->signal_strength);
+			if (tmp_s %_alpha)
+				tmp_s = tmp_s / _alpha + 1;
 			else
-				tmp_s = tmp_s/_alpha;
-			if(tmp_s>100)
+				tmp_s = tmp_s / _alpha;
+			if (tmp_s > 100)
 				tmp_s = 100;
 
-			tmp_q = (avg_signal_qual+(_alpha-1)*recvpriv->signal_qual);
-			if(tmp_q %_alpha)
-				tmp_q = tmp_q/_alpha + 1;
+			tmp_q = (avg_signal_qual + (_alpha - 1) *
+				 recvpriv->signal_qual);
+			if (tmp_q %_alpha)
+				tmp_q = tmp_q / _alpha + 1;
 			else
-				tmp_q = tmp_q/_alpha;
-			if(tmp_q>100)
+				tmp_q = tmp_q / _alpha;
+			if (tmp_q > 100)
 				tmp_q = 100;
 
 			recvpriv->signal_strength = tmp_s;
 			recvpriv->rssi = (s8)translate_percentage_to_dbm(tmp_s);
 			recvpriv->signal_qual = tmp_q;
 
-			DBG_8723A("%s signal_strength:%3u, rssi:%3d, signal_qual:%3u"
-				 ", num_signal_strength:%u, num_signal_qual:%u\n",
-				 __FUNCTION__, recvpriv->signal_strength,
-				 recvpriv->rssi, recvpriv->signal_qual,
-				 num_signal_strength, num_signal_qual
+			DBG_8723A("%s signal_strength:%3u, rssi:%3d, "
+				  "signal_qual:%3u, num_signal_strength:%u, "
+				  "num_signal_qual:%u\n",
+				  __FUNCTION__, recvpriv->signal_strength,
+				  recvpriv->rssi, recvpriv->signal_qual,
+				  num_signal_strength, num_signal_qual
 			);
 		}
 	}
