@@ -44,8 +44,6 @@ void	_rtw_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv)
 
 _func_enter_;
 
-	memset((unsigned char *)psta_xmitpriv, 0, sizeof (struct sta_xmit_priv));
-
 	spin_lock_init(&psta_xmitpriv->lock);
 
 	/* for(i = 0 ; i < MAX_NUMBLKS; i++) */

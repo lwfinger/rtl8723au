@@ -47,8 +47,6 @@ void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
 
 _func_enter_;
 
-	memset((u8 *)psta_recvpriv, 0, sizeof (struct sta_recv_priv));
-
 	spin_lock_init(&psta_recvpriv->lock);
 
 	/* for(i=0; i<MAX_RX_NUMBLKS; i++) */
