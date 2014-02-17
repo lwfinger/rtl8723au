@@ -149,50 +149,36 @@ _func_enter_;
 _func_exit_;
 }
 
-struct recv_frame *_rtw_alloc_recvframe (_queue *pfree_recv_queue)
+struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue)
 {
-	struct recv_frame *hdr;
-	struct list_head	*plist, *phead;
+	struct recv_frame *pframe;
+	struct list_head *plist, *phead;
 	struct rtw_adapter *padapter;
 	struct recv_priv *precvpriv;
-_func_enter_;
 
-	if(_rtw_queue_empty(pfree_recv_queue) == true)
-	{
-		hdr = NULL;
-	}
-	else
-	{
+	spin_lock_bh(&pfree_recv_queue->lock);
+
+	if (_rtw_queue_empty(pfree_recv_queue) == true)
+		pframe = NULL;
+	else {
 		phead = get_list_head(pfree_recv_queue);
 
 		plist = phead->next;
 
-		hdr = container_of(plist, struct recv_frame, list);
+		pframe = container_of(plist, struct recv_frame, list);
 
-		list_del_init(&hdr->list);
-		padapter=hdr->adapter;
-		if(padapter !=NULL){
-			precvpriv=&padapter->recvpriv;
-			if(pfree_recv_queue == &precvpriv->free_recv_queue)
+		list_del_init(&pframe->list);
+		padapter = pframe->adapter;
+		if (padapter){
+			precvpriv = &padapter->recvpriv;
+			if (pfree_recv_queue == &precvpriv->free_recv_queue)
 				precvpriv->free_recvframe_cnt--;
 		}
 	}
 
-_func_exit_;
-	return hdr;
-}
-
-struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue)
-{
-	struct recv_frame  *precvframe;
-
-	spin_lock_bh(&pfree_recv_queue->lock);
-
-	precvframe = _rtw_alloc_recvframe(pfree_recv_queue);
-
 	spin_unlock_bh(&pfree_recv_queue->lock);
 
-	return precvframe;
+	return pframe;
 }
 
 void rtw_init_recvframe(struct recv_frame *precvframe, struct recv_priv *precvpriv)
