@@ -357,22 +357,6 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue);
 
 void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
 
-static inline u8 *get_rxmem(struct recv_frame *precvframe)
-{
-	//always return rx_head...
-	if(precvframe==NULL)
-		return NULL;
-
-	return precvframe->rx_head;
-}
-
-static inline u8 *get_rx_status(struct recv_frame *precvframe)
-{
-
-	return get_rxmem(precvframe);
-
-}
-
 static inline u8 *recvframe_push(struct recv_frame *precvframe, int sz)
 {
 	// append data before rx_data
