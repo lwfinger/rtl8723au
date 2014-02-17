@@ -35,47 +35,51 @@
 //#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 
-void rtl8723au_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
+void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
+			    struct recv_buf *precvbuf)
 {
-
 	precvbuf->transfer_len = 0;
 
 	precvbuf->len = 0;
 
 	precvbuf->ref_cnt = 0;
 
-	if(precvbuf->pbuf)
-	{
+	if (precvbuf->pbuf) {
 		precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pbuf;
 		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
 	}
 
 }
 
-int	rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
+int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 {
-	struct recv_priv	*precvpriv = &padapter->recvpriv;
-	int	i, res = _SUCCESS;
+	struct recv_priv *precvpriv = &padapter->recvpriv;
+	int i, size, res = _SUCCESS;
 	struct recv_buf *precvbuf;
+	unsigned long tmpaddr;
+	unsigned long alignment;
+	struct sk_buff *pskb;
 
 	tasklet_init(&precvpriv->recv_tasklet,
-	     (void(*)(unsigned long))rtl8723au_recv_tasklet,
-	     (unsigned long)padapter);
+		     (void(*)(unsigned long))rtl8723au_recv_tasklet,
+		     (unsigned long)padapter);
 
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
-	if(precvpriv->int_in_urb == NULL)
+	if (!precvpriv->int_in_urb)
 		DBG_8723A("alloc_urb for interrupt in endpoint fail !!!!\n");
 	precvpriv->int_in_buf = kzalloc(USB_INTR_CONTENT_LENGTH, GFP_KERNEL);
-	if (precvpriv->int_in_buf == NULL)
+	if (!precvpriv->int_in_buf)
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
 
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
-	precvpriv->pallocated_recv_buf = kzalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4, GFP_KERNEL);
-	if(precvpriv->pallocated_recv_buf==NULL){
-		res= _FAIL;
-		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("alloc recv_buf fail!\n"));
+	size = NR_RECVBUFF *sizeof(struct recv_buf) + 4;
+	precvpriv->pallocated_recv_buf = kzalloc(size , GFP_KERNEL);
+	if (!precvpriv->pallocated_recv_buf) {
+		res = _FAIL;
+		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
+			 ("alloc recv_buf fail!\n"));
 		goto exit;
 	}
 
@@ -83,8 +87,7 @@ int	rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
-	for(i=0; i < NR_RECVBUFF ; i++)
-	{
+	for (i = 0; i < NR_RECVBUFF; i++) {
 		INIT_LIST_HEAD(&precvbuf->list);
 
 		spin_lock_init(&precvbuf->recvbuf_lock);
@@ -92,73 +95,58 @@ int	rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
 
 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
-		if(res==_FAIL)
+		if (res == _FAIL)
 			break;
 
 		precvbuf->ref_cnt = 0;
 		precvbuf->adapter =padapter;
 
-
 		//list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue));
-
 		precvbuf++;
-
 	}
 
 	precvpriv->free_recv_buf_queue_cnt = NR_RECVBUFF;
 
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
+	skb_queue_head_init(&precvpriv->free_recv_skb_queue);
 
-	{
-		int i;
-		unsigned long tmpaddr = 0;
-		unsigned long alignment = 0;
-		struct sk_buff *pskb = NULL;
+	for (i = 0; i < NR_PREALLOC_RECV_SKB; i++) {
+		size = MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ;
+		pskb = __netdev_alloc_skb(padapter->pnetdev, size, GFP_KERNEL);
 
-		skb_queue_head_init(&precvpriv->free_recv_skb_queue);
+		if (pskb) {
+			pskb->dev = padapter->pnetdev;
 
-		for(i=0; i<NR_PREALLOC_RECV_SKB; i++) {
+			tmpaddr = (unsigned long)pskb->data;
+			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
+			skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
 
-			pskb = __netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, GFP_KERNEL);
-
-			if(pskb) {
-				pskb->dev = padapter->pnetdev;
-
-				tmpaddr = (unsigned long)pskb->data;
-				alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
-				skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
-
-				skb_queue_tail(&precvpriv->free_recv_skb_queue, pskb);
-			}
-
-			pskb=NULL;
-
+			skb_queue_tail(&precvpriv->free_recv_skb_queue, pskb);
 		}
+
+		pskb = NULL;
 	}
 
 exit:
-
 	return res;
-
 }
 
 void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 {
 	int	i;
 	struct recv_buf	*precvbuf;
-	struct recv_priv	*precvpriv = &padapter->recvpriv;
+	struct recv_priv *precvpriv = &padapter->recvpriv;
 
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
-	for(i=0; i < NR_RECVBUFF ; i++)
-	{
+	for (i = 0; i < NR_RECVBUFF; i++) {
 		rtw_os_recvbuf_resource_free(padapter, precvbuf);
 		precvbuf++;
 	}
 
 	kfree(precvpriv->pallocated_recv_buf);
 
-	if(precvpriv->int_in_urb)
+	if (precvpriv->int_in_urb)
 		usb_free_urb(precvpriv->int_in_urb);
 	kfree(precvpriv->int_in_buf);
 
@@ -169,7 +157,8 @@ void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 	skb_queue_purge(&precvpriv->rx_skb_queue);
 
 	if (skb_queue_len(&precvpriv->free_recv_skb_queue)) {
-		DBG_8723A(KERN_WARNING "free_recv_skb_queue not empty, %d\n", skb_queue_len(&precvpriv->free_recv_skb_queue));
+		DBG_8723A(KERN_WARNING "free_recv_skb_queue not empty, %d\n",
+			  skb_queue_len(&precvpriv->free_recv_skb_queue));
 	}
 
 	skb_queue_purge(&precvpriv->free_recv_skb_queue);
@@ -178,8 +167,8 @@ void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 void update_recvframe_attrib(struct recv_frame *precvframe,
 			     struct recv_stat *prxstat)
 {
-	struct rx_pkt_attrib	*pattrib;
-	struct recv_stat	report;
+	struct rx_pkt_attrib *pattrib;
+	struct recv_stat report;
 	struct rxreport_8723a *prxreport;
 
 	report.rxdw0 = le32_to_cpu(prxstat->rxdw0);
@@ -229,72 +218,67 @@ void update_recvframe_attrib(struct recv_frame *precvframe,
 void update_recvframe_phyinfo(struct recv_frame *precvframe,
 			      struct phy_stat *pphy_status)
 {
-	struct rtw_adapter *	padapter = precvframe->adapter;
-	struct rx_pkt_attrib	*pattrib = &precvframe->attrib;
-	struct hal_data_8723a		*pHalData= GET_HAL_DATA(padapter);
-	PODM_PHY_INFO_T		pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);
-	u8					*wlanhdr;
-	ODM_PACKET_INFO_T	pkt_info;
+	struct rtw_adapter *padapter = precvframe->adapter;
+	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
+	struct hal_data_8723a *pHalData= GET_HAL_DATA(padapter);
+	PODM_PHY_INFO_T pPHYInfo = (PODM_PHY_INFO_T)(&pattrib->phy_info);
+	u8 *wlanhdr;
+	ODM_PACKET_INFO_T pkt_info;
 	u8 *sa;
-	//_irqL		irqL;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
 
-	pkt_info.bPacketMatchBSSID =false;
+	pkt_info.bPacketMatchBSSID = false;
 	pkt_info.bPacketToSelf = false;
 	pkt_info.bPacketBeacon = false;
 
 	wlanhdr = precvframe->rx_data;
 
-	pkt_info.bPacketMatchBSSID = ((!IsFrameTypeCtrl(wlanhdr)) &&
-		!pattrib->icv_err && !pattrib->crc_err &&
-		!memcmp(get_hdr_bssid(wlanhdr), get_bssid(&padapter->mlmepriv), ETH_ALEN));
+	pkt_info.bPacketMatchBSSID =
+		((!IsFrameTypeCtrl(wlanhdr)) &&
+		 !pattrib->icv_err &&
+		 !pattrib->crc_err &&
+		 !memcmp(get_hdr_bssid(wlanhdr),
+			 get_bssid(&padapter->mlmepriv), ETH_ALEN));
 
 	pkt_info.bPacketToSelf = pkt_info.bPacketMatchBSSID && (!memcmp(get_da(wlanhdr), myid(&padapter->eeprompriv), ETH_ALEN));
 
-	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
+	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID &&
+		(GetFrameSubType(wlanhdr) == WIFI_BEACON);
 
 	pkt_info.StationID = 0xFF;
-	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true){
+	if (pkt_info.bPacketBeacon) {
+		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true)
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
-		}
 		//to do Ad-hoc
-	}
-	else{
+	} else {
 		sa = get_sa(wlanhdr);
 	}
 
 	pstapriv = &padapter->stapriv;
 	psta = rtw_get_stainfo(pstapriv, sa);
-	if (psta)
-	{
-             pkt_info.StationID = psta->mac_id;
+	if (psta) {
+		pkt_info.StationID = psta->mac_id;
 		//printk("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID);
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 
-	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
+	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,
+			   (u8 *)pphy_status,&(pkt_info));
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
-		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true))
-	{
-		if (psta)
-		{
+	    (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true)) {
+		if (psta) {
 			precvframe->psta = psta;
 			rtl8723a_process_phy_info(padapter, precvframe);
                 }
-	}
-	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
-	{
-		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == true)
-		{
+	} else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon) {
+		if (check_fwstate(&padapter->mlmepriv,
+				  WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) ==
+		    true) {
 			if (psta)
-			{
 				precvframe->psta = psta;
-			}
 		}
-
 		rtl8723a_process_phy_info(padapter, precvframe);
 	}
 }
