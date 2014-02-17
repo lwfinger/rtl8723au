@@ -344,7 +344,6 @@ struct recv_frame
 struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue);  //get a free recv_frame from pfree_recv_queue
 int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue);
 
-int _rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue);
 int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue);
 
 void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue);

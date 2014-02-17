@@ -211,15 +211,14 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-int _rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
+int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
 {
-
 	struct rtw_adapter *padapter = precvframe->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
+	int ret;
 
-_func_enter_;
+	spin_lock_bh(&queue->lock);
 
-	/* INIT_LIST_HEAD(&(precvframe->list)); */
 	list_del_init(&(precvframe->list));
 
 	list_add_tail(&(precvframe->list), get_list_head(queue));
@@ -229,30 +228,10 @@ _func_enter_;
 			precvpriv->free_recvframe_cnt++;
 	}
 
-_func_exit_;
+	spin_unlock_bh(&queue->lock);
 
 	return _SUCCESS;
 }
-
-int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
-{
-	int ret;
-
-	/* _spinlock(&pfree_recv_queue->lock); */
-	spin_lock_bh(&queue->lock);
-	ret = _rtw_enqueue_recvframe(precvframe, queue);
-	/* spin_unlock(&pfree_recv_queue->lock); */
-	spin_unlock_bh(&queue->lock);
-
-	return ret;
-}
-
-/*
-int	rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
-{
-	return rtw_free_recvframe(precvframe, queue);
-}
-*/
 
 /*
 caller : defrag ; recvframe_chk_defrag in recv_thread  (passive)
