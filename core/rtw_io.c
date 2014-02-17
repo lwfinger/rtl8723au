@@ -161,10 +161,12 @@ void _rtw_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &(pio_priv->intf);
 
-	if ((adapter->bDriverStopped ==true) ||
-	    (adapter->bSurpriseRemoved == true))
-	{
-	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_, ("rtw_read_mem:bDriverStopped(%d) OR bSurpriseRemoved(%d)", adapter->bDriverStopped, adapter->bSurpriseRemoved));
+	if ((adapter->bDriverStopped == true) ||
+	    (adapter->bSurpriseRemoved == true)) {
+	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_,
+		      ("rtw_read_mem:bDriverStopped(%d) OR "
+		       "bSurpriseRemoved(%d)", adapter->bDriverStopped,
+		       adapter->bSurpriseRemoved));
 	     return;
 	}
 
@@ -184,10 +186,12 @@ void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &(pio_priv->intf);
 
-	if ((adapter->bDriverStopped ==true) ||
-	    (adapter->bSurpriseRemoved == true))
-	{
-	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_, ("rtw_read_port:bDriverStopped(%d) OR bSurpriseRemoved(%d)", adapter->bDriverStopped, adapter->bSurpriseRemoved));
+	if ((adapter->bDriverStopped == true) ||
+	    (adapter->bSurpriseRemoved == true)) {
+	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_,
+		      ("rtw_read_port:bDriverStopped(%d) OR "
+		       "bSurpriseRemoved(%d)", adapter->bDriverStopped,
+		       adapter->bSurpriseRemoved));
 	     return;
 	}
 
@@ -202,7 +206,7 @@ void _rtw_read_port_cancel(struct rtw_adapter *adapter)
 
 	_read_port_cancel = pintfhdl->io_ops._read_port_cancel;
 
-	if(_read_port_cancel)
+	if (_read_port_cancel)
 		_read_port_cancel(pintfhdl);
 }
 
@@ -217,7 +221,8 @@ u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 	return ret;
 }
 
-u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int timeout_ms)
+u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt,
+			     u8 *pmem, int timeout_ms)
 {
 	int ret = _SUCCESS;
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)pmem;
@@ -246,7 +251,8 @@ void _rtw_write_port_cancel(struct rtw_adapter *adapter)
 		_write_port_cancel(pintfhdl);
 }
 
-int rtw_init_io_priv(struct rtw_adapter *padapter, void (*set_intf_ops)(struct _io_ops *pops))
+int rtw_init_io_priv(struct rtw_adapter *padapter,
+		     void (*set_intf_ops)(struct _io_ops *pops))
 {
 	struct io_priv	*piopriv = &padapter->iopriv;
 	struct intf_hdl *pintf = &piopriv->intf;
@@ -280,8 +286,9 @@ int write_sniff_num = sizeof(write_sniff_ranges)/sizeof(u16)/2;
 bool match_read_sniff_ranges(u16 addr, u16 len)
 {
 	int i;
-	for (i = 0; i<read_sniff_num; i++) {
-		if (addr + len > read_sniff_ranges[i][0] && addr <= read_sniff_ranges[i][1])
+	for (i = 0; i < read_sniff_num; i++) {
+		if (addr + len > read_sniff_ranges[i][0] &&
+		    addr <= read_sniff_ranges[i][1])
 			return true;
 	}
 
@@ -291,69 +298,84 @@ bool match_read_sniff_ranges(u16 addr, u16 len)
 bool match_write_sniff_ranges(u16 addr, u16 len)
 {
 	int i;
-	for (i = 0; i<write_sniff_num; i++) {
-		if (addr + len > write_sniff_ranges[i][0] && addr <= write_sniff_ranges[i][1])
+	for (i = 0; i < write_sniff_num; i++) {
+		if (addr + len > write_sniff_ranges[i][0] &&
+		    addr <= write_sniff_ranges[i][1])
 			return true;
 	}
 
 	return false;
 }
 
-u8 dbg_rtw_read8(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line)
+u8 dbg_rtw_read8(struct rtw_adapter *adapter, u32 addr,
+		 const char *caller, const int line)
 {
 	u8 val = _rtw_read8(adapter, addr);
 
 	if (match_read_sniff_ranges(addr, 1))
-		DBG_8723A("DBG_IO %s:%d rtw_read8(0x%04x) return 0x%02x\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_read8(0x%04x) return 0x%02x\n",
+			  caller, line, addr, val);
 
 	return val;
 }
 
-u16 dbg_rtw_read16(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line)
+u16 dbg_rtw_read16(struct rtw_adapter *adapter, u32 addr,
+		   const char *caller, const int line)
 {
 	u16 val = _rtw_read16(adapter, addr);
 
 	if (match_read_sniff_ranges(addr, 2))
-		DBG_8723A("DBG_IO %s:%d rtw_read16(0x%04x) return 0x%04x\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_read16(0x%04x) return 0x%04x\n",
+			  caller, line, addr, val);
 
 	return val;
 }
 
-u32 dbg_rtw_read32(struct rtw_adapter *adapter, u32 addr, const char *caller, const int line)
+u32 dbg_rtw_read32(struct rtw_adapter *adapter, u32 addr,
+		   const char *caller, const int line)
 {
 	u32 val = _rtw_read32(adapter, addr);
 
 	if (match_read_sniff_ranges(addr, 4))
-		DBG_8723A("DBG_IO %s:%d rtw_read32(0x%04x) return 0x%08x\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_read32(0x%04x) return 0x%08x\n",
+			  caller, line, addr, val);
 
 	return val;
 }
 
-int dbg_rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val, const char *caller, const int line)
+int dbg_rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val,
+		   const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 1))
-		DBG_8723A("DBG_IO %s:%d rtw_write8(0x%04x, 0x%02x)\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_write8(0x%04x, 0x%02x)\n",
+			  caller, line, addr, val);
 
 	return _rtw_write8(adapter, addr, val);
 }
-int dbg_rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val, const char *caller, const int line)
+int dbg_rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val,
+		    const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 2))
-		DBG_8723A("DBG_IO %s:%d rtw_write16(0x%04x, 0x%04x)\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_write16(0x%04x, 0x%04x)\n",
+			  caller, line, addr, val);
 
 	return _rtw_write16(adapter, addr, val);
 }
-int dbg_rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val, const char *caller, const int line)
+int dbg_rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val,
+		    const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, 4))
-		DBG_8723A("DBG_IO %s:%d rtw_write32(0x%04x, 0x%08x)\n", caller, line, addr, val);
+		DBG_8723A("DBG_IO %s:%d rtw_write32(0x%04x, 0x%08x)\n",
+			  caller, line, addr, val);
 
 	return _rtw_write32(adapter, addr, val);
 }
-int dbg_rtw_writeN(struct rtw_adapter *adapter, u32 addr ,u32 length , u8 *data, const char *caller, const int line)
+int dbg_rtw_writeN(struct rtw_adapter *adapter, u32 addr, u32 length, u8 *data,
+		   const char *caller, const int line)
 {
 	if (match_write_sniff_ranges(addr, length))
-		DBG_8723A("DBG_IO %s:%d rtw_writeN(0x%04x, %u)\n", caller, line, addr, length);
+		DBG_8723A("DBG_IO %s:%d rtw_writeN(0x%04x, %u)\n",
+			  caller, line, addr, length);
 
 	return _rtw_writeN(adapter, addr, length, data);
 }
