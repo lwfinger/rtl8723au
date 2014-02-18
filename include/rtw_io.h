@@ -413,26 +413,6 @@ void ioreq_write8(struct rtw_adapter *adapter, u32 addr, u8 val);
 void ioreq_write16(struct rtw_adapter *adapter, u32 addr, u16 val);
 void ioreq_write32(struct rtw_adapter *adapter, u32 addr, u32 val);
 
-uint async_read8(struct rtw_adapter *adapter, u32 addr, u8 *pbuff,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-uint async_read16(struct rtw_adapter *adapter, u32 addr,  u8 *pbuff,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-uint async_read32(struct rtw_adapter *adapter, u32 addr,  u8 *pbuff,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-
-void async_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-void async_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-
-void async_write8(struct rtw_adapter *adapter, u32 addr, u8 val,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-void async_write16(struct rtw_adapter *adapter, u32 addr, u16 val,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-void async_write32(struct rtw_adapter *adapter, u32 addr, u32 val,
-	void (*_async_io_callback)(struct rtw_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
-
-void async_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-void async_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-
 int rtw_init_io_priv(struct rtw_adapter *padapter, void (*set_intf_ops)(struct _io_ops *pops));
 
 uint alloc_io_queue(struct rtw_adapter *adapter);
