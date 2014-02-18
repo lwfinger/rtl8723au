@@ -284,7 +284,6 @@ struct recv_buf
 	u32 alloc_sz;
 
 	u8  irp_pending;
-	int  transfer_len;
 	struct sk_buff *pskb;
 	u8	reuse;
 };

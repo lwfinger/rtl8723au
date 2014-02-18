@@ -79,8 +79,6 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter, struct recv_buf 
 
 	precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pend = NULL;
 
-	precvbuf->transfer_len = 0;
-
 	precvbuf->len = 0;
 	return res;
 }

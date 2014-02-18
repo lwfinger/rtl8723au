@@ -38,8 +38,6 @@
 void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
 			    struct recv_buf *precvbuf)
 {
-	precvbuf->transfer_len = 0;
-
 	precvbuf->len = 0;
 
 	precvbuf->ref_cnt = 0;

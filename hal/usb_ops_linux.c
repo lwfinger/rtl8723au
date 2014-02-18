@@ -729,7 +729,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			rtw_reset_continual_urb_error(
 				adapter_to_dvobj(padapter));
 
-			precvbuf->transfer_len = purb->actual_length;
 			skb_put(precvbuf->pskb, purb->actual_length);
 			skb_queue_tail(&precvpriv->rx_skb_queue,
 				       precvbuf->pskb);
