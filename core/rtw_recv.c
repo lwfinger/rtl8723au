@@ -80,17 +80,14 @@ _func_enter_;
 
 	rtw_os_recv_resource_init(precvpriv, padapter);
 
-	precvpriv->pallocated_frame_buf = rtw_zvmalloc(NR_RECVFRAME * sizeof(struct recv_frame) + RXFRAME_ALIGN_SZ);
+	precvpriv->pallocated_frame_buf = rtw_zvmalloc(NR_RECVFRAME * sizeof(struct recv_frame));
 
 	if(precvpriv->pallocated_frame_buf==NULL){
 		res= _FAIL;
 		goto exit;
 	}
-	/* memset(precvpriv->pallocated_frame_buf, 0, NR_RECVFRAME * sizeof(struct recv_frame) + RXFRAME_ALIGN_SZ); */
 
-	precvpriv->precv_frame_buf = PTR_ALIGN(precvpriv->pallocated_frame_buf, RXFRAME_ALIGN_SZ);
-
-	precvframe = (struct recv_frame*) precvpriv->precv_frame_buf;
+	precvframe = precvpriv->pallocated_frame_buf;
 
 	for(i=0; i < NR_RECVFRAME ; i++)
 	{
@@ -139,7 +136,7 @@ _func_enter_;
 	rtw_os_recv_resource_free(precvpriv);
 
 	if(precvpriv->pallocated_frame_buf) {
-		rtw_vmfree(precvpriv->pallocated_frame_buf, NR_RECVFRAME * sizeof(struct recv_frame) + RXFRAME_ALIGN_SZ);
+		rtw_vmfree(precvpriv->pallocated_frame_buf, NR_RECVFRAME * sizeof(struct recv_frame));
 	}
 
 	rtw_hal_free_recv_priv(padapter);

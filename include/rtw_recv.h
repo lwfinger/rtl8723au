@@ -26,9 +26,6 @@
 
 #define NR_RECVFRAME 256
 
-#define RXFRAME_ALIGN	8
-#define RXFRAME_ALIGN_SZ	(1<<RXFRAME_ALIGN)
-
 #define MAX_RXFRAME_CNT	512
 #define MAX_RX_NUMBLKS		(32)
 #define RECVFRAME_HDR_ALIGN 128
@@ -190,9 +187,7 @@ struct recv_priv
 	_queue	recv_pending_queue;
 	_queue	uc_swdec_pending_queue;
 
-
-	u8 *pallocated_frame_buf;
-	u8 *precv_frame_buf;
+	void *pallocated_frame_buf;
 
 	uint free_recvframe_cnt;
 
