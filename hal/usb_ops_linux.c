@@ -705,7 +705,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			  "bSurpriseRemoved(%d)\n", padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved));
 
-		precvbuf->reuse = true;
 		DBG_8723A("%s()-%d: RX Warning! bDriverStopped(%d) OR "
 			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
 			  __FUNCTION__, __LINE__,padapter->bDriverStopped,
@@ -720,7 +719,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				 ("usb_read_port_complete: (purb->actual_"
 				  "length > MAX_RECVBUF_SZ) || (purb->actual_"
 				  "length < RXDESC_SIZE)\n"));
-			precvbuf->reuse = true;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
 				      precvbuf);
 			DBG_8723A("%s()-%d: RX Warning!\n",
@@ -737,7 +735,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				tasklet_schedule(&precvpriv->recv_tasklet);
 
 			precvbuf->pskb = NULL;
-			precvbuf->reuse = false;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
 				      precvbuf);
 		}
@@ -776,7 +773,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				pHalData = GET_HAL_DATA(padapter);
 				pHalData->srestpriv.Wifi_Error_Status =
 					USB_READ_PORT_FAIL;
-				precvbuf->reuse = true;
 				rtw_read_port(padapter, precvpriv->ff_hwaddr,
 					      0, precvbuf);
 				break;
@@ -826,15 +822,13 @@ _func_enter_;
 		return _FAIL;
 	}
 
-	if ((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
-		if (NULL != (precvbuf->pskb =
-			     skb_dequeue(&precvpriv->free_recv_skb_queue)))
-			precvbuf->reuse = true;
-	}
+	if (!precvbuf->pskb)
+		precvbuf->pskb = skb_dequeue(&precvpriv->free_recv_skb_queue);
+
 	rtl8723au_init_recvbuf(adapter, precvbuf);
 
 	//re-assign for linux based on skb
-	if ((precvbuf->reuse == false) || (precvbuf->pskb == NULL)) {
+	if (!precvbuf->pskb) {
 		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 		if (precvbuf->pskb == NULL) {
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("init_recvbuf(): alloc_skb fail!\n"));
@@ -856,8 +850,6 @@ _func_enter_;
 		precvbuf->ptail = skb_tail_pointer(precvbuf->pskb);
 		precvbuf->pend = skb_end_pointer(precvbuf->pskb);
 		precvbuf->pbuf = precvbuf->pskb->data;
-
-		precvbuf->reuse = false;
 	}
 
 	precvpriv->rx_pending_cnt++;

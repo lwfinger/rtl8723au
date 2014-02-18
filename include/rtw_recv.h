@@ -285,7 +285,6 @@ struct recv_buf
 
 	u8  irp_pending;
 	struct sk_buff *pskb;
-	u8	reuse;
 };
 
 

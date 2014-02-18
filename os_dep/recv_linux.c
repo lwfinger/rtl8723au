@@ -73,8 +73,6 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter, struct recv_buf 
 
 	precvbuf->pskb = NULL;
 
-	precvbuf->reuse = false;
-
 	precvbuf->pallocated_buf  = precvbuf->pbuf = NULL;
 
 	precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pend = NULL;
@@ -273,7 +271,6 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 	dev_kfree_skb_any(precvbuf->pskb);
 
 	precvbuf->pskb = NULL;
-	precvbuf->reuse = false;
 
 	if(precvbuf->irp_pending == false)
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, precvbuf);

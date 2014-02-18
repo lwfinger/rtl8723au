@@ -146,7 +146,6 @@ void usb_read_port_cancel(struct intf_hdl *pintfhdl)
 
 	for (i=0; i < NR_RECVBUFF ; i++) {
 
-		precvbuf->reuse = true;
 		if (precvbuf->purb)
 			usb_kill_urb(precvbuf->purb);
 		precvbuf++;
