@@ -1902,7 +1902,7 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	struct dvobj_priv *pdev= adapter_to_dvobj(Adapter);
 	struct intf_hdl * pintfhdl=&Adapter->iopriv.intf;
 	struct recv_priv *precvpriv = &(Adapter->recvpriv);
-	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
+	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, struct recv_buf *rbuf);
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
 	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
 
@@ -1920,8 +1920,7 @@ _func_enter_;
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 	for(i=0; i<NR_RECVBUFF; i++)
 	{
-		if(_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf) == false )
-		{
+		if (_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, precvbuf) == false) {
 			RT_TRACE(_module_hci_hal_init_c_,_drv_err_,("usb_rx_init: usb_read_port error \n"));
 			status = _FAIL;
 			goto exit;

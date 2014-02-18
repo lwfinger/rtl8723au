@@ -429,7 +429,7 @@ static s32 rtw_dump_xframe(struct rtw_adapter *padapter, struct xmit_frame *pxmi
 		}
 
 		ff_hwaddr = rtw_get_ff_hwaddr(pxmitframe);
-		inner_ret = rtw_write_port(padapter, ff_hwaddr, w_sz, (unsigned char*)pxmitbuf);
+		inner_ret = rtw_write_port(padapter, ff_hwaddr, w_sz, pxmitbuf);
 		rtw_count_tx_stats(padapter, pxmitframe, sz);
 
 

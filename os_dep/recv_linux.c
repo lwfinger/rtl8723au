@@ -278,7 +278,7 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 	precvbuf->reuse = false;
 
 	if(precvbuf->irp_pending == false)
-		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
+		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, precvbuf);
 }
 
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)

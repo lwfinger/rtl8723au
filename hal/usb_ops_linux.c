@@ -722,7 +722,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				  "length < RXDESC_SIZE)\n"));
 			precvbuf->reuse = true;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
-				      (unsigned char *)precvbuf);
+				      precvbuf);
 			DBG_8723A("%s()-%d: RX Warning!\n",
 				  __FUNCTION__, __LINE__);
 		} else {
@@ -740,7 +740,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			precvbuf->pskb = NULL;
 			precvbuf->reuse = false;
 			rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
-				      (unsigned char *)precvbuf);
+				      precvbuf);
 		}
 	} else {
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
@@ -779,7 +779,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 					USB_READ_PORT_FAIL;
 				precvbuf->reuse = true;
 				rtw_read_port(padapter, precvpriv->ff_hwaddr,
-					      0, (unsigned char *)precvbuf);
+					      0, precvbuf);
 				break;
 			case -EINPROGRESS:
 				DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
@@ -795,7 +795,8 @@ exit:
 _func_exit_;
 }
 
-static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
+static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
+			 struct recv_buf *precvbuf)
 {
 	int err;
 	unsigned int pipe;
@@ -803,7 +804,6 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 	unsigned long alignment = 0;
 	u32 ret = _SUCCESS;
 	struct urb *purb = NULL;
-	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
 	struct rtw_adapter		*adapter = pintfhdl->padapter;
 	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
 	struct recv_priv	*precvpriv = &adapter->recvpriv;

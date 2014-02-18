@@ -127,8 +127,8 @@ struct _io_ops
 
 		u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
 
-		u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
-		u32 (*_write_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
+		u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, struct recv_buf *rbuf);
+		u32 (*_write_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, struct xmit_buf *pmem);
 
 		u32 (*_write_scsi)(struct intf_hdl *pintfhdl,u32 cnt, u8 *pmem);
 
@@ -330,7 +330,7 @@ u8 _rtw_read8(struct rtw_adapter *adapter, u32 addr);
 u16 _rtw_read16(struct rtw_adapter *adapter, u32 addr);
 u32 _rtw_read32(struct rtw_adapter *adapter, u32 addr);
 void _rtw_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
+void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct recv_buf *rbuf);
 void _rtw_read_port_cancel(struct rtw_adapter *adapter);
 
 int _rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val);
@@ -343,8 +343,8 @@ int _rtw_write16_async(struct rtw_adapter *adapter, u32 addr, u16 val);
 int _rtw_write32_async(struct rtw_adapter *adapter, u32 addr, u32 val);
 
 void _rtw_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int timeout_ms);
+u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct xmit_buf *pmem);
+u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct xmit_buf *pmem, int timeout_ms);
 void _rtw_write_port_cancel(struct rtw_adapter *adapter);
 
 #ifdef DBG_IO

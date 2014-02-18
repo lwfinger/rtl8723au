@@ -43,7 +43,7 @@ void usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem);
 
 void usb_read_port_cancel(struct intf_hdl *pintfhdl);
 
-u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem);
+u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, struct xmit_buf *wmem);
 void usb_write_port_cancel(struct intf_hdl *pintfhdl);
 
 #endif
