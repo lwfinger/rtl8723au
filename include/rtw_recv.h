@@ -269,7 +269,6 @@ struct recv_buf
 	struct rtw_adapter *adapter;
 
 	u8	*pbuf;
-	u8	*pallocated_buf;
 
 	u32	len;
 	u8	*phead;
