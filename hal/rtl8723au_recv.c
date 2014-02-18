@@ -40,8 +40,6 @@ void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
 {
 	precvbuf->len = 0;
 
-	precvbuf->ref_cnt = 0;
-
 	if (precvbuf->pbuf) {
 		precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pbuf;
 		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
@@ -96,7 +94,6 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 		if (res == _FAIL)
 			break;
 
-		precvbuf->ref_cnt = 0;
 		precvbuf->adapter =padapter;
 
 		//list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue));
