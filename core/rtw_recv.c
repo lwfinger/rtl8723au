@@ -1940,7 +1940,8 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 		a_len -= ETH_HLEN;
 
 		/* Allocate new skb for releasing to upper layer */
-		sub_skb = dev_alloc_skb(nSubframe_Length + 12);
+		sub_skb = netdev_alloc_skb(padapter->pnetdev,
+					   nSubframe_Length + 12);
 		if(sub_skb)
 		{
 			skb_reserve(sub_skb, 12);
