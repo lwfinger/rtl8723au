@@ -1896,8 +1896,6 @@ _func_exit_;
 	return prtnframe;
 }
 
-#define ENDIAN_FREE 1
-
 int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe);
 int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 {
@@ -1929,15 +1927,8 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	while(a_len > ETH_HLEN) {
 
 		/* Offset 12 denote 2 mac address */
-#ifdef ENDIAN_FREE
 		/* nSubframe_Length = ntohs(*((u16*)(pdata + 12))); */
 		nSubframe_Length = RTW_GET_BE16(pdata + 12);
-#else /*  ENDIAN_FREE */
-		nSubframe_Length = *((u16*)(pdata + 12));
-		/* m==>change the length order */
-		nSubframe_Length = (nSubframe_Length>>8) + (nSubframe_Length<<8);
-		/* ntohs(nSubframe_Length); */
-#endif /*  ENDIAN_FREE */
 
 		if (a_len < (ETH_HLEN + nSubframe_Length)) {
 			DBG_8723A("nRemain_Length is %d and nSubframe_Length is : %d\n",a_len,nSubframe_Length);
@@ -1995,12 +1986,8 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	for(i=0; i<nr_subframes; i++){
 		sub_skb = subframes[i];
 		/* convert hdr + possible LLC headers into Ethernet header */
-#ifdef ENDIAN_FREE
 		/* eth_type = ntohs(*(u16*)&sub_skb->data[6]); */
 		eth_type = RTW_GET_BE16(&sub_skb->data[6]);
-#else /*  ENDIAN_FREE */
-		eth_type = (sub_skb->data[6] << 8) | sub_skb->data[7];
-#endif /*  ENDIAN_FREE */
 		if (sub_skb->len >= 8 &&
 		    ((!memcmp(sub_skb->data, rtw_rfc1042_header, SNAP_SIZE) &&
 		      eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
