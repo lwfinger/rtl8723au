@@ -2080,7 +2080,8 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 		    ((!memcmp(sub_skb->data, rtw_rfc1042_header, SNAP_SIZE) &&
 		      eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
 		     !memcmp(sub_skb->data, rtw_bridge_tunnel_header, SNAP_SIZE) )) {
-			/* remove RFC1042 or Bridge-Tunnel encapsulation and replace EtherType */
+			/* remove RFC1042 or Bridge-Tunnel encapsulation
+			   and replace EtherType */
 			skb_pull(sub_skb, SNAP_SIZE);
 			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src,
 			       ETH_ALEN);

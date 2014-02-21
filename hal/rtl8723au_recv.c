@@ -38,13 +38,6 @@
 void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
 			    struct recv_buf *precvbuf)
 {
-	precvbuf->len = 0;
-
-	if (precvbuf->pbuf) {
-		precvbuf->pdata = precvbuf->phead = precvbuf->ptail = precvbuf->pbuf;
-		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
-	}
-
 }
 
 int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
