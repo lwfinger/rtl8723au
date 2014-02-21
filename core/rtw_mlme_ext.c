@@ -6158,7 +6158,7 @@ void issue_auth(struct rtw_adapter *padapter, struct sta_info *psta, unsigned sh
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
-	rtw_wep_encrypt(padapter, (u8 *)pmgntframe);
+	rtw_wep_encrypt(padapter, pmgntframe);
 	DBG_8723A("%s\n", __FUNCTION__);
 	dump_mgntframe(padapter, pmgntframe);
 

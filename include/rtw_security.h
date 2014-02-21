@@ -400,9 +400,9 @@ void rtw_seccalctkipmic(
 	u8 *Miccode,
 	u8   priority);
 
-u32 rtw_aes_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
-u32 rtw_tkip_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
-void rtw_wep_encrypt(struct rtw_adapter *padapter, u8  *pxmitframe);
+u32 rtw_aes_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
+u32 rtw_tkip_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
+void rtw_wep_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 
 u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
 u32 rtw_tkip_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
