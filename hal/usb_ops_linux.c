@@ -325,49 +325,49 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 
 }
 
-//
-// Description:
-//	Recognize the interrupt content by reading the interrupt register or content and masking interrupt mask (IMR)
-//	if it is our NIC's interrupt. After recognizing, we may clear the all interrupts (ISR).
-// Arguments:
-//	[in] Adapter -
-//		The adapter context.
-//	[in] pContent -
-//		Under PCI interface, this field is ignord.
-//		Under USB interface, the content is the interrupt content pointer.
-//		Under SDIO interface, this is the interrupt type which is Local interrupt or system interrupt.
-//	[in] ContentLen -
-//		The length in byte of pContent.
-// Return:
-//	If any interrupt matches the mask (IMR), return true, and return false otherwise.
-//
+/*
+ * Description:
+ *	Recognize the interrupt content by reading the interrupt
+ *	register or content and masking interrupt mask (IMR)
+ *	if it is our NIC's interrupt. After recognizing, we may clear
+ *	the all interrupts (ISR).
+ * Arguments:
+ *	[in] Adapter -
+ *		The adapter context.
+ *	[in] pContent -
+ *		Under PCI interface, this field is ignord.
+ *		Under USB interface, the content is the interrupt
+ *		content pointer.
+ *		Under SDIO interface, this is the interrupt type which
+ *		is Local interrupt or system interrupt. 
+ *	[in] ContentLen -
+ *		The length in byte of pContent.
+ * Return:
+ *	If any interrupt matches the mask (IMR), return true, and
+ *	return false otherwise.
+ */
 bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 			  u32 ContentLen)
 {
 	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
 	u8 *			buffer = (u8 *)pContent;
-//	RT_PRINT_DATA(COMP_RECV, DBG_LOUD, ("InterruptRecognized8723AU Interrupt buffer \n"), buffer, MAX_RECEIVE_INTERRUPT_BUFFER_SIZE(Adapter));
+	struct reportpwrstate_parm report;
 
-	memcpy(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), 4);
-//	PlatformMoveMemory(&(pHalData->IntArray[0]), &(buffer[USB_INTR_CONTENT_HISR_OFFSET]), sizeof(u32));
-//	DBG_8723A("InterruptRecognized8723AU HISR = 0x%x HIMR = 0x%x\n", pHalData->IntArray[0],pHalData->IntrMask[0]);
+	memcpy(&pHalData->IntArray[0], &buffer[USB_INTR_CONTENT_HISR_OFFSET],
+	       4);
 	pHalData->IntArray[0] &= pHalData->IntrMask[0];
 
 	//For HISR extension. Added by tynli. 2009.10.07.
-	memcpy(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
-//	PlatformMoveMemory(&(pHalData->IntArray[1]), &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), sizeof(u32));
-//	DBG_8723A("InterruptRecognized8192CUsb HISRE = 0x%x HIMRE = 0x%x\n", pHalData->IntArray[1], pHalData->IntrMask[1]);
+	memcpy(&(pHalData->IntArray[1]),
+	       &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
 	pHalData->IntArray[1] &= pHalData->IntrMask[1];
 
-	// We sholud remove this function later because DDK suggest not to executing too many operations in MPISR
-//	if(pHalData->IntArray[0] != 0)
-//		LogInterruptHistory8723AU(Adapter);
+	/* We sholud remove this function later because DDK suggest
+	 * not to executing too many operations in MPISR  */
 
-	{
-		struct reportpwrstate_parm report;
-		memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
-	}
+	memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
+
 	return (((pHalData->IntArray[0])&pHalData->IntrMask[0])!=0 ||
 		((pHalData->IntArray[1])&pHalData->IntrMask[1])!=0);
 
