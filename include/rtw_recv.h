@@ -292,8 +292,6 @@ struct recv_frame
 
 	struct rtw_adapter  *adapter;
 
-	int frame_tag;
-
 	struct rx_pkt_attrib attrib;
 
 	void *precvbuf;
