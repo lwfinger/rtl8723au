@@ -404,9 +404,9 @@ u32 rtw_aes_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
 u32 rtw_tkip_encrypt(struct rtw_adapter *padapter, u8 *pxmitframe);
 void rtw_wep_encrypt(struct rtw_adapter *padapter, u8  *pxmitframe);
 
-u32 rtw_aes_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
-u32 rtw_tkip_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
-void rtw_wep_decrypt(struct rtw_adapter *padapter, u8  *precvframe);
+u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
+u32 rtw_tkip_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
+void rtw_wep_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
 
 void rtw_use_tkipkey_handler(void* FunctionContext);
 
