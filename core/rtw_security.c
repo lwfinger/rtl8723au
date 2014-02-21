@@ -1461,17 +1461,17 @@ u32 rtw_aes_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 /*	unsigned char	message[MAX_MSG_SIZE]; */
 
 	/* Intermediate Buffers */
-	int	curfragnum,length;
-	u32	prwskeylen;
-	u8	*pframe,*prwskey;	/*  *payload,*iv */
-	u8   hw_hdr_offset = 0;
-	struct	sta_info		*stainfo;
-	struct	pkt_attrib	 *pattrib = &pxmitframe->attrib;
-	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
-	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
+	int curfragnum,length;
+	u32 prwskeylen;
+	u8 *pframe, *prwskey;	/*  *payload,*iv */
+	u8 hw_hdr_offset = 0;
+	struct sta_info *stainfo;
+	struct pkt_attrib *pattrib = &pxmitframe->attrib;
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 /*	uint	offset = 0; */
-	u32 res=_SUCCESS;
+	u32 res = _SUCCESS;
 _func_enter_;
 
 	if (!pxmitframe->buf_addr)
@@ -1482,62 +1482,61 @@ _func_enter_;
 	pframe = pxmitframe->buf_addr + hw_hdr_offset;
 
 	/* 4 start to encrypt each fragment */
-	if((pattrib->encrypt==_AES_)){
+	if (pattrib->encrypt !=_AES_)
+		return _FAIL;
 
-		if(pattrib->psta)
-		{
-			stainfo = pattrib->psta;
+	if(pattrib->psta) {
+		stainfo = pattrib->psta;
+	} else {
+		DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
+		stainfo = rtw_get_stainfo(&padapter->stapriv, &pattrib->ra[0]);
+	}
+
+	if (!stainfo) {
+		RT_TRACE(_module_rtl871x_security_c_,_drv_err_,
+			 ("rtw_aes_encrypt: stainfo==NULL!!!\n"));
+		DBG_8723A("%s, psta==NUL\n", __func__);
+		res = _FAIL;
+		goto out;
+	}
+
+	if (!(stainfo->state &_FW_LINKED)) {
+		DBG_8723A("%s, psta->state(0x%x) != _FW_LINKED\n",
+			  __func__, stainfo->state);
+		return _FAIL;
+	}
+
+	RT_TRACE(_module_rtl871x_security_c_,_drv_err_,
+		 ("rtw_aes_encrypt: stainfo!=NULL!!!\n"));
+
+	if (is_multicast_ether_addr(pattrib->ra))
+		prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey;
+	else
+		prwskey = &stainfo->dot118021x_UncstKey.skey[0];
+
+	prwskeylen = 16;
+
+	for (curfragnum = 0; curfragnum < pattrib->nr_frags; curfragnum++){
+
+		/* 4 the last fragment */
+		if ((curfragnum + 1) == pattrib->nr_frags) {
+			length = pattrib->last_txcmdsz -
+				pattrib->hdrlen-pattrib->iv_len -
+				pattrib->icv_len;
+
+			aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
+		} else {
+			length = pxmitpriv->frag_len-pattrib->hdrlen -
+				pattrib->iv_len - pattrib->icv_len;
+
+			aes_cipher(prwskey, pattrib->hdrlen, pframe, length);
+			pframe += pxmitpriv->frag_len;
+			pframe =(u8*)RND4((unsigned long)pframe);
 		}
-		else
-		{
-			DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
-			stainfo=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
-		}
-
-		if (stainfo!=NULL){
-
-			if(!(stainfo->state &_FW_LINKED))
-			{
-				DBG_8723A("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, stainfo->state);
-				return _FAIL;
-			}
-
-			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo!=NULL!!!\n"));
-
-			if(is_multicast_ether_addr(pattrib->ra))
-				prwskey=psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey;
-			else
-				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-
-			prwskeylen=16;
-
-			for(curfragnum=0;curfragnum<pattrib->nr_frags;curfragnum++){
-
-				if((curfragnum+1)==pattrib->nr_frags){	/* 4 the last fragment */
-					length=pattrib->last_txcmdsz-pattrib->hdrlen-pattrib->iv_len- pattrib->icv_len;
-
-					aes_cipher(prwskey,pattrib->hdrlen,pframe, length);
-				}
-				else{
-					length=pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len ;
-
-					aes_cipher(prwskey,pattrib->hdrlen,pframe, length);
-				pframe+=pxmitpriv->frag_len;
-				pframe=(u8*)RND4((unsigned long)(pframe));
-
-				}
-			}
-
-		}
-		else{
-			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo==NULL!!!\n"));
-                        DBG_8723A("%s, psta==NUL\n", __func__);
-			res=_FAIL;
-		}
-
 	}
 
 _func_exit_;
+out:
 		return res;
 }
 
