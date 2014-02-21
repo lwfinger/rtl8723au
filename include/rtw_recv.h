@@ -297,7 +297,6 @@ struct recv_frame
 
 	struct rx_pkt_attrib attrib;
 
-	uint  len;
 	u8 *rx_data;
 
 	void *precvbuf;
@@ -341,7 +340,9 @@ static inline u8 *recvframe_pull(struct recv_frame *precvframe, int sz)
 
 	precvframe->rx_data += sz;
 
+#if 0
 	precvframe->len -=sz;
+#endif
 
 	return precvframe->rx_data;
 
@@ -355,7 +356,9 @@ static inline u8 *recvframe_put(struct recv_frame *precvframe, int sz)
 	   and return the updated rx_tail to the caller
 	   after putting, rx_tail must be still larger than rx_end. */
 
+#if 0
 	precvframe->len +=sz;
+#endif
 
 	return NULL;
 }
@@ -377,7 +380,9 @@ static inline u8 *recvframe_pull_tail(struct recv_frame *precvframe, int sz)
 	if (precvframe->rx_data != precvframe->pkt->data)
 		printk(KERN_DEBUG "pull_tail mismatch!\n");
 
+#if 0
 	precvframe->len -=sz;
+#endif
 
 	return NULL;
 }

@@ -235,10 +235,11 @@ void rtw_wep_decrypt(struct rtw_adapter *padapter,
 	u8	 keyindex;
 	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
 	struct	security_priv *psecuritypriv=&padapter->securitypriv;
+	struct sk_buff * skb = precvframe->pkt;
 
 _func_enter_;
 
-	pframe = precvframe->pkt->data;
+	pframe = skb->data;
 
 	/* start to decrypt recvframe */
 	if((prxattrib->encrypt==_WEP40_)||(prxattrib->encrypt==_WEP104_))
@@ -250,7 +251,7 @@ _func_enter_;
 		memcpy(&wepkey[0], iv, 3);
 		/* memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[psecuritypriv->dot11PrivacyKeyIndex].skey[0],keylength); */
 		memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[keyindex].skey[0],keylength);
-		length= ((struct recv_frame *)precvframe)->len-prxattrib->hdrlen-prxattrib->iv_len;
+		length = skb->len-prxattrib->hdrlen - prxattrib->iv_len;
 
 		payload=pframe+prxattrib->iv_len+prxattrib->hdrlen;
 
@@ -745,12 +746,13 @@ u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
 	struct	sta_info		*stainfo;
 	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
 	struct	security_priv *psecuritypriv = &padapter->securitypriv;
+	struct sk_buff * skb = precvframe->pkt;
 /*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
 	u32		res=_SUCCESS;
 
 _func_enter_;
 
-	pframe = precvframe->pkt->data;
+	pframe = skb->data;
 
 	/* 4 start to decrypt recvframe */
 	if(prxattrib->encrypt==_TKIP_){
@@ -776,7 +778,7 @@ _func_enter_;
 
 			iv=pframe+prxattrib->hdrlen;
 			payload=pframe+prxattrib->iv_len+prxattrib->hdrlen;
-			length= ((struct recv_frame *)precvframe)->len-prxattrib->hdrlen-prxattrib->iv_len;
+			length = skb->len - prxattrib->hdrlen-prxattrib->iv_len;
 
 			GET_TKIP_PN(iv, dot11txpn);
 
@@ -1804,10 +1806,11 @@ u32	rtw_aes_decrypt(struct rtw_adapter *padapter,
 	struct	sta_info		*stainfo;
 	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
 	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
+	struct sk_buff * skb = precvframe->pkt;
 /*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
 	u32	res=_SUCCESS;
 _func_enter_;
-	pframe= precvframe->pkt->data;
+	pframe = skb->data;
 	/* 4 start to encrypt each fragment */
 	if((prxattrib->encrypt==_AES_)){
 
@@ -1839,7 +1842,8 @@ _func_enter_;
 				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
 			}
 
-			length= ((struct recv_frame *)precvframe)->len-prxattrib->hdrlen-prxattrib->iv_len;
+			length = skb->len - prxattrib->hdrlen -
+				prxattrib->iv_len;
 
 			res= aes_decipher(prwskey,prxattrib->hdrlen,pframe, length);
 

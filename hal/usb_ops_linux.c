@@ -531,7 +531,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		INIT_LIST_HEAD(&precvframe->list);
 		//can't access the precvbuf for new arch.
 		precvframe->precvbuf = NULL;
-		precvframe->len = 0;
 
 		update_recvframe_attrib(precvframe, prxstat);
 

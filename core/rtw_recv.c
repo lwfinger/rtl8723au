@@ -100,8 +100,6 @@ _func_enter_;
 
 		res = rtw_os_recv_resource_alloc(padapter, precvframe);
 
-		precvframe->len = 0;
-
 		precvframe->adapter =padapter;
 		precvframe++;
 	}
@@ -193,8 +191,6 @@ _func_enter_;
 	spin_lock_bh(&pfree_recv_queue->lock);
 
 	list_del_init(&(precvframe->list));
-
-	precvframe->len = 0;
 
 	list_add_tail(&(precvframe->list), get_list_head(pfree_recv_queue));
 
@@ -343,10 +339,6 @@ int recvframe_chkmic(struct rtw_adapter *adapter,
 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
 _func_enter_;
-
-if ((precvframe->pkt->data != precvframe->rx_data) || (precvframe->pkt->len != precvframe->len))
-	printk(KERN_DEBUG "chkmic skb->data %p %i pframe->rx_data %p %i !\n", precvframe->pkt->data, precvframe->pkt->len, precvframe->rx_data, precvframe->len);
-
 
 	stainfo = rtw_get_stainfo(&adapter->stapriv ,&prxattrib->ta[0]);
 
@@ -865,9 +857,6 @@ void count_rx_stats(struct rtw_adapter *padapter,
 	struct rx_pkt_attrib *pattrib = & prframe->attrib;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
-if ((prframe->pkt->data != prframe->rx_data) || (prframe->pkt->len != prframe->len))
-	printk(KERN_DEBUG "rx_stats: skb->data %p %i pframe->rx_data %p %i !\n", prframe->pkt->data, prframe->pkt->len, prframe->rx_data, prframe->len);
-
 	sz = prframe->pkt->len;
 	precvpriv->rx_bytes += sz;
 
@@ -1201,7 +1190,6 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 *pframe = precv_frame->pkt->data;
-	/* uint len = precv_frame->len; */
 
 	/* DBG_8723A("+validate_recv_ctrl_frame\n"); */
 
@@ -1678,9 +1666,6 @@ static int wlanhdr_to_ethhdr (struct recv_frame *precvframe)
 
 _func_enter_;
 
-if ((skb->data != precvframe->rx_data) || (skb->len != precvframe->len))
-	printk(KERN_DEBUG "wlanhdr skb->data %p %i pframe->rx_data %p %i !\n", skb->data, skb->len, precvframe->rx_data, precvframe->len);
-
 	if (pattrib->encrypt) {
 #if 1
 		recvframe_pull_tail(precvframe, pattrib->icv_len);
@@ -1789,10 +1774,6 @@ _func_enter_;
 
 	phead = get_list_head(defrag_q);
 
-if ((prframe->pkt->data != prframe->rx_data) || (prframe->pkt->len != prframe->len))
-	printk(KERN_DEBUG "defrag skb->data %p %i pframe->rx_data %p %i !\n", prframe->pkt->data, prframe->pkt->len, prframe->rx_data, prframe->len);
-
-
 	data = prframe->pkt->data;
 
 	list_for_each_safe(plist, ptmp, phead) {
@@ -1831,9 +1812,9 @@ if ((prframe->pkt->data != prframe->rx_data) || (prframe->pkt->len != prframe->l
 		memcpy(skb_tail_pointer(skb), pnfhdr->pkt->data, pnfhdr->pkt->len);
 
 #if 1
-		recvframe_put(prframe, pnfhdr->len);
+		recvframe_put(prframe, pnfhdr->pkt->len);
 #endif
-		skb_put(skb, pnfhdr->len);
+		skb_put(skb, pnfhdr->pkt->len);
 
 		prframe->attrib.icv_len = pnfhdr->attrib.icv_len;
 	};
@@ -2000,11 +1981,6 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	} else {
 		printk(KERN_DEBUG "amsdu pointers are good\n");
 	}
-	if (prframe->len != prframe->pkt->len) {
-		printk(KERN_DEBUG "amsdu length mismatch\n");
-	} else {
-		printk(KERN_DEBUG "amsdu length is good\n");
-	}
 
 	a_len = prframe->pkt->len;
 
@@ -2110,7 +2086,6 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 
 exit:
 
-	prframe->len = 0;
 	rtw_free_recvframe(prframe, pfree_recv_queue);/* free this recv_frame */
 
 	return ret;
@@ -2608,9 +2583,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	}
 
 	count_rx_stats(padapter, prframe, NULL);
-
-if ((prframe->pkt->data != prframe->rx_data) || (prframe->pkt->len != prframe->len))
-	printk(KERN_DEBUG "chkmic skb->data %p %i pframe->rx_data %p %i !\n", prframe->pkt->data, prframe->pkt->len, prframe->rx_data, prframe->len);
 
 	ret = process_recv_indicatepkts(padapter, prframe);
 	if (ret != _SUCCESS) {
