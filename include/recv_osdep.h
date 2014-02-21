@@ -26,7 +26,7 @@
 int _rtw_init_recv_priv(struct recv_priv *precvpriv, struct rtw_adapter *padapter);
 void _rtw_free_recv_priv (struct recv_priv *precvpriv);
 
-s32  rtw_recv_entry(struct recv_frame *precv_frame);
+int rtw_recv_entry(struct recv_frame *precv_frame);
 int rtw_recv_indicatepkt(struct rtw_adapter *adapter, struct recv_frame *precv_frame);
 void rtw_recv_returnpacket(struct net_device *cnxt, struct sk_buff *preturnedpkt);
 

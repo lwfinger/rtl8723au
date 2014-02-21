@@ -2577,10 +2577,10 @@ _recv_data_drop:
 	return ret;
 }
 
-int recv_func(struct rtw_adapter *padapter, struct recv_frame *rframe);
-int recv_func(struct rtw_adapter *padapter, struct recv_frame *rframe)
+int rtw_recv_entry(struct recv_frame *rframe)
 {
 	int ret, r;
+	struct rtw_adapter *padapter = rframe->adapter;
 	struct rx_pkt_attrib *prxattrib = &rframe->attrib;
 	struct recv_priv *recvpriv = &padapter->recvpriv;
 	struct security_priv *psecuritypriv=&padapter->securitypriv;
@@ -2614,44 +2614,11 @@ int recv_func(struct rtw_adapter *padapter, struct recv_frame *rframe)
 		}
 
 		ret = recv_func_posthandle(padapter, rframe);
+
+		recvpriv->rx_pkts++;
 	}
 
 exit:
-	return ret;
-}
-
-s32 rtw_recv_entry(struct recv_frame *precvframe)
-{
-	struct rtw_adapter *padapter;
-	struct recv_priv *precvpriv;
-	s32 ret=_SUCCESS;
-
-_func_enter_;
-
-/*	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("+rtw_recv_entry\n")); */
-
-	padapter = precvframe->adapter;
-
-	precvpriv = &padapter->recvpriv;
-
-	if ((ret = recv_func(padapter, precvframe)) == _FAIL) {
-		RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
-			 ("rtw_recv_entry: recv_func return fail!!!\n"));
-		goto _recv_entry_drop;
-	}
-
-	precvpriv->rx_pkts++;
-
-_func_exit_;
-
-	return ret;
-
-_recv_entry_drop:
-
-	/* RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("_recv_entry_drop\n")); */
-
-_func_exit_;
-
 	return ret;
 }
 
