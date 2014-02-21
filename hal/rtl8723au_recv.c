@@ -191,12 +191,6 @@ void update_recvframe_attrib(struct recv_frame *precvframe,
 }
 
 
-
-/*
- * Notice:
- *	Before calling this function,
- *	precvframe->rx_data should be ready!
- */
 void update_recvframe_phyinfo(struct recv_frame *precvframe,
 			      struct phy_stat *pphy_status)
 {
@@ -214,7 +208,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	pkt_info.bPacketToSelf = false;
 	pkt_info.bPacketBeacon = false;
 
-	wlanhdr = precvframe->rx_data;
+	wlanhdr = precvframe->pkt->data;
 
 	pkt_info.bPacketMatchBSSID =
 		((!IsFrameTypeCtrl(wlanhdr)) &&

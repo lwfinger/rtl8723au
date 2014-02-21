@@ -298,9 +298,7 @@ struct recv_frame
 	struct rx_pkt_attrib attrib;
 
 	uint  len;
-	u8 *rx_head;
 	u8 *rx_data;
-	u8 *rx_tail;
 
 	void *precvbuf;
 
@@ -338,14 +336,10 @@ static inline u8 *recvframe_pull(struct recv_frame *precvframe, int sz)
 	if(precvframe==NULL)
 		return NULL;
 
+	if (precvframe->rx_data != precvframe->pkt->data)
+		printk(KERN_DEBUG "pull mismatch!\n");
 
 	precvframe->rx_data += sz;
-
-	if(precvframe->rx_data > precvframe->rx_tail)
-	{
-		precvframe->rx_data -= sz;
-		return NULL;
-	}
 
 	precvframe->len -=sz;
 
@@ -361,16 +355,9 @@ static inline u8 *recvframe_put(struct recv_frame *precvframe, int sz)
 	   and return the updated rx_tail to the caller
 	   after putting, rx_tail must be still larger than rx_end. */
 
-	if (precvframe->pkt == NULL) {
-		printk(KERN_DEBUG "Mayday! called with NULL pointer\n");
-	}
-
-	precvframe->rx_tail += sz;
-
 	precvframe->len +=sz;
 
-	return precvframe->rx_tail;
-
+	return NULL;
 }
 
 
@@ -382,21 +369,17 @@ static inline u8 *recvframe_pull_tail(struct recv_frame *precvframe, int sz)
 	//used for extract sz bytes from rx_end, update rx_end and return the updated rx_end to the caller
 	//after pulling, rx_end must be still larger than rx_data.
 
-	if(precvframe==NULL)
-		return NULL;
-
-	precvframe->rx_tail -= sz;
-
-	if(precvframe->rx_tail < precvframe->rx_data)
-	{
-		precvframe->rx_tail += sz;
+	if (!precvframe) {
+		printk(KERN_DEBUG "pull_tail no frame!\n");
 		return NULL;
 	}
 
+	if (precvframe->rx_data != precvframe->pkt->data)
+		printk(KERN_DEBUG "pull_tail mismatch!\n");
+
 	precvframe->len -=sz;
 
-	return precvframe->rx_tail;
-
+	return NULL;
 }
 
 

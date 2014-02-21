@@ -588,12 +588,12 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		if (pkt_copy) {
 			pkt_copy->dev = padapter->pnetdev;
 			precvframe->pkt = pkt_copy;
-			precvframe->rx_head = pkt_copy->head;
 			skb_reserve(pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
 	/*force ip_hdr at 8-byte alignment address according to shift_sz. */
 			skb_reserve(pkt_copy, shift_sz);
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
-			precvframe->rx_data = precvframe->rx_tail = pkt_copy->data;
+			skb_put(pkt_copy, skb_len);
+			precvframe->rx_data = pkt_copy->data;
 		} else {
 			if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)) {
 				DBG_8723A("recvbuf2recvframe: alloc_skb fail, "
@@ -605,8 +605,8 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 
 			precvframe->pkt = skb_clone(pskb, GFP_ATOMIC);
 			if (precvframe->pkt) {
-				precvframe->rx_head = precvframe->rx_data = precvframe->rx_tail
-					= pbuf + pattrib->drvinfo_sz + RXDESC_SIZE;
+				precvframe->rx_data =
+					pbuf + pattrib->drvinfo_sz + RXDESC_SIZE;
 			} else {
 				DBG_8723A("recvbuf2recvframe: skb_clone "
 					  "fail\n");

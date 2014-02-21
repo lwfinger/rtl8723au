@@ -238,7 +238,7 @@ void rtw_wep_decrypt(struct rtw_adapter *padapter,
 
 _func_enter_;
 
-	pframe = precvframe->rx_data;
+	pframe = precvframe->pkt->data;
 
 	/* start to decrypt recvframe */
 	if((prxattrib->encrypt==_WEP40_)||(prxattrib->encrypt==_WEP104_))
@@ -750,7 +750,7 @@ u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
 
 _func_enter_;
 
-	pframe = precvframe->rx_data;
+	pframe = precvframe->pkt->data;
 
 	/* 4 start to decrypt recvframe */
 	if(prxattrib->encrypt==_TKIP_){
@@ -1807,7 +1807,7 @@ u32	rtw_aes_decrypt(struct rtw_adapter *padapter,
 /*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
 	u32	res=_SUCCESS;
 _func_enter_;
-	pframe= precvframe->rx_data;
+	pframe= precvframe->pkt->data;
 	/* 4 start to encrypt each fragment */
 	if((prxattrib->encrypt==_AES_)){
 

@@ -168,13 +168,15 @@ _func_enter_;
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
 		 ("rtw_recv_indicatepkt():skb != NULL !!!\n"));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
-		 ("rtw_recv_indicatepkt():precv_frame->rx_head=%p  "
-		  "precv_frame->hdr.rx_data=%p\n",
-		  precv_frame->rx_head, precv_frame->rx_data));
+		 ("rtw_recv_indicatepkt():precv_frame->hdr.rx_data=%p\n",
+		  precv_frame->rx_data));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
-		 ("precv_frame->hdr.rx_tail=%p precv_frame->hdr.len=%d \n",
-		  precv_frame->rx_tail, precv_frame->len));
+		 ("precv_frame->hdr.len=%d \n",
+		  precv_frame->len));
 
+	if (skb->data != precv_frame->rx_data) {
+		printk(KERN_DEBUG "yuck, data pointers differ skb->data %p %p\n", skb->data, precv_frame->rx_data);
+	}
 	skb->data = precv_frame->rx_data;
 
 	skb_set_tail_pointer(skb, precv_frame->len);
