@@ -234,7 +234,6 @@ struct xmit_buf
 	struct submit_ctx *sctx;
 	u32	ff_hwaddr;
 	struct urb *pxmit_urb[8];
-	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u8 bpending[8];
 	int last[8];
 #if defined(DBG_XMIT_BUF )|| defined(DBG_XMIT_BUF_EXT)

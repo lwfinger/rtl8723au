@@ -98,7 +98,6 @@ int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *px
 	}
 
 	pxmitbuf->pbuf = PTR_ALIGN(pxmitbuf->pallocated_buf, XMITBUF_ALIGN_SZ);
-	pxmitbuf->dma_transfer_addr = 0;
 
 	for(i=0; i<8; i++) {
 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
