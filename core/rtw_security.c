@@ -1800,8 +1800,7 @@ _func_exit_;
 	return res;
 }
 
-u32	rtw_aes_decrypt(struct rtw_adapter *padapter,
-			struct recv_frame *precvframe)
+u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe)
 {	/*  exclude ICV */
 
 	/*static*/
@@ -1809,59 +1808,58 @@ u32	rtw_aes_decrypt(struct rtw_adapter *padapter,
 
 	/* Intermediate Buffers */
 
-	int		length;
-	u8	*pframe,*prwskey;	/*  *payload,*iv */
-	struct	sta_info		*stainfo;
-	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
-	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
+	int length;
+	u8 *pframe, *prwskey;	/*  *payload,*iv */
+	struct sta_info *stainfo;
+	struct rx_pkt_attrib *prxattrib = &precvframe->attrib;
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct sk_buff * skb = precvframe->pkt;
 /*	struct	recv_priv		*precvpriv=&padapter->recvpriv; */
-	u32	res=_SUCCESS;
+	u32 res = _SUCCESS;
 _func_enter_;
 	pframe = skb->data;
 	/* 4 start to encrypt each fragment */
-	if((prxattrib->encrypt==_AES_)){
-
-		stainfo=rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0] );
-		if (stainfo!=NULL){
-			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_decrypt: stainfo!=NULL!!!\n"));
-
-			if(is_multicast_ether_addr(prxattrib->ra)) {
-				/* in concurrent we should use sw descrypt in group key, so we remove this message */
-				/* DBG_8723A("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
-				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
-				if(psecuritypriv->binstallGrpkey==false)
-				{
-					res=_FAIL;
-					DBG_8723A("%s:rx bc/mc packets,but didn't install group key!!!!!!!!!!\n",__FUNCTION__);
-					goto exit;
-				}
-				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
-				if(psecuritypriv->dot118021XGrpKeyid != prxattrib->key_index)
-				{
-					DBG_8723A("not match packet_index=%d, install_index=%d \n"
-					, prxattrib->key_index, psecuritypriv->dot118021XGrpKeyid);
-					res=_FAIL;
-					goto exit;
-				}
-			}
-			else
-			{
-				prwskey=&stainfo->dot118021x_UncstKey.skey[0];
-			}
-
-			length = skb->len - prxattrib->hdrlen -
-				prxattrib->iv_len;
-
-			res= aes_decipher(prwskey,prxattrib->hdrlen,pframe, length);
-
-		}
-		else{
-			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_aes_encrypt: stainfo==NULL!!!\n"));
-			res=_FAIL;
-		}
-
+	if (!prxattrib->encrypt !=_AES_)
+		return _FAIL;
+	
+	stainfo = rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0]);
+	if (!stainfo) {
+		RT_TRACE(_module_rtl871x_security_c_,_drv_err_,
+			 ("rtw_aes_encrypt: stainfo==NULL!!!\n"));
+		res = _FAIL;
+		goto exit;
 	}
+
+	RT_TRACE(_module_rtl871x_security_c_,_drv_err_,
+		 ("rtw_aes_decrypt: stainfo!=NULL!!!\n"));
+
+	if (is_multicast_ether_addr(prxattrib->ra)) {
+		/* in concurrent we should use sw descrypt in group key,
+		   so we remove this message */
+		/* DBG_8723A("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
+		/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
+		if (psecuritypriv->binstallGrpkey == false) {
+			res = _FAIL;
+			DBG_8723A("%s:rx bc/mc packets,but didn't install "
+				  "group key!!!!!!!!!!\n",__FUNCTION__);
+			goto exit;
+		}
+		prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
+		if (psecuritypriv->dot118021XGrpKeyid != prxattrib->key_index) {
+			DBG_8723A("not match packet_index=%d, install_index="
+				  "%d \n", prxattrib->key_index,
+				  psecuritypriv->dot118021XGrpKeyid);
+			res = _FAIL;
+			goto exit;
+		}
+	} else {
+		prwskey = &stainfo->dot118021x_UncstKey.skey[0];
+	}
+
+	length = skb->len - prxattrib->hdrlen -	prxattrib->iv_len;
+
+	res = aes_decipher(prwskey, prxattrib->hdrlen, pframe, length);
+
 _func_exit_;
 exit:
 	return res;
