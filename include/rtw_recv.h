@@ -294,9 +294,6 @@ struct recv_frame
 
 	struct rx_pkt_attrib attrib;
 
-	void *precvbuf;
-
-	//
 	struct sta_info *psta;
 
 	//for A-MPDU Rx reordering buffer control
