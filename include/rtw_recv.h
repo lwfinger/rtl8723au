@@ -289,7 +289,6 @@ struct recv_frame
 {
 	struct list_head	list;
 	struct sk_buff *pkt;
-	struct sk_buff *pkt_newalloc;
 
 	struct rtw_adapter  *adapter;
 

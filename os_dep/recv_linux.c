@@ -45,10 +45,9 @@ int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 {
 	int res = _SUCCESS;
 
-	precvframe->pkt_newalloc = precvframe->pkt = NULL;
+	precvframe->pkt = NULL;
 
 	return res;
-
 }
 
 //free os related resource in struct recv_frame
