@@ -293,8 +293,6 @@ struct recv_frame
 
 	struct rtw_adapter  *adapter;
 
-	u8 fragcnt;
-
 	int frame_tag;
 
 	struct rx_pkt_attrib attrib;
