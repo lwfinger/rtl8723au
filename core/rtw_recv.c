@@ -503,9 +503,6 @@ _func_enter_;
 				  "NULL!!!\n"));
 		}
 
-#if 1
-		recvframe_pull_tail(precvframe, 8);
-#endif
 		skb_trim(precvframe->pkt, precvframe->pkt->len - 8);
 	}
 
@@ -1667,9 +1664,6 @@ static int wlanhdr_to_ethhdr (struct recv_frame *precvframe)
 _func_enter_;
 
 	if (pattrib->encrypt) {
-#if 1
-		recvframe_pull_tail(precvframe, pattrib->icv_len);
-#endif
 		skb_trim(skb, skb->len - pattrib->icv_len);
 	}
 
@@ -1710,15 +1704,11 @@ _func_enter_;
 		eth_type = 0x8712;
 		/*  append rx status for mp test packets */
 
-		recvframe_pull(precvframe,
-			       (rmv_len - sizeof(struct ethhdr) + 2) -24);
 		ptr = skb_pull(precvframe->pkt,
 			       (rmv_len - sizeof(struct ethhdr) + 2) - 24);
 		memcpy(ptr, skb->head, 24);
 		ptr += 24;
 	} else {
-		recvframe_pull(precvframe, (rmv_len - sizeof(struct ethhdr) +
-					    (bsnaphdr ? 2:0)));
 		ptr = skb_pull(precvframe->pkt,
 			       (rmv_len - sizeof(struct ethhdr) +
 				(bsnaphdr ? 2:0)));
@@ -1798,22 +1788,16 @@ _func_enter_;
 
 		wlanhdr_offset = pnfhdr->attrib.hdrlen + pnfhdr->attrib.iv_len;
 
-		recvframe_pull(pnextrframe, wlanhdr_offset);
 		skb_pull(pnfhdr->pkt, wlanhdr_offset);
 
 		/* append  to first fragment frame's tail
 		   (if privacy frame, pull the ICV) */
-#if 1
-		recvframe_pull_tail(prframe, prframe->attrib.icv_len);
-#endif
 
 		skb_trim(skb, skb->len - prframe->attrib.icv_len);
 
-		memcpy(skb_tail_pointer(skb), pnfhdr->pkt->data, pnfhdr->pkt->len);
+		memcpy(skb_tail_pointer(skb), pnfhdr->pkt->data,
+		       pnfhdr->pkt->len);
 
-#if 1
-		recvframe_put(prframe, pnfhdr->pkt->len);
-#endif
 		skb_put(skb, pnfhdr->pkt->len);
 
 		prframe->attrib.icv_len = pnfhdr->attrib.icv_len;
@@ -1969,11 +1953,9 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 
 	pattrib = &prframe->attrib;
 
-	recvframe_pull(prframe, prframe->attrib.hdrlen);
 	skb_pull(prframe->pkt, prframe->attrib.hdrlen);
 
 	if (prframe->attrib.iv_len > 0) {
-		recvframe_pull(prframe, prframe->attrib.iv_len);
 		skb_pull(prframe->pkt, prframe->attrib.iv_len);
 	}
 

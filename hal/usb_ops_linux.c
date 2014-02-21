@@ -611,9 +611,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			}
 		}
 
-		recvframe_put(precvframe, skb_len);
-		//recvframe_pull(precvframe, drvinfo_sz + RXDESC_SIZE);
-
 		if (pattrib->physt) {
 			pphy_info = (struct phy_stat*)(pbuf + RXDESC_OFFSET);
 			update_recvframe_phyinfo(precvframe, pphy_info);
