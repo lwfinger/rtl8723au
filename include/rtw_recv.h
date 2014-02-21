@@ -301,7 +301,6 @@ struct recv_frame
 	u8 *rx_head;
 	u8 *rx_data;
 	u8 *rx_tail;
-	u8 *rx_end;
 
 	void *precvbuf;
 
@@ -358,22 +357,15 @@ static inline u8 *recvframe_put(struct recv_frame *precvframe, int sz)
 {
 	// rx_tai += sz; move rx_tail sz bytes  hereafter
 
-	//used for append sz bytes from ptr to rx_tail, update rx_tail and return the updated rx_tail to the caller
-	//after putting, rx_tail must be still larger than rx_end.
-	unsigned char * prev_rx_tail;
+	/* used for append sz bytes from ptr to rx_tail, update rx_tail
+	   and return the updated rx_tail to the caller
+	   after putting, rx_tail must be still larger than rx_end. */
 
-	if(precvframe==NULL)
-		return NULL;
-
-	prev_rx_tail = precvframe->rx_tail;
+	if (precvframe->pkt == NULL) {
+		printk(KERN_DEBUG "Mayday! called with NULL pointer\n");
+	}
 
 	precvframe->rx_tail += sz;
-
-	if(precvframe->rx_tail > precvframe->rx_end)
-	{
-		precvframe->rx_tail -= sz;
-		return NULL;
-	}
 
 	precvframe->len +=sz;
 

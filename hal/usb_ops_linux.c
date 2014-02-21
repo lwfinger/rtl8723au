@@ -588,8 +588,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		if (pkt_copy) {
 			pkt_copy->dev = padapter->pnetdev;
 			precvframe->pkt = pkt_copy;
-			precvframe->rx_head = pkt_copy->data;
-			precvframe->rx_end = pkt_copy->data + alloc_sz;
+			precvframe->rx_head = pkt_copy->head;
 			skb_reserve(pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
 	/*force ip_hdr at 8-byte alignment address according to shift_sz. */
 			skb_reserve(pkt_copy, shift_sz);
@@ -608,7 +607,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			if (precvframe->pkt) {
 				precvframe->rx_head = precvframe->rx_data = precvframe->rx_tail
 					= pbuf + pattrib->drvinfo_sz + RXDESC_SIZE;
-				precvframe->rx_end =  pbuf + pattrib->drvinfo_sz + RXDESC_SIZE+ alloc_sz;
 			} else {
 				DBG_8723A("recvbuf2recvframe: skb_clone "
 					  "fail\n");
@@ -616,7 +614,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 						   pfree_recv_queue);
 				goto _exit_recvbuf2recvframe;
 			}
-
 		}
 
 		recvframe_put(precvframe, skb_len);

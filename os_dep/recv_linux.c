@@ -172,9 +172,8 @@ _func_enter_;
 		  "precv_frame->hdr.rx_data=%p\n",
 		  precv_frame->rx_head, precv_frame->rx_data));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
-		 ("precv_frame->hdr.rx_tail=%p precv_frame->rx_end=%p "
-		  "precv_frame->hdr.len=%d \n",
-		  precv_frame->rx_tail, precv_frame->rx_end, precv_frame->len));
+		 ("precv_frame->hdr.rx_tail=%p precv_frame->hdr.len=%d \n",
+		  precv_frame->rx_tail, precv_frame->len));
 
 	skb->data = precv_frame->rx_data;
 
