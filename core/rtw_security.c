@@ -227,14 +227,14 @@ void rtw_wep_decrypt(struct rtw_adapter *padapter,
 		     struct recv_frame *precvframe)
 {
 	/*  exclude ICV */
-	u8	crc[4];
-	struct arc4context	 mycontext;
-	int	length;
-	u32	keylength;
-	u8	*pframe, *payload,*iv,wepkey[16];
-	u8	 keyindex;
-	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
-	struct	security_priv *psecuritypriv=&padapter->securitypriv;
+	u8 crc[4];
+	struct arc4context mycontext;
+	int length;
+	u32 keylength;
+	u8 *pframe, *payload, *iv, wepkey[16];
+	u8 keyindex;
+	struct rx_pkt_attrib *prxattrib = &precvframe->attrib;
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct sk_buff * skb = precvframe->pkt;
 
 _func_enter_;
@@ -242,32 +242,39 @@ _func_enter_;
 	pframe = skb->data;
 
 	/* start to decrypt recvframe */
-	if((prxattrib->encrypt==_WEP40_)||(prxattrib->encrypt==_WEP104_))
-	{
-		iv=pframe+prxattrib->hdrlen;
-		/* keyindex=(iv[3]&0x3); */
-		keyindex = prxattrib->key_index;
-		keylength=psecuritypriv->dot11DefKeylen[keyindex];
-		memcpy(&wepkey[0], iv, 3);
-		/* memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[psecuritypriv->dot11PrivacyKeyIndex].skey[0],keylength); */
-		memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[keyindex].skey[0],keylength);
-		length = skb->len-prxattrib->hdrlen - prxattrib->iv_len;
+	if ((prxattrib->encrypt =! _WEP40_) && (prxattrib->encrypt !=_WEP104_))
+		return;
 
-		payload=pframe+prxattrib->iv_len+prxattrib->hdrlen;
+	iv = pframe + prxattrib->hdrlen;
+	/* keyindex=(iv[3]&0x3); */
+	keyindex = prxattrib->key_index;
+	keylength = psecuritypriv->dot11DefKeylen[keyindex];
+	memcpy(&wepkey[0], iv, 3);
+	/* memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[psecuritypriv->dot11PrivacyKeyIndex].skey[0],keylength); */
+	memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[keyindex].skey[0],
+	       keylength);
+	length = skb->len - prxattrib->hdrlen - prxattrib->iv_len;
 
-		/* decrypt payload include icv */
-		arcfour_init(&mycontext, wepkey,3+keylength);
-		arcfour_encrypt(&mycontext, payload, payload,  length);
+	payload = pframe + prxattrib->iv_len + prxattrib->hdrlen;
 
-		/* calculate icv and compare the icv */
-		*((u32 *)crc)=le32_to_cpu(getcrc32(payload,length-4));
+	/* decrypt payload include icv */
+	arcfour_init(&mycontext, wepkey, 3 + keylength);
+	arcfour_encrypt(&mycontext, payload, payload, length);
 
-		if(crc[3]!=payload[length-1] || crc[2]!=payload[length-2] || crc[1]!=payload[length-3] || crc[0]!=payload[length-4])
-		{
-			RT_TRACE(_module_rtl871x_security_c_,_drv_err_,("rtw_wep_decrypt:icv error crc[3](%x)!=payload[length-1](%x) || crc[2](%x)!=payload[length-2](%x) || crc[1](%x)!=payload[length-3](%x) || crc[0](%x)!=payload[length-4](%x)\n",
-						crc[3],payload[length-1],crc[2],payload[length-2],crc[1],payload[length-3],crc[0],payload[length-4]));
-		}
+	/* calculate icv and compare the icv */
+	*((u32 *)crc) = le32_to_cpu(getcrc32(payload, length - 4));
 
+	if (crc[3] != payload[length - 1] || crc[2] != payload[length - 2] ||
+	    crc[1] != payload[length - 3] || crc[0] != payload[length - 4]) {
+		RT_TRACE(_module_rtl871x_security_c_,_drv_err_,
+			 ("rtw_wep_decrypt:icv error crc[3](%x)!=payload"
+			  "[length-1](%x) || crc[2](%x)!=payload[length-2](%x)"
+			  " || crc[1](%x)!=payload[length-3](%x) || crc[0](%x)"
+			  "!=payload[length-4](%x)\n",
+			  crc[3], payload[length - 1],
+			  crc[2], payload[length - 2],
+			  crc[1], payload[length - 3],
+			  crc[0], payload[length - 4]));
 	}
 
 _func_exit_;
