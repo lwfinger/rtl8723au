@@ -489,14 +489,6 @@ _func_exit_;
 	return ret;
 }
 
-static s32 pre_recv_entry(struct recv_frame *precvframe,
-			  struct recv_stat *prxstat, struct phy_stat *pphy_info)
-{
-	s32 ret = _SUCCESS;
-
-	return ret;
-}
-
 static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 {
 	u8	*pbuf;
@@ -552,7 +544,8 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		pkt_offset = RXDESC_SIZE + pattrib->drvinfo_sz + pattrib->shift_sz + pattrib->pkt_len;
+		pkt_offset = RXDESC_SIZE + pattrib->drvinfo_sz +
+			pattrib->shift_sz + pattrib->pkt_len;
 
 		if ((pattrib->pkt_len <= 0) || (pkt_offset > transfer_len)) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
