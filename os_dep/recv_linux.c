@@ -67,7 +67,6 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter,
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device *pusbd = pdvobjpriv->pusbdev;
 
-	precvbuf->irp_pending = false;
 	precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
 	if (precvbuf->purb == NULL) {
 		res = _FAIL;
@@ -264,8 +263,7 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 
 	precvbuf->pskb = NULL;
 
-	if (precvbuf->irp_pending == false)
-		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, precvbuf);
+	rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, precvbuf);
 }
 
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)

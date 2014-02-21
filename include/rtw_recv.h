@@ -271,7 +271,6 @@ struct recv_buf
 	struct urb *purb;
 	u32 alloc_sz;
 
-	u8  irp_pending;
 	struct sk_buff *pskb;
 };
 
