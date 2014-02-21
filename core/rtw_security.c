@@ -156,20 +156,20 @@ _func_exit_;
 */
 void rtw_wep_encrypt(struct rtw_adapter *padapter,
 		     struct xmit_frame *pxmitframe)
-{																	/*  exclude ICV */
+{
+	/*  exclude ICV */
 
-	unsigned char	crc[4];
-	struct arc4context	 mycontext;
+	unsigned char crc[4];
+	struct arc4context mycontext;
+	int curfragnum, length, index;
+	u32 keylength;
 
-	int	curfragnum,length;
-	u32	keylength;
-
-	u8	*pframe, *payload,*iv;    /* wepkey */
-	u8	wepkey[16];
-	u8   hw_hdr_offset=0;
-	struct	pkt_attrib	 *pattrib = &((struct xmit_frame*)pxmitframe)->attrib;
-	struct	security_priv	*psecuritypriv=&padapter->securitypriv;
-	struct	xmit_priv		*pxmitpriv=&padapter->xmitpriv;
+	u8 *pframe, *payload, *iv;    /* wepkey */
+	u8 wepkey[16];
+	u8 hw_hdr_offset = 0;
+	struct pkt_attrib *pattrib = &pxmitframe->attrib;
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 _func_enter_;
 
@@ -181,44 +181,40 @@ _func_enter_;
 	pframe = pxmitframe->buf_addr + hw_hdr_offset;
 
 	/* start to encrypt each fragment */
-	if((pattrib->encrypt==_WEP40_)||(pattrib->encrypt==_WEP104_))
-	{
-		keylength=psecuritypriv->dot11DefKeylen[psecuritypriv->dot11PrivacyKeyIndex];
+	if ((pattrib->encrypt !=_WEP40_) && (pattrib->encrypt !=_WEP104_))
+		return;
 
-		for(curfragnum=0;curfragnum<pattrib->nr_frags;curfragnum++)
-		{
-			iv=pframe+pattrib->hdrlen;
-			memcpy(&wepkey[0], iv, 3);
-			memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[psecuritypriv->dot11PrivacyKeyIndex].skey[0],keylength);
-			payload=pframe+pattrib->iv_len+pattrib->hdrlen;
+	index = psecuritypriv->dot11PrivacyKeyIndex;
+	keylength = psecuritypriv->dot11DefKeylen[index];
 
-			if((curfragnum+1)==pattrib->nr_frags)
-			{	/* the last fragment */
+	for (curfragnum = 0; curfragnum < pattrib->nr_frags ; curfragnum++) {
+		iv = pframe + pattrib->hdrlen;
+		memcpy(&wepkey[0], iv, 3);
+		memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[index].skey[0],
+		       keylength);
+		payload = pframe + pattrib->iv_len + pattrib->hdrlen;
 
-				length=pattrib->last_txcmdsz-pattrib->hdrlen-pattrib->iv_len- pattrib->icv_len;
+		if ((curfragnum + 1) == pattrib->nr_frags) {
+			/* the last fragment */
+			length = pattrib->last_txcmdsz - pattrib->hdrlen -
+				pattrib->iv_len- pattrib->icv_len;
 
-				*((u32 *)crc)=cpu_to_le32(getcrc32(payload,length));
+			*((u32 *)crc) = cpu_to_le32(getcrc32(payload, length));
 
-				arcfour_init(&mycontext, wepkey,3+keylength);
-				arcfour_encrypt(&mycontext, payload, payload, length);
-				arcfour_encrypt(&mycontext, payload+length, crc, 4);
+			arcfour_init(&mycontext, wepkey, 3 + keylength);
+			arcfour_encrypt(&mycontext, payload, payload, length);
+			arcfour_encrypt(&mycontext, payload + length, crc, 4);
+		} else {
+			length = pxmitpriv->frag_len - pattrib->hdrlen -
+				pattrib->iv_len - pattrib->icv_len;
+			*((u32 *)crc) = cpu_to_le32(getcrc32(payload, length));
+			arcfour_init(&mycontext, wepkey, 3 + keylength);
+			arcfour_encrypt(&mycontext, payload, payload, length);
+			arcfour_encrypt(&mycontext, payload + length, crc, 4);
 
-			}
-			else
-			{
-			length=pxmitpriv->frag_len-pattrib->hdrlen-pattrib->iv_len-pattrib->icv_len ;
-				*((u32 *)crc)=cpu_to_le32(getcrc32(payload,length));
-				arcfour_init(&mycontext, wepkey,3+keylength);
-				arcfour_encrypt(&mycontext, payload, payload, length);
-				arcfour_encrypt(&mycontext, payload+length, crc, 4);
-
-			pframe+=pxmitpriv->frag_len;
-			pframe=(u8 *)RND4((unsigned long)(pframe));
-
-			}
-
+			pframe += pxmitpriv->frag_len;
+			pframe = (u8 *)RND4((unsigned long)(pframe));
 		}
-
 	}
 
 _func_exit_;
