@@ -169,19 +169,28 @@ _func_enter_;
 		 ("rtw_recv_indicatepkt():skb != NULL !!!\n"));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
 		 ("rtw_recv_indicatepkt():precv_frame->hdr.rx_data=%p\n",
-		  precv_frame->rx_data));
+		  precv_frame->pkt->data));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
 		 ("precv_frame->hdr.len=%d \n",
 		  precv_frame->len));
 
 	if (skb->data != precv_frame->rx_data) {
 		printk(KERN_DEBUG "yuck, data pointers differ skb->data %p %p\n", skb->data, precv_frame->rx_data);
+		skb->data = precv_frame->rx_data;
 	}
-	skb->data = precv_frame->rx_data;
+
+	if (skb->len != precv_frame->len) {
+		printk(KERN_DEBUG "yick, len differs skb->data %i %i\n", skb->len, precv_frame->len);
+		skb->len = precv_frame->len;
+	}
+{
+	unsigned char *oldptr = skb_tail_pointer(skb);
 
 	skb_set_tail_pointer(skb, precv_frame->len);
-
-	skb->len = precv_frame->len;
+	if (oldptr != skb_tail_pointer(skb))
+		printk(KERN_DEBUG "OUF! tail pointer mismatch old %p new %p\n",
+		       oldptr, skb_tail_pointer(skb));
+}
 
 	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
 		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p "

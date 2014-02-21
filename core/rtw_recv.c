@@ -1352,6 +1352,7 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 			     struct recv_frame *precv_frame)
 {
 	struct sta_info *psta;
+	struct sk_buff *skb;
 	/* struct mlme_priv *pmlmepriv = &adapter->mlmepriv; */
 
 	RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
@@ -1364,23 +1365,23 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 		return _SUCCESS;
 	}
 
+	skb = precv_frame->pkt;
+
 		/* for rx pkt statistics */
 	psta = rtw_get_stainfo(&padapter->stapriv,
-			       GetAddr2Ptr(precv_frame->rx_data));
+			       GetAddr2Ptr(skb->data));
 	if (psta) {
 		psta->sta_stats.rx_mgnt_pkts++;
-		if (GetFrameSubType(precv_frame->rx_data) == WIFI_BEACON)
+		if (GetFrameSubType(skb->data) == WIFI_BEACON)
 			psta->sta_stats.rx_beacon_pkts++;
-		else if (GetFrameSubType(precv_frame->rx_data) == WIFI_PROBEREQ)
+		else if (GetFrameSubType(skb->data) == WIFI_PROBEREQ)
 			psta->sta_stats.rx_probereq_pkts++;
-		else if (GetFrameSubType(precv_frame->rx_data) ==
-			 WIFI_PROBERSP) {
+		else if (GetFrameSubType(skb->data) == WIFI_PROBERSP) {
 			if (!memcmp(padapter->eeprompriv.mac_addr,
-				    GetAddr1Ptr(precv_frame->rx_data),
-				    ETH_ALEN))
+				    GetAddr1Ptr(skb->data), ETH_ALEN))
 				psta->sta_stats.rx_probersp_pkts++;
-			else if (is_broadcast_ether_addr(GetAddr1Ptr(precv_frame->rx_data)) ||
-				 is_multicast_mac_addr(GetAddr1Ptr(precv_frame->rx_data)))
+			else if (is_broadcast_ether_addr(GetAddr1Ptr(skb->data)) ||
+				 is_multicast_mac_addr(GetAddr1Ptr(skb->data)))
 				psta->sta_stats.rx_probersp_bm_pkts++;
 			else
 				psta->sta_stats.rx_probersp_uo_pkts++;
@@ -1999,8 +2000,13 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	} else {
 		printk(KERN_DEBUG "amsdu pointers are good\n");
 	}
+	if (prframe->len != prframe->pkt->len) {
+		printk(KERN_DEBUG "amsdu length mismatch\n");
+	} else {
+		printk(KERN_DEBUG "amsdu length is good\n");
+	}
 
-	a_len = prframe->len;
+	a_len = prframe->pkt->len;
 
 	pdata = prframe->pkt->data;
 
