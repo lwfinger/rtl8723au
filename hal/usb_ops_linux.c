@@ -376,94 +376,110 @@ InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 
 static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 {
-	int	err;
+	int err;
 	struct rtw_adapter *padapter = (struct rtw_adapter *)purb->context;
 
-
-	if(padapter->bSurpriseRemoved || padapter->bDriverStopped||padapter->bReadPortCancel)
-	{
-		DBG_8723A("%s() RX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-		__FUNCTION__,padapter->bDriverStopped, padapter->bSurpriseRemoved,padapter->bReadPortCancel);
+	if (padapter->bSurpriseRemoved || padapter->bDriverStopped ||
+	    padapter->bReadPortCancel) {
+		DBG_8723A("%s() RX Warning! bDriverStopped(%d) OR "
+			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
+			  __FUNCTION__, padapter->bDriverStopped,
+			  padapter->bSurpriseRemoved,
+			  padapter->bReadPortCancel);
 		return;
 	}
 
-	if (purb->status == 0)//SUCCESS
-	{
-		struct c2h_evt_hdr *c2h_evt = (struct c2h_evt_hdr *)purb->transfer_buffer;
+	if (purb->status == 0) {
+		struct c2h_evt_hdr *c2h_evt;
+
+		c2h_evt = (struct c2h_evt_hdr *)purb->transfer_buffer;
 
 		if (purb->actual_length > USB_INTR_CONTENT_LENGTH) {
-			DBG_8723A("usb_read_interrupt_complete: purb->actual_length > USB_INTR_CONTENT_LENGTH\n");
+			DBG_8723A("usb_read_interrupt_complete: purb->actual_"
+				  "length > USB_INTR_CONTENT_LENGTH\n");
 			goto urb_submit;
 		}
 
-		InterruptRecognized8723AU(padapter, purb->transfer_buffer, purb->actual_length);
+		InterruptRecognized8723AU(padapter, purb->transfer_buffer,
+					  purb->actual_length);
 
 		if (c2h_evt_exist(c2h_evt)) {
-			if (0)
-				DBG_8723A("%s C2H == %d\n", __func__, c2h_evt->id);
 			if (c2h_id_filter_ccx_8723a(c2h_evt->id)) {
 				/* Handle CCX report here */
 				handle_txrpt_ccx_8723a(padapter, (void *)(c2h_evt->payload));
-				/* Replace with special pointer to trigger c2h_evt_clear */
-				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)&padapter->evtpriv) != _SUCCESS)
-					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
+				/* Replace with special pointer to
+				   trigger c2h_evt_clear */
+				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue,
+						  (void*)&padapter->evtpriv) !=
+				    _SUCCESS)
+					DBG_8723A("%s rtw_cbuf_push fail\n",
+						  __func__);
 				schedule_work(&padapter->evtpriv.c2h_wk);
-			} else if ((c2h_evt = (struct c2h_evt_hdr *)rtw_malloc(16)) != NULL) {
+			} else if ((c2h_evt =
+				    (struct c2h_evt_hdr *)rtw_malloc(16))) {
 				memcpy(c2h_evt, purb->transfer_buffer, 16);
-				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)c2h_evt) != _SUCCESS)
-					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
+				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue,
+						  (void*)c2h_evt) != _SUCCESS)
+					DBG_8723A("%s rtw_cbuf_push fail\n",
+						  __func__);
 				schedule_work(&padapter->evtpriv.c2h_wk);
 			} else {
 				/* Error handling for malloc fail */
-				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue, (void*)NULL) != _SUCCESS)
-					DBG_8723A("%s rtw_cbuf_push fail\n", __func__);
+				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue,
+						  (void*)NULL) != _SUCCESS)
+					DBG_8723A("%s rtw_cbuf_push fail\n",
+						  __func__);
 				schedule_work(&padapter->evtpriv.c2h_wk);
 			}
 		}
 
 urb_submit:
 		err = usb_submit_urb(purb, GFP_ATOMIC);
-		if ((err) && (err != (-EPERM)))
-		{
-			DBG_8723A("cannot submit interrupt in-token(err = 0x%08x),urb_status = %d\n",err, purb->status);
+		if (err && (err != -EPERM)) {
+			DBG_8723A("cannot submit interrupt in-token(err = "
+				  "0x%08x),urb_status = %d\n",
+				  err, purb->status);
 		}
-	}
-	else
-	{
-		DBG_8723A("###=> usb_read_interrupt_complete => urb status(%d)\n", purb->status);
+	} else {
+		DBG_8723A("###=> usb_read_interrupt_complete => urb "
+			  "status(%d)\n", purb->status);
 
 		switch (purb->status)
 		{
-			case -EINVAL:
-			case -EPIPE:
-			case -ENODEV:
-			case -ESHUTDOWN:
-				//padapter->bSurpriseRemoved = true;
-				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bSurpriseRemoved=true\n"));
-			case -ENOENT:
-				padapter->bDriverStopped = true;
-				RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usb_read_port_complete:bDriverStopped=true\n"));
-				break;
-			case -EPROTO:
-				break;
-			case -EINPROGRESS:
-				DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
-				break;
-			default:
-				break;
+		case -EINVAL:
+		case -EPIPE:
+		case -ENODEV:
+		case -ESHUTDOWN:
+			//padapter->bSurpriseRemoved = true;
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
+				 ("usb_read_port_complete:bSurpriseRemoved="
+				  "true\n"));
+		case -ENOENT:
+			padapter->bDriverStopped = true;
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
+				 ("usb_read_port_complete:bDriverStopped="
+				  "true\n"));
+			break;
+		case -EPROTO:
+			break;
+		case -EINPROGRESS:
+			DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
+			break;
+		default:
+			break;
 		}
 	}
 }
 
 static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 {
-	int	err;
+	int err;
 	unsigned int pipe;
-	u32	ret = _SUCCESS;
-	struct rtw_adapter			*adapter = pintfhdl->padapter;
-	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
-	struct recv_priv	*precvpriv = &adapter->recvpriv;
-	struct usb_device	*pusbd = pdvobj->pusbdev;
+	u32 ret = _SUCCESS;
+	struct rtw_adapter *adapter = pintfhdl->padapter;
+	struct dvobj_priv *pdvobj = adapter_to_dvobj(adapter);
+	struct recv_priv *precvpriv = &adapter->recvpriv;
+	struct usb_device *pusbd = pdvobj->pusbdev;
 
 _func_enter_;
 
@@ -471,16 +487,14 @@ _func_enter_;
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
 	usb_fill_int_urb(precvpriv->int_in_urb, pusbd, pipe,
-					precvpriv->int_in_buf,
-					USB_INTR_CONTENT_LENGTH,
-					usb_read_interrupt_complete,
-					adapter,
-					1);
+			 precvpriv->int_in_buf, USB_INTR_CONTENT_LENGTH,
+			 usb_read_interrupt_complete, adapter, 1);
 
 	err = usb_submit_urb(precvpriv->int_in_urb, GFP_ATOMIC);
-	if((err) && (err != (-EPERM)))
-	{
-		DBG_8723A("cannot submit interrupt in-token(err = 0x%08x),urb_status = %d\n",err, precvpriv->int_in_urb->status);
+	if (err && (err != -EPERM)) {
+		DBG_8723A("cannot submit interrupt in-token(err = 0x%08x),"
+			  "urb_status = %d\n", err,
+			  precvpriv->int_in_urb->status);
 		ret = _FAIL;
 	}
 
