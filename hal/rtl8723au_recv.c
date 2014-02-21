@@ -81,8 +81,6 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 
 		spin_lock_init(&precvbuf->recvbuf_lock);
 
-		precvbuf->alloc_sz = MAX_RECVBUF_SZ;
-
 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
 		if (res == _FAIL)
 			break;

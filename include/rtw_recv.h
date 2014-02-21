@@ -269,8 +269,6 @@ struct recv_buf
 	struct rtw_adapter *adapter;
 
 	struct urb *purb;
-	u32 alloc_sz;
-
 	struct sk_buff *pskb;
 };
 
