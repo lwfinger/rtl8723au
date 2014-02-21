@@ -268,8 +268,6 @@ struct recv_buf
 
 	struct rtw_adapter *adapter;
 
-	u8	*pbuf;
-
 	struct urb *purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;

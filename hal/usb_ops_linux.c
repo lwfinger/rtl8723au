@@ -838,10 +838,6 @@ _func_enter_;
 		tmpaddr = (unsigned long)precvbuf->pskb->data;
 		alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
 		skb_reserve(precvbuf->pskb, (RECVBUFF_ALIGN_SZ - alignment));
-
-		precvbuf->pbuf = precvbuf->pskb->data;
-	} else { //reuse skb
-		precvbuf->pbuf = precvbuf->pskb->data;
 	}
 
 	precvpriv->rx_pending_cnt++;
@@ -851,7 +847,7 @@ _func_enter_;
 	//translate DMA FIFO addr to pipehandle
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
-	usb_fill_bulk_urb(purb, pusbd, pipe, precvbuf->pbuf,
+	usb_fill_bulk_urb(purb, pusbd, pipe, precvbuf->pskb->data,
 			  MAX_RECVBUF_SZ, usb_read_port_complete,
 			  precvbuf);//context is precvbuf
 
