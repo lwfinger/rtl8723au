@@ -1002,10 +1002,6 @@ _func_enter_;
 		if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN)) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 (" SA==myself \n"));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s SA="MAC_FMT", myhwaddr="MAC_FMT"\n",
-				__FUNCTION__, MAC_ARG(pattrib->src), MAC_ARG(myhwaddr));
-#endif
 			ret = _FAIL;
 			goto exit;
 		}
@@ -1015,10 +1011,6 @@ _func_enter_;
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 				(" ap2sta_data_frame:  compare DA fail; DA="
 				 MAC_FMT"\n", MAC_ARG(pattrib->dst)));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s DA="MAC_FMT"\n",
-				  __func__, MAC_ARG(pattrib->dst));
-#endif
 			ret = _FAIL;
 			goto exit;
 		}
@@ -1032,14 +1024,6 @@ _func_enter_;
 				 "BSSID="MAC_FMT"\n", MAC_ARG(pattrib->bssid)));
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 				 ("mybssid="MAC_FMT"\n", MAC_ARG(mybssid)));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s BSSID="MAC_FMT", "
-				  "mybssid="MAC_FMT"\n", __FUNCTION__,
-				  MAC_ARG(pattrib->bssid), MAC_ARG(mybssid));
-			DBG_8723A( "this adapter = %d, buddy adapter = %d\n",
-				   adapter->adapter_type,
-				   adapter->pbuddy_adapter->adapter_type );
-#endif
 
 			if(!bmcast) {
 				DBG_8723A("issue_deauth to the nonassociated "
@@ -1063,10 +1047,6 @@ _func_enter_;
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 ("ap2sta: can't get psta under STATION_MODE ;"
 				  " drop pkt\n"));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s can't get psta under "
-				  "STATION_MODE ; drop pkt\n", __FUNCTION__);
-#endif
 			ret = _FAIL;
 			goto exit;
 		}
@@ -1098,11 +1078,6 @@ _func_enter_;
 		if (*psta == NULL) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 ("can't get psta under MP_MODE ; drop pkt\n"));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s can't get psta "
-				  "under WIFI_MP_STATE ; drop pkt\n",
-				  __FUNCTION__);
-#endif
 			ret = _FAIL;
 			goto exit;
 		}
@@ -1124,10 +1099,6 @@ _func_enter_;
 		}
 
 		ret = _FAIL;
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s fw_state:0x%x\n",
-			  __FUNCTION__, get_fwstate(pmlmepriv));
-#endif
 	}
 
 exit:
@@ -1432,9 +1403,6 @@ _func_enter_;
 	pbssid = get_hdr_bssid(ptr);
 
 	if (pbssid == NULL) {
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s pbssid == NULL\n", __func__);
-#endif
 		ret = _FAIL;
 		goto exit;
 	}
@@ -1477,10 +1445,6 @@ _func_enter_;
 	}
 
 	if (ret ==_FAIL) {
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s case:%d, res:%d\n",
-			  __FUNCTION__, pattrib->to_fr_ds, ret);
-#endif
 		goto exit;
 	} else if (ret == RTW_RX_HANDLED) {
 		goto exit;
@@ -1489,9 +1453,6 @@ _func_enter_;
 	if (psta==NULL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 (" after to_fr_ds_chk; psta==NULL \n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s psta == NULL\n", __func__);
-#endif
 		ret = _FAIL;
 		goto exit;
 	}
@@ -1528,9 +1489,6 @@ _func_enter_;
 	    _FAIL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("decache : drop pkt\n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s recv_decache return _FAIL\n", __func__);
-#endif
 		ret = _FAIL;
 		goto exit;
 	}
@@ -1677,10 +1635,6 @@ _func_enter_;
 	default:
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("validate_recv_data_frame fail! type=0x%x\n", type));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME validate_recv_data_frame fail! "
-			  "type=0x%x\n", type);
-#endif
 		retval = _FAIL;
 		break;
 	}
@@ -2139,11 +2093,6 @@ int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num)
 		/* RT_TRACE(COMP_RX_REORDER, DBG_LOUD, ("CheckRxTsIndicateSeq(): Packet Drop! IndicateSeq: %d, NewSeq: %d\n", pTS->RxIndicateSeq, NewSeqNum)); */
 		/* DbgPrint("CheckRxTsIndicateSeq(): Packet Drop! IndicateSeq: %d, NewSeq: %d\n", precvpriv->indicate_seq, seq_num); */
 
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("%s IndicateSeq: %d > NewSeq: %d\n", __FUNCTION__,
-			  preorder_ctrl->indicate_seq, seq_num);
-#endif
-
 		return false;
 	}
 
@@ -2370,10 +2319,6 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter,
 				return _SUCCESS;
 			}
 
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s pattrib->qos !=1\n",
-				  __FUNCTION__);
-#endif
 			return _FAIL;
 		}
 
@@ -2422,12 +2367,6 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter,
 				  pattrib->seq_num);
 #endif
 
-			if (retval != _SUCCESS) {
-#ifdef DBG_RX_DROP_FRAME
-				DBG_8723A("DBG_RX_DROP_FRAME %s amsdu_to_msdu "
-					  "fail\n", __FUNCTION__);
-#endif
-			}
 			return retval;
 		}
 	}
@@ -2440,19 +2379,11 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter,
 
 	/* s2. check if winstart_b(indicate_seq) needs to been updated */
 	if (!check_indicate_seq(preorder_ctrl, pattrib->seq_num)) {
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s check_indicate_seq fail\n",
-			  __FUNCTION__);
-#endif
 		goto _err_exit;
 	}
 
 	/* s3. Insert all packet into Reorder Queue to maintain its ordering. */
 	if (!enqueue_reorder_recvframe(preorder_ctrl, prframe)) {
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s enqueue_reorder_recvframe "
-			  "fail\n", __FUNCTION__);
-#endif
 		goto _err_exit;
 	}
 
@@ -2531,11 +2462,6 @@ int process_recv_indicatepkts(struct rtw_adapter *padapter,
 
 		/*  including perform A-MPDU Rx Ordering Buffer Control */
 		if (recv_indicatepkt_reorder(padapter, prframe) != _SUCCESS) {
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s recv_indicatepkt_"
-				  "reorder error!\n", __FUNCTION__);
-#endif
-
 			if ((padapter->bDriverStopped == false) &&
 			    (padapter->bSurpriseRemoved == false)) {
 				retval = _FAIL;
@@ -2548,10 +2474,6 @@ int process_recv_indicatepkts(struct rtw_adapter *padapter,
 		if (retval != _SUCCESS) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 ("wlanhdr_to_ethhdr: drop pkt \n"));
-#ifdef DBG_RX_DROP_FRAME
-			DBG_8723A("DBG_RX_DROP_FRAME %s wlanhdr_to_ethhdr "
-				  "error!\n", __FUNCTION__);
-#endif
 			return retval;
 		}
 
@@ -2618,10 +2540,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	if (prframe == NULL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("decryptor: drop pkt\n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s decryptor: drop pkt\n",
-			  __FUNCTION__);
-#endif
 		ret = _FAIL;
 		goto _recv_data_drop;
 	}
@@ -2630,10 +2548,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	if (!prframe) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("recvframe_chk_defrag: drop pkt\n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s recvframe_chk_defrag: drop "
-			  "pkt\n", __FUNCTION__);
-#endif
 		goto _recv_data_drop;
 	}
 
@@ -2641,10 +2555,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	if (!prframe) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("portctrl: drop pkt \n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s portctrl: drop pkt\n",
-			  __FUNCTION__);
-#endif
 		ret = _FAIL;
 		goto _recv_data_drop;
 	}
@@ -2655,10 +2565,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	if (ret != _SUCCESS) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("recv_func: process_recv_indicatepkts fail! \n"));
-#ifdef DBG_RX_DROP_FRAME
-		DBG_8723A("DBG_RX_DROP_FRAME %s process_recv_indicatepkts "
-			  "fail!\n", __FUNCTION__);
-#endif
 		rtw_free_recvframe(orig_prframe, pfree_recv_queue);/* free this recv_frame */
 		goto _recv_data_drop;
 	}
