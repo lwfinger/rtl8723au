@@ -79,8 +79,6 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 	for (i = 0; i < NR_RECVBUFF; i++) {
 		INIT_LIST_HEAD(&precvbuf->list);
 
-		spin_lock_init(&precvbuf->recvbuf_lock);
-
 		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
 		if (res == _FAIL)
 			break;

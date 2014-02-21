@@ -264,8 +264,6 @@ struct recv_buf
 {
 	struct list_head list;
 
-	spinlock_t recvbuf_lock;
-
 	struct rtw_adapter *adapter;
 
 	struct urb *purb;
