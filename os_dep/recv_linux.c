@@ -170,12 +170,6 @@ _func_enter_;
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
 		 ("rtw_recv_indicatepkt():precv_frame->hdr.rx_data=%p\n",
 		  precv_frame->pkt->data));
-
-	if (skb->data != precv_frame->rx_data) {
-		printk(KERN_DEBUG "yuck, data pointers differ skb->data %p %p\n", skb->data, precv_frame->rx_data);
-		skb->data = precv_frame->rx_data;
-	}
-
 	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
 		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p "
 		  "skb->len=%d\n", skb->head, skb->data,

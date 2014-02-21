@@ -592,7 +592,6 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			skb_reserve(pkt_copy, shift_sz);
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
 			skb_put(pkt_copy, skb_len);
-			precvframe->rx_data = pkt_copy->data;
 		} else {
 			if ((pattrib->mfrag == 1)&&(pattrib->frag_num == 0)) {
 				DBG_8723A("recvbuf2recvframe: alloc_skb fail, "
@@ -603,10 +602,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			}
 
 			precvframe->pkt = skb_clone(pskb, GFP_ATOMIC);
-			if (precvframe->pkt) {
-				precvframe->rx_data =
-					pbuf + pattrib->drvinfo_sz + RXDESC_SIZE;
-			} else {
+			if (!precvframe->pkt) {
 				DBG_8723A("recvbuf2recvframe: skb_clone "
 					  "fail\n");
 				rtw_free_recvframe(precvframe,

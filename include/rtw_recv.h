@@ -297,10 +297,7 @@ struct recv_frame
 
 	struct rx_pkt_attrib attrib;
 
-	u8 *rx_data;
-
 	void *precvbuf;
-
 
 	//
 	struct sta_info *psta;
@@ -327,6 +324,9 @@ void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
 
 static inline u8 *recvframe_pull(struct recv_frame *precvframe, int sz)
 {
+	return NULL;
+
+#if 0
 	// rx_data += sz; move rx_data sz bytes  hereafter
 
 	//used for extract sz bytes from rx_data, update rx_data and return the updated rx_data to the caller
@@ -346,6 +346,7 @@ static inline u8 *recvframe_pull(struct recv_frame *precvframe, int sz)
 
 	return precvframe->rx_data;
 
+#endif
 }
 
 static inline u8 *recvframe_put(struct recv_frame *precvframe, int sz)
@@ -367,6 +368,7 @@ static inline u8 *recvframe_put(struct recv_frame *precvframe, int sz)
 
 static inline u8 *recvframe_pull_tail(struct recv_frame *precvframe, int sz)
 {
+#if 0
 	// rmv data from rx_tail (by yitsen)
 
 	//used for extract sz bytes from rx_end, update rx_end and return the updated rx_end to the caller
@@ -380,7 +382,6 @@ static inline u8 *recvframe_pull_tail(struct recv_frame *precvframe, int sz)
 	if (precvframe->rx_data != precvframe->pkt->data)
 		printk(KERN_DEBUG "pull_tail mismatch!\n");
 
-#if 0
 	precvframe->len -=sz;
 #endif
 

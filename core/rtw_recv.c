@@ -1976,11 +1976,6 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 		recvframe_pull(prframe, prframe->attrib.iv_len);
 		skb_pull(prframe->pkt, prframe->attrib.iv_len);
 	}
-	if (prframe->rx_data != prframe->pkt->data) {
-		printk(KERN_DEBUG "amsdu pointer mismatch\n");
-	} else {
-		printk(KERN_DEBUG "amsdu pointers are good\n");
-	}
 
 	a_len = prframe->pkt->len;
 
