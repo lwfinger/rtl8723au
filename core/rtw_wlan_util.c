@@ -843,7 +843,6 @@ void WMMOnAssocRsp(struct rtw_adapter *padapter)
 
 static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 {
-#ifdef CONFIG_80211N_HT
 	unsigned char	 new_bwmode;
 	unsigned char  new_ch_offset;
 	struct HT_info_element	 *pHT_info;
@@ -931,12 +930,10 @@ static void bwmode_update_check(struct rtw_adapter *padapter, PNDIS_802_11_VARIA
 
 		}
 	}
-#endif /* CONFIG_80211N_HT */
 }
 
 void HT_caps_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 {
-#ifdef CONFIG_80211N_HT
 	unsigned int	i;
 	u8	rf_type;
 	u8	max_AMPDU_len, min_MPDU_spacing;
@@ -1001,13 +998,11 @@ void HT_caps_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 		else
 			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_2R[i];
 	}
-#endif /* CONFIG_80211N_HT */
 	return;
 }
 
 void HT_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
 {
-#ifdef CONFIG_80211N_HT
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
@@ -1022,7 +1017,6 @@ void HT_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 
 	pmlmeinfo->HT_info_enable = 1;
 	memcpy(&(pmlmeinfo->HT_info), pIE->data, pIE->Length);
-#endif /* CONFIG_80211N_HT */
 	return;
 }
 

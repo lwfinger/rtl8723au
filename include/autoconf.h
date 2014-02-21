@@ -33,8 +33,6 @@
  * Functions Config
  */
 
-#define CONFIG_80211N_HT
-
 #define CONFIG_8723AU_AP_MODE
 
 #define CONFIG_8723AU_P2P

@@ -2965,7 +2965,6 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 			psta->qos_option = 0;
 
 
-#ifdef CONFIG_80211N_HT
 		//chec 802.11n ht cap.
 		if(WLAN_STA_HT&flags)
 		{
@@ -2980,7 +2979,6 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 
 		if(pmlmepriv->htpriv.ht_option == false)
 			psta->htpriv.ht_option = false;
-#endif
 
 
 		update_sta_info_apmode(padapter, psta);
@@ -3092,9 +3090,7 @@ static int rtw_ioctl_get_sta_data(struct net_device *dev, struct ieee_param *par
 
 		psta_data->tx_supp_rates_len =  psta->bssratelen;
 		memcpy(psta_data->tx_supp_rates, psta->bssrateset, psta->bssratelen);
-#ifdef CONFIG_80211N_HT
 		memcpy(&psta_data->ht_cap, &psta->htpriv.ht_cap, sizeof(struct ieee80211_ht_cap));
-#endif //CONFIG_80211N_HT
 		psta_data->rx_pkts = psta->sta_stats.rx_data_pkts;
 		psta_data->rx_bytes = psta->sta_stats.rx_bytes;
 		psta_data->rx_drops = psta->sta_stats.rx_drops;
