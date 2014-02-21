@@ -217,8 +217,7 @@ struct recv_priv
 	struct tasklet_struct recv_tasklet;
 	struct sk_buff_head free_recv_skb_queue;
 	struct sk_buff_head rx_skb_queue;
-	u8 *pallocated_recv_buf;
-	u8 *precv_buf;    // 4 alignment
+	u8 *precv_buf;
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 

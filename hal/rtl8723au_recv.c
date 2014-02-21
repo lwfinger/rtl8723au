@@ -63,16 +63,14 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
-	size = NR_RECVBUFF *sizeof(struct recv_buf) + 4;
-	precvpriv->pallocated_recv_buf = kzalloc(size , GFP_KERNEL);
-	if (!precvpriv->pallocated_recv_buf) {
+	size = NR_RECVBUFF * sizeof(struct recv_buf);
+	precvpriv->precv_buf = kzalloc(size, GFP_KERNEL);
+	if (!precvpriv->precv_buf) {
 		res = _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("alloc recv_buf fail!\n"));
 		goto exit;
 	}
-
-	precvpriv->precv_buf = PTR_ALIGN(precvpriv->pallocated_recv_buf, 4);
 
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
@@ -128,7 +126,7 @@ void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 		precvbuf++;
 	}
 
-	kfree(precvpriv->pallocated_recv_buf);
+	kfree(precvpriv->precv_buf);
 
 	if (precvpriv->int_in_urb)
 		usb_free_urb(precvpriv->int_in_urb);
