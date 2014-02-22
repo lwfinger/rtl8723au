@@ -1817,7 +1817,7 @@ _func_enter_;
 	/* 4 start to encrypt each fragment */
 	if (!prxattrib->encrypt !=_AES_)
 		return _FAIL;
-	
+
 	stainfo = rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0]);
 	if (!stainfo) {
 		RT_TRACE(_module_rtl871x_security_c_,_drv_err_,

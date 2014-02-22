@@ -605,10 +605,10 @@ static s32 update_attrib(struct rtw_adapter *padapter,
 		psta = rtw_get_stainfo(pstapriv, pattrib->ra);
 		if (psta == NULL) { /*  if we cannot get psta => drrp the pkt */
 			RT_TRACE(_module_rtl871x_xmit_c_, _drv_alert_,
-				 ("\nupdate_attrib => get sta_info fail, ra:" 
+				 ("\nupdate_attrib => get sta_info fail, ra:"
 				  MAC_FMT"\n", MAC_ARG(pattrib->ra)));
 #ifdef DBG_TX_DROP_FRAME
-			DBG_8723A("DBG_TX_DROP_FRAME %s get sta_info fail, ra:" 
+			DBG_8723A("DBG_TX_DROP_FRAME %s get sta_info fail, ra:"
 				  MAC_FMT"\n",
 				  __FUNCTION__, MAC_ARG(pattrib->ra));
 #endif

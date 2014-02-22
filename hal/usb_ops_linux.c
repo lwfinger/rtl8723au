@@ -339,7 +339,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
  *		Under USB interface, the content is the interrupt
  *		content pointer.
  *		Under SDIO interface, this is the interrupt type which
- *		is Local interrupt or system interrupt. 
+ *		is Local interrupt or system interrupt.
  *	[in] ContentLen -
  *		The length in byte of pContent.
  * Return:

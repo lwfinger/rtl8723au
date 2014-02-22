@@ -66,7 +66,7 @@ int _rtw_init_recv_priv(struct recv_priv *precvpriv,
 
 _func_enter_;
 
-	/*  We don't need to memset padapter->XXX to zero, because 
+	/*  We don't need to memset padapter->XXX to zero, because
 	    adapter is allocated by rtw_zvmalloc(). */
 	/* memset((unsigned char *)precvpriv, 0, sizeof (struct  recv_priv)); */
 
@@ -1132,7 +1132,7 @@ _func_enter_;
 		if (*psta == NULL) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 ("can't get psta under AP_MODE; drop pkt\n"));
-			DBG_8723A("issue_deauth to sta=" MAC_FMT 
+			DBG_8723A("issue_deauth to sta=" MAC_FMT
 				  " for the reason(7)\n",
 				  MAC_ARG(pattrib->src));
 
@@ -2477,7 +2477,7 @@ int process_recv_indicatepkts(struct rtw_adapter *padapter,
 			return retval;
 		}
 
-		if ((padapter->bDriverStopped == false) && 
+		if ((padapter->bDriverStopped == false) &&
 		    (padapter->bSurpriseRemoved == false)) {
 			/* indicate this recv_frame */
 			RT_TRACE(_module_rtl871x_recv_c_, _drv_notice_,

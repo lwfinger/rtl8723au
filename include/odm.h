@@ -368,8 +368,8 @@ typedef		struct _ODM_STA_INFO{
 	/* 1 TX_INFO (may changed by IC) */
 
 	/*  */
-	/* 	Please use compile flag to disable the structure for other IC except 88E. */
-	/* 	Move To lower layer. */
+	/*	Please use compile flag to disable the structure for other IC except 88E. */
+	/*	Move To lower layer. */
 	/*  */
 	/*  ODM Write Wilson will handle this part(said by Luke.Lee) */
 }ODM_STA_INFO_T, *PODM_STA_INFO_T;
@@ -490,7 +490,7 @@ typedef enum _ODM_Support_Ability_Definition
 
 }ODM_ABILITY_E;
 
-/* 	ODM_CMNINFO_INTERFACE */
+/*	ODM_CMNINFO_INTERFACE */
 typedef enum tag_ODM_Support_Interface_Definition
 {
 	ODM_ITRF_PCIE	=	0x1,
@@ -847,7 +847,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 {
 	/* struct timer_list FastAntTrainingTimer; */
 	/*  */
-	/* 	Add for different team use temporarily */
+	/*	Add for different team use temporarily */
 	/*  */
 	struct rtw_adapter	*Adapter;		/*  For CE/NIC team */
 	struct rtl8723a_priv	*priv;			/*  For AP/ADSL team */

@@ -752,7 +752,7 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 			is client */
 		if (wifi_test_chk_rate == 1) {
 			if ((is_valid_p2p_probereq =
-			     process_probe_req_p2p_ie(pwdinfo, pframe, len)) == 
+			     process_probe_req_p2p_ie(pwdinfo, pframe, len)) ==
 			    true) {
 				if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE)){
 					p2p_listen_state_process(padapter, get_sa(pframe));
@@ -5536,7 +5536,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 			if (wdev_to_priv(padapter->rtw_wdev)->p2p_enabled) {
 				len = pmlmepriv->p2p_beacon_ie_len;
 				if (pmlmepriv->p2p_beacon_ie && len>0)
-					memcpy(pframe, 
+					memcpy(pframe,
 					       pmlmepriv->p2p_beacon_ie, len);
 			} else {
 				len = build_beacon_p2p_ie(pwdinfo, pframe);
