@@ -167,19 +167,9 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_TO_DS_); \
 	} while(0)
 
-#define ClearToDs(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_TO_DS_)); \
-	} while(0)
-
 #define SetFrDs(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_FROM_DS_); \
-	} while(0)
-
-#define ClearFrDs(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_FROM_DS_)); \
 	} while(0)
 
 #define get_tofr_ds(pframe)	((ieee80211_has_tods(pframe) << 1) | \
@@ -201,19 +191,9 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_RETRY_); \
 	} while(0)
 
-#define ClearRetry(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_RETRY_)); \
-	} while(0)
-
 #define SetPwrMgt(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_PWRMGT_); \
-	} while(0)
-
-#define ClearPwrMgt(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_PWRMGT_)); \
 	} while(0)
 
 #define SetMData(pbuf)	\
@@ -221,19 +201,9 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_MORE_DATA_); \
 	} while(0)
 
-#define ClearMData(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_MORE_DATA_)); \
-	} while(0)
-
 #define SetPrivacy(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_PRIVACY_); \
-	} while(0)
-
-#define ClearPrivacy(pbuf)	\
-	do	{	\
-		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_PRIVACY_)); \
 	} while(0)
 
 
