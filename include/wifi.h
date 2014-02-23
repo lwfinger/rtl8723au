@@ -250,8 +250,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(tid & 0xf); \
 	} while(0)
 
-#define GetPriority(pbuf)	((le16_to_cpu(*(unsigned short *)(pbuf))) & 0xf)
-
 #define SetEOSP(pbuf, eosp)	\
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16( (eosp & 1) << 4); \
@@ -261,10 +259,6 @@ enum WIFI_REG_DOMAIN {
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16( (ack & 3) << 5); \
 	} while(0)
-
-#define GetAckpolicy(pbuf) (((le16_to_cpu(*(unsigned short *)pbuf)) >> 5) & 0x3)
-
-#define GetAMsdu(pbuf) (((le16_to_cpu(*(unsigned short *)pbuf)) >> 7) & 0x1)
 
 #define SetAMsdu(pbuf, amsdu)	\
 	do	{	\
