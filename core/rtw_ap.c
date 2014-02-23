@@ -1404,14 +1404,16 @@ static void update_bcn_erpinfo_ie(struct rtw_adapter *padapter)
 		struct ndis_802_11_var_ies * pIE = (struct ndis_802_11_var_ies *)p;
 
 		if (pmlmepriv->num_sta_non_erp == 1)
-			pIE->data[0] |= RTW_ERP_INFO_NON_ERP_PRESENT|RTW_ERP_INFO_USE_PROTECTION;
+			pIE->data[0] |= WLAN_ERP_NON_ERP_PRESENT |
+				WLAN_ERP_USE_PROTECTION;
 		else
-			pIE->data[0] &= ~(RTW_ERP_INFO_NON_ERP_PRESENT|RTW_ERP_INFO_USE_PROTECTION);
+			pIE->data[0] &= ~(WLAN_ERP_NON_ERP_PRESENT |
+					  WLAN_ERP_USE_PROTECTION);
 
 		if(pmlmepriv->num_sta_no_short_preamble > 0)
-			pIE->data[0] |= RTW_ERP_INFO_BARKER_PREAMBLE_MODE;
+			pIE->data[0] |= WLAN_ERP_BARKER_PREAMBLE;
 		else
-			pIE->data[0] &= ~(RTW_ERP_INFO_BARKER_PREAMBLE_MODE);
+			pIE->data[0] &= ~(WLAN_ERP_BARKER_PREAMBLE);
 
 		ERP_IE_handler(padapter, pIE);
 	}

@@ -271,11 +271,6 @@ struct sta_data{
 #define MIN_FRAG_THRESHOLD     256U
 #define	MAX_FRAG_THRESHOLD     2346U
 
-
-#define RTW_ERP_INFO_NON_ERP_PRESENT BIT(0)
-#define RTW_ERP_INFO_USE_PROTECTION BIT(1)
-#define RTW_ERP_INFO_BARKER_PREAMBLE_MODE BIT(2)
-
 /* QoS,QOS */
 #define NORMAL_ACK			0
 #define NO_ACK				1
