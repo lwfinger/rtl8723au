@@ -1382,7 +1382,7 @@ int validate_recv_data_frame(struct rtw_adapter *adapter,
 
 _func_enter_;
 
-	bretry = GetRetry(ptr);
+	bretry = ieee80211_has_retry(hdr->frame_control);
 	pda = ieee80211_get_DA(hdr);
 	psa = ieee80211_get_SA(hdr);
 	pbssid = get_hdr_bssid(ptr);

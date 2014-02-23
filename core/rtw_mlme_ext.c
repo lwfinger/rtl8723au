@@ -601,6 +601,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 #endif /* CONFIG_8723AU_AP_MODE */
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
 	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, GetAddr2Ptr(pframe));
 
@@ -633,7 +634,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 	ptable += index;
 
 	if (psta) {
-		if (GetRetry(pframe)) {
+		if (ieee80211_has_retry(hdr->frame_control)) {
 			if (precv_frame->attrib.seq_num ==
 			    psta->RxMgmtFrameSeqNum) {
 				/* drop the duplicate management frame */
@@ -4593,11 +4594,12 @@ static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
 	struct rtw_adapter *adapter = recv_frame->adapter;
 	struct mlme_ext_priv *mlmeext = &(adapter->mlmeextpriv);
 	struct sk_buff *skb = recv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *frame = skb->data;
 	u16 seq_ctrl = ( (recv_frame->attrib.seq_num&0xffff) << 4) |
 		(recv_frame->attrib.frag_num & 0xf);
 
-	if (GetRetry(frame)) {
+	if (ieee80211_has_retry(hdr->frame_control)) {
 		if (token >= 0) {
 			if ((seq_ctrl == mlmeext->action_public_rxseq)
 				&& (token == mlmeext->action_public_dialog_token))

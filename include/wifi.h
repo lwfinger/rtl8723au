@@ -201,8 +201,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_RETRY_); \
 	} while(0)
 
-#define GetRetry(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_RETRY_)) != 0)
-
 #define ClearRetry(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_RETRY_)); \
