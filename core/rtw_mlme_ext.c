@@ -721,6 +721,7 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct wlan_bssid_ex	*cur = &(pmlmeinfo->network);
 	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
 	uint len = skb->len;
 	u8 is_valid_p2p_probereq = false;
@@ -750,7 +751,8 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 			     process_probe_req_p2p_ie(pwdinfo, pframe, len)) ==
 			    true) {
 				if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE)){
-					p2p_listen_state_process(padapter, get_sa(pframe));
+					u8 *sa = ieee80211_get_SA(hdr);
+					p2p_listen_state_process(padapter, sa);
 					return _SUCCESS;
 				}
 
@@ -796,7 +798,7 @@ _issue_probersp:
 		if (check_fwstate(pmlmepriv, _FW_LINKED) == true &&
 		    pmlmepriv->cur_network.join_res == true) {
 			/* DBG_8723A("+issue_probersp during ap mode\n"); */
-			issue_probersp(padapter, get_sa(pframe),
+			issue_probersp(padapter, ieee80211_get_SA(hdr),
 				       is_valid_p2p_probereq);
 		}
 	}
@@ -1213,13 +1215,15 @@ unsigned int OnAuthClient(struct rtw_adapter *padapter,
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
 	uint pkt_len = skb->len;
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	/* check A1 matches or not */
-	if (memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
+	if (!ether_addr_equal(myid(&padapter->eeprompriv),
+			      ieee80211_get_DA(hdr)))
 		return _SUCCESS;
 
 	if (!(pmlmeinfo->state & WIFI_FW_AUTH_STATE))
@@ -1843,13 +1847,15 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	/* struct wlan_bssid_ex			*cur_network = &(pmlmeinfo->network); */
 	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
 	uint pkt_len = skb->len;
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
 	/* check A1 matches or not */
-	if (memcmp(myid(&(padapter->eeprompriv)), get_da(pframe), ETH_ALEN))
+	if (!ether_addr_equal(myid(&padapter->eeprompriv),
+			      ieee80211_get_DA(hdr)))
 		return _SUCCESS;
 
 	if (!(pmlmeinfo->state & (WIFI_FW_AUTH_SUCCESS | WIFI_FW_ASSOC_STATE)))

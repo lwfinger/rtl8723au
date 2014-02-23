@@ -1377,12 +1377,14 @@ int validate_recv_data_frame(struct rtw_adapter *adapter,
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	struct security_priv *psecuritypriv = &adapter->securitypriv;
 	int ret = _SUCCESS;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 
 _func_enter_;
 
 	bretry = GetRetry(ptr);
-	pda = get_da(ptr);
-	psa = get_sa(ptr);
+	pda = ieee80211_get_DA(hdr);
+	psa = ieee80211_get_SA(hdr);
 	pbssid = get_hdr_bssid(ptr);
 
 	if (pbssid == NULL) {
