@@ -24,12 +24,6 @@
 #include <linux/ieee80211.h>
 #include <wifi.h>
 
-static u8 SNAP_ETH_TYPE_IPX[2] = {0x81, 0x37};
-
-static u8 SNAP_ETH_TYPE_APPLETALK_AARP[2] = {0x80, 0xf3};
-static u8 SNAP_ETH_TYPE_APPLETALK_DDP[2] = {0x80, 0x9b};
-static u8 SNAP_ETH_TYPE_TDLS[2] = {0x89, 0x0d};
-
 static u8 rtw_rfc1042_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00 };
 /* Bridge-Tunnel header (for EtherTypes ETH_P_AARP and ETH_P_IPX) */
 static u8 rtw_bridge_tunnel_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0xf8 };
@@ -1641,18 +1635,16 @@ _func_exit_;
 
 static int wlanhdr_to_ethhdr (struct recv_frame *precvframe)
 {
-	int	rmv_len;
-	u16	eth_type, len;
+	u16	eth_type, len, hdrlen;
 	u8	bsnaphdr;
-	u8	*psnap_type;
-	struct ieee80211_snap_hdr	*psnap;
+	u8	*psnap;
 
 	int ret = _SUCCESS;
 	struct rtw_adapter *adapter = precvframe->adapter;
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
 	struct sk_buff *skb = precvframe->pkt;
-	u8 *ptr = skb->data;
+	u8 *ptr;
 	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
 
 _func_enter_;
@@ -1661,51 +1653,46 @@ _func_enter_;
 		skb_trim(skb, skb->len - pattrib->icv_len);
 	}
 
-	psnap = (struct ieee80211_snap_hdr *)(ptr + pattrib->hdrlen +
-					      pattrib->iv_len);
-	psnap_type=ptr + pattrib->hdrlen + pattrib->iv_len + SNAP_SIZE;
+	ptr = skb->data;
+	hdrlen = pattrib->hdrlen + pattrib->iv_len;
+	psnap = ptr + hdrlen;
+	eth_type = (psnap[6] << 8) | psnap[7];
 	/* convert hdr + possible LLC headers into Ethernet header */
 	/* eth_type = (psnap_type[0] << 8) | psnap_type[1]; */
-	if ((!memcmp(psnap, rtw_rfc1042_header, SNAP_SIZE) &&
-	     memcmp(psnap_type, SNAP_ETH_TYPE_IPX, 2) &&
-	     memcmp(psnap_type, SNAP_ETH_TYPE_APPLETALK_AARP, 2)) ||
-	     /* eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) || */
-	    !memcmp(psnap, rtw_bridge_tunnel_header, SNAP_SIZE)) {
+	if ((ether_addr_equal(psnap, rtw_rfc1042_header) &&
+	     eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
+	    ether_addr_equal(psnap, rtw_bridge_tunnel_header)) {
 		/* remove RFC1042 or Bridge-Tunnel encapsulation
 		   and replace EtherType */
 		bsnaphdr = true;
+		hdrlen += SNAP_SIZE;
 	} else {
 		/* Leave Ethernet header part of hdr and full payload */
 		bsnaphdr = false;
+		eth_type = (psnap[0] << 8) | psnap[1];
 	}
 
-	rmv_len = pattrib->hdrlen + pattrib->iv_len + (bsnaphdr ? SNAP_SIZE:0);
-	len = skb->len - rmv_len;
+	len = skb->len - hdrlen;
 
 	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 		 ("\n===pattrib->hdrlen: %x,  pattrib->iv_len:%x ===\n\n",
 		  pattrib->hdrlen,  pattrib->iv_len));
 
-	memcpy(&eth_type, ptr + rmv_len, 2);
-	eth_type= ntohs((unsigned short )eth_type); /* pattrib->ether_type */
 	pattrib->eth_type = eth_type;
-
 	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)) {
-		ptr += rmv_len ;
+		ptr += hdrlen;
 		*ptr = 0x87;
 		*(ptr + 1) = 0x12;
 
 		eth_type = 0x8712;
 		/*  append rx status for mp test packets */
 
-		ptr = skb_pull(precvframe->pkt,
-			       (rmv_len - sizeof(struct ethhdr) + 2) - 24);
+		ptr = skb_pull(skb, (hdrlen - sizeof(struct ethhdr) + 2) - 24);
 		memcpy(ptr, skb->head, 24);
 		ptr += 24;
 	} else {
-		ptr = skb_pull(precvframe->pkt,
-			       (rmv_len - sizeof(struct ethhdr) +
-				(bsnaphdr ? 2:0)));
+		ptr = skb_pull(skb, (hdrlen - sizeof(struct ethhdr) +
+				     (bsnaphdr ? 2:0)));
 	}
 
 	memcpy(ptr, pattrib->dst, ETH_ALEN);
