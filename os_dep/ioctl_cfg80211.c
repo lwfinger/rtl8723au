@@ -1346,7 +1346,7 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 				     struct vif_params *params)
 {
 	enum nl80211_iftype old_type;
-	NDIS_802_11_NETWORK_INFRASTRUCTURE networkType ;
+	enum ndis_802_11_net_infra networkType ;
 	struct rtw_adapter *padapter = wiphy_to_adapter(wiphy);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct wireless_dev *rtw_wdev = wiphy_to_wdev(wiphy);
@@ -1618,7 +1618,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	int ret = 0;
 	struct rtw_adapter *padapter = wiphy_to_adapter(wiphy);
 	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
-	NDIS_802_11_SSID ssid[RTW_SSID_SCAN_AMOUNT];
+	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 	unsigned long	irqL;
 	u8 *wps_ie=NULL;
@@ -1723,7 +1723,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 #endif /* CONFIG_8723AU_P2P */
 
 
-	memset(ssid, 0, sizeof(NDIS_802_11_SSID)*RTW_SSID_SCAN_AMOUNT);
+	memset(ssid, 0, sizeof(struct ndis_802_11_ssid)*RTW_SSID_SCAN_AMOUNT);
 	/* parsing request ssids, n_ssids */
 	for (i = 0; i < request->n_ssids && i < RTW_SSID_SCAN_AMOUNT; i++) {
 #ifdef CONFIG_DEBUG_CFG80211
@@ -2155,8 +2155,8 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	unsigned long irqL;
 	struct list_head *phead, *plist, *ptmp;
 	struct wlan_network *pnetwork = NULL;
-	NDIS_802_11_AUTHENTICATION_MODE authmode;
-	NDIS_802_11_SSID ndis_ssid;
+	enum ndis_802_11_auth_mode authmode;
+	struct ndis_802_11_ssid ndis_ssid;
 	u8 *dst_ssid, *src_ssid;
 	u8 *dst_bssid, *src_bssid;
 	/* u8 matched_by_bssid=false; */
@@ -2201,7 +2201,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	}
 
 
-	memset(&ndis_ssid, 0, sizeof(NDIS_802_11_SSID));
+	memset(&ndis_ssid, 0, sizeof(struct ndis_802_11_ssid));
 	ndis_ssid.SsidLength = sme->ssid_len;
 	memcpy(ndis_ssid.Ssid, sme->ssid, sme->ssid_len);
 
@@ -2325,7 +2325,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	)
 	{
 		u32 wep_key_idx, wep_key_len,wep_total_len;
-		NDIS_802_11_WEP	 *pwep = NULL;
+		struct ndis_802_11_wep	 *pwep = NULL;
 		DBG_8723A("%s(): Shared/Auto WEP\n",__FUNCTION__);
 
 		wep_key_idx = sme->key_idx;
@@ -2339,8 +2339,8 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		if (wep_key_len > 0)
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
-			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep =(NDIS_802_11_WEP	 *)kmalloc(wep_total_len,
+			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
+			pwep =(struct ndis_802_11_wep	 *)kmalloc(wep_total_len,
 							   GFP_KERNEL);
 			if(pwep == NULL){
 				DBG_8723A(" wpa_set_encryption: pwep allocate fail !!!\n");
@@ -3126,8 +3126,8 @@ static int cfg80211_rtw_start_ap(struct wiphy *wiphy, struct net_device *ndev,
 	adapter->mlmeextpriv.mlmext_info.hidden_ssid_mode = settings->hidden_ssid;
 
 	if (settings->ssid && settings->ssid_len) {
-		WLAN_BSSID_EX *pbss_network = &adapter->mlmepriv.cur_network.network;
-		WLAN_BSSID_EX *pbss_network_ext = &adapter->mlmeextpriv.mlmext_info.network;
+		struct wlan_bssid_ex *pbss_network = &adapter->mlmepriv.cur_network.network;
+		struct wlan_bssid_ex *pbss_network_ext = &adapter->mlmeextpriv.mlmext_info.network;
 
 		if(0)
 		DBG_8723A(FUNC_ADPT_FMT" ssid:(%s,%d), from ie:(%s,%d)\n", FUNC_ADPT_ARG(adapter),

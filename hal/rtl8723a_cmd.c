@@ -250,7 +250,7 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	u32					rate_len, pktlen;
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
+	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 
@@ -291,8 +291,8 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	if( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
 	{
 		/* DBG_8723A("ie len=%d\n", cur_network->IELength); */
-		pktlen += cur_network->IELength - sizeof(NDIS_802_11_FIXED_IEs);
-		memcpy(pframe, cur_network->IEs+sizeof(NDIS_802_11_FIXED_IEs), pktlen);
+		pktlen += cur_network->IELength - sizeof(struct ndis_802_11_fixed_ies);
+		memcpy(pframe, cur_network->IEs+sizeof(struct ndis_802_11_fixed_ies), pktlen);
 
 		goto _ConstructBeacon;
 	}
@@ -456,7 +456,7 @@ static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLe
 	u32					pktlen;
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
+	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
 
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */

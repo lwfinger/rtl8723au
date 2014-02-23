@@ -7746,7 +7746,7 @@ static void btdm_1AntUpdateHalRAMask(struct rtw_adapter *padapter, u32 mac_id, u
 	struct dm_priv *pdmpriv;
 	struct mlme_ext_priv *pmlmeext;
 	struct mlme_ext_info *pmlmeinfo;
-	WLAN_BSSID_EX *cur_network;
+	struct wlan_bssid_ex *cur_network;
 
 
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], %s, MACID=%d, filter=0x%08x!!\n", __FUNCTION__, mac_id, filter));
@@ -7828,7 +7828,7 @@ static void btdm_1AntUpdateHalRAMaskForSCO(struct rtw_adapter *padapter, u8 forc
 {
 	PBTDM_8723A_1ANT pBtdm8723;
 	struct sta_priv *pstapriv;
-	WLAN_BSSID_EX *cur_network;
+	struct wlan_bssid_ex *cur_network;
 	struct sta_info *psta;
 	u32 macid;
 	u32 filter = 0;
@@ -7860,7 +7860,7 @@ static void btdm_1AntRecoverHalRAMask(struct rtw_adapter *padapter)
 {
 	PBTDM_8723A_1ANT pBtdm8723;
 	struct sta_priv *pstapriv;
-	WLAN_BSSID_EX *cur_network;
+	struct wlan_bssid_ex *cur_network;
 	struct sta_info *psta;
 	u32 macid;
 

@@ -612,7 +612,7 @@ rtw_sitesurvey_cmd(~)
 	### NOTE:#### (!!!!)
 	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
 */
-u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, NDIS_802_11_SSID *ssid, int ssid_num,
+u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num,
 	struct rtw_ieee80211_channel *ch, int ch_num)
 {
 	u8 res = _FAIL;
@@ -662,7 +662,7 @@ _func_enter_;
 		int i;
 		for (i=0; i<ssid_num && i< RTW_SSID_SCAN_AMOUNT; i++) {
 			if (ssid[i].SsidLength) {
-				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(NDIS_802_11_SSID));
+				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(struct ndis_802_11_ssid));
 				psurveyPara->ssid_num++;
 				if (0)
 				DBG_8723A(FUNC_ADPT_FMT" ssid:(%s, %d)\n", FUNC_ADPT_ARG(padapter),
@@ -983,7 +983,7 @@ u8 rtw_createbss_cmd(struct rtw_adapter  *padapter)
 	struct cmd_obj*			pcmd;
 	struct cmd_priv				*pcmdpriv=&padapter->cmdpriv;
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
-	WLAN_BSSID_EX		*pdev_network = &padapter->registrypriv.dev_network;
+	struct wlan_bssid_ex		*pdev_network = &padapter->registrypriv.dev_network;
 	u8	res=_SUCCESS;
 
 _func_enter_;
@@ -1005,7 +1005,7 @@ _func_enter_;
 	INIT_LIST_HEAD(&pcmd->list);
 	pcmd->cmdcode = _CreateBss_CMD_;
 	pcmd->parmbuf = (unsigned char *)pdev_network;
-	pcmd->cmdsz = get_WLAN_BSSID_EX_sz((WLAN_BSSID_EX*)pdev_network);
+	pcmd->cmdsz = get_wlan_bssid_ex_sz((struct wlan_bssid_ex*)pdev_network);
 	pcmd->rsp = NULL;
 	pcmd->rspsz = 0;
 
@@ -1054,7 +1054,7 @@ u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork)
 {
 	u8	*auth, res = _SUCCESS;
 	uint	t_len = 0;
-	WLAN_BSSID_EX		*psecnetwork;
+	struct wlan_bssid_ex		*psecnetwork;
 	struct cmd_obj		*pcmd;
 	struct cmd_priv		*pcmdpriv=&padapter->cmdpriv;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
@@ -1062,7 +1062,7 @@ u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork)
 	struct security_priv	*psecuritypriv=&padapter->securitypriv;
 	struct registry_priv	*pregistrypriv = &padapter->registrypriv;
 	struct ht_priv			*phtpriv = &pmlmepriv->htpriv;
-	NDIS_802_11_NETWORK_INFRASTRUCTURE ndis_network_mode = pnetwork->network.InfrastructureMode;
+	enum ndis_802_11_net_infra ndis_network_mode = pnetwork->network.InfrastructureMode;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
@@ -1083,7 +1083,7 @@ _func_enter_;
 		goto exit;
 	}
 	/* for IEs is fix buf size */
-	t_len = sizeof(WLAN_BSSID_EX);
+	t_len = sizeof(struct wlan_bssid_ex);
 
 	/* for hidden ap to set fw_state here */
 	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) != true)
@@ -1106,7 +1106,7 @@ _func_enter_;
 		}
 	}
 
-	psecnetwork=(WLAN_BSSID_EX *)&psecuritypriv->sec_bss;
+	psecnetwork=(struct wlan_bssid_ex *)&psecuritypriv->sec_bss;
 	if(psecnetwork==NULL)
 	{
 		if(pcmd !=NULL)
@@ -1121,7 +1121,7 @@ _func_enter_;
 
 	memset(psecnetwork, 0, t_len);
 
-	memcpy(psecnetwork, &pnetwork->network, get_WLAN_BSSID_EX_sz(&pnetwork->network));
+	memcpy(psecnetwork, &pnetwork->network, get_wlan_bssid_ex_sz(&pnetwork->network));
 
 	auth=&psecuritypriv->authenticator_ie[0];
 	psecuritypriv->authenticator_ie[0]=(unsigned char)psecnetwork->IELength;
@@ -1189,7 +1189,7 @@ _func_enter_;
 
 	DBG_8723A("%s: smart_ps=%d\n", __func__, padapter->pwrctrlpriv.smart_ps);
 
-	pcmd->cmdsz = get_WLAN_BSSID_EX_sz(psecnetwork);/* get cmdsz before endian conversion */
+	pcmd->cmdsz = get_wlan_bssid_ex_sz(psecnetwork);/* get cmdsz before endian conversion */
 
 	INIT_LIST_HEAD(&pcmd->list);
 	pcmd->cmdcode = _JoinBss_CMD_;/* GEN_CMD_CODE(_JoinBss) */
@@ -1249,7 +1249,7 @@ _func_exit_;
 	return res;
 }
 
-u8 rtw_setopmode_cmd(struct rtw_adapter  *padapter, NDIS_802_11_NETWORK_INFRASTRUCTURE networktype)
+u8 rtw_setopmode_cmd(struct rtw_adapter  *padapter, enum ndis_802_11_net_infra networktype)
 {
 	struct	cmd_obj*	ph2c;
 	struct	setopmode_parm* psetop;
@@ -2495,7 +2495,7 @@ void rtw_createbss_cmd_callback(struct rtw_adapter *padapter, struct cmd_obj *pc
 	struct sta_info *psta = NULL;
 	struct wlan_network *pwlan = NULL;
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	WLAN_BSSID_EX *pnetwork = (WLAN_BSSID_EX *)pcmd->parmbuf;
+	struct wlan_bssid_ex *pnetwork = (struct wlan_bssid_ex *)pcmd->parmbuf;
 	struct wlan_network *tgt_network = &(pmlmepriv->cur_network);
 
 _func_enter_;
@@ -2541,14 +2541,14 @@ _func_enter_;
 			list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue);
 		}
 
-		pnetwork->Length = get_WLAN_BSSID_EX_sz(pnetwork);
+		pnetwork->Length = get_wlan_bssid_ex_sz(pnetwork);
 		memcpy(&(pwlan->network), pnetwork, pnetwork->Length);
 		/* pwlan->fixed = true; */
 
 		/* list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue); */
 
 		/*  copy pdev_network information to	pmlmepriv->cur_network */
-		memcpy(&tgt_network->network, pnetwork, (get_WLAN_BSSID_EX_sz(pnetwork)));
+		memcpy(&tgt_network->network, pnetwork, (get_wlan_bssid_ex_sz(pnetwork)));
 
 		/*  reset DSConfig */
 

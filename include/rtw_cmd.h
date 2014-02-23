@@ -174,7 +174,7 @@ Command Event Mode
 
 */
 struct joinbss_parm {
-	WLAN_BSSID_EX network;
+	struct wlan_bssid_ex network;
 };
 
 /*
@@ -197,7 +197,7 @@ Notes: To create a BSS
 Command Mode
 */
 struct createbss_parm {
-	WLAN_BSSID_EX network;
+	struct wlan_bssid_ex network;
 };
 
 struct	setopmode_parm {
@@ -220,7 +220,7 @@ struct sitesurvey_parm {
 	int scan_mode;	/* active: 1, passive: 0 */
 	u8 ssid_num;
 	u8 ch_num;
-	NDIS_802_11_SSID ssid[RTW_SSID_SCAN_AMOUNT];
+	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 };
 
@@ -488,7 +488,7 @@ struct getrfintfs_parm {
 
 struct Tx_Beacon_param
 {
-	WLAN_BSSID_EX network;
+	struct wlan_bssid_ex network;
 };
 
 /*  CMD param Formart for driver extra cmd handler */
@@ -765,7 +765,7 @@ Result:
 
 u8 rtw_setassocsta_cmd(struct rtw_adapter  *padapter, u8 *mac_addr);
 u8 rtw_setstandby_cmd(struct rtw_adapter *padapter, uint action);
-u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, NDIS_802_11_SSID *ssid, int ssid_num, struct rtw_ieee80211_channel *ch, int ch_num);
+u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num, struct rtw_ieee80211_channel *ch, int ch_num);
 u8 rtw_createbss_cmd(struct rtw_adapter  *padapter);
 u8 rtw_createbss_cmd_ex(struct rtw_adapter  *padapter, unsigned char *pbss, unsigned int sz);
 u8 rtw_setphy_cmd(struct rtw_adapter  *padapter, u8 modem, u8 ch);
@@ -773,7 +773,7 @@ u8 rtw_setstakey_cmd(struct rtw_adapter  *padapter, u8 *psta, u8 unicast_key);
 u8 rtw_clearstakey_cmd(struct rtw_adapter *padapter, u8 *psta, u8 entry, u8 enqueue);
 u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork);
 u8 rtw_disassoc_cmd(struct rtw_adapter *padapter, u32 deauth_timeout_ms, bool enqueue);
-u8 rtw_setopmode_cmd(struct rtw_adapter  *padapter, NDIS_802_11_NETWORK_INFRASTRUCTURE networktype);
+u8 rtw_setopmode_cmd(struct rtw_adapter  *padapter, enum ndis_802_11_net_infra networktype);
 u8 rtw_setdatarate_cmd(struct rtw_adapter  *padapter, u8 *rateset);
 u8 rtw_setbasicrate_cmd(struct rtw_adapter  *padapter, u8 *rateset);
 u8 rtw_setbbreg_cmd(struct rtw_adapter * padapter, u8 offset, u8 val);

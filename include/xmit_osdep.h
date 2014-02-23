@@ -20,7 +20,7 @@
 
 struct pkt_file {
 	struct sk_buff *pkt;
-	__kernel_size_t pkt_len;	 /* the remainder length of the open_file */
+	__kernel_size_t pkt_len; /* the remainder length of the open_file */
 	unsigned char *cur_buffer;
 	u8 *buf_start;
 	u8 *cur_addr;
@@ -40,19 +40,22 @@ int rtw_xmit_entry(struct sk_buff *pkt, struct net_device *pnetdev);
 
 void rtw_os_xmit_schedule(struct rtw_adapter *padapter);
 
-int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz);
-void rtw_os_xmit_resource_free(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf);
+int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter,
+			       struct xmit_buf *pxmitbuf, u32 alloc_sz);
+void rtw_os_xmit_resource_free(struct rtw_adapter *padapter,
+			       struct xmit_buf *pxmitbuf);
 
 void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib);
 
 uint rtw_remainder_len(struct pkt_file *pfile);
 void _rtw_open_pktfile(struct sk_buff *pkt, struct pkt_file *pfile);
-uint _rtw_pktfile_read (struct pkt_file *pfile, u8 *rmem, uint rlen);
+uint _rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen);
 int rtw_endofpktfile (struct pkt_file *pfile);
 
 void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt);
-void rtw_os_xmit_complete(struct rtw_adapter *padapter, struct xmit_frame *pxframe);
+void rtw_os_xmit_complete(struct rtw_adapter *padapter,
+			  struct xmit_frame *pxframe);
 int _netdev_open(struct net_device *pnetdev);
-int netdev_open (struct net_device *pnetdev);
+int netdev_open(struct net_device *pnetdev);
 
 #endif /* __XMIT_OSDEP_H_ */

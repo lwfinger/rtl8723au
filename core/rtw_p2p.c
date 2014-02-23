@@ -3060,12 +3060,12 @@ static void find_phase_handler(struct rtw_adapter *padapter)
 {
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-	NDIS_802_11_SSID	ssid;
+	struct ndis_802_11_ssid	ssid;
 	u8					_status = 0;
 
 _func_enter_;
 
-	memset((unsigned char*)&ssid, 0, sizeof(NDIS_802_11_SSID));
+	memset((unsigned char*)&ssid, 0, sizeof(struct ndis_802_11_ssid));
 	memcpy(ssid.Ssid, pwdinfo->p2p_wildcard_ssid, P2P_WILDCARD_SSID_LEN );
 	ssid.SsidLength = P2P_WILDCARD_SSID_LEN;
 

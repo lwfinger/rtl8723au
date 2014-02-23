@@ -37,7 +37,7 @@ static int rtw_lbkmode = 0;/* RTL8712_AIR_TRX; */
 static int rtw_debug = 1;
 
 static int rtw_network_mode = Ndis802_11IBSS;/* Ndis802_11Infrastructure;infra, ad-hoc, auto */
-/* NDIS_802_11_SSID	ssid; */
+/* struct ndis_802_11_ssid	ssid; */
 static int rtw_channel = 1;/* ad-hoc support requirement */
 static int rtw_wireless_mode = WIRELESS_11BG_24N;
 static int rtw_vrtl_carrier_sense = AUTO_VCS;

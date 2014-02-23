@@ -719,7 +719,7 @@ unsigned int OnProbeReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX	*cur = &(pmlmeinfo->network);
+	struct wlan_bssid_ex	*cur = &(pmlmeinfo->network);
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
 	uint len = skb->len;
@@ -887,7 +887,7 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
 	uint len = skb->len;
-	WLAN_BSSID_EX *pbss;
+	struct wlan_bssid_ex *pbss;
 	int ret = _SUCCESS;
 	u8 *p = NULL;
 	u32 ielen = 0;
@@ -919,13 +919,13 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 		if (pmlmeinfo->state & WIFI_FW_AUTH_NULL)
 		{
 			/* we should update current network before auth, or some IE is wrong */
-			pbss = (WLAN_BSSID_EX*)rtw_malloc(sizeof(WLAN_BSSID_EX));
+			pbss = (struct wlan_bssid_ex*)rtw_malloc(sizeof(struct wlan_bssid_ex));
 			if (pbss) {
 				if (collect_bss_info(padapter, precv_frame, pbss) == _SUCCESS) {
 					update_network(&(pmlmepriv->cur_network.network), pbss, padapter, true);
 					rtw_get_bcn_info(&(pmlmepriv->cur_network));
 				}
-				rtw_mfree((u8*)pbss, sizeof(WLAN_BSSID_EX));
+				rtw_mfree((u8*)pbss, sizeof(struct wlan_bssid_ex));
 			}
 
 			/* check the vendor of the assoc AP */
@@ -1323,7 +1323,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX	*cur = &(pmlmeinfo->network);
+	struct wlan_bssid_ex	*cur = &(pmlmeinfo->network);
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
@@ -1837,11 +1837,11 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	uint i;
 	int res;
 	unsigned short	status;
-	PNDIS_802_11_VARIABLE_IEs	pIE;
+	struct ndis_802_11_var_ies *	pIE;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	/* WLAN_BSSID_EX			*cur_network = &(pmlmeinfo->network); */
+	/* struct wlan_bssid_ex			*cur_network = &(pmlmeinfo->network); */
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
 	uint pkt_len = skb->len;
@@ -1883,7 +1883,7 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	/* for not to handle the synchronous IO in the tasklet */
 	for (i = (6 + WLAN_HDR_A3_LEN); i < pkt_len;)
 	{
-		pIE = (PNDIS_802_11_VARIABLE_IEs)(pframe + i);
+		pIE = (struct ndis_802_11_var_ies *)(pframe + i);
 
 		switch (pIE->ElementID)
 		{
@@ -3910,7 +3910,7 @@ void issue_probersp_p2p(struct rtw_adapter *padapter, unsigned char *da)
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-	/* WLAN_BSSID_EX			*cur_network = &(pmlmeinfo->network); */
+	/* struct wlan_bssid_ex			*cur_network = &(pmlmeinfo->network); */
 	u16					beacon_interval = 100;
 	u16					capInfo = 0;
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
@@ -5357,7 +5357,7 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 #endif
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
+	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
@@ -5650,7 +5650,7 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 #endif
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
+	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
 	unsigned int	rate_len;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
@@ -5871,7 +5871,7 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 	return;
 }
 
-static int _issue_probereq(struct rtw_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da, int wait_ack)
+static int _issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da, int wait_ack)
 {
 	int ret = _FAIL;
 	struct xmit_frame		*pmgntframe;
@@ -5971,12 +5971,12 @@ exit:
 	return ret;
 }
 
-inline void issue_probereq(struct rtw_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da)
+inline void issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da)
 {
 	_issue_probereq(padapter, pssid, da, false);
 }
 
-int issue_probereq_ex(struct rtw_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da,
+int issue_probereq_ex(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da,
 	int try_cnt, int wait_ms)
 {
 	int ret;
@@ -6173,7 +6173,7 @@ void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct s
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX *pnetwork = &(pmlmeinfo->network);
+	struct wlan_bssid_ex *pnetwork = &(pmlmeinfo->network);
 	u8 *ie = pnetwork->IEs;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
@@ -6333,7 +6333,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	unsigned short				val16;
 	unsigned int					i, j, ie_len, index=0;
 	unsigned char					rf_type, bssrate[NumRates], sta_bssrate[NumRates];
-	PNDIS_802_11_VARIABLE_IEs	pIE;
+	struct ndis_802_11_var_ies *	pIE;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	struct xmit_priv		*pxmitpriv = &(padapter->xmitpriv);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
@@ -6451,7 +6451,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	}
 
 	/* RSN */
-	p = rtw_get_ie((pmlmeinfo->network.IEs + sizeof(NDIS_802_11_FIXED_IEs)), _RSN_IE_2_, &ie_len, (pmlmeinfo->network.IELength - sizeof(NDIS_802_11_FIXED_IEs)));
+	p = rtw_get_ie((pmlmeinfo->network.IEs + sizeof(struct ndis_802_11_fixed_ies)), _RSN_IE_2_, &ie_len, (pmlmeinfo->network.IELength - sizeof(struct ndis_802_11_fixed_ies)));
 	if (p != NULL)
 	{
 		pframe = rtw_set_ie(pframe, _RSN_IE_2_, ie_len, (p + 2), &(pattrib->pktlen));
@@ -6460,7 +6460,7 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	/* HT caps */
 	if(padapter->mlmepriv.htpriv.ht_option==true)
 	{
-		p = rtw_get_ie((pmlmeinfo->network.IEs + sizeof(NDIS_802_11_FIXED_IEs)), _HT_CAPABILITY_IE_, &ie_len, (pmlmeinfo->network.IELength - sizeof(NDIS_802_11_FIXED_IEs)));
+		p = rtw_get_ie((pmlmeinfo->network.IEs + sizeof(struct ndis_802_11_fixed_ies)), _HT_CAPABILITY_IE_, &ie_len, (pmlmeinfo->network.IELength - sizeof(struct ndis_802_11_fixed_ies)));
 		if ((p != NULL) && (!(is_ap_in_tkip(padapter))))
 		{
 			memcpy(&(pmlmeinfo->HT_caps), (p + 2), sizeof(struct HT_caps_element));
@@ -6522,9 +6522,9 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	}
 
 	/* vendor specific IE, such as WPA, WMM, WPS */
-	for (i = sizeof(NDIS_802_11_FIXED_IEs); i < pmlmeinfo->network.IELength;)
+	for (i = sizeof(struct ndis_802_11_fixed_ies); i < pmlmeinfo->network.IELength;)
 	{
-		pIE = (PNDIS_802_11_VARIABLE_IEs)(pmlmeinfo->network.IEs + i);
+		pIE = (struct ndis_802_11_var_ies *)(pmlmeinfo->network.IEs + i);
 
 		switch (pIE->ElementID)
 		{
@@ -7434,12 +7434,12 @@ static void issue_action_BSSCoexistPacket(struct rtw_adapter *padapter)
 		list_for_each_safe(plist, ptmp, phead) {
 			int len;
 			u8 *p;
-			WLAN_BSSID_EX *pbss_network;
+			struct wlan_bssid_ex *pbss_network;
 
 			pnetwork = container_of(plist, struct wlan_network,
 						list);
 
-			pbss_network = (WLAN_BSSID_EX *)&pnetwork->network;
+			pbss_network = (struct wlan_bssid_ex *)&pnetwork->network;
 
 			p = rtw_get_ie(pbss_network->IEs + _FIXED_IE_LENGTH_, _HT_CAPABILITY_IE_, &len, pbss_network->IELength - _FIXED_IE_LENGTH_);
 			if((p==NULL) || (len==0))/* non-HT */
@@ -7814,7 +7814,7 @@ void site_survey(struct rtw_adapter *padapter)
 }
 
 /* collect bss info from Beacon and Probe request/response frames. */
-u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame, WLAN_BSSID_EX *bssid)
+u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame, struct wlan_bssid_ex *bssid)
 {
 	int	i;
 	u32	len;
@@ -7836,7 +7836,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		return _FAIL;
 	}
 
-	memset(bssid, 0, sizeof(WLAN_BSSID_EX));
+	memset(bssid, 0, sizeof(struct wlan_bssid_ex));
 
 	subtype = GetFrameSubType(pframe);
 
@@ -7857,7 +7857,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		}
 	}
 
-	bssid->Length = sizeof(WLAN_BSSID_EX) - MAX_IE_SZ + len;
+	bssid->Length = sizeof(struct wlan_bssid_ex) - MAX_IE_SZ + len;
 
 	/* below is to copy the information element */
 	bssid->IELength = len;
@@ -7962,7 +7962,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	memcpy(&bssid->Configuration.BeaconPeriod, rtw_get_beacon_interval_from_ie(bssid->IEs), 2);
 	bssid->Configuration.BeaconPeriod = le32_to_cpu(bssid->Configuration.BeaconPeriod);
 
-	val16 = rtw_get_capability((WLAN_BSSID_EX *)bssid);
+	val16 = rtw_get_capability((struct wlan_bssid_ex *)bssid);
 
 	if (val16 & BIT(0))
 	{
@@ -8030,7 +8030,7 @@ void start_create_ibss(struct rtw_adapter* padapter)
 	u8	join_type;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*pnetwork = (WLAN_BSSID_EX*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
 	pmlmeext->cur_channel = (u8)pnetwork->Configuration.DSConfig;
 	pmlmeinfo->bcn_interval = get_beacon_interval(pnetwork);
 
@@ -8038,7 +8038,7 @@ void start_create_ibss(struct rtw_adapter* padapter)
 	update_wireless_mode(padapter);
 
 	/* udpate capability */
-	caps = rtw_get_capability((WLAN_BSSID_EX *)pnetwork);
+	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
 	update_capinfo(padapter, caps);
 	if(caps&cap_IBSS)/* adhoc master */
 	{
@@ -8086,7 +8086,7 @@ void start_clnt_join(struct rtw_adapter* padapter)
 	u8	val8;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*pnetwork = (WLAN_BSSID_EX*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
 	int beacon_timeout;
 
 	pmlmeext->cur_channel = (u8)pnetwork->Configuration.DSConfig;
@@ -8096,7 +8096,7 @@ void start_clnt_join(struct rtw_adapter* padapter)
 	update_wireless_mode(padapter);
 
 	/* udpate capability */
-	caps = rtw_get_capability((WLAN_BSSID_EX *)pnetwork);
+	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
 	update_capinfo(padapter, caps);
 	if (caps&cap_ESS) {
 		/* switch channel */
@@ -8215,7 +8215,7 @@ unsigned int receive_disconnect(struct rtw_adapter *padapter, unsigned char *Mac
 	return _SUCCESS;
 }
 
-static void process_80211d(struct rtw_adapter *padapter, WLAN_BSSID_EX *bssid)
+static void process_80211d(struct rtw_adapter *padapter, struct wlan_bssid_ex *bssid)
 {
 	struct registry_priv *pregistrypriv;
 	struct mlme_ext_priv *pmlmeext;
@@ -8502,7 +8502,7 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 
 	psurvey_evt = (struct survey_event*)(pevtcmd + sizeof(struct C2HEvent_Header));
 
-	if (collect_bss_info(padapter, precv_frame, (WLAN_BSSID_EX *)&psurvey_evt->bss) == _FAIL) {
+	if (collect_bss_info(padapter, precv_frame, (struct wlan_bssid_ex *)&psurvey_evt->bss) == _FAIL) {
 		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
 		rtw_mfree((u8 *)pevtcmd, cmdsz);
 		return;
@@ -8601,7 +8601,7 @@ void report_join_res(struct rtw_adapter *padapter, int res)
 	pc2h_evt_hdr->seq = atomic_inc_return(&pmlmeext->event_seq);
 
 	pjoinbss_evt = (struct joinbss_event*)(pevtcmd + sizeof(struct C2HEvent_Header));
-	memcpy((unsigned char *)(&(pjoinbss_evt->network.network)), &(pmlmeinfo->network), sizeof(WLAN_BSSID_EX));
+	memcpy((unsigned char *)(&(pjoinbss_evt->network.network)), &(pmlmeinfo->network), sizeof(struct wlan_bssid_ex));
 	pjoinbss_evt->network.join_res	= pjoinbss_evt->network.aid = res;
 
 	DBG_8723A("report_join_res(%d)\n", res);
@@ -8774,7 +8774,7 @@ void mlmeext_joinbss_event_callback(struct rtw_adapter *padapter, int join_res)
 	struct sta_info		*psta, *psta_bmc;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
+	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	u8	join_type;
 	u16 media_status;
@@ -9348,7 +9348,7 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX	*pnetwork = (WLAN_BSSID_EX*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex	*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
 	struct joinbss_parm *pparm = (struct joinbss_parm *)pbuf;
 	/* u32	initialgain; */
 
@@ -9393,13 +9393,13 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		/* clear CAM */
 		flush_all_cam_entry(padapter);
 
-		memcpy(pnetwork, pbuf, FIELD_OFFSET(WLAN_BSSID_EX, IELength));
-		pnetwork->IELength = ((WLAN_BSSID_EX *)pbuf)->IELength;
+		memcpy(pnetwork, pbuf, FIELD_OFFSET(struct wlan_bssid_ex, IELength));
+		pnetwork->IELength = ((struct wlan_bssid_ex *)pbuf)->IELength;
 
 		if(pnetwork->IELength>MAX_IE_SZ)/* Check pbuf->IELength */
 			return H2C_PARAMETERS_ERROR;
 
-		memcpy(pnetwork->IEs, ((WLAN_BSSID_EX *)pbuf)->IEs, pnetwork->IELength);
+		memcpy(pnetwork->IEs, ((struct wlan_bssid_ex *)pbuf)->IEs, pnetwork->IELength);
 
 		start_create_ibss(padapter);
 
@@ -9411,11 +9411,11 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 {
 	u8	join_type;
-	PNDIS_802_11_VARIABLE_IEs	pIE;
+	struct ndis_802_11_var_ies *	pIE;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*pnetwork = (WLAN_BSSID_EX*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
 	u32 i;
         /* u32	initialgain; */
 	/* u32	acparm; */
@@ -9456,20 +9456,20 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	pmlmeinfo->bwmode_updated = false;
 	/* pmlmeinfo->assoc_AP_vendor = HT_IOT_PEER_MAX; */
 
-	memcpy(pnetwork, pbuf, FIELD_OFFSET(WLAN_BSSID_EX, IELength));
-	pnetwork->IELength = ((WLAN_BSSID_EX *)pbuf)->IELength;
+	memcpy(pnetwork, pbuf, FIELD_OFFSET(struct wlan_bssid_ex, IELength));
+	pnetwork->IELength = ((struct wlan_bssid_ex *)pbuf)->IELength;
 
 	if(pnetwork->IELength>MAX_IE_SZ)/* Check pbuf->IELength */
 		return H2C_PARAMETERS_ERROR;
 
-	memcpy(pnetwork->IEs, ((WLAN_BSSID_EX *)pbuf)->IEs, pnetwork->IELength);
+	memcpy(pnetwork->IEs, ((struct wlan_bssid_ex *)pbuf)->IEs, pnetwork->IELength);
 
 	/* Check AP vendor to move rtw_joinbss_cmd() */
 	/* pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pnetwork->IEs, pnetwork->IELength); */
 
-	for (i = sizeof(NDIS_802_11_FIXED_IEs); i < pnetwork->IELength;)
+	for (i = sizeof(struct ndis_802_11_fixed_ies); i < pnetwork->IELength;)
 	{
-		pIE = (PNDIS_802_11_VARIABLE_IEs)(pnetwork->IEs + i);
+		pIE = (struct ndis_802_11_var_ies *)(pnetwork->IEs + i);
 
 		switch (pIE->ElementID)
 		{
@@ -9545,7 +9545,7 @@ u8 disconnect_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	struct disconnect_parm *param = (struct disconnect_parm *)pbuf;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*pnetwork = (WLAN_BSSID_EX*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
 	u8	val8;
 
 	if (is_client_associated_to_ap(padapter))
@@ -9919,7 +9919,7 @@ _func_enter_;
 		goto exit;
 	}
 
-	memcpy(&(ptxBeacon_parm->network), &(pmlmeinfo->network), sizeof(WLAN_BSSID_EX));
+	memcpy(&(ptxBeacon_parm->network), &(pmlmeinfo->network), sizeof(struct wlan_bssid_ex));
 
 	len_diff = update_hidden_ssid(
 		ptxBeacon_parm->network.IEs+_BEACON_IE_OFFSET_

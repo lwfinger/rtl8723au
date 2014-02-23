@@ -89,7 +89,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 {
 	int ret = 0;
 	u32 wep_key_idx, wep_key_len,wep_total_len;
-	NDIS_802_11_WEP	 *pwep = NULL;
+	struct ndis_802_11_wep	 *pwep = NULL;
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
@@ -144,8 +144,8 @@ _func_enter_;
 		if (wep_key_len > 0)
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
-			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep =(NDIS_802_11_WEP	 *) kzalloc(wep_total_len, GFP_KERNEL);
+			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
+			pwep =(struct ndis_802_11_wep	 *) kzalloc(wep_total_len, GFP_KERNEL);
 			if (pwep == NULL){
 				RT_TRACE(_module_rtl871x_ioctl_os_c,_drv_err_,(" wpa_set_encryption: pwep allocate fail !!!\n"));
 				goto exit;
@@ -1972,7 +1972,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		/* 	Reset the content of struct tx_provdisc_req_info excluded the wps_config_method_request. */
 		memset( pwdinfo->tx_prov_disc_info.peerDevAddr, 0x00, ETH_ALEN );
 		memset( pwdinfo->tx_prov_disc_info.peerIFAddr, 0x00, ETH_ALEN );
-		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( NDIS_802_11_SSID ) );
+		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( struct ndis_802_11_ssid ) );
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 0 ] = 0;
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 1 ] = 0;
 		pwdinfo->tx_prov_disc_info.benable = false;
@@ -2105,7 +2105,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 		if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT))
 		{
-			memcpy(&pwdinfo->tx_prov_disc_info.ssid, &pnetwork->network.Ssid, sizeof( NDIS_802_11_SSID ) );
+			memcpy(&pwdinfo->tx_prov_disc_info.ssid, &pnetwork->network.Ssid, sizeof( struct ndis_802_11_ssid ) );
 		}
 		else if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) || rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 		{
@@ -2544,7 +2544,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 {
 	int ret = 0;
 	u32 wep_key_idx, wep_key_len,wep_total_len;
-	NDIS_802_11_WEP	 *pwep = NULL;
+	struct ndis_802_11_wep	 *pwep = NULL;
 	struct sta_info *psta = NULL, *pbcmc_sta = NULL;
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
@@ -2611,8 +2611,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		if (wep_key_len > 0)
 		{
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
-			wep_total_len = wep_key_len + FIELD_OFFSET(NDIS_802_11_WEP, KeyMaterial);
-			pwep = (NDIS_802_11_WEP *)kzalloc(wep_total_len,
+			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
+			pwep = (struct ndis_802_11_wep *)kzalloc(wep_total_len,
 							  GFP_KERNEL);
 			if(pwep == NULL){
 				DBG_8723A(" r871x_set_encryption: pwep allocate fail !!!\n");
@@ -3287,8 +3287,8 @@ static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param,
 	ssid_ie = rtw_get_ie(param->u.bcn_ie.buf,  WLAN_EID_SSID, &ssid_len, ie_len);
 
 	if (ssid_ie && ssid_len) {
-		WLAN_BSSID_EX *pbss_network = &mlmepriv->cur_network.network;
-		WLAN_BSSID_EX *pbss_network_ext = &mlmeinfo->network;
+		struct wlan_bssid_ex *pbss_network = &mlmepriv->cur_network.network;
+		struct wlan_bssid_ex *pbss_network_ext = &mlmeinfo->network;
 
 		memcpy(ssid, ssid_ie+2, ssid_len);
 		ssid[ssid_len>NDIS_802_11_LENGTH_SSID?NDIS_802_11_LENGTH_SSID:ssid_len] = 0x0;
