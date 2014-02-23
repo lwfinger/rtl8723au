@@ -317,7 +317,7 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 	s32 notify_signal;
 	u8 buf[MAX_BSSINFO_LEN], *pbuf;
 	size_t len,bssinf_len=0;
-	struct rtw_ieee80211_hdr *pwlanhdr;
+	struct ieee80211_hdr *pwlanhdr;
 	unsigned short *fctrl;
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
@@ -328,7 +328,7 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 
 	/* DBG_8723A("%s\n", __func__); */
 
-	bssinf_len = pnetwork->network.IELength+sizeof (struct rtw_ieee80211_hdr_3addr);
+	bssinf_len = pnetwork->network.IELength+sizeof (struct ieee80211_hdr_3addr);
 	if(bssinf_len > MAX_BSSINFO_LEN){
 		DBG_8723A("%s IE Length too long > %d byte \n",__FUNCTION__,MAX_BSSINFO_LEN);
 		goto exit;
@@ -373,8 +373,8 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 
 	pbuf = buf;
 
-	pwlanhdr = (struct rtw_ieee80211_hdr *)pbuf;
-	fctrl = &(pwlanhdr->frame_ctl);
+	pwlanhdr = (struct ieee80211_hdr *)pbuf;
+	fctrl = &(pwlanhdr->frame_control);
 	*(fctrl) = 0;
 
 	SetSeqNum(pwlanhdr, 0/*pmlmeext->mgnt_seq*/);
@@ -392,8 +392,8 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 	memcpy(pwlanhdr->addr3, pnetwork->network.MacAddress, ETH_ALEN);
 
 
-	pbuf += sizeof(struct rtw_ieee80211_hdr_3addr);
-	len = sizeof (struct rtw_ieee80211_hdr_3addr);
+	pbuf += sizeof(struct ieee80211_hdr_3addr);
+	len = sizeof (struct ieee80211_hdr_3addr);
 
 	memcpy(pbuf, pnetwork->network.IEs, pnetwork->network.IELength);
 	len += pnetwork->network.IELength;
@@ -458,18 +458,18 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 		cfg80211_roamed(padapter->pnetdev
 			, notify_channel
 			, cur_network->network.MacAddress
-			, pmlmepriv->assoc_req+sizeof(struct rtw_ieee80211_hdr_3addr)+2
-			, pmlmepriv->assoc_req_len-sizeof(struct rtw_ieee80211_hdr_3addr)-2
-			, pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6
-			, pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6
+			, pmlmepriv->assoc_req+sizeof(struct ieee80211_hdr_3addr)+2
+			, pmlmepriv->assoc_req_len-sizeof(struct ieee80211_hdr_3addr)-2
+			, pmlmepriv->assoc_rsp+sizeof(struct ieee80211_hdr_3addr)+6
+			, pmlmepriv->assoc_rsp_len-sizeof(struct ieee80211_hdr_3addr)-6
 			, GFP_ATOMIC);
 	} else {
 		cfg80211_connect_result(padapter->pnetdev,
 					cur_network->network.MacAddress,
-					pmlmepriv->assoc_req+sizeof(struct rtw_ieee80211_hdr_3addr)+2,
-					pmlmepriv->assoc_req_len-sizeof(struct rtw_ieee80211_hdr_3addr)-2,
-					pmlmepriv->assoc_rsp+sizeof(struct rtw_ieee80211_hdr_3addr)+6,
-					pmlmepriv->assoc_rsp_len-sizeof(struct rtw_ieee80211_hdr_3addr)-6,
+					pmlmepriv->assoc_req+sizeof(struct ieee80211_hdr_3addr)+2,
+					pmlmepriv->assoc_req_len-sizeof(struct ieee80211_hdr_3addr)-2,
+					pmlmepriv->assoc_rsp+sizeof(struct ieee80211_hdr_3addr)+6,
+					pmlmepriv->assoc_rsp_len-sizeof(struct ieee80211_hdr_3addr)-6,
 					WLAN_STATUS_SUCCESS, GFP_ATOMIC);
 	}
 }
@@ -2629,7 +2629,7 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 	int channel;
 	u8 *pmgmt_frame;
 	uint frame_len;
-	struct rtw_ieee80211_hdr *pwlanhdr;
+	struct ieee80211_hdr *pwlanhdr;
 	unsigned short *fctrl;
 	u8 mgmt_buf[128] = {0};
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
@@ -2648,9 +2648,9 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
 
 	pmgmt_frame = mgmt_buf;
-	pwlanhdr = (struct rtw_ieee80211_hdr *)pmgmt_frame;
+	pwlanhdr = (struct ieee80211_hdr *)pmgmt_frame;
 
-	fctrl = &(pwlanhdr->frame_ctl);
+	fctrl = &(pwlanhdr->frame_control);
 	*(fctrl) = 0;
 
 	memcpy(pwlanhdr->addr1, myid(&(padapter->eeprompriv)), ETH_ALEN);
@@ -2661,8 +2661,8 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 	pmlmeext->mgnt_seq++;
 	SetFrameSubType(pmgmt_frame, WIFI_DEAUTH);
 
-	pmgmt_frame += sizeof(struct rtw_ieee80211_hdr_3addr);
-	frame_len = sizeof(struct rtw_ieee80211_hdr_3addr);
+	pmgmt_frame += sizeof(struct ieee80211_hdr_3addr);
+	frame_len = sizeof(struct ieee80211_hdr_3addr);
 
 	reason = cpu_to_le16(reason);
 	pmgmt_frame = rtw_set_fixed_ie(pmgmt_frame, _RSON_CODE_ , (unsigned char *)&reason, &frame_len);
@@ -2777,7 +2777,7 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 
 		if (rtw_action_frame_parse(buf, len, &category, &action) == false) {
 			DBG_8723A(FUNC_NDEV_FMT" frame_control:0x%x\n", FUNC_NDEV_ARG(ndev),
-				le16_to_cpu(((struct rtw_ieee80211_hdr_3addr *)buf)->frame_ctl));
+				le16_to_cpu(((struct ieee80211_hdr_3addr *)buf)->frame_control));
 			goto fail;
 		}
 
@@ -3437,15 +3437,15 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
 	unsigned char					*pframe;
-	struct rtw_ieee80211_hdr	*pwlanhdr;
+	struct ieee80211_hdr	*pwlanhdr;
 	unsigned short				*fctrl;
 	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	struct wifidirect_info *pwdinfo = &(padapter->wdinfo);
-	u8 *frame_body = (unsigned char *)(buf + sizeof(struct rtw_ieee80211_hdr_3addr));
-	size_t frame_body_len = len - sizeof(struct rtw_ieee80211_hdr_3addr);
+	u8 *frame_body = (unsigned char *)(buf + sizeof(struct ieee80211_hdr_3addr));
+	size_t frame_body_len = len - sizeof(struct ieee80211_hdr_3addr);
 
 
 	DBG_8723A( "[%s] In\n", __FUNCTION__ );
@@ -3510,9 +3510,9 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	memset(pmgntframe->buf_addr, 0, WLANHDR_OFFSET + TXDESC_OFFSET);
 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
-	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
+	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_ctl);
+	fctrl = &(pwlanhdr->frame_control);
 	*(fctrl) = 0;
 
 	memcpy(pwlanhdr->addr1, pwdinfo->tx_prov_disc_info.peerDevAddr, ETH_ALEN);
@@ -3523,8 +3523,8 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	pmlmeext->mgnt_seq++;
 	SetFrameSubType(pframe, WIFI_ACTION);
 
-	pframe += sizeof(struct rtw_ieee80211_hdr_3addr);
-	pattrib->pktlen = sizeof(struct rtw_ieee80211_hdr_3addr);
+	pframe += sizeof(struct ieee80211_hdr_3addr);
+	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
 	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
 	pframe = rtw_set_fixed_ie(pframe, 1, &(action), &(pattrib->pktlen));
@@ -3903,7 +3903,7 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 
 	if (rtw_action_frame_parse(buf, len, &category, &action) == false) {
 		DBG_8723A(FUNC_ADPT_FMT" frame_control:0x%x\n", FUNC_ADPT_ARG(padapter),
-			le16_to_cpu(((struct rtw_ieee80211_hdr_3addr *)buf)->frame_ctl));
+			le16_to_cpu(((struct ieee80211_hdr_3addr *)buf)->frame_control));
 		goto exit;
 	}
 

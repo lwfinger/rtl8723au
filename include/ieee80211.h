@@ -293,47 +293,6 @@ struct ieee_ibss_seq {
 	struct list_head list;
 };
 
-struct rtw_ieee80211_hdr {
-	u16 frame_ctl;
-	u16 duration_id;
-	u8 addr1[ETH_ALEN];
-	u8 addr2[ETH_ALEN];
-	u8 addr3[ETH_ALEN];
-	u16 seq_ctl;
-	u8 addr4[ETH_ALEN];
-} __attribute__ ((packed));
-
-struct rtw_ieee80211_hdr_3addr {
-	u16 frame_ctl;
-	u16 duration_id;
-	u8 addr1[ETH_ALEN];
-	u8 addr2[ETH_ALEN];
-	u8 addr3[ETH_ALEN];
-	u16 seq_ctl;
-} __attribute__ ((packed));
-
-
-struct rtw_ieee80211_hdr_qos {
-	u16 frame_ctl;
-	u16 duration_id;
-	u8 addr1[ETH_ALEN];
-	u8 addr2[ETH_ALEN];
-	u8 addr3[ETH_ALEN];
-	u16 seq_ctl;
-	u8 addr4[ETH_ALEN];
-	u16	qc;
-}  __attribute__ ((packed));
-
-struct rtw_ieee80211_hdr_3addr_qos {
-        u16 frame_ctl;
-	u16 duration_id;
-	u8 addr1[ETH_ALEN];
-	u8 addr2[ETH_ALEN];
-	u8 addr3[ETH_ALEN];
-	u16 seq_ctl;
-       u16     qc;
-}  __attribute__ ((packed));
-
 struct eapol {
 	u8 snap[6];
 	u16 ethertype;
@@ -761,7 +720,7 @@ struct ieee80211_probe_request {
 } __attribute__ ((packed));
 
 struct ieee80211_assoc_request_frame {
-	struct rtw_ieee80211_hdr_3addr header;
+	struct ieee80211_hdr_3addr header;
 	u16 capability;
 	u16 listen_interval;
 	/* u8 current_ap[ETH_ALEN]; */
@@ -769,7 +728,7 @@ struct ieee80211_assoc_request_frame {
 } __attribute__ ((packed));
 
 struct ieee80211_assoc_response_frame {
-	struct rtw_ieee80211_hdr_3addr header;
+	struct ieee80211_hdr_3addr header;
 	u16 capability;
 	u16 status;
 	u16 aid;
