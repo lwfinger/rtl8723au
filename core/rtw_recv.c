@@ -1542,7 +1542,9 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	u8 subtype;
 	int retval = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
-	u8 *ptr = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u8 *ptr = skb->data;
 	u8 ver = (unsigned char)(*ptr)&0x3;
 	u8 bDumpRxPkt;
 
@@ -1559,13 +1561,13 @@ _func_enter_;
 	type = GetFrameType(ptr);
 	subtype = GetFrameSubType(ptr); /* bit(7)~bit(2) */
 
-	pattrib->to_fr_ds = get_tofr_ds(ptr);
+	pattrib->to_fr_ds = get_tofr_ds(hdr->frame_control);
 
 	pattrib->frag_num = GetFragNum(ptr);
 	pattrib->seq_num = GetSequence(ptr);
 
 	pattrib->pw_save = GetPwrMgt(ptr);
-	pattrib->mfrag = GetMFrag(ptr);
+	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);
 	pattrib->mdata = GetMData(ptr);
 	pattrib->privacy = GetPrivacy(ptr);
 	pattrib->order = GetOrder(ptr);

@@ -167,8 +167,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_TO_DS_); \
 	} while(0)
 
-#define GetToDs(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_TO_DS_)) != 0)
-
 #define ClearToDs(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_TO_DS_)); \
@@ -179,22 +177,19 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_FROM_DS_); \
 	} while(0)
 
-#define GetFrDs(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_FROM_DS_)) != 0)
-
 #define ClearFrDs(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_FROM_DS_)); \
 	} while(0)
 
-#define get_tofr_ds(pframe)	((GetToDs(pframe) << 1) | GetFrDs(pframe))
+#define get_tofr_ds(pframe)	((ieee80211_has_tods(pframe) << 1) | \
+				 ieee80211_has_fromds(pframe))
 
 
 #define SetMFrag(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_MORE_FRAG_); \
 	} while(0)
-
-#define GetMFrag(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_MORE_FRAG_)) != 0)
 
 #define ClearMFrag(pbuf)	\
 	do	{	\
@@ -322,7 +317,7 @@ enum WIFI_REG_DOMAIN {
 
 #define GetAid(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 2)) & 0x3fff)
 
-#define GetTid(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + (((GetToDs(pbuf)<<1)|GetFrDs(pbuf))==3?30:24))) & 0x000f)
+#define GetTid(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + (((ieee80211_has_tods(pbuf)<<1)|ieee80211_has_fromds(pbuf))==3?30:24))) & 0x000f)
 
 #define GetAddr1Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 4))
 
@@ -335,7 +330,11 @@ enum WIFI_REG_DOMAIN {
 static inline unsigned char * get_hdr_bssid(unsigned char *pframe)
 {
 	unsigned char	*sa;
-	unsigned int	to_fr_ds	= (GetToDs(pframe) << 1) | GetFrDs(pframe);
+	unsigned int	to_fr_ds;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
+
+	to_fr_ds = (ieee80211_has_tods(hdr->frame_control) << 1) |
+		ieee80211_has_fromds(hdr->frame_control);
 
 	switch (to_fr_ds) {
 		case 0x00:	/*  ToDs=0, FromDs=0 */
