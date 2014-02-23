@@ -1116,7 +1116,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 {
 	unsigned int		len;
 	unsigned char		*p;
-	unsigned short	val16, subtype;
+	unsigned short	val16;
 	struct wlan_network *cur_network = &(Adapter->mlmepriv.cur_network);
 	u16 wpa_len=0,rsn_len=0;
 	u8 encryp_protocol = 0;
@@ -1132,6 +1132,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	u32 bcn_channel;
 	unsigned short	ht_cap_info;
 	unsigned char	ht_info_infos_0;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
 
 	if (is_client_associated_to_ap(Adapter) == false)
 		return true;
@@ -1151,9 +1152,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 
 	bssid = (struct wlan_bssid_ex *)rtw_zmalloc(sizeof(struct wlan_bssid_ex));
 
-	subtype = GetFrameSubType(pframe) >> 4;
-
-	if(subtype==WIFI_BEACON)
+	if (ieee80211_is_beacon(hdr->frame_control))
 		bssid->Reserved[0] = 1;
 
 	bssid->Length = sizeof(struct wlan_bssid_ex) - MAX_IE_SZ + len;
