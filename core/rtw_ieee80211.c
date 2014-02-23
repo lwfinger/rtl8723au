@@ -958,7 +958,7 @@ rtw_ieee802_11_parse_vendor_specific(u8 *pos, uint elen,
 
 	oui = RTW_GET_BE24(pos);
 	switch (oui) {
-	case OUI_MICROSOFT:
+	case WLAN_OUI_MICROSOFT:
 		/* Microsoft/Wi-Fi information elements are further typed and
 		 * subtyped */
 		switch (pos[3]) {
