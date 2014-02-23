@@ -511,7 +511,7 @@ static int rtw_wext_p2p_enable(struct net_device *dev,
 		u16 bwmode;
 
 		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_LISTEN)) {
-			/* 	Stay at the listen state and wait for discovery. */
+			/*	Stay at the listen state and wait for discovery. */
 			channel = pwdinfo->listen_channel;
 			pwdinfo->operating_channel = pwdinfo->listen_channel;
 			ch_offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
@@ -597,7 +597,7 @@ static int rtw_p2p_set_listen_ch(struct net_device *dev,
 	int ret = 0;
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-	u8	listen_ch = pwdinfo->listen_channel;	/* 	Listen channel number */
+	u8	listen_ch = pwdinfo->listen_channel;	/*	Listen channel number */
 
 	switch( wrqu->data.length )
 	{
@@ -633,13 +633,13 @@ static int rtw_p2p_set_op_ch(struct net_device *dev,
                                struct iw_request_info *info,
                                union iwreq_data *wrqu, char *extra)
 {
-/* 	Commented by Albert 20110524 */
-/* 	This function is used to set the operating channel if the driver will become the group owner */
+/*	Commented by Albert 20110524 */
+/*	This function is used to set the operating channel if the driver will become the group owner */
 
 	int ret = 0;
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
-	u8	op_ch = pwdinfo->operating_channel;	/* 	Operating channel number */
+	u8	op_ch = pwdinfo->operating_channel;	/*	Operating channel number */
 
 	switch( wrqu->data.length )
 	{
@@ -680,25 +680,25 @@ static int rtw_p2p_profilefound(struct net_device *dev,
 	struct rtw_adapter *padapter = netdev_priv(dev);
 	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
 
-	/* 	Comment by Albert 2010/10/13 */
-	/* 	Input data format: */
-	/* 	Ex:  0 */
-	/* 	Ex:  1XX:XX:XX:XX:XX:XXYYSSID */
-	/* 	0 => Reflush the profile record list. */
-	/* 	1 => Add the profile list */
-	/* 	XX:XX:XX:XX:XX:XX => peer's MAC Address ( ex: 00:E0:4C:00:00:01 ) */
-	/* 	YY => SSID Length */
-	/* 	SSID => SSID for persistence group */
+	/*	Comment by Albert 2010/10/13 */
+	/*	Input data format: */
+	/*	Ex:  0 */
+	/*	Ex:  1XX:XX:XX:XX:XX:XXYYSSID */
+	/*	0 => Reflush the profile record list. */
+	/*	1 => Add the profile list */
+	/*	XX:XX:XX:XX:XX:XX => peer's MAC Address ( ex: 00:E0:4C:00:00:01 ) */
+	/*	YY => SSID Length */
+	/*	SSID => SSID for persistence group */
 
 	DBG_8723A( "[%s] In value = %s, len = %d \n", __func__, extra, wrqu->data.length -1);
 
 
-	/* 	The upper application should pass the SSID to driver by using this rtw_p2p_profilefound function. */
+	/*	The upper application should pass the SSID to driver by using this rtw_p2p_profilefound function. */
 	if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 	{
 		if ( extra[ 0 ] == '0' )
 		{
-			/* 	Remove all the profile information of wifidirect_info structure. */
+			/*	Remove all the profile information of wifidirect_info structure. */
 			memset( &pwdinfo->profileinfo[ 0 ], 0x00, sizeof( struct profile_info ) * P2P_MAX_PERSISTENT_GROUP_NUM );
 			pwdinfo->profileindex = 0;
 		}
@@ -712,8 +712,8 @@ static int rtw_p2p_profilefound(struct net_device *dev,
 		{
 				int jj, kk;
 
-				/* 	Add this profile information into pwdinfo->profileinfo */
-				/* 	Ex:  1XX:XX:XX:XX:XX:XXYYSSID */
+				/*	Add this profile information into pwdinfo->profileinfo */
+				/*	Ex:  1XX:XX:XX:XX:XX:XXYYSSID */
 				for( jj = 0, kk = 1; jj < ETH_ALEN; jj++, kk += 3 )
 				{
 					pwdinfo->profileinfo[ pwdinfo->profileindex ].peermac[ jj ] = key_2char2num(extra[ kk ], extra[ kk+ 1 ]);
@@ -767,9 +767,9 @@ static int rtw_p2p_get_status(struct net_device *dev,
 				pwdinfo->p2p_peer_interface_addr[ 3 ], pwdinfo->p2p_peer_interface_addr[ 4 ], pwdinfo->p2p_peer_interface_addr[ 5 ]);
 	}
 
-	/* 	Commented by Albert 2010/10/12 */
-	/* 	Because of the output size limitation, I had removed the "Role" information. */
-	/* 	About the "Role" information, we will use the new private IOCTL to get the "Role" information. */
+	/*	Commented by Albert 2010/10/12 */
+	/*	Because of the output size limitation, I had removed the "Role" information. */
+	/*	About the "Role" information, we will use the new private IOCTL to get the "Role" information. */
 	sprintf( extra, "\n\nStatus=%.2d\n", rtw_p2p_state(pwdinfo) );
 	wrqu->data.length = strlen( extra );
 
@@ -777,10 +777,10 @@ static int rtw_p2p_get_status(struct net_device *dev,
 
 }
 
-/* 	Commented by Albert 20110520 */
-/* 	This function will return the config method description */
-/* 	This config method description will show us which config method the remote P2P device is intented to use */
-/* 	by sending the provisioning discovery request frame. */
+/*	Commented by Albert 20110520 */
+/*	This function will return the config method description */
+/*	This config method description will show us which config method the remote P2P device is intented to use */
+/*	by sending the provisioning discovery request frame. */
 
 static int rtw_p2p_get_req_cm(struct net_device *dev,
                                struct iw_request_info *info,
@@ -959,10 +959,10 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 	uint attr_contentlen = 0;
 	u8	attr_content_str[P2P_PRIVATE_IOCTL_SET_LEN] = { 0x00 };
 
-	/* 	Commented by Albert 20110727 */
-	/* 	The input data is the MAC address which the application wants to know its WPS config method. */
-	/* 	After knowing its WPS config method, the application can decide the config method for provisioning discovery. */
-	/* 	Format: iwpriv wlanx p2p_get_wpsCM 00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20110727 */
+	/*	The input data is the MAC address which the application wants to know its WPS config method. */
+	/*	After knowing its WPS config method, the application can decide the config method for provisioning discovery. */
+	/*	Format: iwpriv wlanx p2p_get_wpsCM 00:E0:4C:00:00:05 */
 
 	DBG_8723A("[%s] data = %s\n", __func__, subcmd);
 
@@ -979,7 +979,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 			u8 *wpsie;
 			uint	wpsie_len = 0;
 
-			/* 	The mac address is matched. */
+			/*	The mac address is matched. */
 
 			if ((wpsie = rtw_get_wps_ie(&pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &wpsie_len)))
 			{
@@ -1045,7 +1045,7 @@ static int rtw_p2p_get_peer_wfd_preferred_connection(struct net_device *dev,
 	DBG_8723A( "[%s] wfd_pc = %d\n", __func__, pwdinfo->wfd_info->wfd_pc );
 
 	wrqu->data.length = strlen( extra );
-	pwdinfo->wfd_info->wfd_pc = false;	/* 	Reset the WFD preferred connection to P2P */
+	pwdinfo->wfd_info->wfd_pc = false;	/*	Reset the WFD preferred connection to P2P */
 	return ret;
 
 }
@@ -1064,7 +1064,7 @@ static int rtw_p2p_get_peer_wfd_session_available(struct net_device *dev,
 	DBG_8723A( "[%s] wfd_sa = %d\n", __func__, pwdinfo->wfd_info->peer_session_avail );
 
 	wrqu->data.length = strlen( extra );
-	pwdinfo->wfd_info->peer_session_avail = true;	/* 	Reset the WFD session available */
+	pwdinfo->wfd_info->peer_session_avail = true;	/*	Reset the WFD session available */
 	return ret;
 
 }
@@ -1089,9 +1089,9 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 	u8 attr_content[100] = { 0x00 };
 	u8 go_devadd_str[P2P_PRIVATE_IOCTL_SET_LEN] = { 0x00 };
 
-	/* 	Commented by Albert 20121209 */
-	/* 	The input data is the GO's interface address which the application wants to know its device address. */
-	/* 	Format: iwpriv wlanx p2p_get2 go_devadd=00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20121209 */
+	/*	The input data is the GO's interface address which the application wants to know its device address. */
+	/*	Format: iwpriv wlanx p2p_get2 go_devadd=00:E0:4C:00:00:05 */
 
 	DBG_8723A("[%s] data = %s\n", __func__, subcmd);
 
@@ -1105,27 +1105,27 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN))
 		{
-			/* 	Commented by Albert 2011/05/18 */
-			/* 	Match the device address located in the P2P IE */
-			/* 	This is for the case that the P2P device address is not the same as the P2P interface address. */
+			/*	Commented by Albert 2011/05/18 */
+			/*	Match the device address located in the P2P IE */
+			/*	This is for the case that the P2P device address is not the same as the P2P interface address. */
 
 			if ((p2pie = rtw_get_p2p_ie(&pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen)))
 			{
 				while (p2pie)
 				{
-					/* 	The P2P Device ID attribute is included in the Beacon frame. */
-					/* 	The P2P Device Info attribute is included in the probe response frame. */
+					/*	The P2P Device ID attribute is included in the Beacon frame. */
+					/*	The P2P Device Info attribute is included in the probe response frame. */
 
 					memset(attr_content, 0x00, 100);
 					if (rtw_get_p2p_attr_content(p2pie, p2pielen, P2P_ATTR_DEVICE_ID, attr_content, &attr_contentlen))
 					{
-						/* 	Handle the P2P Device ID attribute of Beacon first */
+						/*	Handle the P2P Device ID attribute of Beacon first */
 						blnMatch = 1;
 						break;
 
 					} else if (rtw_get_p2p_attr_content(p2pie, p2pielen, P2P_ATTR_DEVICE_INFO, attr_content, &attr_contentlen))
 					{
-						/* 	Handle the P2P Device Info attribute of probe response */
+						/*	Handle the P2P Device Info attribute of probe response */
 						blnMatch = 1;
 						break;
 					}
@@ -1172,10 +1172,10 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 	uint dev_type_len = 0;
 	u8 dev_type_str[P2P_PRIVATE_IOCTL_SET_LEN] = { 0x00 };    /*  +9 is for the str "dev_type=", we have to clear it at wrqu->data.pointer */
 
-	/* 	Commented by Albert 20121209 */
-	/* 	The input data is the MAC address which the application wants to know its device type. */
-	/* 	Such user interface could know the device type. */
-	/* 	Format: iwpriv wlanx p2p_get2 dev_type=00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20121209 */
+	/*	The input data is the MAC address which the application wants to know its device type. */
+	/*	Such user interface could know the device type. */
+	/*	Format: iwpriv wlanx p2p_get2 dev_type=00:E0:4C:00:00:05 */
 
 	DBG_8723A("[%s] data = %s\n", __func__, subcmd);
 
@@ -1192,7 +1192,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 			u8 *wpsie;
 			uint	wpsie_len = 0;
 
-			/* 	The mac address is matched. */
+			/*	The mac address is matched. */
 
 			if ((wpsie = rtw_get_wps_ie(&pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &wpsie_len)))
 			{
@@ -1242,10 +1242,10 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 	uint dev_len = 0;
 	u8 dev_name_str[P2P_PRIVATE_IOCTL_SET_LEN] = { 0x00 };
 
-	/* 	Commented by Albert 20121225 */
-	/* 	The input data is the MAC address which the application wants to know its device name. */
-	/* 	Such user interface could show peer device's device name instead of ssid. */
-	/* 	Format: iwpriv wlanx p2p_get2 devN=00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20121225 */
+	/*	The input data is the MAC address which the application wants to know its device name. */
+	/*	Such user interface could show peer device's device name instead of ssid. */
+	/*	Format: iwpriv wlanx p2p_get2 devN=00:E0:4C:00:00:05 */
 
 	DBG_8723A("[%s] data = %s\n", __func__, subcmd);
 
@@ -1262,7 +1262,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 			u8 *wpsie;
 			uint	wpsie_len = 0;
 
-			/* 	The mac address is matched. */
+			/*	The mac address is matched. */
 
 			if ((wpsie = rtw_get_wps_ie(&pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &wpsie_len)))
 			{
@@ -1309,9 +1309,9 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	u8 attr_content[2] = { 0x00 };
 	u8 inv_proc_str[P2P_PRIVATE_IOCTL_SET_LEN] = { 0x00 };
 
-	/* 	Commented by Ouden 20121226 */
-	/* 	The application wants to know P2P initation procedure is support or not. */
-	/* 	Format: iwpriv wlanx p2p_get2 InvProc=00:E0:4C:00:00:05 */
+	/*	Commented by Ouden 20121226 */
+	/*	The application wants to know P2P initation procedure is support or not. */
+	/*	Format: iwpriv wlanx p2p_get2 InvProc=00:E0:4C:00:00:05 */
 
 	DBG_8723A("[%s] data = %s\n", __func__, subcmd);
 
@@ -1324,15 +1324,15 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 		if (!memcmp(pnetwork->network.MacAddress, peerMAC, ETH_ALEN)) {
-			/* 	Commented by Albert 20121226 */
-			/* 	Match the device address located in the P2P IE */
-			/* 	This is for the case that the P2P device address is not the same as the P2P interface address. */
+			/*	Commented by Albert 20121226 */
+			/*	Match the device address located in the P2P IE */
+			/*	This is for the case that the P2P device address is not the same as the P2P interface address. */
 
 			if ((p2pie = rtw_get_p2p_ie(&pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen))) {
 				while (p2pie) {
 					/* memset( attr_content, 0x00, 2); */
 					if (rtw_get_p2p_attr_content(p2pie, p2pielen, P2P_ATTR_CAPABILITY, attr_content, &attr_contentlen)) {
-						/* 	Handle the P2P capability attribute */
+						/*	Handle the P2P capability attribute */
 						blnMatch = 1;
 						break;
 					}
@@ -1378,12 +1378,12 @@ static int rtw_p2p_connect(struct net_device *dev,
 	struct wlan_network *pnetwork;
 	uint					uintPeerChannel = 0;
 
-	/* 	Commented by Albert 20110304 */
-	/* 	The input data contains two informations. */
-	/* 	1. First information is the MAC address which wants to formate with */
-	/* 	2. Second information is the WPS PINCode or "pbc" string for push button method */
-	/* 	Format: 00:E0:4C:00:00:05 */
-	/* 	Format: 00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20110304 */
+	/*	The input data contains two informations. */
+	/*	1. First information is the MAC address which wants to formate with */
+	/*	2. Second information is the WPS PINCode or "pbc" string for push button method */
+	/*	Format: 00:E0:4C:00:00:05 */
+	/*	Format: 00:E0:4C:00:00:05 */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1430,7 +1430,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 		del_timer_sync(&pwdinfo->restore_p2p_state_timer);
 		if ( rtw_p2p_state(pwdinfo) != P2P_STATE_GONEGO_OK )
 		{
-			/* 	Restore to the listen state if the current p2p state is not nego OK */
+			/*	Restore to the listen state if the current p2p state is not nego OK */
 			rtw_p2p_set_state(pwdinfo, P2P_STATE_LISTEN );
 		}
 
@@ -1475,12 +1475,12 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
 #endif /*  CONFIG_8723AU_P2P */
 
-	/* 	Commented by Albert 20120321 */
-	/* 	The input data contains two informations. */
-	/* 	1. First information is the P2P device address which you want to send to. */
-	/* 	2. Second information is the group id which combines with GO's mac address, space and GO's ssid. */
-	/* 	Command line sample: iwpriv wlan0 p2p_set invite="00:11:22:33:44:55 00:E0:4C:00:00:05 DIRECT-xy" */
-	/* 	Format: 00:11:22:33:44:55 00:E0:4C:00:00:05 DIRECT-xy */
+	/*	Commented by Albert 20120321 */
+	/*	The input data contains two informations. */
+	/*	1. First information is the P2P device address which you want to send to. */
+	/*	2. Second information is the group id which combines with GO's mac address, space and GO's ssid. */
+	/*	Command line sample: iwpriv wlan0 p2p_set invite="00:11:22:33:44:55 00:E0:4C:00:00:05 DIRECT-xy" */
+	/*	Format: 00:11:22:33:44:55 00:E0:4C:00:00:05 DIRECT-xy */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1494,7 +1494,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 		DBG_8723A( "[%s] WiFi Direct is disable!\n", __func__ );
 		return ret;
 	} else {
-		/* 	Reset the content of struct tx_invite_req_info */
+		/*	Reset the content of struct tx_invite_req_info */
 		pinvite_req_info->benable = false;
 		memset(pinvite_req_info->go_bssid, 0x00, ETH_ALEN);
 		memset(pinvite_req_info->go_ssid, 0x00, IEEE80211_MAX_SSID_LEN);
@@ -1516,18 +1516,18 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
-		/* 	Commented by Albert 2011/05/18 */
-		/* 	Match the device address located in the P2P IE */
-		/* 	This is for the case that the P2P device address is not the same as the P2P interface address. */
+		/*	Commented by Albert 2011/05/18 */
+		/*	Match the device address located in the P2P IE */
+		/*	This is for the case that the P2P device address is not the same as the P2P interface address. */
 
 		if ( (p2pie=rtw_get_p2p_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen)) )
 		{
-			/* 	The P2P Device ID attribute is included in the Beacon frame. */
-			/* 	The P2P Device Info attribute is included in the probe response frame. */
+			/*	The P2P Device ID attribute is included in the Beacon frame. */
+			/*	The P2P Device Info attribute is included in the probe response frame. */
 
 			if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_ID, attr_content, &attr_contentlen) )
 			{
-				/* 	Handle the P2P Device ID attribute of Beacon first */
+				/*	Handle the P2P Device ID attribute of Beacon first */
 				if (!memcmp(attr_content, pinvite_req_info->peer_macaddr, ETH_ALEN))
 				{
 					uintPeerChannel = pnetwork->network.Configuration.DSConfig;
@@ -1536,7 +1536,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 			}
 			else if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_INFO, attr_content, &attr_contentlen) )
 			{
-				/* 	Handle the P2P Device Info attribute of probe response */
+				/*	Handle the P2P Device Info attribute of probe response */
 				if (!memcmp(attr_content, pinvite_req_info->peer_macaddr, ETH_ALEN))
 				{
 					uintPeerChannel = pnetwork->network.Configuration.DSConfig;
@@ -1565,9 +1565,9 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 			{
 				u16	wfd_devinfo_field = 0;
 
-				/* 	Commented by Albert 20120319 */
-				/* 	The first two bytes are the WFD device information field of WFD device information subelement. */
-				/* 	In big endian format. */
+				/*	Commented by Albert 20120319 */
+				/*	The first two bytes are the WFD device information field of WFD device information subelement. */
+				/*	In big endian format. */
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_SESSION_AVAIL )
 				{
@@ -1589,13 +1589,13 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 #endif /*  CONFIG_8723AU_P2P */
 
 	if ( uintPeerChannel ) {
-		/* 	Store the GO's bssid */
+		/*	Store the GO's bssid */
 		for( jj = 0, kk = 18; jj < ETH_ALEN; jj++, kk += 3 )
 		{
 			pinvite_req_info->go_bssid[ jj ] = key_2char2num( extra[kk], extra[kk+ 1] );
 		}
 
-		/* 	Store the GO's ssid */
+		/*	Store the GO's ssid */
 		pinvite_req_info->ssidlen = wrqu->data.length - 36;
 		memcpy(pinvite_req_info->go_ssid, &extra[ 36 ], (u32) pinvite_req_info->ssidlen );
 		pinvite_req_info->benable = true;
@@ -1647,10 +1647,10 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
 #endif /*  CONFIG_8723AU_P2P */
 
-	/* 	Commented by Albert 20120328 */
-	/* 	The input data is 0 or 1 */
-	/* 	0: disable persistent group functionality */
-	/* 	1: enable persistent group founctionality */
+	/*	Commented by Albert 20120328 */
+	/*	The input data is 0 or 1 */
+	/*	0: disable persistent group functionality */
+	/*	1: enable persistent group founctionality */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1661,11 +1661,11 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	}
 	else
 	{
-		if ( extra[ 0 ] == '0' )	/* 	Disable the persistent group function. */
+		if ( extra[ 0 ] == '0' )	/*	Disable the persistent group function. */
 		{
 			pwdinfo->persistent_supported = false;
 		}
-		else if ( extra[ 0 ] == '1' )	/* 	Enable the persistent group function. */
+		else if ( extra[ 0 ] == '1' )	/*	Enable the persistent group function. */
 		{
 			pwdinfo->persistent_supported = true;
 		}
@@ -1705,9 +1705,9 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	uint					uintPeerChannel = 0;
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
 
-	/* 	Commented by Albert 20120512 */
-	/* 	1. Input information is the MAC address which wants to know the Preferred Connection bit (PC bit) */
-	/* 	Format: 00:E0:4C:00:00:05 */
+	/*	Commented by Albert 20120512 */
+	/*	1. Input information is the MAC address which wants to know the Preferred Connection bit (PC bit) */
+	/*	Format: 00:E0:4C:00:00:05 */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1729,18 +1729,18 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
-		/* 	Commented by Albert 2011/05/18 */
-		/* 	Match the device address located in the P2P IE */
-		/* 	This is for the case that the P2P device address is not the same as the P2P interface address. */
+		/*	Commented by Albert 2011/05/18 */
+		/*	Match the device address located in the P2P IE */
+		/*	This is for the case that the P2P device address is not the same as the P2P interface address. */
 
 		if ( (p2pie=rtw_get_p2p_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen)) )
 		{
-			/* 	The P2P Device ID attribute is included in the Beacon frame. */
-			/* 	The P2P Device Info attribute is included in the probe response frame. */
+			/*	The P2P Device ID attribute is included in the Beacon frame. */
+			/*	The P2P Device Info attribute is included in the probe response frame. */
 			printk( "[%s] Got P2P IE\n", __func__ );
 			if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_ID, attr_content, &attr_contentlen) )
 			{
-				/* 	Handle the P2P Device ID attribute of Beacon first */
+				/*	Handle the P2P Device ID attribute of Beacon first */
 				printk( "[%s] P2P_ATTR_DEVICE_ID \n", __func__ );
 				if (!memcmp(attr_content, peerMAC, ETH_ALEN))
 				{
@@ -1750,7 +1750,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 			}
 			else if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_INFO, attr_content, &attr_contentlen) )
 			{
-				/* 	Handle the P2P Device Info attribute of probe response */
+				/*	Handle the P2P Device Info attribute of probe response */
 				printk( "[%s] P2P_ATTR_DEVICE_INFO \n", __func__ );
 				if (!memcmp( attr_content, peerMAC, ETH_ALEN))
 				{
@@ -1780,9 +1780,9 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 			{
 				u16	wfd_devinfo_field = 0;
 
-				/* 	Commented by Albert 20120319 */
-				/* 	The first two bytes are the WFD device information field of WFD device information subelement. */
-				/* 	In big endian format. */
+				/*	Commented by Albert 20120319 */
+				/*	The first two bytes are the WFD device information field of WFD device information subelement. */
+				/*	In big endian format. */
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_PC_TDLS )
 				{
@@ -1817,18 +1817,18 @@ static int rtw_p2p_set_wfd_device_type(struct net_device *dev,
 	struct wifidirect_info		*pwdinfo = &( padapter->wdinfo );
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
 
-	/* 	Commented by Albert 20120328 */
-	/* 	The input data is 0 or 1 */
-	/* 	0: specify to Miracast source device */
-	/* 	1 or others: specify to Miracast sink device (display device) */
+	/*	Commented by Albert 20120328 */
+	/*	The input data is 0 or 1 */
+	/*	0: specify to Miracast source device */
+	/*	1 or others: specify to Miracast sink device (display device) */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
-	if ( extra[ 0 ] == '0' )	/* 	Set to Miracast source device. */
+	if ( extra[ 0 ] == '0' )	/*	Set to Miracast source device. */
 	{
 		pwfd_info->wfd_device_type = WFD_DEVINFO_SOURCE;
 	}
-	else					/* 	Set to Miracast sink device. */
+	else					/*	Set to Miracast sink device. */
 	{
 		pwfd_info->wfd_device_type = WFD_DEVINFO_PSINK;
 	}
@@ -1850,13 +1850,13 @@ static int rtw_p2p_set_scan_result_type(struct net_device *dev,
 	struct wifidirect_info		*pwdinfo = &( padapter->wdinfo );
 	struct wifi_display_info		*pwfd_info = pwdinfo->wfd_info;
 
-	/* 	Commented by Albert 20120328 */
-	/* 	The input data is 0 , 1 , 2 */
-	/* 	0: when the P2P is enabled, the scan result will return all the found P2P device. */
-	/* 	1: when the P2P is enabled, the scan result will return all the found P2P device and AP. */
-	/* 	2: when the P2P is enabled, the scan result will show up the found Miracast devices base on... */
-	/* 	It will show up all the Miracast source device if this device is sink. */
-	/* 	It will show up all the Miracast sink device if this device is source. */
+	/*	Commented by Albert 20120328 */
+	/*	The input data is 0 , 1 , 2 */
+	/*	0: when the P2P is enabled, the scan result will return all the found P2P device. */
+	/*	1: when the P2P is enabled, the scan result will return all the found P2P device and AP. */
+	/*	2: when the P2P is enabled, the scan result will show up the found Miracast devices base on... */
+	/*	It will show up all the Miracast source device if this device is sink. */
+	/*	It will show up all the Miracast sink device if this device is source. */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1883,7 +1883,7 @@ exit:
 
 }
 
-/* 	To set the WFD session available to enable or disable */
+/*	To set the WFD session available to enable or disable */
 static int rtw_p2p_set_sa(struct net_device *dev,
                                struct iw_request_info *info,
                                union iwreq_data *wrqu, char *extra)
@@ -1904,11 +1904,11 @@ static int rtw_p2p_set_sa(struct net_device *dev,
 	}
 	else
 	{
-		if ( extra[ 0 ] == '0' )	/* 	Disable the session available. */
+		if ( extra[ 0 ] == '0' )	/*	Disable the session available. */
 		{
 			pwdinfo->session_available = false;
 		}
-		else if ( extra[ 0 ] == '1' )	/* 	Enable the session available. */
+		else if ( extra[ 0 ] == '1' )	/*	Enable the session available. */
 		{
 			pwdinfo->session_available = true;
 		}
@@ -1948,14 +1948,14 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	struct wifi_display_info*	pwfd_info = pwdinfo->wfd_info;
 #endif /*  CONFIG_8723AU_P2P */
 
-	/* 	Commented by Albert 20110301 */
-	/* 	The input data contains two informations. */
-	/* 	1. First information is the MAC address which wants to issue the provisioning discovery request frame. */
-	/* 	2. Second information is the WPS configuration method which wants to discovery */
-	/* 	Format: 00:E0:4C:00:00:05_display */
-	/* 	Format: 00:E0:4C:00:00:05_keypad */
-	/* 	Format: 00:E0:4C:00:00:05_pbc */
-	/* 	Format: 00:E0:4C:00:00:05_label */
+	/*	Commented by Albert 20110301 */
+	/*	The input data contains two informations. */
+	/*	1. First information is the MAC address which wants to issue the provisioning discovery request frame. */
+	/*	2. Second information is the WPS configuration method which wants to discovery */
+	/*	Format: 00:E0:4C:00:00:05_display */
+	/*	Format: 00:E0:4C:00:00:05_keypad */
+	/*	Format: 00:E0:4C:00:00:05_pbc */
+	/*	Format: 00:E0:4C:00:00:05_label */
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
 
@@ -1966,7 +1966,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	}
 	else
 	{
-		/* 	Reset the content of struct tx_provdisc_req_info excluded the wps_config_method_request. */
+		/*	Reset the content of struct tx_provdisc_req_info excluded the wps_config_method_request. */
 		memset( pwdinfo->tx_prov_disc_info.peerDevAddr, 0x00, ETH_ALEN );
 		memset( pwdinfo->tx_prov_disc_info.peerIFAddr, 0x00, ETH_ALEN );
 		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( struct ndis_802_11_ssid ) );
@@ -2012,20 +2012,20 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 
 		pnetwork = container_of(plist, struct wlan_network, list);
 
-		/* 	Commented by Albert 2011/05/18 */
-		/* 	Match the device address located in the P2P IE */
-		/* 	This is for the case that the P2P device address is not the same as the P2P interface address. */
+		/*	Commented by Albert 2011/05/18 */
+		/*	Match the device address located in the P2P IE */
+		/*	This is for the case that the P2P device address is not the same as the P2P interface address. */
 
 		if ( (p2pie=rtw_get_p2p_ie( &pnetwork->network.IEs[12], pnetwork->network.IELength - 12, NULL, &p2pielen)) )
 		{
 			while ( p2pie )
 			{
-				/* 	The P2P Device ID attribute is included in the Beacon frame. */
-				/* 	The P2P Device Info attribute is included in the probe response frame. */
+				/*	The P2P Device ID attribute is included in the Beacon frame. */
+				/*	The P2P Device Info attribute is included in the probe response frame. */
 
 				if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_ID, attr_content, &attr_contentlen) )
 				{
-					/* 	Handle the P2P Device ID attribute of Beacon first */
+					/*	Handle the P2P Device ID attribute of Beacon first */
 					if (!memcmp( attr_content, peerMAC, ETH_ALEN))
 					{
 						uintPeerChannel = pnetwork->network.Configuration.DSConfig;
@@ -2034,7 +2034,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 				}
 				else if ( rtw_get_p2p_attr_content( p2pie, p2pielen, P2P_ATTR_DEVICE_INFO, attr_content, &attr_contentlen) )
 				{
-					/* 	Handle the P2P Device Info attribute of probe response */
+					/*	Handle the P2P Device Info attribute of probe response */
 					if (!memcmp( attr_content, peerMAC, ETH_ALEN))
 					{
 						uintPeerChannel = pnetwork->network.Configuration.DSConfig;
@@ -2066,9 +2066,9 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 			{
 				u16	wfd_devinfo_field = 0;
 
-				/* 	Commented by Albert 20120319 */
-				/* 	The first two bytes are the WFD device information field of WFD device information subelement. */
-				/* 	In big endian format. */
+				/*	Commented by Albert 20120319 */
+				/*	The first two bytes are the WFD device information field of WFD device information subelement. */
+				/*	In big endian format. */
 				wfd_devinfo_field = RTW_GET_BE16(wfd_devinfo);
 				if ( wfd_devinfo_field & WFD_DEVINFO_SESSION_AVAIL )
 				{
@@ -2125,9 +2125,9 @@ exit:
 	return ret;
 }
 
-/* 	Added by Albert 20110328 */
-/* 	This function is used to inform the driver the user had specified the pin code value or pbc */
-/* 	to application. */
+/*	Added by Albert 20110328 */
+/*	This function is used to inform the driver the user had specified the pin code value or pbc */
+/*	to application. */
 
 static int rtw_p2p_got_wpsinfo(struct net_device *dev,
                                struct iw_request_info *info,
@@ -2140,11 +2140,11 @@ static int rtw_p2p_got_wpsinfo(struct net_device *dev,
 
 
 	DBG_8723A( "[%s] data = %s\n", __func__, extra );
-	/* 	Added by Albert 20110328 */
-	/* 	if the input data is P2P_NO_WPSINFO -> reset the wpsinfo */
-	/* 	if the input data is P2P_GOT_WPSINFO_PEER_DISPLAY_PIN -> the utility just input the PIN code got from the peer P2P device. */
-	/* 	if the input data is P2P_GOT_WPSINFO_SELF_DISPLAY_PIN -> the utility just got the PIN code from itself. */
-	/* 	if the input data is P2P_GOT_WPSINFO_PBC -> the utility just determine to use the PBC */
+	/*	Added by Albert 20110328 */
+	/*	if the input data is P2P_NO_WPSINFO -> reset the wpsinfo */
+	/*	if the input data is P2P_GOT_WPSINFO_PEER_DISPLAY_PIN -> the utility just input the PIN code got from the peer P2P device. */
+	/*	if the input data is P2P_GOT_WPSINFO_SELF_DISPLAY_PIN -> the utility just got the PIN code from itself. */
+	/*	if the input data is P2P_GOT_WPSINFO_PBC -> the utility just determine to use the PBC */
 
 	if ( *extra == '0' )
 	{

@@ -34,7 +34,7 @@ inline int RTW_STATUS_CODE(int error_code){
 
 	switch(error_code) {
 		/* case -ETIMEDOUT: */
-		/* 	return RTW_STATUS_TIMEDOUT; */
+		/*	return RTW_STATUS_TIMEDOUT; */
 		default:
 			return _FAIL;
 	}

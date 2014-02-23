@@ -129,8 +129,8 @@ typedef struct _SCAN_EN_PARM {
 #define SET_H2CCMD_BT_PWR_IDX(__pH2CCmd, __Value)							SET_BITS_TO_LE_1BYTE_8BIT(__pH2CCmd, 0, 8, __Value)
 
 /*  BT_FW_PATCH */
-#define SET_H2CCMD_BT_FW_PATCH_ENABLE(__pH2CCmd, __Value)					SET_BITS_TO_LE_4BYTE(__pH2CCmd, 0, 8, __Value) /* 	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value) */
-#define SET_H2CCMD_BT_FW_PATCH_SIZE(__pH2CCmd, __Value)						SET_BITS_TO_LE_4BYTE(__pH2CCmd, 8, 16, __Value) /* 	SET_BITS_TO_LE_2BYTE((__pH2CCmd)+1, 0, 16, __Value) */
+#define SET_H2CCMD_BT_FW_PATCH_ENABLE(__pH2CCmd, __Value)					SET_BITS_TO_LE_4BYTE(__pH2CCmd, 0, 8, __Value) /*	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value) */
+#define SET_H2CCMD_BT_FW_PATCH_SIZE(__pH2CCmd, __Value)						SET_BITS_TO_LE_4BYTE(__pH2CCmd, 8, 16, __Value) /*	SET_BITS_TO_LE_2BYTE((__pH2CCmd)+1, 0, 16, __Value) */
 
 typedef struct _LOWPWR_LPS_PARM
 {

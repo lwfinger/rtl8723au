@@ -49,7 +49,7 @@
 #define RTL8723_PHY_REG_MP				"rtl8723S\\PHY_REG_MP.txt"
 
 /*  */
-/* 		RTL8723S From header */
+/*		RTL8723S From header */
 /*  */
 
 /*  Fw Array */
@@ -158,7 +158,7 @@ struct rt_8723a_firmware_hdr {
 
 
 /*  */
-/* 	Chip specific */
+/*	Chip specific */
 /*  */
 #define CHIP_BONDING_IDENTIFIER(_value)	(((_value)>>22)&0x3)
 #define CHIP_BONDING_92C_1T2R			0x1
@@ -169,7 +169,7 @@ struct rt_8723a_firmware_hdr {
 #include "hal_com.h"
 
 /*  */
-/* 	Channel Plan */
+/*	Channel Plan */
 /*  */
 enum ChannelPlan
 {
@@ -211,7 +211,7 @@ enum ChannelPlan
 #define EFUSE_MAX_SECTION_8723A			32
 
 /*  */
-/* 			EFUSE for BT definition */
+/*			EFUSE for BT definition */
 /*  */
 #define EFUSE_BT_REAL_BANK_CONTENT_LEN	512
 #define EFUSE_BT_REAL_CONTENT_LEN		1536	/*  512*3 */

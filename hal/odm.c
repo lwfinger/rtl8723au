@@ -777,19 +777,19 @@ ODM_CmnInfoHook(
 			break;
 
 		/* case	ODM_CMNINFO_BT_COEXIST: */
-		/* 	pDM_Odm->BTCoexist = (bool *)pValue; */
+		/*	pDM_Odm->BTCoexist = (bool *)pValue; */
 
 		/* case	ODM_CMNINFO_STA_STATUS: */
 			/* pDM_Odm->pODM_StaInfo[] = (PSTA_INFO_T)pValue; */
 			/* break; */
 
 		/* case	ODM_CMNINFO_PHY_STATUS: */
-		/* 	pDM_Odm->pPhyInfo = (ODM_PHY_INFO *)pValue; */
-		/* 	break; */
+		/*	pDM_Odm->pPhyInfo = (ODM_PHY_INFO *)pValue; */
+		/*	break; */
 
 		/* case	ODM_CMNINFO_MAC_STATUS: */
-		/* 	pDM_Odm->pMacInfo = (ODM_MAC_INFO *)pValue; */
-		/* 	break; */
+		/*	pDM_Odm->pMacInfo = (ODM_MAC_INFO *)pValue; */
+		/*	break; */
 		/* To remove the compiler warning, must add an empty default statement to handle the other values. */
 		default:
 			/* do nothing */
@@ -2602,7 +2602,7 @@ odm_GlobalAdapterCheck(
 
 /*  */
 /*  Description: */
-/* 	Set Single/Dual Antenna default setting for products that do not do detection in advance. */
+/*	Set Single/Dual Antenna default setting for products that do not do detection in advance. */
 /*  */
 /*  Added by Joseph, 2012.03.22 */
 /*  */
@@ -2654,8 +2654,8 @@ static void odm_PHY_ReloadAFERegisters(
 /* 2 8723A ANT DETECT */
 /*  */
 /*  Description: */
-/* 	Implement IQK single tone for RF DPK loopback and BB PSD scanning. */
-/* 	This function is cooperated with BB team Neil. */
+/*	Implement IQK single tone for RF DPK loopback and BB PSD scanning. */
+/*	This function is cooperated with BB team Neil. */
 /*  */
 /*  Added by Roger, 2011.12.15 */
 /*  */

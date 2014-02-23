@@ -19,7 +19,7 @@
 
 /*  */
 /*  */
-/* 	0x0000h ~ 0x00FFh	System Configuration */
+/*	0x0000h ~ 0x00FFh	System Configuration */
 /*  */
 /*  */
 #define REG_SYS_ISO_CTRL			0x0000
@@ -81,7 +81,7 @@
 
 /*  */
 /*  */
-/* 	0x0100h ~ 0x01FFh	MACTOP General Configuration */
+/*	0x0100h ~ 0x01FFh	MACTOP General Configuration */
 /*  */
 /*  */
 #define REG_CR						0x0100
@@ -128,7 +128,7 @@
 
 /*  */
 /*  */
-/* 	0x0200h ~ 0x027Fh	TXDMA Configuration */
+/*	0x0200h ~ 0x027Fh	TXDMA Configuration */
 /*  */
 /*  */
 #define REG_RQPN					0x0200
@@ -140,7 +140,7 @@
 
 /*  */
 /*  */
-/* 	0x0280h ~ 0x02FFh	RXDMA Configuration */
+/*	0x0280h ~ 0x02FFh	RXDMA Configuration */
 /*  */
 /*  */
 #define REG_RXDMA_AGG_PG_TH		0x0280
@@ -150,7 +150,7 @@
 
 /*  */
 /*  */
-/* 	0x0300h ~ 0x03FFh	PCIe */
+/*	0x0300h ~ 0x03FFh	PCIe */
 /*  */
 /*  */
 #define	REG_PCIE_CTRL_REG			0x0300
@@ -176,7 +176,7 @@
 /*  spec version 11 */
 /*  */
 /*  */
-/* 	0x0400h ~ 0x047Fh	Protocol Configuration */
+/*	0x0400h ~ 0x047Fh	Protocol Configuration */
 /*  */
 /*  */
 #define REG_VOQ_INFORMATION			0x0400
@@ -235,7 +235,7 @@
 
 /*  */
 /*  */
-/* 	0x0500h ~ 0x05FFh	EDCA Configuration */
+/*	0x0500h ~ 0x05FFh	EDCA Configuration */
 /*  */
 /*  */
 #define REG_EDCA_VO_PARAM			0x0500
@@ -294,7 +294,7 @@
 
 /*  */
 /*  */
-/* 	0x0600h ~ 0x07FFh	WMAC Configuration */
+/*	0x0600h ~ 0x07FFh	WMAC Configuration */
 /*  */
 /*  */
 #define REG_APSD_CTRL				0x0600
@@ -359,7 +359,7 @@
 
 /*  */
 /*  */
-/* 	0xFE00h ~ 0xFE55h	USB Configuration */
+/*	0xFE00h ~ 0xFE55h	USB Configuration */
 /*  */
 /*  */
 #define REG_USB_INFO				0xFE17
@@ -393,7 +393,7 @@
 
 /*  */
 /*  */
-/* 	Redifine 8192C register definition for compatibility */
+/*	Redifine 8192C register definition for compatibility */
 /*  */
 /*  */
 
@@ -763,7 +763,7 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 #define BOARD_TYPE_TEST_MASK					0x0F
 #define EEPROM_EASY_REPLACEMENT				0x50/* BIT0 1 for build-in module, 0 for external dongle */
 /*  */
-/* 	EEPROM content definitions */
+/*	EEPROM content definitions */
 /*  */
 #define OS_LINK_SPEED							BIT(5)
 
@@ -780,7 +780,7 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 
 
 /*  */
-/* 	EEPROM default value definitions */
+/*	EEPROM default value definitions */
 /*  */
 /*  Use 0xABCD instead of 0x8192 for debug */
 #define EEPROM_DEF_ID_0						0xCD	/*  Byte 0x00 */
@@ -888,7 +888,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0xFE00h ~ 0xFE55h	USB Configuration */
+/*	0xFE00h ~ 0xFE55h	USB Configuration */
 /*  */
 /*  */
 #define REG_USB_INFO				0xFE17
@@ -914,7 +914,7 @@ Current IOREG MAP
 /*  */
 /*  */
 /*  */
-/* 	0x0000h ~ 0x00FFh	System Configuration */
+/*	0x0000h ~ 0x00FFh	System Configuration */
 /*  */
 /*  */
 
@@ -1231,7 +1231,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0100h ~ 0x01FFh	MACTOP General Configuration */
+/*	0x0100h ~ 0x01FFh	MACTOP General Configuration */
 /*  */
 /*  */
 
@@ -1340,7 +1340,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0200h ~ 0x027Fh	TXDMA Configuration */
+/*	0x0200h ~ 0x027Fh	TXDMA Configuration */
 /*  */
 /*  */
 /* 2 RQPN */
@@ -1370,7 +1370,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0400h ~ 0x047Fh	Protocol Configuration */
+/*	0x0400h ~ 0x047Fh	Protocol Configuration */
 /*  */
 /*  */
 /* 2 FWHW_TXQ_CTRL */
@@ -1445,7 +1445,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0500h ~ 0x05FFh	EDCA Configuration */
+/*	0x0500h ~ 0x05FFh	EDCA Configuration */
 /*  */
 /*  */
 
@@ -1513,7 +1513,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0600h ~ 0x07FFh	WMAC Configuration */
+/*	0x0600h ~ 0x07FFh	WMAC Configuration */
 /*  */
 /*  */
 
@@ -1615,7 +1615,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0xFE00h ~ 0xFE55h	USB Configuration */
+/*	0xFE00h ~ 0xFE55h	USB Configuration */
 /*  */
 /*  */
 
@@ -1692,13 +1692,13 @@ Current IOREG MAP
 
 
 /*  */
-/* 	8723A Regsiter offset definition */
+/*	8723A Regsiter offset definition */
 /*  */
 #define HAL_8723A_NAV_UPPER_UNIT	128		/*  micro-second */
 
 /*  */
 /*  */
-/* 	0x0000h ~ 0x00FFh	System Configuration */
+/*	0x0000h ~ 0x00FFh	System Configuration */
 /*  */
 /*  */
 #define REG_SYSON_REG_LOCK		0x001C
@@ -1706,7 +1706,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0100h ~ 0x01FFh	MACTOP General Configuration */
+/*	0x0100h ~ 0x01FFh	MACTOP General Configuration */
 /*  */
 /*  */
 #define REG_FTIMR			0x0138
@@ -1714,28 +1714,28 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0200h ~ 0x027Fh	TXDMA Configuration */
+/*	0x0200h ~ 0x027Fh	TXDMA Configuration */
 /*  */
 /*  */
 
 
 /*  */
 /*  */
-/* 	0x0280h ~ 0x02FFh	RXDMA Configuration */
+/*	0x0280h ~ 0x02FFh	RXDMA Configuration */
 /*  */
 /*  */
 
 
 /*  */
 /*  */
-/* 	0x0300h ~ 0x03FFh	PCIe */
+/*	0x0300h ~ 0x03FFh	PCIe */
 /*  */
 /*  */
 
 
 /*  */
 /*  */
-/* 	0x0400h ~ 0x047Fh	Protocol Configuration */
+/*	0x0400h ~ 0x047Fh	Protocol Configuration */
 /*  */
 /*  */
 #define REG_EARLY_MODE_CONTROL		0x4D0
@@ -1743,7 +1743,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0500h ~ 0x05FFh	EDCA Configuration */
+/*	0x0500h ~ 0x05FFh	EDCA Configuration */
 /*  */
 /*  */
 
@@ -1755,28 +1755,28 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0600h ~ 0x07FFh	WMAC Configuration */
+/*	0x0600h ~ 0x07FFh	WMAC Configuration */
 /*  */
 /*  */
 /*  */
 /*  Note: */
-/* 	The NAV upper value is very important to WiFi 11n 5.2.3 NAV test. The default value is */
-/* 	always too small, but the WiFi TestPlan test by 25,000 microseconds of NAV through sending */
-/* 	CTS in the air. We must update this value greater than 25,000 microseconds to pass the item. */
-/* 	The offset of NAV_UPPER in 8192C Spec is incorrect, and the offset should be 0x0652. Commented */
-/* 	by SD1 Scott. */
+/*	The NAV upper value is very important to WiFi 11n 5.2.3 NAV test. The default value is */
+/*	always too small, but the WiFi TestPlan test by 25,000 microseconds of NAV through sending */
+/*	CTS in the air. We must update this value greater than 25,000 microseconds to pass the item. */
+/*	The offset of NAV_UPPER in 8192C Spec is incorrect, and the offset should be 0x0652. Commented */
+/*	by SD1 Scott. */
 /*  By Bruce, 2011-07-18. */
 /*  */
 #define	REG_NAV_UPPER			0x0652	/*  unit of 128 */
 
 
 /*  */
-/* 	8723 Regsiter Bit and Content definition */
+/*	8723 Regsiter Bit and Content definition */
 /*  */
 
 /*  */
 /*  */
-/* 	0x0000h ~ 0x00FFh	System Configuration */
+/*	0x0000h ~ 0x00FFh	System Configuration */
 /*  */
 /*  */
 
@@ -1876,7 +1876,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0100h ~ 0x01FFh	MACTOP General Configuration */
+/*	0x0100h ~ 0x01FFh	MACTOP General Configuration */
 /*  */
 /*  */
 
@@ -1898,7 +1898,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0200h ~ 0x027Fh	TXDMA Configuration */
+/*	0x0200h ~ 0x027Fh	TXDMA Configuration */
 /*  */
 /*  */
 
@@ -1913,7 +1913,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0400h ~ 0x047Fh	Protocol Configuration */
+/*	0x0400h ~ 0x047Fh	Protocol Configuration */
 /*  */
 /*  */
 
@@ -1938,7 +1938,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0500h ~ 0x05FFh	EDCA Configuration */
+/*	0x0500h ~ 0x05FFh	EDCA Configuration */
 /*  */
 /*  */
 
@@ -1961,7 +1961,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0x0600h ~ 0x07FFh	WMAC Configuration */
+/*	0x0600h ~ 0x07FFh	WMAC Configuration */
 /*  */
 /*  */
 
@@ -1988,7 +1988,7 @@ Current IOREG MAP
 
 /*  */
 /*  */
-/* 	0xFE00h ~ 0xFE55h	RTL8723 SDIO Configuration */
+/*	0xFE00h ~ 0xFE55h	RTL8723 SDIO Configuration */
 /*  */
 /*  */
 
@@ -2086,7 +2086,7 @@ Current IOREG MAP
 #define	USB_C2H_SEQ_OFFSET		1
 #define	USB_C2H_EVENT_OFFSET		2
 /*  */
-/* 	General definitions */
+/*	General definitions */
 /*  */
 
 

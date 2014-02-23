@@ -26,8 +26,8 @@
 /* define   MAX_JOIN_TIMEOUT	2500 */
 #define   MAX_JOIN_TIMEOUT	6500
 
-/* 	Commented by Albert 20101105 */
-/* 	Increase the scanning timeout because of increasing the SURVEY_TO value. */
+/*	Commented by Albert 20101105 */
+/*	Increase the scanning timeout because of increasing the SURVEY_TO value. */
 
 #define		SCANNING_TIMEOUT	8000
 
@@ -114,10 +114,10 @@ enum  _BAND
 
 enum SCAN_RESULT_TYPE
 {
-	SCAN_RESULT_P2P_ONLY = 0,		/* 	Will return all the P2P devices. */
-	SCAN_RESULT_ALL = 1,			/* 	Will return all the scanned device, include AP. */
-	SCAN_RESULT_WFD_TYPE = 2		/* 	Will just return the correct WFD device. */
-									/* 	If this device is Miracast sink device, it will just return all the Miracast source devices. */
+	SCAN_RESULT_P2P_ONLY = 0,		/*	Will return all the P2P devices. */
+	SCAN_RESULT_ALL = 1,			/*	Will return all the scanned device, include AP. */
+	SCAN_RESULT_WFD_TYPE = 2		/*	Will just return the correct WFD device. */
+									/*	If this device is Miracast sink device, it will just return all the Miracast source devices. */
 };
 
 /*
@@ -171,69 +171,69 @@ struct tx_invite_req_info{
 	u8					ssidlen;
 	u8					go_bssid[ ETH_ALEN ];
 	u8					peer_macaddr[ ETH_ALEN ];
-	u8					operating_ch;	/* 	This information will be set by using the p2p_set op_ch=x */
-	u8					peer_ch;		/* 	The listen channel for peer P2P device */
+	u8					operating_ch;	/*	This information will be set by using the p2p_set op_ch=x */
+	u8					peer_ch;		/*	The listen channel for peer P2P device */
 
 };
 
 struct tx_invite_resp_info{
-	u8					token;	/* 	Used to record the dialog token of p2p invitation request frame. */
+	u8					token;	/*	Used to record the dialog token of p2p invitation request frame. */
 };
 
 #ifdef CONFIG_8723AU_P2P
 
 struct wifi_display_info{
-	u16							wfd_enable;			/* 	Eanble/Disable the WFD function. */
-	u16							rtsp_ctrlport;		/* 	TCP port number at which the this WFD device listens for RTSP messages */
-	u16							peer_rtsp_ctrlport;	/* 	TCP port number at which the peer WFD device listens for RTSP messages */
-													/* 	This filed should be filled when receiving the gropu negotiation request */
+	u16							wfd_enable;			/*	Eanble/Disable the WFD function. */
+	u16							rtsp_ctrlport;		/*	TCP port number at which the this WFD device listens for RTSP messages */
+	u16							peer_rtsp_ctrlport;	/*	TCP port number at which the peer WFD device listens for RTSP messages */
+													/*	This filed should be filled when receiving the gropu negotiation request */
 
-	u8							peer_session_avail;	/* 	WFD session is available or not for the peer wfd device. */
-													/* 	This variable will be set when sending the provisioning discovery request to peer WFD device. */
-													/* 	And this variable will be reset when it is read by using the iwpriv p2p_get wfd_sa command. */
+	u8							peer_session_avail;	/*	WFD session is available or not for the peer wfd device. */
+													/*	This variable will be set when sending the provisioning discovery request to peer WFD device. */
+													/*	And this variable will be reset when it is read by using the iwpriv p2p_get wfd_sa command. */
 	u8							ip_address[4];
 	u8							peer_ip_address[4];
-	u8							wfd_pc;				/* 	WFD preferred connection */
-													/* 	0 -> Prefer to use the P2P for WFD connection on peer side. */
-													/* 	1 -> Prefer to use the TDLS for WFD connection on peer side. */
+	u8							wfd_pc;				/*	WFD preferred connection */
+													/*	0 -> Prefer to use the P2P for WFD connection on peer side. */
+													/*	1 -> Prefer to use the TDLS for WFD connection on peer side. */
 
-	u8							wfd_device_type;	/* 	WFD Device Type */
-													/* 	0 -> WFD Source Device */
-													/* 	1 -> WFD Primary Sink Device */
-	enum	SCAN_RESULT_TYPE	scan_result_type;	/* 	Used when P2P is enable. This parameter will impact the scan result. */
+	u8							wfd_device_type;	/*	WFD Device Type */
+													/*	0 -> WFD Source Device */
+													/*	1 -> WFD Primary Sink Device */
+	enum	SCAN_RESULT_TYPE	scan_result_type;	/*	Used when P2P is enable. This parameter will impact the scan result. */
 };
 #endif /* CONFIG_8723AU_P2P */
 
 struct tx_provdisc_req_info{
-	u16					wps_config_method_request;	/* 	Used when sending the provisioning request frame */
-	u16					peer_channel_num[2];		/* 	The channel number which the receiver stands. */
+	u16					wps_config_method_request;	/*	Used when sending the provisioning request frame */
+	u16					peer_channel_num[2];		/*	The channel number which the receiver stands. */
 	struct ndis_802_11_ssid	ssid;
-	u8					peerDevAddr[ ETH_ALEN ];		/* 	Peer device address */
-	u8					peerIFAddr[ ETH_ALEN ];		/* 	Peer interface address */
-	u8					benable;					/* 	This provision discovery request frame is trigger to send or not */
+	u8					peerDevAddr[ ETH_ALEN ];		/*	Peer device address */
+	u8					peerIFAddr[ ETH_ALEN ];		/*	Peer interface address */
+	u8					benable;					/*	This provision discovery request frame is trigger to send or not */
 };
 
 struct rx_provdisc_req_info{	/* When peer device issue prov_disc_req first, we should store the following informations */
-	u8					peerDevAddr[ ETH_ALEN ];		/* 	Peer device address */
-	u8					strconfig_method_desc_of_prov_disc_req[4];	/* 	description for the config method located in the provisioning discovery request frame. */
-																	/* 	The UI must know this information to know which config method the remote p2p device is requiring. */
+	u8					peerDevAddr[ ETH_ALEN ];		/*	Peer device address */
+	u8					strconfig_method_desc_of_prov_disc_req[4];	/*	description for the config method located in the provisioning discovery request frame. */
+																	/*	The UI must know this information to know which config method the remote p2p device is requiring. */
 };
 
 struct tx_nego_req_info{
-	u16					peer_channel_num[2];		/* 	The channel number which the receiver stands. */
-	u8					peerDevAddr[ ETH_ALEN ];		/* 	Peer device address */
-	u8					benable;					/* 	This negoitation request frame is trigger to send or not */
+	u16					peer_channel_num[2];		/*	The channel number which the receiver stands. */
+	u8					peerDevAddr[ ETH_ALEN ];		/*	Peer device address */
+	u8					benable;					/*	This negoitation request frame is trigger to send or not */
 };
 
 struct group_id_info{
 	u8 go_device_addr[ETH_ALEN]; /*The GO's device address of P2P group */
-	
+
 	u8 ssid[IEEE80211_MAX_SSID_LEN]; /* The SSID of this P2P group */
 };
 
 struct scan_limit_info{
-	u8					scan_op_ch_only;			/* 	When this flag is set, the driver should just scan the operation channel */
-	u8					operation_ch[2];				/* 	Store the operation channel of invitation request frame */
+	u8					scan_op_ch_only;			/*	When this flag is set, the driver should just scan the operation channel */
+	u8					operation_ch[2];				/*	Store the operation channel of invitation request frame */
 };
 
 struct cfg80211_wifidirect_info {
@@ -250,74 +250,74 @@ struct wifidirect_info{
 	struct timer_list		find_phase_timer;
 	struct timer_list		restore_p2p_state_timer;
 
-	/* 	Used to do the scanning. After confirming the peer is availalble, the driver transmits the P2P frame to peer. */
+	/*	Used to do the scanning. After confirming the peer is availalble, the driver transmits the P2P frame to peer. */
 	struct timer_list		pre_tx_scan_timer;
 	struct timer_list		reset_ch_sitesurvey;
-	struct timer_list		reset_ch_sitesurvey2;	/* 	Just for resetting the scan limit function by using p2p nego */
+	struct timer_list		reset_ch_sitesurvey2;	/*	Just for resetting the scan limit function by using p2p nego */
 	struct tx_provdisc_req_info	tx_prov_disc_info;
 	struct rx_provdisc_req_info rx_prov_disc_info;
 	struct tx_invite_req_info	invitereq_info;
-	struct profile_info			profileinfo[ P2P_MAX_PERSISTENT_GROUP_NUM ];	/* 	Store the profile information of persistent group */
+	struct profile_info			profileinfo[ P2P_MAX_PERSISTENT_GROUP_NUM ];	/*	Store the profile information of persistent group */
 	struct tx_invite_resp_info	inviteresp_info;
 	struct tx_nego_req_info	nego_req_info;
-	struct group_id_info		groupid_info;	/* 	Store the group id information when doing the group negotiation handshake. */
-	struct scan_limit_info		rx_invitereq_info;	/* 	Used for get the limit scan channel from the Invitation procedure */
-	struct scan_limit_info		p2p_info;		/* 	Used for get the limit scan channel from the P2P negotiation handshake */
+	struct group_id_info		groupid_info;	/*	Store the group id information when doing the group negotiation handshake. */
+	struct scan_limit_info		rx_invitereq_info;	/*	Used for get the limit scan channel from the Invitation procedure */
+	struct scan_limit_info		p2p_info;		/*	Used for get the limit scan channel from the P2P negotiation handshake */
 #ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info		*wfd_info;
 #endif
 	enum P2P_ROLE			role;
 	enum P2P_STATE			pre_p2p_state;
 	enum P2P_STATE			p2p_state;
-	u8						device_addr[ETH_ALEN];	/* 	The device address should be the mac address of this device. */
+	u8						device_addr[ETH_ALEN];	/*	The device address should be the mac address of this device. */
 	u8						interface_addr[ETH_ALEN];
 	u8						social_chan[4];
 	u8						listen_channel;
 	u8						operating_channel;
-	u8						listen_dwell;		/* 	This value should be between 1 and 3 */
+	u8						listen_dwell;		/*	This value should be between 1 and 3 */
 	u8						support_rate[8];
 	u8						p2p_wildcard_ssid[P2P_WILDCARD_SSID_LEN];
-	u8						intent;		/* 	should only include the intent value. */
+	u8						intent;		/*	should only include the intent value. */
 	u8						p2p_peer_interface_addr[ ETH_ALEN ];
 	u8						p2p_peer_device_addr[ ETH_ALEN ];
-	u8						peer_intent;	/* 	Included the intent value and tie breaker value. */
-	u8						device_name[ WPS_MAX_DEVICE_NAME_LEN ];	/* 	Device name for displaying on searching device screen */
+	u8						peer_intent;	/*	Included the intent value and tie breaker value. */
+	u8						device_name[ WPS_MAX_DEVICE_NAME_LEN ];	/*	Device name for displaying on searching device screen */
 	u8						device_name_len;
-	u8						profileindex;	/* 	Used to point to the index of profileinfo array */
+	u8						profileindex;	/*	Used to point to the index of profileinfo array */
 	u8						peer_operating_ch;
 	u8						find_phase_state_exchange_cnt;
-	u16						device_password_id_for_nego;	/* 	The device password ID for group negotation */
+	u16						device_password_id_for_nego;	/*	The device password ID for group negotation */
 	u8						negotiation_dialog_token;
-	/* 	SSID information for group negotitation */
+	/*	SSID information for group negotitation */
 	u8 nego_ssid[IEEE80211_MAX_SSID_LEN];
 	u8 nego_ssidlen;
 	u8 p2p_group_ssid[IEEE80211_MAX_SSID_LEN];
 	u8 p2p_group_ssid_len;
-	u8						persistent_supported;		/* 	Flag to know the persistent function should be supported or not. */
-														/* 	In the Sigma test, the Sigma will provide this enable from the sta_set_p2p CAPI. */
-														/* 	0: disable */
-														/* 	1: enable */
-	u8						session_available;			/* 	Flag to set the WFD session available to enable or disable "by Sigma" */
-														/* 	In the Sigma test, the Sigma will disable the session available by using the sta_preset CAPI. */
-														/* 	0: disable */
-														/* 	1: enable */
+	u8						persistent_supported;		/*	Flag to know the persistent function should be supported or not. */
+														/*	In the Sigma test, the Sigma will provide this enable from the sta_set_p2p CAPI. */
+														/*	0: disable */
+														/*	1: enable */
+	u8						session_available;			/*	Flag to set the WFD session available to enable or disable "by Sigma" */
+														/*	In the Sigma test, the Sigma will disable the session available by using the sta_preset CAPI. */
+														/*	0: disable */
+														/*	1: enable */
 
-	u8						wfd_tdls_enable;			/* 	Flag to enable or disable the TDLS by WFD Sigma */
-														/* 	0: disable */
-														/* 	1: enable */
-	u8						wfd_tdls_weaksec;			/* 	Flag to enable or disable the weak security function for TDLS by WFD Sigma */
-														/* 	0: disable */
-														/* 	In this case, the driver can't issue the tdsl setup request frame. */
-														/* 	1: enable */
-														/* 	In this case, the driver can issue the tdls setup request frame */
-														/* 	even the current security is weak security. */
+	u8						wfd_tdls_enable;			/*	Flag to enable or disable the TDLS by WFD Sigma */
+														/*	0: disable */
+														/*	1: enable */
+	u8						wfd_tdls_weaksec;			/*	Flag to enable or disable the weak security function for TDLS by WFD Sigma */
+														/*	0: disable */
+														/*	In this case, the driver can't issue the tdsl setup request frame. */
+														/*	1: enable */
+														/*	In this case, the driver can issue the tdls setup request frame */
+														/*	even the current security is weak security. */
 
-	enum	P2P_WPSINFO		ui_got_wps_info;			/* 	This field will store the WPS value (PIN value or PBC) that UI had got from the user. */
-	u16						supported_wps_cm;			/* 	This field describes the WPS config method which this driver supported. */
-														/* 	The value should be the combination of config method defined in page104 of WPS v2.0 spec. */
-	uint						channel_list_attr_len;		/* 	This field will contain the length of body of P2P Channel List attribute of group negotitation response frame. */
-	u8						channel_list_attr[100];		/* 	This field will contain the body of P2P Channel List attribute of group negotitation response frame. */
-														/* 	We will use the channel_cnt and channel_list fields when constructing the group negotitation confirm frame. */
+	enum	P2P_WPSINFO		ui_got_wps_info;			/*	This field will store the WPS value (PIN value or PBC) that UI had got from the user. */
+	u16						supported_wps_cm;			/*	This field describes the WPS config method which this driver supported. */
+														/*	The value should be the combination of config method defined in page104 of WPS v2.0 spec. */
+	uint						channel_list_attr_len;		/*	This field will contain the length of body of P2P Channel List attribute of group negotitation response frame. */
+	u8						channel_list_attr[100];		/*	This field will contain the body of P2P Channel List attribute of group negotitation response frame. */
+														/*	We will use the channel_cnt and channel_list fields when constructing the group negotitation confirm frame. */
 #ifdef CONFIG_8723AU_P2P
 	enum P2P_PS_MODE		p2p_ps_mode; /*  indicate p2p ps mode */
 	enum P2P_PS_STATE		p2p_ps_state; /*  indicate p2p ps state */

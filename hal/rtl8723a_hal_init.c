@@ -285,8 +285,8 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 
 
 /*  */
-/* 	Description: */
-/* 		Download 8192C firmware code. */
+/*	Description: */
+/*		Download 8192C firmware code. */
 /*  */
 /*  */
 s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
@@ -446,7 +446,7 @@ _func_exit_;
 }
 
 /*  */
-/* 				Efuse related code */
+/*				Efuse related code */
 /*  */
 static u8
 hal_EfuseSwitchToBank(
@@ -2055,9 +2055,9 @@ void rtl8723a_init_default_value(struct rtw_adapter * padapter)
 
 	/*  init dm default value */
 	pdmpriv->TM_Trigger = 0;/* for IQK */
-/* 	pdmpriv->binitialized = false; */
-/* 	pdmpriv->prv_traffic_idx = 3; */
-/* 	pdmpriv->initialize = 0; */
+/*	pdmpriv->binitialized = false; */
+/*	pdmpriv->prv_traffic_idx = 3; */
+/*	pdmpriv->initialize = 0; */
 
 	pdmpriv->ThermalValue_HP_index = 0;
 	for (i=0; i<HP_THERMAL_NUM; i++)
@@ -2198,7 +2198,7 @@ s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 static void _DisableGPIO(struct rtw_adapter *	padapter)
 {
 /***************************************
-j. GPIO_PIN_CTRL 0x44[31:0]=0x000		
+j. GPIO_PIN_CTRL 0x44[31:0]=0x000
 k.Value = GPIO_PIN_CTRL[7:0]
 l. GPIO_PIN_CTRL 0x44[31:0] = 0x00FF0000 | (value <<8); write external PIN level
 m. GPIO_MUXCFG 0x42 [15:0] = 0x0780
@@ -2262,7 +2262,7 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		reset BB state machine
 
 	/*  2010/08/12 MH We need to set BB/GLBAL reset to save power for SS mode. */
 
-/* 	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n")); */
+/*	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n")); */
 }
 
 static void _DisableRFAFEAndResetBB(struct rtw_adapter * padapter)
@@ -2321,14 +2321,14 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWit
 						/*  2010/08/25 For test only We keep on reset 5051 to prevent fail. */
 						/* rtw_write8(padapter, REG_HMETFR+3, 0x20);8051 reset by self */
 					}
-/* 					RT_ASSERT((retry_cnts < 100), ("8051 reset failed!\n")); */
+/*					RT_ASSERT((retry_cnts < 100), ("8051 reset failed!\n")); */
 
 					if (retry_cnts >= 100)
 					{
 						/*  if 8051 reset fail we trigger GPIO 0 for LA */
 						/* rtw_write32(	padapter, */
-						/* 						REG_GPIO_PIN_CTRL, */
-						/* 						0x00010100); */
+						/*						REG_GPIO_PIN_CTRL, */
+						/*						0x00010100); */
 						/*  2010/08/31 MH According to Filen's info, if 8051 reset fail, reset MAC directly. */
 						rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x50);	/* Reset MAC and Enable 8051 */
 						mdelay(10);
@@ -2396,7 +2396,7 @@ static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 		value8 = rtw_read8(padapter, REG_LDOV12D_CTRL);
 		value8 &= (~LDV12_EN);
 		rtw_write8(padapter, REG_LDOV12D_CTRL, value8);
-/* 		RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8)); */
+/*		RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8)); */
 	}
 
 	/*****************************
@@ -2488,20 +2488,20 @@ Hal_InitPGData(
 	u8			*PROMContent)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
-/* 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
+/*	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u32			i;
 	u16			value16;
 
 	if(false == pEEPROM->bautoload_fail_flag)
 	{ /*  autoload OK. */
-/* 		if (IS_BOOT_FROM_EEPROM(padapter)) */
+/*		if (IS_BOOT_FROM_EEPROM(padapter)) */
 		if (true == pEEPROM->EepromOrEfuse)
 		{
 			/*  Read all Content from EEPROM or EFUSE. */
 			for(i = 0; i < HWSET_MAX_SIZE; i += 2)
 			{
-/* 				value16 = EF2Byte(ReadEEprom(pAdapter, (u16) (i>>1))); */
-/* 				*((u16*)(&PROMContent[i])) = value16; */
+/*				value16 = EF2Byte(ReadEEprom(pAdapter, (u16) (i>>1))); */
+/*				*((u16*)(&PROMContent[i])) = value16; */
 			}
 		}
 		else
@@ -2514,7 +2514,7 @@ Hal_InitPGData(
 	else
 	{/* autoload fail */
 		RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("AutoLoad Fail reported from CR9346!!\n"));
-/* 		pHalData->AutoloadFailFlag = true; */
+/*		pHalData->AutoloadFailFlag = true; */
 		/* update to default value 0xFF */
 		if (false == pEEPROM->EepromOrEfuse)
 			EFUSE_ShadowMapUpdate(padapter, EFUSE_WIFI, false);
@@ -2529,7 +2529,7 @@ Hal_EfuseParseIDCode(
 	)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
-/* 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
+/*	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u16			EEPROMId;
 
 
@@ -3096,7 +3096,7 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 	}
 	else if (pxmitframe->frame_tag == MGNT_FRAMETAG)
 	{
-/* 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_, ("%s: MGNT_FRAMETAG\n", __FUNCTION__)); */
+/*		RT_TRACE(_module_hal_xmit_c_, _drv_notice_, ("%s: MGNT_FRAMETAG\n", __FUNCTION__)); */
 
 		ptxdesc->macid = pattrib->mac_id; /*  CAM_ID(MAC_ID) */
 		ptxdesc->qsel = pattrib->qsel;
@@ -3187,8 +3187,8 @@ void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 
 /*  */
 /*  Description: In normal chip, we should send some packet to Hw which will be used by Fw */
-/* 			in FW LPS mode. The function is to fill the Tx descriptor of this packets, then */
-/* 			Fw can tell Hw to send these packet derectly. */
+/*			in FW LPS mode. The function is to fill the Tx descriptor of this packets, then */
+/*			Fw can tell Hw to send these packet derectly. */
 /*  Added by tynli. 2009.10.15. */
 /*  */
 void rtl8723a_fill_fake_txdesc(
@@ -3583,7 +3583,7 @@ _func_enter_;
 					break;
 				case 2:
 					/*  sta add event callback */
-/* 					BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
+/*					BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
 					break;
 			}
 #endif

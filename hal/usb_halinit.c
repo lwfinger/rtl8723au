@@ -235,7 +235,7 @@ static u8 _LLTRead(
 
 /*  */
 /*  */
-/* 	MAC init functions */
+/*	MAC init functions */
 /*  */
 /*  */
 static void
@@ -1090,7 +1090,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 		goto exit;
 	}
 
-/* 	pHalData->bMACFuncEnable = false; */
+/*	pHalData->bMACFuncEnable = false; */
 	/*  Check if MAC has already power on. by tynli. 2011.05.27. */
 	val8 = rtw_read8(Adapter, REG_CR);
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_,
@@ -1203,8 +1203,8 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	/*  2011/11/15 MH Add for tx power by rate fine tune. We need to call the function after BB config. */
 	/*  Because the tx power by rate table is inited in BB config. */
 	/*  */
-/* 	HAL_AdjustPwrIndexDiffRateOffset(Adapter); */
-/* 	HAL_AdjustPwrIndexbyRegistry(Adapter); */
+/*	HAL_AdjustPwrIndexDiffRateOffset(Adapter); */
+/*	HAL_AdjustPwrIndexbyRegistry(Adapter); */
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 #if (HAL_RF_ENABLE == 1)
@@ -1359,7 +1359,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 #endif /* USB_INTERFERENCE_ISSUE */
 
 /* HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS); */
-/* 	_InitPABias(Adapter); */
+/*	_InitPABias(Adapter); */
 
 #ifdef CONFIG_8723AU_BT_COEXIST
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
@@ -1535,10 +1535,10 @@ static void phy_SsPwrSwitch92CU(
 					/*  Disable RF and BB only for SelectSuspend. */
 
 					/*  1. Set BB/RF to shutdown. */
-					/* 	(1) Reg878[5:3]= 0	 RF rx_code for preamble power saving */
-					/* 	(2)Reg878[21:19]= 0	Turn off RF-B */
-					/* 	(3) RegC04[7:4]= 0	 turn off all paths for packet detection */
-					/* 	(4) Reg800[1] = 1	 enable preamble power saving */
+					/*	(1) Reg878[5:3]= 0	 RF rx_code for preamble power saving */
+					/*	(2)Reg878[21:19]= 0	Turn off RF-B */
+					/*	(3) RegC04[7:4]= 0	 turn off all paths for packet detection */
+					/*	(4) Reg800[1] = 1	 enable preamble power saving */
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF0] = PHY_QueryBBReg(Adapter, rFPGA0_XAB_RFParameter, bMaskDWord);
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF1] = PHY_QueryBBReg(Adapter, rOFDM0_TRxPathEnable, bMaskDWord);
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF2] = PHY_QueryBBReg(Adapter, rFPGA0_RFMOD, bMaskDWord);
@@ -1599,10 +1599,10 @@ static void phy_SsPwrSwitch92CU(
 					/*  Disable RF and BB only for SelectSuspend. */
 
 					/*  1. Set BB/RF to shutdown. */
-					/* 	(1) Reg878[5:3]= 0	 RF rx_code for preamble power saving */
-					/* 	(2)Reg878[21:19]= 0	Turn off RF-B */
-					/* 	(3) RegC04[7:4]= 0	 turn off all paths for packet detection */
-					/* 	(4) Reg800[1] = 1	 enable preamble power saving */
+					/*	(1) Reg878[5:3]= 0	 RF rx_code for preamble power saving */
+					/*	(2)Reg878[21:19]= 0	Turn off RF-B */
+					/*	(3) RegC04[7:4]= 0	 turn off all paths for packet detection */
+					/*	(4) Reg800[1] = 1	 enable preamble power saving */
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF0] = PHY_QueryBBReg(Adapter, rFPGA0_XAB_RFParameter, bMaskDWord);
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF1] = PHY_QueryBBReg(Adapter, rOFDM0_TRxPathEnable, bMaskDWord);
 					Adapter->pwrctrlpriv.PS_BBRegBackup[PSBBREG_RF2] = PHY_QueryBBReg(Adapter, rFPGA0_RFMOD, bMaskDWord);
@@ -1676,7 +1676,7 @@ _DisableGPIO(
 	)
 {
 /***************************************
-j. GPIO_PIN_CTRL 0x44[31:0]=0x000	
+j. GPIO_PIN_CTRL 0x44[31:0]=0x000
 k. Value = GPIO_PIN_CTRL[7:0]
 l.  GPIO_PIN_CTRL 0x44[31:0] = 0x00FF0000 | (value <<8); write external PIN level
 m. GPIO_MUXCFG 0x42 [15:0] = 0x0780
@@ -1826,7 +1826,7 @@ _SetUsbSuspend(
 static void CardDisableRTL8723U(struct rtw_adapter * Adapter)
 {
 	u8		u1bTmp;
-/* 	PMGNT_INFO	pMgntInfo	= &(Adapter->MgntInfo); */
+/*	PMGNT_INFO	pMgntInfo	= &(Adapter->MgntInfo); */
 
 	DBG_8723A("CardDisableRTL8723U\n");
 
@@ -1837,7 +1837,7 @@ static void CardDisableRTL8723U(struct rtw_adapter * Adapter)
 	/*  2. 0x1F[7:0] = 0		turn off RF */
 	rtw_write8(Adapter, REG_RF_CTRL, 0x00);
 
-	/* 	==== Reset digital sequence   ====== */
+	/*	==== Reset digital sequence   ====== */
 	if((rtw_read8(Adapter, REG_MCUFWDL)&BIT7) &&
 		Adapter->bFWReady) /* 8051 RAM code */
 	{
@@ -1851,8 +1851,8 @@ static void CardDisableRTL8723U(struct rtw_adapter * Adapter)
 	/*  g.	MCUFWDL 0x80[1:0]=0				reset MCU ready status */
 	rtw_write8(Adapter, REG_MCUFWDL, 0x00);
 
-	/* 	==== Reset digital sequence end ====== */
-/* 	if((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW) ) */
+	/*	==== Reset digital sequence end ====== */
+/*	if((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW) ) */
 	{
 		/*  Card disable power action flow */
 		HalPwrSeqCmdParsing(Adapter, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_USB_MSK, rtl8723A_card_disable_flow);
@@ -1982,7 +1982,7 @@ _GetChannelGroup(
 
 /*  */
 /*  */
-/* 	EEPROM/EFUSE Content Parsing */
+/*	EEPROM/EFUSE Content Parsing */
 /*  */
 /*  */
 static void
@@ -2018,7 +2018,7 @@ _ReadIDs(
 	if((pHalData->EEPROMVID == 0x103C) || (pHalData->EEPROMVID == 0x1629))/*  HP Lite-On for RTL8188CUS Slim Combo. */
 		pHalData->CustomerID = RT_CID_819x_HP;
 
-	/* 	Decide CustomerID according to VID/DID or EEPROM */
+	/*	Decide CustomerID according to VID/DID or EEPROM */
 	switch(pHalData->EEPROMCustomerID) {
 	case EEPROM_CID_DEFAULT:
 		if((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3308))
@@ -2285,8 +2285,8 @@ readAdapterInfo(
 	rtl8723a_EfuseParseChnlPlan(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	Hal_EfuseParseThermalMeter_8723A(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	_ReadLEDSetting(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
-/* 	_ReadRFSetting(Adapter, PROMContent, pEEPROM->bautoload_fail_flag); */
-/* 	_ReadPSSetting(Adapter, PROMContent, pEEPROM->bautoload_fail_flag); */
+/*	_ReadRFSetting(Adapter, PROMContent, pEEPROM->bautoload_fail_flag); */
+/*	_ReadPSSetting(Adapter, PROMContent, pEEPROM->bautoload_fail_flag); */
 	Hal_EfuseParseAntennaDiversity(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 
 	Hal_EfuseParseEEPROMVer(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
@@ -2302,7 +2302,7 @@ readAdapterInfo(
 
 	/* hal_CustomizedBehavior_8723U(Adapter); */
 
-/* 	Adapter->bDongle = (PROMContent[EEPROM_EASY_REPLACEMENT] == 1)? 0: 1; */
+/*	Adapter->bDongle = (PROMContent[EEPROM_EASY_REPLACEMENT] == 1)? 0: 1; */
 	DBG_8723A("%s(): REPLACEMENT = %x\n",__FUNCTION__,padapter->bDongle);
 }
 
@@ -2339,10 +2339,10 @@ _InitOtherVariable(
 
 
 	/* if(Adapter->bInHctTest){ */
-	/* 	pMgntInfo->PowerSaveControl.bInactivePs = false; */
-	/* 	pMgntInfo->PowerSaveControl.bIPSModeBackup = false; */
-	/* 	pMgntInfo->PowerSaveControl.bLeisurePs = false; */
-	/* 	pMgntInfo->keepAliveLevel = 0; */
+	/*	pMgntInfo->PowerSaveControl.bInactivePs = false; */
+	/*	pMgntInfo->PowerSaveControl.bIPSModeBackup = false; */
+	/*	pMgntInfo->PowerSaveControl.bLeisurePs = false; */
+	/*	pMgntInfo->keepAliveLevel = 0; */
 	/*  */
 
 
@@ -2370,13 +2370,13 @@ static void _ReadSilmComboMode(struct rtw_adapter *Adapter)
 }
 
 /*  */
-/* 	Description: */
-/* 		We should set Efuse cell selection to WiFi cell in default. */
+/*	Description: */
+/*		We should set Efuse cell selection to WiFi cell in default. */
 /*  */
-/* 	Assumption: */
-/* 		PASSIVE_LEVEL */
+/*	Assumption: */
+/*		PASSIVE_LEVEL */
 /*  */
-/* 	Added by Roger, 2010.11.23. */
+/*	Added by Roger, 2010.11.23. */
 /*  */
 static void hal_EfuseCellSel(
 	struct rtw_adapter *	Adapter
@@ -2493,8 +2493,8 @@ _func_exit_;
 }
 
 /*  */
-/* 	Description: */
-/* 		Query setting of specified variable. */
+/*	Description: */
+/*		Query setting of specified variable. */
 /*  */
 static u8 GetHalDefVar8192CUsb(
 	struct rtw_adapter *				Adapter,
@@ -2552,8 +2552,8 @@ static u8 GetHalDefVar8192CUsb(
 
 
 /*  */
-/* 	Description: */
-/* 		Change default setting of specified variable. */
+/*	Description: */
+/*		Change default setting of specified variable. */
 /*  */
 static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 		     HAL_DEF_VARIABLE eVariable, void *pValue)

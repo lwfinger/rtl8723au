@@ -239,7 +239,7 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 			if(PWDB_ALL > 25 && PWDB_ALL <= 60)
 				PWDB_ALL += 6;
 			/* else if (PWDB_ALL <= 25) */
-			/* 	PWDB_ALL += 8; */
+			/*	PWDB_ALL += 8; */
 		}
 		else/* Modification for int-LNA board */
 		{

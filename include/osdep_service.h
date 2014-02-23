@@ -52,7 +52,7 @@
 #include <linux/kthread.h>
 
 
-/* 	#include <linux/ieee80211.h> */
+/*	#include <linux/ieee80211.h> */
 #include <net/ieee80211_radiotap.h>
 #include <net/cfg80211.h>
 #include <linux/usb.h>

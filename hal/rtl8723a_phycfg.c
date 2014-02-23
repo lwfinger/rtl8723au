@@ -274,8 +274,8 @@ phy_RFSerialRead(
 	/*  2009/06/17 MH We can not execute IO for power save or other accident mode. */
 	/* if(RT_CANNOT_IO(Adapter)) */
 	/*  */
-	/* 	RTPRINT(FPHY, PHY_RFR, ("phy_RFSerialRead return all one\n")); */
-	/* 	return	0xFFFFFFFF; */
+	/*	RTPRINT(FPHY, PHY_RFR, ("phy_RFSerialRead return all one\n")); */
+	/*	return	0xFFFFFFFF; */
 	/*  */
 
 	/*  For 92S LSSI Read RFLSSIRead */
@@ -381,8 +381,8 @@ phy_RFSerialWrite(
 	/*  2009/06/17 MH We can not execute IO for power save or other accident mode. */
 	/* if(RT_CANNOT_IO(Adapter)) */
 	/*  */
-	/* 	RTPRINT(FPHY, PHY_RFW, ("phy_RFSerialWrite stop\n")); */
-	/* 	return; */
+	/*	RTPRINT(FPHY, PHY_RFW, ("phy_RFSerialWrite stop\n")); */
+	/*	return; */
 	/*  */
 
 	Offset &= 0x3f;
@@ -462,7 +462,7 @@ PHY_QueryRFReg(
 *			RF_RADIO_PATH_E	eRFPath,	Radio path of A/B/C/D
 *			u32			RegAddr, The target address to be modified
 *			u32			BitMask		The target bit position in the target address
-*										to be modified 
+*										to be modified
 *			u32			Data			The new register Data in the target bit position
 *										of the target address
 *
@@ -763,97 +763,97 @@ storePwrIndexDiffRateOffset(
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][0] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][0] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][0])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][0])); */
 	}
 	if(RegAddr == rTxAGC_A_Rate54_24)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][1] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][1] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][1])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][1])); */
 	}
 	if(RegAddr == rTxAGC_A_CCK1_Mcs32)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][6] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][6] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][6])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][6])); */
 	}
 	if(RegAddr == rTxAGC_B_CCK11_A_CCK2_11 && BitMask == 0xffffff00)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][7] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][7] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][7])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][7])); */
 	}
 	if(RegAddr == rTxAGC_A_Mcs03_Mcs00)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][2] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][2] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][2])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][2])); */
 	}
 	if(RegAddr == rTxAGC_A_Mcs07_Mcs04)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][3] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][3] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][3])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][3])); */
 	}
 	if(RegAddr == rTxAGC_A_Mcs11_Mcs08)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][4] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][4] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][4])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][4])); */
 	}
 	if(RegAddr == rTxAGC_A_Mcs15_Mcs12)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][5] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][5] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][5])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][5])); */
 	}
 	if(RegAddr == rTxAGC_B_Rate18_06)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][8] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][8] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][8])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][8])); */
 	}
 	if(RegAddr == rTxAGC_B_Rate54_24)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][9] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][9] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][9])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][9])); */
 	}
 	if(RegAddr == rTxAGC_B_CCK1_55_Mcs32)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][14] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][14] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][14])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][14])); */
 	}
 	if(RegAddr == rTxAGC_B_CCK11_A_CCK2_11 && BitMask == 0x000000ff)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][15] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][15] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][15])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][15])); */
 	}
 	if(RegAddr == rTxAGC_B_Mcs03_Mcs00)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][10] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][10] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][10])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][10])); */
 	}
 	if(RegAddr == rTxAGC_B_Mcs07_Mcs04)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][11] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][11] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][11])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][11])); */
 	}
 	if(RegAddr == rTxAGC_B_Mcs11_Mcs08)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][12] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][12] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][12])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][12])); */
 	}
 	if(RegAddr == rTxAGC_B_Mcs15_Mcs12)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][13] = Data;
 		/* RT_TRACE(COMP_INIT, DBG_TRACE, ("MCSTxPowerLevelOriginalOffset[%d][13] = 0x%lx\n", pHalData->pwrGroupCnt, */
-		/* 	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][13])); */
+		/*	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][13])); */
 		pHalData->pwrGroupCnt++;
 	}
 }
@@ -1231,11 +1231,11 @@ PHY_CheckBBAndRFOK(
 }
 
 /*  */
-/* 	Description: */
-/* 		Map dBm into Tx power index according to */
-/* 		current HW model, for example, RF and PA, and */
-/* 		current wireless mode. */
-/* 	By Bruce, 2008-01-29. */
+/*	Description: */
+/*		Map dBm into Tx power index according to */
+/*		current HW model, for example, RF and PA, and */
+/*		current wireless mode. */
+/*	By Bruce, 2008-01-29. */
 /*  */
 static	u8
 phy_DbmToTxPwrIdx(
@@ -1252,7 +1252,7 @@ phy_DbmToTxPwrIdx(
 	/*  Tested by MP, we found that CCK Index 0 equals to 8dbm, OFDM legacy equals to */
 	/*  3dbm, and OFDM HT equals to 0dbm repectively. */
 	/*  Note: */
-	/* 	The mapping may be different by different NICs. Do not use this formula for what needs accurate result. */
+	/*	The mapping may be different by different NICs. Do not use this formula for what needs accurate result. */
 	/*  By Bruce, 2008-01-29. */
 	/*  */
 	switch(WirelessMode)
@@ -1287,11 +1287,11 @@ phy_DbmToTxPwrIdx(
 }
 
 /*  */
-/* 	Description: */
-/* 		Map Tx power index into dBm according to */
-/* 		current HW model, for example, RF and PA, and */
-/* 		current wireless mode. */
-/* 	By Bruce, 2008-01-29. */
+/*	Description: */
+/*		Map Tx power index into dBm according to */
+/*		current HW model, for example, RF and PA, and */
+/*		current wireless mode. */
+/*	By Bruce, 2008-01-29. */
 /*  */
 int
 phy_TxPwrIdxToDbm(
@@ -1306,7 +1306,7 @@ phy_TxPwrIdxToDbm(
 	/*  */
 	/*  Tested by MP, we found that CCK Index 0 equals to -7dbm, OFDM legacy equals to -8dbm. */
 	/*  Note: */
-	/* 	The mapping may be different by different NICs. Do not use this formula for what needs accurate result. */
+	/*	The mapping may be different by different NICs. Do not use this formula for what needs accurate result. */
 	/*  By Bruce, 2008-01-29. */
 	/*  */
 	switch(WirelessMode)
@@ -1414,7 +1414,7 @@ _PHY_SetBWMode92C(
 	struct rtw_adapter *	Adapter
 )
 {
-/* 	struct rtw_adapter *			Adapter = (struct rtw_adapter *)pTimer->Adapter; */
+/*	struct rtw_adapter *			Adapter = (struct rtw_adapter *)pTimer->Adapter; */
 	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8				regBwOpMode;
 	u8				regRRSR_RSC;
@@ -1564,7 +1564,7 @@ _PHY_SetBWMode92C(
  * Overview:  This function is export to "HalCommon" moudule
  *
  * Input:		struct rtw_adapter *			Adapter
- *			HT_CHANNEL_WIDTH	Bandwidth	20M or 40M 
+ *			HT_CHANNEL_WIDTH	Bandwidth	20M or 40M
  *
  * Output:      NONE
  *
@@ -1686,8 +1686,8 @@ phy_SetSwChnlCmdArray(
 	if(CmdTableIdx >= CmdTableSz)
 	{
 		/* RT_ASSERT(false, */
-		/* 		("phy_SetSwChnlCmdArray(): Access invalid index, please check size of the table, CmdTableIdx:%ld, CmdTableSz:%ld\n", */
-		/* 		CmdTableIdx, CmdTableSz)); */
+		/*		("phy_SetSwChnlCmdArray(): Access invalid index, please check size of the table, CmdTableIdx:%ld, CmdTableSz:%ld\n", */
+		/*		CmdTableIdx, CmdTableSz)); */
 		return false;
 	}
 
@@ -1710,10 +1710,10 @@ phy_FinishSwChnlNow(	/*  We should not call this function directly */
 }
 
 /*  */
-/* 	Description: */
-/* 		Configure H/W functionality to enable/disable Monitor mode. */
-/* 		Note, because we possibly need to configure BB and RF in this function, */
-/* 		so caller should in PASSIVE_LEVEL. 080118, by rcnjko. */
+/*	Description: */
+/*		Configure H/W functionality to enable/disable Monitor mode. */
+/*		Note, because we possibly need to configure BB and RF in this function, */
+/*		so caller should in PASSIVE_LEVEL. 080118, by rcnjko. */
 /*  */
 static void _PHY_SetRFPathSwitch(
 	struct rtw_adapter *	pAdapter,
@@ -1756,8 +1756,8 @@ static bool _PHY_QueryRFPathSwitch(
 	bool		is2T
 	)
 {
-/* 	if(is2T) */
-/* 		return true; */
+/*	if(is2T) */
+/*		return true; */
 
 	if(!pAdapter->hw_init_completed)
 	{
@@ -1797,9 +1797,9 @@ _PHY_DumpRFReg(struct rtw_adapter *	pAdapter)
 /* Move to other DIR later----------------------------*/
 
 /*  */
-/* 	Description: */
-/* 		To dump all Tx FIFO LLT related link-list table. */
-/* 		Added by Roger, 2009.03.10. */
+/*	Description: */
+/*		To dump all Tx FIFO LLT related link-list table. */
+/*		Added by Roger, 2009.03.10. */
 /*  */
 void
 DumpBBDbgPort_92CU(struct rtw_adapter *Adapter)

@@ -226,7 +226,7 @@ rtl823a_phy_rf6052setccktxpower(
 	tmpval = TxAGC[RF_PATH_B]&0x00ffffff;
 	PHY_SetBBReg(Adapter, rTxAGC_B_CCK1_55_Mcs32, 0xffffff00, tmpval);
 	/* RTPRINT(FPHY, PHY_TXPWR, ("CCK PWR 1~5.5M (rf-B) = 0x%x (reg 0x%x)\n", */
-	/* 	tmpval, rTxAGC_B_CCK1_55_Mcs32)); */
+	/*	tmpval, rTxAGC_B_CCK1_55_Mcs32)); */
 
 }	/* PHY_RF6052SetCckTxPower */
 
@@ -299,7 +299,7 @@ static void getTxPowerWriteValByRegulatory(
 					/*  increase power diff defined by Realtek for large power */
 				chnlGroup = 0;
 				/* RTPRINT(FPHY, PHY_TXPWR, ("MCSTxPowerLevelOriginalOffset[%d][%d] = 0x%x\n", */
-				/* 	chnlGroup, index, pHalData->MCSTxPowerLevelOriginalOffset[chnlGroup][index+(rf?8:0)])); */
+				/*	chnlGroup, index, pHalData->MCSTxPowerLevelOriginalOffset[chnlGroup][index+(rf?8:0)])); */
 				writeVal = pHalData->MCSTxPowerLevelOriginalOffset[chnlGroup][index+(rf?8:0)] +
 					((index<2)?powerBase0[rf]:powerBase1[rf]);
 				/* RTPRINT(FPHY, PHY_TXPWR, ("RTK better performance, writeVal(%c) = 0x%x\n", ((rf==0)?'A':'B'), writeVal)); */
@@ -339,17 +339,17 @@ static void getTxPowerWriteValByRegulatory(
 					/*  increase power diff defined by customer. */
 				chnlGroup = 0;
 				/* RTPRINT(FPHY, PHY_TXPWR, ("MCSTxPowerLevelOriginalOffset[%d][%d] = 0x%x\n", */
-				/* 	chnlGroup, index, pHalData->MCSTxPowerLevelOriginalOffset[chnlGroup][index+(rf?8:0)])); */
+				/*	chnlGroup, index, pHalData->MCSTxPowerLevelOriginalOffset[chnlGroup][index+(rf?8:0)])); */
 
 				if (pHalData->CurrentChannelBW == HT_CHANNEL_WIDTH_40)
 				{
 					/* RTPRINT(FPHY, PHY_TXPWR, ("customer's limit, 40MHz rf(%c) = 0x%x\n", */
-					/* 	((rf==0)?'A':'B'), pHalData->PwrGroupHT40[rf][Channel-1])); */
+					/*	((rf==0)?'A':'B'), pHalData->PwrGroupHT40[rf][Channel-1])); */
 				}
 				else
 				{
 					/* RTPRINT(FPHY, PHY_TXPWR, ("customer's limit, 20MHz rf(%c) = 0x%x\n", */
-					/* 	((rf==0)?'A':'B'), pHalData->PwrGroupHT20[rf][Channel-1])); */
+					/*	((rf==0)?'A':'B'), pHalData->PwrGroupHT20[rf][Channel-1])); */
 				}
 				for (i=0; i<4; i++)
 				{

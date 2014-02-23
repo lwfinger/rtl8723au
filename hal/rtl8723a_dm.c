@@ -84,7 +84,7 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 		DBG_8723A("CheckPbcGPIO - PBC is pressed\n");
 
 		if ( padapter->pid[0] == 0 )
-		{	/* 	0 is the default value and it means the application monitors the HW PBC doesn't privde its pid to driver. */
+		{	/*	0 is the default value and it means the application monitors the HW PBC doesn't privde its pid to driver. */
 			return;
 		}
 
@@ -160,7 +160,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
 	}
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
-	/* 	ODM_CMNINFO_BINHCT_TEST only for MP Team */
+	/*	ODM_CMNINFO_BINHCT_TEST only for MP Team */
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
 
 

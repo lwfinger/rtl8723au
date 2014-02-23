@@ -22,7 +22,7 @@
 
 
 /*  */
-/* 	Prototype of protected function. */
+/*	Prototype of protected function. */
 /*  */
 
 /*  */
@@ -30,8 +30,8 @@
 /*  */
 
 /*  */
-/* 	Description: */
-/* 		Turn on LED according to LedPin specified. */
+/*	Description: */
+/*		Turn on LED according to LedPin specified. */
 /*  */
 void
 SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
@@ -72,8 +72,8 @@ SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 
 
 /*  */
-/* 	Description: */
-/* 		Turn off LED according to LedPin specified. */
+/*	Description: */
+/*		Turn off LED according to LedPin specified. */
 /*  */
 void
 SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
@@ -122,8 +122,8 @@ exit:
 /*  */
 
 /*  */
-/* 	Description: */
-/* 		Initialize all LED_871x objects. */
+/*	Description: */
+/*		Initialize all LED_871x objects. */
 /*  */
 void
 rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
@@ -134,13 +134,13 @@ rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 	/* 8723as-vau wifi used led2 */
 	InitLed871x(padapter, &(pledpriv->SwLed0), LED_PIN_LED2);
 
-/* 	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED2); */
+/*	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED2); */
 }
 
 
 /*  */
-/* 	Description: */
-/* 		DeInitialize all LED_819xUsb objects. */
+/*	Description: */
+/*		DeInitialize all LED_819xUsb objects. */
 /*  */
 void
 rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter)

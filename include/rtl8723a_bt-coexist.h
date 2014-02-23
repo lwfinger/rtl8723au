@@ -224,7 +224,7 @@ typedef enum _HCI_STATUS
 /*  */
 
 /* bit 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 */
-/* 	 |	OCF			             |	   OGF       | */
+/*	 |	OCF			             |	   OGF       | */
 /*  */
 
 /* OGF 0x01 */
@@ -837,7 +837,7 @@ typedef struct _HCI_PHY_LINK_BSS_INFO
 	u16						bdCap;			/*  capability information */
 
 	/*  Qos related. Added by Annie, 2005-11-01. */
-/* 	BSS_QOS						BssQos; not implement yet */
+/*	BSS_QOS						BssQos; not implement yet */
 
 } HCI_PHY_LINK_BSS_INFO, *PHCI_PHY_LINK_BSS_INFO;
 
@@ -1192,7 +1192,7 @@ typedef enum _HCI_EXT_BT_OPERATION
 } HCI_EXT_BT_OPERATION, *PHCI_EXT_BT_OPERATION;
 
 /*  */
-/* 	Function proto type */
+/*	Function proto type */
 /*  */
 typedef struct _BTData_ENTRY
 {
@@ -1429,8 +1429,8 @@ typedef struct _BT_COEXIST_8723A
 	u8					bC2hBtInfoReqSent;
 	u8					bForceFwBtInfo;
 	u8					bForceA2dpSink;
-/* 	u8					bForceLps; */
-/* 	u8					bBtPwrSaveMode; */
+/*	u8					bForceLps; */
+/*	u8					bBtPwrSaveMode; */
 	BTDM_8723A_2ANT			btdm2Ant;
 	BTDM_8723A_1ANT			btdm1Ant;
 } BT_COEXIST_8723A, *PBT_COEXIST_8723A;
@@ -1614,7 +1614,7 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define	BT_COEX_MECH_COMMON			10
 #define	BT_COEX_MECH_MAX				11
 /*  */
-/* 	BT Dbg Ctrl */
+/*	BT Dbg Ctrl */
 /*  */
 #define	BT_DBG_PROFILE_NONE			0
 #define	BT_DBG_PROFILE_SCO			1

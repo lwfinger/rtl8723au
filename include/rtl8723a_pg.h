@@ -16,7 +16,7 @@
 #define __RTL8723A_PG_H__
 
 /*  */
-/* 			EEPROM/Efuse PG Offset for 8723E/8723U/8723S */
+/*			EEPROM/Efuse PG Offset for 8723E/8723U/8723S */
 /*  */
 #define EEPROM_CCK_TX_PWR_INX_8723A			0x10
 #define EEPROM_HT40_1S_TX_PWR_INX_8723A		0x16
@@ -54,12 +54,12 @@
 #define EEPROM_MAC_ADDR_8723AS				0xAA
 
 /*  */
-/* 			EEPROM/Efuse Value Type */
+/*			EEPROM/Efuse Value Type */
 /*  */
 #define EETYPE_TX_PWR						0x0
 
 /*  */
-/* 			EEPROM/Efuse Default Value */
+/*			EEPROM/Efuse Default Value */
 /*  */
 #define EEPROM_Default_CrystalCap_8723A		0x20
 

@@ -49,28 +49,28 @@
 #define WriteEF2Byte(_ptr, _val)	(*((u16 *)(_ptr)))=EF2Byte(_val)
 #define WriteEF4Byte(_ptr, _val)	(*((u32 *)(_ptr)))=EF4Byte(_val)
 
-/* 	Example: */
-/* 		BIT_LEN_MASK_32(0) => 0x00000000 */
-/* 		BIT_LEN_MASK_32(1) => 0x00000001 */
-/* 		BIT_LEN_MASK_32(2) => 0x00000003 */
-/* 		BIT_LEN_MASK_32(32) => 0xFFFFFFFF */
+/*	Example: */
+/*		BIT_LEN_MASK_32(0) => 0x00000000 */
+/*		BIT_LEN_MASK_32(1) => 0x00000001 */
+/*		BIT_LEN_MASK_32(2) => 0x00000003 */
+/*		BIT_LEN_MASK_32(32) => 0xFFFFFFFF */
 #define BIT_LEN_MASK_32(__BitLen) \
 	(0xFFFFFFFF >> (32 - (__BitLen)))
-/* 	Example: */
-/* 		BIT_OFFSET_LEN_MASK_32(0, 2) => 0x00000003 */
-/* 		BIT_OFFSET_LEN_MASK_32(16, 2) => 0x00030000 */
+/*	Example: */
+/*		BIT_OFFSET_LEN_MASK_32(0, 2) => 0x00000003 */
+/*		BIT_OFFSET_LEN_MASK_32(16, 2) => 0x00030000 */
 #define BIT_OFFSET_LEN_MASK_32(__BitOffset, __BitLen) \
 	(BIT_LEN_MASK_32(__BitLen) << (__BitOffset))
 
-/* 	Description: */
-/* 		Return 4-byte value in host byte ordering from */
-/* 		4-byte pointer in litten-endian system. */
+/*	Description: */
+/*		Return 4-byte value in host byte ordering from */
+/*		4-byte pointer in litten-endian system. */
 #define LE_P4BYTE_TO_HOST_4BYTE(__pStart) \
 	(EF4Byte(*((u32 *)(__pStart))))
 
-/* 	Description: */
-/* 		Translate subfield (continuous bits in little-endian) of 4-byte value in litten byte to */
-/* 		4-byte value in host byte ordering. */
+/*	Description: */
+/*		Translate subfield (continuous bits in little-endian) of 4-byte value in litten byte to */
+/*		4-byte value in host byte ordering. */
 #define LE_BITS_TO_4BYTE(__pStart, __BitOffset, __BitLen) \
 	( \
 		( LE_P4BYTE_TO_HOST_4BYTE(__pStart) >> (__BitOffset) ) \
@@ -78,9 +78,9 @@
 		BIT_LEN_MASK_32(__BitLen) \
 	)
 
-/* 	Description: */
-/* 		Mask subfield (continuous bits in little-endian) of 4-byte value in litten byte oredering */
-/* 		and return the result in 4-byte value in host byte ordering. */
+/*	Description: */
+/*		Mask subfield (continuous bits in little-endian) of 4-byte value in litten byte oredering */
+/*		and return the result in 4-byte value in host byte ordering. */
 #define LE_BITS_CLEARED_TO_4BYTE(__pStart, __BitOffset, __BitLen) \
 	( \
 		LE_P4BYTE_TO_HOST_4BYTE(__pStart) \
@@ -88,8 +88,8 @@
 		( ~BIT_OFFSET_LEN_MASK_32(__BitOffset, __BitLen) ) \
 	)
 
-/* 	Description: */
-/* 		Set subfield of little-endian 4-byte value to specified value. */
+/*	Description: */
+/*		Set subfield of little-endian 4-byte value to specified value. */
 #define SET_BITS_TO_LE_4BYTE(__pStart, __BitOffset, __BitLen, __Value) \
 	*((u32 *)(__pStart)) = \
 		EF4Byte( \

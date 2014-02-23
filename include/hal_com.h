@@ -97,7 +97,7 @@
 /* pragma mark -- Tx Desc related definition. -- */
 /*  */
 /*  */
-/* 	Rate */
+/*	Rate */
 /*  */
 /*  CCK Rates, TxHT = 0 */
 #define DESC_RATE1M				0x00

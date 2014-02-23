@@ -1909,7 +1909,7 @@ static int rtw_cfg80211_set_cipher(struct security_priv *psecuritypriv, u32 ciph
 		psecuritypriv->ndisencryptstatus = ndisencryptstatus;
 
 		/* if(psecuritypriv->dot11PrivacyAlgrthm >= _AES_) */
-		/* 	psecuritypriv->ndisauthtype = Ndis802_11AuthModeWPA2PSK; */
+		/*	psecuritypriv->ndisauthtype = Ndis802_11AuthModeWPA2PSK; */
 	}
 
 	return 0;
@@ -3048,7 +3048,7 @@ static int rtw_add_beacon(struct rtw_adapter *adapter, const u8 *head, size_t he
 	/* memcpy(&pstapriv->max_num_sta, param->u.bcn_ie.reserved, 2); */
 
 	/* if((pstapriv->max_num_sta>NUM_STA) || (pstapriv->max_num_sta<=0)) */
-	/* 	pstapriv->max_num_sta = NUM_STA; */
+	/*	pstapriv->max_num_sta = NUM_STA; */
 
 
 	memcpy(pbuf, (void *)head+24, head_len-24);/*  24=beacon header len. */
@@ -3542,47 +3542,47 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 
 
 	/* build_prov_disc_request_p2p_ie */
-	/* 	P2P OUI */
+	/*	P2P OUI */
 	p2pielen = 0;
 	p2p_ie[ p2pielen++ ] = 0x50;
 	p2p_ie[ p2pielen++ ] = 0x6F;
 	p2p_ie[ p2pielen++ ] = 0x9A;
-	p2p_ie[ p2pielen++ ] = 0x09;	/* 	WFA P2P v1.0 */
+	p2p_ie[ p2pielen++ ] = 0x09;	/*	WFA P2P v1.0 */
 
-	/* 	Commented by Albert 20110301 */
-	/* 	According to the P2P Specification, the provision discovery request frame should contain 3 P2P attributes */
-	/* 	1. P2P Capability */
-	/* 	2. Device Info */
-	/* 	3. Group ID ( When joining an operating P2P Group ) */
+	/*	Commented by Albert 20110301 */
+	/*	According to the P2P Specification, the provision discovery request frame should contain 3 P2P attributes */
+	/*	1. P2P Capability */
+	/*	2. Device Info */
+	/*	3. Group ID ( When joining an operating P2P Group ) */
 
-	/* 	P2P Capability ATTR */
-	/* 	Type: */
+	/*	P2P Capability ATTR */
+	/*	Type: */
 	p2p_ie[ p2pielen++ ] = P2P_ATTR_CAPABILITY;
 
-	/* 	Length: */
+	/*	Length: */
 	/* u16*) ( p2pie + p2pielen ) = cpu_to_le16( 0x0002 ); */
 	RTW_PUT_LE16(p2p_ie + p2pielen, 0x0002);
 	p2pielen += 2;
 
-	/* 	Value: */
-	/* 	Device Capability Bitmap, 1 byte */
-	/* 	Group Capability Bitmap, 1 byte */
+	/*	Value: */
+	/*	Device Capability Bitmap, 1 byte */
+	/*	Group Capability Bitmap, 1 byte */
 	memcpy(p2p_ie + p2pielen, &capability, 2);
 	p2pielen += 2;
 
 
-	/* 	Device Info ATTR */
-	/* 	Type: */
+	/*	Device Info ATTR */
+	/*	Type: */
 	p2p_ie[ p2pielen++ ] = P2P_ATTR_DEVICE_INFO;
 
-	/* 	Length: */
-	/* 	21 -> P2P Device Address (6bytes) + Config Methods (2bytes) + Primary Device Type (8bytes) */
-	/* 	+ NumofSecondDevType (1byte) + WPS Device Name ID field (2bytes) + WPS Device Name Len field (2bytes) */
+	/*	Length: */
+	/*	21 -> P2P Device Address (6bytes) + Config Methods (2bytes) + Primary Device Type (8bytes) */
+	/*	+ NumofSecondDevType (1byte) + WPS Device Name ID field (2bytes) + WPS Device Name Len field (2bytes) */
 	/* u16*) ( p2pie + p2pielen ) = cpu_to_le16( 21 + pwdinfo->device_name_len ); */
 	RTW_PUT_LE16(p2p_ie + p2pielen, devinfo_contentlen);
 	p2pielen += 2;
 
-	/* 	Value: */
+	/*	Value: */
 	memcpy(p2p_ie + p2pielen, devinfo_content, devinfo_contentlen);
 	p2pielen += devinfo_contentlen;
 
@@ -3593,32 +3593,32 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	pattrib->pktlen += p2p_ielen;
 
 	wpsielen = 0;
-	/* 	WPS OUI */
+	/*	WPS OUI */
 	*(u32*) ( wpsie ) = cpu_to_be32( WPSOUI );
 	wpsielen += 4;
 
-	/* 	WPS version */
-	/* 	Type: */
+	/*	WPS version */
+	/*	Type: */
 	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_VER1 );
 	wpsielen += 2;
 
-	/* 	Length: */
+	/*	Length: */
 	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( 0x0001 );
 	wpsielen += 2;
 
-	/* 	Value: */
-	wpsie[wpsielen++] = WPS_VERSION_1;	/* 	Version 1.0 */
+	/*	Value: */
+	wpsie[wpsielen++] = WPS_VERSION_1;	/*	Version 1.0 */
 
-	/* 	Config Method */
-	/* 	Type: */
+	/*	Config Method */
+	/*	Type: */
 	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_CONF_METHOD );
 	wpsielen += 2;
 
-	/* 	Length: */
+	/*	Length: */
 	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( 0x0002 );
 	wpsielen += 2;
 
-	/* 	Value: */
+	/*	Value: */
 	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( pwdinfo->tx_prov_disc_info.wps_config_method_request );
 	wpsielen += 2;
 
@@ -3639,8 +3639,8 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 
 	/* if(wps_devicepassword_id == WPS_DPID_REGISTRAR_SPEC) */
 	/*  */
-	/* 	DBG_8723A("waiting for p2p peer key-in PIN CODE\n"); */
-	/* 	rtw_msleep_os(15000); 15 sec for key in PIN CODE, workaround for GS2 before issuing Nego Req. */
+	/*	DBG_8723A("waiting for p2p peer key-in PIN CODE\n"); */
+	/*	rtw_msleep_os(15000); 15 sec for key in PIN CODE, workaround for GS2 before issuing Nego Req. */
 	/*  */
 
 }

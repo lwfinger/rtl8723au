@@ -332,14 +332,14 @@
 #define rRTL8258_RSSILPF				0xa
 
 /*  RL6052 Register definition */
-#define RF_AC						0x00	
+#define RF_AC						0x00
 #define RF_IQADJ_G1				0x01
 #define RF_IQADJ_G2				0x02
 #define RF_BS_PA_APSET_G1_G4		0x03
 #define RF_BS_PA_APSET_G5_G8		0x04
-#define RF_POW_TRSW				0x05	
+#define RF_POW_TRSW				0x05
 #define RF_GAIN_RX					0x06
-#define RF_GAIN_TX					0x07	
+#define RF_GAIN_TX					0x07
 #define RF_TXM_IDAC				0x08
 #define RF_IPA_G					0x09
 #define RF_TXBIAS_G				0x0A
@@ -347,9 +347,9 @@
 #define RF_IPA_A					0x0C
 #define RF_TXBIAS_A				0x0D
 #define RF_BS_PA_APSET_G9_G11	0x0E
-#define RF_BS_IQGEN				0x0F	
+#define RF_BS_IQGEN				0x0F
 #define RF_MODE1					0x10
-#define RF_MODE2					0x11	
+#define RF_MODE2					0x11
 #define RF_RX_AGC_HP				0x12
 #define RF_TX_AGC					0x13
 #define RF_BIAS						0x14
@@ -359,18 +359,18 @@
 #define RF_MODE_AG				0x18
 #define rRfChannel					0x18	/*  RF channel and BW switch */
 #define RF_CHNLBW					0x18	/*  RF channel and BW switch */
-#define RF_TOP						0x19	
+#define RF_TOP						0x19
 #define RF_RX_G1					0x1A
-#define RF_RX_G2					0x1B	
+#define RF_RX_G2					0x1B
 #define RF_RX_BB2					0x1C
-#define RF_RX_BB1					0x1D	
+#define RF_RX_BB1					0x1D
 #define RF_RCK1					0x1E
-#define RF_RCK2					0x1F	
+#define RF_RCK2					0x1F
 #define RF_TX_G1					0x20
 #define RF_TX_G2					0x21
-#define RF_TX_G3					0x22	
-#define RF_TX_BB1					0x23	
-#define RF_T_METER					0x24	
+#define RF_TX_G3					0x22
+#define RF_TX_BB1					0x23
+#define RF_T_METER					0x24
 #define RF_SYN_G1					0x25	/*  RF TX Power control */
 #define RF_SYN_G2					0x26	/*  RF TX Power control */
 #define RF_SYN_G3					0x27	/*  RF TX Power control */
@@ -433,7 +433,7 @@
 #define bCCKTxStatus					0x1
 #define bOFDMTxStatus					0x2
 
-#define 	IS_BB_REG_OFFSET_92S(_Offset)		((_Offset >= 0x800) && (_Offset <= 0xfff))
+#define		IS_BB_REG_OFFSET_92S(_Offset)		((_Offset >= 0x800) && (_Offset <= 0xfff))
 
 /*  2. Page8(0x800) */
 #define bRFMOD							0x1	/*  Reg 0x800 rFPGA0_RFMOD */
@@ -545,7 +545,7 @@
 #define bXtalCap01					0xc0000000	/*  Reg 0x884 rFPGA0_AnalogParameter2 Crystal cap */
 #define bXtalCap23					0x3
 #define bXtalCap92x					0x0f000000
-#define 	bXtalCap					0x0f000000
+#define		bXtalCap					0x0f000000
 
 #define bIntDifClkEnable			0x400	/*  Useless */
 #define bExtSigClkEnable			0x800
@@ -993,7 +993,7 @@
 #define bMaskCCK			0x3f3f3f3f
 
 /* for PutRFRegsetting & GetRFRegSetting BitMask */
-#define 	bRFRegOffsetMask	0xfffff
+#define		bRFRegOffsetMask	0xfffff
 
 #define bEnable			0x1	/*  Useless */
 #define bDisable		0x0

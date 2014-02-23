@@ -116,8 +116,8 @@ _func_enter_;
 
 		bcmd_down = true;
 
-	/* 	DBG_8723A("MSG_BOX:%d,CmdLen(%d), reg:0x%x =>h2c_cmd:0x%x, reg:0x%x =>h2c_cmd_ex:0x%x ..\n" */
-	/* 		,pHalData->LastHMEBoxNum ,CmdLen,msgbox_addr,h2c_cmd,msgbox_ex_addr,h2c_cmd_ex); */
+	/*	DBG_8723A("MSG_BOX:%d,CmdLen(%d), reg:0x%x =>h2c_cmd:0x%x, reg:0x%x =>h2c_cmd_ex:0x%x ..\n" */
+	/*		,pHalData->LastHMEBoxNum ,CmdLen,msgbox_addr,h2c_cmd,msgbox_ex_addr,h2c_cmd_ex); */
 
 		pHalData->LastHMEBoxNum = (h2c_box_num+1) % RTL92C_MAX_H2C_BOX_NUMS;
 
@@ -508,13 +508,13 @@ CheckFwRsvdPageContent(struct rtw_adapter *Adapter)
 
 /*  */
 /*  Description: Fill the reserved packets that FW will use to RSVD page. */
-/* 			Now we just send 4 types packet to rsvd page. */
-/* 			(1)Beacon, (2)Ps-poll, (3)Null data, (4)ProbeRsp. */
-/* 	Input: */
-/* 	    bDLFinished - false: At the first time we will send all the packets as a large packet to Hw, */
-/* 						so we need to set the packet length to total lengh. */
-/* 			      true: At the second time, we should send the first packet (default:beacon) */
-/* 						to Hw again and set the lengh in descriptor to the real beacon lengh. */
+/*			Now we just send 4 types packet to rsvd page. */
+/*			(1)Beacon, (2)Ps-poll, (3)Null data, (4)ProbeRsp. */
+/*	Input: */
+/*	    bDLFinished - false: At the first time we will send all the packets as a large packet to Hw, */
+/*						so we need to set the packet length to total lengh. */
+/*			      true: At the second time, we should send the first packet (default:beacon) */
+/*						to Hw again and set the lengh in descriptor to the real beacon lengh. */
 /*  2009.10.15 by tynli. */
 static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 {
@@ -684,8 +684,8 @@ _func_enter_;
 		/*  Disable Hw protection for a time which revserd for Hw sending beacon. */
 		/*  Fix download reserved page packet fail that access collision with the protection time. */
 		/*  2010.05.11. Added by tynli. */
-/* 			SetBcnCtrlReg(padapter, 0, BIT(3)); */
-/* 			SetBcnCtrlReg(padapter, BIT(4), 0); */
+/*			SetBcnCtrlReg(padapter, 0, BIT(3)); */
+/*			SetBcnCtrlReg(padapter, BIT(4), 0); */
 		SetBcnCtrlReg(padapter, BIT(4), BIT(3));
 
 		/*  Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame. */
@@ -699,8 +699,8 @@ _func_enter_;
 		SetFwRsvdPagePkt(padapter, 0);
 
 		/*  2010.05.11. Added by tynli. */
-/* 			SetBcnCtrlReg(padapter, BIT3, 0); */
-/* 			SetBcnCtrlReg(padapter, 0, BIT4); */
+/*			SetBcnCtrlReg(padapter, BIT3, 0); */
+/*			SetBcnCtrlReg(padapter, 0, BIT4); */
 		SetBcnCtrlReg(padapter, BIT(3), BIT(4));
 
 		/*  To make sure that if there exists an adapter which would like to send beacon. */

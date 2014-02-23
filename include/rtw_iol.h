@@ -50,11 +50,11 @@ CMD					Address			Value
 (B1)					(B2/B3:H/L addr)	(B4:B7 : MSB:LSB)
 ******************************************************
 IOL_CMD_LLT			-				B7: PGBNDY
-IOL_CMD_R_EFUSE	-				- 
+IOL_CMD_R_EFUSE	-				-
 IOL_CMD_WB_REG		0x0~0xFFFF		B7
 IOL_CMD_WW_REG	0x0~0xFFFF		B6~B7
 IOL_CMD_WD_REG	0x0~0xFFFF		B4~B7
-IOL_CMD_W_RF		RF Reg			B5~B7 
+IOL_CMD_W_RF		RF Reg			B5~B7
 IOL_CMD_DELAY_US	-				B6~B7
 IOL_CMD_DELAY_MS	-				B6~B7
 IOL_CMD_DELAY_S	-				B6~B7

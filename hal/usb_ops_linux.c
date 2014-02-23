@@ -560,9 +560,9 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		/* 	Modified by Albert 20101213 */
-		/* 	For 8 bytes IP header alignment. */
-		/* 	Qos data, wireless lan header length is 26 */
+		/*	Modified by Albert 20101213 */
+		/*	For 8 bytes IP header alignment. */
+		/*	Qos data, wireless lan header length is 26 */
 		if (pattrib->qos) {
 			shift_sz = 6;
 		} else {

@@ -20,11 +20,11 @@
 #include <wlan_bssdef.h>
 
 
-/* 	Commented by Albert 20101105 */
-/* 	Increase the SURVEY_TO value from 100 to 150  ( 100ms to 150ms ) */
-/* 	The Realtek 8188CE SoftAP will spend around 100ms to send the probe response after receiving the probe request. */
-/* 	So, this driver tried to extend the dwell time for each scanning channel. */
-/* 	This will increase the chance to receive the probe response from SoftAP. */
+/*	Commented by Albert 20101105 */
+/*	Increase the SURVEY_TO value from 100 to 150  ( 100ms to 150ms ) */
+/*	The Realtek 8188CE SoftAP will spend around 100ms to send the probe response after receiving the probe request. */
+/*	So, this driver tried to extend the dwell time for each scanning channel. */
+/*	This will increase the chance to receive the probe response from SoftAP. */
 
 #define SURVEY_TO		(100)
 #define REAUTH_TO		(300) /* 50) */
@@ -102,10 +102,10 @@ extern unsigned char WMM_PARA_OUI[];
 /*  */
 /*  Channel Plan Type. */
 /*  Note: */
-/* 	We just add new channel plan when the new channel plan is different from any of the following */
-/* 	channel plan. */
-/* 	If you just wnat to customize the acitions(scan period or join actions) about one of the channel plan, */
-/* 	customize them in RT_CHANNEL_INFO in the RT_CHANNEL_LIST. */
+/*	We just add new channel plan when the new channel plan is different from any of the following */
+/*	channel plan. */
+/*	If you just wnat to customize the acitions(scan period or join actions) about one of the channel plan, */
+/*	customize them in RT_CHANNEL_INFO in the RT_CHANNEL_LIST. */
 /*  */
 typedef enum _RT_CHANNEL_DOMAIN
 {

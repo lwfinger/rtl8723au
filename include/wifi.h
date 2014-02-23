@@ -21,6 +21,9 @@
 #endif
 #define BIT(x)	(1 << (x))
 
+#ifndef IEEE80211_CHAN_PASSIVE_SCAN
+	#define IEEE80211_CHAN_PASSIVE_SCAN IEEE80211_CHAN_NO_IR
+#endif
 
 #define P80211CAPTURE_VERSION	0x80211001
 
@@ -468,10 +471,10 @@ struct ADDBA_request
 
 
 
-/* 	===============WPS Section=============== */
-/* 	For WPSv1.0 */
+/*	===============WPS Section=============== */
+/*	For WPSv1.0 */
 #define WPSOUI							0x0050f204
-/* 	WPS attribute ID */
+/*	WPS attribute ID */
 #define WPS_ATTR_VER1					0x104A
 #define WPS_ATTR_SIMPLE_CONF_STATE	0x1044
 #define WPS_ATTR_RESP_TYPE			0x103B
@@ -492,29 +495,29 @@ struct ADDBA_request
 #define WPS_ATTR_VENDOR_EXT			0x1049
 #define WPS_ATTR_SELECTED_REGISTRAR	0x1041
 
-/* 	Value of WPS attribute "WPS_ATTR_DEVICE_NAME */
+/*	Value of WPS attribute "WPS_ATTR_DEVICE_NAME */
 #define WPS_MAX_DEVICE_NAME_LEN		32
 
-/* 	Value of WPS Request Type Attribute */
+/*	Value of WPS Request Type Attribute */
 #define WPS_REQ_TYPE_ENROLLEE_INFO_ONLY			0x00
 #define WPS_REQ_TYPE_ENROLLEE_OPEN_8021X		0x01
 #define WPS_REQ_TYPE_REGISTRAR					0x02
 #define WPS_REQ_TYPE_WLAN_MANAGER_REGISTRAR	0x03
 
-/* 	Value of WPS Response Type Attribute */
+/*	Value of WPS Response Type Attribute */
 #define WPS_RESPONSE_TYPE_INFO_ONLY	0x00
 #define WPS_RESPONSE_TYPE_8021X		0x01
 #define WPS_RESPONSE_TYPE_REGISTRAR	0x02
 #define WPS_RESPONSE_TYPE_AP			0x03
 
-/* 	Value of WPS WiFi Simple Configuration State Attribute */
+/*	Value of WPS WiFi Simple Configuration State Attribute */
 #define WPS_WSC_STATE_NOT_CONFIG	0x01
 #define WPS_WSC_STATE_CONFIG			0x02
 
-/* 	Value of WPS Version Attribute */
+/*	Value of WPS Version Attribute */
 #define WPS_VERSION_1					0x10
 
-/* 	Value of WPS Configuration Method Attribute */
+/*	Value of WPS Configuration Method Attribute */
 #define WPS_CONFIG_METHOD_FLASH		0x0001
 #define WPS_CONFIG_METHOD_ETHERNET	0x0002
 #define WPS_CONFIG_METHOD_LABEL		0x0004
@@ -529,16 +532,16 @@ struct ADDBA_request
 #define WPS_CONFIG_METHOD_VDISPLAY	0x2008
 #define WPS_CONFIG_METHOD_PDISPLAY	0x4008
 
-/* 	Value of Category ID of WPS Primary Device Type Attribute */
+/*	Value of Category ID of WPS Primary Device Type Attribute */
 #define WPS_PDT_CID_DISPLAYS			0x0007
 #define WPS_PDT_CID_MULIT_MEDIA		0x0008
 #define WPS_PDT_CID_RTK_WIDI			WPS_PDT_CID_MULIT_MEDIA
 
-/* 	Value of Sub Category ID of WPS Primary Device Type Attribute */
+/*	Value of Sub Category ID of WPS Primary Device Type Attribute */
 #define WPS_PDT_SCID_MEDIA_SERVER	0x0005
 #define WPS_PDT_SCID_RTK_DMP			WPS_PDT_SCID_MEDIA_SERVER
 
-/* 	Value of Device Password ID */
+/*	Value of Device Password ID */
 #define WPS_DPID_PIN					0x0000
 #define WPS_DPID_USER_SPEC			0x0001
 #define WPS_DPID_MACHINE_SPEC			0x0002
@@ -546,22 +549,22 @@ struct ADDBA_request
 #define WPS_DPID_PBC					0x0004
 #define WPS_DPID_REGISTRAR_SPEC		0x0005
 
-/* 	Value of WPS RF Bands Attribute */
+/*	Value of WPS RF Bands Attribute */
 #define WPS_RF_BANDS_2_4_GHZ		0x01
 #define WPS_RF_BANDS_5_GHZ		0x02
 
-/* 	Value of WPS Association State Attribute */
+/*	Value of WPS Association State Attribute */
 #define WPS_ASSOC_STATE_NOT_ASSOCIATED			0x00
 #define WPS_ASSOC_STATE_CONNECTION_SUCCESS		0x01
 #define WPS_ASSOC_STATE_CONFIGURATION_FAILURE	0x02
 #define WPS_ASSOC_STATE_ASSOCIATION_FAILURE		0x03
 #define WPS_ASSOC_STATE_IP_FAILURE				0x04
 
-/* 	=====================P2P Section===================== */
-/* 	For P2P */
+/*	=====================P2P Section===================== */
+/*	For P2P */
 #define	P2POUI							0x506F9A09
 
-/* 	P2P Attribute ID */
+/*	P2P Attribute ID */
 #define	P2P_ATTR_STATUS					0x00
 #define	P2P_ATTR_MINOR_REASON_CODE		0x01
 #define	P2P_ATTR_CAPABILITY				0x02
@@ -582,7 +585,7 @@ struct ADDBA_request
 #define	P2P_ATTR_OPERATING_CH			0x11
 #define	P2P_ATTR_INVITATION_FLAGS		0x12
 
-/* 	Value of Status Attribute */
+/*	Value of Status Attribute */
 #define	P2P_STATUS_SUCCESS						0x00
 #define	P2P_STATUS_FAIL_INFO_UNAVAILABLE		0x01
 #define	P2P_STATUS_FAIL_INCOMPATIBLE_PARAM		0x02
@@ -596,7 +599,7 @@ struct ADDBA_request
 #define	P2P_STATUS_FAIL_INCOMPATIBLE_PROVSION	0x0A
 #define	P2P_STATUS_FAIL_USER_REJECT				0x0B
 
-/* 	Value of Inviation Flags Attribute */
+/*	Value of Inviation Flags Attribute */
 #define	P2P_INVITATION_FLAGS_PERSISTENT			BIT(0)
 
 #define	DMP_P2P_DEVCAP_SUPPORT	(P2P_DEVCAP_SERVICE_DISCOVERY | \
@@ -606,7 +609,7 @@ struct ADDBA_request
 
 #define	DMP_P2P_GRPCAP_SUPPORT	(P2P_GRPCAP_INTRABSS)
 
-/* 	Value of Device Capability Bitmap */
+/*	Value of Device Capability Bitmap */
 #define	P2P_DEVCAP_SERVICE_DISCOVERY		BIT(0)
 #define	P2P_DEVCAP_CLIENT_DISCOVERABILITY	BIT(1)
 #define	P2P_DEVCAP_CONCURRENT_OPERATION	BIT(2)
@@ -614,7 +617,7 @@ struct ADDBA_request
 #define	P2P_DEVCAP_DEVICE_LIMIT				BIT(4)
 #define	P2P_DEVCAP_INVITATION_PROC			BIT(5)
 
-/* 	Value of Group Capability Bitmap */
+/*	Value of Group Capability Bitmap */
 #define	P2P_GRPCAP_GO							BIT(0)
 #define	P2P_GRPCAP_PERSISTENT_GROUP			BIT(1)
 #define	P2P_GRPCAP_GROUP_LIMIT				BIT(2)
@@ -623,10 +626,10 @@ struct ADDBA_request
 #define	P2P_GRPCAP_PERSISTENT_RECONN		BIT(5)
 #define	P2P_GRPCAP_GROUP_FORMATION			BIT(6)
 
-/* 	P2P Public Action Frame ( Management Frame ) */
+/*	P2P Public Action Frame ( Management Frame ) */
 #define	P2P_PUB_ACTION_ACTION				0x09
 
-/* 	P2P Public Action Frame Type */
+/*	P2P Public Action Frame Type */
 #define	P2P_GO_NEGO_REQ						0
 #define	P2P_GO_NEGO_RESP						1
 #define	P2P_GO_NEGO_CONF						2
@@ -637,7 +640,7 @@ struct ADDBA_request
 #define	P2P_PROVISION_DISC_REQ				7
 #define	P2P_PROVISION_DISC_RESP				8
 
-/* 	P2P Action Frame Type */
+/*	P2P Action Frame Type */
 #define	P2P_NOTICE_OF_ABSENCE	0
 #define	P2P_PRESENCE_REQUEST		1
 #define	P2P_PRESENCE_RESPONSE	2
@@ -656,19 +659,19 @@ struct ADDBA_request
 #define	P2P_FINDPHASE_EX_MAX					4
 #define	P2P_FINDPHASE_EX_SOCIAL_LAST		P2P_FINDPHASE_EX_MAX
 
-#define	P2P_PROVISION_TIMEOUT				5000	/* 	5 seconds timeout for sending the provision discovery request */
-#define	P2P_CONCURRENT_PROVISION_TIMEOUT	3000	/* 	3 seconds timeout for sending the provision discovery request under concurrent mode */
-#define	P2P_GO_NEGO_TIMEOUT					5000	/* 	5 seconds timeout for receiving the group negotation response */
-#define	P2P_CONCURRENT_GO_NEGO_TIMEOUT		3000	/* 	3 seconds timeout for sending the negotiation request under concurrent mode */
-#define	P2P_TX_PRESCAN_TIMEOUT				100		/* 	100ms */
-#define	P2P_INVITE_TIMEOUT					5000	/* 	5 seconds timeout for sending the invitation request */
-#define	P2P_CONCURRENT_INVITE_TIMEOUT		3000	/* 	3 seconds timeout for sending the invitation request under concurrent mode */
-#define	P2P_RESET_SCAN_CH						25000	/* 	25 seconds timeout to reset the scan channel ( based on channel plan ) */
+#define	P2P_PROVISION_TIMEOUT				5000	/*	5 seconds timeout for sending the provision discovery request */
+#define	P2P_CONCURRENT_PROVISION_TIMEOUT	3000	/*	3 seconds timeout for sending the provision discovery request under concurrent mode */
+#define	P2P_GO_NEGO_TIMEOUT					5000	/*	5 seconds timeout for receiving the group negotation response */
+#define	P2P_CONCURRENT_GO_NEGO_TIMEOUT		3000	/*	3 seconds timeout for sending the negotiation request under concurrent mode */
+#define	P2P_TX_PRESCAN_TIMEOUT				100		/*	100ms */
+#define	P2P_INVITE_TIMEOUT					5000	/*	5 seconds timeout for sending the invitation request */
+#define	P2P_CONCURRENT_INVITE_TIMEOUT		3000	/*	3 seconds timeout for sending the invitation request under concurrent mode */
+#define	P2P_RESET_SCAN_CH						25000	/*	25 seconds timeout to reset the scan channel ( based on channel plan ) */
 #define	P2P_MAX_INTENT						15
 
 #define	P2P_MAX_NOA_NUM						2
 
-/* 	WPS Configuration Method */
+/*	WPS Configuration Method */
 #define	WPS_CM_NONE							0x0000
 #define	WPS_CM_LABEL							0x0004
 #define	WPS_CM_DISPLYA						0x0008
@@ -690,27 +693,27 @@ enum P2P_ROLE {
 };
 
 enum P2P_STATE {
-	P2P_STATE_NONE = 0,							/* 	P2P disable */
-	P2P_STATE_IDLE = 1,								/* 	P2P had enabled and do nothing */
-	P2P_STATE_LISTEN = 2,							/* 	In pure listen state */
-	P2P_STATE_SCAN = 3,							/* 	In scan phase */
-	P2P_STATE_FIND_PHASE_LISTEN = 4,				/* 	In the listen state of find phase */
-	P2P_STATE_FIND_PHASE_SEARCH = 5,				/* 	In the search state of find phase */
-	P2P_STATE_TX_PROVISION_DIS_REQ = 6,			/* 	In P2P provisioning discovery */
+	P2P_STATE_NONE = 0,							/*	P2P disable */
+	P2P_STATE_IDLE = 1,								/*	P2P had enabled and do nothing */
+	P2P_STATE_LISTEN = 2,							/*	In pure listen state */
+	P2P_STATE_SCAN = 3,							/*	In scan phase */
+	P2P_STATE_FIND_PHASE_LISTEN = 4,				/*	In the listen state of find phase */
+	P2P_STATE_FIND_PHASE_SEARCH = 5,				/*	In the search state of find phase */
+	P2P_STATE_TX_PROVISION_DIS_REQ = 6,			/*	In P2P provisioning discovery */
 	P2P_STATE_RX_PROVISION_DIS_RSP = 7,
 	P2P_STATE_RX_PROVISION_DIS_REQ = 8,
-	P2P_STATE_GONEGO_ING = 9,						/* 	Doing the group owner negoitation handshake */
-	P2P_STATE_GONEGO_OK = 10,						/* 	finish the group negoitation handshake with success */
-	P2P_STATE_GONEGO_FAIL = 11,					/* 	finish the group negoitation handshake with failure */
-	P2P_STATE_RECV_INVITE_REQ_MATCH = 12,		/* 	receiving the P2P Inviation request and match with the profile. */
-	P2P_STATE_PROVISIONING_ING = 13,				/* 	Doing the P2P WPS */
-	P2P_STATE_PROVISIONING_DONE = 14,			/* 	Finish the P2P WPS */
-	P2P_STATE_TX_INVITE_REQ = 15,					/* 	Transmit the P2P Invitation request */
-	P2P_STATE_RX_INVITE_RESP_OK = 16,				/* 	Receiving the P2P Invitation response */
-	P2P_STATE_RECV_INVITE_REQ_DISMATCH = 17,	/* 	receiving the P2P Inviation request and dismatch with the profile. */
-	P2P_STATE_RECV_INVITE_REQ_GO = 18,			/* 	receiving the P2P Inviation request and this wifi is GO. */
-	P2P_STATE_RECV_INVITE_REQ_JOIN = 19,			/* 	receiving the P2P Inviation request to join an existing P2P Group. */
-	P2P_STATE_RX_INVITE_RESP_FAIL = 20,			/* 	recveing the P2P Inviation response with failure */
+	P2P_STATE_GONEGO_ING = 9,						/*	Doing the group owner negoitation handshake */
+	P2P_STATE_GONEGO_OK = 10,						/*	finish the group negoitation handshake with success */
+	P2P_STATE_GONEGO_FAIL = 11,					/*	finish the group negoitation handshake with failure */
+	P2P_STATE_RECV_INVITE_REQ_MATCH = 12,		/*	receiving the P2P Inviation request and match with the profile. */
+	P2P_STATE_PROVISIONING_ING = 13,				/*	Doing the P2P WPS */
+	P2P_STATE_PROVISIONING_DONE = 14,			/*	Finish the P2P WPS */
+	P2P_STATE_TX_INVITE_REQ = 15,					/*	Transmit the P2P Invitation request */
+	P2P_STATE_RX_INVITE_RESP_OK = 16,				/*	Receiving the P2P Invitation response */
+	P2P_STATE_RECV_INVITE_REQ_DISMATCH = 17,	/*	receiving the P2P Inviation request and dismatch with the profile. */
+	P2P_STATE_RECV_INVITE_REQ_GO = 18,			/*	receiving the P2P Inviation request and this wifi is GO. */
+	P2P_STATE_RECV_INVITE_REQ_JOIN = 19,			/*	receiving the P2P Inviation request to join an existing P2P Group. */
+	P2P_STATE_RX_INVITE_RESP_FAIL = 20,			/*	recveing the P2P Inviation response with failure */
 	P2P_STATE_RX_INFOR_NOREADY = 21,			/*  receiving p2p negoitation response with information is not available */
 	P2P_STATE_TX_INFOR_NOREADY = 22,			/*  sending p2p negoitation response with information is not available */
 };
@@ -754,8 +757,8 @@ enum P2P_PS_MODE
 };
 #endif /*  CONFIG_8723AU_P2P */
 
-/* 	=====================WFD Section===================== */
-/* 	For Wi-Fi Display */
+/*	=====================WFD Section===================== */
+/*	For Wi-Fi Display */
 #define	WFD_ATTR_DEVICE_INFO			0x00
 #define	WFD_ATTR_ASSOC_BSSID			0x01
 #define	WFD_ATTR_COUPLED_SINK_INFO	0x06
@@ -763,7 +766,7 @@ enum P2P_PS_MODE
 #define	WFD_ATTR_SESSION_INFO		0x09
 #define	WFD_ATTR_ALTER_MAC			0x0a
 
-/* 	For WFD Device Information Attribute */
+/*	For WFD Device Information Attribute */
 #define	WFD_DEVINFO_SOURCE					0x0000
 #define	WFD_DEVINFO_PSINK					0x0001
 #define	WFD_DEVINFO_SSINK					0x0002

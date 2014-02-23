@@ -31,13 +31,13 @@ Major Change History:
 #include <HalPwrSeqCmd.h>
 
 /*  */
-/* 	Description: */
-/* 		This routine deal with the Power Configuration CMDs parsing for RTL8723/RTL8188E Series IC. */
+/*	Description: */
+/*		This routine deal with the Power Configuration CMDs parsing for RTL8723/RTL8188E Series IC. */
 /*  */
-/* 	Assumption: */
-/* 		We should follow specific format which was released from HW SD. */
+/*	Assumption: */
+/*		We should follow specific format which was released from HW SD. */
 /*  */
-/* 	2011.07.07, added by Roger. */
+/*	2011.07.07, added by Roger. */
 /*  */
 u8 HalPwrSeqCmdParsing(
 	struct rtw_adapter *		padapter,

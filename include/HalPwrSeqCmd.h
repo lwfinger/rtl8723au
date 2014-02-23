@@ -120,7 +120,7 @@ typedef struct _WL_PWR_CFG_
 
 
 /*  */
-/* 	Prototype of protected function. */
+/*	Prototype of protected function. */
 /*  */
 u8 HalPwrSeqCmdParsing(
 	struct rtw_adapter		*padapter,

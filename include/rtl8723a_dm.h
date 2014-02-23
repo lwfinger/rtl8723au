@@ -124,7 +124,7 @@ struct dm_priv
 
 	s32	OFDM_Pkt_Cnt;
 	u8	RSSI_Select;
-/* 	u8	DIG_Dynamic_MIN ; */
+/*	u8	DIG_Dynamic_MIN ; */
 /*  duplicate code,will move to ODM ######### */
 	/*  Add for Reading Initial Data Rate SEL Register 0x484 during watchdog. Using for fill tx desc. 2011.3.21 by Thomas */
 	u8	INIDATA_RATE[32];

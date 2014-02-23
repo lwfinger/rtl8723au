@@ -19,44 +19,44 @@
 
 
 /*  */
-/* 	Define the debug levels */
+/*	Define the debug levels */
 /*  */
-/* 	1.	DBG_TRACE and DBG_LOUD are used for normal cases. */
-/* 	So that, they can help SW engineer to develope or trace states changed */
-/* 	and also help HW enginner to trace every operation to and from HW, */
-/* 	e.g IO, Tx, Rx. */
+/*	1.	DBG_TRACE and DBG_LOUD are used for normal cases. */
+/*	So that, they can help SW engineer to develope or trace states changed */
+/*	and also help HW enginner to trace every operation to and from HW, */
+/*	e.g IO, Tx, Rx. */
 /*  */
-/* 	2.	DBG_WARNNING and DBG_SERIOUS are used for unusual or error cases, */
-/* 	which help us to debug SW or HW. */
+/*	2.	DBG_WARNNING and DBG_SERIOUS are used for unusual or error cases, */
+/*	which help us to debug SW or HW. */
 /*  */
 /*  */
 /*  */
-/* 	Never used in a call to ODM_RT_TRACE()! */
+/*	Never used in a call to ODM_RT_TRACE()! */
 /*  */
 #define ODM_DBG_OFF					1
 
 /*  */
-/* 	Fatal bug. */
-/* 	For example, Tx/Rx/IO locked up, OS hangs, memory access violation, */
-/* 	resource allocation failed, unexpected HW behavior, HW BUG and so on. */
+/*	Fatal bug. */
+/*	For example, Tx/Rx/IO locked up, OS hangs, memory access violation, */
+/*	resource allocation failed, unexpected HW behavior, HW BUG and so on. */
 /*  */
 #define ODM_DBG_SERIOUS				2
 
 /*  */
-/* 	Abnormal, rare, or unexpeted cases. */
-/* 	For example, IRP/Packet/OID canceled, device suprisely unremoved and so on. */
+/*	Abnormal, rare, or unexpeted cases. */
+/*	For example, IRP/Packet/OID canceled, device suprisely unremoved and so on. */
 /*  */
 #define ODM_DBG_WARNING				3
 
 /*  */
-/* 	Normal case with useful information about current SW or HW state. */
-/* 	For example, Tx/Rx descriptor to fill, Tx/Rx descriptor completed status, */
-/* 	SW protocol state change, dynamic mechanism state change and so on. */
+/*	Normal case with useful information about current SW or HW state. */
+/*	For example, Tx/Rx descriptor to fill, Tx/Rx descriptor completed status, */
+/*	SW protocol state change, dynamic mechanism state change and so on. */
 /*  */
 #define ODM_DBG_LOUD					4
 
 /*  */
-/* 	Normal case with detail execution flow or information. */
+/*	Normal case with detail execution flow or information. */
 /*  */
 #define ODM_DBG_TRACE					5
 
