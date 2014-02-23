@@ -200,7 +200,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	pkt_info.bPacketBeacon = false;
 
 	pkt_info.bPacketMatchBSSID =
-		((!IsFrameTypeCtrl(wlanhdr)) &&
+		(!ieee80211_is_ctl(hdr->frame_control) &&
 		 !pattrib->icv_err &&
 		 !pattrib->crc_err &&
 		 !memcmp(get_hdr_bssid(wlanhdr),
@@ -211,7 +211,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 		(!memcmp(da, myid(&padapter->eeprompriv), ETH_ALEN));
 
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID &&
-		(GetFrameSubType(wlanhdr) == WIFI_BEACON);
+		ieee80211_is_beacon(hdr->frame_control);
 
 	pkt_info.StationID = 0xFF;
 	if (pkt_info.bPacketBeacon) {

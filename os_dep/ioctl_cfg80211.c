@@ -2602,6 +2602,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 	struct wireless_dev *pwdev = padapter->rtw_wdev;
 	struct mlme_ext_priv *pmlmeext = &(padapter->mlmeextpriv);
 	struct net_device *ndev = padapter->pnetdev;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pmgmt_frame;
 
 	DBG_8723A("%s(padapter=%p,%s)\n", __func__, padapter, ndev->name);
 
@@ -2609,7 +2610,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 	{
 		struct station_info sinfo;
 		u8 ie_offset;
-		if (GetFrameSubType(pmgmt_frame) == WIFI_ASSOCREQ)
+		if (ieee80211_is_assoc_req(hdr->frame_control))
 			ie_offset = _ASOCREQ_IE_OFFSET_;
 		else /*  WIFI_REASSOCREQ */
 			ie_offset = _REASOCREQ_IE_OFFSET_;
