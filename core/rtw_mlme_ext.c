@@ -605,16 +605,8 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 	u8 *pframe = skb->data;
 	struct sta_info *psta = rtw_get_stainfo(&padapter->stapriv, GetAddr2Ptr(pframe));
 
-	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_,
-		 ("+mgt_dispatcher: type(0x%x) subtype(0x%x)\n",
-		  GetFrameType(pframe), GetFrameSubType(pframe)));
-
-	if (GetFrameType(pframe) != WIFI_MGT_TYPE) {
-		RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_,
-			 ("mgt_dispatcher: type(0x%x) error!\n",
-			  GetFrameType(pframe)));
+	if (!ieee80211_is_mgmt(hdr->frame_control))
 		return;
-	}
 
 	/* receive the frames that ra(a1) is my address or ra(a1) is
 	   bc address. */
@@ -625,10 +617,12 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 
 	ptable = mlme_sta_tbl;
 
-	index = GetFrameSubType(pframe) >> 4;
+	index = (le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE) >> 4;
 
 	if (index > 13) {
-		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("Currently we do not support reserved sub-fr-type=%d\n", index));
+		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+			 ("Currently we do not support reserved sub-fr-type="
+			  "%d\n", index));
 		return;
 	}
 	ptable += index;
@@ -1324,7 +1318,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	unsigned char		supportRate[16];
 	int					supportRateNum;
 	unsigned short		status = WLAN_STATUS_SUCCESS;
-	unsigned short		frame_type, ie_offset=0;
+	unsigned short ie_offset;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -1334,6 +1328,8 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
 	uint pkt_len = skb->len;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u16 frame_control;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
 	u8 p2p_status_code = P2P_STATUS_SUCCESS;
@@ -1348,14 +1344,11 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	if((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
 
-	frame_type = GetFrameSubType(pframe);
-	if (frame_type == WIFI_ASSOCREQ)
-	{
+	frame_control = hdr->frame_control;
+	if (ieee80211_is_assoc_req(frame_control)) {
 		reassoc = 0;
 		ie_offset = _ASOCREQ_IE_OFFSET_;
-	}
-	else /*  WIFI_REASSOCREQ */
-	{
+	} else { /*  WIFI_REASSOCREQ */
 		reassoc = 1;
 		ie_offset = _REASOCREQ_IE_OFFSET_;
 	}
@@ -1797,7 +1790,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		sta_info_update(padapter, pstat);
 
 		/* issue assoc rsp before notify station join event. */
-		if (frame_type == WIFI_ASSOCREQ)
+		if (ieee80211_is_assoc_req(frame_control))
 			issue_asocrsp(padapter, status, pstat, WIFI_ASSOCRSP);
 		else
 			issue_asocrsp(padapter, status, pstat, WIFI_REASSOCRSP);
@@ -1825,7 +1818,7 @@ OnAssocReqFail:
 
 #ifdef CONFIG_8723AU_AP_MODE
 	pstat->aid = 0;
-	if (frame_type == WIFI_ASSOCREQ)
+	if (ieee80211_is_assoc_req(frame_control))
 		issue_asocrsp(padapter, status, pstat, WIFI_ASSOCRSP);
 	else
 		issue_asocrsp(padapter, status, pstat, WIFI_REASSOCRSP);
@@ -5168,10 +5161,9 @@ unsigned int OnAction(struct rtw_adapter *padapter, struct recv_frame *precv_fra
 	return _SUCCESS;
 }
 
-unsigned int DoReserved(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+unsigned int DoReserved(struct rtw_adapter *padapter,
+			struct recv_frame *precv_frame)
 {
-
-	/* DBG_8723A("rcvd mgt frame(%x, %x)\n", (GetFrameSubType(pframe) >> 4), *(unsigned int *)GetAddr1Ptr(pframe)); */
 	return _SUCCESS;
 }
 
@@ -7828,8 +7820,9 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	int	i;
 	u32	len;
 	u8	*p;
-	u16	val16, subtype;
+	u16	val16;
 	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8	*pframe = skb->data;
 	u32	packet_len = skb->len;
 	u8 ie_offset;
@@ -7847,17 +7840,15 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 
 	memset(bssid, 0, sizeof(struct wlan_bssid_ex));
 
-	subtype = GetFrameSubType(pframe);
-
-	if(subtype==WIFI_BEACON) {
+	if (ieee80211_is_beacon(hdr->frame_control)) {
 		bssid->Reserved[0] = 1;
 		ie_offset = _BEACON_IE_OFFSET_;
 	} else {
 		/*  FIXME : more type */
-		if (subtype == WIFI_PROBEREQ) {
+		if (ieee80211_is_probe_req(hdr->frame_control)) {
 			ie_offset = _PROBEREQ_IE_OFFSET_;
 			bssid->Reserved[0] = 2;
-		} else if (subtype == WIFI_PROBERSP) {
+		} else if (ieee80211_is_probe_resp(hdr->frame_control)) {
 			ie_offset = _PROBERSP_IE_OFFSET_;
 			bssid->Reserved[0] = 3;
 		} else {
@@ -7959,8 +7950,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		}
 	}
 
-	if (subtype==WIFI_PROBEREQ)
-	{
+	if (ieee80211_is_probe_req(hdr->frame_control)) {
 		/*  FIXME */
 		bssid->InfrastructureMode = Ndis802_11Infrastructure;
 		memcpy(bssid->MacAddress, GetAddr2Ptr(pframe), ETH_ALEN);
