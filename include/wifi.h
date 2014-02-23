@@ -253,10 +253,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(type); \
 	} while(0)
 
-#define GetSequence(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 22)) >> 4)
-
-#define GetFragNum(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 22)) & 0x0f)
-
 #define GetTupleCache(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 22)))
 
 #define SetFragNum(pbuf, num) \

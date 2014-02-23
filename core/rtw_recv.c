@@ -1547,6 +1547,7 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	u8 *ptr = skb->data;
 	u8 ver = (unsigned char)(*ptr)&0x3;
 	u8 bDumpRxPkt;
+	u16 seq_ctrl;
 
 _func_enter_;
 
@@ -1563,8 +1564,9 @@ _func_enter_;
 
 	pattrib->to_fr_ds = get_tofr_ds(hdr->frame_control);
 
-	pattrib->frag_num = GetFragNum(ptr);
-	pattrib->seq_num = GetSequence(ptr);
+	seq_ctrl = le16_to_cpu(hdr->seq_ctrl);
+	pattrib->frag_num = seq_ctrl & IEEE80211_SCTL_FRAG;
+	pattrib->seq_num = seq_ctrl >> 4;
 
 	pattrib->pw_save = ieee80211_has_pm(hdr->frame_control);
 	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);

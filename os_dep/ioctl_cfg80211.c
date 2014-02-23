@@ -2767,7 +2767,7 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 		unsigned char	*pframe;
 		/* u8 category, action, OUI_Subtype, dialogToken=0; */
 		/* unsigned char	*frame_body; */
-		struct rtw_ieee80211_hdr *pwlanhdr;
+		struct ieee80211_hdr *pwlanhdr;
 		struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 		struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 		u8 *buf = skb->data;
@@ -2824,9 +2824,9 @@ dump:
 		#endif /*  CONFIG_8723AU_P2P */
 		pattrib->pktlen = len;
 
-		pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
+		pwlanhdr = (struct ieee80211_hdr *)pframe;
 		/* update seq number */
-		pmlmeext->mgnt_seq = GetSequence(pwlanhdr);
+		pmlmeext->mgnt_seq = le16_to_cpu(pwlanhdr->seq_ctrl) >> 4;
 		pattrib->seqnum = pmlmeext->mgnt_seq;
 		pmlmeext->mgnt_seq++;
 
@@ -3766,7 +3766,7 @@ static int _cfg80211_rtw_mgmt_tx(struct rtw_adapter *padapter, u8 tx_ch, const u
 	unsigned char	*pframe;
 	int ret = _FAIL;
 	bool ack = true;
-	struct rtw_ieee80211_hdr *pwlanhdr;
+	struct ieee80211_hdr *pwlanhdr;
 	struct rtw_wdev_priv *pwdev_priv = wdev_to_priv(padapter->rtw_wdev);
 	struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
@@ -3809,9 +3809,9 @@ static int _cfg80211_rtw_mgmt_tx(struct rtw_adapter *padapter, u8 tx_ch, const u
 	memcpy(pframe, (void*)buf, len);
 	pattrib->pktlen = len;
 
-	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
+	pwlanhdr = (struct ieee80211_hdr *)pframe;
 	/* update seq number */
-	pmlmeext->mgnt_seq = GetSequence(pwlanhdr);
+	pmlmeext->mgnt_seq = le16_to_cpu(pwlanhdr->seq_ctrl) >> 4;
 	pattrib->seqnum = pmlmeext->mgnt_seq;
 	pmlmeext->mgnt_seq++;
 
