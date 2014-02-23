@@ -1230,7 +1230,7 @@ unsigned int OnAuthClient(struct rtw_adapter *padapter,
 	if (!(pmlmeinfo->state & WIFI_FW_AUTH_STATE))
 		return _SUCCESS;
 
-	offset = (GetPrivacy(pframe))? 4: 0;
+	offset = ieee80211_has_protected(hdr->frame_control) ? 4: 0;
 
 	algthm	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + WLAN_HDR_A3_LEN + offset));
 	seq	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + WLAN_HDR_A3_LEN + offset + 2));

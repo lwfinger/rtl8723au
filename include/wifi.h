@@ -231,8 +231,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_PRIVACY_); \
 	} while(0)
 
-#define GetPrivacy(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_PRIVACY_)) != 0)
-
 #define ClearPrivacy(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_PRIVACY_)); \

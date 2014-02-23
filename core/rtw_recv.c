@@ -1569,7 +1569,7 @@ _func_enter_;
 	pattrib->pw_save = ieee80211_has_pm(hdr->frame_control);
 	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);
 	pattrib->mdata = ieee80211_has_moredata(hdr->frame_control);
-	pattrib->privacy = GetPrivacy(ptr);
+	pattrib->privacy = ieee80211_has_protected(hdr->frame_control);
 	pattrib->order = GetOrder(ptr);
 
 	rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
