@@ -11,10 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
  *******************************************************************************/
 #define _USB_OPS_LINUX_C_
 
@@ -52,7 +48,7 @@ static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
 {
 	struct zero_bulkout_context *pcontext = (struct zero_bulkout_context *)purb->context;
 
-	//DBG_8723A("+usb_bulkout_zero_complete\n");
+	/* DBG_8723A("+usb_bulkout_zero_complete\n"); */
 
 	if (pcontext) {
 		kfree(pcontext->pbuf);
@@ -77,7 +73,7 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 	struct dvobj_priv *pdvobj = adapter_to_dvobj(padapter);
 	struct usb_device *pusbd = pdvobj->pusbdev;
 
-	//DBG_8723A("%s\n", __func__);
+	/* DBG_8723A("%s\n", __func__); */
 
 
 	if((padapter->bDriverStopped) || (padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx))
@@ -97,14 +93,14 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 	pcontext->pirp = NULL;
 	pcontext->padapter = padapter;
 
-	//translate DMA FIFO addr to pipehandle
-	//pipe = ffaddr2pipehdl(pdvobj, addr);
+	/* translate DMA FIFO addr to pipehandle */
+	/* pipe = ffaddr2pipehdl(pdvobj, addr); */
 
 	usb_fill_bulk_urb(purb, pusbd, pipe,
 				pbuf,
 				len,
 				usb_bulkout_zero_complete,
-				pcontext);//context is pcontext
+				pcontext);/* context is pcontext */
 
 	status = usb_submit_urb(purb, GFP_ATOMIC);
 
@@ -158,11 +154,10 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	unsigned long irqL;
 	int i;
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)purb->context;
-	//struct xmit_frame *pxmitframe = (struct xmit_frame *)pxmitbuf->priv_data;
-	//struct rtw_adapter			*padapter = pxmitframe->padapter;
+	/* struct xmit_frame *pxmitframe = (struct xmit_frame *)pxmitbuf->priv_data; */
+	/* struct rtw_adapter			*padapter = pxmitframe->padapter; */
 	struct rtw_adapter	*padapter = pxmitbuf->padapter;
        struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
-	//struct pkt_attrib *pattrib = &pxmitframe->attrib;
 
 _func_enter_;
 
@@ -189,49 +184,6 @@ _func_enter_;
 			break;
 	}
 
-
-/*
-	spin_lock_irqsave(&pxmitpriv->lock, irqL);
-
-	pxmitpriv->txirp_cnt--;
-
-	switch(pattrib->priority)
-	{
-		case 1:
-		case 2:
-			pxmitpriv->bkq_cnt--;
-			//DBG_8723A("pxmitpriv->bkq_cnt=%d\n", pxmitpriv->bkq_cnt);
-			break;
-		case 4:
-		case 5:
-			pxmitpriv->viq_cnt--;
-			//DBG_8723A("pxmitpriv->viq_cnt=%d\n", pxmitpriv->viq_cnt);
-			break;
-		case 6:
-		case 7:
-			pxmitpriv->voq_cnt--;
-			//DBG_8723A("pxmitpriv->voq_cnt=%d\n", pxmitpriv->voq_cnt);
-			break;
-		case 0:
-		case 3:
-		default:
-			pxmitpriv->beq_cnt--;
-			//DBG_8723A("pxmitpriv->beq_cnt=%d\n", pxmitpriv->beq_cnt);
-			break;
-
-	}
-
-	spin_unlock_irqrestore(&pxmitpriv->lock, irqL);
-
-
-	if(pxmitpriv->txirp_cnt==0)
-	{
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete: txirp_cnt== 0, set allrxreturnevt!\n"));
-		up(&(pxmitpriv->tx_retevt));
-	}
-*/
-        //rtw_free_xmitframe(pxmitpriv, pxmitframe);
-
 	if(padapter->bSurpriseRemoved || padapter->bDriverStopped ||padapter->bWritePortCancel)
 	{
 		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)", padapter->bDriverStopped, padapter->bSurpriseRemoved));
@@ -249,8 +201,8 @@ _func_enter_;
 		DBG_8723A("###=> urb_write_port_complete status(%d)\n",purb->status);
 		if((purb->status==-EPIPE)||(purb->status==-EPROTO))
 		{
-			//usb_clear_halt(pusbdev, purb->pipe);
-			//msleep(10);
+			/* usb_clear_halt(pusbdev, purb->pipe); */
+			/* msleep(10); */
 			sreset_set_wifi_error_status(padapter, USB_WRITE_PORT_FAIL);
 		} else if (purb->status == -EINPROGRESS) {
 			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_write_port_complete: EINPROGESS\n"));
@@ -294,7 +246,7 @@ check_completion:
 
 	rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 
-	//if(rtw_txframes_pending(padapter))
+	/* if(rtw_txframes_pending(padapter)) */
 	{
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 	}
@@ -364,14 +316,14 @@ _func_enter_;
 
 	purb	= pxmitbuf->pxmit_urb[0];
 
-	//translate DMA FIFO addr to pipehandle
+	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
 	usb_fill_bulk_urb(purb, pusbd, pipe,
-				pxmitframe->buf_addr, //= pxmitbuf->pbuf
+				pxmitframe->buf_addr, /*  pxmitbuf->pbuf */
 				cnt,
 				usb_write_port_complete,
-				pxmitbuf);//context is pxmitbuf
+				pxmitbuf);/* context is pxmitbuf */
 
 	status = usb_submit_urb(purb, GFP_ATOMIC);
 	if (!status) {
@@ -396,8 +348,8 @@ _func_enter_;
 
 	ret= _SUCCESS;
 
-//   Commented by Albert 2009/10/13
-//   We add the URB_ZERO_PACKET flag to urb so that the host will send the zero packet automatically.
+/*    Commented by Albert 2009/10/13 */
+/*    We add the URB_ZERO_PACKET flag to urb so that the host will send the zero packet automatically. */
 /*
 	if(bwritezero == true)
 	{

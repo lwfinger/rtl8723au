@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 
@@ -53,13 +48,13 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 	u8	backupTKIPCountermeasure = 0x00;
 	u32	backupTKIPcountermeasure_time = 0;
 
-	if(adapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)//802.1x
+	if(adapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)/* 802.1x */
 	{
-		// Added by Albert 2009/02/18
-		// We have to backup the PMK information for WiFi PMK Caching test item.
-		//
-		// Backup the btkip_countermeasure information.
-		// When the countermeasure is trigger, the driver have to disconnect with AP for 60 seconds.
+		/*  Added by Albert 2009/02/18 */
+		/*  We have to backup the PMK information for WiFi PMK Caching test item. */
+		/*  */
+		/*  Backup the btkip_countermeasure information. */
+		/*  When the countermeasure is trigger, the driver have to disconnect with AP for 60 seconds. */
 
 		memset(&backupPMKIDList[0], 0x00, sizeof(RT_PMKID_LIST) * NUM_PMKID_CACHE);
 
@@ -69,8 +64,8 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 		backupTKIPcountermeasure_time = adapter->securitypriv.btkip_countermeasure_time;
 
 		memset((unsigned char *)&adapter->securitypriv, 0, sizeof (struct security_priv));
-		// Added by Albert 2009/02/18
-		// Restore the PMK information to securitypriv structure for the following connection.
+		/*  Added by Albert 2009/02/18 */
+		/*  Restore the PMK information to securitypriv structure for the following connection. */
 		memcpy(&adapter->securitypriv.PMKIDList[ 0 ], &backupPMKIDList[ 0 ], sizeof( RT_PMKID_LIST ) * NUM_PMKID_CACHE );
 		adapter->securitypriv.PMKIDIndex = backupPMKIDIndex;
 		adapter->securitypriv.btkip_countermeasure = backupTKIPCountermeasure;
@@ -80,11 +75,11 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 		adapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
 
 	}
-	else //reset values in securitypriv
+	else /* reset values in securitypriv */
 	{
 		struct security_priv *psec_priv=&adapter->securitypriv;
 
-		psec_priv->dot11AuthAlgrthm =dot11AuthAlgrthm_Open;  //open system
+		psec_priv->dot11AuthAlgrthm =dot11AuthAlgrthm_Open;  /* open system */
 		psec_priv->dot11PrivacyAlgrthm = _NO_PRIVACY_;
 		psec_priv->dot11PrivacyKeyIndex = 0;
 
@@ -98,11 +93,11 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 
 void rtw_os_indicate_disconnect(struct rtw_adapter *adapter)
 {
-   //RT_PMKID_LIST   backupPMKIDList[ NUM_PMKID_CACHE ];
+   /* RT_PMKID_LIST   backupPMKIDList[ NUM_PMKID_CACHE ]; */
 
 _func_enter_;
 
-	netif_carrier_off(adapter->pnetdev); // Do it first for tx broadcast pkt after disconnection issue!
+	netif_carrier_off(adapter->pnetdev); /*  Do it first for tx broadcast pkt after disconnection issue! */
 
 	rtw_cfg80211_indicate_disconnect(adapter);
 

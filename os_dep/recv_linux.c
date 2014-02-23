@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _RECV_OSDEP_C_
 
@@ -30,7 +25,7 @@
 
 #include <usb_ops.h>
 
-//init os related resource in struct recv_priv
+/* init os related resource in struct recv_priv */
 int rtw_os_recv_resource_init(struct recv_priv *precvpriv,
 			      struct rtw_adapter *padapter)
 {
@@ -39,7 +34,7 @@ int rtw_os_recv_resource_init(struct recv_priv *precvpriv,
 	return res;
 }
 
-//alloc os related resource in struct recv_frame
+/* alloc os related resource in struct recv_frame */
 int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 			       struct recv_frame *precvframe)
 {
@@ -50,14 +45,14 @@ int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 	return res;
 }
 
-//free os related resource in struct recv_frame
+/* free os related resource in struct recv_frame */
 void rtw_os_recv_resource_free(struct recv_priv *precvpriv)
 {
 
 }
 
 
-//alloc os related resource in struct recv_buf
+/* alloc os related resource in struct recv_buf */
 int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter,
 				  struct recv_buf *precvbuf)
 {
@@ -76,7 +71,7 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter,
 	return res;
 }
 
-//free os related resource in struct recv_buf
+/* free os related resource in struct recv_buf */
 int rtw_os_recvbuf_resource_free(struct rtw_adapter *padapter,
 				 struct recv_buf *precvbuf)
 {
@@ -181,11 +176,11 @@ _func_enter_;
 		struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 		int bmcast = is_multicast_ether_addr(pattrib->dst);
 
-		//DBG_8723A("bmcast=%d\n", bmcast);
+		/* DBG_8723A("bmcast=%d\n", bmcast); */
 
 		if (memcmp(pattrib->dst, myid(&padapter->eeprompriv),
 			   ETH_ALEN)){
-			//DBG_8723A("not ap psta=%p, addr=%pM\n", psta, pattrib->dst);
+			/* DBG_8723A("not ap psta=%p, addr=%pM\n", psta, pattrib->dst); */
 			if (bmcast) {
 				psta = rtw_get_bcmc_stainfo(padapter);
 				pskb2 = skb_clone(skb, GFP_ATOMIC);
@@ -196,9 +191,9 @@ _func_enter_;
 			if (psta) {
 				struct net_device *pnetdev = padapter->pnetdev;
 
-				//DBG_8723A("directly forwarding to the rtw_xmit_entry\n");
+				/* DBG_8723A("directly forwarding to the rtw_xmit_entry\n"); */
 
-				//skb->ip_summed = CHECKSUM_NONE;
+				/* skb->ip_summed = CHECKSUM_NONE; */
 				skb->dev = pnetdev;
 				skb_set_queue_mapping(skb, rtw_recv_select_queue(skb));
 
@@ -209,8 +204,8 @@ _func_enter_;
 				else
 					goto _recv_indicatepkt_end;
 			}
-		} else { // to APself
-			//DBG_8723A("to APSelf\n");
+		} else { /*  to APself */
+			/* DBG_8723A("to APSelf\n"); */
 		}
 	}
 
@@ -222,7 +217,7 @@ _func_enter_;
 
 _recv_indicatepkt_end:
 
-	precv_frame->pkt = NULL; // pointers to NULL before rtw_free_recvframe()
+	precv_frame->pkt = NULL; /*  pointers to NULL before rtw_free_recvframe() */
 
 	rtw_free_recvframe(precv_frame, pfree_recv_queue);
 
@@ -245,7 +240,7 @@ void rtw_os_read_port(struct rtw_adapter *padapter, struct recv_buf *precvbuf)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
-	//free skb in recv_buf
+	/* free skb in recv_buf */
 	dev_kfree_skb_any(precvbuf->pskb);
 
 	precvbuf->pskb = NULL;

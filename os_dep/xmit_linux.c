@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _XMIT_OSDEP_C_
 
@@ -148,13 +143,7 @@ void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
 void rtw_os_xmit_complete(struct rtw_adapter *padapter, struct xmit_frame *pxframe)
 {
 	if(pxframe->pkt)
-	{
-		//RT_TRACE(_module_xmit_osdep_c_,_drv_err_,("linux : rtw_os_xmit_complete, dev_kfree_skb()\n"));
-
-		//dev_kfree_skb_any(pxframe->pkt);
 		rtw_os_pkt_complete(padapter, pxframe->pkt);
-
-	}
 
 	pxframe->pkt = NULL;
 }
@@ -188,7 +177,6 @@ static void rtw_check_xmit_resource(struct rtw_adapter *padapter, struct sk_buff
 	if (padapter->registrypriv.wifi_spec) {
 		/* No free space for Tx, tx_worker is too slow */
 		if (pxmitpriv->hwxmits[queue].accnt > WMM_XMIT_THRESHOLD) {
-			//DBG_8723A("%s(): stop netif_subqueue[%d]\n", __FUNCTION__, queue);
 			netif_stop_subqueue(padapter->pnetdev, queue);
 		}
 	} else {

@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _HCI_INTF_C_
 
@@ -33,7 +28,7 @@
 
 extern int rtw_ht_enable;
 extern int rtw_cbw40_enable;
-extern int rtw_ampdu_enable;//for enable tx_ampdu
+extern int rtw_ampdu_enable;/* for enable tx_ampdu */
 
 int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 static int rtw_suspend(struct usb_interface *intf, pm_message_t message);
@@ -60,11 +55,11 @@ static struct usb_device_id rtw_usb_id_tbl[] ={
 MODULE_DEVICE_TABLE(usb, rtw_usb_id_tbl);
 
 static struct specific_device_id specific_device_id_tbl[] = {
-	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x8177, .flags=SPEC_DEV_ID_DISABLE_HT},//8188cu 1*1 dongole, (b/g mode only)
-	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x817E, .flags=SPEC_DEV_ID_DISABLE_HT},//8188CE-VAU USB minCard (b/g mode only)
+	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x8177, .flags=SPEC_DEV_ID_DISABLE_HT},/* 8188cu 1*1 dongole, (b/g mode only) */
+	{.idVendor=USB_VENDER_ID_REALTEK, .idProduct=0x817E, .flags=SPEC_DEV_ID_DISABLE_HT},/* 8188CE-VAU USB minCard (b/g mode only) */
 	{.idVendor=0x0b05, .idProduct=0x1791, .flags=SPEC_DEV_ID_DISABLE_HT},
 	{.idVendor=0x13D3, .idProduct=0x3311, .flags=SPEC_DEV_ID_DISABLE_HT},
-	{.idVendor=0x13D3, .idProduct=0x3359, .flags=SPEC_DEV_ID_DISABLE_HT},//Russian customer -Azwave (8188CE-VAU  g mode)
+	{.idVendor=0x13D3, .idProduct=0x3359, .flags=SPEC_DEV_ID_DISABLE_HT},/* Russian customer -Azwave (8188CE-VAU  g mode) */
 	{}
 };
 
@@ -244,7 +239,7 @@ _func_enter_;
 		goto free_dvobj;
 	}
 
-	//.3 misc
+	/* 3 misc */
 	sema_init(&(pdvobjpriv->usb_suspend_sema), 0);
 	rtw_reset_continual_urb_error(pdvobjpriv);
 
@@ -275,12 +270,12 @@ _func_enter_;
 
 	usb_set_intfdata(usb_intf, NULL);
 	if (dvobj) {
-		//Modify condition for 92DU DMDP 2010.11.18, by Thomas
+		/* Modify condition for 92DU DMDP 2010.11.18, by Thomas */
 		if ((dvobj->NumInterfaces != 2 && dvobj->NumInterfaces != 3)
 			|| (dvobj->InterfaceNumber == 1)) {
 			if (interface_to_usbdev(usb_intf)->state != USB_STATE_NOTATTACHED) {
-				//If we didn't unplug usb dongle and remove/insert modlue, driver fails on sitesurvey for the first time when device is up .
-				//Reset usb port for sitesurvey fail issue. 2009.8.13, by Thomas
+				/* If we didn't unplug usb dongle and remove/insert modlue, driver fails on sitesurvey for the first time when device is up . */
+				/* Reset usb port for sitesurvey fail issue. 2009.8.13, by Thomas */
 				DBG_8723A("usb attached..., try to reset usb device\n");
 				usb_reset_device(interface_to_usbdev(usb_intf));
 			}
@@ -320,21 +315,21 @@ static void usb_intf_stop(struct rtw_adapter *padapter)
 
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+usb_intf_stop\n"));
 
-	//disabel_hw_interrupt
+	/* disabel_hw_interrupt */
 	if(padapter->bSurpriseRemoved == false)
 	{
-		//device still exists, so driver can do i/o operation
-		//TODO:
+		/* device still exists, so driver can do i/o operation */
+		/* TODO: */
 		RT_TRACE(_module_hci_intfs_c_,_drv_err_,("SurpriseRemoved==false\n"));
 	}
 
-	//cancel in irp
+	/* cancel in irp */
 	rtw_hal_inirp_deinit(padapter);
 
-	//cancel out irp
+	/* cancel out irp */
 	rtw_write_port_cancel(padapter);
 
-	//todo:cancel other irps
+	/* todo:cancel other irps */
 
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("-usb_intf_stop\n"));
 
@@ -354,16 +349,16 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 		if (padapter->xmitpriv.ack_tx)
 			rtw_ack_tx_done(&padapter->xmitpriv, RTW_SCTX_DONE_DRV_STOP);
 
-		//s3.
+		/* s3. */
 		if(padapter->intf_stop)
 			padapter->intf_stop(padapter);
 
-		//s4.
+		/* s4. */
 		if(!padapter->pwrctrlpriv.bInternalAutoSuspend )
 			rtw_stop_drv_threads(padapter);
 
 
-		//s5.
+		/* s5. */
 		if(padapter->bSurpriseRemoved == false)
 		{
 #ifdef CONFIG_WOWLAN
@@ -371,7 +366,7 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 				DBG_8723A("%s bSupportWakeOnWlan==true  do not run rtw_hal_deinit()\n",__FUNCTION__);
 			}
 			else
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 			{
 				rtw_hal_deinit(padapter);
 			}
@@ -381,7 +376,7 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 		padapter->bup = false;
 #ifdef CONFIG_WOWLAN
 		padapter->hw_init_completed=false;
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 	}
 	else
 	{
@@ -431,26 +426,26 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 		goto error_exit;
 	}
 
-	if(padapter)//system suspend
+	if(padapter)/* system suspend */
 	{
 		LeaveAllPowerSaveMode(padapter);
 
 		DBG_8723A("==> rtw_hw_suspend\n");
 		down(&pwrpriv->lock);
 		pwrpriv->bips_processing = true;
-		//padapter->net_closed = true;
-		//s1.
+		/* padapter->net_closed = true; */
+		/* s1. */
 		if(pnetdev)
 		{
 			netif_carrier_off(pnetdev);
 			rtw_netif_stop_queue(pnetdev);
 		}
 
-		//s2.
+		/* s2. */
 		rtw_disassoc_cmd(padapter, 500, false);
 
-		//s2-2.  indicate disconnect to os
-		//rtw_indicate_disconnect(padapter);
+		/* s2-2.  indicate disconnect to os */
+		/* rtw_indicate_disconnect(padapter); */
 		{
 			struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
@@ -463,16 +458,16 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 				rtw_os_indicate_disconnect(padapter);
 
 				#ifdef CONFIG_LPS
-				//donnot enqueue cmd
+				/* donnot enqueue cmd */
 				rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_DISCONNECT, 0);
 				#endif
 			}
 
 		}
-		//s2-3.
+		/* s2-3. */
 		rtw_free_assoc_resources(padapter, 1);
 
-		//s2-4.
+		/* s2-4. */
 		rtw_free_network_queue(padapter,true);
 		#ifdef CONFIG_IPS
 		rtw_ips_dev_unload(padapter);
@@ -502,7 +497,7 @@ int rtw_hw_resume(struct rtw_adapter *padapter)
 
 	_func_enter_;
 
-	if(padapter)//system resume
+	if(padapter)/* system resume */
 	{
 		DBG_8723A("==> rtw_hw_resume\n");
 		down(&pwrpriv->lock);
@@ -554,7 +549,7 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	struct usb_device *usb_dev = interface_to_usbdev(pusb_intf);
 #ifdef CONFIG_WOWLAN
 	struct wowlan_ioctl_param poidparam;
-#endif // CONFIG_WOWLAN
+#endif /*  CONFIG_WOWLAN */
 
 	int ret = 0;
 	u32 start_time = rtw_get_current_time();
@@ -581,8 +576,8 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	LeaveAllPowerSaveMode(padapter);
 
 	down(&pwrpriv->lock);
-	//padapter->net_closed = true;
-	//s1.
+	/* padapter->net_closed = true; */
+	/* s1. */
 	if(pnetdev)
 	{
 		netif_carrier_off(pnetdev);
@@ -591,17 +586,17 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 
 #ifdef CONFIG_WOWLAN
 	if(padapter->pwrctrlpriv.bSupportRemoteWakeup==true&&padapter->pwrctrlpriv.wowlan_mode==true){
-		//set H2C command
+		/* set H2C command */
 		poidparam.subcode=WOWLAN_ENABLE;
 		padapter->HalFunc.SetHwRegHandler(padapter,HW_VAR_WOWLAN,(u8 *)&poidparam);
 	}
 	else
 #else
 	{
-	//s2.
+	/* s2. */
 	rtw_disassoc_cmd(padapter, 0, false);
 	}
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) && check_fwstate(pmlmepriv, _FW_LINKED) )
 	{
@@ -613,11 +608,11 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 
 		rtw_set_roaming(padapter, 1);
 	}
-	//s2-2.  indicate disconnect to os
+	/* s2-2.  indicate disconnect to os */
 	rtw_indicate_disconnect(padapter);
-	//s2-3.
+	/* s2-3. */
 	rtw_free_assoc_resources(padapter, 1);
-	//s2-4.
+	/* s2-4. */
 	rtw_free_network_queue(padapter, true);
 
 	rtw_dev_unload(padapter);
@@ -662,7 +657,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 	u32 start_time = rtw_get_current_time();
 #ifdef CONFIG_8723AU_BT_COEXIST
 	u8 pm_cnt;
-#endif	//#ifdef CONFIG_8723AU_BT_COEXIST
+#endif	/* ifdef CONFIG_8723AU_BT_COEXIST */
 	_func_enter_;
 
 	DBG_8723A("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
@@ -730,7 +725,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	padapter->iface_id = IFACE_ID0;
 
 #ifndef RTW_DVOBJ_CHIP_HW_TYPE
-	//step 1-1., decide the chip_type via vid/pid
+	/* step 1-1., decide the chip_type via vid/pid */
 	padapter->interface_type = RTW_USB;
 	decide_chip_type_by_usb_device_id(padapter, pdid);
 #endif
@@ -744,25 +739,25 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 		goto handle_dualmac;
 	}
 
-	//step 2. hook HalFunc, allocate HalData
+	/* step 2. hook HalFunc, allocate HalData */
 	hal_set_hal_ops(padapter);
 
 	padapter->intf_start=&usb_intf_start;
 	padapter->intf_stop=&usb_intf_stop;
 
-	//step init_io_priv
+	/* step init_io_priv */
 	rtw_init_io_priv(padapter, usb_set_intf_ops);
 
-	//step read_chip_version
+	/* step read_chip_version */
 	rtw_hal_read_chip_version(padapter);
 
-	//step usb endpoint mapping
+	/* step usb endpoint mapping */
 	rtw_hal_chip_configure(padapter);
 
-	//step read efuse/eeprom data and get mac_addr
+	/* step read efuse/eeprom data and get mac_addr */
 	rtw_hal_read_chip_info(padapter);
 
-	//step 5.
+	/* step 5. */
 	if(rtw_init_drv_sw(padapter) ==_FAIL) {
 		RT_TRACE(_module_hci_intfs_c_,_drv_err_,("Initialize driver software resource Failed!\n"));
 		goto free_hal_data;
@@ -779,14 +774,14 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	}
 #endif
 
-	//2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence
+	/* 2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence */
 			if (usb_autopm_get_interface(pusb_intf) < 0)
 					DBG_8723A( "can't get autopm: \n");
 #ifdef	CONFIG_8723AU_BT_COEXIST
 	padapter->pwrctrlpriv.autopm_cnt=1;
 #endif
 
-	// set mac addr
+	/*  set mac addr */
 	rtw_macaddr_cfg(padapter->eeprompriv.mac_addr);
 	rtw_init_wifidirect_addrs(padapter, padapter->eeprompriv.mac_addr, padapter->eeprompriv.mac_addr);
 
@@ -835,7 +830,7 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 
 	if(if1->DriverState != DRIVER_DISAPPEAR) {
 		if(pnetdev) {
-			unregister_netdev(pnetdev); //will call netdev_close()
+			unregister_netdev(pnetdev); /* will call netdev_close() */
 			rtw_proc_remove_one(pnetdev);
 		}
 	}
@@ -844,7 +839,7 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 
 #ifdef CONFIG_WOWLAN
 	if1->pwrctrlpriv.wowlan_mode=false;
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 
 	rtw_dev_unload(if1);
 
@@ -968,7 +963,7 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_init\n"));
 
-	//step 0.
+	/* step 0. */
 	process_spec_devid(pdid);
 
 	/* Initialize dvobj_priv */
@@ -986,7 +981,7 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 		goto free_dvobj;
 	}
 
-	//dev_alloc_name && register_netdev
+	/* dev_alloc_name && register_netdev */
 	if((status = rtw_drv_register_netdev(if1)) != _SUCCESS) {
 		goto free_if1;
 	}

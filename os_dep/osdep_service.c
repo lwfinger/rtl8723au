@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 
@@ -38,8 +33,8 @@ inline int RTW_STATUS_CODE(int error_code){
 		return _SUCCESS;
 
 	switch(error_code) {
-		//case -ETIMEDOUT:
-		//	return RTW_STATUS_TIMEDOUT;
+		/* case -ETIMEDOUT: */
+		/* 	return RTW_STATUS_TIMEDOUT; */
 		default:
 			return _FAIL;
 	}
@@ -125,7 +120,7 @@ inline u32 rtw_ms_to_systime(u32 ms)
 	return ms * HZ / 1000;
 }
 
-// the input parameter start use the same unit as returned by rtw_get_current_time
+/*  the input parameter start use the same unit as returned by rtw_get_current_time */
 inline s32 rtw_get_passing_time_ms(u32 start)
 {
 	return rtw_systime_to_ms(jiffies-start);
@@ -159,7 +154,7 @@ inline void rtw_unlock_suspend(void)
 inline void rtw_lock_suspend_timeout(long timeout)
 {
 }
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 
 /*
 * Open a file with the specific @param path, @param flag, @param mode
