@@ -20,14 +20,8 @@
 #include <linux/ip.h>
 #include <linux/if_ether.h>
 #include <ethernet.h>
-
 #include <usb_ops.h>
-
-
 #include <wifi.h>
-#include <circ_buf.h>
-
-/* include <rtl8192c_hal.h> */
 #include <rtl8723a_hal.h>
 
 void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,

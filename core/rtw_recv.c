@@ -23,7 +23,6 @@
 #include <usb_ops.h>
 #include <linux/ieee80211.h>
 #include <wifi.h>
-#include <circ_buf.h>
 
 static u8 SNAP_ETH_TYPE_IPX[2] = {0x81, 0x37};
 

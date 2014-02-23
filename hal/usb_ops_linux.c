@@ -18,7 +18,6 @@
 #include <drv_types.h>
 #include <osdep_intf.h>
 #include <usb_ops.h>
-#include <circ_buf.h>
 #include <recv_osdep.h>
 #include <rtl8723a_hal.h>
 #include <rtl8723a_recv.h>

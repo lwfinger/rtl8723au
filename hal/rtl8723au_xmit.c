@@ -17,7 +17,6 @@
 #include <drv_types.h>
 #include <wifi.h>
 #include <osdep_intf.h>
-#include <circ_buf.h>
 #include <usb_ops.h>
 /* include <rtl8192c_hal.h> */
 #include <rtl8723a_hal.h>
