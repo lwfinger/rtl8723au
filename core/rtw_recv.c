@@ -638,8 +638,7 @@ _func_enter_;
 			prtnframe = precv_frame;
 
 			/* get ether_type */
-			ptr = ptr + pfhdr->attrib.hdrlen +
-				pfhdr->attrib.iv_len + LLC_HEADER_SIZE;
+			ptr = ptr + pfhdr->attrib.hdrlen + LLC_HEADER_SIZE;
 			memcpy(&ether_type, ptr, 2);
 			ether_type = ntohs((unsigned short)ether_type);
 
@@ -1649,12 +1648,8 @@ static int wlanhdr_to_ethhdr (struct recv_frame *precvframe)
 
 _func_enter_;
 
-	if (pattrib->encrypt) {
-		skb_trim(skb, skb->len - pattrib->icv_len);
-	}
-
 	ptr = skb->data;
-	hdrlen = pattrib->hdrlen + pattrib->iv_len;
+	hdrlen = pattrib->hdrlen;
 	psnap = ptr + hdrlen;
 	eth_type = (psnap[6] << 8) | psnap[7];
 	/* convert hdr + possible LLC headers into Ethernet header */
@@ -1935,10 +1930,6 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	pattrib = &prframe->attrib;
 
 	skb_pull(prframe->pkt, prframe->attrib.hdrlen);
-
-	if (prframe->attrib.iv_len > 0) {
-		skb_pull(prframe->pkt, prframe->attrib.iv_len);
-	}
 
 	a_len = prframe->pkt->len;
 
@@ -2530,6 +2521,18 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 ("recvframe_chk_defrag: drop pkt\n"));
 		goto _recv_data_drop;
+	}
+
+	/*
+	 * Pull off crypto headers
+	 */
+	if (prframe->attrib.iv_len > 0) {
+		skb_pull(prframe->pkt, prframe->attrib.iv_len);
+	}
+
+	if (prframe->attrib.icv_len > 0) {
+		skb_trim(prframe->pkt,
+			 prframe->pkt->len - prframe->attrib.icv_len);
 	}
 
 	prframe = portctrl(padapter, prframe);
