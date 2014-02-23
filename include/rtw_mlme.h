@@ -160,14 +160,14 @@ typedef struct _RT_LINK_DETECT_T{
 
 struct profile_info {
 	u8	ssidlen;
-	u8	ssid[ WLAN_SSID_MAXLEN ];
+	u8	ssid[IEEE80211_MAX_SSID_LEN];
 	u8	peermac[ ETH_ALEN ];
 };
 
 struct tx_invite_req_info{
 	u8					token;
 	u8					benable;
-	u8					go_ssid[ WLAN_SSID_MAXLEN ];
+	u8					go_ssid[IEEE80211_MAX_SSID_LEN];
 	u8					ssidlen;
 	u8					go_bssid[ ETH_ALEN ];
 	u8					peer_macaddr[ ETH_ALEN ];
@@ -226,8 +226,9 @@ struct tx_nego_req_info{
 };
 
 struct group_id_info{
-	u8					go_device_addr[ ETH_ALEN ];	/* 	The GO's device address of this P2P group */
-	u8					ssid[ WLAN_SSID_MAXLEN ];	/* 	The SSID of this P2P group */
+	u8 go_device_addr[ETH_ALEN]; /*The GO's device address of P2P group */
+	
+	u8 ssid[IEEE80211_MAX_SSID_LEN]; /* The SSID of this P2P group */
 };
 
 struct scan_limit_info{
@@ -287,10 +288,11 @@ struct wifidirect_info{
 	u8						find_phase_state_exchange_cnt;
 	u16						device_password_id_for_nego;	/* 	The device password ID for group negotation */
 	u8						negotiation_dialog_token;
-	u8						nego_ssid[ WLAN_SSID_MAXLEN ];	/* 	SSID information for group negotitation */
-	u8						nego_ssidlen;
-	u8						p2p_group_ssid[WLAN_SSID_MAXLEN];
-	u8						p2p_group_ssid_len;
+	/* 	SSID information for group negotitation */
+	u8 nego_ssid[IEEE80211_MAX_SSID_LEN];
+	u8 nego_ssidlen;
+	u8 p2p_group_ssid[IEEE80211_MAX_SSID_LEN];
+	u8 p2p_group_ssid_len;
 	u8						persistent_supported;		/* 	Flag to know the persistent function should be supported or not. */
 														/* 	In the Sigma test, the Sigma will provide this enable from the sta_set_p2p CAPI. */
 														/* 	0: disable */

@@ -1490,20 +1490,17 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 		return ret;
 	}
 
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-	{
+	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))	{
 		DBG_8723A( "[%s] WiFi Direct is disable!\n", __func__ );
 		return ret;
-	}
-	else
-	{
+	} else {
 		/* 	Reset the content of struct tx_invite_req_info */
 		pinvite_req_info->benable = false;
-		memset( pinvite_req_info->go_bssid, 0x00, ETH_ALEN );
-		memset( pinvite_req_info->go_ssid, 0x00, WLAN_SSID_MAXLEN );
+		memset(pinvite_req_info->go_bssid, 0x00, ETH_ALEN);
+		memset(pinvite_req_info->go_ssid, 0x00, IEEE80211_MAX_SSID_LEN);
 		pinvite_req_info->ssidlen = 0x00;
 		pinvite_req_info->operating_ch = pwdinfo->operating_channel;
-		memset( pinvite_req_info->peer_macaddr, 0x00, ETH_ALEN );
+		memset(pinvite_req_info->peer_macaddr, 0x00, ETH_ALEN);
 		pinvite_req_info->token = 3;
 	}
 

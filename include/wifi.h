@@ -22,27 +22,6 @@
 #define BIT(x)	(1 << (x))
 
 
-#define WLAN_ETHHDR_LEN		14
-#define WLAN_ETHADDR_LEN	6
-#define WLAN_IEEE_OUI_LEN	3
-#define WLAN_ADDR_LEN		6
-#define WLAN_CRC_LEN		4
-#define WLAN_BSSID_LEN		6
-#define WLAN_BSS_TS_LEN		8
-#define WLAN_HDR_A3_LEN		24
-#define WLAN_HDR_A4_LEN		30
-#define WLAN_HDR_A3_QOS_LEN	26
-#define WLAN_HDR_A4_QOS_LEN	32
-#define WLAN_SSID_MAXLEN	32
-#define WLAN_DATA_MAXLEN	2312
-
-#define WLAN_A3_PN_OFFSET	24
-#define WLAN_A4_PN_OFFSET	30
-
-#define WLAN_MIN_ETHFRM_LEN	60
-#define WLAN_MAX_ETHFRM_LEN	1514
-#define WLAN_ETHHDR_LEN		14
-
 #define P80211CAPTURE_VERSION	0x80211001
 
 /*  This value is tested by WiFi 11n Test Plan 5.2.3. */

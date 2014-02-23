@@ -1289,35 +1289,25 @@ _func_enter_;
 	memset((void *)aes_out, 0, 16);
 	memset((void *)padded_buffer, 0, 16);
 
-	if ((hdrlen == WLAN_HDR_A3_LEN )||(hdrlen ==  WLAN_HDR_A3_QOS_LEN))
+	if ((hdrlen == sizeof(struct ieee80211_hdr_3addr) ||
+	     (hdrlen == sizeof(struct ieee80211_qos_hdr))))
 		a4_exists = 0;
 	else
 		a4_exists = 1;
 
-	if (
-		(frtype == WIFI_DATA_CFACK) ||
-		(frtype == WIFI_DATA_CFPOLL)||
-		(frtype == WIFI_DATA_CFACKPOLL))
-		{
+	if ((frtype == WIFI_DATA_CFACK) || (frtype == WIFI_DATA_CFPOLL) ||
+	    (frtype == WIFI_DATA_CFACKPOLL)) {
 			qc_exists = 1;
-					if(hdrlen !=  WLAN_HDR_A3_QOS_LEN){
-
+			if (hdrlen != sizeof(struct ieee80211_qos_hdr)) {
 					hdrlen += 2;
 			}
 		}
-	else if (
-		(frsubtype == 0x08) ||
-		(frsubtype == 0x09)||
-		(frsubtype == 0x0a)||
-		(frsubtype == 0x0b))
-		{
-			if(hdrlen !=  WLAN_HDR_A3_QOS_LEN){
-
-					hdrlen += 2;
-			}
+	else if ((frsubtype == 0x08) ||	(frsubtype == 0x09) ||
+		 (frsubtype == 0x0a) ||	(frsubtype == 0x0b)) {
+			if (hdrlen != sizeof(struct ieee80211_qos_hdr))
+				hdrlen += 2;
 			qc_exists = 1;
-		}
-	else
+	} else
 		qc_exists = 0;
 
 	pn_vector[0]=pframe[hdrlen];
@@ -1577,35 +1567,25 @@ _func_enter_;
 	pn_vector[4]  = pframe[hdrlen+6];
 	pn_vector[5]  = pframe[hdrlen+7];
 
-	if ((hdrlen == WLAN_HDR_A3_LEN )||(hdrlen ==  WLAN_HDR_A3_QOS_LEN))
+	if ((hdrlen == sizeof(struct ieee80211_hdr_3addr) ||
+	     (hdrlen == sizeof(struct ieee80211_qos_hdr))))
 		a4_exists = 0;
 	else
 		a4_exists = 1;
 
-	if (
-		(frtype == WIFI_DATA_CFACK) ||
-		(frtype == WIFI_DATA_CFPOLL)||
-		(frtype == WIFI_DATA_CFACKPOLL))
-		{
-			qc_exists = 1;
-					if(hdrlen !=  WLAN_HDR_A3_QOS_LEN){
-
-					hdrlen += 2;
-			}
+	if ((frtype == WIFI_DATA_CFACK) || (frtype == WIFI_DATA_CFPOLL) ||
+	    (frtype == WIFI_DATA_CFACKPOLL)) {
+		qc_exists = 1;
+		if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
+			hdrlen += 2;
 		}
-	else if (
-		(frsubtype == 0x08) ||
-		(frsubtype == 0x09)||
-		(frsubtype == 0x0a)||
-		(frsubtype == 0x0b))
-		{
-			if(hdrlen !=  WLAN_HDR_A3_QOS_LEN){
-
-					hdrlen += 2;
-			}
-			qc_exists = 1;
+	} else if ((frsubtype == 0x08) || (frsubtype == 0x09) ||
+		   (frsubtype == 0x0a) || (frsubtype == 0x0b)) {
+		if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
+			hdrlen += 2;
 		}
-	else
+		qc_exists = 1;
+	} else
 		qc_exists = 0;
 
 	/*  now, decrypt pframe with hdrlen offset and plen long */

@@ -1326,11 +1326,11 @@ void update_beacon_info(struct rtw_adapter *padapter, u8 *pframe, uint pkt_len, 
 	unsigned int len;
 	struct ndis_802_11_var_ies *	pIE;
 
-	len = pkt_len - (_BEACON_IE_OFFSET_ + WLAN_HDR_A3_LEN);
+	len = pkt_len -
+		(_BEACON_IE_OFFSET_ + sizeof(struct ieee80211_hdr_3addr));
 
-	for (i = 0; i < len;)
-	{
-		pIE = (struct ndis_802_11_var_ies *)(pframe + (_BEACON_IE_OFFSET_ + WLAN_HDR_A3_LEN) + i);
+	for (i = 0; i < len;) {
+		pIE = (struct ndis_802_11_var_ies *)(pframe + (_BEACON_IE_OFFSET_ + sizeof(struct ieee80211_hdr_3addr)) + i);
 
 		switch (pIE->ElementID) {
 		case _HT_EXTRA_INFO_IE_:	/* HT info */

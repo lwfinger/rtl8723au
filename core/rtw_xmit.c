@@ -505,7 +505,7 @@ static void set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 	}
 
 	pattrib->priority = UserPriority;
-	pattrib->hdrlen = WLAN_HDR_A3_QOS_LEN;
+	pattrib->hdrlen = sizeof(struct ieee80211_qos_hdr);
 	pattrib->subtype = WIFI_QOS_DATA_TYPE;
 }
 
@@ -638,7 +638,7 @@ static s32 update_attrib(struct rtw_adapter *padapter,
 	/* pattrib->ether_type == 0x8100) ? (14 + 4 ): 14; vlan tag */
 	pattrib->pkt_hdrlen = ETH_HLEN;
 
-	pattrib->hdrlen = WLAN_HDR_A3_LEN;
+	pattrib->hdrlen = sizeof(struct ieee80211_hdr_3addr);
 	pattrib->subtype = WIFI_DATA_TYPE;
 	pattrib->priority = 0;
 

@@ -550,7 +550,9 @@ static u8 cmp_pkt_chnl_diff(struct rtw_adapter *padapter,u8* pframe,uint packet_
 	uint len;
 	u8 channel;
 	u8 *p;
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _BEACON_IE_OFFSET_, _DSSET_IE_, &len, packet_len - _BEACON_IE_OFFSET_);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) +
+		       _BEACON_IE_OFFSET_, _DSSET_IE_, &len,
+		       packet_len - _BEACON_IE_OFFSET_);
 	if (p)
 	{
 		channel = *(p + 2);
@@ -775,9 +777,10 @@ _continue:
 		return _SUCCESS;
 	}
 
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_,
-		       _SSID_IE_, (int *)&ielen,
-		       len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) +
+		       _PROBEREQ_IE_OFFSET_, _SSID_IE_, (int *)&ielen,
+		       len - sizeof(struct ieee80211_hdr_3addr)
+		       - _PROBEREQ_IE_OFFSET_);
 
 	/* check (wildcard) SSID */
 	if (p) {
@@ -930,7 +933,7 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 			}
 
 			/* check the vendor of the assoc AP */
-			pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pframe+sizeof(struct ieee80211_hdr_3addr), len-sizeof(struct ieee80211_hdr_3addr));
+			pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pframe + sizeof(struct ieee80211_hdr_3addr), len-sizeof(struct ieee80211_hdr_3addr));
 
 			/* update TSF Value */
 			update_TSF(pmlmeext, pframe, len);
@@ -960,7 +963,7 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 				}
 
 #ifdef CONFIG_8723AU_P2P
-				process_p2p_ps_ie(padapter, (pframe + WLAN_HDR_A3_LEN), (len - WLAN_HDR_A3_LEN));
+				process_p2p_ps_ie(padapter, (pframe + sizeof(struct ieee80211_hdr_3addr)), (len - sizeof(struct ieee80211_hdr_3addr)));
 #endif /* CONFIG_8723AU_P2P */
 
 			}
@@ -987,7 +990,7 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 				}
 
 				/* get supported rate */
-				if (update_sta_support_rate(padapter, (pframe + WLAN_HDR_A3_LEN + _BEACON_IE_OFFSET_), (len - WLAN_HDR_A3_LEN - _BEACON_IE_OFFSET_), cam_idx) == _FAIL)
+				if (update_sta_support_rate(padapter, (pframe + sizeof(struct ieee80211_hdr_3addr) + _BEACON_IE_OFFSET_), (len - sizeof(struct ieee80211_hdr_3addr) - _BEACON_IE_OFFSET_), cam_idx) == _FAIL)
 				{
 					pmlmeinfo->FW_sta_info[cam_idx].status = 0;
 					goto _END_ONBEACON_;
@@ -1032,8 +1035,8 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	sa = GetAddr2Ptr(pframe);
 
 	auth_mode = psecuritypriv->dot11AuthAlgrthm;
-	seq = cpu_to_le16(*(u16*)((unsigned long)pframe + WLAN_HDR_A3_LEN + 2));
-	algorithm = cpu_to_le16(*(u16*)((unsigned long)pframe + WLAN_HDR_A3_LEN));
+	seq = cpu_to_le16(*(u16*)((unsigned long)pframe + sizeof(struct ieee80211_hdr_3addr) + 2));
+	algorithm = cpu_to_le16(*(u16*)((unsigned long)pframe + sizeof(struct ieee80211_hdr_3addr)));
 
 	DBG_8723A("auth alg=%x, seq=%X\n", algorithm, seq);
 
@@ -1146,8 +1149,8 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 			/* checking for challenging txt... */
 			DBG_8723A("checking for challenging txt...\n");
 
-			p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + 4 + _AUTH_IE_OFFSET_ , _CHLGETXT_IE_, (int *)&ie_len,
-					len - WLAN_HDR_A3_LEN - _AUTH_IE_OFFSET_ - 4);
+			p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + 4 + _AUTH_IE_OFFSET_ , _CHLGETXT_IE_, (int *)&ie_len,
+					len - sizeof(struct ieee80211_hdr_3addr) - _AUTH_IE_OFFSET_ - 4);
 
 			if((p==NULL) || (ie_len<=0))
 			{
@@ -1230,9 +1233,9 @@ unsigned int OnAuthClient(struct rtw_adapter *padapter,
 
 	offset = ieee80211_has_protected(hdr->frame_control) ? 4: 0;
 
-	algthm	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + WLAN_HDR_A3_LEN + offset));
-	seq	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + WLAN_HDR_A3_LEN + offset + 2));
-	status	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + WLAN_HDR_A3_LEN + offset + 4));
+	algthm	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + sizeof(struct ieee80211_hdr_3addr) + offset));
+	seq	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + sizeof(struct ieee80211_hdr_3addr) + offset + 2));
+	status	= le16_to_cpu(*(unsigned short *)((unsigned long)pframe + sizeof(struct ieee80211_hdr_3addr) + offset + 4));
 
 	if (status != 0)
 	{
@@ -1255,8 +1258,8 @@ unsigned int OnAuthClient(struct rtw_adapter *padapter,
 		if (pmlmeinfo->auth_algo == dot11AuthAlgrthm_Shared)
 		{
 			 /*  legendary shared system */
-			p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _AUTH_IE_OFFSET_, _CHLGETXT_IE_, (int *)&len,
-				pkt_len - WLAN_HDR_A3_LEN - _AUTH_IE_OFFSET_);
+			p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + _AUTH_IE_OFFSET_, _CHLGETXT_IE_, (int *)&len,
+				pkt_len - sizeof(struct ieee80211_hdr_3addr) - _AUTH_IE_OFFSET_);
 
 			if (p == NULL)
 			{
@@ -1370,10 +1373,10 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		goto asoc_class2_error;
 	}
 
-	capab_info = RTW_GET_LE16(pframe + WLAN_HDR_A3_LEN);
-	/* capab_info = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN)); */
-	/* listen_interval = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN+2)); */
-	listen_interval = RTW_GET_LE16(pframe + WLAN_HDR_A3_LEN+2);
+	capab_info = RTW_GET_LE16(pframe + sizeof(struct ieee80211_hdr_3addr));
+	/* capab_info = le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr))); */
+	/* listen_interval = le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr)+2)); */
+	listen_interval = RTW_GET_LE16(pframe + sizeof(struct ieee80211_hdr_3addr)+2);
 
 	left = pkt_len - (sizeof(struct ieee80211_hdr_3addr) + ie_offset);
 	pos = pframe + (sizeof(struct ieee80211_hdr_3addr) + ie_offset);
@@ -1413,8 +1416,8 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 
 	/*  now we should check all the fields... */
 	/*  checking SSID */
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + ie_offset, _SSID_IE_, &ie_len,
-		pkt_len - WLAN_HDR_A3_LEN - ie_offset);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset, _SSID_IE_, &ie_len,
+		pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset);
 	if (p == NULL)
 	{
 		status = _STATS_FAILURE_;
@@ -1436,7 +1439,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		goto OnAssocReqFail;
 
 	/*  check if the supported rate is ok */
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + ie_offset, _SUPPORTEDRATES_IE_, &ie_len, pkt_len - WLAN_HDR_A3_LEN - ie_offset);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset, _SUPPORTEDRATES_IE_, &ie_len, pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset);
 	if (p == NULL) {
 		DBG_8723A("Rx a sta assoc-req which supported rate is empty!\n");
 		/*  use our own rate set as statoin used */
@@ -1450,8 +1453,8 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		memcpy(supportRate, p+2, ie_len);
 		supportRateNum = ie_len;
 
-		p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + ie_offset, _EXT_SUPPORTEDRATES_IE_ , &ie_len,
-				pkt_len - WLAN_HDR_A3_LEN - ie_offset);
+		p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset, _EXT_SUPPORTEDRATES_IE_ , &ie_len,
+				pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset);
 		if (p !=  NULL) {
 
 			if(supportRateNum<=sizeof(supportRate))
@@ -1604,10 +1607,10 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	pstat->uapsd_bk = 0;
 	if (pmlmepriv->qospriv.qos_option)
 	{
-		p = pframe + WLAN_HDR_A3_LEN + ie_offset; ie_len = 0;
+		p = pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset; ie_len = 0;
 		for (;;)
 		{
-			p = rtw_get_ie(p, _VENDOR_SPECIFIC_IE_, &ie_len, pkt_len - WLAN_HDR_A3_LEN - ie_offset);
+			p = rtw_get_ie(p, _VENDOR_SPECIFIC_IE_, &ie_len, pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset);
 			if (p != NULL) {
 				if (!memcmp(p+2, WMM_IE, 6)) {
 
@@ -1708,7 +1711,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	pstat->is_p2p_device = false;
 	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 	{
-		if( (p2pie=rtw_get_p2p_ie(pframe + WLAN_HDR_A3_LEN + ie_offset , pkt_len - WLAN_HDR_A3_LEN - ie_offset , NULL, &p2pielen)))
+		if( (p2pie=rtw_get_p2p_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset , pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset , NULL, &p2pielen)))
 		{
 			pstat->is_p2p_device = true;
 			if((p2p_status_code=(u8)process_assoc_req_p2p_ie(pwdinfo, pframe, pkt_len, pstat))>0)
@@ -1719,7 +1722,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 			}
 		}
 #ifdef CONFIG_8723AU_P2P
-		if(rtw_get_wfd_ie(pframe + WLAN_HDR_A3_LEN + ie_offset , pkt_len - WLAN_HDR_A3_LEN - ie_offset , wfd_ie, &wfd_ielen ))
+		if(rtw_get_wfd_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset , pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset , wfd_ie, &wfd_ielen ))
 		{
 			u8	attr_content[ 10 ] = { 0x00 };
 			u32	attr_contentlen = 0;
@@ -1866,7 +1869,7 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	del_timer_sync(&pmlmeext->link_timer);
 
 	/* status */
-	if ((status = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN + 2))) > 0)
+	if ((status = le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr) + 2))) > 0)
 	{
 		DBG_8723A("assoc reject, status code: %d\n", status);
 		pmlmeinfo->state = WIFI_FW_NULL_STATE;
@@ -1875,18 +1878,18 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	}
 
 	/* get capabilities */
-	pmlmeinfo->capability = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN));
+	pmlmeinfo->capability = le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr)));
 
 	/* set slot time */
 	pmlmeinfo->slotTime = (pmlmeinfo->capability & BIT(10))? 9: 20;
 
 	/* AID */
-	res = pmlmeinfo->aid = (int)(le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN + 4))&0x3fff);
+	res = pmlmeinfo->aid = (int)(le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr) + 4))&0x3fff);
 
 	/* following are moved to join event callback function */
 	/* to handle HT, WMM, rate adaptive, update MAC reg */
 	/* for not to handle the synchronous IO in the tasklet */
-	for (i = (6 + WLAN_HDR_A3_LEN); i < pkt_len;)
+	for (i = (6 + sizeof(struct ieee80211_hdr_3addr)); i < pkt_len;)
 	{
 		pIE = (struct ndis_802_11_var_ies *)(pframe + i);
 
@@ -1966,7 +1969,7 @@ unsigned int OnDeAuth(struct rtw_adapter *padapter, struct recv_frame *precv_fra
 	}
 #endif /* CONFIG_8723AU_P2P */
 
-	reason = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN));
+	reason = le16_to_cpu(*(unsigned short *)(pframe + sizeof(struct ieee80211_hdr_3addr)));
 
 	DBG_8723A("%s Reason code(%d)\n", __FUNCTION__,reason);
 
@@ -2036,7 +2039,8 @@ unsigned int OnDisassoc(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	}
 #endif /* CONFIG_8723AU_P2P */
 
-	reason = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN));
+	reason = le16_to_cpu(*(unsigned short *)
+			     (pframe + sizeof(struct ieee80211_hdr_3addr)));
 
         DBG_8723A("%s Reason code(%d)\n", __FUNCTION__,reason);
 

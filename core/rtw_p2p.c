@@ -2112,8 +2112,8 @@ u32 process_probe_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	u32	p2pielen = 0;
 	int ssid_len=0, rate_cnt = 0;
 
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_, _SUPPORTEDRATES_IE_, (int *)&rate_cnt,
-			len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + _PROBEREQ_IE_OFFSET_, _SUPPORTEDRATES_IE_, (int *)&rate_cnt,
+			len - sizeof(struct ieee80211_hdr_3addr) - _PROBEREQ_IE_OFFSET_);
 
 	if ( rate_cnt <= 4 )
 	{
@@ -2152,13 +2152,13 @@ u32 process_probe_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	/*	5. Requested Device Type in WSC IE. (Todo) */
 	/*	6. Device ID attribute in P2P IE. (Todo) */
 
-	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_, _SSID_IE_, (int *)&ssid_len,
-			len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_);
+	p = rtw_get_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + _PROBEREQ_IE_OFFSET_, _SSID_IE_, (int *)&ssid_len,
+			len - sizeof(struct ieee80211_hdr_3addr) - _PROBEREQ_IE_OFFSET_);
 
 	ssid_len &= 0xff;	/*	Just last 1 byte is valid for ssid len of the probe request */
 	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) || rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 	{
-		if((p2pie=rtw_get_p2p_ie( pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_ , len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_ , NULL, &p2pielen)))
+		if((p2pie=rtw_get_p2p_ie( pframe + sizeof(struct ieee80211_hdr_3addr) + _PROBEREQ_IE_OFFSET_ , len - sizeof(struct ieee80211_hdr_3addr) - _PROBEREQ_IE_OFFSET_ , NULL, &p2pielen)))
 		{
 			if ((p) && !memcmp((void *)(p+2), (void *)pwdinfo->p2p_wildcard_ssid, 7))
 			{
@@ -2208,8 +2208,8 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 		ie_offset = _REASOCREQ_IE_OFFSET_;
 	}
 
-	ies = pframe + WLAN_HDR_A3_LEN + ie_offset;
-	ies_len = len - WLAN_HDR_A3_LEN - ie_offset;
+	ies = pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset;
+	ies_len = len - sizeof(struct ieee80211_hdr_3addr) - ie_offset;
 
 	p2p_ie = rtw_get_p2p_ie(ies , ies_len , NULL, &p2p_ielen);
 
@@ -3994,7 +3994,7 @@ void init_wifidirect_info(struct rtw_adapter *padapter, enum P2P_ROLE role)
 	pwdinfo->device_password_id_for_nego = WPS_DPID_PBC;
 	pwdinfo->negotiation_dialog_token = 1;
 
-	memset( pwdinfo->nego_ssid, 0x00, WLAN_SSID_MAXLEN );
+	memset(pwdinfo->nego_ssid, 0x00, IEEE80211_MAX_SSID_LEN);
 	pwdinfo->nego_ssidlen = 0;
 
 	pwdinfo->ui_got_wps_info = P2P_NO_WPSINFO;
