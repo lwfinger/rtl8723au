@@ -2729,7 +2729,7 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 	dot11_hdr = (struct ieee80211_hdr *)skb->data;
 	frame_ctl = le16_to_cpu(dot11_hdr->frame_control);
 	/* Check if the QoS bit is set */
-	if ((frame_ctl & RTW_IEEE80211_FCTL_FTYPE) == RTW_IEEE80211_FTYPE_DATA) {
+	if ((frame_ctl & IEEE80211_FCTL_FTYPE) == IEEE80211_FTYPE_DATA) {
 		/* Check if this ia a Wireless Distribution System (WDS) frame
 		 * which has 4 MAC addresses
 		 */
@@ -2757,8 +2757,8 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 		return ret;
 
 	}
-	else if ((frame_ctl & (RTW_IEEE80211_FCTL_FTYPE|RTW_IEEE80211_FCTL_STYPE))
-		== (RTW_IEEE80211_FTYPE_MGMT|RTW_IEEE80211_STYPE_ACTION)
+	else if ((frame_ctl & (IEEE80211_FCTL_FTYPE|IEEE80211_FCTL_STYPE))
+		== (IEEE80211_FTYPE_MGMT|IEEE80211_STYPE_ACTION)
 	)
 	{
 		/* only for action frames */
@@ -2787,7 +2787,7 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 		if((type = rtw_p2p_check_frames(padapter, buf, len, true)) >= 0)
 			goto dump;
 		#endif
-		if (category == RTW_WLAN_CATEGORY_PUBLIC)
+		if (category == WLAN_CATEGORY_PUBLIC)
 			DBG_8723A("RTW_Tx:%s\n", action_public_str(action));
 		else
 			DBG_8723A("RTW_Tx:category(%u), action(%u)\n", category, action);
@@ -2830,15 +2830,12 @@ dump:
 		pattrib->seqnum = pmlmeext->mgnt_seq;
 		pmlmeext->mgnt_seq++;
 
-
 		pattrib->last_txcmdsz = pattrib->pktlen;
 
 		dump_mgntframe(padapter, pmgntframe);
-
-	}
-	else
-	{
-		DBG_8723A("frame_ctl=0x%x\n", frame_ctl & (RTW_IEEE80211_FCTL_FTYPE|RTW_IEEE80211_FCTL_STYPE));
+	} else {
+		DBG_8723A("frame_ctl=0x%x\n", frame_ctl &
+			  (IEEE80211_FCTL_FTYPE|IEEE80211_FCTL_STYPE));
 	}
 
 
@@ -3424,7 +3421,7 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	u16	capability = 0;
 	uint capability_len = 0;
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u8			dialogToken = 1;
 	u32			p2poui = cpu_to_be32(P2POUI);
@@ -3912,7 +3909,7 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 	if((type = rtw_p2p_check_frames(padapter, buf, len, true)) >= 0)
 		goto dump;
 	#endif
-	if (category == RTW_WLAN_CATEGORY_PUBLIC)
+	if (category == WLAN_CATEGORY_PUBLIC)
 		DBG_8723A("RTW_Tx:%s\n", action_public_str(action));
 	else
 		DBG_8723A("RTW_Tx:category(%u), action(%u)\n", category, action);

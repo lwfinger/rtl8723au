@@ -72,17 +72,15 @@ struct mlme_handler mlme_ap_tbl[]={
 #endif
 
 static struct action_handler OnAction_tbl[]={
-	{RTW_WLAN_CATEGORY_SPECTRUM_MGMT,	 "ACTION_SPECTRUM_MGMT", on_action_spct},
-	{RTW_WLAN_CATEGORY_QOS, "ACTION_QOS", &OnAction_qos},
-	{RTW_WLAN_CATEGORY_DLS, "ACTION_DLS", &OnAction_dls},
-	{RTW_WLAN_CATEGORY_BACK, "ACTION_BACK", &OnAction_back},
-	{RTW_WLAN_CATEGORY_PUBLIC, "ACTION_PUBLIC", on_action_public},
-	{RTW_WLAN_CATEGORY_RADIO_MEASUREMENT, "ACTION_RADIO_MEASUREMENT", &DoReserved},
-	{RTW_WLAN_CATEGORY_FT, "ACTION_FT",	&DoReserved},
-	{RTW_WLAN_CATEGORY_HT,	"ACTION_HT",	&OnAction_ht},
-	{RTW_WLAN_CATEGORY_SA_QUERY, "ACTION_SA_QUERY", &DoReserved},
-	{RTW_WLAN_CATEGORY_WMM, "ACTION_WMM", &OnAction_wmm},
-	{RTW_WLAN_CATEGORY_P2P, "ACTION_P2P", &OnAction_p2p},
+	{WLAN_CATEGORY_SPECTRUM_MGMT,	 "ACTION_SPECTRUM_MGMT", on_action_spct},
+	{WLAN_CATEGORY_QOS, "ACTION_QOS", &OnAction_qos},
+	{WLAN_CATEGORY_DLS, "ACTION_DLS", &OnAction_dls},
+	{WLAN_CATEGORY_BACK, "ACTION_BACK", &OnAction_back},
+	{WLAN_CATEGORY_PUBLIC, "ACTION_PUBLIC", on_action_public},
+	{WLAN_CATEGORY_HT,	"ACTION_HT",	&OnAction_ht},
+	{WLAN_CATEGORY_SA_QUERY, "ACTION_SA_QUERY", &DoReserved},
+	{WLAN_CATEGORY_WMM, "ACTION_WMM", &OnAction_wmm},
+	{WLAN_CATEGORY_VENDOR_SPECIFIC, "ACTION_P2P", &OnAction_p2p},
 };
 
 static u8	null_addr[ETH_ALEN]= {0,0,0,0,0,0};
@@ -2198,7 +2196,7 @@ unsigned int OnAction_back(struct rtw_adapter *padapter, struct recv_frame *prec
 	frame_body = (unsigned char *)(pframe + sizeof(struct ieee80211_hdr_3addr));
 
 	category = frame_body[0];
-	if (category == RTW_WLAN_CATEGORY_BACK)/*  representing Block Ack */
+	if (category == WLAN_CATEGORY_BACK)/*  representing Block Ack */
 	{
 		if (!pmlmeinfo->HT_enable)
 			return _SUCCESS;
@@ -2299,7 +2297,7 @@ static void get_channel_cnt_24g_5gl_5gh(  struct mlme_ext_priv *pmlmeext, u8* p2
 void issue_p2p_GO_request(struct rtw_adapter *padapter, u8* raddr)
 {
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
 	u8			oui_subtype = P2P_GO_NEGO_REQ;
@@ -2670,7 +2668,7 @@ void issue_p2p_GO_request(struct rtw_adapter *padapter, u8* raddr)
 static void issue_p2p_GO_response(struct rtw_adapter *padapter, u8* raddr, u8* frame_body,uint len, u8 result)
 {
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
 	u8			oui_subtype = P2P_GO_NEGO_RESP;
@@ -3086,7 +3084,7 @@ static void issue_p2p_GO_response(struct rtw_adapter *padapter, u8* raddr, u8* f
 static void issue_p2p_GO_confirm(struct rtw_adapter *padapter, u8* raddr, u8 result)
 {
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
 	u8			oui_subtype = P2P_GO_NEGO_CONF;
@@ -3300,7 +3298,7 @@ static void issue_p2p_GO_confirm(struct rtw_adapter *padapter, u8* raddr, u8 res
 void issue_p2p_invitation_request(struct rtw_adapter *padapter, u8* raddr )
 {
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
 	u8			oui_subtype = P2P_INVIT_REQ;
@@ -3568,7 +3566,7 @@ void issue_p2p_invitation_request(struct rtw_adapter *padapter, u8* raddr )
 void issue_p2p_invitation_response(struct rtw_adapter *padapter, u8* raddr, u8 dialogToken, u8 status_code)
 {
 
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
 	u8			oui_subtype = P2P_INVIT_RESP;
@@ -3776,7 +3774,7 @@ void issue_p2p_invitation_response(struct rtw_adapter *padapter, u8* raddr, u8 d
 
 void issue_p2p_provision_request(struct rtw_adapter *padapter, u8* pssid, u8 ussidlen, u8* pdev_raddr )
 {
-	unsigned char category = RTW_WLAN_CATEGORY_PUBLIC;
+	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u8			dialogToken = 1;
 	u32			p2poui = cpu_to_be32(P2POUI);
@@ -5052,7 +5050,7 @@ unsigned int on_action_public(struct rtw_adapter *padapter, struct recv_frame *p
 		goto exit;
 
 	category = frame_body[0];
-	if(category != RTW_WLAN_CATEGORY_PUBLIC)
+	if(category != WLAN_CATEGORY_PUBLIC)
 		goto exit;
 
 	action = frame_body[1];
@@ -5100,7 +5098,7 @@ unsigned int OnAction_p2p(struct rtw_adapter *padapter,
 	frame_body = (unsigned char *)(pframe + sizeof(struct ieee80211_hdr_3addr));
 
 	category = frame_body[0];
-	if(category != RTW_WLAN_CATEGORY_P2P)
+	if(category != WLAN_CATEGORY_VENDOR_SPECIFIC)
 		return _SUCCESS;
 
 	if ( cpu_to_be32( *( ( u32* ) ( frame_body + 1 ) ) ) != P2POUI )
@@ -7174,7 +7172,7 @@ void issue_action_spct_ch_switch(struct rtw_adapter *padapter, u8 *ra, u8 new_ch
 	/* category, action */
 	{
 		u8 category, action;
-		category = RTW_WLAN_CATEGORY_SPECTRUM_MGMT;
+		category = WLAN_CATEGORY_SPECTRUM_MGMT;
 		action = RTW_WLAN_ACTION_SPCT_CHL_SWITCH;
 
 		pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
@@ -7192,7 +7190,7 @@ void issue_action_spct_ch_switch(struct rtw_adapter *padapter, u8 *ra, u8 new_ch
 
 void issue_action_BA(struct rtw_adapter *padapter, unsigned char *raddr, unsigned char action, unsigned short status)
 {
-	u8	category = RTW_WLAN_CATEGORY_BACK;
+	u8	category = WLAN_CATEGORY_BACK;
 	u16	start_seq;
 	u16	BA_para_set;
 	u16	reason_code;
@@ -7383,7 +7381,7 @@ static void issue_action_BSSCoexistPacket(struct rtw_adapter *padapter)
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
-	category = RTW_WLAN_CATEGORY_PUBLIC;
+	category = WLAN_CATEGORY_PUBLIC;
 	action = ACT_PUBLIC_BSSCOEXIST;
 
 	if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL)

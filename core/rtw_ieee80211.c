@@ -1625,34 +1625,6 @@ int ieee80211_is_empty_essid(const char *essid, int essid_len)
 	return 1;
 }
 
-int ieee80211_get_hdrlen(u16 fc)
-{
-	int hdrlen = 24;
-
-	switch (WLAN_FC_GET_TYPE(fc)) {
-	case RTW_IEEE80211_FTYPE_DATA:
-		if (fc & RTW_IEEE80211_STYPE_QOS_DATA)
-			hdrlen += 2;
-		if ((fc & RTW_IEEE80211_FCTL_FROMDS) &&
-		    (fc & RTW_IEEE80211_FCTL_TODS))
-			hdrlen += 6; /* Addr4 */
-		break;
-	case RTW_IEEE80211_FTYPE_CTL:
-		switch (WLAN_FC_GET_STYPE(fc)) {
-		case RTW_IEEE80211_STYPE_CTS:
-		case RTW_IEEE80211_STYPE_ACK:
-			hdrlen = 10;
-			break;
-		default:
-			hdrlen = 16;
-			break;
-		}
-		break;
-	}
-
-	return hdrlen;
-}
-
 int rtw_get_cipher_info(struct wlan_network *pnetwork)
 {
 	u32 wpa_ielen;
@@ -1862,15 +1834,15 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8* category,
 
 	fc = le16_to_cpu(((struct ieee80211_hdr_3addr *)frame)->frame_control);
 
-	if ((fc & (RTW_IEEE80211_FCTL_FTYPE|RTW_IEEE80211_FCTL_STYPE)) !=
-	    (RTW_IEEE80211_FTYPE_MGMT|RTW_IEEE80211_STYPE_ACTION)) {
+	if ((fc & (IEEE80211_FCTL_FTYPE|IEEE80211_FCTL_STYPE)) !=
+	    (IEEE80211_FTYPE_MGMT|IEEE80211_STYPE_ACTION)) {
 		return false;
 	}
 
 	c = frame_body[0];
 
 	switch(c) {
-	case RTW_WLAN_CATEGORY_P2P: /* vendor-specific */
+	case WLAN_CATEGORY_VENDOR_SPECIFIC: /* vendor-specific */
 		break;
 	default:
 		a = frame_body[1];

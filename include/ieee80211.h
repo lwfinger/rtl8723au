@@ -313,25 +313,6 @@ enum eap_type {
 #define MIN_FRAG_THRESHOLD     256U
 #define	MAX_FRAG_THRESHOLD     2346U
 
-/* Frame control field constants */
-#define RTW_IEEE80211_FCTL_VERS		0x0003
-#define RTW_IEEE80211_FCTL_FTYPE		0x000c
-#define RTW_IEEE80211_FCTL_STYPE		0x00f0
-#define RTW_IEEE80211_FCTL_TODS		0x0100
-#define RTW_IEEE80211_FCTL_FROMDS	0x0200
-#define RTW_IEEE80211_FCTL_MOREFRAGS	0x0400
-#define RTW_IEEE80211_FCTL_RETRY		0x0800
-#define RTW_IEEE80211_FCTL_PM		0x1000
-#define RTW_IEEE80211_FCTL_MOREDATA	0x2000
-#define RTW_IEEE80211_FCTL_PROTECTED	0x4000
-#define RTW_IEEE80211_FCTL_ORDER		0x8000
-#define RTW_IEEE80211_FCTL_CTL_EXT	0x0f00
-
-#define RTW_IEEE80211_FTYPE_MGMT		0x0000
-#define RTW_IEEE80211_FTYPE_CTL		0x0004
-#define RTW_IEEE80211_FTYPE_DATA		0x0008
-#define RTW_IEEE80211_FTYPE_EXT		0x000c
-
 /* management */
 #define RTW_IEEE80211_STYPE_ASSOC_REQ	0x0000
 #define RTW_IEEE80211_STYPE_ASSOC_RESP	0x0010
@@ -418,8 +399,8 @@ struct ieee80211_snap_hdr {
 
 #define SNAP_SIZE sizeof(struct ieee80211_snap_hdr)
 
-#define WLAN_FC_GET_TYPE(fc) ((fc) & RTW_IEEE80211_FCTL_FTYPE)
-#define WLAN_FC_GET_STYPE(fc) ((fc) & RTW_IEEE80211_FCTL_STYPE)
+#define WLAN_FC_GET_TYPE(fc) ((fc) & IEEE80211_FCTL_FTYPE)
+#define WLAN_FC_GET_STYPE(fc) ((fc) & IEEE80211_FCTL_STYPE)
 
 #define WLAN_QC_GET_TID(qc) ((qc) & 0x0f)
 
@@ -852,23 +833,6 @@ typedef struct tx_pending_t{
 
 /* Baron move to ieee80211.c */
 int ieee80211_is_empty_essid(const char *essid, int essid_len);
-int ieee80211_get_hdrlen(u16 fc);
-
-/* Action category code */
-enum rtw_ieee80211_category {
-	RTW_WLAN_CATEGORY_SPECTRUM_MGMT = 0,
-	RTW_WLAN_CATEGORY_QOS = 1,
-	RTW_WLAN_CATEGORY_DLS = 2,
-	RTW_WLAN_CATEGORY_BACK = 3,
-	RTW_WLAN_CATEGORY_PUBLIC = 4, /* IEEE 802.11 public action frames */
-	RTW_WLAN_CATEGORY_RADIO_MEASUREMENT  = 5,
-	RTW_WLAN_CATEGORY_FT = 6,
-	RTW_WLAN_CATEGORY_HT = 7,
-	RTW_WLAN_CATEGORY_SA_QUERY = 8,
-	RTW_WLAN_CATEGORY_TDLS = 12,
-	RTW_WLAN_CATEGORY_WMM = 17,
-	RTW_WLAN_CATEGORY_P2P = 0x7f,/* P2P action frames */
-};
 
 /* SPECTRUM_MGMT action code */
 enum rtw_ieee80211_spectrum_mgmt_actioncode {
