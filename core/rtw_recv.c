@@ -1531,6 +1531,29 @@ _func_exit_;
 	return ret;
 }
 
+static void dump_rx_pkt(struct sk_buff *skb, u16 type, int level)
+{
+	int i;
+	u8 *ptr;
+
+	if ((level == 1) ||
+	    ((level == 2) && (type == IEEE80211_FTYPE_MGMT)) ||
+	    ((level == 3) && (type == IEEE80211_FTYPE_DATA))) {
+
+		ptr = skb->data;
+
+		DBG_8723A("############################# \n");
+
+		for (i = 0; i < 64; i = i + 8)
+			DBG_8723A("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n",
+				  *(ptr + i), *(ptr + i + 1), *(ptr + i + 2),
+				  *(ptr + i + 3), *(ptr + i + 4),
+				  *(ptr + i + 5), *(ptr + i + 6),
+				  *(ptr + i + 7));
+		DBG_8723A("############################# \n");
+	}
+}
+
 int validate_recv_frame(struct rtw_adapter *adapter,
 			struct recv_frame *precv_frame)
 {
@@ -1543,7 +1566,6 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
-	u8 *ptr = skb->data;
 	u8 ver;
 	u8 bDumpRxPkt;
 	u16 seq_ctrl, fctl;
@@ -1573,47 +1595,10 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	pattrib->privacy = ieee80211_has_protected(hdr->frame_control);
 	pattrib->order = ieee80211_has_order(hdr->frame_control);
 
-	rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
-	if (bDumpRxPkt == 1) {/* dump all rx packets */
-		int i;
-		DBG_8723A("############################# \n");
+	rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &bDumpRxPkt);
 
-		for( i = 0; i < 64; i = i + 8)
-			DBG_8723A("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n",
-				  *(ptr + i), *(ptr + i + 1), *(ptr + i + 2),
-				  *(ptr + i + 3), *(ptr + i + 4),
-				  *(ptr + i + 5), *(ptr + i + 6),
-				  *(ptr + i + 7));
-		DBG_8723A("############################# \n");
-	} else if (bDumpRxPkt == 2) {
-		if (type == IEEE80211_FTYPE_MGMT) {
-			int i;
-			DBG_8723A("############################# \n");
-
-			for (i = 0; i < 64; i = i + 8)
-				DBG_8723A("%02X:%02X:%02X:%02X:%02X:%02X:"
-					  "%02X:%02X:\n", *(ptr + i),
-					  *(ptr + i + 1), *(ptr + i + 2),
-					  *(ptr + i + 3), *(ptr + i + 4),
-					  *(ptr + i + 5), *(ptr + i + 6),
-					  *(ptr + i + 7));
-			DBG_8723A("############################# \n");
-		}
-	} else if (bDumpRxPkt == 3) {
-		if (type == IEEE80211_FTYPE_DATA) {
-			int i;
-			DBG_8723A("############################# \n");
-
-			for(i = 0; i < 64; i = i + 8)
-				DBG_8723A("%02X:%02X:%02X:%02X:%02X:%02X:"
-					  "%02X:%02X:\n", *(ptr + i),
-					  *(ptr + i + 1), *(ptr + i + 2),
-					  *(ptr + i + 3), *(ptr + i + 4),
-					  *(ptr + i + 5), *(ptr + i + 6),
-					  *(ptr + i + 7));
-			DBG_8723A("############################# \n");
-		}
-	}
+	if (unlikely(bDumpRxPkt == 1))
+		dump_rx_pkt(skb, type, bDumpRxPkt);
 
 	switch (type)
 	{
