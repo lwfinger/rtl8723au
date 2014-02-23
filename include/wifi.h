@@ -237,8 +237,6 @@ enum WIFI_REG_DOMAIN {
 	} while(0)
 
 
-#define GetOrder(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_ORDER_)) != 0)
-
 #define GetFrameType(pbuf)	(le16_to_cpu(*(unsigned short *)(pbuf)) & (BIT(3) | BIT(2)))
 
 #define SetFrameType(pbuf,type)	\

@@ -1570,7 +1570,7 @@ _func_enter_;
 	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);
 	pattrib->mdata = ieee80211_has_moredata(hdr->frame_control);
 	pattrib->privacy = ieee80211_has_protected(hdr->frame_control);
-	pattrib->order = GetOrder(ptr);
+	pattrib->order = ieee80211_has_order(hdr->frame_control);
 
 	rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
 	if (bDumpRxPkt == 1) {/* dump all rx packets */
