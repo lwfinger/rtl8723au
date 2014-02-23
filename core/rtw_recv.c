@@ -1429,13 +1429,9 @@ _func_enter_;
 		break;
 	}
 
-	if (ret ==_FAIL) {
-		goto exit;
-	} else if (ret == RTW_RX_HANDLED) {
-		goto exit;
-	}
+	if ((ret ==_FAIL) || (ret == RTW_RX_HANDLED))
 
-	if (psta==NULL) {
+	if (!psta) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 			 (" after to_fr_ds_chk; psta==NULL \n"));
 		ret = _FAIL;
