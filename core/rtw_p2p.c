@@ -2189,24 +2189,20 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	u8 *pbuf, *pattr_content=NULL;
 	u32 attr_contentlen = 0;
 	u16 cap_attr=0;
-	unsigned short	frame_type, ie_offset=0;
+	unsigned short ie_offset;
 	u8 * ies;
 	u32 ies_len;
 	u8 * p2p_ie;
 	u32	p2p_ielen = 0;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)pframe;
 
 	if(!rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 		return P2P_STATUS_FAIL_REQUEST_UNABLE;
 
-	frame_type = GetFrameSubType(pframe);
-	if (frame_type == WIFI_ASSOCREQ)
-	{
+	if (ieee80211_is_assoc_req(hdr->frame_control))
 		ie_offset = _ASOCREQ_IE_OFFSET_;
-	}
 	else /*  WIFI_REASSOCREQ */
-	{
 		ie_offset = _REASOCREQ_IE_OFFSET_;
-	}
 
 	ies = pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset;
 	ies_len = len - sizeof(struct ieee80211_hdr_3addr) - ie_offset;
