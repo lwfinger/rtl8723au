@@ -1051,14 +1051,14 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		DBG_8723A("auth rejected due to bad alg [alg=%d, auth_mib=%d] %02X%02X%02X%02X%02X%02X\n",
 			algorithm, auth_mode, sa[0], sa[1], sa[2], sa[3], sa[4], sa[5]);
 
-		status = _STATS_NO_SUPP_ALG_;
+		status = WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG;
 
 		goto auth_fail;
 	}
 
 	if(rtw_access_ctrl(padapter, sa) == false)
 	{
-		status = _STATS_UNABLE_HANDLE_STA_;
+		status = WLAN_STATUS_AP_UNABLE_TO_HANDLE_NEW_STA;
 		goto auth_fail;
 	}
 
@@ -1071,7 +1071,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		if (pstat == NULL)
 		{
 			DBG_8723A(" Exceed the upper limit of supported clients...\n");
-			status = _STATS_UNABLE_HANDLE_STA_;
+			status = WLAN_STATUS_AP_UNABLE_TO_HANDLE_NEW_STA;
 			goto auth_fail;
 		}
 
@@ -1113,7 +1113,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	{
 		DBG_8723A("(1)auth rejected because out of seq [rx_seq=%d, exp_seq=%d]!\n",
 			seq, pstat->auth_seq+1);
-		status = _STATS_OUT_OF_AUTH_SEQ_;
+		status = WLAN_STATUS_UNKNOWN_AUTH_TRANSACTION;
 		goto auth_fail;
 	}
 
@@ -1130,7 +1130,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		{
 			DBG_8723A("(2)auth rejected because out of seq [rx_seq=%d, exp_seq=%d]!\n",
 				seq, pstat->auth_seq+1);
-			status = _STATS_OUT_OF_AUTH_SEQ_;
+			status = WLAN_STATUS_UNKNOWN_AUTH_TRANSACTION;
 			goto auth_fail;
 		}
 	}
@@ -1155,7 +1155,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 			if((p==NULL) || (ie_len<=0))
 			{
 				DBG_8723A("auth rejected because challenge failure!(1)\n");
-				status = _STATS_CHALLENGE_FAIL_;
+				status = WLAN_STATUS_CHALLENGE_FAIL;
 				goto auth_fail;
 			}
 
@@ -1169,7 +1169,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 			else
 			{
 				DBG_8723A("auth rejected because challenge failure!\n");
-				status = _STATS_CHALLENGE_FAIL_;
+				status = WLAN_STATUS_CHALLENGE_FAIL;
 				goto auth_fail;
 			}
 		}
@@ -1177,7 +1177,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		{
 			DBG_8723A("(3)auth rejected because out of seq [rx_seq=%d, exp_seq=%d]!\n",
 				seq, pstat->auth_seq+1);
-			status = _STATS_OUT_OF_AUTH_SEQ_;
+			status = WLAN_STATUS_UNKNOWN_AUTH_TRANSACTION;
 			goto auth_fail;
 		}
 	}
@@ -1185,7 +1185,7 @@ unsigned int OnAuth(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	/*  Now, we are going to issue_auth... */
 	pstat->auth_seq = seq + 1;
 
-	issue_auth(padapter, pstat, (unsigned short)(_STATS_SUCCESSFUL_));
+	issue_auth(padapter, pstat, (unsigned short)(WLAN_STATUS_SUCCESS));
 
 	if (pstat->state & WIFI_FW_AUTH_SUCCESS)
 		pstat->auth_seq = 0;
@@ -1323,7 +1323,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	int		i, ie_len, wpa_ie_len, left;
 	unsigned char		supportRate[16];
 	int					supportRateNum;
-	unsigned short		status = _STATS_SUCCESSFUL_;
+	unsigned short		status = WLAN_STATUS_SUCCESS;
 	unsigned short		frame_type, ie_offset=0;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
@@ -1410,7 +1410,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	    !elems.ssid) {
 		DBG_8723A("STA " MAC_FMT " sent invalid association request\n",
 		       MAC_ARG(pstat->hwaddr));
-		status = _STATS_FAILURE_;
+		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 		goto OnAssocReqFail;
 	}
 
@@ -1420,22 +1420,21 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		pkt_len - sizeof(struct ieee80211_hdr_3addr) - ie_offset);
 	if (p == NULL)
 	{
-		status = _STATS_FAILURE_;
+		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 	}
 
 	if (ie_len == 0) /*  broadcast ssid, however it is not allowed in assocreq */
-		status = _STATS_FAILURE_;
-	else
-	{
+		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
+	else {
 		/*  check if ssid match */
 		if (memcmp((void *)(p+2), cur->Ssid.Ssid, cur->Ssid.SsidLength))
-			status = _STATS_FAILURE_;
+			status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 
 		if (ie_len != cur->Ssid.SsidLength)
-			status = _STATS_FAILURE_;
+			status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 	}
 
-	if(_STATS_SUCCESSFUL_ != status)
+	if (WLAN_STATUS_SUCCESS != status)
 		goto OnAssocReqFail;
 
 	/*  check if the supported rate is ok */
@@ -1446,10 +1445,9 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		/* memcpy(supportRate, AP_BSSRATE, AP_BSSRATE_LEN); */
 		/* supportRateNum = AP_BSSRATE_LEN; */
 
-		status = _STATS_FAILURE_;
+		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 		goto OnAssocReqFail;
-	}
-	else {
+	} else {
 		memcpy(supportRate, p+2, ie_len);
 		supportRateNum = ie_len;
 
@@ -1533,7 +1531,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		wpa_ie_len = 0;
 	}
 
-	if(_STATS_SUCCESSFUL_ != status)
+	if(WLAN_STATUS_SUCCESS != status)
 		goto OnAssocReqFail;
 
 	pstat->flags &= ~(WLAN_STA_WPS | WLAN_STA_MAYBE_WPS);
@@ -1563,7 +1561,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 				if(!selected_registrar) {
 					DBG_8723A("selected_registrar is false , or AP is not ready to do WPS\n");
 
-					status = _STATS_UNABLE_HANDLE_STA_;
+					status = WLAN_STATUS_AP_UNABLE_TO_HANDLE_NEW_STA;
 
 					goto OnAssocReqFail;
 				}
@@ -1675,7 +1673,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 
 	if((pmlmepriv->htpriv.ht_option == false) && (pstat->flags&WLAN_STA_HT))
 	{
-		status = _STATS_FAILURE_;
+		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 		goto OnAssocReqFail;
 	}
 
@@ -1704,7 +1702,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	else
 		pstat->flags &= ~WLAN_STA_SHORT_PREAMBLE;
 
-	if (status != _STATS_SUCCESSFUL_)
+	if (status != WLAN_STATUS_SUCCESS)
 		goto OnAssocReqFail;
 
 #ifdef CONFIG_8723AU_P2P
@@ -1717,7 +1715,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 			if((p2p_status_code=(u8)process_assoc_req_p2p_ie(pwdinfo, pframe, pkt_len, pstat))>0)
 			{
 				pstat->p2p_status_code = p2p_status_code;
-				status = _STATS_CAP_FAIL_;
+				status = WLAN_STATUS_CAPS_UNSUPPORTED;
 				goto OnAssocReqFail;
 			}
 		}
@@ -1791,8 +1789,8 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	spin_unlock_bh(&pstapriv->asoc_list_lock);
 
 	/*  now the station is qualified to join our BSS... */
-	if(pstat && (pstat->state & WIFI_FW_ASSOC_SUCCESS) && (_STATS_SUCCESSFUL_==status))
-	{
+	if (pstat && (pstat->state & WIFI_FW_ASSOC_SUCCESS) &&
+	    (WLAN_STATUS_SUCCESS==status)) {
 #ifdef CONFIG_8723AU_AP_MODE
 		/* 1 bss_cap_update & sta_info_update */
 		bss_cap_update_on_sta_join(padapter, pstat);
@@ -6078,7 +6076,7 @@ void issue_auth(struct rtw_adapter *padapter, struct sta_info *psta, unsigned sh
 		/*  setting auth algo number */
 		val16 = (u16)psta->authalg;
 
-		if(status != _STATS_SUCCESSFUL_)
+		if(status != WLAN_STATUS_SUCCESS)
 			val16 = 0;
 
 		if (val16)	{
