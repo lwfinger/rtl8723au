@@ -371,18 +371,6 @@ enum eap_type {
 #define NON_EXPLICIT_ACK	2
 #define BLOCK_ACK			3
 
-#ifndef ETH_P_PAE
-#define ETH_P_PAE 0x888E /* Port Access Entity (IEEE 802.1X) */
-#endif /* ETH_P_PAE */
-
-#define ETH_P_PREAUTH 0x88C7 /* IEEE 802.11i pre-authentication */
-
-#define ETH_P_ECONET	0x0018
-
-#ifndef ETH_P_80211_RAW
-#define ETH_P_80211_RAW (ETH_P_ECONET + 1)
-#endif
-
 /* IEEE 802.11 defines */
 
 #define P80211_OUI_LEN 3
