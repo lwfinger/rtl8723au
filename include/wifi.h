@@ -221,8 +221,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_MORE_DATA_); \
 	} while(0)
 
-#define GetMData(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_MORE_DATA_)) != 0)
-
 #define ClearMData(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_MORE_DATA_)); \

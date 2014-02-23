@@ -1568,7 +1568,7 @@ _func_enter_;
 
 	pattrib->pw_save = ieee80211_has_pm(hdr->frame_control);
 	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);
-	pattrib->mdata = GetMData(ptr);
+	pattrib->mdata = ieee80211_has_moredata(hdr->frame_control);
 	pattrib->privacy = GetPrivacy(ptr);
 	pattrib->order = GetOrder(ptr);
 
