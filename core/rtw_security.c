@@ -1275,12 +1275,11 @@ static int aes_cipher(u8 *key, uint	hdrlen,
 	u8 padded_buffer[16];
 	u8 mic[8];
 /*	uint	offset = 0; */
-	uint	frtype  = GetFrameType(pframe);
-	uint	frsubtype  = GetFrameSubType(pframe);
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)pframe;
+	u16 frtype = le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_FTYPE;
+	u16 frsubtype = le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE;
 
 _func_enter_;
-	frsubtype=frsubtype>>4;
-
 	memset((void *)mic_iv, 0, 16);
 	memset((void *)mic_header1, 0, 16);
 	memset((void *)mic_header2, 0, 16);
@@ -1295,18 +1294,23 @@ _func_enter_;
 	else
 		a4_exists = 1;
 
-	if ((frtype == WIFI_DATA_CFACK) || (frtype == WIFI_DATA_CFPOLL) ||
-	    (frtype == WIFI_DATA_CFACKPOLL)) {
+	if (ieee80211_is_data(hdr->frame_control)) {
+		if ((frsubtype == IEEE80211_STYPE_DATA_CFACK) ||
+		    (frsubtype == IEEE80211_STYPE_DATA_CFPOLL) ||
+		    (frsubtype == IEEE80211_STYPE_DATA_CFACKPOLL)) {
 			qc_exists = 1;
 			if (hdrlen != sizeof(struct ieee80211_qos_hdr)) {
-					hdrlen += 2;
+				hdrlen += 2;
 			}
-		}
-	else if ((frsubtype == 0x08) ||	(frsubtype == 0x09) ||
-		 (frsubtype == 0x0a) ||	(frsubtype == 0x0b)) {
+		} else if ((frsubtype == IEEE80211_STYPE_QOS_DATA) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFACK) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFPOLL) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFACKPOLL)) {
 			if (hdrlen != sizeof(struct ieee80211_qos_hdr))
 				hdrlen += 2;
 			qc_exists = 1;
+		} else
+			qc_exists = 0;
 	} else
 		qc_exists = 0;
 
@@ -1541,10 +1545,10 @@ static int aes_decipher(u8 *key, uint	hdrlen,
 	u8 mic[8];
 
 /*	uint	offset = 0; */
-	uint	frtype  = GetFrameType(pframe);
-	uint	frsubtype  = GetFrameSubType(pframe);
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)pframe;
+	u16 frtype = le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_FTYPE;
+	u16 frsubtype = le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE;
 _func_enter_;
-	frsubtype=frsubtype>>4;
 
 	memset((void *)mic_iv, 0, 16);
 	memset((void *)mic_header1, 0, 16);
@@ -1573,18 +1577,24 @@ _func_enter_;
 	else
 		a4_exists = 1;
 
-	if ((frtype == WIFI_DATA_CFACK) || (frtype == WIFI_DATA_CFPOLL) ||
-	    (frtype == WIFI_DATA_CFACKPOLL)) {
-		qc_exists = 1;
-		if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
-			hdrlen += 2;
-		}
-	} else if ((frsubtype == 0x08) || (frsubtype == 0x09) ||
-		   (frsubtype == 0x0a) || (frsubtype == 0x0b)) {
-		if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
-			hdrlen += 2;
-		}
-		qc_exists = 1;
+	if (ieee80211_is_data(hdr->frame_control)) {
+		if ((frsubtype == IEEE80211_STYPE_DATA_CFACK) ||
+		    (frsubtype == IEEE80211_STYPE_DATA_CFPOLL) ||
+		    (frsubtype == IEEE80211_STYPE_DATA_CFACKPOLL)) {
+			qc_exists = 1;
+			if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
+				hdrlen += 2;
+			}
+		} else if ((frsubtype == IEEE80211_STYPE_QOS_DATA) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFACK) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFPOLL) ||
+			   (frsubtype == IEEE80211_STYPE_QOS_DATA_CFACKPOLL)) {
+			if (hdrlen != sizeof(struct ieee80211_hdr_3addr)) {
+				hdrlen += 2;
+			}
+			qc_exists = 1;
+		} else
+			qc_exists = 0;
 	} else
 		qc_exists = 0;
 
