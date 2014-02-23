@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 #define _HAL_INTF_C_
@@ -61,7 +56,7 @@ void	rtw_hal_dm_init(struct rtw_adapter *padapter)
 }
 void rtw_hal_dm_deinit(struct rtw_adapter *padapter)
 {
-	// cancel dm  timer
+	/*  cancel dm  timer */
 	if(padapter->HalFunc.dm_deinit)
 		padapter->HalFunc.dm_deinit(padapter);
 }

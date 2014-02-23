@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _HCI_OPS_OS_C_
 
@@ -25,7 +20,6 @@
 #include <usb_ops.h>
 #include <circ_buf.h>
 #include <recv_osdep.h>
-//#include <rtl8192c_hal.h>
 #include <rtl8723a_hal.h>
 #include <rtl8723a_recv.h>
 
@@ -55,7 +49,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 	mutex_lock(&pdvobjpriv->usb_vendor_req_mutex);
 
-	// Acquire IO memory for vendorreq
+	/*  Acquire IO memory for vendorreq */
 	pIo_buf = pdvobjpriv->usb_vendor_req_buf;
 
 	if ( pIo_buf== NULL) {
@@ -70,27 +64,27 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 		if (requesttype == 0x01)
 		{
-			pipe = usb_rcvctrlpipe(udev, 0);//read_in
+			pipe = usb_rcvctrlpipe(udev, 0);/* read_in */
 			reqtype =  REALTEK_USB_VENQT_READ;
 		}
 		else
 		{
-			pipe = usb_sndctrlpipe(udev, 0);//write_out
+			pipe = usb_sndctrlpipe(udev, 0);/* write_out */
 			reqtype =  REALTEK_USB_VENQT_WRITE;
 			memcpy(pIo_buf, pdata, len);
 		}
 
 		status = rtw_usb_control_msg(udev, pipe, request, reqtype, value, index, pIo_buf, len, RTW_USB_CONTROL_MSG_TIMEOUT);
 
-		if ( status == len)   // Success this control transfer.
+		if ( status == len)   /*  Success this control transfer. */
 		{
 			rtw_reset_continual_urb_error(pdvobjpriv);
 			if ( requesttype == 0x01 )
-			{   // For Control read transfer, we have to copy the read data from pIo_buf to pdata.
+			{   /*  For Control read transfer, we have to copy the read data from pIo_buf to pdata. */
 				memcpy(pdata, pIo_buf,  len );
 			}
 		}
-		else { // error cases
+		else { /*  error cases */
 			DBG_8723A("reg 0x%x, usb %s %u fail, status:%d value=0x%x, vendorreq_times:%d\n"
 				, value,(requesttype == 0x01)?"read":"write" , len, status, *(u32*)pdata, vendorreq_times);
 
@@ -103,11 +97,11 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 					pHalData->srestpriv.Wifi_Error_Status = USB_VEN_REQ_CMD_FAIL;
 				}
 			}
-			else // status != len && status >= 0
+			else /*  status != len && status >= 0 */
 			{
 				if(status > 0) {
 					if ( requesttype == 0x01 )
-					{   // For Control read transfer, we have to copy the read data from pIo_buf to pdata.
+					{   /*  For Control read transfer, we have to copy the read data from pIo_buf to pdata. */
 						memcpy(pdata, pIo_buf,  len );
 					}
 				}
@@ -120,7 +114,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 		}
 
-		// firmware download is checksumed, don't retry
+		/*  firmware download is checksumed, don't retry */
 		if( (value >= FW_8723A_START_ADDRESS && value <= FW_8723A_END_ADDRESS) || status == len )
 			break;
 	}
@@ -144,8 +138,8 @@ static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
+	requesttype = 0x01;/* read_in */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 1;
@@ -170,8 +164,8 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
+	requesttype = 0x01;/* read_in */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 2;
@@ -196,8 +190,8 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
+	requesttype = 0x01;/* read_in */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 4;
@@ -223,8 +217,8 @@ static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
+	requesttype = 0x00;/* write_out */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 1;
@@ -252,8 +246,8 @@ static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
+	requesttype = 0x00;/* write_out */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 2;
@@ -281,8 +275,8 @@ static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
+	requesttype = 0x00;/* write_out */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 4;
@@ -310,8 +304,8 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 	_func_enter_;
 
 	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
+	requesttype = 0x00;/* write_out */
+	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = length;
@@ -358,7 +352,7 @@ InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 	       4);
 	pHalData->IntArray[0] &= pHalData->IntrMask[0];
 
-	//For HISR extension. Added by tynli. 2009.10.07.
+	/* For HISR extension. Added by tynli. 2009.10.07. */
 	memcpy(&(pHalData->IntArray[1]),
 	       &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
 	pHalData->IntArray[1] &= pHalData->IntrMask[1];
@@ -450,7 +444,7 @@ urb_submit:
 		case -EPIPE:
 		case -ENODEV:
 		case -ESHUTDOWN:
-			//padapter->bSurpriseRemoved = true;
+			/* padapter->bSurpriseRemoved = true; */
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 				 ("usb_read_port_complete:bSurpriseRemoved="
 				  "true\n"));
@@ -483,7 +477,7 @@ static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 
 _func_enter_;
 
-	//translate DMA FIFO addr to pipehandle
+	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
 	usb_fill_int_urb(precvpriv->int_in_urb, pusbd, pipe,
@@ -567,9 +561,9 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			goto _exit_recvbuf2recvframe;
 		}
 
-		//	Modified by Albert 20101213
-		//	For 8 bytes IP header alignment.
-		//	Qos data, wireless lan header length is 26
+		/* 	Modified by Albert 20101213 */
+		/* 	For 8 bytes IP header alignment. */
+		/* 	Qos data, wireless lan header length is 26 */
 		if (pattrib->qos) {
 			shift_sz = 6;
 		} else {
@@ -583,15 +577,15 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		 * modify alloc_sz for recvive crc error packet
 		 * by thomas 2011-06-02 */
 		if ((pattrib->mfrag == 1) && (pattrib->frag_num == 0)) {
-			//alloc_sz = 1664;	//1664 is 128 alignment.
+			/* alloc_sz = 1664;	1664 is 128 alignment. */
 			if (skb_len <= 1650)
 				alloc_sz = 1664;
 			else
 				alloc_sz = skb_len + 14;
 		} else {
 			alloc_sz = skb_len;
-		// 6 is for IP header 8 bytes alignment in QoS packet case.
-		// 8 is for skb->data 4 bytes alignment.
+		/*  6 is for IP header 8 bytes alignment in QoS packet case. */
+		/*  8 is for skb->data 4 bytes alignment. */
 			alloc_sz += 14;
 		}
 
@@ -599,7 +593,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		if (pkt_copy) {
 			pkt_copy->dev = padapter->pnetdev;
 			precvframe->pkt = pkt_copy;
-			skb_reserve(pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));//force pkt_copy->data at 8-byte alignment address
+			skb_reserve(pkt_copy, 8 - ((unsigned long)(pkt_copy->data) & 7));/* force pkt_copy->data at 8-byte alignment address */
 	/*force ip_hdr at 8-byte alignment address according to shift_sz. */
 			skb_reserve(pkt_copy, shift_sz);
 			memcpy(pkt_copy->data, (pbuf + pattrib->shift_sz + pattrib->drvinfo_sz + RXDESC_SIZE), skb_len);
@@ -746,7 +740,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			case -EPIPE:
 			case -ENODEV:
 			case -ESHUTDOWN:
-				//padapter->bSurpriseRemoved=true;
+				/* padapter->bSurpriseRemoved=true; */
 				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
 					 ("usb_read_port_complete:bSurprise"
 					  "Removed=true\n"));
@@ -815,7 +809,7 @@ _func_enter_;
 
 	rtl8723au_init_recvbuf(adapter, precvbuf);
 
-	//re-assign for linux based on skb
+	/* re-assign for linux based on skb */
 	if (!precvbuf->pskb) {
 		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 		if (precvbuf->pskb == NULL) {
@@ -832,12 +826,12 @@ _func_enter_;
 
 	purb = precvbuf->purb;
 
-	//translate DMA FIFO addr to pipehandle
+	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
 	usb_fill_bulk_urb(purb, pusbd, pipe, precvbuf->pskb->data,
 			  MAX_RECVBUF_SZ, usb_read_port_complete,
-			  precvbuf);//context is precvbuf
+			  precvbuf);/* context is precvbuf */
 
 	err = usb_submit_urb(purb, GFP_ATOMIC);
 	if ((err) && (err != -EPERM)) {

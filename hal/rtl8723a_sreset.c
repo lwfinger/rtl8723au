@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _RTL8723A_SRESET_C_
 
@@ -39,9 +34,9 @@ void rtl8723a_sreset_xmit_status_check(struct rtw_adapter *padapter)
 		rtw_hal_sreset_reset(padapter);
 	}
 
-	//total xmit irp = 4
-	//DBG_8723A("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__FUNCTION__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt);
-	//if(pxmitpriv->txirp_cnt == NR_XMITBUFF+1)
+	/* total xmit irp = 4 */
+	/* DBG_8723A("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__FUNCTION__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt); */
+	/* if(pxmitpriv->txirp_cnt == NR_XMITBUFF+1) */
 	current_time = rtw_get_current_time();
 
 	if(0 == pxmitpriv->free_xmitbuf_cnt || 0 == pxmitpriv->free_xmit_extbuf_cnt) {
@@ -55,7 +50,7 @@ void rtl8723a_sreset_xmit_status_check(struct rtw_adapter *padapter)
 			else{
 				diff_time = rtw_get_passing_time_ms(psrtpriv->last_tx_complete_time);
 				if (diff_time > 4000) {
-					//padapter->Wifi_Error_Status = WIFI_TX_HANG;
+					/* padapter->Wifi_Error_Status = WIFI_TX_HANG; */
 					DBG_8723A("%s tx hang\n", __FUNCTION__);
 					rtw_hal_sreset_reset(padapter);
 				}

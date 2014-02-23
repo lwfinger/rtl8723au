@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _RTL8192CU_RECV_C_
 #include <osdep_service.h>
@@ -32,7 +27,7 @@
 #include <wifi.h>
 #include <circ_buf.h>
 
-//#include <rtl8192c_hal.h>
+/* include <rtl8192c_hal.h> */
 #include <rtl8723a_hal.h>
 
 void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
@@ -60,7 +55,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 	if (!precvpriv->int_in_buf)
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
 
-	//init recv_buf
+	/* init recv_buf */
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
 	size = NR_RECVBUFF * sizeof(struct recv_buf);
@@ -83,7 +78,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 
 		precvbuf->adapter =padapter;
 
-		//list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue));
+		/* list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue)); */
 		precvbuf++;
 	}
 
@@ -165,7 +160,7 @@ void update_recvframe_attrib(struct recv_frame *precvframe,
 	pattrib = &precvframe->attrib;
 	memset(pattrib, 0, sizeof(struct rx_pkt_attrib));
 
-	// update rx report to recv_frame attribute
+	/*  update rx report to recv_frame attribute */
 	pattrib->pkt_len = (u16)prxreport->pktlen;
 	pattrib->drvinfo_sz = (u8)(prxreport->drvinfosize << 3);
 	pattrib->physt = (u8)prxreport->physt;
@@ -226,7 +221,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	if (pkt_info.bPacketBeacon) {
 		if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == true)
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
-		//to do Ad-hoc
+		/* to do Ad-hoc */
 	} else {
 		sa = get_sa(wlanhdr);
 	}
@@ -235,7 +230,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	psta = rtw_get_stainfo(pstapriv, sa);
 	if (psta) {
 		pkt_info.StationID = psta->mac_id;
-		//printk("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID);
+		/* printk("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID); */
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 

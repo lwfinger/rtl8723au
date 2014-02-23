@@ -11,11 +11,6 @@
 * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 * more details.
 *
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
 ******************************************************************************/
 
 #include "odm_precomp.h"
@@ -172,16 +167,16 @@ ODM_ReadAndConfig_MAC_REG_8723A(
 	    u32 v1 = Array[i];
 	    u32 v2 = Array[i+1];
 
-	    // This (offset, data) pair meets the condition.
+	    /*  This (offset, data) pair meets the condition. */
 	    if ( v1 < 0xCDCDCDCD )
 	    {
 			odm_ConfigMAC_8723A(pDM_Odm, v1, (u8)v2);
 		    continue;
 		}
 		else
-		{ // This line is the start line of branch.
+		{ /*  This line is the start line of branch. */
 		    if ( !CheckCondition(Array[i], hex) )
-		    { // Discard the following (offset, data) pairs.
+		    { /*  Discard the following (offset, data) pairs. */
 		        READ_NEXT_PAIR(v1, v2, i);
 		        while (v2 != 0xDEAD &&
 		               v2 != 0xCDEF &&
@@ -189,9 +184,9 @@ ODM_ReadAndConfig_MAC_REG_8723A(
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
-		        i -= 2; // prevent from for-loop += 2
+		        i -= 2; /*  prevent from for-loop += 2 */
 		    }
-		    else // Configure matched pairs and skip to end of if-else.
+		    else /*  Configure matched pairs and skip to end of if-else. */
 		    {
 		        READ_NEXT_PAIR(v1, v2, i);
 		        while (v2 != 0xDEAD &&
@@ -214,4 +209,4 @@ ODM_ReadAndConfig_MAC_REG_8723A(
 }
 
 
-#endif // end of HWIMG_SUPPORT
+#endif /*  end of HWIMG_SUPPORT */

@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 #include "odm_precomp.h"
@@ -58,7 +53,7 @@ odm_ConfigRFReg_8723A(
 	else
 	{
 		ODM_SetRFReg(pDM_Odm, RF_PATH, RegAddr, bRFRegOffsetMask, Data);
-		// Add 1us delay between BB/RF register setting.
+		/*  Add 1us delay between BB/RF register setting. */
 		udelay(1);
 	}
 }
@@ -71,7 +66,7 @@ odm_ConfigRF_RadioA_8723A(
 	u32					Data
 	)
 {
-	u32  content = 0x1000; // RF_Content: radioa_txt
+	u32  content = 0x1000; /*  RF_Content: radioa_txt */
 	u32	maskforPhySet= (u32)(content&0xE000);
 
     odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, ODM_RF_PATH_A, Addr|maskforPhySet);
@@ -86,7 +81,7 @@ odm_ConfigRF_RadioB_8723A(
 	u32					Data
 	)
 {
-	u32  content = 0x1001; // RF_Content: radiob_txt
+	u32  content = 0x1001; /*  RF_Content: radiob_txt */
 	u32	maskforPhySet= (u32)(content&0xE000);
 
     odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, ODM_RF_PATH_B, Addr|maskforPhySet);
@@ -115,7 +110,7 @@ odm_ConfigBB_AGC_8723A(
     )
 {
 	ODM_SetBBReg(pDM_Odm, Addr, Bitmask, Data);
-	// Add 1us delay between BB/RF register setting.
+	/*  Add 1us delay between BB/RF register setting. */
 	udelay(1);
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [AGC_TAB] %08X %08X\n", Addr, Data));
@@ -141,8 +136,8 @@ odm_ConfigBB_PHY_REG_PG_8723A(
 		udelay(5);
 	else if (Addr == 0xf9)
 		udelay(1);
-    // TODO: ODM_StorePwrIndexDiffRateOffset(...)
-	// storePwrIndexDiffRateOffset(Adapter, Addr, Bitmask, Data);
+    /*  TODO: ODM_StorePwrIndexDiffRateOffset(...) */
+	/*  storePwrIndexDiffRateOffset(Adapter, Addr, Bitmask, Data); */
 
     ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [PHY_REG] %08X %08X %08X\n", Addr, Bitmask, Data));
 }
@@ -171,7 +166,7 @@ odm_ConfigBB_PHY_8723A(
 		pDM_Odm->RFCalibrateInfo.RegA24 = Data;
 	ODM_SetBBReg(pDM_Odm, Addr, Bitmask, Data);
 
-	// Add 1us delay between BB/RF register setting.
+	/*  Add 1us delay between BB/RF register setting. */
 	udelay(1);
 
     ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [PHY_REG] %08X %08X\n", Addr, Data));

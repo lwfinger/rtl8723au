@@ -11,32 +11,27 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
-//============================================================
-// Description:
-//
-// This file is for 92CE/92CU dynamic mechanism only
-//
-//
-//============================================================
+/*  */
+/*  Description: */
+/*  */
+/*  This file is for 92CE/92CU dynamic mechanism only */
+/*  */
+/*  */
+/*  */
 #define _RTL8723A_DM_C_
 
-//============================================================
-// include files
-//============================================================
+/*  */
+/*  include files */
+/*  */
 #include <osdep_service.h>
 #include <drv_types.h>
 
 #include <rtl8723a_hal.h>
 
-//============================================================
-// Global var
-//============================================================
+/*  */
+/*  Global var */
+/*  */
 
 
 static void
@@ -63,14 +58,14 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 
 	tmp1byte = rtw_read8(padapter, GPIO_IO_SEL);
 	tmp1byte |= (HAL_8192C_HW_GPIO_WPS_BIT);
-	rtw_write8(padapter, GPIO_IO_SEL, tmp1byte);	//enable GPIO[2] as output mode
+	rtw_write8(padapter, GPIO_IO_SEL, tmp1byte);	/* enable GPIO[2] as output mode */
 
 	tmp1byte &= ~(HAL_8192C_HW_GPIO_WPS_BIT);
-	rtw_write8(padapter,  GPIO_IN, tmp1byte);		//reset the floating voltage level
+	rtw_write8(padapter,  GPIO_IN, tmp1byte);		/* reset the floating voltage level */
 
 	tmp1byte = rtw_read8(padapter, GPIO_IO_SEL);
 	tmp1byte &= ~(HAL_8192C_HW_GPIO_WPS_BIT);
-	rtw_write8(padapter, GPIO_IO_SEL, tmp1byte);	//enable GPIO[2] as input mode
+	rtw_write8(padapter, GPIO_IO_SEL, tmp1byte);	/* enable GPIO[2] as input mode */
 
 	tmp1byte =rtw_read8(padapter, GPIO_IN);
 
@@ -84,12 +79,12 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 
 	if( true == bPbcPressed)
 	{
-		// Here we only set bPbcPressed to true
-		// After trigger PBC, the variable will be set to false
+		/*  Here we only set bPbcPressed to true */
+		/*  After trigger PBC, the variable will be set to false */
 		DBG_8723A("CheckPbcGPIO - PBC is pressed\n");
 
 		if ( padapter->pid[0] == 0 )
-		{	//	0 is the default value and it means the application monitors the HW PBC doesn't privde its pid to driver.
+		{	/* 	0 is the default value and it means the application monitors the HW PBC doesn't privde its pid to driver. */
 			return;
 		}
 
@@ -97,9 +92,9 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 	}
 }
 
-//
-// Initialize GPIO setting registers
-//
+/*  */
+/*  Initialize GPIO setting registers */
+/*  */
 static void
 dm_InitGPIOSetting(
 	struct rtw_adapter *	Adapter
@@ -114,9 +109,9 @@ dm_InitGPIOSetting(
 
 	rtw_write8(Adapter, REG_GPIO_MUXCFG, tmp1byte);
 }
-//============================================================
-// functions
-//============================================================
+/*  */
+/*  functions */
+/*  */
 static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 
@@ -124,9 +119,9 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 	u8	cut_ver,fab_ver;
 
-	//
-	// Init Value
-	//
+	/*  */
+	/*  Init Value */
+	/*  */
 	memset(pDM_Odm, 0, sizeof(*pDM_Odm));
 
 	pDM_Odm->Adapter = Adapter;
@@ -134,7 +129,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	if(Adapter->interface_type == RTW_GSPI )
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,ODM_ITRF_SDIO);
 	else
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,Adapter->interface_type);//RTL871X_HCI_TYPE
+		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,Adapter->interface_type);/* RTL871X_HCI_TYPE */
 
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_IC_TYPE,ODM_RTL8723A);
 
@@ -165,7 +160,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
 	}
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
-	//	ODM_CMNINFO_BINHCT_TEST only for MP Team
+	/* 	ODM_CMNINFO_BINHCT_TEST only for MP Team */
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
 
 
@@ -198,9 +193,9 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 				ODM_MAC_EDCA_TURBO	|
 				ODM_RF_TX_PWR_TRACK	|
 				ODM_RF_CALIBRATION;
-	//
-	// Pointer reference
-	//
+	/*  */
+	/*  Pointer reference */
+	/*  */
 
 	ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_ABILITY,pdmpriv->InitODMFlag);
 
@@ -237,13 +232,12 @@ rtl8723a_InitHalDm(
 
 #ifdef CONFIG_8723AU_BT_COEXIST
 	pdmpriv->DMFlag |= DYNAMIC_FUNC_BT;
-//	btdm_InitBtCoexistDM(Adapter); // Move to BT_CoexistMechanism()
 #endif
 	pdmpriv->InitDMFlag = pdmpriv->DMFlag;
 
 	Update_ODM_ComInfo_8723a(Adapter);
 	ODM_DMInit(pDM_Odm);
-	// Save REG_INIDATA_RATE_SEL value for TXDESC.
+	/*  Save REG_INIDATA_RATE_SEL value for TXDESC. */
 	for(i = 0 ; i<32 ; i++)
 	{
 		pdmpriv->INIDATA_RATE[i] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL+i) & 0x3f;
@@ -273,23 +267,23 @@ rtl8723a_HalDmWatchDog(
 #endif
 
 #ifdef CONFIG_8723AU_P2P
-	// Fw is under p2p powersaving mode, driver should stop dynamic mechanism.
-	// modifed by thomas. 2011.06.11.
+	/*  Fw is under p2p powersaving mode, driver should stop dynamic mechanism. */
+	/*  modifed by thomas. 2011.06.11. */
 	if(Adapter->wdinfo.p2p_ps_mode)
 		bFwPSAwake = false;
-#endif //CONFIG_8723AU_P2P
+#endif /* CONFIG_8723AU_P2P */
 
 	if( (hw_init_completed == true)
 		&& ((!bFwCurrentInPSMode) && bFwPSAwake))
 	{
-		//
-		// Calculate Tx/Rx statistics.
-		//
+		/*  */
+		/*  Calculate Tx/Rx statistics. */
+		/*  */
 		dm_CheckStatistics(Adapter);
 
 _record_initrate:
 
-		// Read REG_INIDATA_RATE_SEL value for TXDESC.
+		/*  Read REG_INIDATA_RATE_SEL value for TXDESC. */
 		if(check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE) == true)
 		{
 			pdmpriv->INIDATA_RATE[0] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL) & 0x3f;
@@ -305,7 +299,7 @@ _record_initrate:
 	}
 
 
-	//ODM
+	/* ODM */
 	if (hw_init_completed == true)
 	{
 		u8	bLinked=false;
@@ -319,9 +313,9 @@ _record_initrate:
 
 skip_dm:
 
-	// Check GPIO to determine current RF on/off and Pbc status.
-	// Check Hardware Radio ON/OFF or not
-	dm_CheckPbcGPIO(Adapter);				// Add by hpfan 2008-03-11
+	/*  Check GPIO to determine current RF on/off and Pbc status. */
+	/*  Check Hardware Radio ON/OFF or not */
+	dm_CheckPbcGPIO(Adapter);				/*  Add by hpfan 2008-03-11 */
 
 }
 

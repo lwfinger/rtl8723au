@@ -11,21 +11,16 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
-//============================================================
-// include files
-//============================================================
+/*  */
+/*  include files */
+/*  */
 
 #include "odm_precomp.h"
-//
-// ODM IO Relative API.
-//
+/*  */
+/*  ODM IO Relative API. */
+/*  */
 
 u8 ODM_Read1Byte(PDM_ODM_T		pDM_Odm,
 	u32			RegAddr
@@ -166,9 +161,9 @@ u32 ODM_GetRFReg(
 	return PHY_QueryRFReg(Adapter, eRFPath, RegAddr, BitMask);
 }
 
-//
-// ODM Memory relative API.
-//
+/*  */
+/*  ODM Memory relative API. */
+/*  */
 void ODM_AllocateMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		*pPtr,
@@ -178,7 +173,7 @@ void ODM_AllocateMemory(
 	*pPtr = rtw_zvmalloc(length);
 }
 
-// length could be ignored, used to detect memory leakage.
+/*  length could be ignored, used to detect memory leakage. */
 void ODM_FreeMemory(
 	PDM_ODM_T	pDM_Odm,
 	void *		pPtr,
@@ -188,9 +183,9 @@ void ODM_FreeMemory(
 	rtw_vmfree(pPtr, length);
 }
 
-//
-// ODM MISC relative API.
-//
+/*  */
+/*  ODM MISC relative API. */
+/*  */
 void
 ODM_AcquireSpinLock(
 	PDM_ODM_T			pDM_Odm,
@@ -206,9 +201,9 @@ void ODM_ReleaseSpinLock(
 {
 }
 
-//
-// Work item relative API. FOr MP driver only~!
-//
+/*  */
+/*  Work item relative API. FOr MP driver only~! */
+/*  */
 void ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
 	void *				pRtWorkItem,
@@ -219,21 +214,21 @@ void ODM_InitializeWorkItem(
 {
 }
 
-//
-// ODM Timer relative API.
-//
+/*  */
+/*  ODM Timer relative API. */
+/*  */
 void ODM_SetTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer, u32 msDelay)
 {
-	mod_timer(pTimer, jiffies + msecs_to_jiffies(msDelay)); //ms
+	mod_timer(pTimer, jiffies + msecs_to_jiffies(msDelay)); /* ms */
 }
 
 void ODM_ReleaseTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer)
 {
 }
 
-//
-// ODM FW relative API.
-//
+/*  */
+/*  ODM FW relative API. */
+/*  */
 u32 ODM_FillH2CCmd(
 	u8 *		pH2CBuffer,
 	u32		H2CBufferLen,

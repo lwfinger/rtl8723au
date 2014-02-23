@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _HAL_INIT_C_
 
@@ -36,25 +31,25 @@ _FWDownloadEnable(
 
 	if(enable)
 	{
-		// 8051 enable
+		/*  8051 enable */
 		tmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
 		rtw_write8(padapter, REG_SYS_FUNC_EN+1, tmp|0x04);
 
-		// MCU firmware download enable.
+		/*  MCU firmware download enable. */
 		tmp = rtw_read8(padapter, REG_MCUFWDL);
 		rtw_write8(padapter, REG_MCUFWDL, tmp|0x01);
 
-		// 8051 reset
+		/*  8051 reset */
 		tmp = rtw_read8(padapter, REG_MCUFWDL+2);
 		rtw_write8(padapter, REG_MCUFWDL+2, tmp&0xf7);
 	}
 	else
 	{
-		// MCU firmware download disable.
+		/*  MCU firmware download disable. */
 		tmp = rtw_read8(padapter, REG_MCUFWDL);
 		rtw_write8(padapter, REG_MCUFWDL, tmp&0xfe);
 
-		// Reserved for fw extension.
+		/*  Reserved for fw extension. */
 		rtw_write8(padapter, REG_MCUFWDL+1, 0x00);
 	}
 }
@@ -67,9 +62,9 @@ _BlockWrite(
 	)
 {
 	int ret = _SUCCESS;
-	u32			blockSize_p1 = 4;	// (Default) Phase #1 : PCI muse use 4-byte write to download FW
-	u32			blockSize_p2 = 8;	// Phase #2 : Use 8-byte, if Phase#1 use big size to write FW.
-	u32			blockSize_p3 = 1;	// Phase #3 : Use 1-byte, the remnant of FW image.
+	u32			blockSize_p1 = 4;	/*  (Default) Phase #1 : PCI muse use 4-byte write to download FW */
+	u32			blockSize_p2 = 8;	/*  Phase #2 : Use 8-byte, if Phase#1 use big size to write FW. */
+	u32			blockSize_p3 = 1;	/*  Phase #3 : Use 1-byte, the remnant of FW image. */
 	u32			blockCount_p1 = 0, blockCount_p2 = 0, blockCount_p3 = 0;
 	u32			remainSize_p1 = 0, remainSize_p2 = 0;
 	u8			*bufferPtr	= (u8*)buffer;
@@ -77,7 +72,7 @@ _BlockWrite(
 
 	blockSize_p1 = 254;
 
-	//3 Phase #1
+	/* 3 Phase #1 */
 	blockCount_p1 = buffSize / blockSize_p1;
 	remainSize_p1 = buffSize % blockSize_p1;
 
@@ -94,7 +89,7 @@ _BlockWrite(
 			goto exit;
 	}
 
-	//3 Phase #2
+	/* 3 Phase #2 */
 	if (remainSize_p1)
 	{
 		offset = blockCount_p1 * blockSize_p1;
@@ -116,7 +111,7 @@ _BlockWrite(
 		}
 	}
 
-	//3 Phase #3
+	/* 3 Phase #3 */
 	if (remainSize_p2)
 	{
 		offset = (blockCount_p1 * blockSize_p1) + (blockCount_p2 * blockSize_p2);
@@ -183,15 +178,15 @@ _WriteFW(
 		u32			size
 	)
 {
-	// Since we need dynamic decide method of dwonload fw, so we call this function to get chip version.
-	// We can remove _ReadChipVersion from ReadpadapterInfo8192C later.
+	/*  Since we need dynamic decide method of dwonload fw, so we call this function to get chip version. */
+	/*  We can remove _ReadChipVersion from ReadpadapterInfo8192C later. */
 	int ret = _SUCCESS;
 	u32	pageNums,remainSize ;
 	u32	page, offset;
 	u8		*bufferPtr = (u8*)buffer;
 
 	pageNums = size / MAX_PAGE_SIZE ;
-	//RT_ASSERT((pageNums <= 4), ("Page numbers should not greater then 4 \n"));
+	/* RT_ASSERT((pageNums <= 4), ("Page numbers should not greater then 4 \n")); */
 	remainSize = size % MAX_PAGE_SIZE;
 
 	for (page = 0; page < pageNums; page++) {
@@ -220,7 +215,7 @@ static s32 _FWFreeToGo(struct rtw_adapter * padapter)
 	u32	counter = 0;
 	u32	value32;
 
-	// polling CheckSum report
+	/*  polling CheckSum report */
 	do {
 		value32 = rtw_read32(padapter, REG_MCUFWDL);
 		if (value32 & FWDL_ChkSum_rpt) break;
@@ -237,7 +232,7 @@ static s32 _FWFreeToGo(struct rtw_adapter * padapter)
 	value32 &= ~WINTINI_RDY;
 	rtw_write32(padapter, REG_MCUFWDL, value32);
 
-	// polling for FW ready
+	/*  polling for FW ready */
 	counter = 0;
 	do {
 		value32 = rtw_read32(padapter, REG_MCUFWDL);
@@ -264,9 +259,9 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 	if (!(IS_FW_81xxC(padapter) &&
 		  ((pHalData->FirmwareVersion < 0x21) ||
 		   (pHalData->FirmwareVersion == 0x21 &&
-		    pHalData->FirmwareSubVersion < 0x01)))) // after 88C Fw v33.1
+		    pHalData->FirmwareSubVersion < 0x01)))) /*  after 88C Fw v33.1 */
 	{
-		//0x1cf=0x20. Inform 8051 to reset. 2009.12.25. tynli_test
+		/* 0x1cf=0x20. Inform 8051 to reset. 2009.12.25. tynli_test */
 		rtw_write8(padapter, REG_HMETFR+3, 0x20);
 
 		u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
@@ -281,7 +276,7 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("-%s: 8051 reset success (%d)\n", __FUNCTION__, Delay));
 
 		if ((Delay == 0)) {
-			//force firmware reset
+			/* force firmware reset */
 			u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
 			rtw_write8(padapter, REG_SYS_FUNC_EN+1, u1bTmp&(~BIT2));
 		}
@@ -289,11 +284,11 @@ void rtl8723a_FirmwareSelfReset(struct rtw_adapter * padapter)
 }
 
 
-//
-//	Description:
-//		Download 8192C firmware code.
-//
-//
+/*  */
+/* 	Description: */
+/* 		Download 8192C firmware code. */
+/*  */
+/*  */
 s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 {
 	s32	rtStatus = _SUCCESS;
@@ -317,7 +312,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 		fw_name = "rtlwifi/rtl8723aufw.bin";
 		RT_TRACE(_module_hal_init_c_, _drv_info_, ("rtl8723a_FirmwareDownload: R8723FwImageArray_UMC for RTL8723A A CUT\n"));
 	} else if (IS_8723A_B_CUT(pHalData->VersionID)) {
-	  // WLAN Fw.
+	  /*  WLAN Fw. */
 		if (padapter->registrypriv.wifi_spec == 1) {
 			fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for RTL8723A B CUT\n");
@@ -331,7 +326,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 #endif
 		}
 	} else {
-		// <Roger_TODO> We should download proper RAM Code here  to match the ROM code.
+		/*  <Roger_TODO> We should download proper RAM Code here  to match the ROM code. */
 		RT_TRACE(_module_hal_init_c_, _drv_err_, ("%s: unknow version!\n", __FUNCTION__));
 		rtStatus = _FAIL;
 		goto Exit;
@@ -358,14 +353,14 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	fw_size = fw->size;
 	release_firmware(fw);
 
-#ifdef DBG_FW_STORE_FILE_PATH //used to store firmware to file...
+#ifdef DBG_FW_STORE_FILE_PATH /* used to store firmware to file... */
 	if(pFirmware->ulFwLength > 0)
 	{
 		rtw_store_to_file(DBG_FW_STORE_FILE_PATH, pFirmware->szFwBuffer, pFirmware->ulFwLength);
 	}
 #endif
 
-	// To Check Fw header. Added by tynli. 2009.12.04.
+	/*  To Check Fw header. Added by tynli. 2009.12.04. */
 	pFwHdr = (struct rt_8723a_firmware_hdr *)firmware_buf;
 
 	pHalData->FirmwareVersion =  le16_to_cpu(pFwHdr->Version);
@@ -382,14 +377,14 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 
 	if (IS_FW_HEADER_EXIST(pFwHdr))
 	{
-		// Shift 32 bytes for FW header
+		/*  Shift 32 bytes for FW header */
 		buf = buf + 32;
 		fw_size = fw_size - 32;
 	}
 
-	// Suggested by Filen. If 8051 is running in RAM code, driver should inform Fw to reset by itself,
-	// or it will cause download Fw fail. 2010.02.01. by tynli.
-	if (rtw_read8(padapter, REG_MCUFWDL) & RAM_DL_SEL) //8051 RAM code
+	/*  Suggested by Filen. If 8051 is running in RAM code, driver should inform Fw to reset by itself, */
+	/*  or it will cause download Fw fail. 2010.02.01. by tynli. */
+	if (rtw_read8(padapter, REG_MCUFWDL) & RAM_DL_SEL) /* 8051 RAM code */
 	{
 		rtl8723a_FirmwareSelfReset(padapter);
 		rtw_write8(padapter, REG_MCUFWDL, 0x00);
@@ -398,7 +393,7 @@ s32 rtl8723a_FirmwareDownload(struct rtw_adapter * padapter)
 	_FWDownloadEnable(padapter, true);
 	fwdl_start_time = rtw_get_current_time();
 	while(1) {
-		//reset the FWDL chksum
+		/* reset the FWDL chksum */
 		rtw_write8(padapter, REG_MCUFWDL, rtw_read8(padapter, REG_MCUFWDL)|FWDL_ChkSum_rpt);
 
 		rtStatus = _WriteFW(padapter, buf, fw_size);
@@ -435,10 +430,10 @@ void rtl8723a_InitializeFirmwareVars(struct rtw_adapter * padapter)
 {
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
 
-	// Init Fw LPS related.
+	/*  Init Fw LPS related. */
 	padapter->pwrctrlpriv.bFwCurrentInPSMode = false;
 
-	// Init H2C counter. by tynli. 2009.12.09.
+	/*  Init H2C counter. by tynli. 2009.12.09. */
 	pHalData->LastHMEBoxNum = 0;
 }
 
@@ -450,9 +445,9 @@ _func_enter_;
 _func_exit_;
 }
 
-//===========================================================
-//				Efuse related code
-//===========================================================
+/*  */
+/* 				Efuse related code */
+/*  */
 static u8
 hal_EfuseSwitchToBank(
 	struct rtw_adapter *	padapter,
@@ -626,20 +621,20 @@ Hal_EfusePowerSwitch(
 	{
 		rtw_write8(padapter, REG_EFUSE_ACCESS, EFUSE_ACCESS_ON);
 
-		// 1.2V Power: From VDDON with Power Cut(0x0000h[15]), defualt valid
+		/*  1.2V Power: From VDDON with Power Cut(0x0000h[15]), defualt valid */
 		tmpV16 = rtw_read16(padapter, REG_SYS_ISO_CTRL);
 		if (!(tmpV16 & PWC_EV12V)) {
 			tmpV16 |= PWC_EV12V ;
 			rtw_write16(padapter, REG_SYS_ISO_CTRL, tmpV16);
 		}
-		// Reset: 0x0000h[28], default valid
+		/*  Reset: 0x0000h[28], default valid */
 		tmpV16 =  rtw_read16(padapter, REG_SYS_FUNC_EN);
 		if (!(tmpV16 & FEN_ELDR)) {
 			tmpV16 |= FEN_ELDR ;
 			rtw_write16(padapter, REG_SYS_FUNC_EN, tmpV16);
 		}
 
-		// Clock: Gated(0x0008h[5]) 8M(0x0008h[1]) clock from ANA, default valid
+		/*  Clock: Gated(0x0008h[5]) 8M(0x0008h[1]) clock from ANA, default valid */
 		tmpV16 = rtw_read16(padapter, REG_SYS_CLKR);
 		if ((!(tmpV16 & LOADER_CLK_EN))  || (!(tmpV16 & ANA8M))) {
 			tmpV16 |= (LOADER_CLK_EN | ANA8M) ;
@@ -648,7 +643,7 @@ Hal_EfusePowerSwitch(
 
 		if (bWrite == true)
 		{
-			// Enable LDO 2.5V before read/write action
+			/*  Enable LDO 2.5V before read/write action */
 			tempval = rtw_read8(padapter, EFUSE_TEST+3);
 			tempval &= 0x0F;
 			tempval |= (VOLTAGE_V25 << 4);
@@ -660,7 +655,7 @@ Hal_EfusePowerSwitch(
 		rtw_write8(padapter, REG_EFUSE_ACCESS, EFUSE_ACCESS_OFF);
 
 		if (bWrite == true) {
-			// Disable LDO 2.5V after read/write action
+			/*  Disable LDO 2.5V after read/write action */
 			tempval = rtw_read8(padapter, EFUSE_TEST+3);
 			rtw_write8(padapter, EFUSE_TEST+3, (tempval & 0x7F));
 		}
@@ -687,9 +682,9 @@ hal_ReadEFuse_WiFi(
 	u8	efuse_usage = 0;
 
 
-	//
-	// Do NOT excess total size of EFuse table. Added by Roger, 2008.11.10.
-	//
+	/*  */
+	/*  Do NOT excess total size of EFuse table. Added by Roger, 2008.11.10. */
+	/*  */
 	if ((_offset+_size_byte) > EFUSE_MAP_LEN_8723A)
 	{
 		DBG_8723A("%s: Invalid offset(%#x) with read bytes(%#x)!!\n", __FUNCTION__, _offset, _size_byte);
@@ -702,10 +697,10 @@ hal_ReadEFuse_WiFi(
 		DBG_8723A("%s: alloc efuseTbl fail!\n", __FUNCTION__);
 		return;
 	}
-	// 0xff will be efuse default value instead of 0x00.
+	/*  0xff will be efuse default value instead of 0x00. */
 	memset(efuseTbl, 0xFF, EFUSE_MAP_LEN_8723A);
 
-	// switch bank back to bank 0 for later BT and wifi use.
+	/*  switch bank back to bank 0 for later BT and wifi use. */
 	hal_EfuseSwitchToBank(padapter, 0, bPseudoTest);
 
 	while (AVAILABLE_EFUSE_ADDR(eFuse_Addr))
@@ -717,8 +712,8 @@ hal_ReadEFuse_WiFi(
 			break;
 		}
 
-		// Check PG header for section num.
-		if (EXT_HEADER(efuseHeader))		//extended header
+		/*  Check PG header for section num. */
+		if (EXT_HEADER(efuseHeader))		/* extended header */
 		{
 			offset = GET_HDR_OFFSET_2_0(efuseHeader);
 
@@ -740,12 +735,12 @@ hal_ReadEFuse_WiFi(
 		if (offset < EFUSE_MAX_SECTION_8723A)
 		{
 			u16 addr;
-			// Get word enable value from PG header
+			/*  Get word enable value from PG header */
 
 			addr = offset * PGPKT_DATA_SIZE;
 			for (i=0; i<EFUSE_MAX_WORD_UNIT; i++)
 			{
-				// Check word enable condition in the section
+				/*  Check word enable condition in the section */
 				if (!(wden & (0x01<<i)))
 				{
 					ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
@@ -764,11 +759,11 @@ hal_ReadEFuse_WiFi(
 		}
 	}
 
-	// Copy from Efuse map to output pointer memory!!!
+	/*  Copy from Efuse map to output pointer memory!!! */
 	for (i=0; i<_size_byte; i++)
 		pbuf[i] = efuseTbl[_offset+i];
 
-	// Calculate Efuse utilization
+	/*  Calculate Efuse utilization */
 	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &total, bPseudoTest);
 	used = eFuse_Addr - 1;
 	efuse_usage = (u8)((used*100)/total);
@@ -811,9 +806,9 @@ hal_ReadEFuse_BT(
 	u8	efuse_usage;
 
 
-	//
-	// Do NOT excess total size of EFuse table. Added by Roger, 2008.11.10.
-	//
+	/*  */
+	/*  Do NOT excess total size of EFuse table. Added by Roger, 2008.11.10. */
+	/*  */
 	if ((_offset+_size_byte) > EFUSE_BT_MAP_LEN)
 	{
 		DBG_8723A("%s: Invalid offset(%#x) with read bytes(%#x)!!\n", __FUNCTION__, _offset, _size_byte);
@@ -825,7 +820,7 @@ hal_ReadEFuse_BT(
 		DBG_8723A("%s: efuseTbl malloc fail!\n", __FUNCTION__);
 		return;
 	}
-	// 0xff will be efuse default value instead of 0x00.
+	/*  0xff will be efuse default value instead of 0x00. */
 	memset(efuseTbl, 0xFF, EFUSE_BT_MAP_LEN);
 
 	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_AVAILABLE_EFUSE_BYTES_BANK, &total, bPseudoTest);
@@ -845,8 +840,8 @@ hal_ReadEFuse_BT(
 			ReadEFuseByte(padapter, eFuse_Addr++, &efuseHeader, bPseudoTest);
 			if (efuseHeader == 0xFF) break;
 
-			// Check PG header for section num.
-			if (EXT_HEADER(efuseHeader))		//extended header
+			/*  Check PG header for section num. */
+			if (EXT_HEADER(efuseHeader))		/* extended header */
 			{
 				offset = GET_HDR_OFFSET_2_0(efuseHeader);
 
@@ -869,12 +864,12 @@ hal_ReadEFuse_BT(
 			{
 				u16 addr;
 
-				// Get word enable value from PG header
+				/*  Get word enable value from PG header */
 
 				addr = offset * PGPKT_DATA_SIZE;
 				for (i=0; i<EFUSE_MAX_WORD_UNIT; i++)
 				{
-					// Check word enable condition in the section
+					/*  Check word enable condition in the section */
 					if (!(wden & (0x01<<i)))
 					{
 						ReadEFuseByte(padapter, eFuse_Addr++, &efuseData, bPseudoTest);
@@ -900,16 +895,16 @@ hal_ReadEFuse_BT(
 		}
 	}
 
-	// switch bank back to bank 0 for later BT and wifi use.
+	/*  switch bank back to bank 0 for later BT and wifi use. */
 	hal_EfuseSwitchToBank(padapter, 0, bPseudoTest);
 
-	// Copy from Efuse map to output pointer memory!!!
+	/*  Copy from Efuse map to output pointer memory!!! */
 	for (i=0; i<_size_byte; i++)
 		pbuf[i] = efuseTbl[_offset+i];
 
-	//
-	// Calculate Efuse utilization.
-	//
+	/*  */
+	/*  Calculate Efuse utilization. */
+	/*  */
 	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &total, bPseudoTest);
 	used = (EFUSE_BT_REAL_BANK_CONTENT_LEN*(bank-1)) + eFuse_Addr - 1;
 	efuse_usage = (u8)((used*100)/total);
@@ -974,7 +969,7 @@ hal_EfuseGetCurrentSize_WiFi(
 	}
 	DBG_8723A("%s: start_efuse_addr=0x%X\n", __FUNCTION__, efuse_addr);
 
-	// switch bank back to bank 0 for later BT and wifi use.
+	/*  switch bank back to bank 0 for later BT and wifi use. */
 	hal_EfuseSwitchToBank(padapter, 0, bPseudoTest);
 
 	while (AVAILABLE_EFUSE_ADDR(efuse_addr))
@@ -1072,7 +1067,7 @@ hal_EfuseGetCurrentSize_BT(
 			break;
 		}
 
-		// only when bank is switched we have to reset the efuse_addr.
+		/*  only when bank is switched we have to reset the efuse_addr. */
 		if (bank != startBank)
 			efuse_addr = 0;
 
@@ -1107,14 +1102,14 @@ hal_EfuseGetCurrentSize_BT(
 				hworden =  efuse_data & 0x0F;
 			}
 			word_cnts = Efuse_CalculateWordCnts(hworden);
-			//read next header
+			/* read next header */
 			efuse_addr += (word_cnts*2)+1;
 		}
 
-		// Check if we need to check next bank efuse
+		/*  Check if we need to check next bank efuse */
 		if (efuse_addr < retU2)
 		{
-			break;// don't need to check next bank.
+			break;/*  don't need to check next bank. */
 		}
 	}
 
@@ -1249,11 +1244,11 @@ Hal_EfusePgPacketRead(
 	memset(data, 0xFF, PGPKT_DATA_SIZE);
 	ret = true;
 
-	//
-	// <Roger_TODO> Efuse has been pre-programmed dummy 5Bytes at the end of Efuse by CP.
-	// Skip dummy parts to prevent unexpected data read from Efuse.
-	// By pass right now. 2009.02.19.
-	//
+	/*  */
+	/*  <Roger_TODO> Efuse has been pre-programmed dummy 5Bytes at the end of Efuse by CP. */
+	/*  Skip dummy parts to prevent unexpected data read from Efuse. */
+	/*  By pass right now. 2009.02.19. */
+	/*  */
 	while (AVAILABLE_EFUSE_ADDR(efuse_addr))
 	{
 		if (efuse_OneByteRead(padapter, efuse_addr++, &efuse_data, bPseudoTest) == false)
@@ -1287,7 +1282,7 @@ Hal_EfusePgPacketRead(
 		{
 			for (i=0; i<EFUSE_MAX_WORD_UNIT; i++)
 			{
-				// Check word enable condition in the section
+				/*  Check word enable condition in the section */
 				if (!(hworden & (0x01<<i)))
 				{
 					ReadEFuseByte(padapter, efuse_addr++, &efuse_data, bPseudoTest);
@@ -1411,7 +1406,7 @@ hal_EfusePartialWriteCheck(
 		}
 		else
 		{
-			// not used header, 0xff
+			/*  not used header, 0xff */
 			*pAddr = startAddr;
 			bRet = true;
 			break;
@@ -1500,7 +1495,7 @@ hal_EfusePgPacketWrite2ByteHeader(
 		return false;
 	}
 
-	// to write ext_header
+	/*  to write ext_header */
 	efuse_addr++;
 	pg_header = ((pTargetPkt->offset & 0x78) << 1) | pTargetPkt->word_en;
 
@@ -1515,7 +1510,7 @@ hal_EfusePgPacketWrite2ByteHeader(
 		}
 	} while (1);
 
-	if (tmp_header != pg_header)	//offset PG fail
+	if (tmp_header != pg_header)	/* offset PG fail */
 	{
 		DBG_8723A(KERN_ERR "%s: PG EXT Header Fail!!(pg=0x%02X read=0x%02X)\n", __FUNCTION__, pg_header, tmp_header);
 		return false;
@@ -1642,15 +1637,15 @@ ReadChipVersion8723A(
 	ChipVersion.ChipType = ((value32 & RTL_ID) ? TEST_CHIP : NORMAL_CHIP);
 	ChipVersion.RFType = RF_TYPE_1T1R ;
 	ChipVersion.VendorType = ((value32 & VENDOR_ID) ? CHIP_VENDOR_UMC : CHIP_VENDOR_TSMC);
-	ChipVersion.CUTVersion = (value32 & CHIP_VER_RTL_MASK)>>CHIP_VER_RTL_SHIFT; // IC version (CUT)
+	ChipVersion.CUTVersion = (value32 & CHIP_VER_RTL_MASK)>>CHIP_VER_RTL_SHIFT; /*  IC version (CUT) */
 
-	// For regulator mode. by tynli. 2011.01.14
+	/*  For regulator mode. by tynli. 2011.01.14 */
 	pHalData->RegulatorMode = ((value32 & SPS_SEL) ? RT_LDO_REGULATOR : RT_SWITCHING_REGULATOR);
 
 	value32 = rtw_read32(padapter, REG_GPIO_OUTSTS);
-	ChipVersion.ROMVer = ((value32 & RF_RL_ID) >> 20);	// ROM code version.
+	ChipVersion.ROMVer = ((value32 & RF_RL_ID) >> 20);	/*  ROM code version. */
 
-	// For multi-function consideration. Added by Roger, 2010.10.06.
+	/*  For multi-function consideration. Added by Roger, 2010.10.06. */
 	pHalData->MultiFunc = RT_MULTI_FUNC_NONE;
 	value32 = rtw_read32(padapter, REG_MULTI_FUNC_CTRL);
 	pHalData->MultiFunc |= ((value32 & WL_FUNC_EN) ? RT_MULTI_FUNC_WIFI : 0);
@@ -1678,15 +1673,15 @@ static void rtl8723a_read_chip_version(struct rtw_adapter * padapter)
 	ReadChipVersion8723A(padapter);
 }
 
-//====================================================================================
-//
-// 20100209 Joseph:
-// This function is used only for 92C to set REG_BCN_CTRL(0x550) register.
-// We just reserve the value of the register in variable pHalData->RegBcnCtrlVal and then operate
-// the value of the register via atomic operation.
-// This prevents from race condition when setting this register.
-// The value of pHalData->RegBcnCtrlVal is initialized in HwConfigureRTL8192CE() function.
-//
+/*  */
+/*  */
+/*  20100209 Joseph: */
+/*  This function is used only for 92C to set REG_BCN_CTRL(0x550) register. */
+/*  We just reserve the value of the register in variable pHalData->RegBcnCtrlVal and then operate */
+/*  the value of the register via atomic operation. */
+/*  This prevents from race condition when setting this register. */
+/*  The value of pHalData->RegBcnCtrlVal is initialized in HwConfigureRTL8192CE() function. */
+/*  */
 void SetBcnCtrlReg(struct rtw_adapter * padapter, u8 SetBits, u8 ClearBits)
 {
 	struct hal_data_8723a * pHalData;
@@ -1714,16 +1709,16 @@ void rtl8723a_InitBeaconParameters(struct rtw_adapter * padapter)
 	rtw_write16(padapter, REG_BCN_CTRL, 0x1010);
 	pHalData->RegBcnCtrlVal = 0x1010;
 
-	// TODO: Remove these magic number
-	rtw_write16(padapter, REG_TBTT_PROHIBIT, 0x6404);// ms
-	// Firmware will control REG_DRVERLYINT when power saving is enable,
-	// so don't set this register on STA mode.
+	/*  TODO: Remove these magic number */
+	rtw_write16(padapter, REG_TBTT_PROHIBIT, 0x6404);/*  ms */
+	/*  Firmware will control REG_DRVERLYINT when power saving is enable, */
+	/*  so don't set this register on STA mode. */
 	if (check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == false)
-		rtw_write8(padapter, REG_DRVERLYINT, DRIVER_EARLY_INT_TIME); // 5ms
-	rtw_write8(padapter, REG_BCNDMATIM, BCN_DMA_ATIME_INT_TIME); // 2ms
+		rtw_write8(padapter, REG_DRVERLYINT, DRIVER_EARLY_INT_TIME); /*  5ms */
+	rtw_write8(padapter, REG_BCNDMATIM, BCN_DMA_ATIME_INT_TIME); /*  2ms */
 
-	// Suggested by designer timchen. Change beacon AIFS to the largest number
-	// beacause test chip does not contension before sending beacon. by tynli. 2009.11.03
+	/*  Suggested by designer timchen. Change beacon AIFS to the largest number */
+	/*  beacause test chip does not contension before sending beacon. by tynli. 2009.11.03 */
 	rtw_write16(padapter, REG_BCNTCFG, 0x660F);
 }
 
@@ -1732,8 +1727,8 @@ static void ResumeTxBeacon(struct rtw_adapter * padapter)
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
 
 
-	// 2010.03.01. Marked by tynli. No need to call workitem beacause we record the value
-	// which should be read from register to a global variable.
+	/*  2010.03.01. Marked by tynli. No need to call workitem beacause we record the value */
+	/*  which should be read from register to a global variable. */
 
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("+ResumeTxBeacon\n"));
 
@@ -1749,8 +1744,8 @@ static void StopTxBeacon(struct rtw_adapter * padapter)
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
 
 
-	// 2010.03.01. Marked by tynli. No need to call workitem beacause we record the value
-	// which should be read from register to a global variable.
+	/*  2010.03.01. Marked by tynli. No need to call workitem beacause we record the value */
+	/*  which should be read from register to a global variable. */
 
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("+StopTxBeacon\n"));
 
@@ -1760,7 +1755,7 @@ static void StopTxBeacon(struct rtw_adapter * padapter)
 	pHalData->RegReg542 &= ~BIT(0);
 	rtw_write8(padapter, REG_TBTT_PROHIBIT+2, pHalData->RegReg542);
 
-	CheckFwRsvdPageContent(padapter);  // 2010.06.23. Added by tynli.
+	CheckFwRsvdPageContent(padapter);  /*  2010.06.23. Added by tynli. */
 }
 
 static void _BeaconFunctionEnable(struct rtw_adapter * padapter, u8 Enable, u8 Linked)
@@ -1777,35 +1772,35 @@ static void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter * padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 
-	//reset TSF, enable update TSF, correcting TSF On Beacon
+	/* reset TSF, enable update TSF, correcting TSF On Beacon */
 
-	//REG_BCN_INTERVAL
-	//REG_BCNDMATIM
-	//REG_ATIMWND
-	//REG_TBTT_PROHIBIT
-	//REG_DRVERLYINT
-	//REG_BCN_MAX_ERR
-	//REG_BCNTCFG //(0x510)
-	//REG_DUAL_TSF_RST
-	//REG_BCN_CTRL //(0x550)
+	/* REG_BCN_INTERVAL */
+	/* REG_BCNDMATIM */
+	/* REG_ATIMWND */
+	/* REG_TBTT_PROHIBIT */
+	/* REG_DRVERLYINT */
+	/* REG_BCN_MAX_ERR */
+	/* REG_BCNTCFG (0x510) */
+	/* REG_DUAL_TSF_RST */
+	/* REG_BCN_CTRL (0x550) */
 
-	//
-	// ATIM window
-	//
+	/*  */
+	/*  ATIM window */
+	/*  */
 	rtw_write16(padapter, REG_ATIMWND, 2);
 
-	//
-	// Beacon interval (in unit of TU).
-	//
+	/*  */
+	/*  Beacon interval (in unit of TU). */
+	/*  */
 	rtw_write16(padapter, REG_BCN_INTERVAL, pmlmeinfo->bcn_interval);
 
 	rtl8723a_InitBeaconParameters(padapter);
 
 	rtw_write8(padapter, REG_SLOT, 0x09);
 
-	//
-	// Reset TSF Timer to zero, added by Roger. 2008.06.24
-	//
+	/*  */
+	/*  Reset TSF Timer to zero, added by Roger. 2008.06.24 */
+	/*  */
 	value32 = rtw_read32(padapter, REG_TCR);
 	value32 &= ~TSFRST;
 	rtw_write32(padapter, REG_TCR, value32);
@@ -1813,7 +1808,7 @@ static void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter * padapter)
 	value32 |= TSFRST;
 	rtw_write32(padapter, REG_TCR, value32);
 
-	// NOTE: Fix test chip's bug (about contention windows's randomness)
+	/*  NOTE: Fix test chip's bug (about contention windows's randomness) */
 	if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE|WIFI_AP_STATE) == true)
 	{
 		rtw_write8(padapter, REG_RXTSF_OFFSET_CCK, 0x50);
@@ -1971,7 +1966,7 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->read_rfreg = &PHY_QueryRFReg;
 	pHalFunc->write_rfreg = &PHY_SetRFReg;
 
-	// Efuse related function
+	/*  Efuse related function */
 	pHalFunc->EfusePowerSwitch = &Hal_EfusePowerSwitch;
 	pHalFunc->ReadEFuse = &Hal_ReadEFuse;
 	pHalFunc->EFUSEGetEfuseDefinition = &Hal_GetEfuseDefinition;
@@ -2006,8 +2001,8 @@ void rtl8723a_InitAntenna_Selection(struct rtw_adapter * padapter)
 	pHalData = GET_HAL_DATA(padapter);
 
 	val = rtw_read8(padapter, REG_LEDCFG2);
-	// Let 8051 take control antenna settting
-	val |= BIT(7); // DPDT_SEL_EN, 0x4C[23]
+	/*  Let 8051 take control antenna settting */
+	val |= BIT(7); /*  DPDT_SEL_EN, 0x4C[23] */
 	rtw_write8(padapter, REG_LEDCFG2, val);
 }
 
@@ -2020,9 +2015,9 @@ void rtl8723a_CheckAntenna_Selection(struct rtw_adapter * padapter)
 	pHalData = GET_HAL_DATA(padapter);
 
 	val = rtw_read8(padapter, REG_LEDCFG2);
-	// Let 8051 take control antenna settting
+	/*  Let 8051 take control antenna settting */
 	if(!(val &BIT(7))){
-		val |= BIT(7); // DPDT_SEL_EN, 0x4C[23]
+		val |= BIT(7); /*  DPDT_SEL_EN, 0x4C[23] */
 		rtw_write8(padapter, REG_LEDCFG2, val);
 	}
 }
@@ -2034,8 +2029,8 @@ void rtl8723a_DeinitAntenna_Selection(struct rtw_adapter * padapter)
 
 	pHalData = GET_HAL_DATA(padapter);
 	val = rtw_read8(padapter, REG_LEDCFG2);
-	// Let 8051 take control antenna settting
-	val &= ~BIT(7); // DPDT_SEL_EN, clear 0x4C[23]
+	/*  Let 8051 take control antenna settting */
+	val &= ~BIT(7); /*  DPDT_SEL_EN, clear 0x4C[23] */
 	rtw_write8(padapter, REG_LEDCFG2, val);
 
 }
@@ -2050,7 +2045,7 @@ void rtl8723a_init_default_value(struct rtw_adapter * padapter)
 	pHalData = GET_HAL_DATA(padapter);
 	pdmpriv = &pHalData->dmpriv;
 
-	// init default value
+	/*  init default value */
 	pHalData->fw_ractrl = false;
 	pHalData->bIQKInitialized = false;
 	if (!padapter->pwrctrlpriv.bkeepfwalive)
@@ -2058,17 +2053,17 @@ void rtl8723a_init_default_value(struct rtw_adapter * padapter)
 
 	pHalData->bIQKInitialized = false;
 
-	// init dm default value
-	pdmpriv->TM_Trigger = 0;//for IQK
-//	pdmpriv->binitialized = false;
-//	pdmpriv->prv_traffic_idx = 3;
-//	pdmpriv->initialize = 0;
+	/*  init dm default value */
+	pdmpriv->TM_Trigger = 0;/* for IQK */
+/* 	pdmpriv->binitialized = false; */
+/* 	pdmpriv->prv_traffic_idx = 3; */
+/* 	pdmpriv->initialize = 0; */
 
 	pdmpriv->ThermalValue_HP_index = 0;
 	for (i=0; i<HP_THERMAL_NUM; i++)
 		pdmpriv->ThermalValue_HP[i] = 0;
 
-	// init Efuse variables
+	/*  init Efuse variables */
 	pHalData->EfuseUsedBytes = 0;
 	pHalData->EfuseUsedPercentage = 0;
 #ifdef HAL_EFUSE_MEMORY
@@ -2095,7 +2090,7 @@ u8 GetEEPROMSize8723A(struct rtw_adapter * padapter)
 	u32	cr;
 
 	cr = rtw_read16(padapter, REG_9346CR);
-	// 6: EEPROM used is 93C46, 4: boot from E-Fuse.
+	/*  6: EEPROM used is 93C46, 4: boot from E-Fuse. */
 	size = (cr & BOOT_FROM_EEPROM) ? 6 : 4;
 
 	MSG_8723A("EEPROM type is %s\n", size==4 ? "E-FUSE" : "93C46");
@@ -2103,11 +2098,11 @@ u8 GetEEPROMSize8723A(struct rtw_adapter * padapter)
 	return size;
 }
 
-//-------------------------------------------------------------------------
-//
-// LLT R/W/Init function
-//
-//-------------------------------------------------------------------------
+/*  */
+/*  */
+/*  LLT R/W/Init function */
+/*  */
+/*  */
 static s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
 {
 	s32	status = _SUCCESS;
@@ -2118,7 +2113,7 @@ static s32 _LLTWrite(struct rtw_adapter * padapter, u32 address, u32 data)
 
 	rtw_write32(padapter, LLTReg, value);
 
-	//polling
+	/* polling */
 	do {
 		value = rtw_read32(padapter, LLTReg);
 		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)) {
@@ -2144,7 +2139,7 @@ static u8 _LLTRead(struct rtw_adapter * padapter, u32 address)
 
 	rtw_write32(padapter, LLTReg, value);
 
-	//polling and get value
+	/* polling and get value */
 	do {
 		value = rtw_read32(padapter, LLTReg);
 		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value)) {
@@ -2175,15 +2170,15 @@ s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 		}
 	}
 
-	// end of list
+	/*  end of list */
 	status = _LLTWrite(padapter, (txpktbuf_bndy - 1), 0xFF);
 	if (_SUCCESS != status) {
 		return status;
 	}
 
-	// Make the other pages as ring buffer
-	// This ring buffer is used as beacon buffer if we config this MAC as two MAC transfer.
-	// Otherwise used as local loopback buffer.
+	/*  Make the other pages as ring buffer */
+	/*  This ring buffer is used as beacon buffer if we config this MAC as two MAC transfer. */
+	/*  Otherwise used as local loopback buffer. */
 	for (i = txpktbuf_bndy; i < Last_Entry_Of_TxPktBuf; i++) {
 		status = _LLTWrite(padapter, i, (i + 1));
 		if (_SUCCESS != status) {
@@ -2191,7 +2186,7 @@ s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 		}
 	}
 
-	// Let last entry point to the start entry of ring buffer
+	/*  Let last entry point to the start entry of ring buffer */
 	status = _LLTWrite(padapter, Last_Entry_Of_TxPktBuf, txpktbuf_bndy);
 	if (_SUCCESS != status) {
 		return status;
@@ -2203,9 +2198,9 @@ s32 InitLLTTable(struct rtw_adapter * padapter, u32 boundary)
 static void _DisableGPIO(struct rtw_adapter *	padapter)
 {
 /***************************************
-j. GPIO_PIN_CTRL 0x44[31:0]=0x000		//
+j. GPIO_PIN_CTRL 0x44[31:0]=0x000		
 k.Value = GPIO_PIN_CTRL[7:0]
-l. GPIO_PIN_CTRL 0x44[31:0] = 0x00FF0000 | (value <<8); //write external PIN level
+l. GPIO_PIN_CTRL 0x44[31:0] = 0x00FF0000 | (value <<8); write external PIN level
 m. GPIO_MUXCFG 0x42 [15:0] = 0x0780
 n. LEDCFG 0x4C[15:0] = 0x8080
 ***************************************/
@@ -2215,37 +2210,37 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	u32	u4bTmp;
 
 
-	//1. Disable GPIO[7:0]
+	/* 1. Disable GPIO[7:0] */
 	rtw_write16(padapter, REG_GPIO_PIN_CTRL+2, 0x0000);
 	value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL) & 0xFFFF00FF;
 	u4bTmp = value32 & 0x000000FF;
 	value32 |= ((u4bTmp<<8) | 0x00FF0000);
 	rtw_write32(padapter, REG_GPIO_PIN_CTRL, value32);
 
-	//
-	// <Roger_Notes> For RTL8723u multi-function configuration which was autoload from Efuse offset 0x0a and 0x0b,
-	// WLAN HW GPIO[9], GPS HW GPIO[10] and BT HW GPIO[11].
-	// Added by Roger, 2010.10.07.
-	//
-	//2. Disable GPIO[8] and GPIO[12]
-	rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
+	/*  */
+	/*  <Roger_Notes> For RTL8723u multi-function configuration which was autoload from Efuse offset 0x0a and 0x0b, */
+	/*  WLAN HW GPIO[9], GPS HW GPIO[10] and BT HW GPIO[11]. */
+	/*  Added by Roger, 2010.10.07. */
+	/*  */
+	/* 2. Disable GPIO[8] and GPIO[12] */
+	rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); /*  Configure all pins as input mode. */
 	value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
 	u4bTmp = value32 & 0x0000001F;
-	value32 |= ((u4bTmp<<8) | 0x001D0000); // Set pin 8, 10, 11 and pin 12 to output mode.
+	value32 |= ((u4bTmp<<8) | 0x001D0000); /*  Set pin 8, 10, 11 and pin 12 to output mode. */
 	rtw_write32(padapter, REG_GPIO_PIN_CTRL_2, value32);
 
-	//3. Disable LED0 & 1
+	/* 3. Disable LED0 & 1 */
 	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
-} //end of _DisableGPIO()
+} /* end of _DisableGPIO() */
 
 static void _DisableRFAFEAndResetBB8192C(struct rtw_adapter * padapter)
 {
 /**************************************
-a.	TXPAUSE 0x522[7:0] = 0xFF             //Pause MAC TX queue
-b.	RF path 0 offset 0x00 = 0x00            // disable RF
+a.	TXPAUSE 0x522[7:0] = 0xFF		Pause MAC TX queue
+b.	RF path 0 offset 0x00 = 0x00		disable RF
 c.	APSD_CTRL 0x600[7:0] = 0x40
-d.	SYS_FUNC_EN 0x02[7:0] = 0x16		//reset BB state machine
-e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
+d.	SYS_FUNC_EN 0x02[7:0] = 0x16		reset BB state machine
+e.	SYS_FUNC_EN 0x02[7:0] = 0x14		reset BB state machine
 ***************************************/
 	u8 eRFPath = 0, value8 = 0;
 
@@ -2254,20 +2249,20 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 	PHY_SetRFReg(padapter, (RF_RADIO_PATH_E)eRFPath, 0x0, bMaskByte0, 0x0);
 
 	value8 |= APSDOFF;
-	rtw_write8(padapter, REG_APSD_CTRL, value8);//0x40
+	rtw_write8(padapter, REG_APSD_CTRL, value8);/* 0x40 */
 
-	// Set BB reset at first
+	/*  Set BB reset at first */
 	value8 = 0 ;
 	value8 |= (FEN_USBD | FEN_USBA | FEN_BB_GLB_RSTn);
-	rtw_write8(padapter, REG_SYS_FUNC_EN, value8 );//0x16
+	rtw_write8(padapter, REG_SYS_FUNC_EN, value8 );/* 0x16 */
 
-	// Set global reset.
+	/*  Set global reset. */
 	value8 &= ~FEN_BB_GLB_RSTn;
-	rtw_write8(padapter, REG_SYS_FUNC_EN, value8); //0x14
+	rtw_write8(padapter, REG_SYS_FUNC_EN, value8); /* 0x14 */
 
-	// 2010/08/12 MH We need to set BB/GLBAL reset to save power for SS mode.
+	/*  2010/08/12 MH We need to set BB/GLBAL reset to save power for SS mode. */
 
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
+/* 	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n")); */
 }
 
 static void _DisableRFAFEAndResetBB(struct rtw_adapter * padapter)
@@ -2281,72 +2276,66 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWit
 
 	if (IS_FW_81xxC(padapter) && (pHalData->FirmwareVersion <= 0x20)) {
 		/*****************************
-		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
-		h.	SYS_FUNC_EN 0x02[15-12]= 5		// reset MAC register, DCORE
-		i.     SYS_FUNC_EN 0x02[10]= 1			// enable MCU register, (8051 enable)
+		f.	MCUFWDL 0x80[7:0]=0			reset MCU ready status
+		g.	SYS_FUNC_EN 0x02[10]= 0			reset MCU register, (8051 reset)
+		h.	SYS_FUNC_EN 0x02[15-12]= 5		reset MAC register, DCORE
+		i.     SYS_FUNC_EN 0x02[10]= 1			enable MCU register, (8051 enable)
 		******************************/
 		u16 valu16 = 0;
 		rtw_write8(padapter, REG_MCUFWDL, 0);
 
 		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));/* reset MCU ,8051 */
 
 		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN)&0x0FFF;
-		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));/* reset MAC */
 
 		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));/* enable MCU ,8051 */
 	} else {
 		u8 retry_cnts = 0;
 
-		// 2010/08/12 MH For USB SS, we can not stop 8051 when we are trying to
-		// enter IPS/HW&SW radio off. For S3/S4/S5/Disable, we can stop 8051 because
-		// we will init FW when power on again.
-		//if(!pDevice->RegUsbSS)
-		{	// If we want to SS mode, we can not reset 8051.
+		/*  2010/08/12 MH For USB SS, we can not stop 8051 when we are trying to */
+		/*  enter IPS/HW&SW radio off. For S3/S4/S5/Disable, we can stop 8051 because */
+		/*  we will init FW when power on again. */
+		/* if(!pDevice->RegUsbSS) */
+		{	/*  If we want to SS mode, we can not reset 8051. */
 			if(rtw_read8(padapter, REG_MCUFWDL) & BIT1)
-			{ //IF fw in RAM code, do reset
+			{ /* IF fw in RAM code, do reset */
 
 
 				if(padapter->bFWReady)
 				{
-					// 2010/08/25 MH Accordign to RD alfred's suggestion, we need to disable other
-					// HRCV INT to influence 8051 reset.
+					/*  2010/08/25 MH Accordign to RD alfred's suggestion, we need to disable other */
+					/*  HRCV INT to influence 8051 reset. */
 					rtw_write8(padapter, REG_FWIMR, 0x20);
-					// 2011/02/15 MH According to Alex's suggestion, close mask to prevent incorrect FW write operation.
+					/*  2011/02/15 MH According to Alex's suggestion, close mask to prevent incorrect FW write operation. */
 					rtw_write8(padapter, REG_FTIMR, 0x00);
 					rtw_write8(padapter, REG_FSIMR, 0x00);
 
-					rtw_write8(padapter, REG_HMETFR+3, 0x20);//8051 reset by self
+					rtw_write8(padapter, REG_HMETFR+3, 0x20);/* 8051 reset by self */
 
 					while( (retry_cnts++ <100) && (FEN_CPUEN &rtw_read16(padapter, REG_SYS_FUNC_EN)))
 					{
-						udelay(50);//us
-						// 2010/08/25 For test only We keep on reset 5051 to prevent fail.
-						//rtw_write8(padapter, REG_HMETFR+3, 0x20);//8051 reset by self
+						udelay(50);/* us */
+						/*  2010/08/25 For test only We keep on reset 5051 to prevent fail. */
+						/* rtw_write8(padapter, REG_HMETFR+3, 0x20);8051 reset by self */
 					}
-//					RT_ASSERT((retry_cnts < 100), ("8051 reset failed!\n"));
+/* 					RT_ASSERT((retry_cnts < 100), ("8051 reset failed!\n")); */
 
 					if (retry_cnts >= 100)
 					{
-						// if 8051 reset fail we trigger GPIO 0 for LA
-						//rtw_write32(	padapter,
-						//						REG_GPIO_PIN_CTRL,
-						//						0x00010100);
-						// 2010/08/31 MH According to Filen's info, if 8051 reset fail, reset MAC directly.
-						rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x50);	//Reset MAC and Enable 8051
+						/*  if 8051 reset fail we trigger GPIO 0 for LA */
+						/* rtw_write32(	padapter, */
+						/* 						REG_GPIO_PIN_CTRL, */
+						/* 						0x00010100); */
+						/*  2010/08/31 MH According to Filen's info, if 8051 reset fail, reset MAC directly. */
+						rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x50);	/* Reset MAC and Enable 8051 */
 						mdelay(10);
 					}
-//					else
-//					RT_TRACE(COMP_INIT, DBG_LOUD, ("=====> 8051 reset success (%d) .\n",retry_cnts));
 				}
 			}
-//			else
-//			{
-//				RT_TRACE(COMP_INIT, DBG_LOUD, ("=====> 8051 in ROM.\n"));
-//			}
-			rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x54);	//Reset MAC and Enable 8051
+			rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x54);	/* Reset MAC and Enable 8051 */
 			rtw_write8(padapter, REG_MCUFWDL, 0);
 		}
 	}
@@ -2355,17 +2344,17 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter * padapter, bool bWit
 	{
 	/*****************************
 		Without HW auto state machine
-	g.	SYS_CLKR 0x08[15:0] = 0x30A3			//disable MAC clock
-	h.	AFE_PLL_CTRL 0x28[7:0] = 0x80			//disable AFE PLL
-	i.	AFE_XTAL_CTRL 0x24[15:0] = 0x880F		//gated AFE DIG_CLOCK
-	j.	SYS_ISO_CTRL 0x00[7:0] = 0xF9			// isolated digital to PON
+	g.	SYS_CLKR 0x08[15:0] = 0x30A3			disable MAC clock
+	h.	AFE_PLL_CTRL 0x28[7:0] = 0x80			disable AFE PLL
+	i.	AFE_XTAL_CTRL 0x24[15:0] = 0x880F		gated AFE DIG_CLOCK
+	j.	SYS_ISO_CTRL 0x00[7:0] = 0xF9			isolated digital to PON
 	******************************/
-		rtw_write16(padapter, REG_SYS_CLKR, 0x70A3);  //modify to 0x70A3 by Scott.
+		rtw_write16(padapter, REG_SYS_CLKR, 0x70A3);  /* modify to 0x70A3 by Scott. */
 		rtw_write8(padapter, REG_AFE_PLL_CTRL, 0x80);
 		rtw_write16(padapter, REG_AFE_XTAL_CTRL, 0x880F);
 		rtw_write8(padapter, REG_SYS_ISO_CTRL, 0xF9);
 	} else {
-		// Disable all RF/BB power
+		/*  Disable all RF/BB power */
 		rtw_write8(padapter, REG_RF_CTRL, 0x00);
 	}
 }
@@ -2378,12 +2367,12 @@ static void _ResetDigitalProcedure1(struct rtw_adapter * padapter, bool bWithout
 static void _ResetDigitalProcedure2(struct rtw_adapter * padapter)
 {
 /*****************************
-k.	SYS_FUNC_EN 0x03[7:0] = 0x44			// disable ELDR runction
-l.	SYS_CLKR 0x08[15:0] = 0x3083			// disable ELDR clock
-m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
+k.	SYS_FUNC_EN 0x03[7:0] = 0x44		disable ELDR runction
+l.	SYS_CLKR 0x08[15:0] = 0x3083		disable ELDR clock
+m.	SYS_ISO_CTRL 0x01[7:0] = 0x83		isolated ELDR to PON
 ******************************/
-	rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); //modify to 0x70a3 by Scott.
-	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
+	rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); /* modify to 0x70a3 by Scott. */
+	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); /* modify to 0x82 by Scott. */
 }
 
 static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
@@ -2396,23 +2385,23 @@ static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 	if (bWithoutHWSM)
 	{
 		/*****************************
-		n.	LDOA15_CTRL 0x20[7:0] = 0x04		// disable A15 power
-		o.	LDOV12D_CTRL 0x21[7:0] = 0x54		// disable digital core power
+		n.	LDOA15_CTRL 0x20[7:0] = 0x04		disable A15 power
+		o.	LDOV12D_CTRL 0x21[7:0] = 0x54		disable digital core power
 		r.	When driver call disable, the ASIC will turn off remaining clock automatically
 		******************************/
 
 		rtw_write8(padapter, REG_LDOA15_CTRL, 0x04);
-		//rtw_write8(padapter, REG_LDOV12D_CTRL, 0x54);
+		/* rtw_write8(padapter, REG_LDOV12D_CTRL, 0x54); */
 
 		value8 = rtw_read8(padapter, REG_LDOV12D_CTRL);
 		value8 &= (~LDV12_EN);
 		rtw_write8(padapter, REG_LDOV12D_CTRL, value8);
-//		RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8));
+/* 		RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8)); */
 	}
 
 	/*****************************
-	h.	SPS0_CTRL 0x11[7:0] = 0x23			//enter PFM mode
-	i.	APS_FSMCO 0x04[15:0] = 0x4802		// set USB suspend
+	h.	SPS0_CTRL 0x11[7:0] = 0x23		enter PFM mode
+	i.	APS_FSMCO 0x04[15:0] = 0x4802		set USB suspend
 	******************************/
 	value8 = 0x23;
 	if (IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID))
@@ -2422,9 +2411,9 @@ static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 
 	if(bWithoutHWSM)
 	{
-		//value16 |= (APDM_HOST | /*AFSM_HSUS |*/PFM_ALDN);
-		// 2010/08/31 According to Filen description, we need to use HW to shut down 8051 automatically.
-		// Becasue suspend operatione need the asistance of 8051 to wait for 3ms.
+		/* value16 |= (APDM_HOST | FSM_HSUS |/PFM_ALDN); */
+		/*  2010/08/31 According to Filen description, we need to use HW to shut down 8051 automatically. */
+		/*  Becasue suspend operatione need the asistance of 8051 to wait for 3ms. */
 		value16 |= (APDM_HOST | AFSM_HSUS | PFM_ALDN);
 	}
 	else
@@ -2432,12 +2421,12 @@ static void _DisableAnalog(struct rtw_adapter * padapter, bool bWithoutHWSM)
 		value16 |= (APDM_HOST | AFSM_HSUS | PFM_ALDN);
 	}
 
-	rtw_write16(padapter, REG_APS_FSMCO, value16);//0x4802
+	rtw_write16(padapter, REG_APS_FSMCO, value16);/* 0x4802 */
 
 	rtw_write8(padapter, REG_RSV_CTRL, 0x0e);
 }
 
-// HW Auto state machine
+/*  HW Auto state machine */
 s32 CardDisableHWSM(struct rtw_adapter * padapter, u8 resetMCU)
 {
 	int rtStatus = _SUCCESS;
@@ -2446,16 +2435,16 @@ s32 CardDisableHWSM(struct rtw_adapter * padapter, u8 resetMCU)
 	if (padapter->bSurpriseRemoved){
 		return rtStatus;
 	}
-	//==== RF Off Sequence ====
+	/*  RF Off Sequence ==== */
 	_DisableRFAFEAndResetBB(padapter);
 
-	//  ==== Reset digital sequence   ======
+	/*   ==== Reset digital sequence   ====== */
 	_ResetDigitalProcedure1(padapter, false);
 
-	//  ==== Pull GPIO PIN to balance level and LED control ======
+	/*   ==== Pull GPIO PIN to balance level and LED control ====== */
 	_DisableGPIO(padapter);
 
-	//  ==== Disable analog sequence ===
+	/*   ==== Disable analog sequence === */
 	_DisableAnalog(padapter, false);
 
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("======> Card disable finished.\n"));
@@ -2463,33 +2452,33 @@ s32 CardDisableHWSM(struct rtw_adapter * padapter, u8 resetMCU)
 	return rtStatus;
 }
 
-// without HW Auto state machine
+/*  without HW Auto state machine */
 s32 CardDisableWithoutHWSM(struct rtw_adapter * padapter)
 {
 	s32 rtStatus = _SUCCESS;
 
 
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Card Disable Without HWSM .\n"));
+	/* RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Card Disable Without HWSM .\n")); */
 	if (padapter->bSurpriseRemoved) {
 		return rtStatus;
 	}
 
-	//==== RF Off Sequence ====
+	/*  RF Off Sequence ==== */
 	_DisableRFAFEAndResetBB(padapter);
 
-	//  ==== Reset digital sequence   ======
+	/*   ==== Reset digital sequence   ====== */
 	_ResetDigitalProcedure1(padapter, true);
 
-	//  ==== Pull GPIO PIN to balance level and LED control ======
+	/*   ==== Pull GPIO PIN to balance level and LED control ====== */
 	_DisableGPIO(padapter);
 
-	//  ==== Reset digital sequence   ======
+	/*   ==== Reset digital sequence   ====== */
 	_ResetDigitalProcedure2(padapter);
 
-	//  ==== Disable analog sequence ===
+	/*   ==== Disable analog sequence === */
 	_DisableAnalog(padapter, true);
 
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("<====== Card Disable Without HWSM .\n"));
+	/* RT_TRACE(COMP_INIT, DBG_LOUD, ("<====== Card Disable Without HWSM .\n")); */
 	return rtStatus;
 }
 
@@ -2499,34 +2488,34 @@ Hal_InitPGData(
 	u8			*PROMContent)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
-//	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+/* 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u32			i;
 	u16			value16;
 
 	if(false == pEEPROM->bautoload_fail_flag)
-	{ // autoload OK.
-//		if (IS_BOOT_FROM_EEPROM(padapter))
+	{ /*  autoload OK. */
+/* 		if (IS_BOOT_FROM_EEPROM(padapter)) */
 		if (true == pEEPROM->EepromOrEfuse)
 		{
-			// Read all Content from EEPROM or EFUSE.
+			/*  Read all Content from EEPROM or EFUSE. */
 			for(i = 0; i < HWSET_MAX_SIZE; i += 2)
 			{
-//				value16 = EF2Byte(ReadEEprom(pAdapter, (u16) (i>>1)));
-//				*((u16*)(&PROMContent[i])) = value16;
+/* 				value16 = EF2Byte(ReadEEprom(pAdapter, (u16) (i>>1))); */
+/* 				*((u16*)(&PROMContent[i])) = value16; */
 			}
 		}
 		else
 		{
-			// Read EFUSE real map to shadow.
+			/*  Read EFUSE real map to shadow. */
 			EFUSE_ShadowMapUpdate(padapter, EFUSE_WIFI, false);
 			memcpy((void*)PROMContent, (void*)pEEPROM->efuse_eeprom_data, HWSET_MAX_SIZE);
 		}
 	}
 	else
-	{//autoload fail
+	{/* autoload fail */
 		RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("AutoLoad Fail reported from CR9346!!\n"));
-//		pHalData->AutoloadFailFlag = true;
-		//update to default value 0xFF
+/* 		pHalData->AutoloadFailFlag = true; */
+		/* update to default value 0xFF */
 		if (false == pEEPROM->EepromOrEfuse)
 			EFUSE_ShadowMapUpdate(padapter, EFUSE_WIFI, false);
 		memcpy((void*)PROMContent, (void*)pEEPROM->efuse_eeprom_data, HWSET_MAX_SIZE);
@@ -2540,11 +2529,11 @@ Hal_EfuseParseIDCode(
 	)
 {
 	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
-//	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+/* 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u16			EEPROMId;
 
 
-	// Checl 0x8129 again for making sure autoload status!!
+	/*  Checl 0x8129 again for making sure autoload status!! */
 	EEPROMId = le16_to_cpu(*((u16*)hwinfo));
 	if (EEPROMId != RTL_EEPROM_ID)
 	{
@@ -2625,10 +2614,10 @@ Hal_ReadPowerValueFromPROM_8723A(
 		for (group = 0; group < MAX_CHNL_GROUP; group++)
 		{
 			eeAddr = EEPROM_CCK_TX_PWR_INX_8723A + (rfPath * 3) + group;
-			//pwrInfo->CCKIndex[rfPath][group] = PROMContent[eeAddr];
+			/* pwrInfo->CCKIndex[rfPath][group] = PROMContent[eeAddr]; */
 			Hal_EEValueCheck(EETYPE_TX_PWR, &PROMContent[eeAddr], &pwrInfo->CCKIndex[rfPath][group]);
 			eeAddr = EEPROM_HT40_1S_TX_PWR_INX_8723A + (rfPath * 3) + group;
-			//pwrInfo->HT40_1SIndex[rfPath][group] = PROMContent[eeAddr];
+			/* pwrInfo->HT40_1SIndex[rfPath][group] = PROMContent[eeAddr]; */
 			Hal_EEValueCheck(EETYPE_TX_PWR, &PROMContent[eeAddr], &pwrInfo->HT40_1SIndex[rfPath][group]);
 		}
 	}
@@ -2640,7 +2629,7 @@ Hal_ReadPowerValueFromPROM_8723A(
 			pwrInfo->HT40_2SIndexDiff[rfPath][group] = 0;
 			pwrInfo->HT20IndexDiff[rfPath][group] =
 			(PROMContent[EEPROM_HT20_TX_PWR_INX_DIFF_8723A + group] >> (rfPath * 4)) & 0xF;
-			if(pwrInfo->HT20IndexDiff[rfPath][group] & BIT3)	//4bit sign number to 8 bit sign number
+			if(pwrInfo->HT20IndexDiff[rfPath][group] & BIT3)	/* 4bit sign number to 8 bit sign number */
 				pwrInfo->HT20IndexDiff[rfPath][group] |= 0xF0;
 
 			pwrInfo->OFDMIndexDiff[rfPath][group] =
@@ -2664,11 +2653,11 @@ Hal_GetChnlGroup(
 {
 	u8	group=0;
 
-	if (chnl < 3)			// Cjanel 1-3
+	if (chnl < 3)			/*  Cjanel 1-3 */
 		group = 0;
-	else if (chnl < 9)		// Channel 4-9
+	else if (chnl < 9)		/*  Channel 4-9 */
 		group = 1;
-	else					// Channel 10-14
+	else					/*  Channel 10-14 */
 		group = 2;
 
 	return group;
@@ -2735,7 +2724,7 @@ Hal_EfuseParseTxPowerInfo_8723A(
 			if( PROMContent[RF_OPTION1_8723A] == 0xff)
 				pHalData->EEPROMRegulatory = 0 ;
 			else
-				pHalData->EEPROMRegulatory = PROMContent[RF_OPTION1_8723A]&0x7;	//bit0~2
+				pHalData->EEPROMRegulatory = PROMContent[RF_OPTION1_8723A]&0x7;	/* bit0~2 */
 		} else {
 			pHalData->EEPROMRegulatory = registry_par->regulatory_tid;
 		}
@@ -2768,12 +2757,12 @@ Hal_EfuseParseBTCoexistInfo_8723A(
 			pHalData->EEPROMBluetoothCoexist = 0;
 		pHalData->EEPROMBluetoothType = BT_RTL8723A;
 
-		// The following need to be checked with newer version of
-		// eeprom spec
+		/*  The following need to be checked with newer version of */
+		/*  eeprom spec */
 		tempval = hwinfo[RF_OPTION4_8723A];
-		pHalData->EEPROMBluetoothAntNum = (tempval&0x1);					// bit [0]
-		pHalData->EEPROMBluetoothAntIsolation = ((tempval&0x10)>>4);			// bit [4]
-		pHalData->EEPROMBluetoothRadioShared = ((tempval&0x20)>>5);		// bit [5]
+		pHalData->EEPROMBluetoothAntNum = (tempval&0x1);					/*  bit [0] */
+		pHalData->EEPROMBluetoothAntIsolation = ((tempval&0x10)>>4);			/*  bit [4] */
+		pHalData->EEPROMBluetoothRadioShared = ((tempval&0x20)>>5);		/*  bit [5] */
 	}
 	else
 	{
@@ -2894,9 +2883,9 @@ Hal_EfuseParseThermalMeter_8723A(
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(padapter);
 
 
-	//
-	// ThermalMeter from EEPROM
-	//
+	/*  */
+	/*  ThermalMeter from EEPROM */
+	/*  */
 	if (false == AutoloadFail)
 		pHalData->EEPROMThermalMeter = PROMContent[EEPROM_THERMAL_METER_8723A];
 	else
@@ -2921,12 +2910,12 @@ Hal_InitChannelPlan(
 static void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 {
 	u16	*usPtr = (u16*)ptxdesc;
-	u32 count = 16;		// (32 bytes / 2 bytes per XOR) => 16 times
+	u32 count = 16;		/*  (32 bytes / 2 bytes per XOR) => 16 times */
 	u32 index;
 	u16 checksum = 0;
 
 
-	// Clear first
+	/*  Clear first */
 	ptxdesc->txdw7 &= cpu_to_le32(0xffff0000);
 
 	for (index = 0; index < count; index++) {
@@ -2942,7 +2931,7 @@ static void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct txdesc_8723a 
 	{
 		switch (pattrib->encrypt)
 		{
-			// SEC_TYPE
+			/*  SEC_TYPE */
 			case _WEP40_:
 			case _WEP104_:
 			case _TKIP_:
@@ -2963,7 +2952,7 @@ static void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct txdesc_8723a 
 
 static void fill_txdesc_vcs(struct pkt_attrib *pattrib, struct txdesc_8723a *ptxdesc)
 {
-	//DBG_8723A("cvs_mode=%d\n", pattrib->vcs_mode);
+	/* DBG_8723A("cvs_mode=%d\n", pattrib->vcs_mode); */
 
 	switch (pattrib->vcs_mode)
 	{
@@ -2981,9 +2970,9 @@ static void fill_txdesc_vcs(struct pkt_attrib *pattrib, struct txdesc_8723a *ptx
 	}
 
 	if(pattrib->vcs_mode) {
-		ptxdesc->hw_rts_en = 1; // ENABLE HW RTS
+		ptxdesc->hw_rts_en = 1; /*  ENABLE HW RTS */
 
-		// Set RTS BW
+		/*  Set RTS BW */
 		if(pattrib->ht_en)
 		{
 			if (pattrib->bwmode & HT_CHANNEL_WIDTH_40)
@@ -3004,7 +2993,7 @@ static void fill_txdesc_vcs(struct pkt_attrib *pattrib, struct txdesc_8723a *ptx
 					break;
 
 				default:
-					ptxdesc->rts_sc = 3; // Duplicate
+					ptxdesc->rts_sc = 3; /*  Duplicate */
 					break;
 			}
 		}
@@ -3033,7 +3022,7 @@ static void fill_txdesc_phy(struct pkt_attrib *pattrib, struct txdesc_8723a *ptx
 				break;
 
 			default:
-				ptxdesc->data_sc = 3; // Duplicate
+				ptxdesc->data_sc = 3; /*  Duplicate */
 				break;
 		}
 	}
@@ -3062,12 +3051,12 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 	ptxdesc = (struct txdesc_8723a *)pbuf;
 
 	if (pxmitframe->frame_tag == DATA_FRAMETAG) {
-		ptxdesc->macid = pattrib->mac_id; // CAM_ID(MAC_ID)
+		ptxdesc->macid = pattrib->mac_id; /*  CAM_ID(MAC_ID) */
 
 		if (pattrib->ampdu_en == true)
-			ptxdesc->agg_en = 1; // AGG EN
+			ptxdesc->agg_en = 1; /*  AGG EN */
 		else
-			ptxdesc->bk = 1; // AGG BK
+			ptxdesc->bk = 1; /*  AGG BK */
 
 		ptxdesc->qsel = pattrib->qsel;
 		ptxdesc->rate_id = pattrib->raid;
@@ -3079,45 +3068,45 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 		if ((pattrib->ether_type != 0x888e) &&
 		    (pattrib->ether_type != 0x0806) &&
 		    (pattrib->dhcp_pkt != 1)) {
-			// Non EAP & ARP & DHCP type data packet
+			/*  Non EAP & ARP & DHCP type data packet */
 
 			fill_txdesc_vcs(pattrib, ptxdesc);
 			fill_txdesc_phy(pattrib, ptxdesc);
 
-			ptxdesc->rtsrate = 8; // RTS Rate=24M
+			ptxdesc->rtsrate = 8; /*  RTS Rate=24M */
 			ptxdesc->data_ratefb_lmt = 0x1F;
 			ptxdesc->rts_ratefb_lmt = 0xF;
 
-			// use REG_INIDATA_RATE_SEL value
+			/*  use REG_INIDATA_RATE_SEL value */
 			ptxdesc->datarate = pdmpriv->INIDATA_RATE[pattrib->mac_id];
 
 		}
 		else
 		{
-			// EAP data packet and ARP packet.
-			// Use the 1M data rate to send the EAP/ARP packet.
-			// This will maybe make the handshake smooth.
+			/*  EAP data packet and ARP packet. */
+			/*  Use the 1M data rate to send the EAP/ARP packet. */
+			/*  This will maybe make the handshake smooth. */
 
-			ptxdesc->bk = 1; // AGG BK
-			ptxdesc->userate = 1; // driver uses rate
+			ptxdesc->bk = 1; /*  AGG BK */
+			ptxdesc->userate = 1; /*  driver uses rate */
 			if (pmlmeinfo->preamble_mode == PREAMBLE_SHORT)
-				ptxdesc->data_short = 1;// DATA_SHORT
+				ptxdesc->data_short = 1;/*  DATA_SHORT */
 			ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 		}
 	}
 	else if (pxmitframe->frame_tag == MGNT_FRAMETAG)
 	{
-//		RT_TRACE(_module_hal_xmit_c_, _drv_notice_, ("%s: MGNT_FRAMETAG\n", __FUNCTION__));
+/* 		RT_TRACE(_module_hal_xmit_c_, _drv_notice_, ("%s: MGNT_FRAMETAG\n", __FUNCTION__)); */
 
-		ptxdesc->macid = pattrib->mac_id; // CAM_ID(MAC_ID)
+		ptxdesc->macid = pattrib->mac_id; /*  CAM_ID(MAC_ID) */
 		ptxdesc->qsel = pattrib->qsel;
-		ptxdesc->rate_id = pattrib->raid; // Rate ID
+		ptxdesc->rate_id = pattrib->raid; /*  Rate ID */
 		ptxdesc->seq = pattrib->seqnum;
-		ptxdesc->userate = 1; // driver uses rate, 1M
-		ptxdesc->rty_lmt_en = 1; // retry limit enable
-		ptxdesc->data_rt_lmt = 6; // retry limit = 6
+		ptxdesc->userate = 1; /*  driver uses rate, 1M */
+		ptxdesc->rty_lmt_en = 1; /*  retry limit enable */
+		ptxdesc->data_rt_lmt = 6; /*  retry limit = 6 */
 
-		//CCX-TXRPT ack for xmit mgmt frames.
+		/* CCX-TXRPT ack for xmit mgmt frames. */
 		if (pxmitframe->ack_report) {
 			#ifdef DBG_CCX
 			static u16 ccx_sw = 0x123;
@@ -3138,10 +3127,10 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 	{
 		RT_TRACE(_module_hal_xmit_c_, _drv_warning_, ("%s: frame_tag=0x%x\n", __FUNCTION__, pxmitframe->frame_tag));
 
-		ptxdesc->macid = 4; // CAM_ID(MAC_ID)
-		ptxdesc->rate_id = 6; // Rate ID
+		ptxdesc->macid = 4; /*  CAM_ID(MAC_ID) */
+		ptxdesc->rate_id = 6; /*  Rate ID */
 		ptxdesc->seq = pattrib->seqnum;
-		ptxdesc->userate = 1; // driver uses rate
+		ptxdesc->userate = 1; /*  driver uses rate */
 		ptxdesc->datarate = MRateToHwRate(pmlmeext->tx_rate);
 	}
 
@@ -3152,19 +3141,19 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 	ptxdesc->fs = 1;
 	ptxdesc->own = 1;
 
-	// 2009.11.05. tynli_test. Suggested by SD4 Filen for FW LPS.
-	// (1) The sequence number of each non-Qos frame / broadcast / multicast /
-	// mgnt frame should be controled by Hw because Fw will also send null data
-	// which we cannot control when Fw LPS enable.
-	// --> default enable non-Qos data sequense number. 2010.06.23. by tynli.
-	// (2) Enable HW SEQ control for beacon packet, because we use Hw beacon.
-	// (3) Use HW Qos SEQ to control the seq num of Ext port non-Qos packets.
-	// 2010.06.23. Added by tynli.
+	/*  2009.11.05. tynli_test. Suggested by SD4 Filen for FW LPS. */
+	/*  (1) The sequence number of each non-Qos frame / broadcast / multicast / */
+	/*  mgnt frame should be controled by Hw because Fw will also send null data */
+	/*  which we cannot control when Fw LPS enable. */
+	/*  --> default enable non-Qos data sequense number. 2010.06.23. by tynli. */
+	/*  (2) Enable HW SEQ control for beacon packet, because we use Hw beacon. */
+	/*  (3) Use HW Qos SEQ to control the seq num of Ext port non-Qos packets. */
+	/*  2010.06.23. Added by tynli. */
 	if (!pattrib->qos_en)
 	{
-		// Hw set sequence number
-		ptxdesc->hwseq_en = 1; // HWSEQ_EN
-		ptxdesc->hwseq_sel = 0; // HWSEQ_SEL
+		/*  Hw set sequence number */
+		ptxdesc->hwseq_en = 1; /*  HWSEQ_EN */
+		ptxdesc->hwseq_sel = 0; /*  HWSEQ_SEL */
 	}
 }
 
@@ -3196,12 +3185,12 @@ void rtl8723a_update_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 	rtl8723a_cal_txdesc_chksum(pdesc);
 }
 
-//
-// Description: In normal chip, we should send some packet to Hw which will be used by Fw
-//			in FW LPS mode. The function is to fill the Tx descriptor of this packets, then
-//			Fw can tell Hw to send these packet derectly.
-// Added by tynli. 2009.10.15.
-//
+/*  */
+/*  Description: In normal chip, we should send some packet to Hw which will be used by Fw */
+/* 			in FW LPS mode. The function is to fill the Tx descriptor of this packets, then */
+/* 			Fw can tell Hw to send these packet derectly. */
+/*  Added by tynli. 2009.10.15. */
+/*  */
 void rtl8723a_fill_fake_txdesc(
 	struct rtw_adapter *	padapter,
 	u8*			pDesc,
@@ -3212,41 +3201,41 @@ void rtl8723a_fill_fake_txdesc(
 	struct tx_desc *ptxdesc;
 
 
-	// Clear all status
+	/*  Clear all status */
 	ptxdesc = (struct tx_desc*)pDesc;
 	memset(pDesc, 0, TXDESC_SIZE);
 
-	//offset 0
-	ptxdesc->txdw0 |= cpu_to_le32( OWN | FSG | LSG); //own, bFirstSeg, bLastSeg;
+	/* offset 0 */
+	ptxdesc->txdw0 |= cpu_to_le32( OWN | FSG | LSG); /* own, bFirstSeg, bLastSeg; */
 
-	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ)<<OFFSET_SHT)&0x00ff0000); //32 bytes for TX Desc
+	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE+OFFSET_SZ)<<OFFSET_SHT)&0x00ff0000); /* 32 bytes for TX Desc */
 
-	ptxdesc->txdw0 |= cpu_to_le32(BufferLen&0x0000ffff); // Buffer size + command header
+	ptxdesc->txdw0 |= cpu_to_le32(BufferLen&0x0000ffff); /*  Buffer size + command header */
 
-	//offset 4
-	ptxdesc->txdw1 |= cpu_to_le32((QSLT_MGNT<<QSEL_SHT)&0x00001f00); // Fixed queue of Mgnt queue
+	/* offset 4 */
+	ptxdesc->txdw1 |= cpu_to_le32((QSLT_MGNT<<QSEL_SHT)&0x00001f00); /*  Fixed queue of Mgnt queue */
 
-	//Set NAVUSEHDR to prevent Ps-poll AId filed to be changed to error vlaue by Hw.
+	/* Set NAVUSEHDR to prevent Ps-poll AId filed to be changed to error vlaue by Hw. */
 	if (IsPsPoll)
 	{
 		ptxdesc->txdw1 |= cpu_to_le32(NAVUSEHDR);
 	}
 	else
 	{
-		ptxdesc->txdw4 |= cpu_to_le32(BIT(7)); // Hw set sequence number
-		ptxdesc->txdw3 |= cpu_to_le32((8 <<28)); //set bit3 to 1. Suugested by TimChen. 2009.12.29.
+		ptxdesc->txdw4 |= cpu_to_le32(BIT(7)); /*  Hw set sequence number */
+		ptxdesc->txdw3 |= cpu_to_le32((8 <<28)); /* set bit3 to 1. Suugested by TimChen. 2009.12.29. */
 	}
 
 	if (true == IsBTQosNull)
 	{
-		ptxdesc->txdw2 |= cpu_to_le32(BIT(23)); // BT NULL
+		ptxdesc->txdw2 |= cpu_to_le32(BIT(23)); /*  BT NULL */
 	}
 
-	//offset 16
-	ptxdesc->txdw4 |= cpu_to_le32(BIT(8));//driver uses rate
+	/* offset 16 */
+	ptxdesc->txdw4 |= cpu_to_le32(BIT(8));/* driver uses rate */
 
-	// USB interface drop packet if the checksum of descriptor isn't correct.
-	// Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.).
+	/*  USB interface drop packet if the checksum of descriptor isn't correct. */
+	/*  Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.). */
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
 }
 
@@ -3261,7 +3250,7 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 	{
 		StopTxBeacon(padapter);
 
-		// disable atim wnd
+		/*  disable atim wnd */
 		val8 = DIS_TSF_UDT|EN_BCN_FUNCTION|DIS_ATIM;
 		SetBcnCtrlReg(padapter, val8, ~val8);
 	}
@@ -3275,7 +3264,7 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 	else if (mode == _HW_STATE_AP_)
 	{
 #ifdef CONFIG_8723AU_BT_COEXIST
-		// add NULL Data and BT NULL Data Packets to FW RSVD Page
+		/*  add NULL Data and BT NULL Data Packets to FW RSVD Page */
 		rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(padapter);
 #endif
 
@@ -3284,27 +3273,27 @@ static void hw_var_set_opmode(struct rtw_adapter * padapter, u8 variable, u8 *va
 		val8 = DIS_TSF_UDT|DIS_BCNQ_SUB;
 		SetBcnCtrlReg(padapter, val8, ~val8);
 
-		// Set RCR
-		//rtw_write32(padapter, REG_RCR, 0x70002a8e);//CBSSID_DATA must set to 0
-		rtw_write32(padapter, REG_RCR, 0x7000228e);//CBSSID_DATA must set to 0
-		// enable to rx data frame
+		/*  Set RCR */
+		/* rtw_write32(padapter, REG_RCR, 0x70002a8e);CBSSID_DATA must set to 0 */
+		rtw_write32(padapter, REG_RCR, 0x7000228e);/* CBSSID_DATA must set to 0 */
+		/*  enable to rx data frame */
 		rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
-		// enable to rx ps-poll
+		/*  enable to rx ps-poll */
 		rtw_write16(padapter, REG_RXFLTMAP1, 0x0400);
 
-		// Beacon Control related register for first time
-		rtw_write8(padapter, REG_BCNDMATIM, 0x02); // 2ms
-		rtw_write8(padapter, REG_DRVERLYINT, 0x05); // 5ms
-		rtw_write8(padapter, REG_ATIMWND, 0x0a); // 10ms for port0
+		/*  Beacon Control related register for first time */
+		rtw_write8(padapter, REG_BCNDMATIM, 0x02); /*  2ms */
+		rtw_write8(padapter, REG_DRVERLYINT, 0x05); /*  5ms */
+		rtw_write8(padapter, REG_ATIMWND, 0x0a); /*  10ms for port0 */
 		rtw_write16(padapter, REG_BCNTCFG, 0x00);
 		rtw_write16(padapter, REG_TBTT_PROHIBIT, 0xff04);
-		rtw_write16(padapter, REG_TSFTR_SYN_OFFSET, 0x7fff);// +32767 (~32ms)
+		rtw_write16(padapter, REG_TSFTR_SYN_OFFSET, 0x7fff);/*  +32767 (~32ms) */
 
-		// reset TSF
+		/*  reset TSF */
 		rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
 
-		// enable BCN Function
-		// don't enable update TSF (due to TSF update when beacon/probe rsp are received)
+		/*  enable BCN Function */
+		/*  don't enable update TSF (due to TSF update when beacon/probe rsp are received) */
 		val8 = DIS_TSF_UDT | EN_BCN_FUNCTION | EN_TXBCN_RPT | DIS_BCNQ_SUB;
 		SetBcnCtrlReg(padapter, val8, ~val8);
 	}
@@ -3344,26 +3333,26 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 
-	//tsf = pmlmeext->TSFValue - ((u32)pmlmeext->TSFValue % (pmlmeinfo->bcn_interval*1024)) - 1024; //us
-	tsf = pmlmeext->TSFValue - rtw_modular64(pmlmeext->TSFValue, (pmlmeinfo->bcn_interval*1024)) - 1024; //us
+	/* tsf = pmlmeext->TSFValue - ((u32)pmlmeext->TSFValue % (pmlmeinfo->bcn_interval*1024)) - 1024; us */
+	tsf = pmlmeext->TSFValue - rtw_modular64(pmlmeext->TSFValue, (pmlmeinfo->bcn_interval*1024)) - 1024; /* us */
 
 	if (((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE) ||
 		((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE))
 	{
-		//pHalData->RegTxPause |= STOP_BCNQ;BIT(6)
-		//rtw_write8(padapter, REG_TXPAUSE, (rtw_read8(Adapter, REG_TXPAUSE)|BIT(6)));
+		/* pHalData->RegTxPause |= STOP_BCNQ;BIT(6) */
+		/* rtw_write8(padapter, REG_TXPAUSE, (rtw_read8(Adapter, REG_TXPAUSE)|BIT(6))); */
 		StopTxBeacon(padapter);
 	}
 
 	reg_tsftr = REG_TSFTR;
 
-	// disable related TSF function
+	/*  disable related TSF function */
 	SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION);
 
 	rtw_write32(padapter, reg_tsftr, tsf);
 	rtw_write32(padapter, reg_tsftr+4, tsf>>32);
 
-	//enable related TSF function
+	/* enable related TSF function */
 	SetBcnCtrlReg(padapter, EN_BCN_FUNCTION, 0);
 
 	if (((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE) ||
@@ -3374,13 +3363,13 @@ static void hw_var_set_correct_tsf(struct rtw_adapter * padapter, u8 variable, u
 static void hw_var_set_mlme_disconnect(struct rtw_adapter * padapter, u8 variable, u8 *val)
 {
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
-	// reject all data frames
+	/*  reject all data frames */
 	rtw_write16(padapter, REG_RXFLTMAP2, 0);
 
-	// reset TSF
+	/*  reset TSF */
 	rtw_write8(padapter, REG_DUAL_TSF_RST, BIT(0));
 
-	// disable update TSF
+	/*  disable update TSF */
 	SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
 }
 
@@ -3392,12 +3381,12 @@ static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 
 	struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-	if (type == 0) // prepare to join
+	if (type == 0) /*  prepare to join */
 	{
 		u32 v32;
 
-		// enable to rx data frame.Accept all data frame
-		//rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR)|RCR_ADF);
+		/*  enable to rx data frame.Accept all data frame */
+		/* rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR)|RCR_ADF); */
 		rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
 
 		v32 = rtw_read32(padapter, REG_RCR);
@@ -3406,22 +3395,22 @@ static void hw_var_set_mlme_join(struct rtw_adapter * padapter, u8 variable, u8 
 
 		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true)
 			RetryLimit = (pHalData->CustomerID == RT_CID_CCX) ? 7 : 48;
-		else // Ad-hoc Mode
+		else /*  Ad-hoc Mode */
 			RetryLimit = 0x7;
 	}
-	else if (type == 1) // joinbss_event callback when join res < 0
+	else if (type == 1) /*  joinbss_event callback when join res < 0 */
 	{
-		// config RCR to receive different BSSID & not to receive data frame during linking
+		/*  config RCR to receive different BSSID & not to receive data frame during linking */
 		rtw_write16(padapter, REG_RXFLTMAP2, 0);
 	}
-	else if (type == 2) // sta add event callback
+	else if (type == 2) /*  sta add event callback */
 	{
-		// enable update TSF
+		/*  enable update TSF */
 		SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
 
 		if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == true)
 		{
-			// fixed beacon issue for 8191su...........
+			/*  fixed beacon issue for 8191su........... */
 			rtw_write8(padapter, 0x542, 0x02);
 			RetryLimit = 0x7;
 		}
@@ -3474,33 +3463,33 @@ _func_enter_;
 				u16			BrateCfg = 0;
 				u8			RateIndex = 0;
 
-				// 2007.01.16, by Emily
-				// Select RRSR (in Legacy-OFDM and CCK)
-				// For 8190, we select only 24M, 12M, 6M, 11M, 5.5M, 2M, and 1M from the Basic rate.
-				// We do not use other rates.
+				/*  2007.01.16, by Emily */
+				/*  Select RRSR (in Legacy-OFDM and CCK) */
+				/*  For 8190, we select only 24M, 12M, 6M, 11M, 5.5M, 2M, and 1M from the Basic rate. */
+				/*  We do not use other rates. */
 				HalSetBrateCfg(padapter, val, &BrateCfg);
 
-				//2011.03.30 add by Luke Lee
-				//CCK 2M ACK should be disabled for some BCM and Atheros AP IOT
-				//because CCK 2M has poor TXEVM
-				//CCK 5.5M & 11M ACK should be enabled for better performance
+				/* 2011.03.30 add by Luke Lee */
+				/* CCK 2M ACK should be disabled for some BCM and Atheros AP IOT */
+				/* because CCK 2M has poor TXEVM */
+				/* CCK 5.5M & 11M ACK should be enabled for better performance */
 
 				pHalData->BasicRateSet = BrateCfg = (BrateCfg |0xd) & 0x15d;
-				BrateCfg |= 0x01; // default enable 1M ACK rate
+				BrateCfg |= 0x01; /*  default enable 1M ACK rate */
 				DBG_8723A("HW_VAR_BASIC_RATE: BrateCfg(%#x)\n", BrateCfg);
 
-				// Set RRSR rate table.
+				/*  Set RRSR rate table. */
 				rtw_write8(padapter, REG_RRSR, BrateCfg&0xff);
 				rtw_write8(padapter, REG_RRSR+1, (BrateCfg>>8)&0xff);
 				rtw_write8(padapter, REG_RRSR+2, rtw_read8(padapter, REG_RRSR+2)&0xf0);
 
-				// Set RTS initial rate
+				/*  Set RTS initial rate */
 				while (BrateCfg > 0x1)
 				{
 					BrateCfg = (BrateCfg >> 1);
 					RateIndex++;
 				}
-				// Ziv - Check
+				/*  Ziv - Check */
 				rtw_write8(padapter, REG_INIRTS_RATE_SEL, RateIndex);
 			}
 			break;
@@ -3537,21 +3526,21 @@ _func_enter_;
 			break;
 
 		case HW_VAR_MLME_SITESURVEY:
-			if (*val)//under sitesurvey
+			if (*val)/* under sitesurvey */
 			{
 				u32 v32;
 
-				// config RCR to receive different BSSID & not to receive data frame
+				/*  config RCR to receive different BSSID & not to receive data frame */
 				v32 = rtw_read32(padapter, REG_RCR);
 				v32 &= ~(RCR_CBSSID_BCN);
 				rtw_write32(padapter, REG_RCR, v32);
-				// reject all data frame
+				/*  reject all data frame */
 				rtw_write16(padapter, REG_RXFLTMAP2, 0);
 
-				// disable update TSF
+				/*  disable update TSF */
 				SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
 			}
-			else//sitesurvey done
+			else/* sitesurvey done */
 			{
 				struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 				struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -3561,10 +3550,10 @@ _func_enter_;
 					((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE) ||
 					((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE))
 				{
-					// enable to rx data frame
+					/*  enable to rx data frame */
 					rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
 
-					// enable update TSF
+					/*  enable update TSF */
 					SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
 				}
 
@@ -3585,16 +3574,16 @@ _func_enter_;
 			switch (*val)
 			{
 				case 0:
-					// prepare to join
+					/*  prepare to join */
 					BT_WifiAssociateNotify(padapter, true);
 					break;
 				case 1:
-					// joinbss_event callback when join res < 0
+					/*  joinbss_event callback when join res < 0 */
 					BT_WifiAssociateNotify(padapter, false);
 					break;
 				case 2:
-					// sta add event callback
-//					BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT);
+					/*  sta add event callback */
+/* 					BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
 					break;
 			}
 #endif
@@ -3631,7 +3620,7 @@ _func_enter_;
 
 					u1bAIFS = aSifsTime + (2 * pmlmeinfo->slotTime);
 
-					// <Roger_EXP> Temporary removed, 2008.06.20.
+					/*  <Roger_EXP> Temporary removed, 2008.06.20. */
 					rtw_write8(padapter, REG_EDCA_VO_PARAM, u1bAIFS);
 					rtw_write8(padapter, REG_EDCA_VI_PARAM, u1bAIFS);
 					rtw_write8(padapter, REG_EDCA_BE_PARAM, u1bAIFS);
@@ -3641,13 +3630,13 @@ _func_enter_;
 			break;
 
 		case HW_VAR_RESP_SIFS:
-			//SIFS_Timer = 0x0a0a0808;
-			//RESP_SIFS for CCK
-			rtw_write8(padapter, REG_R2T_SIFS, val[0]); // SIFS_T2T_CCK (0x08)
-			rtw_write8(padapter, REG_R2T_SIFS+1, val[1]); //SIFS_R2T_CCK(0x08)
-			//RESP_SIFS for OFDM
-			rtw_write8(padapter, REG_T2T_SIFS, val[2]); //SIFS_T2T_OFDM (0x0a)
-			rtw_write8(padapter, REG_T2T_SIFS+1, val[3]); //SIFS_R2T_OFDM(0x0a)
+			/* SIFS_Timer = 0x0a0a0808; */
+			/* RESP_SIFS for CCK */
+			rtw_write8(padapter, REG_R2T_SIFS, val[0]); /*  SIFS_T2T_CCK (0x08) */
+			rtw_write8(padapter, REG_R2T_SIFS+1, val[1]); /* SIFS_R2T_CCK(0x08) */
+			/* RESP_SIFS for OFDM */
+			rtw_write8(padapter, REG_T2T_SIFS, val[2]); /* SIFS_T2T_OFDM (0x0a) */
+			rtw_write8(padapter, REG_T2T_SIFS+1, val[3]); /* SIFS_R2T_OFDM(0x0a) */
 			break;
 
 		case HW_VAR_ACK_PREAMBLE:
@@ -3655,9 +3644,9 @@ _func_enter_;
 				u8 regTmp;
 				u8 bShortPreamble = *val;
 
-				// Joseph marked out for Netgear 3500 TKIP channel 7 issue.(Temporarily)
+				/*  Joseph marked out for Netgear 3500 TKIP channel 7 issue.(Temporarily) */
 				regTmp = (pHalData->nCur40MhzPrimeSC)<<5;
-				//regTmp = 0;
+				/* regTmp = 0; */
 				if (bShortPreamble) regTmp |= 0x80;
 					rtw_write8(padapter, REG_RRSR+2, regTmp);
 			}
@@ -3670,9 +3659,9 @@ _func_enter_;
 			pHalData->odmpriv.SupportAbility = *((u32*)val);
 			break;
 		case HW_VAR_DM_FUNC_OP:
-			if (*val) // save dm flag
+			if (*val) /*  save dm flag */
 				pHalData->odmpriv.BK_SupportAbility = pHalData->odmpriv.SupportAbility;
-			else // restore dm flag
+			else /*  restore dm flag */
 				pHalData->odmpriv.SupportAbility = pHalData->odmpriv.BK_SupportAbility;
 			break;
 		case HW_VAR_DM_FUNC_SET:
@@ -3698,24 +3687,24 @@ _func_enter_;
 
 				for (i=0; i<CAM_CONTENT_COUNT; i++)
 				{
-					// filled id in CAM config 2 byte
+					/*  filled id in CAM config 2 byte */
 					if (i == 0)
 					{
 						ulContent |= (ucIndex & 0x03) | ((u16)(ulEncAlgo)<<2);
-						//ulContent |= CAM_VALID;
+						/* ulContent |= CAM_VALID; */
 					}
 					else
 					{
 						ulContent = 0;
 					}
-					// polling bit, and No Write enable, and address
+					/*  polling bit, and No Write enable, and address */
 					ulCommand = CAM_CONTENT_COUNT*ucIndex+i;
 					ulCommand = ulCommand | CAM_POLLINIG | CAM_WRITE;
-					// write content 0 is equall to mark invalid
-					rtw_write32(padapter, WCAMI, ulContent);  //delay_ms(40);
-					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A4: %lx \n",ulContent));
-					rtw_write32(padapter, RWCAM, ulCommand);  //delay_ms(40);
-					//RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A0: %lx \n",ulCommand));
+					/*  write content 0 is equall to mark invalid */
+					rtw_write32(padapter, WCAMI, ulContent);  /* delay_ms(40); */
+					/* RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A4: %lx \n",ulContent)); */
+					rtw_write32(padapter, RWCAM, ulCommand);  /* delay_ms(40); */
+					/* RT_TRACE(COMP_SEC, DBG_LOUD, ("CAM_empty_entry(): WRITE A0: %lx \n",ulCommand)); */
 				}
 			}
 			break;
@@ -3762,13 +3751,13 @@ _func_enter_;
 				{
 					hwctrl |= AcmHw_HwEn;
 
-					if (ctrl & BIT(1)) // BE
+					if (ctrl & BIT(1)) /*  BE */
 						hwctrl |= AcmHw_BeqEn;
 
-					if (ctrl & BIT(2)) // VI
+					if (ctrl & BIT(2)) /*  VI */
 						hwctrl |= AcmHw_ViqEn;
 
-					if (ctrl & BIT(3)) // VO
+					if (ctrl & BIT(3)) /*  VO */
 						hwctrl |= AcmHw_VoqEn;
 				}
 
@@ -3806,7 +3795,7 @@ _func_enter_;
 					if (MinSpacingToSet < SecMinSpace)
 						MinSpacingToSet = SecMinSpace;
 
-					//RT_TRACE(COMP_MLME, DBG_LOUD, ("Set HW_VAR_AMPDU_MIN_SPACE: %#x\n", padapter->MgntInfo.MinSpaceCfg));
+					/* RT_TRACE(COMP_MLME, DBG_LOUD, ("Set HW_VAR_AMPDU_MIN_SPACE: %#x\n", padapter->MgntInfo.MinSpaceCfg)); */
 					MinSpacingToSet |= rtw_read8(padapter, REG_AMPDU_MIN_SPACE) & 0xf8;
 					rtw_write8(padapter, REG_AMPDU_MIN_SPACE, MinSpacingToSet);
 				}
@@ -3821,7 +3810,7 @@ _func_enter_;
 				u8 *pRegToSet;
 				u8 index = 0;
 
-				pRegToSet = RegToSet_Normal; // 0xb972a841;
+				pRegToSet = RegToSet_Normal; /*  0xb972a841; */
 #ifdef CONFIG_8723AU_BT_COEXIST
 				if ((BT_IsBtDisabled(padapter) == false) &&
 					(BT_1Ant(padapter) == true))
@@ -3829,7 +3818,7 @@ _func_enter_;
 					MaxAggNum = 0x8;
 				}
 				else
-#endif // CONFIG_8723AU_BT_COEXIST
+#endif /*  CONFIG_8723AU_BT_COEXIST */
 				{
 					MaxAggNum = 0xF;
 				}
@@ -3852,7 +3841,7 @@ _func_enter_;
 						rtw_write8(padapter, REG_AGGLEN_LMT+index, pRegToSet[index]);
 					}
 
-					//RT_TRACE(COMP_MLME, DBG_LOUD, ("Set HW_VAR_AMPDU_FACTOR: %#x\n", FactorToSet));
+					/* RT_TRACE(COMP_MLME, DBG_LOUD, ("Set HW_VAR_AMPDU_FACTOR: %#x\n", FactorToSet)); */
 				}
 			}
 			break;
@@ -3865,8 +3854,8 @@ _func_enter_;
 			{
 				u8 psmode = *val;
 
-				// Forece leave RF low power mode for 1T1R to prevent conficting setting in Fw power
-				// saving sequence. 2010.06.07. Added by tynli. Suggested by SD3 yschang.
+				/*  Forece leave RF low power mode for 1T1R to prevent conficting setting in Fw power */
+				/*  saving sequence. 2010.06.07. Added by tynli. Suggested by SD3 yschang. */
 				if ((psmode != PS_MODE_ACTIVE) && (!IS_92C_SERIAL(pHalData->VersionID)))
 				{
 					ODM_RF_Saving(&pHalData->odmpriv, true);
@@ -3883,14 +3872,14 @@ _func_enter_;
 		case HW_VAR_H2C_FW_P2P_PS_OFFLOAD:
 			rtl8723a_set_p2p_ps_offload_cmd(padapter, *val);
 			break;
-#endif //CONFIG_8723AU_P2P
+#endif /* CONFIG_8723AU_P2P */
 
 		case HW_VAR_INITIAL_GAIN:
 			{
 				struct dig_t *pDigTable = &pHalData->odmpriv.DM_DigTable;
 				u32 rx_gain = *(u32*)val;
 
-				if (rx_gain == 0xff) {//restore rx gain
+				if (rx_gain == 0xff) {/* restore rx gain */
 					ODM_Write_DIG(&pHalData->odmpriv, pDigTable->BackupIGValue);
 				} else {
 					pDigTable->BackupIGValue = pDigTable->CurIGValue;
@@ -3924,17 +3913,17 @@ _func_enter_;
 				struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 				u8 trycnt = 100;
 
-				// pause tx
+				/*  pause tx */
 				rtw_write8(padapter, REG_TXPAUSE, 0xff);
 
-				// keep sn
+				/*  keep sn */
 				padapter->xmitpriv.nqos_ssn = rtw_read16(padapter, REG_NQOS_SEQ);
 
 				if (pwrpriv->bkeepfwalive != true)
 				{
 					u32 v32;
 
-					// RX DMA stop
+					/*  RX DMA stop */
 					v32 = rtw_read32(padapter, REG_RXPKT_NUM);
 					v32 |= RW_RELEASE_EN;
 					rtw_write32(padapter, REG_RXPKT_NUM, v32);
@@ -3946,7 +3935,7 @@ _func_enter_;
 						DBG_8723A("Stop RX DMA failed......\n");
 					}
 
-					// RQPN Load 0
+					/*  RQPN Load 0 */
 					rtw_write16(padapter, REG_RQPN_NPQ, 0);
 					rtw_write32(padapter, REG_RQPN, 0x80000000);
 					mdelay(10);
@@ -3969,14 +3958,14 @@ _func_enter_;
 					break;
 				}
 
-				// The value of ((usNavUpper + HAL_8723A_NAV_UPPER_UNIT - 1) / HAL_8723A_NAV_UPPER_UNIT)
-				// is getting the upper integer.
+				/*  The value of ((usNavUpper + HAL_8723A_NAV_UPPER_UNIT - 1) / HAL_8723A_NAV_UPPER_UNIT) */
+				/*  is getting the upper integer. */
 				usNavUpper = (usNavUpper + HAL_8723A_NAV_UPPER_UNIT - 1) / HAL_8723A_NAV_UPPER_UNIT;
 				rtw_write8(padapter, REG_NAV_UPPER, (u8)usNavUpper);
 			}
 			break;
 		case HW_VAR_BCN_VALID:
-			//BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2, write 1 to clear, Clear by sw
+			/* BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2, write 1 to clear, Clear by sw */
 			rtw_write8(padapter, REG_TDECTRL+2, rtw_read8(padapter, REG_TDECTRL+2) | BIT0);
 			break;
 		default:
@@ -4002,7 +3991,7 @@ void GetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 			break;
 
 		case HW_VAR_BCN_VALID:
-			//BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2
+			/* BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2 */
 			val[0] = (BIT0 & rtw_read8(padapter, REG_TDECTRL+2))?true:false;
 			break;
 
@@ -4019,14 +4008,14 @@ void GetHwReg8723A(struct rtw_adapter * padapter, u8 variable, u8 *val)
 
 		case HW_VAR_FWLPS_RF_ON:
 			{
-				// When we halt NIC, we should check if FW LPS is leave.
+				/*  When we halt NIC, we should check if FW LPS is leave. */
 				u32 valRCR;
 
 				if ((padapter->bSurpriseRemoved == true) ||
 					(padapter->pwrctrlpriv.rf_pwrstate == rf_off))
 				{
-					// If it is in HW/SW Radio OFF or IPS state, we do not check Fw LPS Leave,
-					// because Fw is unload.
+					/*  If it is in HW/SW Radio OFF or IPS state, we do not check Fw LPS Leave, */
+					/*  because Fw is unload. */
 					*val = true;
 				}
 				else
@@ -4084,15 +4073,15 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 	pDM_Odm = &pHalData->odmpriv;
 	pDM_SWAT_Table= &pDM_Odm->DM_SWAT_Table;
 
-	//
-	// <Roger_Notes> RTL8723A Single and Dual antenna dynamic detection mechanism when RF power state is on.
-	// We should take power tracking, IQK, LCK, RCK RF read/write operation into consideration.
-	// 2011.12.15.
-	//
+	/*  */
+	/*  <Roger_Notes> RTL8723A Single and Dual antenna dynamic detection mechanism when RF power state is on. */
+	/*  We should take power tracking, IQK, LCK, RCK RF read/write operation into consideration. */
+	/*  2011.12.15. */
+	/*  */
 	if (!pHalData->bAntennaDetected) {
 		u8 btAntNum = BT_GetPGAntNum(padapter);
 
-		// Set default antenna B status
+		/*  Set default antenna B status */
 		if (btAntNum == Ant_x2)
 			pDM_SWAT_Table->ANTB_ON = true;
 		else if (btAntNum == Ant_x1)
@@ -4108,14 +4097,14 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 					break;
 			}
 
-			// Set default antenna number for BT coexistence
+			/*  Set default antenna number for BT coexistence */
 			if (btAntNum == Ant_x2)
 				BT_SetBtCoexCurrAntNum(padapter, pDM_SWAT_Table->ANTB_ON ? 2 : 1);
 		}
 		pHalData->bAntennaDetected = true;
 	}
 }
-#endif // CONFIG_8723AU_BT_COEXIST
+#endif /*  CONFIG_8723AU_BT_COEXIST */
 
 void rtl8723a_clone_haldata(struct rtw_adapter* dst_adapter,
 			    struct rtw_adapter* src_adapter)

@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #define _RTL8723A_REDESC_C_
 
@@ -25,10 +20,10 @@
 
 static s32  translate2dbm(u8 signal_strength_idx)
 {
-	s32	signal_power; // in dBm.
+	s32	signal_power; /*  in dBm. */
 
 
-	// Translate to dBm (x=0.5y-95).
+	/*  Translate to dBm (x=0.5y-95). */
 	signal_power = (s32)((signal_strength_idx + 1) >> 1);
 	signal_power -= 95;
 
@@ -80,23 +75,23 @@ static void process_link_qual(struct rtw_adapter *padapter,
 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
 }
 
-//void rtl8723a_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe)
+/* void rtl8723a_process_phy_info(struct rtw_adapter *padapter, union recv_frame *prframe) */
 void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe)
 {
 	struct recv_frame *precvframe = prframe;
-	//
-	// Check RSSI
-	//
+	/*  */
+	/*  Check RSSI */
+	/*  */
 	process_rssi(padapter, precvframe);
-	//
-	// Check PWDB.
-	//
-	//process_PWDB(padapter, precvframe);
+	/*  */
+	/*  Check PWDB. */
+	/*  */
+	/* process_PWDB(padapter, precvframe); */
 
-	//UpdateRxSignalStatistics8192C(Adapter, pRfd);
-	//
-	// Check EVM
-	//
+	/* UpdateRxSignalStatistics8192C(Adapter, pRfd); */
+	/*  */
+	/*  Check EVM */
+	/*  */
 	process_link_qual(padapter,  precvframe);
 
 }

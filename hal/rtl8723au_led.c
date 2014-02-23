@@ -11,38 +11,33 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 #include "drv_types.h"
 #include "rtl8723a_hal.h"
 
-//================================================================================
-// LED object.
-//================================================================================
+/*  */
+/*  LED object. */
+/*  */
 
 
-//================================================================================
-//	Prototype of protected function.
-//================================================================================
+/*  */
+/* 	Prototype of protected function. */
+/*  */
 
-//================================================================================
-// LED_819xUsb routines.
-//================================================================================
+/*  */
+/*  LED_819xUsb routines. */
+/*  */
 
-//
-//	Description:
-//		Turn on LED according to LedPin specified.
-//
+/*  */
+/* 	Description: */
+/* 		Turn on LED according to LedPin specified. */
+/*  */
 void
 SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
-	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 
 	if( (padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{
@@ -54,16 +49,16 @@ SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 			break;
 
 		case LED_PIN_LED0:
-			rtw_write8(padapter, REG_LEDCFG0, (LedCfg&0xf0)|BIT5|BIT6); // SW control led0 on.
+			rtw_write8(padapter, REG_LEDCFG0, (LedCfg&0xf0)|BIT5|BIT6); /*  SW control led0 on. */
 			break;
 
 		case LED_PIN_LED1:
-			rtw_write8(padapter, REG_LEDCFG1, (LedCfg&0x00)|BIT6); // SW control led1 on.
+			rtw_write8(padapter, REG_LEDCFG1, (LedCfg&0x00)|BIT6); /*  SW control led1 on. */
 			break;
 
 		case LED_PIN_LED2:
 			LedCfg=rtw_read8(padapter, REG_LEDCFG2);
-			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT5); // SW control led1 on.
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT5); /*  SW control led1 on. */
 			break;
 
 		default:
@@ -76,15 +71,15 @@ SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 }
 
 
-//
-//	Description:
-//		Turn off LED according to LedPin specified.
-//
+/*  */
+/* 	Description: */
+/* 		Turn off LED according to LedPin specified. */
+/*  */
 void
 SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
 {
 	u8	LedCfg;
-	//struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
+	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 
 	if((padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
 	{
@@ -97,16 +92,16 @@ SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
 			break;
 
 		case LED_PIN_LED0:
-			rtw_write8(padapter, REG_LEDCFG0, (LedCfg&0xf0)|BIT5|BIT6); // SW control led0 on.
+			rtw_write8(padapter, REG_LEDCFG0, (LedCfg&0xf0)|BIT5|BIT6); /*  SW control led0 on. */
 			break;
 
 		case LED_PIN_LED1:
-			rtw_write8(padapter, REG_LEDCFG1, (LedCfg&0x00)|BIT5|BIT6); // SW control led1 on.
+			rtw_write8(padapter, REG_LEDCFG1, (LedCfg&0x00)|BIT5|BIT6); /*  SW control led1 on. */
 			break;
 
 		case LED_PIN_LED2:
 			LedCfg=rtw_read8(padapter, REG_LEDCFG2);
-			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT3|BIT5); // SW control led1 on.
+			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT3|BIT5); /*  SW control led1 on. */
 			break;
 
 		default:
@@ -118,40 +113,39 @@ exit:
 
 }
 
-//================================================================================
-// Interface to manipulate LED objects.
-//================================================================================
+/*  */
+/*  Interface to manipulate LED objects. */
+/*  */
 
-//================================================================================
-// Default LED behavior.
-//================================================================================
+/*  */
+/*  Default LED behavior. */
+/*  */
 
-//
-//	Description:
-//		Initialize all LED_871x objects.
-//
+/*  */
+/* 	Description: */
+/* 		Initialize all LED_871x objects. */
+/*  */
 void
 rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 {
 	struct led_priv *pledpriv = &(padapter->ledpriv);
 
 	pledpriv->LedControlHandler = LedControl871x;
-	//8723as-vau wifi used led2
+	/* 8723as-vau wifi used led2 */
 	InitLed871x(padapter, &(pledpriv->SwLed0), LED_PIN_LED2);
 
-//	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED2);
+/* 	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED2); */
 }
 
 
-//
-//	Description:
-//		DeInitialize all LED_819xUsb objects.
-//
+/*  */
+/* 	Description: */
+/* 		DeInitialize all LED_819xUsb objects. */
+/*  */
 void
 rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter)
 {
 	struct led_priv	*ledpriv = &(padapter->ledpriv);
 
 	DeInitLed871x( &(ledpriv->SwLed0) );
-//	DeInitLed871x( &(ledpriv->SwLed1) );
 }
