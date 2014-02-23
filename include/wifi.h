@@ -211,8 +211,6 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)(pbuf) |= cpu_to_le16(_PWRMGT_); \
 	} while(0)
 
-#define GetPwrMgt(pbuf)	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_PWRMGT_)) != 0)
-
 #define ClearPwrMgt(pbuf)	\
 	do	{	\
 		*(unsigned short *)(pbuf) &= (~cpu_to_le16(_PWRMGT_)); \

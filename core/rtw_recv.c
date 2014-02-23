@@ -729,17 +729,17 @@ void process_pwrbit_data(struct rtw_adapter *padapter,
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	unsigned char pwrbit;
-	u8 *ptr = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info *psta = NULL;
 
 	psta = rtw_get_stainfo(pstapriv, pattrib->src);
 
-	pwrbit = GetPwrMgt(ptr);
-
-printk(KERN_DEBUG "pwrbit_data!!!\n\n\n");
 	if (psta) {
+		pwrbit = ieee80211_has_pm(hdr->frame_control);
+
 		if (pwrbit) {
 			if (!(psta->state & WIFI_SLEEP_STATE)) {
 				/* psta->state |= WIFI_SLEEP_STATE; */
@@ -1566,7 +1566,7 @@ _func_enter_;
 	pattrib->frag_num = GetFragNum(ptr);
 	pattrib->seq_num = GetSequence(ptr);
 
-	pattrib->pw_save = GetPwrMgt(ptr);
+	pattrib->pw_save = ieee80211_has_pm(hdr->frame_control);
 	pattrib->mfrag = ieee80211_has_morefrags(hdr->frame_control);
 	pattrib->mdata = GetMData(ptr);
 	pattrib->privacy = GetPrivacy(ptr);
