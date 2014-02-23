@@ -2674,7 +2674,9 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 	frame_len = sizeof(struct ieee80211_hdr_3addr);
 
 	reason = cpu_to_le16(reason);
-	pmgmt_frame = rtw_set_fixed_ie(pmgmt_frame, _RSON_CODE_ , (unsigned char *)&reason, &frame_len);
+	pmgmt_frame = rtw_set_fixed_ie(pmgmt_frame,
+				       WLAN_REASON_PREV_AUTH_NOT_VALID,
+				       (unsigned char *)&reason, &frame_len);
 
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len, GFP_ATOMIC);
 #endif /* defined(RTW_USE_CFG80211_STA_EVENT) */

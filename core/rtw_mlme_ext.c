@@ -1369,7 +1369,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	pstat = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
 	if (pstat == (struct sta_info *)NULL)
 	{
-		status = _RSON_CLS2_;
+		status = WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA;
 		goto asoc_class2_error;
 	}
 
@@ -1388,7 +1388,7 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	{
 		if (!((pstat->state) & WIFI_FW_ASSOC_SUCCESS))
 		{
-			status = _RSON_CLS2_;
+			status = WLAN_REASON_CLASS2_FRAME_FROM_NONAUTH_STA;
 			goto asoc_class2_error;
 		}
 		else
@@ -7065,7 +7065,8 @@ static int _issue_deauth(struct rtw_adapter *padapter, unsigned char *da, unsign
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
 	reason = cpu_to_le16(reason);
-	pframe = rtw_set_fixed_ie(pframe, _RSON_CODE_ , (unsigned char *)&reason, &(pattrib->pktlen));
+	pframe = rtw_set_fixed_ie(pframe, WLAN_REASON_PREV_AUTH_NOT_VALID,
+				  (unsigned char *)&reason, &(pattrib->pktlen));
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
