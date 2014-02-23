@@ -961,7 +961,9 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 		      struct recv_frame *precv_frame,
 		      struct sta_info **psta)
 {
-	u8 *ptr = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u8 *ptr = skb->data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	int ret = _SUCCESS;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -1029,10 +1031,7 @@ _func_enter_;
 			goto exit;
 		}
 
-		/* if ((GetFrameSubType(ptr) & WIFI_QOS_DATA_TYPE) == WIFI_QOS_DATA_TYPE) { */
-		/*  */
-
-		if (GetFrameSubType(ptr) & BIT(6)) {
+		if (ieee80211_is_nullfunc(hdr->frame_control)) {
 			/* No data, will not indicate to upper layer,
 			   temporily count it here */
 			count_rx_stats(adapter, precv_frame, *psta);
@@ -1093,7 +1092,8 @@ int sta2ap_data_frame(struct rtw_adapter *adapter,
 		      struct recv_frame *precv_frame,
 		      struct sta_info **psta)
 {
-	u8 *ptr = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
@@ -1126,12 +1126,12 @@ _func_enter_;
 
 		process_pwrbit_data(adapter, precv_frame);
 
-		if ((GetFrameSubType(ptr) & WIFI_QOS_DATA_TYPE) ==
-		    WIFI_QOS_DATA_TYPE) {
+		/* We only get here if it's a data frame, so no need to
+		 * confirm data frame type first */
+		if (ieee80211_is_data_qos(hdr->frame_control))
 			process_wmmps_data(adapter, precv_frame);
-		}
 
-		if (GetFrameSubType(ptr) & BIT(6)) {
+		if (ieee80211_is_nullfunc(hdr->frame_control)) {
 			/* No data, will not indicate to upper layer,
 			   temporily count it here */
 			count_rx_stats(adapter, precv_frame, *psta);
@@ -1167,13 +1167,15 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 #ifdef CONFIG_8723AU_AP_MODE
 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
-	u8 *pframe = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u8 *pframe = skb->data;
+	u16 stype;
 
 	/* DBG_8723A("+validate_recv_ctrl_frame\n"); */
 
-	if (GetFrameType(pframe) != WIFI_CTRL_TYPE) {
+	if (!ieee80211_is_ctl(hdr->frame_control))
 		return _FAIL;
-	}
 
 	/* receive the frames that ra(a1) is my address */
 	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN)){
@@ -1181,7 +1183,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 	}
 
 	/* only handle ps-poll */
-	if (GetFrameSubType(pframe) == WIFI_PSPOLL) {
+	if (ieee80211_is_pspoll(hdr->frame_control)) {
 		u16 aid;
 		u8 wmmps_ac = 0;
 		struct sta_info *psta = NULL;
@@ -1319,6 +1321,7 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 {
 	struct sta_info *psta;
 	struct sk_buff *skb;
+	struct ieee80211_hdr *hdr;
 	/* struct mlme_priv *pmlmepriv = &adapter->mlmepriv; */
 
 	RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
@@ -1337,17 +1340,19 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 	}
 
 	skb = precv_frame->pkt;
+	hdr = (struct ieee80211_hdr *) skb->data;
 
 		/* for rx pkt statistics */
 	psta = rtw_get_stainfo(&padapter->stapriv,
 			       GetAddr2Ptr(skb->data));
 	if (psta) {
 		psta->sta_stats.rx_mgnt_pkts++;
-		if (GetFrameSubType(skb->data) == WIFI_BEACON)
+
+		if (ieee80211_is_beacon(hdr->frame_control))
 			psta->sta_stats.rx_beacon_pkts++;
-		else if (GetFrameSubType(skb->data) == WIFI_PROBEREQ)
+		else if (ieee80211_is_probe_req(hdr->frame_control))
 			psta->sta_stats.rx_probereq_pkts++;
-		else if (GetFrameSubType(skb->data) == WIFI_PROBERSP) {
+		else if (ieee80211_is_probe_resp(hdr->frame_control)) {
 			if (!memcmp(padapter->eeprompriv.mac_addr,
 				    GetAddr1Ptr(skb->data), ETH_ALEN))
 				psta->sta_stats.rx_probersp_pkts++;
@@ -1823,8 +1828,9 @@ _func_enter_;
 	psta_addr = pfhdr->attrib.ta;
 	psta = rtw_get_stainfo(pstapriv, psta_addr);
 	if (!psta) {
-		u8 type = GetFrameType(pfhdr->pkt->data);
-		if (type != WIFI_DATA_TYPE) {
+		struct ieee80211_hdr *hdr =
+			(struct ieee80211_hdr *) pfhdr->pkt->data;
+		if (!ieee80211_is_data(hdr->frame_control)) {
 			psta = rtw_get_bcmc_stainfo(padapter);
 			pdefrag_q = &psta->sta_recvpriv.defrag_q;
 		} else
