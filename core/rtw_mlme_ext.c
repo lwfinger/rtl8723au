@@ -7173,7 +7173,7 @@ void issue_action_spct_ch_switch(struct rtw_adapter *padapter, u8 *ra, u8 new_ch
 	{
 		u8 category, action;
 		category = WLAN_CATEGORY_SPECTRUM_MGMT;
-		action = RTW_WLAN_ACTION_SPCT_CHL_SWITCH;
+		action = WLAN_ACTION_SPCT_CHL_SWITCH;
 
 		pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
 		pframe = rtw_set_fixed_ie(pframe, 1, &(action), &(pattrib->pktlen));
