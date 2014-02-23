@@ -1537,7 +1537,6 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	/* shall check frame subtype, to / from ds, da, bssid */
 
 	/* then call check if rx seq/frag. duplicated. */
-
 	u8 type;
 	u8 subtype;
 	int retval = _SUCCESS;
@@ -1545,11 +1544,14 @@ int validate_recv_frame(struct rtw_adapter *adapter,
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *ptr = skb->data;
-	u8 ver = (unsigned char)(*ptr)&0x3;
+	u8 ver;
 	u8 bDumpRxPkt;
-	u16 seq_ctrl;
+	u16 seq_ctrl, fctl;
 
-_func_enter_;
+	fctl = le16_to_cpu(hdr->frame_control);
+	ver = fctl & IEEE80211_FCTL_VERS;
+	type = fctl & IEEE80211_FCTL_FTYPE;
+	subtype = fctl & IEEE80211_FCTL_STYPE;
 
 	/* add version chk */
 	if (ver != 0) {
@@ -1558,9 +1560,6 @@ _func_enter_;
 		retval = _FAIL;
 		goto exit;
 	}
-
-	type = GetFrameType(ptr);
-	subtype = GetFrameSubType(ptr); /* bit(7)~bit(2) */
 
 	pattrib->to_fr_ds = get_tofr_ds(hdr->frame_control);
 
@@ -1587,7 +1586,7 @@ _func_enter_;
 				  *(ptr + i + 7));
 		DBG_8723A("############################# \n");
 	} else if (bDumpRxPkt == 2) {
-		if (type == WIFI_MGT_TYPE) {
+		if (type == IEEE80211_FTYPE_MGMT) {
 			int i;
 			DBG_8723A("############################# \n");
 
@@ -1601,7 +1600,7 @@ _func_enter_;
 			DBG_8723A("############################# \n");
 		}
 	} else if (bDumpRxPkt == 3) {
-		if (type == WIFI_DATA_TYPE) {
+		if (type == IEEE80211_FTYPE_DATA) {
 			int i;
 			DBG_8723A("############################# \n");
 
@@ -1618,7 +1617,7 @@ _func_enter_;
 
 	switch (type)
 	{
-	case WIFI_MGT_TYPE: /* mgnt */
+	case IEEE80211_FTYPE_MGMT:
 		retval = validate_recv_mgnt_frame(adapter, precv_frame);
 		if (retval == _FAIL) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
@@ -1626,7 +1625,7 @@ _func_enter_;
 		}
 		retval = _FAIL; /*  only data frame return _SUCCESS */
 		break;
-	case WIFI_CTRL_TYPE: /* ctrl */
+	case IEEE80211_FTYPE_CTL:
 		retval = validate_recv_ctrl_frame(adapter, precv_frame);
 		if (retval == _FAIL) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
@@ -1634,9 +1633,9 @@ _func_enter_;
 		}
 		retval = _FAIL; /*  only data frame return _SUCCESS */
 		break;
-	case WIFI_DATA_TYPE: /* data */
+	case IEEE80211_FTYPE_DATA:
 		rtw_led_control(adapter, LED_CTL_RX);
-		pattrib->qos = (subtype & BIT(7))? 1:0;
+		pattrib->qos = (subtype & IEEE80211_STYPE_QOS_DATA) ? 1 : 0;
 		retval = validate_recv_data_frame(adapter, precv_frame);
 		if (retval == _FAIL) {
 			struct recv_priv *precvpriv = &adapter->recvpriv;
@@ -1652,9 +1651,6 @@ _func_enter_;
 	}
 
 exit:
-
-_func_exit_;
-
 	return retval;
 }
 
