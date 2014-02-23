@@ -1446,6 +1446,10 @@ _func_enter_;
 	/* psta->signal_quality= prxcmd->sq; */
 	precv_frame->psta = psta;
 
+	pattrib->hdrlen = sizeof(struct ieee80211_hdr_3addr);
+	if (ieee80211_has_a4(hdr->frame_control))
+		pattrib->hdrlen += ETH_ALEN;
+
 	/* parsing QC field */
 	if (pattrib->qos == 1) {
 		__le16 *qptr = (__le16 *)ieee80211_get_qos_ctl(hdr);
@@ -1455,7 +1459,7 @@ _func_enter_;
 		pattrib->ack_policy = (qos_ctrl >> 5) & 3;
 		pattrib->amsdu =
 			(qos_ctrl & IEEE80211_QOS_CTL_A_MSDU_PRESENT) >> 7;
-		pattrib->hdrlen = pattrib->to_fr_ds==3 ? 32 : 26;
+		pattrib->hdrlen += IEEE80211_QOS_CTL_LEN;
 
 		if (pattrib->priority != 0 && pattrib->priority != 3) {
 			adapter->recvpriv.bIsAnyNonBEPkts = true;
@@ -1464,7 +1468,6 @@ _func_enter_;
 		pattrib->priority = 0;
 		pattrib->ack_policy = 0;
 		pattrib->amsdu = 0;
-		pattrib->hdrlen = pattrib->to_fr_ds == 3 ? 30 : 24;
 	}
 
 	if (pattrib->order) { /* HT-CTRL 11n */
