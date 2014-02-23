@@ -1492,11 +1492,34 @@ _func_enter_;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 			 ("\n pattrib->encrypt=%d\n",pattrib->encrypt));
 
-		SET_ICE_IV_LEN(pattrib->iv_len, pattrib->icv_len,
-			       pattrib->encrypt);
+		switch(pattrib->encrypt)
+		{
+		case _WEP40_:
+		case _WEP104_:
+			pattrib->iv_len = 4;
+			pattrib->icv_len = 4;
+			break;
+		case _TKIP_:
+			pattrib->iv_len = 8;
+			pattrib->icv_len = 4;
+			break;
+		case _AES_:
+			pattrib->iv_len = 8;
+			pattrib->icv_len = 8;
+			break;
+		case _SMS4_:
+			pattrib->iv_len = 18;
+			pattrib->icv_len = 16;
+			break;
+		default:
+			pattrib->iv_len = 0;
+			pattrib->icv_len = 0;
+			break;
+		}
 	} else {
 		pattrib->encrypt = 0;
-		pattrib->iv_len = pattrib->icv_len = 0;
+		pattrib->iv_len = 0;
+		pattrib->icv_len = 0;
 	}
 
 exit:

@@ -208,35 +208,6 @@ do{\
 }while(0)
 
 
-#define SET_ICE_IV_LEN( iv_len, icv_len, encrypt)\
-do{\
-	switch(encrypt)\
-	{\
-		case _WEP40_:\
-		case _WEP104_:\
-			iv_len = 4;\
-			icv_len = 4;\
-			break;\
-		case _TKIP_:\
-			iv_len = 8;\
-			icv_len = 4;\
-			break;\
-		case _AES_:\
-			iv_len = 8;\
-			icv_len = 8;\
-			break;\
-		case _SMS4_:\
-			iv_len = 18;\
-			icv_len = 16;\
-			break;\
-		default:\
-			iv_len = 0;\
-			icv_len = 0;\
-			break;\
-	}\
-}while(0)
-
-
 #define GET_TKIP_PN(iv,dot11txpn)\
 do{\
 	dot11txpn._byte_.TSC0=iv[2];\
