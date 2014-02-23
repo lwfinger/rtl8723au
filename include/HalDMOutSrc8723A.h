@@ -11,15 +11,11 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
  *
  ******************************************************************************/
 #ifndef	__RTL8723A_ODM_H__
 #define __RTL8723A_ODM_H__
-//============================================================
+/*  */
 
 #define	RSSI_CCK	0
 #define	RSSI_OFDM	1
@@ -31,9 +27,9 @@
 #define HP_THERMAL_NUM		8
 
 
-//============================================================
-// structure and define
-//============================================================
+/*  */
+/*  structure and define */
+/*  */
 
 
 
@@ -41,26 +37,26 @@
 /*------------------------Export global variable----------------------------*/
 /*------------------------Export global variable----------------------------*/
 /*------------------------Export Marco Definition---------------------------*/
-//#define DM_MultiSTA_InitGainChangeNotify(Event) {DM_DigTable.CurMultiSTAConnectState = Event;}
+/* define DM_MultiSTA_InitGainChangeNotify(Event) {DM_DigTable.CurMultiSTAConnectState = Event;} */
 
 
-//============================================================
-// function prototype
-//============================================================
+/*  */
+/*  function prototype */
+/*  */
 
-//
-// IQ calibrate
-//
+/*  */
+/*  IQ calibrate */
+/*  */
 void rtl8723a_phy_iq_calibrate(struct rtw_adapter *pAdapter, bool bReCovery);
 
-//
-// LC calibrate
-//
+/*  */
+/*  LC calibrate */
+/*  */
 void rtl8723a_phy_lc_calibrate(struct rtw_adapter *pAdapter);
 
-//
-// AP calibrate
-//
+/*  */
+/*  AP calibrate */
+/*  */
 void rtl8723a_phy_ap_calibrate(struct rtw_adapter *pAdapter, char delta);
 
 void rtl8723a_odm_check_tx_power_tracking(struct rtw_adapter *Adapter);

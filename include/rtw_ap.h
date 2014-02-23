@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTW_AP_H_
 #define __RTW_AP_H_
@@ -26,13 +21,13 @@
 
 #ifdef CONFIG_8723AU_AP_MODE
 
-//external function
+/* external function */
 void rtw_indicate_sta_assoc_event(struct rtw_adapter *padapter, struct sta_info *psta);
 void rtw_indicate_sta_disassoc_event(struct rtw_adapter *padapter, struct sta_info *psta);
 
 void init_mlme_ap_info(struct rtw_adapter *padapter);
 void free_mlme_ap_info(struct rtw_adapter *padapter);
-//void update_BCNTIM(struct rtw_adapter *padapter);
+/* void update_BCNTIM(struct rtw_adapter *padapter); */
 void rtw_add_bcn_ie(struct rtw_adapter *padapter, WLAN_BSSID_EX *pnetwork, u8 index, u8 *data, u8 len);
 void rtw_remove_bcn_ie(struct rtw_adapter *padapter, WLAN_BSSID_EX *pnetwork, u8 index);
 void update_beacon(struct rtw_adapter *padapter, u8 ie_id, u8 *oui, u8 tx);
@@ -55,6 +50,6 @@ int rtw_sta_flush(struct rtw_adapter *padapter);
 int rtw_ap_inform_ch_switch(struct rtw_adapter *padapter, u8 new_ch, u8 ch_offset);
 void start_ap_mode(struct rtw_adapter *padapter);
 void stop_ap_mode(struct rtw_adapter *padapter);
-#endif //end of CONFIG_8723AU_AP_MODE
+#endif /* end of CONFIG_8723AU_AP_MODE */
 
 #endif

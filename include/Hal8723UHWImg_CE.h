@@ -3,7 +3,7 @@
 
 /*Created on  2013/01/14, 15:51*/
 
-//FW v16 enable usb interrupt
+/* FW v16 enable usb interrupt */
 #define Rtl8723UImgArrayLength 22172
 extern u8 Rtl8723UFwImgArray[Rtl8723UImgArrayLength];
 #define Rtl8723UBTImgArrayLength 1
@@ -26,4 +26,4 @@ extern u32 Rtl8723UPHY_REG_Array_PG[Rtl8723UPHY_REG_Array_PGLength];
 #define Rtl8723UMACPHY_Array_PGLength 1
 extern u32 Rtl8723UMACPHY_Array_PG[Rtl8723UMACPHY_Array_PGLength];
 
-#endif //#ifndef __INC_HAL8723U_FW_IMG_H
+#endif /* ifndef __INC_HAL8723U_FW_IMG_H */

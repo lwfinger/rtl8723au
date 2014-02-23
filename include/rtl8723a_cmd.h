@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_CMD_H__
 #define __RTL8723A_CMD_H__
@@ -58,8 +53,8 @@ enum cmd_msg_element_id
 };
 
 struct cmd_msg_parm {
-	u8 eid; //element id
-	u8 sz; // sz
+	u8 eid; /* element id */
+	u8 sz; /*  sz */
 	u8 buf[6];
 };
 
@@ -67,7 +62,7 @@ typedef struct _SETPWRMODE_PARM
 {
 	u8 Mode;
 	u8 SmartPS;
-	u8 AwakeInterval;	// unit: beacon interval
+	u8 AwakeInterval;	/*  unit: beacon interval */
 	u8 bAllQueueUAPSD;
 
 #define SETPM_LOWRXBCN			BIT(0)
@@ -77,13 +72,13 @@ typedef struct _SETPWRMODE_PARM
 }__attribute__((__packed__)) SETPWRMODE_PARM, *PSETPWRMODE_PARM;
 
 struct H2C_SS_RFOFF_PARAM{
-	u8 ROFOn; // 1: on, 0:off
-	u16 gpio_period; // unit: 1024 us
+	u8 ROFOn; /*  1: on, 0:off */
+	u16 gpio_period; /*  unit: 1024 us */
 }__attribute__ ((packed));
 
 
 typedef struct JOINBSSRPT_PARM{
-	u8 OpMode;	// RT_MEDIA_STATUS
+	u8 OpMode;	/*  RT_MEDIA_STATUS */
 }JOINBSSRPT_PARM, *PJOINBSSRPT_PARM;
 
 typedef struct _RSVDPAGE_LOC {
@@ -96,17 +91,17 @@ typedef struct _RSVDPAGE_LOC {
 
 struct P2P_PS_Offload_t {
 	u8 Offload_En:1;
-	u8 role:1; // 1: Owner, 0: Client
+	u8 role:1; /*  1: Owner, 0: Client */
 	u8 CTWindow_En:1;
 	u8 NoA0_En:1;
 	u8 NoA1_En:1;
-	u8 AllStaSleep:1; // Only valid in Owner
+	u8 AllStaSleep:1; /*  Only valid in Owner */
 	u8 discovery:1;
 	u8 rsvd:1;
 };
 
 struct P2P_PS_CTWPeriod_t {
-	u8 CTWPeriod;	//TU
+	u8 CTWPeriod;	/* TU */
 };
 
 
@@ -130,12 +125,12 @@ typedef struct _SCAN_EN_PARM {
 	u8 En;
 }__attribute__((__packed__)) SCAN_EN_PARM, *PSCAN_EN_PARM;
 
-// BT_PWR
+/*  BT_PWR */
 #define SET_H2CCMD_BT_PWR_IDX(__pH2CCmd, __Value)							SET_BITS_TO_LE_1BYTE_8BIT(__pH2CCmd, 0, 8, __Value)
 
-// BT_FW_PATCH
-#define SET_H2CCMD_BT_FW_PATCH_ENABLE(__pH2CCmd, __Value)					SET_BITS_TO_LE_4BYTE(__pH2CCmd, 0, 8, __Value) //	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value)
-#define SET_H2CCMD_BT_FW_PATCH_SIZE(__pH2CCmd, __Value)						SET_BITS_TO_LE_4BYTE(__pH2CCmd, 8, 16, __Value) //	SET_BITS_TO_LE_2BYTE((__pH2CCmd)+1, 0, 16, __Value)
+/*  BT_FW_PATCH */
+#define SET_H2CCMD_BT_FW_PATCH_ENABLE(__pH2CCmd, __Value)					SET_BITS_TO_LE_4BYTE(__pH2CCmd, 0, 8, __Value) /* 	SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value) */
+#define SET_H2CCMD_BT_FW_PATCH_SIZE(__pH2CCmd, __Value)						SET_BITS_TO_LE_4BYTE(__pH2CCmd, 8, 16, __Value) /* 	SET_BITS_TO_LE_2BYTE((__pH2CCmd)+1, 0, 16, __Value) */
 
 typedef struct _LOWPWR_LPS_PARM
 {
@@ -149,7 +144,7 @@ typedef struct _LOWPWR_LPS_PARM
 }__attribute__((__packed__)) LOWPWR_LPS_PARM, *PLOWPWR_LPS_PARM;
 
 
-// host message to firmware cmd
+/*  host message to firmware cmd */
 void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter * padapter, u8 Mode);
 void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter * padapter, u8 mstatus);
 #ifdef CONFIG_8723AU_BT_COEXIST
@@ -161,7 +156,7 @@ void rtl8723a_add_rateatid(struct rtw_adapter * padapter, u32 bitmap, u8 arg, u8
 
 #ifdef CONFIG_8723AU_P2P
 void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter * padapter, u8 p2p_ps_state);
-#endif //CONFIG_8723AU_P2P
+#endif /* CONFIG_8723AU_P2P */
 
 void CheckFwRsvdPageContent(struct rtw_adapter *padapter);
 

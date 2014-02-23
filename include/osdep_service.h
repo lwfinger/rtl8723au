@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __OSDEP_SERVICE_H_
 #define __OSDEP_SERVICE_H_
@@ -51,13 +46,13 @@
 #include <linux/if_arp.h>
 #include <linux/rtnetlink.h>
 #include <linux/delay.h>
-#include <linux/proc_fs.h>	// Necessary because we use the proc fs
-#include <linux/interrupt.h>	// for struct tasklet_struct
+#include <linux/proc_fs.h>	/*  Necessary because we use the proc fs */
+#include <linux/interrupt.h>	/*  for struct tasklet_struct */
 #include <linux/ip.h>
 #include <linux/kthread.h>
 
 
-//	#include <linux/ieee80211.h>
+/* 	#include <linux/ieee80211.h> */
 #include <net/ieee80211_radiotap.h>
 #include <net/cfg80211.h>
 #include <linux/usb.h>
@@ -272,7 +267,7 @@ static inline u32 bitshift(u32 bitmask)
 
 #define STRUCT_PACKED __attribute__ ((packed))
 
-// limitation of path length
+/*  limitation of path length */
 #define PATH_LENGTH_MAX PATH_MAX
 
 void rtw_suspend_lock_init(void);
@@ -281,9 +276,9 @@ void rtw_lock_suspend(void);
 void rtw_unlock_suspend(void);
 #ifdef CONFIG_WOWLAN
 void rtw_lock_suspend_timeout(long timeout);
-#endif //CONFIG_WOWLAN
+#endif /* CONFIG_WOWLAN */
 
-//File operation APIs, just for linux now
+/* File operation APIs, just for linux now */
 int rtw_is_file_readable(char *path);
 int rtw_retrive_from_file(char *path, u8* buf, u32 sz);
 int rtw_store_to_file(char *path, u8* buf, u32 sz);

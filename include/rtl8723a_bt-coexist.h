@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_BT_COEXIST_H__
 #define __RTL8723A_BT_COEXIST_H__
@@ -35,15 +30,15 @@
 #define __HALBTCOEXIST_C__ 1
 #define __HALBT_C__ 1
 
-#ifdef __BT_C__ // COMMON/BT.h
+#ifdef __BT_C__ /*  COMMON/BT.h */
 
-// HEADER/PlatformDef.h
+/*  HEADER/PlatformDef.h */
 typedef enum _RT_MEDIA_STATUS {
 	RT_MEDIA_DISCONNECT = 0,
 	RT_MEDIA_CONNECT       = 1
 } RT_MEDIA_STATUS;
 
-// ===== Below this line is sync from SD7 driver COMMON/BT.h =====
+/*  ===== Below this line is sync from SD7 driver COMMON/BT.h ===== */
 
 #define	BT_TMP_BUF_SIZE		100
 
@@ -57,56 +52,56 @@ void BT_LpsLeave(struct rtw_adapter * padapter);
 
 
 #define	BT_HsConnectionEstablished(Adapter)					false
-// ===== End of sync from SD7 driver COMMON/BT.h =====
-#endif // __BT_C__
+/*  ===== End of sync from SD7 driver COMMON/BT.h ===== */
+#endif /*  __BT_C__ */
 
-#ifdef __BT_HCI_C__ // COMMON/bt_hci.h
+#ifdef __BT_HCI_C__ /*  COMMON/bt_hci.h */
 
-// HEADER/SecurityType.h
-#define TKIP_ENC_KEY_POS		32		//(KEK_LEN+KEK_LEN)
+/*  HEADER/SecurityType.h */
+#define TKIP_ENC_KEY_POS		32		/* KEK_LEN+KEK_LEN) */
 #define MAXRSNIELEN				256
 
-// COMMON/Protocol802_11.h
-//----------------------------------------------------------------------------
-//      802.11 Management frame Status Code field
-//----------------------------------------------------------------------------
+/*  COMMON/Protocol802_11.h */
+/*  */
+/*       802.11 Management frame Status Code field */
+/*  */
 typedef struct _OCTET_STRING{
 	u8		*Octet;
 	u16		Length;
 } OCTET_STRING, *POCTET_STRING;
 
 
-//======================================================================================
-// AES_CCMP specific
-//======================================================================================
+/*  */
+/*  AES_CCMP specific */
+/*  */
 enum
 {
-	AESCCMP_BLK_SIZE		=   16,     // # octets in an AES block
-	AESCCMP_MAX_PACKET		=   4*512,  // largest packet size
-	AESCCMP_N_RESERVED		=   0,      // reserved nonce octet value
-	AESCCMP_A_DATA			=   0x40,   // the Adata bit in the flags
-	AESCCMP_M_SHIFT			=   3,      // how much to shift the 3-bit M field
-	AESCCMP_L_SHIFT			=   0,      // how much to shift the 3-bit L field
-	AESCCMP_L_SIZE			=   2,       // size of the l(m) length field (in octets)
+	AESCCMP_BLK_SIZE		=   16,     /*  # octets in an AES block */
+	AESCCMP_MAX_PACKET		=   4*512,  /*  largest packet size */
+	AESCCMP_N_RESERVED		=   0,      /*  reserved nonce octet value */
+	AESCCMP_A_DATA			=   0x40,   /*  the Adata bit in the flags */
+	AESCCMP_M_SHIFT			=   3,      /*  how much to shift the 3-bit M field */
+	AESCCMP_L_SHIFT			=   0,      /*  how much to shift the 3-bit L field */
+	AESCCMP_L_SIZE			=   2,       /*  size of the l(m) length field (in octets) */
 	AESCCMP_OFFSET_SC		=	22,
 	AESCCMP_OFFSET_DURATION	=	4,
 	AESCCMP_OFFSET_A2		=	10,
 	AESCCMP_OFFSET_A4		=	24,
 	AESCCMP_QC_TID_MASK		=	0x0f,
-	AESCCMP_BLK_SIZE_TOTAL	=   16*16,     // Added by Annie for CKIP AES MIC BSOD, 2006-08-17.
-											// 16*8 < 4*60  Resove to 16*16
+	AESCCMP_BLK_SIZE_TOTAL	=   16*16,     /*  Added by Annie for CKIP AES MIC BSOD, 2006-08-17. */
+											/*  16*8 < 4*60  Resove to 16*16 */
 };
 
-//
-// Key Length
-//
+/*  */
+/*  Key Length */
+/*  */
 #define PMK_LEN					32
 #define PTK_LEN_TKIP			64
 #define GTK_LEN					32
 #define KEY_NONCE_LEN			32
 
 
-// COMMON/Dot11d.h
+/*  COMMON/Dot11d.h */
 typedef struct _CHNL_TXPOWER_TRIPLE
 {
 	u8 FirstChnl;
@@ -115,17 +110,17 @@ typedef struct _CHNL_TXPOWER_TRIPLE
 } CHNL_TXPOWER_TRIPLE, *PCHNL_TXPOWER_TRIPLE;
 
 
-// ===== Below this line is sync from SD7 driver COMMON/bt_hci.h =====
+/*  ===== Below this line is sync from SD7 driver COMMON/bt_hci.h ===== */
 #define BT_THREAD		0
 #if(BT_THREAD == 1)
 #define SENDTXMEHTOD	2
 #else
-#define SENDTXMEHTOD	1  // 0=workitem, 1= SendDirectily, 2=thread
+#define SENDTXMEHTOD	1  /*  0=workitem, 1= SendDirectily, 2=thread */
 #endif
 
-//=============================================
-// The following is for BT 3.0 + HS HCI COMMAND ERRORS CODES
-//=============================================
+/*  */
+/*  The following is for BT 3.0 + HS HCI COMMAND ERRORS CODES */
+/*  */
 
 #define Max80211PALPDUSize			1492
 #define Max80211AMPASSOCLen			672
@@ -146,93 +141,93 @@ typedef struct _CHNL_TXPOWER_TRIPLE
 #define BTMAXBANDGUBANDWIDTH		0x4e20
 #define TmpLocalBufSize					0x100
 #define BTSynDataPacketLength			0xff
-//=============================================
+/*  */
 
 #define BTMaxAuthCount					5
 #define BTMaxAsocCount					5
 
-#define MAX_LOGICAL_LINK_NUM			2	//temporarily define
-#define MAX_BT_ASOC_ENTRY_NUM		2	//temporarily define
+#define MAX_LOGICAL_LINK_NUM			2	/* temporarily define */
+#define MAX_BT_ASOC_ENTRY_NUM		2	/* temporarily define */
 
 #define INVALID_PL_HANDLE				0xff
 #define INVALID_ENTRY_NUM				0xff
-//=============================================
+/*  */
 
-#define CAM_BT_START_INDEX		(HALF_CAM_ENTRY - 4)   // MAX_BT_ASOC_ENTRY_NUM : 4 !!!
-#define BT_HWCAM_STAR			CAM_BT_START_INDEX  // We used  HALF_CAM_ENTRY ~ HALF_CAM_ENTRY -MAX_BT_ASOC_ENTRY_NUM
+#define CAM_BT_START_INDEX		(HALF_CAM_ENTRY - 4)   /*  MAX_BT_ASOC_ENTRY_NUM : 4 !!! */
+#define BT_HWCAM_STAR			CAM_BT_START_INDEX  /*  We used  HALF_CAM_ENTRY ~ HALF_CAM_ENTRY -MAX_BT_ASOC_ENTRY_NUM */
 
 typedef enum _HCI_STATUS
 {
-	HCI_STATUS_SUCCESS										=0x00, //Success
-	HCI_STATUS_UNKNOW_HCI_CMD								=0x01, //Unknown HCI Command
-	HCI_STATUS_UNKNOW_CONNECT_ID							=0X02, //Unknown Connection Identifier
-	HCI_STATUS_HW_FAIL										=0X03, //Hardware Failure
-	HCI_STATUS_PAGE_TIMEOUT									=0X04, //Page Timeout
-	HCI_STATUS_AUTH_FAIL										=0X05, //Authentication Failure
-	HCI_STATUS_PIN_OR_KEY_MISSING							=0X06, //PIN or Key Missing
-	HCI_STATUS_MEM_CAP_EXCEED								=0X07, //Memory Capacity Exceeded
-	HCI_STATUS_CONNECT_TIMEOUT								=0X08, //Connection Timeout
-	HCI_STATUS_CONNECT_LIMIT									=0X09, //Connection Limit Exceeded
-	HCI_STATUS_SYN_CONNECT_LIMIT								=0X0a, //Synchronous Connection Limit To A Device Exceeded
-	HCI_STATUS_ACL_CONNECT_EXISTS							=0X0b, //ACL Connection Already Exists
-	HCI_STATUS_CMD_DISALLOW									=0X0c, //Command Disallowed
-	HCI_STATUS_CONNECT_RJT_LIMIT_RESOURCE					=0X0d, //Connection Rejected due to Limited Resources
-	HCI_STATUS_CONNECT_RJT_SEC_REASON						=0X0e, //Connection Rejected Due To Security Reasons
-	HCI_STATUS_CONNECT_RJT_UNACCEPT_BD_ADDR				=0X0f, //Connection Rejected due to Unacceptable BD_ADDR
-	HCI_STATUS_CONNECT_ACCEPT_TIMEOUT						=0X10, //Connection Accept Timeout Exceeded
-	HCI_STATUS_UNSUPPORT_FEATURE_PARA_VALUE				=0X11, //Unsupported Feature or Parameter Value
-	HCI_STATUS_INVALID_HCI_CMD_PARA_VALUE					=0X12, //Invalid HCI Command Parameters
-	HCI_STATUS_REMOTE_USER_TERMINATE_CONNECT				=0X13, //Remote User Terminated Connection
-	HCI_STATUS_REMOTE_DEV_TERMINATE_LOW_RESOURCE			=0X14, //Remote Device Terminated Connection due to Low Resources
-	HCI_STATUS_REMOTE_DEV_TERMINATE_CONNECT_POWER_OFF	=0X15, //Remote Device Terminated Connection due to Power Off
-	HCI_STATUS_CONNECT_TERMINATE_LOCAL_HOST				=0X16, //Connection Terminated By Local Host
-	HCI_STATUS_REPEATE_ATTEMPT								=0X17, //Repeated Attempts
-	HCI_STATUS_PAIR_NOT_ALLOW								=0X18, //Pairing Not Allowed
-	HCI_STATUS_UNKNOW_LMP_PDU								=0X19, //Unknown LMP PDU
-	HCI_STATUS_UNSUPPORT_REMOTE_LMP_FEATURE				=0X1a, //Unsupported Remote Feature / Unsupported LMP Feature
-	HCI_STATUS_SOC_OFFSET_REJECT								=0X1b, //SCO Offset Rejected
-	HCI_STATUS_SOC_INTERVAL_REJECT							=0X1c, //SCO Interval Rejected
-	HCI_STATUS_SOC_AIR_MODE_REJECT							=0X1d,//SCO Air Mode Rejected
-	HCI_STATUS_INVALID_LMP_PARA								=0X1e, //Invalid LMP Parameters
-	HCI_STATUS_UNSPECIFIC_ERROR								=0X1f, //Unspecified Error
-	HCI_STATUS_UNSUPPORT_LMP_PARA_VALUE					=0X20, //Unsupported LMP Parameter Value
-	HCI_STATUS_ROLE_CHANGE_NOT_ALLOW						=0X21, //Role Change Not Allowed
-	HCI_STATUS_LMP_RESPONSE_TIMEOUT							=0X22, //LMP Response Timeout
-	HCI_STATUS_LMP_ERROR_TRANSACTION_COLLISION				=0X23, //LMP Error Transaction Collision
-	HCI_STATUS_LMP_PDU_NOT_ALLOW							=0X24, //LMP PDU Not Allowed
-	HCI_STATUS_ENCRYPTION_MODE_NOT_ALLOW					=0X25, //Encryption Mode Not Acceptable
-	HCI_STATUS_LINK_KEY_CAN_NOT_CHANGE						=0X26, //Link Key Can Not be Changed
-	HCI_STATUS_REQUEST_QOS_NOT_SUPPORT						=0X27, //Requested QoS Not Supported
-	HCI_STATUS_INSTANT_PASSED								=0X28, //Instant Passed
-	HCI_STATUS_PAIRING_UNIT_KEY_NOT_SUPPORT					=0X29, //Pairing With Unit Key Not Supported
-	HCI_STATUS_DIFFERENT_TRANSACTION_COLLISION				=0X2a, //Different Transaction Collision
-	HCI_STATUS_RESERVE_1										=0X2b, //Reserved
-	HCI_STATUS_QOS_UNACCEPT_PARA							=0X2c, //QoS Unacceptable Parameter
-	HCI_STATUS_QOS_REJECT										=0X2d, //QoS Rejected
-	HCI_STATUS_CHNL_CLASSIFICATION_NOT_SUPPORT				=0X2e, //Channel Classification Not Supported
-	HCI_STATUS_INSUFFICIENT_SECURITY							=0X2f, //Insufficient Security
-	HCI_STATUS_PARA_OUT_OF_RANGE							=0x30, //Parameter Out Of Mandatory Range
-	HCI_STATUS_RESERVE_2										=0X31, //Reserved
-	HCI_STATUS_ROLE_SWITCH_PENDING							=0X32, //Role Switch Pending
-	HCI_STATUS_RESERVE_3										=0X33, //Reserved
-	HCI_STATUS_RESERVE_SOLT_VIOLATION						=0X34, //Reserved Slot Violation
-	HCI_STATUS_ROLE_SWITCH_FAIL								=0X35, //Role Switch Failed
-	HCI_STATUS_EXTEND_INQUIRY_RSP_TOO_LARGE				=0X36, //Extended Inquiry Response Too Large
-	HCI_STATUS_SEC_SIMPLE_PAIRING_NOT_SUPPORT				=0X37, //Secure Simple Pairing Not Supported By Host.
-	HCI_STATUS_HOST_BUSY_PAIRING								=0X38, //Host Busy - Pairing
-	HCI_STATUS_CONNECT_REJ_NOT_SUIT_CHNL_FOUND			=0X39, //Connection Rejected due to No Suitable Channel Found
-	HCI_STATUS_CONTROLLER_BUSY								=0X3a  //CONTROLLER BUSY
+	HCI_STATUS_SUCCESS										=0x00, /* Success */
+	HCI_STATUS_UNKNOW_HCI_CMD								=0x01, /* Unknown HCI Command */
+	HCI_STATUS_UNKNOW_CONNECT_ID							=0X02, /* Unknown Connection Identifier */
+	HCI_STATUS_HW_FAIL										=0X03, /* Hardware Failure */
+	HCI_STATUS_PAGE_TIMEOUT									=0X04, /* Page Timeout */
+	HCI_STATUS_AUTH_FAIL										=0X05, /* Authentication Failure */
+	HCI_STATUS_PIN_OR_KEY_MISSING							=0X06, /* PIN or Key Missing */
+	HCI_STATUS_MEM_CAP_EXCEED								=0X07, /* Memory Capacity Exceeded */
+	HCI_STATUS_CONNECT_TIMEOUT								=0X08, /* Connection Timeout */
+	HCI_STATUS_CONNECT_LIMIT									=0X09, /* Connection Limit Exceeded */
+	HCI_STATUS_SYN_CONNECT_LIMIT								=0X0a, /* Synchronous Connection Limit To A Device Exceeded */
+	HCI_STATUS_ACL_CONNECT_EXISTS							=0X0b, /* ACL Connection Already Exists */
+	HCI_STATUS_CMD_DISALLOW									=0X0c, /* Command Disallowed */
+	HCI_STATUS_CONNECT_RJT_LIMIT_RESOURCE					=0X0d, /* Connection Rejected due to Limited Resources */
+	HCI_STATUS_CONNECT_RJT_SEC_REASON						=0X0e, /* Connection Rejected Due To Security Reasons */
+	HCI_STATUS_CONNECT_RJT_UNACCEPT_BD_ADDR				=0X0f, /* Connection Rejected due to Unacceptable BD_ADDR */
+	HCI_STATUS_CONNECT_ACCEPT_TIMEOUT						=0X10, /* Connection Accept Timeout Exceeded */
+	HCI_STATUS_UNSUPPORT_FEATURE_PARA_VALUE				=0X11, /* Unsupported Feature or Parameter Value */
+	HCI_STATUS_INVALID_HCI_CMD_PARA_VALUE					=0X12, /* Invalid HCI Command Parameters */
+	HCI_STATUS_REMOTE_USER_TERMINATE_CONNECT				=0X13, /* Remote User Terminated Connection */
+	HCI_STATUS_REMOTE_DEV_TERMINATE_LOW_RESOURCE			=0X14, /* Remote Device Terminated Connection due to Low Resources */
+	HCI_STATUS_REMOTE_DEV_TERMINATE_CONNECT_POWER_OFF	=0X15, /* Remote Device Terminated Connection due to Power Off */
+	HCI_STATUS_CONNECT_TERMINATE_LOCAL_HOST				=0X16, /* Connection Terminated By Local Host */
+	HCI_STATUS_REPEATE_ATTEMPT								=0X17, /* Repeated Attempts */
+	HCI_STATUS_PAIR_NOT_ALLOW								=0X18, /* Pairing Not Allowed */
+	HCI_STATUS_UNKNOW_LMP_PDU								=0X19, /* Unknown LMP PDU */
+	HCI_STATUS_UNSUPPORT_REMOTE_LMP_FEATURE				=0X1a, /* Unsupported Remote Feature / Unsupported LMP Feature */
+	HCI_STATUS_SOC_OFFSET_REJECT								=0X1b, /* SCO Offset Rejected */
+	HCI_STATUS_SOC_INTERVAL_REJECT							=0X1c, /* SCO Interval Rejected */
+	HCI_STATUS_SOC_AIR_MODE_REJECT							=0X1d,/* SCO Air Mode Rejected */
+	HCI_STATUS_INVALID_LMP_PARA								=0X1e, /* Invalid LMP Parameters */
+	HCI_STATUS_UNSPECIFIC_ERROR								=0X1f, /* Unspecified Error */
+	HCI_STATUS_UNSUPPORT_LMP_PARA_VALUE					=0X20, /* Unsupported LMP Parameter Value */
+	HCI_STATUS_ROLE_CHANGE_NOT_ALLOW						=0X21, /* Role Change Not Allowed */
+	HCI_STATUS_LMP_RESPONSE_TIMEOUT							=0X22, /* LMP Response Timeout */
+	HCI_STATUS_LMP_ERROR_TRANSACTION_COLLISION				=0X23, /* LMP Error Transaction Collision */
+	HCI_STATUS_LMP_PDU_NOT_ALLOW							=0X24, /* LMP PDU Not Allowed */
+	HCI_STATUS_ENCRYPTION_MODE_NOT_ALLOW					=0X25, /* Encryption Mode Not Acceptable */
+	HCI_STATUS_LINK_KEY_CAN_NOT_CHANGE						=0X26, /* Link Key Can Not be Changed */
+	HCI_STATUS_REQUEST_QOS_NOT_SUPPORT						=0X27, /* Requested QoS Not Supported */
+	HCI_STATUS_INSTANT_PASSED								=0X28, /* Instant Passed */
+	HCI_STATUS_PAIRING_UNIT_KEY_NOT_SUPPORT					=0X29, /* Pairing With Unit Key Not Supported */
+	HCI_STATUS_DIFFERENT_TRANSACTION_COLLISION				=0X2a, /* Different Transaction Collision */
+	HCI_STATUS_RESERVE_1										=0X2b, /* Reserved */
+	HCI_STATUS_QOS_UNACCEPT_PARA							=0X2c, /* QoS Unacceptable Parameter */
+	HCI_STATUS_QOS_REJECT										=0X2d, /* QoS Rejected */
+	HCI_STATUS_CHNL_CLASSIFICATION_NOT_SUPPORT				=0X2e, /* Channel Classification Not Supported */
+	HCI_STATUS_INSUFFICIENT_SECURITY							=0X2f, /* Insufficient Security */
+	HCI_STATUS_PARA_OUT_OF_RANGE							=0x30, /* Parameter Out Of Mandatory Range */
+	HCI_STATUS_RESERVE_2										=0X31, /* Reserved */
+	HCI_STATUS_ROLE_SWITCH_PENDING							=0X32, /* Role Switch Pending */
+	HCI_STATUS_RESERVE_3										=0X33, /* Reserved */
+	HCI_STATUS_RESERVE_SOLT_VIOLATION						=0X34, /* Reserved Slot Violation */
+	HCI_STATUS_ROLE_SWITCH_FAIL								=0X35, /* Role Switch Failed */
+	HCI_STATUS_EXTEND_INQUIRY_RSP_TOO_LARGE				=0X36, /* Extended Inquiry Response Too Large */
+	HCI_STATUS_SEC_SIMPLE_PAIRING_NOT_SUPPORT				=0X37, /* Secure Simple Pairing Not Supported By Host. */
+	HCI_STATUS_HOST_BUSY_PAIRING								=0X38, /* Host Busy - Pairing */
+	HCI_STATUS_CONNECT_REJ_NOT_SUIT_CHNL_FOUND			=0X39, /* Connection Rejected due to No Suitable Channel Found */
+	HCI_STATUS_CONTROLLER_BUSY								=0X3a  /* CONTROLLER BUSY */
 } HCI_STATUS,*PHCI_STATUS;
 
-//=============================================
-// The following is for BT 3.0 + HS HCI COMMAND
-//=============================================
+/*  */
+/*  The following is for BT 3.0 + HS HCI COMMAND */
+/*  */
 
-//bit 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
-//	 |	OCF			             |	   OGF       |
-//
+/* bit 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 */
+/* 	 |	OCF			             |	   OGF       | */
+/*  */
 
-//OGF 0x01
+/* OGF 0x01 */
 #define OGF_LINK_CONTROL_COMMANDS						0x01
 typedef enum _LINK_CONTROL_COMMANDS
 {
@@ -282,7 +277,7 @@ typedef enum _LINK_CONTROL_COMMANDS
 	HCI_FLOW_SPEC_MODIFY									=0x003c
 } LINK_CONTROL_COMMANDS,*PLINK_CONTROL_COMMANDS;
 
-//OGF 0x02
+/* OGF 0x02 */
 #define OGF_HOLD_MODE_COMMAND							0x02
 typedef enum _HOLD_MODE_COMMAND
 {
@@ -302,7 +297,7 @@ typedef enum _HOLD_MODE_COMMAND
 	HCI_SNIFF_SUBRATING									=0x0011
 } HOLD_MODE_COMMAND,*PHOLD_MODE_COMMAND;
 
-//OGF 0x03
+/* OGF 0x03 */
 #define OGF_SET_EVENT_MASK_COMMAND						0x03
 typedef enum _SET_EVENT_MASK_COMMAND
 {
@@ -386,7 +381,7 @@ typedef enum _SET_EVENT_MASK_COMMAND
 	HCI_SHORT_RANGE_MODE								=0x006b
 }SET_EVENT_MASK_COMMAND,*PSET_EVENT_MASK_COMMAND;
 
-//OGF 0x04
+/* OGF 0x04 */
 #define OGF_INFORMATIONAL_PARAMETERS						0x04
 typedef enum _INFORMATIONAL_PARAMETERS
 {
@@ -399,7 +394,7 @@ typedef enum _INFORMATIONAL_PARAMETERS
 	HCI_READ_DATA_BLOCK_SIZE							=0x000a
 } INFORMATIONAL_PARAMETERS,*PINFORMATIONAL_PARAMETERS;
 
-//OGF 0x05
+/* OGF 0x05 */
 #define OGF_STATUS_PARAMETERS								0x05
 typedef enum _STATUS_PARAMETERS
 {
@@ -415,7 +410,7 @@ typedef enum _STATUS_PARAMETERS
 	HCI_WRITE_REMOTE_AMP_ASSOC							=0x000b
 } STATUS_PARAMETERS,*PSTATUS_PARAMETERS;
 
-//OGF 0x06
+/* OGF 0x06 */
 #define OGF_TESTING_COMMANDS								0x06
 typedef enum _TESTING_COMMANDS
 {
@@ -428,7 +423,7 @@ typedef enum _TESTING_COMMANDS
 	HCI_AMP_TEST_COMMAND							=0x0009
 } TESTING_COMMANDS,*PTESTING_COMMANDS;
 
-//OGF 0x3f
+/* OGF 0x3f */
 #define OGF_EXTENSION							0X3f
 typedef enum _HCI_EXTENSION_COMMANDS
 {
@@ -438,14 +433,14 @@ typedef enum _HCI_EXTENSION_COMMANDS
 	HCI_SET_RSSI_VALUE								=0x0040,
 	HCI_SET_CURRENT_BLUETOOTH_STATUS				=0x0041,
 
-	//The following is for RTK8723
+	/* The following is for RTK8723 */
 	HCI_EXTENSION_VERSION_NOTIFY					=0x0100,
 	HCI_LINK_STATUS_NOTIFY							=0x0101,
 	HCI_BT_OPERATION_NOTIFY							=0x0102,
 	HCI_ENABLE_WIFI_SCAN_NOTIFY						=0x0103,
 
 
-	//The following is for IVT
+	/* The following is for IVT */
 	HCI_WIFI_CURRENT_CHANNEL						=0x0300,
 	HCI_WIFI_CURRENT_BANDWIDTH						=0x0301,
 	HCI_WIFI_CONNECTION_STATUS						=0x0302,
@@ -462,9 +457,9 @@ typedef enum _BT_SPEC
 	BT_SPEC_4_0										=0x06
 } BT_SPEC,*PBT_SPEC;
 
-//=============================================
-// The following is for BT 3.0 + HS EVENTS
-//=============================================
+/*  */
+/*  The following is for BT 3.0 + HS EVENTS */
+/*  */
 typedef enum _HCI_EVENT
 {
 	HCI_EVENT_INQUIRY_COMPLETE								=0x01,
@@ -667,24 +662,24 @@ typedef enum _BT_LL_SERVICE_TYPE
 
 typedef enum _BT_LL_FLOWSPEC
 {
-	BT_TX_BE_FS,				//TX best effort flowspec
-	BT_RX_BE_FS,				//RX best effort flowspec
-	BT_TX_GU_FS,				//TX guaranteed latency flowspec
-	BT_RX_GU_FS,				//RX guaranteed latency flowspec
-	BT_TX_BE_AGG_FS,			//TX aggregated best effort flowspec
-	BT_RX_BE_AGG_FS,			//RX aggregated best effort flowspec
-	BT_TX_GU_BW_FS,			//TX guaranteed bandwidth flowspec
-	BT_RX_GU_BW_FS,			//RX guaranteed bandwidth flowspec
-	BT_TX_GU_LARGE_FS,		//TX guaranteed latency flowspec, for testing only
-	BT_RX_GU_LARGE_FS,		//RX guaranteed latency flowspec, for testing only
+	BT_TX_BE_FS,				/* TX best effort flowspec */
+	BT_RX_BE_FS,				/* RX best effort flowspec */
+	BT_TX_GU_FS,				/* TX guaranteed latency flowspec */
+	BT_RX_GU_FS,				/* RX guaranteed latency flowspec */
+	BT_TX_BE_AGG_FS,			/* TX aggregated best effort flowspec */
+	BT_RX_BE_AGG_FS,			/* RX aggregated best effort flowspec */
+	BT_TX_GU_BW_FS,			/* TX guaranteed bandwidth flowspec */
+	BT_RX_GU_BW_FS,			/* RX guaranteed bandwidth flowspec */
+	BT_TX_GU_LARGE_FS,		/* TX guaranteed latency flowspec, for testing only */
+	BT_RX_GU_LARGE_FS,		/* RX guaranteed latency flowspec, for testing only */
 } BT_LL_FLOWSPEC;
 
 typedef enum _BT_TRAFFIC_MODE
 {
-	BT_MOTOR_EXT_BE		= 0x00, //Best Effort. Default. for HCRP, PAN, SDP, RFCOMM-based profiles like FTP,OPP, SPP, DUN, etc.
-	BT_MOTOR_EXT_GUL	= 0x01, //Guaranteed Latency. This type of traffic is used e.g. for HID and AVRCP.
-	BT_MOTOR_EXT_GUB	= 0X02, //Guaranteed Bandwidth.
-	BT_MOTOR_EXT_GULB	= 0X03  //Guaranteed Latency and Bandwidth. for A2DP and VDP.
+	BT_MOTOR_EXT_BE		= 0x00, /* Best Effort. Default. for HCRP, PAN, SDP, RFCOMM-based profiles like FTP,OPP, SPP, DUN, etc. */
+	BT_MOTOR_EXT_GUL	= 0x01, /* Guaranteed Latency. This type of traffic is used e.g. for HID and AVRCP. */
+	BT_MOTOR_EXT_GUB	= 0X02, /* Guaranteed Bandwidth. */
+	BT_MOTOR_EXT_GULB	= 0X03  /* Guaranteed Latency and Bandwidth. for A2DP and VDP. */
 } BT_TRAFFIC_MODE;
 
 typedef enum _BT_TRAFFIC_MODE_PROFILE
@@ -705,8 +700,8 @@ typedef enum _BT_LINK_ROLE
 typedef enum _BT_STATE_WPA_AUTH
 {
 	STATE_WPA_AUTH_UNINITIALIZED,
-	STATE_WPA_AUTH_WAIT_PACKET_1, // Join
-	STATE_WPA_AUTH_WAIT_PACKET_2, // Creat
+	STATE_WPA_AUTH_WAIT_PACKET_1, /*  Join */
+	STATE_WPA_AUTH_WAIT_PACKET_2, /*  Creat */
 	STATE_WPA_AUTH_WAIT_PACKET_3,
 	STATE_WPA_AUTH_WAIT_PACKET_4,
 	STATE_WPA_AUTH_SUCCESSED
@@ -745,28 +740,28 @@ typedef struct _HCI_LOG_LINK_CMD_DATA
 
 typedef struct _HCI_PHY_LINK_CMD_DATA
 {
-	//Physical_Link_Handle
+	/* Physical_Link_Handle */
 	u8				BtPhyLinkhandle;
 
 	u16				LinkSuperversionTimeout;
 
-	//u16				SuperTimeOutCnt;
+	/* u16				SuperTimeOutCnt; */
 
-	//Dedicated_AMP_Key_Length
+	/* Dedicated_AMP_Key_Length */
 	u8				BtAMPKeyLen;
-	//Dedicated_AMP_Key_Type
+	/* Dedicated_AMP_Key_Type */
 	u8				BtAMPKeyType;
-	//Dedicated_AMP_Key
+	/* Dedicated_AMP_Key */
 	u8				BtAMPKey[PMK_LEN];
 } HCI_PHY_LINK_CMD_DATA, *PHCI_PHY_LINK_CMD_DATA;
 
 typedef struct _AMP_ASSOC_STRUCTURE
 {
-	//TYPE ID
+	/* TYPE ID */
 	u8				TypeID;
-	//Length
+	/* Length */
 	u16				Length;
-	//Value
+	/* Value */
 	u8				Data[1];
 } AMP_ASSOC_STRUCTURE, *PAMP_ASSOC_STRUCTURE;
 
@@ -779,15 +774,15 @@ typedef struct _AMP_PREF_CHNL_REGULATORY
 
 typedef struct _AMP_ASSOC_CMD_DATA
 {
-	//Physical_Link_Handle
+	/* Physical_Link_Handle */
 	u8					BtPhyLinkhandle;
-	//Length_So_Far
+	/* Length_So_Far */
 	u16					LenSoFar;
 
 	u16					MaxRemoteASSOCLen;
-	//AMP_ASSOC_Remaining_Length
+	/* AMP_ASSOC_Remaining_Length */
 	u16					AMPAssocRemLen;
-	//AMP_ASSOC_fragment
+	/* AMP_ASSOC_fragment */
 	void				*AMPAssocfragment;
 } AMP_ASSOC_CMD_DATA, *PAMP_ASSOC_CMD_DATA;
 
@@ -816,7 +811,7 @@ typedef struct _HCI_EXT_CONFIG
 	u8					CurrentBTStatus;
 	u16					HCIExtensionVer;
 
-	//Bt coexist related
+	/* Bt coexist related */
 	u8					btProfileCase;
 	u8					btProfileAction;
 	u8					bManualControl;
@@ -839,10 +834,10 @@ typedef struct _HCI_ACL_PACKET_DATA
 
 typedef struct _HCI_PHY_LINK_BSS_INFO
 {
-	u16						bdCap;			// capability information
+	u16						bdCap;			/*  capability information */
 
-	// Qos related. Added by Annie, 2005-11-01.
-//	BSS_QOS						BssQos; // not implement yet
+	/*  Qos related. Added by Annie, 2005-11-01. */
+/* 	BSS_QOS						BssQos; not implement yet */
 
 } HCI_PHY_LINK_BSS_INFO, *PHCI_PHY_LINK_BSS_INFO;
 
@@ -873,15 +868,15 @@ typedef struct _BT_ASOC_ENTRY
 	HCI_STATUS						PhyLinkDisconnectReason;
 
 	u8						bSendSupervisionPacket;
-	//u8						CurrentSuervisionPacketSendNum;
-	//u8						LastSuervisionPacketSendNum;
+	/* u8						CurrentSuervisionPacketSendNum; */
+	/* u8						LastSuervisionPacketSendNum; */
 	u32						NoRxPktCnt;
-	//Is Creator or Joiner
+	/* Is Creator or Joiner */
 	AMP_BTAP_TYPE				AMPRole;
 
-	//BT current state
+	/* BT current state */
 	u8						BtCurrentState;
-	//BT next state
+	/* BT next state */
 	u8						BtNextState;
 
 	u8						bNeedPhysLinkCompleteEvent;
@@ -910,8 +905,8 @@ typedef struct _BT_ASOC_ENTRY
 	BT_STATE_WPA_AUTH			BTWPAAuthState;
 	s32						UndecoratedSmoothedPWDB;
 
-	// Add for HW security !!
-	u8						HwCAMIndex;  // Cam index
+	/*  Add for HW security !! */
+	u8						HwCAMIndex;  /*  Cam index */
 	u8						bPeerQosSta;
 
 	u32						rxSuvpPktCnt;
@@ -980,7 +975,7 @@ typedef struct _BT_HCI_DBG_INFO
 typedef struct _BT_IRP_DBG_INFO
 {
 	u32				irpMJCreate;
-	// Io Control
+	/*  Io Control */
 	u32				irpIoControl;
 	u32				irpIoCtrlHciCmd;
 	u32				irpIoCtrlHciEvent;
@@ -1036,23 +1031,23 @@ typedef struct _BT_DBG
 
 typedef struct _BT_HCI_INFO
 {
-	//802.11 Pal version specifier
+	/* 802.11 Pal version specifier */
 	u8				BTPalVersion;
 	u16				BTPalCompanyID;
 	u16				BTPalsubversion;
 
-	//Connected channel list
+	/* Connected channel list */
 	u16				BTConnectChnlListLen;
 	u8				BTConnectChnllist[64];
 
-	//Fail contact counter
+	/* Fail contact counter */
 	u16				FailContactCount;
 
-	//Event mask
+	/* Event mask */
 	u64				BTEventMask;
 	u64				BTEventMaskPage2;
 
-	//timeout var
+	/* timeout var */
 	u16				ConnAcceptTimeout;
 	u16				LogicalAcceptTimeout;
 	u16				PageTimeout;
@@ -1064,15 +1059,15 @@ typedef struct _BT_HCI_INFO
 
 	u8				FlowControlMode;
 
-	//Preferred channel list
+	/* Preferred channel list */
 	u16				BtPreChnlListLen;
 	u8				BTPreChnllist[64];
 
-	u16				enFlush_LLH;	//enhanced flush handle
-	u16				FLTO_LLH;		//enhanced flush handle
+	u16				enFlush_LLH;	/* enhanced flush handle */
+	u16				FLTO_LLH;		/* enhanced flush handle */
 
-	//==========================================
-	//Test command only.
+	/*  */
+	/* Test command only. */
 	u8				bInTestMode;
 	u8				bTestIsEnd;
 	u8				bTestNeedReport;
@@ -1084,17 +1079,17 @@ typedef struct _BT_HCI_INFO
 	u16				TestNumOfErrFrame;
 	u16				TestNumOfBits;
 	u16				TestNumOfErrBits;
-	//==========================================
+	/*  */
 } BT_HCI_INFO, *PBT_HCI_INFO;
 
 typedef struct _BT_TRAFFIC
 {
-	// Add for check replay data
+	/*  Add for check replay data */
 	u8					LastRxUniFragNum;
 	u16					LastRxUniSeqNum;
 
-	//s32					EntryMaxUndecoratedSmoothedPWDB;
-	//s32					EntryMinUndecoratedSmoothedPWDB;
+	/* s32					EntryMaxUndecoratedSmoothedPWDB; */
+	/* s32					EntryMinUndecoratedSmoothedPWDB; */
 
 	BT_TRAFFIC_STATISTICS		Bt30TrafficStatistics;
 } BT_TRAFFIC, *PBT_TRAFFIC;
@@ -1103,14 +1098,14 @@ typedef struct _BT_TRAFFIC
 
 typedef struct _BT_SECURITY
 {
-	// WPA auth state
-	// May need to remove to BTSecInfo ...
-	//BT_STATE_WPA_AUTH BTWPAAuthState;
-	//u8				PMK[PMK_LEN];
+	/*  WPA auth state */
+	/*  May need to remove to BTSecInfo ... */
+	/* BT_STATE_WPA_AUTH BTWPAAuthState; */
+	/* u8				PMK[PMK_LEN]; */
 	OCTET_STRING		RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
 	u8			bRegNoEncrypt;
-	u8			bUsedHwEncrypt;   // It is define by OS version !!
+	u8			bUsedHwEncrypt;   /*  It is define by OS version !! */
 } BT_SECURITY, *PBT_SECURITY;
 
 typedef struct _BT30Info
@@ -1170,7 +1165,7 @@ typedef struct _COMMON_TRIPLE
 	u8 byte_3rd;
 } COMMON_TRIPLE, *PCOMMON_TRIPLE;
 
-#define COUNTRY_STR_LEN		3	// country string len=3
+#define COUNTRY_STR_LEN		3	/*  country string len=3 */
 
 #define LOCAL_PMK	0
 
@@ -1196,9 +1191,9 @@ typedef enum _HCI_EXT_BT_OPERATION
 	HCI_BT_OP_MAX
 } HCI_EXT_BT_OPERATION, *PHCI_EXT_BT_OPERATION;
 
-//======================================
-//	Function proto type
-//======================================
+/*  */
+/* 	Function proto type */
+/*  */
 typedef struct _BTData_ENTRY
 {
 	struct list_head	List;
@@ -1223,11 +1218,11 @@ void BTHCI_EventAMPStatusChange(struct rtw_adapter * padapter, u8 AMP_Status);
 void BTHCI_DisconnectAll(struct rtw_adapter * padapter);
 HCI_STATUS BTHCI_HandleHCICMD(struct rtw_adapter * padapter, PPACKET_IRP_HCICMD_DATA pHciCmd);
 
-// ===== End of sync from SD7 driver COMMON/bt_hci.h =====
-#endif // __BT_HCI_C__
+/*  ===== End of sync from SD7 driver COMMON/bt_hci.h ===== */
+#endif /*  __BT_HCI_C__ */
 
-#ifdef __HALBTC87231ANT_C__ // HAL/BTCoexist/HalBtc87231Ant.h
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h =====
+#ifdef __HALBTC87231ANT_C__ /*  HAL/BTCoexist/HalBtc87231Ant.h */
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h ===== */
 #define GET_BT_INFO(padapter)	(&GET_HAL_DATA(padapter)->BtInfo)
 
 #define	BTC_FOR_SCAN_START				1
@@ -1236,10 +1231,10 @@ HCI_STATUS BTHCI_HandleHCICMD(struct rtw_adapter * padapter, PPACKET_IRP_HCICMD_
 #define	BT_TXRX_CNT_THRES_1				1200
 #define	BT_TXRX_CNT_THRES_2				1400
 #define	BT_TXRX_CNT_THRES_3				3000
-#define	BT_TXRX_CNT_LEVEL_0				0	// < 1200
-#define	BT_TXRX_CNT_LEVEL_1				1	// >= 1200 && < 1400
-#define	BT_TXRX_CNT_LEVEL_2				2	// >= 1400
-#define	BT_TXRX_CNT_LEVEL_3				3	// >= 3000
+#define	BT_TXRX_CNT_LEVEL_0				0	/*  < 1200 */
+#define	BT_TXRX_CNT_LEVEL_1				1	/*  >= 1200 && < 1400 */
+#define	BT_TXRX_CNT_LEVEL_2				2	/*  >= 1400 */
+#define	BT_TXRX_CNT_LEVEL_3				3	/*  >= 3000 */
 
 typedef enum _BT_STATE_1ANT{
 	BT_INFO_STATE_DISABLED			= 0,
@@ -1269,7 +1264,7 @@ typedef struct _BTDM_8723A_1ANT
 	u32		psTdmaMonitorCnt;
 	u32		psTdmaGlobalCnt;
 
-	//DurationAdjust For SCO
+	/* DurationAdjust For SCO */
 	u32		psTdmaMonitorCntForSCO;
 	u8		psTdmaDuAdjTypeForSCO;
 	u8		RSSI_WiFi_Last;
@@ -1283,11 +1278,11 @@ void BTDM_1AntSignalCompensation(struct rtw_adapter * padapter, u8 *rssi_wifi, u
 void BTDM_1AntForDhcp(struct rtw_adapter * padapter);
 void BTDM_1AntBtCoexist8723A(struct rtw_adapter * padapter);
 
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h =====
-#endif // __HALBTC87231ANT_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87231Ant.h ===== */
+#endif /*  __HALBTC87231ANT_C__ */
 
-#ifdef __HALBTC87232ANT_C__ // HAL/BTCoexist/HalBtc87232Ant.h
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87232Ant.h =====
+#ifdef __HALBTC87232ANT_C__ /*  HAL/BTCoexist/HalBtc87232Ant.h */
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc87232Ant.h ===== */
 typedef enum _BT_2ANT_BT_STATUS{
 	BT_2ANT_BT_STATUS_IDLE				= 0x0,
 	BT_2ANT_BT_STATUS_CONNECTED_IDLE	= 0x1,
@@ -1367,11 +1362,11 @@ typedef struct _BTDM_8723A_2ANT
 	u8		btStatus;
 } BTDM_8723A_2ANT, *PBTDM_8723A_2ANT;
 void BTDM_2AntBtCoexist8723A(struct rtw_adapter * padapter);
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87232Ant.h =====
-#endif // __HALBTC87232ANT_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87232Ant.h ===== */
+#endif /*  __HALBTC87232ANT_C__ */
 
-#ifdef __HALBTC8723_C__ // HAL/BTCoexist/HalBtc8723.h
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc8723.h =====
+#ifdef __HALBTC8723_C__ /*  HAL/BTCoexist/HalBtc8723.h */
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtc8723.h ===== */
 
 #define	BT_Q_PKT_OFF		0
 #define	BT_Q_PKT_ON		1
@@ -1379,7 +1374,7 @@ void BTDM_2AntBtCoexist8723A(struct rtw_adapter * padapter);
 #define	BT_TX_PWR_OFF		0
 #define	BT_TX_PWR_ON		1
 
-// TDMA mode definition
+/*  TDMA mode definition */
 #define	TDMA_2ANT			0
 #define	TDMA_1ANT			1
 #define	TDMA_NAV_OFF		0
@@ -1391,15 +1386,15 @@ void BTDM_2AntBtCoexist8723A(struct rtw_adapter * padapter);
 #define	BT_RSSI_LEVEL_M	1
 #define	BT_RSSI_LEVEL_L	2
 
-// PTA mode related definition
+/*  PTA mode related definition */
 #define	BT_PTA_MODE_OFF		0
 #define	BT_PTA_MODE_ON		1
 
-// Penalty Tx Rate Adaptive
+/*  Penalty Tx Rate Adaptive */
 #define	BT_TX_RATE_ADAPTIVE_NORMAL			0
 #define	BT_TX_RATE_ADAPTIVE_LOW_PENALTY	1
 
-// RF Corner
+/*  RF Corner */
 #define	BT_RF_RX_LPF_CORNER_RESUME			0
 #define	BT_RF_RX_LPF_CORNER_SHRINK			1
 
@@ -1425,17 +1420,17 @@ typedef struct _BT_COEXIST_8723A
 	u8					bC2hBtInfoSupport;
 	u8					c2hBtInfo;
 	u8					c2hBtInfoOriginal;
-	u8					prec2hBtInfo; // for 1Ant
+	u8					prec2hBtInfo; /*  for 1Ant */
 	u8					bC2hBtInquiryPage;
-	u64					btInqPageStartTime; // for 2Ant
-	u8					c2hBtProfile; // for 1Ant
+	u64					btInqPageStartTime; /*  for 2Ant */
+	u8					c2hBtProfile; /*  for 1Ant */
 	u8					btRetryCnt;
 	u8					btInfoExt;
 	u8					bC2hBtInfoReqSent;
 	u8					bForceFwBtInfo;
 	u8					bForceA2dpSink;
-//	u8					bForceLps;
-//	u8					bBtPwrSaveMode;
+/* 	u8					bForceLps; */
+/* 	u8					bBtPwrSaveMode; */
 	BTDM_8723A_2ANT			btdm2Ant;
 	BTDM_8723A_1ANT			btdm1Ant;
 } BT_COEXIST_8723A, *PBT_COEXIST_8723A;
@@ -1452,16 +1447,16 @@ void BTDM_LpsLeave(struct rtw_adapter * padapter);
 u8 BTDM_1Ant8723A(struct rtw_adapter * padapter);
 #define BT_1Ant BTDM_1Ant8723A
 
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc8723.h =====
-#endif // __HALBTC8723_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc8723.h ===== */
+#endif /*  __HALBTC8723_C__ */
 
-#ifdef __HALBTCCSR1ANT_C__ // HAL/BTCoexist/HalBtcCsr1Ant.h
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtcCsr1Ant.h =====
+#ifdef __HALBTCCSR1ANT_C__ /*  HAL/BTCoexist/HalBtcCsr1Ant.h */
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtcCsr1Ant.h ===== */
 
 enum BT_A2DP_INDEX{
-	BT_A2DP_INDEX0		=0,			// 32,12; the most critical for BT
-	BT_A2DP_INDEX1,					// 12,24
-	BT_A2DP_INDEX2,					// 0,0
+	BT_A2DP_INDEX0		=0,			/*  32,12; the most critical for BT */
+	BT_A2DP_INDEX1,					/*  12,24 */
+	BT_A2DP_INDEX2,					/*  0,0 */
 	BT_A2DP_INDEX_MAX
 };
 
@@ -1477,15 +1472,15 @@ enum BT_A2DP_INDEX{
 void BTDM_SingleAnt(struct rtw_adapter * padapter, u8 bSingleAntOn, u8 bInterruptOn, u8 bMultiNAVOn);
 void BTDM_CheckBTIdleChange1Ant(struct rtw_adapter * padapter);
 
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtcCsr1Ant.h =====
-#endif // __HALBTCCSR1ANT_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtcCsr1Ant.h ===== */
+#endif /*  __HALBTCCSR1ANT_C__ */
 
-#ifdef __HALBTCCSR2ANT_C__ // HAL/BTCoexist/HalBtcCsr2Ant.h
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtcCsr2Ant.h =====
+#ifdef __HALBTCCSR2ANT_C__ /*  HAL/BTCoexist/HalBtcCsr2Ant.h */
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtcCsr2Ant.h ===== */
 
-//===========================================
-// For old core stack before v251
-//===========================================
+/*  */
+/*  For old core stack before v251 */
+/*  */
 #define BT_RSSI_STATE_NORMAL_POWER	BIT0
 #define BT_RSSI_STATE_AMDPU_OFF		BIT1
 #define BT_RSSI_STATE_SPECIAL_LOW	BIT2
@@ -1499,15 +1494,15 @@ void BTDM_CheckBTIdleChange1Ant(struct rtw_adapter * padapter);
 
 void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn, u8 DACSwingLevel, u8 bNAVOn);
 
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtcCsr2Ant.h =====
-#endif // __HALBTCCSR2ANT_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtcCsr2Ant.h ===== */
+#endif /*  __HALBTCCSR2ANT_C__ */
 
-#ifdef __HALBTCOEXIST_C__ // HAL/BTCoexist/HalBtCoexist.h
+#ifdef __HALBTCOEXIST_C__ /*  HAL/BTCoexist/HalBtCoexist.h */
 
-// HEADER/TypeDef.h
+/*  HEADER/TypeDef.h */
 #define MAX_FW_SUPPORT_MACID_NUM			64
 
-// ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtCoexist.h =====
+/*  ===== Below this line is sync from SD7 driver HAL/BTCoexist/HalBtCoexist.h ===== */
 
 #define	FW_VER_BT_REG			62
 #define	FW_VER_BT_REG1		74
@@ -1520,7 +1515,7 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define	REG_BT_STATE_OLD		0x48c
 #define	REG_BT_POLLING_OLD	0x490
 
-// The reg define is for 8723
+/*  The reg define is for 8723 */
 #define	REG_HIGH_PRIORITY_TXRX			0x770
 #define	REG_LOW_PRIORITY_TXRX			0x774
 
@@ -1555,13 +1550,13 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define BT_COEX_STATE_BT_IDLE				BIT(12)
 #define BT_COEX_STATE_BT_UPLINK			BIT(13)
 #define BT_COEX_STATE_BT_DOWNLINK		BIT(14)
-//===========================================
-// Todo: Remove these definitions
+/*  */
+/*  Todo: Remove these definitions */
 #define BT_COEX_STATE_BT_PAN_IDLE			BIT(15)
 #define BT_COEX_STATE_BT_PAN_UPLINK		BIT(16)
 #define BT_COEX_STATE_BT_PAN_DOWNLINK	BIT(17)
 #define BT_COEX_STATE_BT_A2DP_IDLE		BIT(18)
-//===========================================
+/*  */
 #define BT_COEX_STATE_BT_RSSI_LOW			BIT(19)
 
 #define BT_COEX_STATE_PROFILE_HID			BIT(20)
@@ -1618,9 +1613,9 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define	BT_COEX_MECH_FTP_A2DP			9
 #define	BT_COEX_MECH_COMMON			10
 #define	BT_COEX_MECH_MAX				11
-//===========================================
-//	BT Dbg Ctrl
-//===========================================
+/*  */
+/* 	BT Dbg Ctrl */
+/*  */
 #define	BT_DBG_PROFILE_NONE			0
 #define	BT_DBG_PROFILE_SCO			1
 #define	BT_DBG_PROFILE_HID			2
@@ -1630,14 +1625,14 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define	BT_DBG_PROFILE_HID_PAN		6
 #define	BT_DBG_PROFILE_PAN_A2DP		7
 #define	BT_DBG_PROFILE_MAX			9
-//===========================================
+/*  */
 
 typedef struct _BT_COEXIST_STR
 {
 	u8					BluetoothCoexist;
 	u8					BT_Ant_Num;
 	u8					BT_CoexistType;
-	u8					BT_Ant_isolation;	//0:good, 1:bad
+	u8					BT_Ant_isolation;	/* 0:good, 1:bad */
 	u8					BT_RadioSharedType;
 	u32					Ratio_Tx;
 	u32					Ratio_PRI;
@@ -1742,11 +1737,11 @@ u8 BTDM_IsBtDisabled(struct rtw_adapter * padapter);
 u32 BTDM_BtTxRxCounterH(struct rtw_adapter * padapter);
 u32 BTDM_BtTxRxCounterL(struct rtw_adapter * padapter);
 
-// ===== End of sync from SD7 driver HAL/BTCoexist/HalBtCoexist.h =====
-#endif // __HALBTCOEXIST_C__
+/*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtCoexist.h ===== */
+#endif /*  __HALBTCOEXIST_C__ */
 
-#ifdef __HALBT_C__ // HAL/HalBT.h
-// ===== Below this line is sync from SD7 driver HAL/HalBT.h =====
+#ifdef __HALBT_C__ /*  HAL/HalBT.h */
+/*  ===== Below this line is sync from SD7 driver HAL/HalBT.h ===== */
 
 #define RTS_CTS_NO_LEN_LIMIT	0
 
@@ -1764,8 +1759,8 @@ void HALBT_InitHwConfig(struct rtw_adapter * padapter);
 #define BT_InitHwConfig HALBT_InitHwConfig
 void HALBT_SetRtsCtsNoLenLimit(struct rtw_adapter * padapter);
 
-// ===== End of sync from SD7 driver HAL/HalBT.c =====
-#endif // __HALBT_C__
+/*  ===== End of sync from SD7 driver HAL/HalBT.c ===== */
+#endif /*  __HALBT_C__ */
 
 #define _bt_dbg_off_		0
 #define _bt_dbg_on_		1
@@ -1774,4 +1769,4 @@ extern u32 BTCoexDbgLevel;
 
 
 
-#endif // __RTL8723A_BT_COEXIST_H__
+#endif /*  __RTL8723A_BT_COEXIST_H__ */

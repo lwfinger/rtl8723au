@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_HAL_H__
 #define __RTL8723A_HAL_H__
@@ -38,11 +33,11 @@
 #include "odm_precomp.h"
 
 
-//2TODO: We should define 8192S firmware related macro settings here!!
+/* 2TODO: We should define 8192S firmware related macro settings here!! */
 #define RTL819X_DEFAULT_RF_TYPE			RF_1T2R
 #define RTL819X_TOTAL_RF_PATH				2
 
-//TODO:  The following need to check!!
+/* TODO:  The following need to check!! */
 #define RTL8723_FW_UMC_IMG				"rtl8192CU\\rtl8723fw.bin"
 #define RTL8723_FW_UMC_B_IMG			"rtl8192CU\\rtl8723fw_B.bin"
 #define RTL8723_PHY_REG					"rtl8723S\\PHY_REG_1T.txt"
@@ -53,11 +48,11 @@
 #define RTL8723_PHY_REG_PG				"rtl8723S\\PHY_REG_PG.txt"
 #define RTL8723_PHY_REG_MP				"rtl8723S\\PHY_REG_MP.txt"
 
-//---------------------------------------------------------------------
-//		RTL8723S From header
-//---------------------------------------------------------------------
+/*  */
+/* 		RTL8723S From header */
+/*  */
 
-// Fw Array
+/*  Fw Array */
 #define Rtl8723_FwImageArray				Rtl8723UFwImgArray
 #define Rtl8723_FwUMCBCutImageArrayWithBT		Rtl8723UFwUMCBCutImgArrayWithBT
 #define Rtl8723_FwUMCBCutImageArrayWithoutBT	Rtl8723UFwUMCBCutImgArrayWithoutBT
@@ -72,48 +67,48 @@
 #define Rtl8723_FwUMCBCutMPImageArray		Rtl8723SFwUMCBCutMPImgAr
 #define Rtl8723_UMCBCutMPImgArrayLength		Rtl8723SUMCBCutMPImgArrayLength
 
-#define DRVINFO_SZ				4 // unit is 8bytes
+#define DRVINFO_SZ				4 /*  unit is 8bytes */
 #define PageNum_128(_Len)		(u32)(((_Len)>>7) + ((_Len)&0x7F ? 1:0))
 
 #define FW_8723A_SIZE			0x8000
 #define FW_8723A_START_ADDRESS	0x1000
-#define FW_8723A_END_ADDRESS		0x1FFF //0x5FFF
+#define FW_8723A_END_ADDRESS		0x1FFF /* 0x5FFF */
 
-#define MAX_PAGE_SIZE			4096	// @ page : 4k bytes
+#define MAX_PAGE_SIZE			4096	/*  @ page : 4k bytes */
 
 #define IS_FW_HEADER_EXIST(_pFwHdr)	((le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x92C0 ||\
 									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88C0 ||\
 									(le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x2300)
 
-//
-// This structure must be cared byte-ordering
-//
-// Added by tynli. 2009.12.04.
+/*  */
+/*  This structure must be cared byte-ordering */
+/*  */
+/*  Added by tynli. 2009.12.04. */
 struct rt_8723a_firmware_hdr {
-	// 8-byte alinment required
+	/*  8-byte alinment required */
 
-	//--- LONG WORD 0 ----
-	u16		Signature;	// 92C0: test chip; 92C, 88C0: test chip; 88C1: MP A-cut; 92C1: MP A-cut
-	u8		Category;	// AP/NIC and USB/PCI
-	u8		Function;	// Reserved for different FW function indcation, for further use when driver needs to download different FW in different conditions
-	u16		Version;		// FW Version
-	u8		Subversion;	// FW Subversion, default 0x00
+	/*  LONG WORD 0 ---- */
+	u16		Signature;	/*  92C0: test chip; 92C, 88C0: test chip; 88C1: MP A-cut; 92C1: MP A-cut */
+	u8		Category;	/*  AP/NIC and USB/PCI */
+	u8		Function;	/*  Reserved for different FW function indcation, for further use when driver needs to download different FW in different conditions */
+	u16		Version;		/*  FW Version */
+	u8		Subversion;	/*  FW Subversion, default 0x00 */
 	u16		Rsvd1;
 
 
-	//--- LONG WORD 1 ----
-	u8		Month;	// Release time Month field
-	u8		Date;	// Release time Date field
-	u8		Hour;	// Release time Hour field
-	u8		Minute;	// Release time Minute field
-	u16		RamCodeSize;	// The size of RAM code
+	/*  LONG WORD 1 ---- */
+	u8		Month;	/*  Release time Month field */
+	u8		Date;	/*  Release time Date field */
+	u8		Hour;	/*  Release time Hour field */
+	u8		Minute;	/*  Release time Minute field */
+	u16		RamCodeSize;	/*  The size of RAM code */
 	u16		Rsvd2;
 
-	//--- LONG WORD 2 ----
-	u32		SvnIdx;	// The SVN entry index
+	/*  LONG WORD 2 ---- */
+	u32		SvnIdx;	/*  The SVN entry index */
 	u32		Rsvd3;
 
-	//--- LONG WORD 3 ----
+	/*  LONG WORD 3 ---- */
 	u32		Rsvd4;
 	u32		Rsvd5;
 };
@@ -122,39 +117,39 @@ struct rt_8723a_firmware_hdr {
 #define BCN_DMA_ATIME_INT_TIME		0x02
 
 
-// BK, BE, VI, VO, HCCA, MANAGEMENT, COMMAND, HIGH, BEACON.
+/*  BK, BE, VI, VO, HCCA, MANAGEMENT, COMMAND, HIGH, BEACON. */
 #define MAX_TX_QUEUE		9
 
-#define TX_SELE_HQ			BIT(0)		// High Queue
-#define TX_SELE_LQ			BIT(1)		// Low Queue
-#define TX_SELE_NQ			BIT(2)		// Normal Queue
+#define TX_SELE_HQ			BIT(0)		/*  High Queue */
+#define TX_SELE_LQ			BIT(1)		/*  Low Queue */
+#define TX_SELE_NQ			BIT(2)		/*  Normal Queue */
 
-// Note: We will divide number of page equally for each queue other than public queue!
+/*  Note: We will divide number of page equally for each queue other than public queue! */
 #define TX_TOTAL_PAGE_NUMBER	0xF8
 #define TX_PAGE_BOUNDARY		(TX_TOTAL_PAGE_NUMBER + 1)
 
-// For Normal Chip Setting
-// (HPQ + LPQ + NPQ + PUBQ) shall be TX_TOTAL_PAGE_NUMBER
+/*  For Normal Chip Setting */
+/*  (HPQ + LPQ + NPQ + PUBQ) shall be TX_TOTAL_PAGE_NUMBER */
 #define NORMAL_PAGE_NUM_PUBQ	0xE7
 #define NORMAL_PAGE_NUM_HPQ		0x0C
 #define NORMAL_PAGE_NUM_LPQ		0x02
 #define NORMAL_PAGE_NUM_NPQ		0x02
 
-// For Test Chip Setting
-// (HPQ + LPQ + PUBQ) shall be TX_TOTAL_PAGE_NUMBER
+/*  For Test Chip Setting */
+/*  (HPQ + LPQ + PUBQ) shall be TX_TOTAL_PAGE_NUMBER */
 #define TEST_PAGE_NUM_PUBQ		0x7E
 
-// For Test Chip Setting
+/*  For Test Chip Setting */
 #define WMM_TEST_TX_TOTAL_PAGE_NUMBER	0xF5
-#define WMM_TEST_TX_PAGE_BOUNDARY		(WMM_TEST_TX_TOTAL_PAGE_NUMBER + 1) //F6
+#define WMM_TEST_TX_PAGE_BOUNDARY		(WMM_TEST_TX_TOTAL_PAGE_NUMBER + 1) /* F6 */
 
 #define WMM_TEST_PAGE_NUM_PUBQ		0xA3
 #define WMM_TEST_PAGE_NUM_HPQ		0x29
 #define WMM_TEST_PAGE_NUM_LPQ		0x29
 
-// Note: For Normal Chip Setting, modify later
+/*  Note: For Normal Chip Setting, modify later */
 #define WMM_NORMAL_TX_TOTAL_PAGE_NUMBER	0xF5
-#define WMM_NORMAL_TX_PAGE_BOUNDARY		(WMM_TEST_TX_TOTAL_PAGE_NUMBER + 1) //F6
+#define WMM_NORMAL_TX_PAGE_BOUNDARY		(WMM_TEST_TX_TOTAL_PAGE_NUMBER + 1) /* F6 */
 
 #define WMM_NORMAL_PAGE_NUM_PUBQ	0xB0
 #define WMM_NORMAL_PAGE_NUM_HPQ		0x29
@@ -162,9 +157,9 @@ struct rt_8723a_firmware_hdr {
 #define WMM_NORMAL_PAGE_NUM_NPQ		0x1C
 
 
-//-------------------------------------------------------------------------
-//	Chip specific
-//-------------------------------------------------------------------------
+/*  */
+/* 	Chip specific */
+/*  */
 #define CHIP_BONDING_IDENTIFIER(_value)	(((_value)>>22)&0x3)
 #define CHIP_BONDING_92C_1T2R			0x1
 #define CHIP_BONDING_88C_USB_MCARD		0x2
@@ -173,9 +168,9 @@ struct rt_8723a_firmware_hdr {
 #include "HalVerDef.h"
 #include "hal_com.h"
 
-//-------------------------------------------------------------------------
-//	Channel Plan
-//-------------------------------------------------------------------------
+/*  */
+/* 	Channel Plan */
+/*  */
 enum ChannelPlan
 {
 	CHPL_FCC	= 0,
@@ -196,38 +191,38 @@ enum ChannelPlan
 #define EFUSE_REAL_CONTENT_LEN		512
 #define EFUSE_MAP_LEN				128
 #define EFUSE_MAX_SECTION			16
-#define EFUSE_IC_ID_OFFSET			506	//For some inferiority IC purpose. added by Roger, 2009.09.02.
+#define EFUSE_IC_ID_OFFSET			506	/* For some inferiority IC purpose. added by Roger, 2009.09.02. */
 #define AVAILABLE_EFUSE_ADDR(addr)	(addr < EFUSE_REAL_CONTENT_LEN)
-//
-// <Roger_Notes>
-// To prevent out of boundary programming case,
-// leave 1byte and program full section
-// 9bytes + 1byt + 5bytes and pre 1byte.
-// For worst case:
-// | 1byte|----8bytes----|1byte|--5bytes--|
-// |         |            Reserved(14bytes)	      |
-//
+/*  */
+/*  <Roger_Notes> */
+/*  To prevent out of boundary programming case, */
+/*  leave 1byte and program full section */
+/*  9bytes + 1byt + 5bytes and pre 1byte. */
+/*  For worst case: */
+/*  | 1byte|----8bytes----|1byte|--5bytes--| */
+/*  |         |            Reserved(14bytes)	      | */
+/*  */
 
-// PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte.
+/*  PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte. */
 #define EFUSE_OOB_PROTECT_BYTES			15
 
 #define EFUSE_REAL_CONTENT_LEN_8723A	512
 #define EFUSE_MAP_LEN_8723A				256
 #define EFUSE_MAX_SECTION_8723A			32
 
-//========================================================
-//			EFUSE for BT definition
-//========================================================
+/*  */
+/* 			EFUSE for BT definition */
+/*  */
 #define EFUSE_BT_REAL_BANK_CONTENT_LEN	512
-#define EFUSE_BT_REAL_CONTENT_LEN		1536	// 512*3
-#define EFUSE_BT_MAP_LEN				1024	// 1k bytes
-#define EFUSE_BT_MAX_SECTION			128		// 1024/8
+#define EFUSE_BT_REAL_CONTENT_LEN		1536	/*  512*3 */
+#define EFUSE_BT_MAP_LEN				1024	/*  1k bytes */
+#define EFUSE_BT_MAX_SECTION			128		/*  1024/8 */
 
 #define EFUSE_PROTECT_BYTES_BANK		16
 
-//
-// <Roger_Notes> For RTL8723 WiFi/BT/GPS multi-function configuration. 2010.10.06.
-//
+/*  */
+/*  <Roger_Notes> For RTL8723 WiFi/BT/GPS multi-function configuration. 2010.10.06. */
+/*  */
 enum RT_MULTI_FUNC {
 	RT_MULTI_FUNC_NONE = 0x00,
 	RT_MULTI_FUNC_WIFI = 0x01,
@@ -235,27 +230,27 @@ enum RT_MULTI_FUNC {
 	RT_MULTI_FUNC_GPS = 0x04,
 };
 
-//
-// <Roger_Notes> For RTL8723 WiFi PDn/GPIO polarity control configuration. 2010.10.08.
-//
+/*  */
+/*  <Roger_Notes> For RTL8723 WiFi PDn/GPIO polarity control configuration. 2010.10.08. */
+/*  */
 enum RT_POLARITY_CTL {
 	RT_POLARITY_LOW_ACT = 0,
 	RT_POLARITY_HIGH_ACT = 1,
 };
 
-// For RTL8723 regulator mode. by tynli. 2011.01.14.
+/*  For RTL8723 regulator mode. by tynli. 2011.01.14. */
 enum RT_REGULATOR_MODE {
 	RT_SWITCHING_REGULATOR = 0,
 	RT_LDO_REGULATOR = 1,
 };
 
-// Description: Determine the types of C2H events that are the same in driver and Fw.
-// Fisrt constructed by tynli. 2009.10.09.
+/*  Description: Determine the types of C2H events that are the same in driver and Fw. */
+/*  Fisrt constructed by tynli. 2009.10.09. */
 enum {
 	C2H_DBG = 0,
 	C2H_TSF = 1,
 	C2H_AP_RPT_RSP = 2,
-	C2H_CCX_TX_RPT = 3,	// The FW notify the report of the specific tx packet.
+	C2H_CCX_TX_RPT = 3,	/*  The FW notify the report of the specific tx packet. */
 	C2H_BT_RSSI = 4,
 	C2H_BT_OP_MODE = 5,
 	C2H_EXT_RA_RPT = 6,
@@ -275,25 +270,25 @@ struct hal_data_8723a {
 	u16	FirmwareSubVersion;
 	u16	FirmwareSignature;
 
-	//current WIFI_PHY values
+	/* current WIFI_PHY values */
 	u32	ReceiveConfig;
 	WIRELESS_MODE		CurrentWirelessMode;
 	HT_CHANNEL_WIDTH	CurrentChannelBW;
 	u8	CurrentChannel;
-	u8	nCur40MhzPrimeSC;// Control channel sub-carrier
+	u8	nCur40MhzPrimeSC;/*  Control channel sub-carrier */
 
 	u16	BasicRateSet;
 
-	//rf_ctrl
+	/* rf_ctrl */
 	u8	rf_chip;
 	u8	rf_type;
 	u8	NumTotalRFPath;
 
 	u8	BoardType;
 	u8	CrystalCap;
-	//
-	// EEPROM setting.
-	//
+	/*  */
+	/*  EEPROM setting. */
+	/*  */
 	u8	EEPROMVersion;
 	u16	EEPROMVID;
 	u16	EEPROMPID;
@@ -316,17 +311,17 @@ struct hal_data_8723a {
 	u8	bAntennaDetected;
 
 	u8	TxPwrLevelCck[RF_PATH_MAX][CHANNEL_MAX_NUMBER];
-	u8	TxPwrLevelHT40_1S[RF_PATH_MAX][CHANNEL_MAX_NUMBER];	// For HT 40MHZ pwr
-	u8	TxPwrLevelHT40_2S[RF_PATH_MAX][CHANNEL_MAX_NUMBER];	// For HT 40MHZ pwr
-	u8	TxPwrHt20Diff[RF_PATH_MAX][CHANNEL_MAX_NUMBER];// HT 20<->40 Pwr diff
-	u8	TxPwrLegacyHtDiff[RF_PATH_MAX][CHANNEL_MAX_NUMBER];// For HT<->legacy pwr diff
-	// For power group
+	u8	TxPwrLevelHT40_1S[RF_PATH_MAX][CHANNEL_MAX_NUMBER];	/*  For HT 40MHZ pwr */
+	u8	TxPwrLevelHT40_2S[RF_PATH_MAX][CHANNEL_MAX_NUMBER];	/*  For HT 40MHZ pwr */
+	u8	TxPwrHt20Diff[RF_PATH_MAX][CHANNEL_MAX_NUMBER];/*  HT 20<->40 Pwr diff */
+	u8	TxPwrLegacyHtDiff[RF_PATH_MAX][CHANNEL_MAX_NUMBER];/*  For HT<->legacy pwr diff */
+	/*  For power group */
 	u8	PwrGroupHT20[RF_PATH_MAX][CHANNEL_MAX_NUMBER];
 	u8	PwrGroupHT40[RF_PATH_MAX][CHANNEL_MAX_NUMBER];
 
-	u8	LegacyHTTxPowerDiff;// Legacy to HT rate power diff
+	u8	LegacyHTTxPowerDiff;/*  Legacy to HT rate power diff */
 
-	// Read/write are allow for following hardware information variables
+	/*  Read/write are allow for following hardware information variables */
 	u8	framesync;
 	u32	framesyncC34;
 	u8	framesyncMonitor;
@@ -335,49 +330,42 @@ struct hal_data_8723a {
 	u32	MCSTxPowerLevelOriginalOffset[7][16];
 	u32	CCKTxPowerLevelOriginalOffset;
 
-	u32	AntennaTxPath;					// Antenna path Tx
-	u32	AntennaRxPath;					// Antenna path Rx
+	u32	AntennaTxPath;					/*  Antenna path Tx */
+	u32	AntennaRxPath;					/*  Antenna path Rx */
 	u8	ExternalPA;
 
-	u8	bLedOpenDrain; // Support Open-drain arrangement for controlling the LED. Added by Roger, 2009.10.16.
+	u8	bLedOpenDrain; /*  Support Open-drain arrangement for controlling the LED. Added by Roger, 2009.10.16. */
 
-	//u32	LedControlNum;
-	//u32	LedControlMode;
-	//u32	TxPowerTrackControl;
-	u8	b1x1RecvCombine;	// for 1T1R receive combining
+	u8	b1x1RecvCombine;	/*  for 1T1R receive combining */
 
-	// For EDCA Turbo mode
-//	u8	bIsAnyNonBEPkts; // Adapter->recvpriv.bIsAnyNonBEPkts
-//	u8	bCurrentTurboEDCA;
-//	u8	bForcedDisableTurboEDCA;
-//	u8	bIsCurRDLState;	// pdmpriv->prv_traffic_idx
+	/*  For EDCA Turbo mode */
 
-	u32	AcParam_BE; //Original parameter for BE, use for EDCA turbo.
+	u32	AcParam_BE; /* Original parameter for BE, use for EDCA turbo. */
 
-	//vivi, for tx power tracking, 20080407
-	//u16	TSSI_13dBm;
-	//u32	Pwr_Track;
-	// The current Tx Power Level
+	/* vivi, for tx power tracking, 20080407 */
+	/* u16	TSSI_13dBm; */
+	/* u32	Pwr_Track; */
+	/*  The current Tx Power Level */
 	u8	CurrentCckTxPwrIdx;
 	u8	CurrentOfdm24GTxPwrIdx;
 
-	BB_REGISTER_DEFINITION_T	PHYRegDef[4];	//Radio A/B/C/D
+	BB_REGISTER_DEFINITION_T	PHYRegDef[4];	/* Radio A/B/C/D */
 
-	bool		bRFPathRxEnable[4];	// We support 4 RF path now.
+	bool		bRFPathRxEnable[4];	/*  We support 4 RF path now. */
 
 	u32	RfRegChnlVal[2];
 
 	u8	bCckHighPower;
 
-	//RDG enable
+	/* RDG enable */
 	bool	 bRDGEnable;
 
-	//for host message to fw
+	/* for host message to fw */
 	u8	LastHMEBoxNum;
 
 	u8	fw_ractrl;
 	u8	RegTxPause;
-	// Beacon function related global variable.
+	/*  Beacon function related global variable. */
 	u32	RegBcnCtrlVal;
 	u8	RegFwHwTxQCtrl;
 	u8	RegReg542;
@@ -388,58 +376,56 @@ struct hal_data_8723a {
 
 #ifdef CONFIG_8723AU_BT_COEXIST
 	u8				bBTMode;
-	// BT only.
+	/*  BT only. */
 	BT30Info		BtInfo;
-	// For bluetooth co-existance
+	/*  For bluetooth co-existance */
 	BT_COEXIST_STR	bt_coexist;
 #endif
 
-	u8	bDumpRxPkt;//for debug
-	u8	FwRsvdPageStartOffset; //2010.06.23. Added by tynli. Reserve page start offset except beacon in TxQ.
+	u8	bDumpRxPkt;/* for debug */
+	u8	FwRsvdPageStartOffset; /* 2010.06.23. Added by tynli. Reserve page start offset except beacon in TxQ. */
 
-	// 2010/08/09 MH Add CU power down mode.
+	/*  2010/08/09 MH Add CU power down mode. */
 	u8	pwrdown;
 
-	// Add for dual MAC  0--Mac0 1--Mac1
+	/*  Add for dual MAC  0--Mac0 1--Mac1 */
 	u32	interfaceIndex;
 
 	u8	OutEpQueueSel;
 	u8	OutEpNumber;
 
-	// 2010/12/10 MH Add for USB aggreation mode dynamic shceme.
+	/*  2010/12/10 MH Add for USB aggreation mode dynamic shceme. */
 	bool		UsbRxHighSpeedMode;
 
-	// 2010/11/22 MH Add for slim combo debug mode selective.
-	// This is used for fix the drawback of CU TSMC-A/UMC-A cut. HW auto suspend ability. Close BT clock.
+	/*  2010/11/22 MH Add for slim combo debug mode selective. */
+	/*  This is used for fix the drawback of CU TSMC-A/UMC-A cut. HW auto suspend ability. Close BT clock. */
 	bool		SlimComboDbg;
 
-	//
-	// Add For EEPROM Efuse switch and  Efuse Shadow map Setting
-	//
+	/*  */
+	/*  Add For EEPROM Efuse switch and  Efuse Shadow map Setting */
+	/*  */
 	u8			EepromOrEfuse;
-//	u8			EfuseMap[2][HWSET_MAX_SIZE_512]; //92C:256bytes, 88E:512bytes, we use union set (512bytes)
 	u16			EfuseUsedBytes;
 	u8			EfuseUsedPercentage;
 #ifdef HAL_EFUSE_MEMORY
 	EFUSE_HAL	EfuseHal;
 #endif
 
-	// Interrupt relatd register information.
+	/*  Interrupt relatd register information. */
 	u32			SysIntrStatus;
 	u32			SysIntrMask;
 
-	//
-	// 2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an
-	// independent file in the future.
-	//
-	//------------------------8723-----------------------------------------//
-	enum RT_MULTI_FUNC	MultiFunc; // For multi-function consideration.
-	enum RT_POLARITY_CTL	PolarityCtl; // For Wifi PDn Polarity control.
-	enum RT_REGULATOR_MODE	RegulatorMode; // switching regulator or LDO
-	//------------------------8723-----------------------------------------//
-	//
-	// 2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an
-	// independent file in the future.
+	/*  */
+	/*  2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an */
+	/*  independent file in the future. */
+	/*  */
+	/* 8723-----------------------------------------*/
+	enum RT_MULTI_FUNC	MultiFunc; /*  For multi-function consideration. */
+	enum RT_POLARITY_CTL	PolarityCtl; /*  For Wifi PDn Polarity control. */
+	enum RT_REGULATOR_MODE	RegulatorMode; /*  switching regulator or LDO */
+	/* 8723-----------------------------------------
+	 *  2011/02/23 MH Add for 8723 mylti function definition. The define should be moved to an */
+	/*  independent file in the future. */
 
 	bool				bMACFuncEnable;
 
@@ -448,20 +434,20 @@ struct hal_data_8723a {
 #endif
 
 
-	//
-	// For USB Interface HAL related
-	//
+	/*  */
+	/*  For USB Interface HAL related */
+	/*  */
 	u32	UsbBulkOutSize;
 
-	// Interrupt related register information.
+	/*  Interrupt related register information. */
 	u32	IntArray[2];
 	u32	IntrMask[2];
 
-	//
-	// For SDIO Interface HAL related
-	//
+	/*  */
+	/*  For SDIO Interface HAL related */
+	/*  */
 
-	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
+	/*  Auto FSM to Turn On, include clock, isolation, power control for MAC only */
 	u8			bMacPwrCtrlOn;
 
 };
@@ -543,7 +529,7 @@ struct rxreport_8723a {
 	u32 rsvd2413:19;
 };
 
-// rtl8723a_hal_init.c
+/*  rtl8723a_hal_init.c */
 s32 rtl8723a_FirmwareDownload(struct rtw_adapter *padapter);
 void rtl8723a_FirmwareSelfReset(struct rtw_adapter *padapter);
 void rtl8723a_InitializeFirmwareVars(struct rtw_adapter *padapter);
@@ -558,7 +544,7 @@ s32 InitLLTTable(struct rtw_adapter *padapter, u32 boundary);
 s32 CardDisableHWSM(struct rtw_adapter *padapter, u8 resetMCU);
 s32 CardDisableWithoutHWSM(struct rtw_adapter *padapter);
 
-// EFuse
+/*  EFuse */
 u8 GetEEPROMSize8723A(struct rtw_adapter *padapter);
 void Hal_InitPGData(struct rtw_adapter *padapter, u8 *PROMContent);
 void Hal_EfuseParseIDCode(struct rtw_adapter *padapter, u8 *hwinfo);
@@ -581,7 +567,7 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
 void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 #endif
 
-// register
+/*  register */
 void SetBcnCtrlReg(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);
 void rtl8723a_InitBeaconParameters(struct rtw_adapter *padapter);
 

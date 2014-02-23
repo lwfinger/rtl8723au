@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __IOCTL_CFG80211_H__
 #define __IOCTL_CFG80211_H__
@@ -47,8 +42,8 @@ struct rtw_wdev_priv
 	struct cfg80211_scan_request *scan_request;
 	spinlock_t scan_req_lock;
 
-	struct net_device *pmon_ndev;//for monitor interface
-	char ifname_mon[IFNAMSIZ + 1]; //interface name for monitor interface
+	struct net_device *pmon_ndev;/* for monitor interface */
+	char ifname_mon[IFNAMSIZ + 1]; /* interface name for monitor interface */
 
 	u8 p2p_enabled;
 
@@ -81,7 +76,7 @@ void rtw_cfg80211_indicate_scan_done(struct rtw_wdev_priv *pwdev_priv, bool abor
 #ifdef CONFIG_8723AU_AP_MODE
 void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len);
 void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned char *da, unsigned short reason);
-#endif //CONFIG_8723AU_AP_MODE
+#endif /* CONFIG_8723AU_AP_MODE */
 
 void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, const u8 *buf, size_t len);
 void rtw_cfg80211_rx_p2p_action_public(struct rtw_adapter *padapter, u8 *pmgmt_frame, uint frame_len);
@@ -105,4 +100,4 @@ bool rtw_cfg80211_pwr_mgmt(struct rtw_adapter *adapter);
 #define rtw_cfg80211_ready_on_channel(adapter, cookie, chan, channel_type, duration, gfp)  cfg80211_ready_on_channel((adapter)->rtw_wdev, cookie, chan, duration, gfp)
 #define rtw_cfg80211_remain_on_channel_expired(adapter, cookie, chan, chan_type, gfp) cfg80211_remain_on_channel_expired((adapter)->rtw_wdev, cookie, chan, gfp)
 
-#endif //__IOCTL_CFG80211_H__
+#endif /* __IOCTL_CFG80211_H__ */

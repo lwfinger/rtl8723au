@@ -11,10 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
  *
  ******************************************************************************/
 #ifndef __RTW_EFUSE_H__
@@ -65,13 +61,13 @@ enum _EFUSE_DEF_TYPE {
 
 #define		EFUSE_REPEAT_THRESHOLD_			3
 
-//=============================================
-//	The following is for BT Efuse definition
-//=============================================
+/*  */
+/* 	The following is for BT Efuse definition */
+/*  */
 #define		EFUSE_BT_MAX_MAP_LEN		1024
 #define		EFUSE_MAX_BANK			4
 #define		EFUSE_MAX_BT_BANK		(EFUSE_MAX_BANK-1)
-//=============================================
+/*  */
 /*--------------------------Define Parameters-------------------------------*/
 #define		EFUSE_MAX_WORD_UNIT			4
 

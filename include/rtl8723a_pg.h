@@ -11,18 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_PG_H__
 #define __RTL8723A_PG_H__
 
-//====================================================
-//			EEPROM/Efuse PG Offset for 8723E/8723U/8723S
-//====================================================
+/*  */
+/* 			EEPROM/Efuse PG Offset for 8723E/8723U/8723S */
+/*  */
 #define EEPROM_CCK_TX_PWR_INX_8723A			0x10
 #define EEPROM_HT40_1S_TX_PWR_INX_8723A		0x16
 #define EEPROM_HT20_TX_PWR_INX_DIFF_8723A	0x1C
@@ -43,35 +38,35 @@
 #define EEPROM_XTAL_K_8723A					0x33
 #define EEPROM_Chipset_8723A				0x34
 
-// RTL8723AE
+/*  RTL8723AE */
 #define EEPROM_VID_8723AE					0x49
 #define EEPROM_DID_8723AE					0x4B
 #define EEPROM_SVID_8723AE					0x4D
 #define EEPROM_SMID_8723AE					0x4F
 #define EEPROM_MAC_ADDR_8723AE				0x67
 
-// RTL8723AU
+/*  RTL8723AU */
 #define EEPROM_MAC_ADDR_8723AU				0xC6
 #define EEPROM_VID_8723AU					0xB7
 #define EEPROM_PID_8723AU					0xB9
 
-// RTL8723AS
+/*  RTL8723AS */
 #define EEPROM_MAC_ADDR_8723AS				0xAA
 
-//====================================================
-//			EEPROM/Efuse Value Type
-//====================================================
+/*  */
+/* 			EEPROM/Efuse Value Type */
+/*  */
 #define EETYPE_TX_PWR						0x0
 
-//====================================================
-//			EEPROM/Efuse Default Value
-//====================================================
+/*  */
+/* 			EEPROM/Efuse Default Value */
+/*  */
 #define EEPROM_Default_CrystalCap_8723A		0x20
 
 
-//----------------------------------------------------------------------------
-//       EEPROM/EFUSE data structure definition.
-//----------------------------------------------------------------------------
+/*  */
+/*        EEPROM/EFUSE data structure definition. */
+/*  */
 #define	MAX_RF_PATH_NUM	2
 #define	MAX_CHNL_GROUP		3+9
 typedef struct _TxPowerInfo
@@ -85,7 +80,7 @@ typedef struct _TxPowerInfo
 	u8 HT20MaxOffset[MAX_RF_PATH_NUM][MAX_CHNL_GROUP];
 	u8 TSSI_A[3];
 	u8 TSSI_B[3];
-	u8 TSSI_A_5G[3];		//5GL/5GM/5GH
+	u8 TSSI_A_5G[3];		/* 5GL/5GM/5GH */
 	u8 TSSI_B_5G[3];
 } TxPowerInfo, *PTxPowerInfo;
 

@@ -11,23 +11,18 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __USB_OPS_LINUX_H__
 #define __USB_OPS_LINUX_H__
 
 #define VENDOR_CMD_MAX_DATA_LEN	254
 
-#define RTW_USB_CONTROL_MSG_TIMEOUT_TEST	10//ms
-#define RTW_USB_CONTROL_MSG_TIMEOUT	500//ms
+#define RTW_USB_CONTROL_MSG_TIMEOUT_TEST	10/* ms */
+#define RTW_USB_CONTROL_MSG_TIMEOUT	500/* ms */
 
 #define MAX_USBCTRL_VENDORREQ_TIMES	10
 
-#define RTW_USB_BULKOUT_TIMEOUT	5000//ms
+#define RTW_USB_BULKOUT_TIMEOUT	5000/* ms */
 
 #define _usbctrl_vendorreq_async_callback(urb, regs)	_usbctrl_vendorreq_async_callback(urb)
 #define usb_bulkout_zero_complete(purb, regs)	usb_bulkout_zero_complete(purb)

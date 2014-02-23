@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTW_IOL_H_
 #define __RTW_IOL_H_
@@ -40,14 +35,14 @@ typedef struct _io_offload_cmd {
 } IO_OFFLOAD_CMD, IOL_CMD;
 
 #define IOL_CMD_LLT			0x00
-//#define IOL_CMD_R_EFUSE	0x01
+/* define IOL_CMD_R_EFUSE	0x01 */
 #define IOL_CMD_WB_REG		0x02
 #define IOL_CMD_WW_REG	0x03
 #define IOL_CMD_WD_REG		0x04
-//#define IOL_CMD_W_RF		0x05
+/* define IOL_CMD_W_RF		0x05 */
 #define IOL_CMD_DELAY_US	0x80
 #define IOL_CMD_DELAY_MS	0x81
-//#define IOL_CMD_DELAY_S	0x82
+/* define IOL_CMD_DELAY_S	0x82 */
 #define IOL_CMD_END			0x83
 
 /*****************************************************
@@ -55,14 +50,14 @@ CMD					Address			Value
 (B1)					(B2/B3:H/L addr)	(B4:B7 : MSB:LSB)
 ******************************************************
 IOL_CMD_LLT			-				B7: PGBNDY
-//IOL_CMD_R_EFUSE	-				-
+IOL_CMD_R_EFUSE	-				- 
 IOL_CMD_WB_REG		0x0~0xFFFF		B7
 IOL_CMD_WW_REG	0x0~0xFFFF		B6~B7
 IOL_CMD_WD_REG	0x0~0xFFFF		B4~B7
-//IOL_CMD_W_RF		RF Reg			B5~B7
+IOL_CMD_W_RF		RF Reg			B5~B7 
 IOL_CMD_DELAY_US	-				B6~B7
 IOL_CMD_DELAY_MS	-				B6~B7
-//IOL_CMD_DELAY_S	-				B6~B7
+IOL_CMD_DELAY_S	-				B6~B7
 IOL_CMD_END		-				-
 ******************************************************/
 int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value);
@@ -84,6 +79,6 @@ int dbg_rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value
 #define rtw_IOL_append_WB_cmd(xmit_frame, addr, value) _rtw_IOL_append_WB_cmd((xmit_frame), (addr), (value))
 #define rtw_IOL_append_WW_cmd(xmit_frame, addr, value) _rtw_IOL_append_WW_cmd((xmit_frame), (addr), (value))
 #define rtw_IOL_append_WD_cmd(xmit_frame, addr, value) _rtw_IOL_append_WD_cmd((xmit_frame), (addr), (value))
-#endif // DBG_IO
+#endif /*  DBG_IO */
 
-#endif //__RTW_IOL_H_
+#endif /* __RTW_IOL_H_ */

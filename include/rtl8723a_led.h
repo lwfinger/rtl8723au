@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_LED_H__
 #define __RTL8723A_LED_H__
@@ -24,9 +19,9 @@
 #include <drv_types.h>
 
 
-//================================================================================
-// Interface to manipulate LED objects.
-//================================================================================
+/*  */
+/*  Interface to manipulate LED objects. */
+/*  */
 void rtl8723au_InitSwLeds(struct rtw_adapter *padapter);
 void rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter);
 

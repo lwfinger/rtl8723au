@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef _RTW_IOCTL_H_
 #define _RTW_IOCTL_H_
@@ -28,4 +23,4 @@
 extern struct iw_handler_def  rtw_handlers_def;
 #endif
 
-#endif // #ifndef __INC_CEINFO_
+#endif /*  #ifndef __INC_CEINFO_ */

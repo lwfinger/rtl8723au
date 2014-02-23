@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 
@@ -24,22 +19,22 @@
 
 
 
-//
-// =========== Constant/Structure/Enum/... Define
-//
+/*  */
+/*  =========== Constant/Structure/Enum/... Define */
+/*  */
 
 
 
-//
-// =========== Macro Define
-//
+/*  */
+/*  =========== Macro Define */
+/*  */
 
 #define _reg_all(_name)			ODM_##_name
 #define _reg_ic(_name, _ic)		ODM_##_name##_ic
 #define _bit_all(_name)			BIT_##_name
 #define _bit_ic(_name, _ic)		BIT_##_name##_ic
 
-// _cat: implemented by Token-Pasting Operator.
+/*  _cat: implemented by Token-Pasting Operator. */
 
 /*===================================
 
@@ -60,27 +55,27 @@ ODM_REG(DIG,_pDM_Odm)
 		_func##_11AC(_name)									\
 	)
 
-// _name: name of register or bit.
-// Example: "ODM_REG(R_A_AGC_CORE1, pDM_Odm)"
-//        gets "ODM_R_A_AGC_CORE1" or "ODM_R_A_AGC_CORE1_8192C", depends on SupportICType.
+/*  _name: name of register or bit. */
+/*  Example: "ODM_REG(R_A_AGC_CORE1, pDM_Odm)" */
+/*         gets "ODM_R_A_AGC_CORE1" or "ODM_R_A_AGC_CORE1_8192C", depends on SupportICType. */
 #define ODM_REG(_name, _pDM_Odm)	_cat(_name, _pDM_Odm->SupportICType, _reg)
 #define ODM_BIT(_name, _pDM_Odm)	_cat(_name, _pDM_Odm->SupportICType, _bit)
 
-//
-// 2012/02/17 MH For non-MP compile pass only. Linux does not support workitem.
-// Suggest HW team to use thread instead of workitem. Windows also support the feature.
-//
+/*  */
+/*  2012/02/17 MH For non-MP compile pass only. Linux does not support workitem. */
+/*  Suggest HW team to use thread instead of workitem. Windows also support the feature. */
+/*  */
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
 typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct * pContext);
 
-//
-// =========== Extern Variable ??? It should be forbidden.
-//
+/*  */
+/*  =========== Extern Variable ??? It should be forbidden. */
+/*  */
 
 
-//
-// =========== EXtern Function Prototype
-//
+/*  */
+/*  =========== EXtern Function Prototype */
+/*  */
 
 
 u8
@@ -170,9 +165,9 @@ ODM_GetRFReg(
 	);
 
 
-//
-// Memory Relative Function.
-//
+/*  */
+/*  Memory Relative Function. */
+/*  */
 void
 ODM_AllocateMemory(
 	PDM_ODM_T	pDM_Odm,
@@ -193,9 +188,9 @@ s32 ODM_CompareMemory(
 	u32          length
        );
 
-//
-// ODM MISC-spin lock relative API.
-//
+/*  */
+/*  ODM MISC-spin lock relative API. */
+/*  */
 void
 ODM_AcquireSpinLock(
 	PDM_ODM_T			pDM_Odm,
@@ -209,9 +204,9 @@ ODM_ReleaseSpinLock(
 	);
 
 
-//
-// ODM MISC-workitem relative API.
-//
+/*  */
+/*  ODM MISC-workitem relative API. */
+/*  */
 void
 ODM_InitializeWorkItem(
 	PDM_ODM_T					pDM_Odm,
@@ -221,9 +216,9 @@ ODM_InitializeWorkItem(
 	const char*					szID
 	);
 
-//
-// ODM Timer relative API.
-//
+/*  */
+/*  ODM Timer relative API. */
+/*  */
 void
 ODM_SetTimer(
 	PDM_ODM_T		pDM_Odm,
@@ -238,9 +233,9 @@ ODM_ReleaseTimer(
 	);
 
 
-//
-// ODM FW relative API.
-//
+/*  */
+/*  ODM FW relative API. */
+/*  */
 u32
 ODM_FillH2CCmd(
 	u8 *		pH2CBuffer,
@@ -252,4 +247,4 @@ ODM_FillH2CCmd(
 	u8 *		CmdStartSeq
 	);
 
-#endif	// __ODM_INTERFACE_H__
+#endif	/*  __ODM_INTERFACE_H__ */

@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 
 #ifndef	__ODM_PRECOMP_H__
@@ -25,18 +20,18 @@
 
 #define		TEST_FALG___		1
 
-//2 Config Flags and Structs - defined by each ODM Type
+/* 2 Config Flags and Structs - defined by each ODM Type */
 
 #include <osdep_service.h>
 #include <drv_types.h>
 #include <hal_intf.h>
 
 
-//2 Hardware Parameter Files
+/* 2 Hardware Parameter Files */
 #include "Hal8723UHWImg_CE.h"
 
 
-//2 OutSrc Header Files
+/* 2 OutSrc Header Files */
 
 #include "odm.h"
 #include "odm_HWConfig.h"
@@ -44,7 +39,7 @@
 #include "odm_RegDefine11AC.h"
 #include "odm_RegDefine11N.h"
 
-#include "HalDMOutSrc8723A.h" //for IQK,LCK,Power-tracking
+#include "HalDMOutSrc8723A.h" /* for IQK,LCK,Power-tracking */
 #include "rtl8723a_hal.h"
 
 #include "odm_interface.h"
@@ -56,4 +51,4 @@
 #include "HalHWImg8723A_FW.h"
 #include "odm_RegConfig8723A.h"
 
-#endif	// __ODM_PRECOMP_H__
+#endif	/*  __ODM_PRECOMP_H__ */

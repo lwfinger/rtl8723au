@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef _RTW_RECV_H_
 #define _RTW_RECV_H_
@@ -34,12 +29,12 @@
 
 #define MAX_SUBFRAME_COUNT	64
 
-//for Rx reordering buffer control
+/* for Rx reordering buffer control */
 struct recv_reorder_ctrl
 {
 	struct rtw_adapter	*padapter;
 	u8 enable;
-	u16 indicate_seq;//=wstart_b, init_value=0xffff
+	u16 indicate_seq;/* wstart_b, init_value=0xffff */
 	u16 wend_b;
 	u8 wsize_b;
 	_queue pending_recvframe_queue;
@@ -70,31 +65,31 @@ struct	stainfo_rxcache	{
 
 
 struct smooth_rssi_data {
-	u32	elements[100];	//array to store values
-	u32	index;			//index to current array to store
-	u32	total_num;		//num of valid elements
-	u32	total_val;		//sum of valid elements
+	u32	elements[100];	/* array to store values */
+	u32	index;			/* index to current array to store */
+	u32	total_num;		/* num of valid elements */
+	u32	total_val;		/* sum of valid elements */
 };
 
 struct signal_stat {
-	u8	update_req;		//used to indicate
-	u8	avg_val;		//avg of valid elements
-	u32	total_num;		//num of valid elements
-	u32	total_val;		//sum of valid elements
+	u8	update_req;		/* used to indicate */
+	u8	avg_val;		/* avg of valid elements */
+	u32	total_num;		/* num of valid elements */
+	u32	total_val;		/* sum of valid elements */
 };
 #define MAX_PATH_NUM_92CS		2
-struct phy_info //ODM_PHY_INFO_T
+struct phy_info /* ODM_PHY_INFO_T */
 {
 	u8		RxPWDBAll;
-	u8		SignalQuality;	 // in 0-100 index.
-	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; //EVM
-	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];// in 0~100 index
-	s8		RxPower; // in dBm Translate from PWdB
-	s8		RecvSignalPower;// Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures.
+	u8		SignalQuality;	 /*  in 0-100 index. */
+	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
+	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/*  in 0~100 index */
+	s8		RxPower; /*  in dBm Translate from PWdB */
+	s8		RecvSignalPower;/*  Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures. */
 	u8		BTRxRSSIPercentage;
-	u8		SignalStrength; // in 0-100 index.
-	u8		RxPwr[MAX_PATH_NUM_92CS];//per-path's pwdb
-	u8		RxSNR[MAX_PATH_NUM_92CS];//per-path's SNR
+	u8		SignalStrength; /*  in 0-100 index. */
+	u8		RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
+	u8		RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
 };
 
 
@@ -103,7 +98,7 @@ struct rx_pkt_attrib	{
 	u8	physt;
 	u8	drvinfo_sz;
 	u8	shift_sz;
-	u8	hdrlen; //the WLAN Header Len
+	u8	hdrlen; /* the WLAN Header Len */
 	u8	to_fr_ds;
 	u8	amsdu;
 	u8	qos;
@@ -114,9 +109,9 @@ struct rx_pkt_attrib	{
 	u8	frag_num;
 	u8	mfrag;
 	u8	order;
-	u8	privacy; //in frame_ctrl field
+	u8	privacy; /* in frame_ctrl field */
 	u8	bdecrypted;
-	u8	encrypt; //when 0 indicate no encrypt. when non-zero, indicate the encrypt algorith
+	u8	encrypt; /* when 0 indicate no encrypt. when non-zero, indicate the encrypt algorith */
 	u8	iv_len;
 	u8	icv_len;
 	u8	crc_err;
@@ -132,26 +127,26 @@ struct rx_pkt_attrib	{
 
 	u8 ack_policy;
 
-	u8	tcpchk_valid; // 0: invalid, 1: valid
-	u8	ip_chkrpt; //0: incorrect, 1: correct
-	u8	tcp_chkrpt; //0: incorrect, 1: correct
+	u8	tcpchk_valid; /*  0: invalid, 1: valid */
+	u8	ip_chkrpt; /* 0: incorrect, 1: correct */
+	u8	tcp_chkrpt; /* 0: incorrect, 1: correct */
 	u8	key_index;
 
 	u8	mcs_rate;
 	u8	rxht;
 	u8	sgi;
 	u8	pkt_rpt_type;
-	u32	MacIDValidEntry[2];	// 64 bits present 64 entry.
+	u32	MacIDValidEntry[2];	/*  64 bits present 64 entry. */
 	struct phy_info phy_info;
 };
 
 
-//These definition is used for Rx packet reordering.
+/* These definition is used for Rx packet reordering. */
 #define SN_LESS(a, b)		(((a-b)&0x800)!=0)
 #define SN_EQUAL(a, b)	(a == b)
-//#define REORDER_WIN_SIZE	128
-//#define REORDER_ENTRY_NUM	128
-#define REORDER_WAIT_TIME	(50) // (ms)
+/* define REORDER_WIN_SIZE	128 */
+/* define REORDER_ENTRY_NUM	128 */
+#define REORDER_WAIT_TIME	(50) /*  (ms) */
 
 #define RECVBUFF_ALIGN_SZ 8
 
@@ -204,7 +199,7 @@ struct recv_priv
 	uint  rx_smallpacket_crcerr;
 	uint  rx_middlepacket_crcerr;
 
-	//u8 *pallocated_urb_buf;
+	/* u8 *pallocated_urb_buf; */
 	struct semaphore allrxreturnevt;
 	uint	ff_hwaddr;
 	u8	rx_pending_cnt;
@@ -221,9 +216,9 @@ struct recv_priv
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 
-	//For display the phy informatiom
-	u8 is_signal_dbg;	// for debug
-	u8 signal_strength_dbg;	// for debug
+	/* For display the phy informatiom */
+	u8 is_signal_dbg;	/*  for debug */
+	u8 signal_strength_dbg;	/*  for debug */
 	s8 rssi;
 	s8 rxpwdb;
 	u8 signal_strength;
@@ -235,7 +230,7 @@ struct recv_priv
 
 	struct timer_list signal_stat_timer;
 	u32 signal_stat_sampling_interval;
-	//u32 signal_stat_converging_constant;
+	/* u32 signal_stat_converging_constant; */
 	struct signal_stat signal_qual_data;
 	struct signal_stat signal_strength_data;
 };
@@ -247,14 +242,14 @@ struct sta_recv_priv {
 	spinlock_t	lock;
 	int	option;
 
-	//_queue	blk_strms[MAX_RX_NUMBLKS];
-	_queue defrag_q;	 //keeping the fragment frame until defrag
+	/* _queue	blk_strms[MAX_RX_NUMBLKS]; */
+	_queue defrag_q;	 /* keeping the fragment frame until defrag */
 
 	struct	stainfo_rxcache rxcache;
 
-	//uint	sta_rx_bytes;
-	//uint	sta_rx_pkts;
-	//uint	sta_rx_fail;
+	/* uint	sta_rx_bytes; */
+	/* uint	sta_rx_pkts; */
+	/* uint	sta_rx_fail; */
 
 };
 
@@ -296,12 +291,12 @@ struct recv_frame
 
 	struct sta_info *psta;
 
-	//for A-MPDU Rx reordering buffer control
+	/* for A-MPDU Rx reordering buffer control */
 	struct recv_reorder_ctrl *preorder_ctrl;
 };
 
 
-struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue);  //get a free recv_frame from pfree_recv_queue
+struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue);  /* get a free recv_frame from pfree_recv_queue */
 int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue);
 
 int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue);
@@ -317,9 +312,9 @@ void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
 
 static inline s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
 {
-	s32	SignalPower; // in dBm.
+	s32	SignalPower; /*  in dBm. */
 
-	// Translate to dBm (x=0.5y-95).
+	/*  Translate to dBm (x=0.5y-95). */
 	SignalPower = (s32)((SignalStrengthIndex + 1) >> 1);
 	SignalPower -= 95;
 

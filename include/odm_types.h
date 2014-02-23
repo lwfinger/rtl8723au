@@ -11,18 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __ODM_TYPES_H__
 #define __ODM_TYPES_H__
 
-//
-// Define Different SW team support
-//
+/*  */
+/*  Define Different SW team support */
+/*  */
 
 typedef enum _HAL_STATUS{
 	HAL_STATUS_SUCCESS,
@@ -43,10 +38,10 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define SET_TX_DESC_ANTSEL_B_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 25, 1, __Value)
 	#define SET_TX_DESC_ANTSEL_C_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 29, 1, __Value)
 
-	//define useless flag to avoid compile warning
+	/* define useless flag to avoid compile warning */
 	#define	USE_WORKITEM			0
 	#define		FOR_BRAZIL_PRETEST	0
 	#define	BT_30_SUPPORT			0
 	#define   FPGA_TWO_MAC_VERIFICATION	0
 
-#endif // __ODM_TYPES_H__
+#endif /*  __ODM_TYPES_H__ */

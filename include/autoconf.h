@@ -37,7 +37,7 @@
 
 #define CONFIG_8723AU_P2P
 
-#define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
+#define USB_INTERFERENCE_ISSUE /*  this should be checked in all usb interface */
 #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable,  */
 
 /*
@@ -51,13 +51,13 @@
 
 #ifdef CONFIG_LED
 	#define CONFIG_SW_LED
-#endif // CONFIG_LED
+#endif /*  CONFIG_LED */
 
 #define CONFIG_IPS
 
 #ifdef CONFIG_BR_EXT
 #define CONFIG_BR_EXT_BRNAME	"br0"
-#endif	// CONFIG_BR_EXT
+#endif	/*  CONFIG_BR_EXT */
 
 /*
  * HAL  Related Config

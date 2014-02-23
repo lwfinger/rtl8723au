@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __INC_ODM_REGCONFIG_H_8723A
 #define __INC_ODM_REGCONFIG_H_8723A
@@ -76,4 +71,4 @@ odm_ConfigBB_PHY_8723A(
 	u32		Data
     );
 #endif
-#endif // end of SUPPORT
+#endif /*  end of SUPPORT */

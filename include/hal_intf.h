@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __HAL_INTF_H__
 #define __HAL_INTF_H__
@@ -105,9 +100,9 @@ typedef enum _HW_VARIABLES{
 	HW_VAR_EFUSE_BT_BYTES,
 	HW_VAR_FIFO_CLEARN_UP,
 	HW_VAR_CHECK_TXBUF,
-	HW_VAR_APFM_ON_MAC, //Auto FSM to Turn On, include clock, isolation, power control for MAC only
-	// The valid upper nav range for the HW updating, if the true value is larger than the upper range, the HW won't update it.
-	// Unit in microsecond. 0 means disable this function.
+	HW_VAR_APFM_ON_MAC, /* Auto FSM to Turn On, include clock, isolation, power control for MAC only */
+	/*  The valid upper nav range for the HW updating, if the true value is larger than the upper range, the HW won't update it. */
+	/*  Unit in microsecond. 0 means disable this function. */
 #ifdef CONFIG_WOWLAN
 	HW_VAR_WOWLAN,
 #endif
@@ -126,8 +121,8 @@ typedef enum _HAL_DEF_VARIABLE{
 	HAL_DEF_DRVINFO_SZ,
 	HAL_DEF_MAX_RECVBUF_SZ,
 	HAL_DEF_RX_PACKET_OFFSET,
-	HAL_DEF_DBG_DUMP_RXPKT,//for dbg
-	HAL_DEF_DBG_DM_FUNC,//for dbg
+	HAL_DEF_DBG_DUMP_RXPKT,/* for dbg */
+	HAL_DEF_DBG_DM_FUNC,/* for dbg */
 	HAL_DEF_RA_DECISION_RATE,
 	HAL_DEF_RA_SGI,
 	HAL_DEF_PT_PWR_STATUS,
@@ -317,7 +312,7 @@ struct wowlan_ioctl_param{
 #define Rx_MagicPkt				0x21
 #define Rx_UnicastPkt			0x22
 #define Rx_PatternPkt			0x23
-#endif // CONFIG_WOWLAN
+#endif /*  CONFIG_WOWLAN */
 
 void rtw_hal_def_value_init(struct rtw_adapter *padapter);
 
@@ -400,4 +395,4 @@ void rtw_hal_reset_security_engine(struct rtw_adapter * adapter);
 s32 rtw_hal_c2h_handler(struct rtw_adapter *adapter, struct c2h_evt_hdr *c2h_evt);
 c2h_id_filter rtw_hal_c2h_id_filter_ccx(struct rtw_adapter *adapter);
 
-#endif //__HAL_INTF_H__
+#endif /* __HAL_INTF_H__ */

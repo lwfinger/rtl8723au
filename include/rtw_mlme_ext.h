@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTW_MLME_EXT_H_
 #define __RTW_MLME_EXT_H_
@@ -25,19 +20,19 @@
 #include <wlan_bssdef.h>
 
 
-//	Commented by Albert 20101105
-//	Increase the SURVEY_TO value from 100 to 150  ( 100ms to 150ms )
-//	The Realtek 8188CE SoftAP will spend around 100ms to send the probe response after receiving the probe request.
-//	So, this driver tried to extend the dwell time for each scanning channel.
-//	This will increase the chance to receive the probe response from SoftAP.
+/* 	Commented by Albert 20101105 */
+/* 	Increase the SURVEY_TO value from 100 to 150  ( 100ms to 150ms ) */
+/* 	The Realtek 8188CE SoftAP will spend around 100ms to send the probe response after receiving the probe request. */
+/* 	So, this driver tried to extend the dwell time for each scanning channel. */
+/* 	This will increase the chance to receive the probe response from SoftAP. */
 
 #define SURVEY_TO		(100)
-#define REAUTH_TO		(300) //(50)
-#define REASSOC_TO		(300) //(50)
-//#define DISCONNECT_TO	(3000)
+#define REAUTH_TO		(300) /* 50) */
+#define REASSOC_TO		(300) /* 50) */
+/* define DISCONNECT_TO	(3000) */
 #define ADDBA_TO			(2000)
 
-#define LINKED_TO (1) //unit:2 sec, 1x2=2 sec
+#define LINKED_TO (1) /* unit:2 sec, 1x2=2 sec */
 
 #define REAUTH_LIMIT	(4)
 #define REASSOC_LIMIT	(4)
@@ -47,8 +42,8 @@
 
 #define	DYNAMIC_FUNC_DISABLE			(0x0)
 
-// ====== ODM_ABILITY_E ========
-// BB ODM section BIT 0-15
+/*  ====== ODM_ABILITY_E ======== */
+/*  BB ODM section BIT 0-15 */
 #define	DYNAMIC_BB_DIG				BIT(0)
 #define	DYNAMIC_BB_RA_MASK			BIT(1)
 #define	DYNAMIC_BB_DYNAMIC_TXPWR	BIT(2)
@@ -63,11 +58,11 @@
 #define		DYNAMIC_BB_PATH_DIV			BIT(10)
 #define		DYNAMIC_BB_PSD				BIT(11)
 
-// MAC DM section BIT 16-23
+/*  MAC DM section BIT 16-23 */
 #define		DYNAMIC_MAC_EDCA_TURBO		BIT(16)
 #define		DYNAMIC_MAC_EARLY_MODE		BIT(17)
 
-// RF ODM section BIT 24-31
+/*  RF ODM section BIT 24-31 */
 #define		DYNAMIC_RF_TX_PWR_TRACK		BIT(24)
 #define		DYNAMIC_RF_RX_GAIN_TRACK		BIT(25)
 #define		DYNAMIC_RF_CALIBRATION		BIT(26)
@@ -104,17 +99,17 @@ extern unsigned char WMM_INFO_OUI[];
 extern unsigned char WMM_PARA_OUI[];
 
 
-//
-// Channel Plan Type.
-// Note:
-//	We just add new channel plan when the new channel plan is different from any of the following
-//	channel plan.
-//	If you just wnat to customize the acitions(scan period or join actions) about one of the channel plan,
-//	customize them in RT_CHANNEL_INFO in the RT_CHANNEL_LIST.
-//
+/*  */
+/*  Channel Plan Type. */
+/*  Note: */
+/* 	We just add new channel plan when the new channel plan is different from any of the following */
+/* 	channel plan. */
+/* 	If you just wnat to customize the acitions(scan period or join actions) about one of the channel plan, */
+/* 	customize them in RT_CHANNEL_INFO in the RT_CHANNEL_LIST. */
+/*  */
 typedef enum _RT_CHANNEL_DOMAIN
 {
-	//===== old channel plan mapping =====//
+	/*  old channel plan mapping ===== */
 	RT_CHANNEL_DOMAIN_FCC = 0x00,
 	RT_CHANNEL_DOMAIN_IC = 0x01,
 	RT_CHANNEL_DOMAIN_ETSI = 0x02,
@@ -137,7 +132,7 @@ typedef enum _RT_CHANNEL_DOMAIN
 	RT_CHANNEL_DOMAIN_WORLD_WIDE_5G = 0x13,
 	RT_CHANNEL_DOMAIN_TAIWAN_NO_DFS = 0x14,
 
-	//===== new channel plan mapping, (2GDOMAIN_5GDOMAIN) =====//
+	/*  new channel plan mapping, (2GDOMAIN_5GDOMAIN) ===== */
 	RT_CHANNEL_DOMAIN_WORLD_NULL = 0x20,
 	RT_CHANNEL_DOMAIN_ETSI1_NULL = 0x21,
 	RT_CHANNEL_DOMAIN_FCC1_NULL = 0x22,
@@ -160,44 +155,44 @@ typedef enum _RT_CHANNEL_DOMAIN
 	RT_CHANNEL_DOMAIN_FCC1_NCC1 = 0x39,
 	RT_CHANNEL_DOMAIN_FCC1_NCC2 = 0x40,
 	RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G = 0x41,
-	//===== Add new channel plan above this line===============//
+	/*  Add new channel plan above this line=============== */
 	RT_CHANNEL_DOMAIN_MAX,
 	RT_CHANNEL_DOMAIN_REALTEK_DEFINE = 0x7F,
 }RT_CHANNEL_DOMAIN, *PRT_CHANNEL_DOMAIN;
 
 typedef enum _RT_CHANNEL_DOMAIN_2G
 {
-	RT_CHANNEL_DOMAIN_2G_WORLD = 0x00,		//Worldwird 13
-	RT_CHANNEL_DOMAIN_2G_ETSI1 = 0x01,		//Europe
-	RT_CHANNEL_DOMAIN_2G_FCC1 = 0x02,		//US
-	RT_CHANNEL_DOMAIN_2G_MKK1 = 0x03,		//Japan
-	RT_CHANNEL_DOMAIN_2G_ETSI2 = 0x04,		//France
+	RT_CHANNEL_DOMAIN_2G_WORLD = 0x00,		/* Worldwird 13 */
+	RT_CHANNEL_DOMAIN_2G_ETSI1 = 0x01,		/* Europe */
+	RT_CHANNEL_DOMAIN_2G_FCC1 = 0x02,		/* US */
+	RT_CHANNEL_DOMAIN_2G_MKK1 = 0x03,		/* Japan */
+	RT_CHANNEL_DOMAIN_2G_ETSI2 = 0x04,		/* France */
 	RT_CHANNEL_DOMAIN_2G_NULL = 0x05,
-	//===== Add new channel plan above this line===============//
+	/*  Add new channel plan above this line=============== */
 	RT_CHANNEL_DOMAIN_2G_MAX,
 }RT_CHANNEL_DOMAIN_2G, *PRT_CHANNEL_DOMAIN_2G;
 
 typedef enum _RT_CHANNEL_DOMAIN_5G
 {
 	RT_CHANNEL_DOMAIN_5G_NULL = 0x00,
-	RT_CHANNEL_DOMAIN_5G_ETSI1 = 0x01,		//Europe
-	RT_CHANNEL_DOMAIN_5G_ETSI2 = 0x02,		//Australia, New Zealand
-	RT_CHANNEL_DOMAIN_5G_ETSI3 = 0x03,		//Russia
-	RT_CHANNEL_DOMAIN_5G_FCC1 = 0x04,		//US
-	RT_CHANNEL_DOMAIN_5G_FCC2 = 0x05,		//FCC o/w DFS Channels
-	RT_CHANNEL_DOMAIN_5G_FCC3 = 0x06,		//India, Mexico
-	RT_CHANNEL_DOMAIN_5G_FCC4 = 0x07,		//Venezuela
-	RT_CHANNEL_DOMAIN_5G_FCC5 = 0x08,		//China
-	RT_CHANNEL_DOMAIN_5G_FCC6 = 0x09,		//Israel
-	RT_CHANNEL_DOMAIN_5G_FCC7_IC1 = 0x0A,	//US, Canada
-	RT_CHANNEL_DOMAIN_5G_KCC1 = 0x0B,		//Korea
-	RT_CHANNEL_DOMAIN_5G_MKK1 = 0x0C,		//Japan
-	RT_CHANNEL_DOMAIN_5G_MKK2 = 0x0D,		//Japan (W52, W53)
-	RT_CHANNEL_DOMAIN_5G_MKK3 = 0x0E,		//Japan (W56)
-	RT_CHANNEL_DOMAIN_5G_NCC1 = 0x0F,		//Taiwan
-	RT_CHANNEL_DOMAIN_5G_NCC2 = 0x10,		//Taiwan o/w DFS
-	//===== Add new channel plan above this line===============//
-	//===== Driver Self Defined =====//
+	RT_CHANNEL_DOMAIN_5G_ETSI1 = 0x01,		/* Europe */
+	RT_CHANNEL_DOMAIN_5G_ETSI2 = 0x02,		/* Australia, New Zealand */
+	RT_CHANNEL_DOMAIN_5G_ETSI3 = 0x03,		/* Russia */
+	RT_CHANNEL_DOMAIN_5G_FCC1 = 0x04,		/* US */
+	RT_CHANNEL_DOMAIN_5G_FCC2 = 0x05,		/* FCC o/w DFS Channels */
+	RT_CHANNEL_DOMAIN_5G_FCC3 = 0x06,		/* India, Mexico */
+	RT_CHANNEL_DOMAIN_5G_FCC4 = 0x07,		/* Venezuela */
+	RT_CHANNEL_DOMAIN_5G_FCC5 = 0x08,		/* China */
+	RT_CHANNEL_DOMAIN_5G_FCC6 = 0x09,		/* Israel */
+	RT_CHANNEL_DOMAIN_5G_FCC7_IC1 = 0x0A,	/* US, Canada */
+	RT_CHANNEL_DOMAIN_5G_KCC1 = 0x0B,		/* Korea */
+	RT_CHANNEL_DOMAIN_5G_MKK1 = 0x0C,		/* Japan */
+	RT_CHANNEL_DOMAIN_5G_MKK2 = 0x0D,		/* Japan (W52, W53) */
+	RT_CHANNEL_DOMAIN_5G_MKK3 = 0x0E,		/* Japan (W56) */
+	RT_CHANNEL_DOMAIN_5G_NCC1 = 0x0F,		/* Taiwan */
+	RT_CHANNEL_DOMAIN_5G_NCC2 = 0x10,		/* Taiwan o/w DFS */
+	/*  Add new channel plan above this line=============== */
+	/*  Driver Self Defined ===== */
 	RT_CHANNEL_DOMAIN_5G_FCC = 0x11,
 	RT_CHANNEL_DOMAIN_5G_JAPAN_NO_DFS = 0x12,
 	RT_CHANNEL_DOMAIN_5G_FCC4_NO_DFS = 0x13,
@@ -254,8 +249,8 @@ typedef enum _HT_IOT_PEER
 	HT_IOT_PEER_CISCO				= 6,
 	HT_IOT_PEER_MERU				= 7,
 	HT_IOT_PEER_MARVELL			= 8,
-	HT_IOT_PEER_REALTEK_SOFTAP	= 9,// peer is RealTek SOFT_AP, by Bohn, 2009.12.17
-	HT_IOT_PEER_SELF_SOFTAP			= 10, // Self is SoftAP
+	HT_IOT_PEER_REALTEK_SOFTAP	= 9,/*  peer is RealTek SOFT_AP, by Bohn, 2009.12.17 */
+	HT_IOT_PEER_SELF_SOFTAP			= 10, /*  Self is SoftAP */
 	HT_IOT_PEER_AIRGO				= 11,
 	HT_IOT_PEER_INTEL				= 12,
 	HT_IOT_PEER_RTK_APCLIENT		= 13,
@@ -300,10 +295,10 @@ struct	ss_res
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 };
 
-//#define AP_MODE				0x0C
-//#define STATION_MODE	0x08
-//#define AD_HOC_MODE		0x04
-//#define NO_LINK_MODE	0x00
+/* define AP_MODE				0x0C */
+/* define STATION_MODE	0x08 */
+/* define AD_HOC_MODE		0x04 */
+/* define NO_LINK_MODE	0x00 */
 
 #define		WIFI_FW_NULL_STATE			_HW_STATE_NOLINK_
 #define	WIFI_FW_STATION_STATE		_HW_STATE_STATION_
@@ -354,10 +349,10 @@ struct mlme_ext_info
 	u32	reassoc_count;
 	u32	link_count;
 	u32	auth_seq;
-	u32	auth_algo;	// 802.11 auth, could be open, shared, auto
+	u32	auth_algo;	/*  802.11 auth, could be open, shared, auto */
 	u32	authModeToggle;
-	u32	enc_algo;//encrypt algorithm;
-	u32	key_index;	// this is only valid for legendary wep, 0~3 for key id.
+	u32	enc_algo;/* encrypt algorithm; */
+	u32	key_index;	/*  this is only valid for legendary wep, 0~3 for key id. */
 	u32	iv;
 	u8	chg_txt[128];
 	u16	aid;
@@ -380,7 +375,7 @@ struct mlme_ext_info
 	u8	ADDBA_retry_count;
 	u8	candidate_tid_bitmap;
 	u8	dialogToken;
-	// Accept ADDBA Request
+	/*  Accept ADDBA Request */
 	bool bAcceptAddbaReq;
 	u8	bwmode_updated;
 	u8	hidden_ssid_mode;
@@ -389,40 +384,40 @@ struct mlme_ext_info
 	struct WMM_para_element	WMM_param;
 	struct HT_caps_element	HT_caps;
 	struct HT_info_element		HT_info;
-	WLAN_BSSID_EX			network;//join network or bss_network, if in ap mode, it is the same to cur_network.network
+	WLAN_BSSID_EX			network;/* join network or bss_network, if in ap mode, it is the same to cur_network.network */
 	struct FW_Sta_Info		FW_sta_info[NUM_STA];
 };
 
-// The channel information about this channel including joining, scanning, and power constraints.
+/*  The channel information about this channel including joining, scanning, and power constraints. */
 typedef struct _RT_CHANNEL_INFO
 {
-	u8		ChannelNum;		// The channel number.
-	RT_SCAN_TYPE	ScanType;		// Scan type such as passive or active scan.
+	u8		ChannelNum;		/*  The channel number. */
+	RT_SCAN_TYPE	ScanType;		/*  Scan type such as passive or active scan. */
 }RT_CHANNEL_INFO, *PRT_CHANNEL_INFO;
 
 int rtw_ch_set_search_ch(RT_CHANNEL_INFO *ch_set, const u32 ch);
 
-// P2P_MAX_REG_CLASSES - Maximum number of regulatory classes
+/*  P2P_MAX_REG_CLASSES - Maximum number of regulatory classes */
 #define P2P_MAX_REG_CLASSES 10
 
-// P2P_MAX_REG_CLASS_CHANNELS - Maximum number of channels per regulatory class
+/*  P2P_MAX_REG_CLASS_CHANNELS - Maximum number of channels per regulatory class */
 #define P2P_MAX_REG_CLASS_CHANNELS 20
 
-//  struct p2p_channels - List of supported channels
+/*   struct p2p_channels - List of supported channels */
 struct p2p_channels {
-	// struct p2p_reg_class - Supported regulatory class
+	/*  struct p2p_reg_class - Supported regulatory class */
 	struct p2p_reg_class {
-		// reg_class - Regulatory class (IEEE 802.11-2007, Annex J)
+		/*  reg_class - Regulatory class (IEEE 802.11-2007, Annex J) */
 		u8 reg_class;
 
-		// channel - Supported channels
+		/*  channel - Supported channels */
 		u8 channel[P2P_MAX_REG_CLASS_CHANNELS];
 
-		// channels - Number of channel entries in use
+		/*  channels - Number of channel entries in use */
 		size_t channels;
 	} reg_class[P2P_MAX_REG_CLASSES];
 
-	// reg_classes - Number of reg_class entries in use
+	/*  reg_classes - Number of reg_class entries in use */
 	size_t reg_classes;
 };
 
@@ -442,12 +437,12 @@ struct mlme_ext_priv
 	atomic_t		event_seq;
 	u16	mgnt_seq;
 
-	//struct fw_priv	fwpriv;
+	/* struct fw_priv	fwpriv; */
 
 	unsigned char	cur_channel;
 	unsigned char	cur_bwmode;
-	unsigned char	cur_ch_offset;//PRIME_CHNL_OFFSET
-	unsigned char	cur_wireless_mode;	// NETWORK_TYPE
+	unsigned char	cur_ch_offset;/* PRIME_CHNL_OFFSET */
+	unsigned char	cur_wireless_mode;	/*  NETWORK_TYPE */
 
 	unsigned char	max_chan_nums;
 	RT_CHANNEL_INFO		channel_set[MAX_CHANNEL_NUM];
@@ -456,17 +451,17 @@ struct mlme_ext_priv
 	unsigned char	datarate[NumRates];
 
 	struct ss_res		sitesurvey_res;
-	struct mlme_ext_info	mlmext_info;//for sta/adhoc mode, including current scanning/connecting/connected related info.
-                                                     //for ap mode, network includes ap's cap_info
+	struct mlme_ext_info	mlmext_info;/* for sta/adhoc mode, including current scanning/connecting/connected related info. */
+                                                     /* for ap mode, network includes ap's cap_info */
 	struct timer_list		survey_timer;
 	struct timer_list		link_timer;
-	//struct timer_list		ADDBA_timer;
+	/* struct timer_list		ADDBA_timer; */
 	u16			chan_scan_time;
 
 	u8	scan_abort;
-	u8	tx_rate; // TXRATE when USERATE is set.
+	u8	tx_rate; /*  TXRATE when USERATE is set. */
 
-	u32	retry; //retry for issue probereq
+	u32	retry; /* retry for issue probereq */
 
 	u64 TSFValue;
 
@@ -475,7 +470,7 @@ struct mlme_ext_priv
 #endif
 
 	u8 update_channel_plan_by_ap_done;
-	//recv_decache check for Action_public frame
+	/* recv_decache check for Action_public frame */
 	u8 action_public_dialog_token;
 	u16	 action_public_rxseq;
 
@@ -493,7 +488,7 @@ void init_mlme_ext_timer(struct rtw_adapter *padapter);
 void init_addba_retry_timer(struct sta_info *psta);
 struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv);
 
-//void fill_fwpriv(struct rtw_adapter * padapter, struct fw_priv *pfwpriv);
+/* void fill_fwpriv(struct rtw_adapter * padapter, struct fw_priv *pfwpriv); */
 
 unsigned char networktype_to_raid(unsigned char network_type);
 u8 judge_network_type(struct rtw_adapter *padapter, unsigned char *rate, int ratelen);
@@ -505,8 +500,8 @@ void Save_DM_Func_Flag(struct rtw_adapter *padapter);
 void Restore_DM_Func_Flag(struct rtw_adapter *padapter);
 void Switch_DM_Func(struct rtw_adapter *padapter, u32 mode, u8 enable);
 
-//void Set_NETYPE1_MSR(struct rtw_adapter *padapter, u8 type);
-//void Set_NETYPE0_MSR(struct rtw_adapter *padapter, u8 type);
+/* void Set_NETYPE1_MSR(struct rtw_adapter *padapter, u8 type); */
+/* void Set_NETYPE0_MSR(struct rtw_adapter *padapter, u8 type); */
 void Set_MSR(struct rtw_adapter *padapter, u8 type);
 
 u8 rtw_get_oper_ch(struct rtw_adapter *adapter);
@@ -570,7 +565,7 @@ void update_tx_basic_rate(struct rtw_adapter *padapter, u8 modulation);
 void update_bmc_sta_support_rate(struct rtw_adapter *padapter, u32 mac_id);
 int update_sta_support_rate(struct rtw_adapter *padapter, u8* pvar_ie, uint var_ie_len, int cam_idx);
 
-//for sta/adhoc mode
+/* for sta/adhoc mode */
 void update_sta_info(struct rtw_adapter *padapter, struct sta_info *psta);
 unsigned int update_basic_rate(unsigned char *ptn, unsigned int ptn_sz);
 unsigned int update_supported_rate(unsigned char *ptn, unsigned int ptn_sz);
@@ -609,7 +604,7 @@ void issue_probereq_p2p(struct rtw_adapter *padapter, u8 *da);
 int issue_probereq_p2p_ex(struct rtw_adapter *adapter, u8 *da, int try_cnt, int wait_ms);
 void issue_p2p_invitation_response(struct rtw_adapter *padapter, u8* raddr, u8 dialogToken, u8 success);
 void issue_p2p_invitation_request(struct rtw_adapter *padapter, u8* raddr );
-#endif //CONFIG_8723AU_P2P
+#endif /* CONFIG_8723AU_P2P */
 void issue_beacon(struct rtw_adapter *padapter, int timeout_ms);
 void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid_p2p_probereq);
 void issue_assocreq(struct rtw_adapter *padapter);
@@ -713,7 +708,7 @@ u8 tx_beacon_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);
 u8 set_ch_hdl(struct rtw_adapter *padapter, u8 *pbuf);
 u8 set_chplan_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);
 u8 led_blink_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 set_csa_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);	//Kurt: Handling DFS channel switch announcement ie.
+u8 set_csa_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);	/* Kurt: Handling DFS channel switch announcement ie. */
 u8 tdls_hdl(struct rtw_adapter *padapter, unsigned char *pbuf);
 
 
@@ -775,8 +770,8 @@ enum rtw_c2h_event
 	GEN_EVT_CODE(_C2HFEEDBACK),               /*20*/
 	GEN_EVT_CODE(_ADDBA),
 	GEN_EVT_CODE(_C2HBCN),
-	GEN_EVT_CODE(_ReportPwrState),		//filen: only for PCIE, USB
-	GEN_EVT_CODE(_CloseRF),				//filen: only for PCIE, work around ASPM
+	GEN_EVT_CODE(_ReportPwrState),		/* filen: only for PCIE, USB */
+	GEN_EVT_CODE(_CloseRF),				/* filen: only for PCIE, work around ASPM */
 	MAX_C2HEVT
 };
 

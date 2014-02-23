@@ -11,11 +11,6 @@
 * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 * more details.
 *
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
 ******************************************************************************/
 
 #if (RTL8723A_SUPPORT == 1)
@@ -33,4 +28,4 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 
 
 #endif
-#endif // end of HWIMG_SUPPORT
+#endif /*  end of HWIMG_SUPPORT */

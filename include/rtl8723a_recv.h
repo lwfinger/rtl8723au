@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __RTL8723A_RECV_H__
 #define __RTL8723A_RECV_H__
@@ -31,7 +26,7 @@
 #define RECV_BLK_CNT 16
 #define RECV_BLK_TH RECV_BLK_CNT
 
-#define MAX_RECVBUF_SZ (15360) // 15k < 16k
+#define MAX_RECVBUF_SZ (15360) /*  15k < 16k */
 
 #define RECV_BULK_IN_ADDR		0x80
 #define RECV_INT_IN_ADDR		0x81
@@ -52,7 +47,7 @@ struct phy_stat
 	unsigned int phydw7;
 };
 
-// Rx smooth factor
+/*  Rx smooth factor */
 #define	Rx_Smooth_Factor (20)
 
 typedef struct _INTERRUPT_MSG_FORMAT_EX{
@@ -60,8 +55,8 @@ typedef struct _INTERRUPT_MSG_FORMAT_EX{
 	unsigned int C2H_MSG1;
 	unsigned int C2H_MSG2;
 	unsigned int C2H_MSG3;
-	unsigned int HISR; // from HISR Reg0x124, read to clear
-	unsigned int HISRE;// from HISRE Reg0x12c, read to clear
+	unsigned int HISR; /*  from HISR Reg0x124, read to clear */
+	unsigned int HISRE;/*  from HISRE Reg0x12c, read to clear */
 	unsigned int  MSG_EX;
 }INTERRUPT_MSG_FORMAT_EX,*PINTERRUPT_MSG_FORMAT_EX;
 

@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef __HAL_VERSION_DEF_H__
 #define __HAL_VERSION_DEF_H__
@@ -50,7 +45,7 @@ enum hal_cut_version {
 	G_CUT_VERSION		=	6,
 };
 
-// HAL_Manufacturer
+/*  HAL_Manufacturer */
 enum hal_vendor {
 	CHIP_VENDOR_TSMC	=	0,
 	CHIP_VENDOR_UMC		=	1,
@@ -76,7 +71,7 @@ struct hal_version {
 	u8			ROMVer;
 };
 
-// Get element
+/*  Get element */
 #define GET_CVID_IC_TYPE(version)		((enum hal_ic_type)(((struct hal_version)version).ICType))
 #define GET_CVID_CHIP_TYPE(version)		((enum hal_chip_type)(((struct hal_version)version).ChipType))
 #define GET_CVID_RF_TYPE(version)		((enum hal_rf_type)(((struct hal_version)version).RFType))
@@ -84,9 +79,9 @@ struct hal_version {
 #define GET_CVID_CUT_VERSION(version)		((enum hal_cut_version)(((struct hal_version)version).CUTVersion))
 #define GET_CVID_ROM_VERSION(version)		((((struct hal_version)version).ROMVer) & ROM_VERSION_MASK)
 
-//----------------------------------------------------------------------------
-//Common Macro. --
-//----------------------------------------------------------------------------
+/*  */
+/* Common Macro. -- */
+/*  */
 
 #define IS_81XXC(version)		(((GET_CVID_IC_TYPE(version) == CHIP_8192C)||(GET_CVID_IC_TYPE(version) == CHIP_8188C))? true : false)
 #define IS_8723_SERIES(version)		((GET_CVID_IC_TYPE(version) == CHIP_8723A)? true : false)
@@ -109,9 +104,9 @@ struct hal_version {
 #define IS_1T2R(version)		((GET_CVID_RF_TYPE(version) == RF_TYPE_1T2R)? true : false)
 #define IS_2T2R(version)		((GET_CVID_RF_TYPE(version) == RF_TYPE_2T2R)? true : false)
 
-//----------------------------------------------------------------------------
-//Chip version Macro. --
-//----------------------------------------------------------------------------
+/*  */
+/* Chip version Macro. -- */
+/*  */
 #define IS_81XXC_TEST_CHIP(version)		((IS_81XXC(version) && (!IS_NORMAL_CHIP(version)))? true: false)
 
 #define IS_92C_SERIAL(version)			((IS_81XXC(version) && IS_2T2R(version)) ? true : false)

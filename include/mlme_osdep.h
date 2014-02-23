@@ -11,11 +11,6 @@
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
- *
  ******************************************************************************/
 #ifndef	__MLME_OSDEP_H_
 #define __MLME_OSDEP_H_
@@ -30,4 +25,4 @@ void rtw_report_sec_ie(struct rtw_adapter *adapter,u8 authmode,u8 *sec_ie);
 
 void rtw_reset_securitypriv(struct rtw_adapter *adapter );
 
-#endif	//_MLME_OSDEP_H_
+#endif	/* _MLME_OSDEP_H_ */
