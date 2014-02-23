@@ -1642,8 +1642,6 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy,
 		printk(KERN_DEBUG "oh dear! out of memory\n");
 		return -ENOMEM;
 	}
-printk(KERN_DEBUG "in cfg80211_rtw_scan - atomic %i\n", in_atomic());
-
 
 	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	pwdev_priv->scan_request = request;
