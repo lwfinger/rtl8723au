@@ -23,11 +23,6 @@
 #define NDIS_802_11_LENGTH_RATES        8
 #define NDIS_802_11_LENGTH_RATES_EX     16
 
-typedef unsigned char   NDIS_802_11_MAC_ADDRESS[6];
-typedef unsigned char   NDIS_802_11_RATES[NDIS_802_11_LENGTH_RATES];        /*  Set of 8 data rates */
-typedef unsigned char   NDIS_802_11_RATES_EX[NDIS_802_11_LENGTH_RATES_EX];  /*  Set of 16 data rates */
-
-
 struct ndis_802_11_ssid {
 	u32  SsidLength;
 	u8  Ssid[32];
@@ -82,9 +77,9 @@ struct ndis_802_11_var_ies {
 };
 
 /* Length is the 4 bytes multiples of the sume of
-	sizeof (NDIS_802_11_MAC_ADDRESS) + 2 + sizeof (struct ndis_802_11_ssid) + sizeof (u32)
+	sizeof (6 * sizeof(unsigned char)) + 2 + sizeof (struct ndis_802_11_ssid) + sizeof (u32)
 +   sizeof (long) + sizeof (enum ndis_802_11_net_type) + sizeof (struct ndis_802_11_config)
-+   sizeof (NDIS_802_11_RATES_EX) + IELength
++   sizeof (sizeof(unsigned char) * NDIS_802_11_LENGTH_RATES_EX) + IELength
 
 Except the IELength, all other fields are fixed length. Therefore, we can define a marco to present the
 partial sum.
@@ -121,7 +116,7 @@ struct ndis_802_11_key {
 	u32           Length;             /*  Length of this structure */
 	u32           KeyIndex;
 	u32           KeyLength;          /*  length of key in bytes */
-	NDIS_802_11_MAC_ADDRESS BSSID;
+	unsigned char BSSID[6];
 	unsigned long long KeyRSC;
 	u8           KeyMaterial[32];     /*  variable length depending on above field */
 };
@@ -176,7 +171,7 @@ struct wlan_bcn_info {
 
 struct wlan_bssid_ex {
 	u32  Length;
-	NDIS_802_11_MAC_ADDRESS  MacAddress;
+	unsigned char  MacAddress[6];
 	u8  Reserved[2];/* 0]: IS beacon frame */
 	struct ndis_802_11_ssid  Ssid;
 	u32  Privacy;
@@ -184,7 +179,7 @@ struct wlan_bssid_ex {
 	enum ndis_802_11_net_type  NetworkTypeInUse;
 	struct ndis_802_11_config  Configuration;
 	enum ndis_802_11_net_infra  InfrastructureMode;
-	NDIS_802_11_RATES_EX  SupportedRates;
+	unsigned char SupportedRates[NDIS_802_11_LENGTH_RATES_EX];
 	struct wlan_phy_info	PhyInfo;
 	u32  IELength;
 	u8  IEs[MAX_IE_SZ];	/* timestamp, beacon interval, and capability info) */

@@ -314,13 +314,12 @@ struct	ss_res
 
 #define	WIFI_FW_LINKING_STATE		(WIFI_FW_AUTH_NULL | WIFI_FW_AUTH_STATE | WIFI_FW_AUTH_SUCCESS |WIFI_FW_ASSOC_STATE)
 
-struct FW_Sta_Info
-{
+struct FW_Sta_Info {
 	struct sta_info	*psta;
 	u32	status;
 	u32	rx_pkt;
 	u32	retry;
-	NDIS_802_11_RATES_EX  SupportedRates;
+	unsigned char SupportedRates[NDIS_802_11_LENGTH_RATES_EX];
 };
 
 /*
