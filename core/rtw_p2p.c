@@ -3042,6 +3042,7 @@ u8 process_p2p_presence_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 	u8 *frame_body;
 	u8 dialogToken=0;
 	u8 status = P2P_STATUS_SUCCESS;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
 
 	frame_body = (unsigned char *)(pframe + sizeof(struct ieee80211_hdr_3addr));
 
@@ -3049,7 +3050,7 @@ u8 process_p2p_presence_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 
 	/* todo: check NoA attribute */
 
-	issue_p2p_presence_resp(pwdinfo, GetAddr2Ptr(pframe), status, dialogToken);
+	issue_p2p_presence_resp(pwdinfo, hdr->addr2, status, dialogToken);
 
 	return true;
 }
