@@ -1124,7 +1124,6 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	int group_cipher = 0, pairwise_cipher = 0, is_8021x = 0;
 	unsigned char *pbuf;
 	u32 wpa_ielen = 0;
-	u8 *pbssid = GetAddr3Ptr(pframe);
 	u32 hidden_ssid = 0;
 	u8 cur_network_type, network_type=0;
 	struct HT_info_element *pht_info = NULL;
@@ -1133,6 +1132,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 	unsigned short	ht_cap_info;
 	unsigned char	ht_info_infos_0;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
+	u8 *pbssid = hdr->addr3;
 
 	if (is_client_associated_to_ap(Adapter) == false)
 		return true;
