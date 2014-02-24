@@ -45,17 +45,17 @@ static void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 		    rtw_set_scan_deny_timer_hdl, (unsigned long)padapter);
 }
 
-int	_rtw_init_mlme_priv (struct rtw_adapter* padapter)
+int _rtw_init_mlme_priv (struct rtw_adapter *padapter)
 {
-	int	i;
-	u8	*pbuf;
-	struct wlan_network	*pnetwork;
-	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-	int	res = _SUCCESS;
+	int i;
+	u8 *pbuf;
+	struct wlan_network *pnetwork;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	int res = _SUCCESS;
 
 _func_enter_;
 
-	pmlmepriv->nic_hdl = (u8 *)padapter;
+	pmlmepriv->nic_hdl = padapter;
 
 	pmlmepriv->fw_state = 0;
 	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
@@ -1949,7 +1949,7 @@ _func_enter_;
 
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
 	phead = get_list_head(queue);
-	adapter = (struct rtw_adapter *)pmlmepriv->nic_hdl;
+	adapter = pmlmepriv->nic_hdl;
 
 	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);

@@ -368,7 +368,7 @@ struct mlme_priv {
 	u8	to_join; /* flag */
 	u8 to_roaming; /*  roaming trying times */
 
-	u8	*nic_hdl;
+	struct rtw_adapter *nic_hdl;
 
 	u8	not_indic_disco;
 	_queue	scanned_queue;
