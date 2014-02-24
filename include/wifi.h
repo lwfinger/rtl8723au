@@ -187,14 +187,6 @@ enum WIFI_REG_DOMAIN {
 	 (((ieee80211_has_tods(pbuf)<<1) |				\
 	 ieee80211_has_fromds(pbuf)) == 3 ? 30 : 24))) & 0x000f)
 
-#define GetAddr1Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 4))
-
-#define GetAddr2Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 10))
-
-#define GetAddr3Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 16))
-
-#define GetAddr4Ptr(pbuf)	((unsigned char *)((unsigned long)(pbuf) + 24))
-
 static inline unsigned char * get_hdr_bssid(unsigned char *pframe)
 {
 	unsigned char	*sa;
@@ -206,19 +198,19 @@ static inline unsigned char * get_hdr_bssid(unsigned char *pframe)
 
 	switch (to_fr_ds) {
 	case 0x00:	/*  ToDs=0, FromDs=0 */
-		sa = GetAddr3Ptr(pframe);
+		sa = hdr->addr3;
 		break;
 	case 0x01:	/*  ToDs=0, FromDs=1 */
-		sa = GetAddr2Ptr(pframe);
+		sa = hdr->addr2;
 		break;
 	case 0x02:	/*  ToDs=1, FromDs=0 */
-		sa = GetAddr1Ptr(pframe);
+		sa = hdr->addr1;
 		break;
 	case 0x03:	/*  ToDs=1, FromDs=1 */
-		sa = GetAddr1Ptr(pframe);
+		sa = hdr->addr1;
 		break;
 	default:
-		sa =NULL; /*  */
+		sa = NULL; /*  */
 		break;
 	}
 	return sa;
