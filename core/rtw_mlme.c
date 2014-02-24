@@ -1935,19 +1935,19 @@ pmlmepriv->lock
 
 */
 
-int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
+int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
 {
 	int ret;
 	struct list_head *phead, *plist, *ptmp;
 	struct rtw_adapter *adapter;
-	_queue	*queue	= &(pmlmepriv->scanned_queue);
+	_queue *queue = &pmlmepriv->scanned_queue;
 	struct	wlan_network	*pnetwork = NULL;
 	struct	wlan_network	*candidate = NULL;
-	u8		bSupportAntDiv = false;
+	u8 bSupportAntDiv = false;
 
 _func_enter_;
 
-	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
+	spin_lock_bh(&pmlmepriv->scanned_queue.lock);
 	phead = get_list_head(queue);
 	adapter = pmlmepriv->nic_hdl;
 
@@ -1964,7 +1964,7 @@ _func_enter_;
 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
 	}
 
-	if(candidate == NULL) {
+	if (!candidate) {
 		DBG_8723A("%s: return _FAIL(candidate == NULL)\n", __func__);
 #ifdef CONFIG_WOWLAN
 		_clr_fwstate_(pmlmepriv, _FW_LINKED|_FW_UNDER_LINKING);
@@ -1973,14 +1973,15 @@ _func_enter_;
 		goto exit;
 	} else {
 		DBG_8723A("%s: candidate: %s("MAC_FMT", ch:%u)\n", __func__,
-			candidate->network.Ssid.Ssid, MAC_ARG(candidate->network.MacAddress),
-			candidate->network.Configuration.DSConfig);
+			  candidate->network.Ssid.Ssid,
+			  MAC_ARG(candidate->network.MacAddress),
+			  candidate->network.Configuration.DSConfig);
 	}
 
 	/*  check for situation of  _FW_LINKED */
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
-	{
-		DBG_8723A("%s: _FW_LINKED while ask_for_joinbss!!!\n", __func__);
+	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
+		DBG_8723A("%s: _FW_LINKED while ask_for_joinbss!!!\n",
+			  __func__);
 
 		rtw_disassoc_cmd(adapter, 0, true);
 		rtw_indicate_disconnect(adapter);
@@ -1990,37 +1991,38 @@ _func_enter_;
 	ret = rtw_joinbss_cmd(adapter, candidate);
 
 exit:
-	spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
+	spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
 
 _func_exit_;
 
 	return ret;
 }
 
-int rtw_set_auth(struct rtw_adapter * adapter,struct security_priv *psecuritypriv)
+int rtw_set_auth(struct rtw_adapter * adapter,
+		 struct security_priv *psecuritypriv)
 {
-	struct	cmd_obj* pcmd;
-	struct	setauth_parm *psetauthparm;
-	struct	cmd_priv	*pcmdpriv=&(adapter->cmdpriv);
-	int		res=_SUCCESS;
+	struct cmd_obj* pcmd;
+	struct setauth_parm *psetauthparm;
+	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
+	int res = _SUCCESS;
 
 _func_enter_;
 
-	pcmd = (struct	cmd_obj*)rtw_zmalloc(sizeof(struct	cmd_obj));
-	if(pcmd==NULL){
-		res= _FAIL;  /* try again */
+	pcmd = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
+	if (!pcmd){
+		res = _FAIL;  /* try again */
 		goto exit;
 	}
 
-	psetauthparm=(struct setauth_parm*)rtw_zmalloc(sizeof(struct setauth_parm));
-	if(psetauthparm==NULL){
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct	cmd_obj));
-		res= _FAIL;
+	psetauthparm = (struct setauth_parm*)
+		rtw_zmalloc(sizeof(struct setauth_parm));
+	if (!psetauthparm) {
+		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
+		res = _FAIL;
 		goto exit;
 	}
 
-	memset(psetauthparm, 0, sizeof(struct setauth_parm));
-	psetauthparm->mode=(unsigned char)psecuritypriv->dot11AuthAlgrthm;
+	psetauthparm->mode = (unsigned char)psecuritypriv->dot11AuthAlgrthm;
 
 	pcmd->cmdcode = _SetAuth_CMD_;
 	pcmd->parmbuf = (unsigned char *)psetauthparm;
@@ -2030,7 +2032,9 @@ _func_enter_;
 
 	INIT_LIST_HEAD(&pcmd->list);
 
-	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("after enqueue set_auth_cmd, auth_mode=%x\n", psecuritypriv->dot11AuthAlgrthm));
+	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+		 ("after enqueue set_auth_cmd, auth_mode=%x\n",
+		  psecuritypriv->dot11AuthAlgrthm));
 
 	res = rtw_enqueue_cmd(pcmdpriv, pcmd);
 
@@ -2041,39 +2045,44 @@ _func_exit_;
 	return res;
 }
 
-int rtw_set_key(struct rtw_adapter * adapter,struct security_priv *psecuritypriv,int keyid, u8 set_tx)
+int rtw_set_key(struct rtw_adapter *adapter,
+		struct security_priv *psecuritypriv, int keyid, u8 set_tx)
 {
-	u8	keylen;
-	struct cmd_obj		*pcmd;
-	struct setkey_parm	*psetkeyparm;
-	struct cmd_priv		*pcmdpriv = &(adapter->cmdpriv);
-	struct mlme_priv		*pmlmepriv = &(adapter->mlmepriv);
-	int	res=_SUCCESS;
+	u8 keylen;
+	struct cmd_obj *pcmd;
+	struct setkey_parm *psetkeyparm;
+	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
+	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
+	int res = _SUCCESS;
 
 _func_enter_;
 
-	pcmd = (struct	cmd_obj*)rtw_zmalloc(sizeof(struct	cmd_obj));
-	if(pcmd==NULL){
-		res= _FAIL;  /* try again */
+	pcmd = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
+	if (!pcmd) {
+		res = _FAIL;  /* try again */
 		goto exit;
 	}
-	psetkeyparm=(struct setkey_parm*)rtw_zmalloc(sizeof(struct setkey_parm));
-	if(psetkeyparm==NULL){
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct	cmd_obj));
-		res= _FAIL;
+	psetkeyparm = (struct setkey_parm *)
+		rtw_zmalloc(sizeof(struct setkey_parm));
+	if (!psetkeyparm) {
+		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
+		res = _FAIL;
 		goto exit;
 	}
 
-	memset(psetkeyparm, 0, sizeof(struct setkey_parm));
-
-	if(psecuritypriv->dot11AuthAlgrthm ==dot11AuthAlgrthm_8021X){
-		psetkeyparm->algorithm=(unsigned char)psecuritypriv->dot118021XGrpPrivacy;
-		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n rtw_set_key: psetkeyparm->algorithm=(unsigned char)psecuritypriv->dot118021XGrpPrivacy=%d \n", psetkeyparm->algorithm));
-	}
-	else{
-		psetkeyparm->algorithm=(u8)psecuritypriv->dot11PrivacyAlgrthm;
-		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n rtw_set_key: psetkeyparm->algorithm=(u8)psecuritypriv->dot11PrivacyAlgrthm=%d \n", psetkeyparm->algorithm));
-
+	if (psecuritypriv->dot11AuthAlgrthm == dot11AuthAlgrthm_8021X) {
+		psetkeyparm->algorithm = (unsigned char)
+			psecuritypriv->dot118021XGrpPrivacy;
+		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+			 ("\n rtw_set_key: psetkeyparm->algorithm=(unsigned "
+			  "char)psecuritypriv->dot118021XGrpPrivacy=%d \n",
+			  psetkeyparm->algorithm));
+	} else {
+		psetkeyparm->algorithm = (u8)psecuritypriv->dot11PrivacyAlgrthm;
+		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+			 ("\n rtw_set_key: psetkeyparm->algorithm=(u8)"
+			  "psecuritypriv->dot11PrivacyAlgrthm=%d \n",
+			  psetkeyparm->algorithm));
 	}
 	psetkeyparm->keyid = (u8)keyid;/* 0~3 */
 	psetkeyparm->set_tx = set_tx;
@@ -2084,33 +2093,39 @@ _func_enter_;
 		  psetkeyparm->algorithm, psetkeyparm->keyid,
 		  pmlmepriv->key_mask);
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_err_,
-		 ("\n rtw_set_key: psetkeyparm->algorithm=%d psetkeyparm->keyid=(u8)keyid=%d\n",
-		 psetkeyparm->algorithm, keyid));
+		 ("\n rtw_set_key: psetkeyparm->algorithm=%d psetkeyparm->"
+		  "keyid=(u8)keyid=%d\n", psetkeyparm->algorithm, keyid));
 
-	switch(psetkeyparm->algorithm){
-
-		case _WEP40_:
-			keylen=5;
-			memcpy(&(psetkeyparm->key[0]), &(psecuritypriv->dot11DefKey[keyid].skey[0]), keylen);
-			break;
-		case _WEP104_:
-			keylen=13;
-			memcpy(&(psetkeyparm->key[0]), &(psecuritypriv->dot11DefKey[keyid].skey[0]), keylen);
-			break;
-		case _TKIP_:
-			keylen=16;
-			memcpy(&psetkeyparm->key, &psecuritypriv->dot118021XGrpKey[keyid], keylen);
-			psetkeyparm->grpkey=1;
-			break;
-		case _AES_:
-			keylen=16;
-			memcpy(&psetkeyparm->key, &psecuritypriv->dot118021XGrpKey[keyid], keylen);
-			psetkeyparm->grpkey=1;
-			break;
-		default:
-			RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("\n rtw_set_key:psecuritypriv->dot11PrivacyAlgrthm = %x (must be 1 or 2 or 4 or 5)\n",psecuritypriv->dot11PrivacyAlgrthm));
-			res= _FAIL;
-			goto exit;
+	switch (psetkeyparm->algorithm) {
+	case _WEP40_:
+		keylen = 5;
+		memcpy(&psetkeyparm->key[0],
+		       &psecuritypriv->dot11DefKey[keyid].skey[0], keylen);
+		break;
+	case _WEP104_:
+		keylen = 13;
+		memcpy(&psetkeyparm->key[0],
+		       &psecuritypriv->dot11DefKey[keyid].skey[0], keylen);
+		break;
+	case _TKIP_:
+		keylen = 16;
+		memcpy(&psetkeyparm->key,
+		       &psecuritypriv->dot118021XGrpKey[keyid], keylen);
+		psetkeyparm->grpkey = 1;
+		break;
+	case _AES_:
+		keylen = 16;
+		memcpy(&psetkeyparm->key,
+		       &psecuritypriv->dot118021XGrpKey[keyid], keylen);
+		psetkeyparm->grpkey = 1;
+		break;
+	default:
+		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+			 ("\n rtw_set_key:psecuritypriv->dot11PrivacyAlgrthm = "
+			  "%x (must be 1 or 2 or 4 or 5)\n",
+			  psecuritypriv->dot11PrivacyAlgrthm));
+		res = _FAIL;
+		goto exit;
 	}
 
 	pcmd->cmdcode = _SetKey_CMD_;
@@ -2131,116 +2146,117 @@ _func_exit_;
 }
 
 /* adjust IEs for rtw_joinbss_cmd in WMM */
-int rtw_restruct_wmm_ie(struct rtw_adapter *adapter, u8 *in_ie, u8 *out_ie, uint in_len, uint initial_out_len)
+int rtw_restruct_wmm_ie(struct rtw_adapter *adapter, u8 *in_ie,
+			u8 *out_ie, uint in_len, uint initial_out_len)
 {
-	unsigned	int ielength=0;
+	unsigned int ielength = 0;
 	unsigned int i, j;
 
 	i = 12; /* after the fixed IE */
-	while(i<in_len)
-	{
+	while(i < in_len) {
 		ielength = initial_out_len;
 
-		if(in_ie[i] == 0xDD && in_ie[i+2] == 0x00 && in_ie[i+3] == 0x50  && in_ie[i+4] == 0xF2 && in_ie[i+5] == 0x02 && i+5 < in_len) /* WMM element ID and OUI */
-		{
+		/* WMM element ID and OUI */
+		if (in_ie[i] == 0xDD && in_ie[i + 2] == 0x00 &&
+		    in_ie[i + 3] == 0x50 && in_ie[i + 4] == 0xF2 &&
+		    in_ie[i + 5] == 0x02 && i+5 < in_len) {
 
 			/* Append WMM IE to the last index of out_ie */
-                        for ( j = i; j < i + 9; j++ )
-                        {
-                            out_ie[ ielength] = in_ie[ j ];
-                            ielength++;
+                        for (j = i; j < i + 9; j++) {
+				out_ie[ielength] = in_ie[j];
+				ielength++;
                         }
-                        out_ie[ initial_out_len + 1 ] = 0x07;
-                        out_ie[ initial_out_len + 6 ] = 0x00;
-                        out_ie[ initial_out_len + 8 ] = 0x00;
+                        out_ie[initial_out_len + 1] = 0x07;
+                        out_ie[initial_out_len + 6] = 0x00;
+                        out_ie[initial_out_len + 8] = 0x00;
 
 			break;
 		}
 
-		i+=(in_ie[i+1]+2); /*  to the next IE element */
+		i += (in_ie[i + 1] + 2); /*  to the next IE element */
 	}
 
 	return ielength;
 }
 
 /*  */
-/*  Ported from 8185: IsInPreAuthKeyList(). (Renamed from SecIsInPreAuthKeyList(), 2006-10-13.) */
+/*  Ported from 8185: IsInPreAuthKeyList().
+    (Renamed from SecIsInPreAuthKeyList(), 2006-10-13.) */
 /*  Added by Annie, 2006-05-07. */
 /*  */
 /*  Search by BSSID, */
 /*  Return Value: */
-/*		-1		:if there is no pre-auth key in the  table */
-/*		>=0		:if there is pre-auth key, and   return the entry id */
+/*		-1	:if there is no pre-auth key in the  table */
+/*		>=0	:if there is pre-auth key, and   return the entry id */
 /*  */
 /*  */
 
 static int SecIsInPMKIDList(struct rtw_adapter *Adapter, u8 *bssid)
 {
-	struct security_priv *psecuritypriv=&Adapter->securitypriv;
-	int i=0;
+	struct security_priv *psecuritypriv = &Adapter->securitypriv;
+	int i = 0;
 
-	do
-	{
+	do {
 		if (psecuritypriv->PMKIDList[i].bUsed &&
-                    !memcmp(psecuritypriv->PMKIDList[i].Bssid, bssid, ETH_ALEN))
-		{
+                    ether_addr_equal(psecuritypriv->PMKIDList[i].Bssid, bssid)){
 			break;
 		} else {
 			i++;
 			/* continue; */
 		}
+	} while(i < NUM_PMKID_CACHE);
 
-	}while(i<NUM_PMKID_CACHE);
-
-	if( i == NUM_PMKID_CACHE )
-	{
+	if (i == NUM_PMKID_CACHE) {
 		i = -1;/*  Could not find. */
-	}
-	else
-	{
-		/*  There is one Pre-Authentication Key for the specific BSSID. */
+	} else {
+		/*  There is one Pre-Authentication Key for
+		    the specific BSSID. */
 	}
 
-	return (i);
+	return i;
 }
 
 /*  */
 /*  Check the RSN IE length */
-/*  If the RSN IE length <= 20, the RSN IE didn't include the PMKID information */
+/*  If the RSN IE length <= 20, the RSN IE didn't include
+    the PMKID information */
 /*  0-11th element in the array are the fixed IE */
 /*  12th element in the array is the IE */
 /*  13th element in the array is the IE length */
 /*  */
 
-static int rtw_append_pmkid(struct rtw_adapter *Adapter,int iEntry, u8 *ie, uint ie_len)
+static int rtw_append_pmkid(struct rtw_adapter *Adapter, int iEntry,
+			    u8 *ie, uint ie_len)
 {
-	struct security_priv *psecuritypriv=&Adapter->securitypriv;
+	struct security_priv *psecuritypriv = &Adapter->securitypriv;
 
-	if(ie[13]<=20){
-		/*  The RSN IE didn't include the PMK ID, append the PMK information */
-			ie[ie_len]=1;
+	if (ie[13] <= 20) {
+		/*  The RSN IE didn't include the PMK ID,
+		    append the PMK information */
+			ie[ie_len] = 1;
 			ie_len++;
-			ie[ie_len]=0;	/* PMKID count = 0x0100 */
+			ie[ie_len] = 0;	/* PMKID count = 0x0100 */
 			ie_len++;
-			memcpy(	&ie[ie_len], &psecuritypriv->PMKIDList[iEntry].PMKID, 16);
+			memcpy(&ie[ie_len],
+			       &psecuritypriv->PMKIDList[iEntry].PMKID, 16);
 
-			ie_len+=16;
-			ie[13]+=18;/* PMKID length = 2+16 */
-
+			ie_len += 16;
+			ie[13] += 18;/* PMKID length = 2+16 */
 	}
-	return (ie_len);
+	return ie_len;
 }
-int rtw_restruct_sec_ie(struct rtw_adapter *adapter,u8 *in_ie, u8 *out_ie, uint in_len)
+int rtw_restruct_sec_ie(struct rtw_adapter *adapter, u8 *in_ie, u8 *out_ie,
+			uint in_len)
 {
 	u8 authmode, securitytype, match;
 	u8 sec_ie[255], uncst_oui[4], bkup_ie[255];
-	u8 wpa_oui[4]={0x0, 0x50, 0xf2, 0x01};
-	uint	ielength, cnt, remove_cnt;
+	u8 wpa_oui[4] = {0x0, 0x50, 0xf2, 0x01};
+	uint ielength, cnt, remove_cnt;
 	int iEntry;
 
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
-	struct security_priv *psecuritypriv=&adapter->securitypriv;
-	uint	ndisauthmode=psecuritypriv->ndisauthtype;
+	struct security_priv *psecuritypriv = &adapter->securitypriv;
+	uint ndisauthmode = psecuritypriv->ndisauthtype;
 	uint ndissecuritytype = psecuritypriv->ndisencryptstatus;
 
 _func_enter_;
@@ -2250,37 +2266,36 @@ _func_enter_;
 		  ndisauthmode, ndissecuritytype));
 
 	/* copy fixed ie only */
-	memcpy(out_ie, in_ie,12);
-	ielength=12;
-	if((ndisauthmode==Ndis802_11AuthModeWPA)||(ndisauthmode==Ndis802_11AuthModeWPAPSK))
-			authmode=_WPA_IE_ID_;
-	if((ndisauthmode==Ndis802_11AuthModeWPA2)||(ndisauthmode==Ndis802_11AuthModeWPA2PSK))
-			authmode=_WPA2_IE_ID_;
+	memcpy(out_ie, in_ie, 12);
+	ielength = 12;
+	if ((ndisauthmode==Ndis802_11AuthModeWPA) ||
+	    (ndisauthmode==Ndis802_11AuthModeWPAPSK))
+		authmode=_WPA_IE_ID_;
+	if ((ndisauthmode==Ndis802_11AuthModeWPA2) ||
+	    (ndisauthmode==Ndis802_11AuthModeWPA2PSK))
+		authmode=_WPA2_IE_ID_;
 
-	if(check_fwstate(pmlmepriv, WIFI_UNDER_WPS))
-	{
-		memcpy(out_ie+ielength, psecuritypriv->wps_ie, psecuritypriv->wps_ie_len);
+	if (check_fwstate(pmlmepriv, WIFI_UNDER_WPS)) {
+		memcpy(out_ie + ielength, psecuritypriv->wps_ie,
+		       psecuritypriv->wps_ie_len);
 
 		ielength += psecuritypriv->wps_ie_len;
-	}
-	else if((authmode==_WPA_IE_ID_)||(authmode==_WPA2_IE_ID_))
-	{
+	} else if ((authmode==_WPA_IE_ID_) || (authmode==_WPA2_IE_ID_)) {
 		/* copy RSN or SSN */
-		memcpy(&out_ie[ielength], &psecuritypriv->supplicant_ie[0], psecuritypriv->supplicant_ie[1]+2);
-		ielength+=psecuritypriv->supplicant_ie[1]+2;
-		rtw_report_sec_ie(adapter, authmode, psecuritypriv->supplicant_ie);
+		memcpy(&out_ie[ielength], &psecuritypriv->supplicant_ie[0],
+		       psecuritypriv->supplicant_ie[1] + 2);
+		ielength += psecuritypriv->supplicant_ie[1] + 2;
+		rtw_report_sec_ie(adapter, authmode,
+				  psecuritypriv->supplicant_ie);
 	}
 
 	iEntry = SecIsInPMKIDList(adapter, pmlmepriv->assoc_bssid);
-	if(iEntry<0)
-	{
+	if (iEntry < 0)	{
 		return ielength;
-	}
-	else
-	{
-		if(authmode == _WPA2_IE_ID_)
-		{
-			ielength=rtw_append_pmkid(adapter, iEntry, out_ie, ielength);
+	} else {
+		if (authmode == _WPA2_IE_ID_) {
+			ielength=rtw_append_pmkid(adapter, iEntry,
+						  out_ie, ielength);
 		}
 	}
 
@@ -2300,7 +2315,8 @@ _func_enter_;
 
 	memcpy(pdev_network->MacAddress, myhwaddr, ETH_ALEN);
 
-	memcpy(&pdev_network->Ssid, &pregistrypriv->ssid, sizeof(struct ndis_802_11_ssid));
+	memcpy(&pdev_network->Ssid, &pregistrypriv->ssid,
+	       sizeof(struct ndis_802_11_ssid));
 
 	pdev_network->Configuration.Length=sizeof(struct ndis_802_11_config);
 	pdev_network->Configuration.BeaconPeriod = 100;
@@ -2314,53 +2330,58 @@ _func_exit_;
 
 void rtw_update_registrypriv_dev_network(struct rtw_adapter* adapter)
 {
-	int sz=0;
+	int sz = 0;
 	struct registry_priv* pregistrypriv = &adapter->registrypriv;
-	struct wlan_bssid_ex    *pdev_network = &pregistrypriv->dev_network;
-	struct	security_priv*	psecuritypriv = &adapter->securitypriv;
-	struct	wlan_network	*cur_network = &adapter->mlmepriv.cur_network;
+	struct wlan_bssid_ex *pdev_network = &pregistrypriv->dev_network;
+	struct security_priv *psecuritypriv = &adapter->securitypriv;
+	struct wlan_network *cur_network = &adapter->mlmepriv.cur_network;
 	/* struct	xmit_priv	*pxmitpriv = &adapter->xmitpriv; */
 
 _func_enter_;
 
-	pdev_network->Privacy = (psecuritypriv->dot11PrivacyAlgrthm > 0 ? 1 : 0) ; /*  adhoc no 802.1x */
+	pdev_network->Privacy =
+		(psecuritypriv->dot11PrivacyAlgrthm > 0 ? 1 : 0);
 
 	pdev_network->Rssi = 0;
 
 	switch(pregistrypriv->wireless_mode)
 	{
-		case WIRELESS_11B:
-			pdev_network->NetworkTypeInUse = (Ndis802_11DS);
-			break;
-		case WIRELESS_11G:
-		case WIRELESS_11BG:
-		case WIRELESS_11_24N:
-		case WIRELESS_11G_24N:
-		case WIRELESS_11BG_24N:
-			pdev_network->NetworkTypeInUse = (Ndis802_11OFDM24);
-			break;
-		case WIRELESS_11A:
-		case WIRELESS_11A_5N:
-			pdev_network->NetworkTypeInUse = (Ndis802_11OFDM5);
-			break;
-		case WIRELESS_11ABGN:
-			if(pregistrypriv->channel > 14)
-				pdev_network->NetworkTypeInUse = (Ndis802_11OFDM5);
-			else
-				pdev_network->NetworkTypeInUse = (Ndis802_11OFDM24);
-			break;
-		default :
-			/*  TODO */
-			break;
+	case WIRELESS_11B:
+		pdev_network->NetworkTypeInUse = Ndis802_11DS;
+		break;
+	case WIRELESS_11G:
+	case WIRELESS_11BG:
+	case WIRELESS_11_24N:
+	case WIRELESS_11G_24N:
+	case WIRELESS_11BG_24N:
+		pdev_network->NetworkTypeInUse = Ndis802_11OFDM24;
+		break;
+	case WIRELESS_11A:
+	case WIRELESS_11A_5N:
+		pdev_network->NetworkTypeInUse = Ndis802_11OFDM5;
+		break;
+	case WIRELESS_11ABGN:
+		if (pregistrypriv->channel > 14)
+			pdev_network->NetworkTypeInUse = Ndis802_11OFDM5;
+		else
+			pdev_network->NetworkTypeInUse = Ndis802_11OFDM24;
+		break;
+	default :
+		/*  TODO */
+		break;
 	}
 
-	pdev_network->Configuration.DSConfig = (pregistrypriv->channel);
-	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("pregistrypriv->channel=%d, pdev_network->Configuration.DSConfig=0x%x\n", pregistrypriv->channel, pdev_network->Configuration.DSConfig));
+	pdev_network->Configuration.DSConfig = pregistrypriv->channel;
+	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,
+		 ("pregistrypriv->channel=%d, pdev_network->Configuration."
+		  "DSConfig=0x%x\n", pregistrypriv->channel,
+		  pdev_network->Configuration.DSConfig));
 
-	if(cur_network->network.InfrastructureMode == Ndis802_11IBSS)
-		pdev_network->Configuration.ATIMWindow = (0);
+	if (cur_network->network.InfrastructureMode == Ndis802_11IBSS)
+		pdev_network->Configuration.ATIMWindow = 0;
 
-	pdev_network->InfrastructureMode = (cur_network->network.InfrastructureMode);
+	pdev_network->InfrastructureMode =
+		cur_network->network.InfrastructureMode;
 
 	/*  1. Supported rates */
 	/*  2. IE */
@@ -2369,9 +2390,11 @@ _func_enter_;
 
 	pdev_network->IELength = sz;
 
-	pdev_network->Length = get_wlan_bssid_ex_sz((struct wlan_bssid_ex  *)pdev_network);
+	pdev_network->Length =
+		get_wlan_bssid_ex_sz((struct wlan_bssid_ex *)pdev_network);
 
-	/* notes: translate IELength & Length after assign the Length to cmdsz in createbss_cmd(); */
+	/* notes: translate IELength & Length after assign the
+	   Length to cmdsz in createbss_cmd(); */
 	/* pdev_network->IELength = cpu_to_le32(sz); */
 
 _func_exit_;
@@ -2387,11 +2410,12 @@ _func_exit_;
 /* the fucntion is at passive_level */
 void rtw_joinbss_reset(struct rtw_adapter *padapter)
 {
-	u8	threshold;
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
+	u8 threshold;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct ht_priv *phtpriv = &pmlmepriv->htpriv;
 
-	/* todo: if you want to do something io/reg/hw setting before join_bss, please add code here */
+	/* todo: if you want to do something io/reg/hw setting
+	   before join_bss, please add code here */
 
 	pmlmepriv->num_FortyMHzIntolerant = 0;
 
@@ -2401,44 +2425,44 @@ void rtw_joinbss_reset(struct rtw_adapter *padapter)
 
 	/*  TH=1 => means that invalidate usb rx aggregation */
 	/*  TH=0 => means that validate usb rx aggregation, use init value. */
-	if(phtpriv->ht_option)
-	{
-		if(padapter->registrypriv.wifi_spec==1)
+	if (phtpriv->ht_option) {
+		if (padapter->registrypriv.wifi_spec == 1)
 			threshold = 1;
 		else
 			threshold = 0;
-		rtw_hal_set_hwreg(padapter, HW_VAR_RXDMA_AGG_PG_TH, (u8 *)(&threshold));
-	}
-	else
-	{
+		rtw_hal_set_hwreg(padapter, HW_VAR_RXDMA_AGG_PG_TH,
+				  (u8 *)(&threshold));
+	} else {
 		threshold = 1;
-		rtw_hal_set_hwreg(padapter, HW_VAR_RXDMA_AGG_PG_TH, (u8 *)(&threshold));
+		rtw_hal_set_hwreg(padapter, HW_VAR_RXDMA_AGG_PG_TH,
+				  (u8 *)(&threshold));
 	}
 }
 
 /* the fucntion is >= passive_level */
-unsigned int rtw_restructure_ht_ie(struct rtw_adapter *padapter, u8 *in_ie, u8 *out_ie, uint in_len, uint *pout_len)
+unsigned int rtw_restructure_ht_ie(struct rtw_adapter *padapter, u8 *in_ie,
+				   u8 *out_ie, uint in_len, uint *pout_len)
 {
 	u32 ielen, out_len;
 	int max_rx_ampdu_factor;
 	unsigned char *p, *pframe;
 	struct ieee80211_ht_cap ht_capie;
 	unsigned char WMM_IE[] = {0x00, 0x50, 0xf2, 0x02, 0x00, 0x01, 0x00};
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	struct qos_priv		*pqospriv= &pmlmepriv->qospriv;
-	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct qos_priv *pqospriv= &pmlmepriv->qospriv;
+	struct ht_priv *phtpriv = &pmlmepriv->htpriv;
 
 	phtpriv->ht_option = false;
 
-	p = rtw_get_ie(in_ie+12, _HT_CAPABILITY_IE_, &ielen, in_len-12);
+	p = rtw_get_ie(in_ie + 12, _HT_CAPABILITY_IE_, &ielen, in_len - 12);
 
-	if(p && ielen>0)
-	{
-		if(pqospriv->qos_option == 0)
-		{
+	if (p && ielen > 0) {
+		u32 rx_packet_offset, max_recvbuf_sz;
+		if (pqospriv->qos_option == 0) {
 			out_len = *pout_len;
-			pframe = rtw_set_ie(out_ie+out_len, _VENDOR_SPECIFIC_IE_,
-								_WMM_IE_Length_, WMM_IE, pout_len);
+			pframe = rtw_set_ie(out_ie + out_len,
+					    _VENDOR_SPECIFIC_IE_,
+					    _WMM_IE_Length_, WMM_IE, pout_len);
 
 			pqospriv->qos_option = 1;
 		}
@@ -2451,38 +2475,37 @@ unsigned int rtw_restructure_ht_ie(struct rtw_adapter *padapter, u8 *in_ie, u8 *
 			IEEE80211_HT_CAP_SGI_20 | IEEE80211_HT_CAP_SGI_40 |
 			IEEE80211_HT_CAP_TX_STBC | IEEE80211_HT_CAP_DSSSCCK40;
 
-		{
-			u32 rx_packet_offset, max_recvbuf_sz;
-			rtw_hal_get_def_var(padapter, HAL_DEF_RX_PACKET_OFFSET, &rx_packet_offset);
-			rtw_hal_get_def_var(padapter, HAL_DEF_MAX_RECVBUF_SZ, &max_recvbuf_sz);
-			/* if(max_recvbuf_sz-rx_packet_offset>(8191-256)) { */
-			/*	DBG_8723A("%s IEEE80211_HT_CAP_MAX_AMSDU is set\n", __func__); */
-			/*	ht_capie.cap_info = ht_capie.cap_info |IEEE80211_HT_CAP_MAX_AMSDU; */
-			/*  */
-		}
-		rtw_hal_get_def_var(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR, &max_rx_ampdu_factor);
-		ht_capie.ampdu_params_info = (max_rx_ampdu_factor&0x03);
+		rtw_hal_get_def_var(padapter, HAL_DEF_RX_PACKET_OFFSET,
+				    &rx_packet_offset);
+		rtw_hal_get_def_var(padapter, HAL_DEF_MAX_RECVBUF_SZ,
+				    &max_recvbuf_sz);
 
-		if(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_ )
-			ht_capie.ampdu_params_info |= (IEEE80211_HT_AMPDU_PARM_DENSITY&(0x07<<2));
+		rtw_hal_get_def_var(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR,
+				    &max_rx_ampdu_factor);
+		ht_capie.ampdu_params_info = max_rx_ampdu_factor & 0x03;
+
+		if (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)
+			ht_capie.ampdu_params_info |=
+				(IEEE80211_HT_AMPDU_PARM_DENSITY& (0x07 << 2));
 		else
-			ht_capie.ampdu_params_info |= (IEEE80211_HT_AMPDU_PARM_DENSITY&0x00);
+			ht_capie.ampdu_params_info |=
+				(IEEE80211_HT_AMPDU_PARM_DENSITY & 0x00);
 
-		pframe = rtw_set_ie(out_ie+out_len, _HT_CAPABILITY_IE_,
-							sizeof(struct ieee80211_ht_cap), (unsigned char*)&ht_capie, pout_len);
+		pframe = rtw_set_ie(out_ie + out_len, _HT_CAPABILITY_IE_,
+				    sizeof(struct ieee80211_ht_cap),
+				    (unsigned char*)&ht_capie, pout_len);
 
 		phtpriv->ht_option = true;
 
-		p = rtw_get_ie(in_ie+12, _HT_ADD_INFO_IE_, &ielen, in_len-12);
-		if(p && (ielen==sizeof(struct ieee80211_ht_addt_info)))
-		{
+		p = rtw_get_ie(in_ie + 12, _HT_ADD_INFO_IE_, &ielen, in_len-12);
+		if (p && (ielen == sizeof(struct ieee80211_ht_addt_info))) {
 			out_len = *pout_len;
-			pframe = rtw_set_ie(out_ie+out_len, _HT_ADD_INFO_IE_, ielen, p+2 , pout_len);
+			pframe = rtw_set_ie(out_ie + out_len, _HT_ADD_INFO_IE_,
+					    ielen, p + 2 , pout_len);
 		}
-
 	}
 
-	return (phtpriv->ht_option);
+	return phtpriv->ht_option;
 }
 
 /* the fucntion is > passive_level (in critical_section) */
