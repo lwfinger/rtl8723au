@@ -280,25 +280,6 @@ rtw_cfg80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	},
 };
 
-static int rtw_ieee80211_channel_to_frequency(int chan, int band)
-{
-	/* see 802.11 17.3.8.3.2 and Annex J
-	* there are overlapping channel numbers in 5GHz and 2GHz bands */
-
-	if (band == IEEE80211_BAND_5GHZ) {
-	if (chan >= 182 && chan <= 196)
-			return 4000 + chan * 5;
-             else
-                    return 5000 + chan * 5;
-       } else { /* IEEE80211_BAND_2GHZ */
-		if (chan == 14)
-			return 2484;
-             else if (chan < 14)
-			return 2407 + chan * 5;
-             else
-			return 0; /* not supported */
-	}
-}
 
 #define MAX_BSSINFO_LEN 1000
 static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_network *pnetwork)
@@ -336,9 +317,11 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 
 	channel = pnetwork->network.Configuration.DSConfig;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	notify_channel = ieee80211_get_channel(wiphy, freq);
 
@@ -448,9 +431,9 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 		u16 channel = cur_network->network.Configuration.DSConfig;
 
 		if (channel <= RTW_CH_MAX_2G_CHANNEL)
-			freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+			freq = ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
 		else
-			freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+			freq = ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
 
 		notify_channel = ieee80211_get_channel(wiphy, freq);
 
@@ -2622,9 +2605,11 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
 #endif /* defined(RTW_USE_CFG80211_STA_EVENT) */
@@ -2651,9 +2636,11 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter, unsigned c
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	pmgmt_frame = mgmt_buf;
 	pwlanhdr = (struct ieee80211_hdr *)pmgmt_frame;
@@ -3351,9 +3338,11 @@ void rtw_cfg80211_rx_action_p2p(struct rtw_adapter *padapter, u8 *pmgmt_frame, u
 
 indicate:
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
 }
@@ -3385,9 +3374,11 @@ void rtw_cfg80211_rx_p2p_action_public(struct rtw_adapter *padapter, u8 *pmgmt_f
 
 indicate:
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
 }
@@ -3411,9 +3402,11 @@ void rtw_cfg80211_rx_action(struct rtw_adapter *adapter, u8 *frame, uint frame_l
 		DBG_8723A("RTW_Rx:category(%u), action(%u)\n", category, action);
 
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = ieee80211_channel_to_frequency(channel,
+						      IEEE80211_BAND_5GHZ);
 
 	rtw_cfg80211_rx_mgmt(adapter, freq, 0, frame, frame_len, GFP_ATOMIC);
 }
