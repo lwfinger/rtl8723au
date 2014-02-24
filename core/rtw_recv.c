@@ -615,8 +615,6 @@ _func_enter_;
 	pattrib = &pfhdr->attrib;
 	psta_addr = pattrib->ta;
 
-	prtnframe = NULL;
-
 	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 		 ("########portctrl:adapter->securitypriv.dot11AuthAlgrthm="
 		  "%d\n", adapter->securitypriv.dot11AuthAlgrthm));
