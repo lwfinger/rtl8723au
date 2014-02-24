@@ -864,7 +864,8 @@ int sta2sta_data_frame(struct rtw_adapter *adapter,
 		       struct recv_frame *precv_frame,
 		       struct sta_info**psta)
 {
-	u8 *ptr = precv_frame->pkt->data;
+	struct sk_buff *skb = precv_frame->pkt;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -927,9 +928,9 @@ _func_enter_;
 			sta_addr = pattrib->src;
 		}
 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
-		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
-		memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
+		memcpy(pattrib->dst, hdr->addr1, ETH_ALEN);
+		memcpy(pattrib->src, hdr->addr2, ETH_ALEN);
+		memcpy(pattrib->bssid, hdr->addr3, ETH_ALEN);
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 
@@ -963,7 +964,6 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 {
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
-	u8 *ptr = skb->data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	int ret = _SUCCESS;
 	struct sta_priv *pstapriv = &adapter->stapriv;
@@ -1041,9 +1041,9 @@ _func_enter_;
 
 	} else if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) &&
 		   (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
-		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
-		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
-		memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
+		memcpy(pattrib->dst, hdr->addr1, ETH_ALEN);
+		memcpy(pattrib->src, hdr->addr2, ETH_ALEN);
+		memcpy(pattrib->bssid, hdr->addr3, ETH_ALEN);
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 
@@ -1178,7 +1178,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 		return _FAIL;
 
 	/* receive the frames that ra(a1) is my address */
-	if (memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN)){
+	if (memcmp(hdr->addr1, myid(&padapter->eeprompriv), ETH_ALEN)){
 		return _FAIL;
 	}
 
@@ -1189,7 +1189,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 		struct sta_info *psta = NULL;
 
 		aid = GetAid(pframe);
-		psta = rtw_get_stainfo(pstapriv, GetAddr2Ptr(pframe));
+		psta = rtw_get_stainfo(pstapriv, hdr->addr2);
 
 		if ((!psta) || (psta->aid != aid)) {
 			return _FAIL;
@@ -1343,8 +1343,7 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 	hdr = (struct ieee80211_hdr *) skb->data;
 
 		/* for rx pkt statistics */
-	psta = rtw_get_stainfo(&padapter->stapriv,
-			       GetAddr2Ptr(skb->data));
+	psta = rtw_get_stainfo(&padapter->stapriv, hdr->addr2);
 	if (psta) {
 		psta->sta_stats.rx_mgnt_pkts++;
 
@@ -1354,10 +1353,10 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 			psta->sta_stats.rx_probereq_pkts++;
 		else if (ieee80211_is_probe_resp(hdr->frame_control)) {
 			if (!memcmp(padapter->eeprompriv.mac_addr,
-				    GetAddr1Ptr(skb->data), ETH_ALEN))
+				    hdr->addr1, ETH_ALEN))
 				psta->sta_stats.rx_probersp_pkts++;
-			else if (is_broadcast_ether_addr(GetAddr1Ptr(skb->data)) ||
-				 is_multicast_ether_addr(GetAddr1Ptr(skb->data)))
+			else if (is_broadcast_ether_addr(hdr->addr1) ||
+				 is_multicast_ether_addr(hdr->addr1))
 				psta->sta_stats.rx_probersp_bm_pkts++;
 			else
 				psta->sta_stats.rx_probersp_uo_pkts++;
@@ -1423,8 +1422,8 @@ _func_enter_;
 		break;
 
 	case 3:
-		memcpy(pattrib->ra, GetAddr1Ptr(ptr), ETH_ALEN);
-		memcpy(pattrib->ta, GetAddr2Ptr(ptr), ETH_ALEN);
+		memcpy(pattrib->ra, hdr->addr1, ETH_ALEN);
+		memcpy(pattrib->ta, hdr->addr2, ETH_ALEN);
 		ret =_FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,(" case 3\n"));
 		break;
