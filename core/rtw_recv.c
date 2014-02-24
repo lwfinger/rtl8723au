@@ -928,11 +928,11 @@ _func_enter_;
 			sta_addr = pattrib->src;
 		}
 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-		memcpy(pattrib->dst, hdr->addr1, ETH_ALEN);
-		memcpy(pattrib->src, hdr->addr2, ETH_ALEN);
-		memcpy(pattrib->bssid, hdr->addr3, ETH_ALEN);
-		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
-		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
+		ether_addr_copy(pattrib->dst, hdr->addr1);
+		ether_addr_copy(pattrib->src, hdr->addr2);
+		ether_addr_copy(pattrib->bssid, hdr->addr3);
+		ether_addr_copy(pattrib->ra, pattrib->dst);
+		ether_addr_copy(pattrib->ta, pattrib->src);
 
 		sta_addr = mybssid;
 	} else {
@@ -1041,14 +1041,14 @@ _func_enter_;
 
 	} else if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) &&
 		   (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
-		memcpy(pattrib->dst, hdr->addr1, ETH_ALEN);
-		memcpy(pattrib->src, hdr->addr2, ETH_ALEN);
-		memcpy(pattrib->bssid, hdr->addr3, ETH_ALEN);
-		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
-		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
+		ether_addr_copy(pattrib->dst, hdr->addr1);
+		ether_addr_copy(pattrib->src, hdr->addr2);
+		ether_addr_copy(pattrib->bssid, hdr->addr3);
+		ether_addr_copy(pattrib->ra, pattrib->dst);
+		ether_addr_copy(pattrib->ta, pattrib->src);
 
 		/*  */
-		memcpy(pattrib->bssid,  mybssid, ETH_ALEN);
+		ether_addr_copy(pattrib->bssid,  mybssid);
 
 		/*  get sta_info */
 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid);
@@ -1396,34 +1396,34 @@ _func_enter_;
 		goto exit;
 	}
 
-	memcpy(pattrib->dst, pda, ETH_ALEN);
-	memcpy(pattrib->src, psa, ETH_ALEN);
+	ether_addr_copy(pattrib->dst, pda);
+	ether_addr_copy(pattrib->src, psa);
 
-	memcpy(pattrib->bssid, pbssid, ETH_ALEN);
+	ether_addr_copy(pattrib->bssid, pbssid);
 
 	switch(pattrib->to_fr_ds)
 	{
 	case 0:
-		memcpy(pattrib->ra, pda, ETH_ALEN);
-		memcpy(pattrib->ta, psa, ETH_ALEN);
+		ether_addr_copy(pattrib->ra, pda);
+		ether_addr_copy(pattrib->ta, psa);
 		ret = sta2sta_data_frame(adapter, precv_frame, &psta);
 		break;
 
 	case 1:
-		memcpy(pattrib->ra, pda, ETH_ALEN);
-		memcpy(pattrib->ta, pbssid, ETH_ALEN);
+		ether_addr_copy(pattrib->ra, pda);
+		ether_addr_copy(pattrib->ta, pbssid);
 		ret = ap2sta_data_frame(adapter, precv_frame, &psta);
 		break;
 
 	case 2:
-		memcpy(pattrib->ra, pbssid, ETH_ALEN);
-		memcpy(pattrib->ta, psa, ETH_ALEN);
+		ether_addr_copy(pattrib->ra, pbssid);
+		ether_addr_copy(pattrib->ta, psa);
 		ret = sta2ap_data_frame(adapter, precv_frame, &psta);
 		break;
 
 	case 3:
-		memcpy(pattrib->ra, hdr->addr1, ETH_ALEN);
-		memcpy(pattrib->ta, hdr->addr2, ETH_ALEN);
+		ether_addr_copy(pattrib->ra, hdr->addr1);
+		ether_addr_copy(pattrib->ta, hdr->addr2);
 		ret =_FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,(" case 3\n"));
 		break;
@@ -1702,8 +1702,8 @@ _func_enter_;
 				     (bsnaphdr ? 2:0)));
 	}
 
-	memcpy(ptr, pattrib->dst, ETH_ALEN);
-	memcpy(ptr + ETH_ALEN, pattrib->src, ETH_ALEN);
+	ether_addr_copy(ptr, pattrib->dst);
+	ether_addr_copy(ptr + ETH_ALEN, pattrib->src);
 
 	if (!bsnaphdr) {
 		len = htons(len);
@@ -2019,19 +2019,19 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 			/* remove RFC1042 or Bridge-Tunnel encapsulation
 			   and replace EtherType */
 			skb_pull(sub_skb, SNAP_SIZE);
-			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src,
-			       ETH_ALEN);
-			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst,
-			       ETH_ALEN);
+			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
+					pattrib->src);
+			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
+					pattrib->dst);
 		} else {
 			u16 len;
 			/* Leave Ethernet header part of hdr and full payload */
 			len = htons(sub_skb->len);
 			memcpy(skb_push(sub_skb, 2), &len, 2);
-			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src,
-			       ETH_ALEN);
-			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst,
-			       ETH_ALEN);
+			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
+					pattrib->src);
+			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
+					pattrib->dst);
 		}
 
 		/* Indicat the packets to upper layer */
