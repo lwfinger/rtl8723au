@@ -881,30 +881,33 @@ _func_enter_;
 		(check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
 
 		/*  filter packets that SA is myself or multicast or broadcast */
-		if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN)) {
+		if (ether_addr_equal(myhwaddr, pattrib->src)) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 (" SA==myself \n"));
 			ret= _FAIL;
 			goto exit;
 		}
 
-		if ((memcmp(myhwaddr, pattrib->dst, ETH_ALEN)) && (!bmcast)) {
+		if (!ether_addr_equal(myhwaddr, pattrib->dst) && !bmcast) {
 			ret= _FAIL;
 			goto exit;
 		}
 
-		if (!memcmp(pattrib->bssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
-		    !memcmp(mybssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
-		    memcmp(pattrib->bssid, mybssid, ETH_ALEN)) {
+		if (ether_addr_equal(pattrib->bssid, "\x0\x0\x0\x0\x0\x0") ||
+		    ether_addr_equal(mybssid, "\x0\x0\x0\x0\x0\x0") ||
+		    !ether_addr_equal(pattrib->bssid, mybssid)) {
 			ret= _FAIL;
 			goto exit;
 		}
 
 		sta_addr = pattrib->src;
 	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true) {
-		/*  For Station mode, sa and bssid should always be BSSID, and DA is my mac-address */
-		if (memcmp(pattrib->bssid, pattrib->src, ETH_ALEN)) {
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("bssid != TA under STATION_MODE; drop pkt\n"));
+		/*  For Station mode, sa and bssid should always be BSSID,
+		    and DA is my mac-address */
+		if (!ether_addr_equal(pattrib->bssid, pattrib->src)) {
+			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
+				 ("bssid != TA under STATION_MODE; drop "
+				  "pkt\n"));
 			ret = _FAIL;
 			goto exit;
 		}
@@ -919,8 +922,9 @@ _func_enter_;
 				goto exit;
 			}
 		} else { /*  not mc-frame */
-			/*  For AP mode, if DA is non-MCAST, then it must be BSSID, and bssid == BSSID */
-			if (memcmp(pattrib->bssid, pattrib->dst, ETH_ALEN)) {
+			/*  For AP mode, if DA is non-MCAST, then it must
+			    be BSSID, and bssid == BSSID */
+			if (!ether_addr_equal(pattrib->bssid, pattrib->dst)) {
 				ret= _FAIL;
 				goto exit;
 			}
@@ -979,7 +983,7 @@ _func_enter_;
 	     check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true)) {
 
 		/* filter packets that SA is myself or multicast or broadcast */
-		if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN)) {
+		if (ether_addr_equal(myhwaddr, pattrib->src)) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
 				 (" SA==myself \n"));
 			ret = _FAIL;
@@ -987,7 +991,7 @@ _func_enter_;
 		}
 
 		/*  da should be for me */
-		if (memcmp(myhwaddr, pattrib->dst, ETH_ALEN) && (!bmcast)) {
+		if (!ether_addr_equal(myhwaddr, pattrib->dst) && !bmcast) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 				(" ap2sta_data_frame:  compare DA fail; DA="
 				 MAC_FMT"\n", MAC_ARG(pattrib->dst)));
@@ -996,9 +1000,9 @@ _func_enter_;
 		}
 
 		/*  check BSSID */
-		if (!memcmp(pattrib->bssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
-		    !memcmp(mybssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
-		    memcmp(pattrib->bssid, mybssid, ETH_ALEN)) {
+		if (ether_addr_equal(pattrib->bssid, "\x0\x0\x0\x0\x0\x0") ||
+		    ether_addr_equal(mybssid, "\x0\x0\x0\x0\x0\x0") ||
+		    !ether_addr_equal(pattrib->bssid, mybssid)) {
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
 				(" ap2sta_data_frame:  compare BSSID fail ; "
 				 "BSSID="MAC_FMT"\n", MAC_ARG(pattrib->bssid)));
@@ -1063,7 +1067,7 @@ _func_enter_;
 		ret = RTW_RX_HANDLED;
 		goto exit;
 	} else {
-		if (!memcmp(myhwaddr, pattrib->dst, ETH_ALEN) && (!bmcast)) {
+		if (ether_addr_equal(myhwaddr, pattrib->dst) && !bmcast) {
 			*psta = rtw_get_stainfo(pstapriv, pattrib->bssid);
 			if (*psta == NULL) {
 				DBG_8723A("issue_deauth to the ap=" MAC_FMT
@@ -1104,7 +1108,7 @@ _func_enter_;
 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
 		/* For AP mode, RA=BSSID, TX=STA(SRC_ADDR), A3=DST_ADDR */
-		if (memcmp(pattrib->bssid, mybssid, ETH_ALEN)) {
+		if (!ether_addr_equal(pattrib->bssid, mybssid)) {
 			ret = _FAIL;
 			goto exit;
 		}
@@ -1140,7 +1144,7 @@ _func_enter_;
 		}
 	} else {
 		u8 *myhwaddr = myid(&adapter->eeprompriv);
-		if (memcmp(pattrib->ra, myhwaddr, ETH_ALEN)) {
+		if (!ether_addr_equal(pattrib->ra, myhwaddr)) {
 			ret = RTW_RX_HANDLED;
 			goto exit;
 		}
@@ -1178,7 +1182,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 		return _FAIL;
 
 	/* receive the frames that ra(a1) is my address */
-	if (memcmp(hdr->addr1, myid(&padapter->eeprompriv), ETH_ALEN)){
+	if (!ether_addr_equal(hdr->addr1, myid(&padapter->eeprompriv))){
 		return _FAIL;
 	}
 
@@ -1352,8 +1356,8 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 		else if (ieee80211_is_probe_req(hdr->frame_control))
 			psta->sta_stats.rx_probereq_pkts++;
 		else if (ieee80211_is_probe_resp(hdr->frame_control)) {
-			if (!memcmp(padapter->eeprompriv.mac_addr,
-				    hdr->addr1, ETH_ALEN))
+			if (ether_addr_equal(padapter->eeprompriv.mac_addr,
+				    hdr->addr1))
 				psta->sta_stats.rx_probersp_pkts++;
 			else if (is_broadcast_ether_addr(hdr->addr1) ||
 				 is_multicast_ether_addr(hdr->addr1))
