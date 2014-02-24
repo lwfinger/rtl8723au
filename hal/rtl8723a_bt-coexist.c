@@ -1001,21 +1001,17 @@ bthci_ReservedForTestingPLV(
 static u8 bthci_CheckRfStateBeforeConnect(struct rtw_adapter *padapter)
 {
 	PBT30Info				pBTInfo;
-	rt_rf_power_state		RfState;
-
+	enum rt_rf_power_state		RfState;
 
 	pBTInfo = GET_BT_INFO(padapter);
 
-/*	rtw_hal_get_hwreg(padapter, HW_VAR_RF_STATE, (u8*)(&RfState)); */
 	RfState = padapter->pwrctrlpriv.rf_pwrstate;
 
-	if (RfState != rf_on)
-	{
+	if (RfState != rf_on) {
 		mod_timer(&pBTInfo->BTPsDisableTimer,
 			  jiffies + msecs_to_jiffies(50));
 		return false;
 	}
-
 	return true;
 }
 
@@ -5874,30 +5870,24 @@ static u8 bthci_WaitForRfReady(struct rtw_adapter *padapter)
 	u8 bRet = false;
 
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
-	rt_rf_power_state			RfState;
-	u32						waitcnt = 0;
+	enum rt_rf_power_state RfState;
+	u32 waitcnt = 0;
 
-	while(1)
-	{
+	while (1) {
 		RfState = ppwrctrl->rf_pwrstate;
 
-		if ((RfState != rf_on) || (ppwrctrl->bips_processing))
-		{
+		if ((RfState != rf_on) || (ppwrctrl->bips_processing)) {
 			mdelay(10);
-			if (waitcnt++ >= 200)
-			{
+			if (waitcnt++ >= 200) {
 				bRet = false;
 				break;
 			}
-		}
-		else
-		{
+		} else {
 			RTPRINT(FIOCTL, IOCTL_STATE, ("bthci_WaitForRfReady(), Rf is on, wait %d times\n", waitcnt));
 			bRet = true;
 			break;
 		}
 	}
-
 	return bRet;
 }
 
@@ -6032,7 +6022,7 @@ static void BTHCI_StatusWatchdog(struct rtw_adapter *padapter)
 }
 
 static void
-BTHCI_NotifyRFState(struct rtw_adapter *padapter, rt_rf_power_state StateToSet,
+BTHCI_NotifyRFState(struct rtw_adapter *padapter, enum rt_rf_power_state StateToSet,
 		    RT_RF_CHANGE_SOURCE ChangeSource)
 {
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;

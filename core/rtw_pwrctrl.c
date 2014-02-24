@@ -171,7 +171,7 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 #endif /* CONFIG_8723AU_P2P */
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-	rt_rf_power_state rfpwrstate;
+	enum rt_rf_power_state rfpwrstate;
 
 	pwrpriv->ps_processing = true;
 
