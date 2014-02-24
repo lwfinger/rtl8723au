@@ -3402,7 +3402,8 @@ void rtw_cfg80211_rx_action(struct rtw_adapter *adapter, u8 *frame, uint frame_l
 }
 
 #ifdef CONFIG_8723AU_P2P
-void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, const u8 *buf, size_t len)
+void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter,
+					      const u8 *buf, size_t len)
 {
 	u16	wps_devicepassword_id = 0x0000;
 	uint	wps_devicepassword_id_len = 0;
@@ -3427,8 +3428,7 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	struct xmit_frame			*pmgntframe;
 	struct pkt_attrib			*pattrib;
 	unsigned char					*pframe;
-	struct ieee80211_hdr	*pwlanhdr;
-	unsigned short				*fctrl;
+	struct ieee80211_hdr	*pwlanhdr, *hdr;
 	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
@@ -3440,9 +3440,10 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 
 	DBG_8723A( "[%s] In\n", __FUNCTION__ );
 
+	hdr = (struct ieee80211_hdr *) buf;
 	/* prepare for building provision_request frame */
-	memcpy(pwdinfo->tx_prov_disc_info.peerIFAddr, GetAddr1Ptr(buf), ETH_ALEN);
-	memcpy(pwdinfo->tx_prov_disc_info.peerDevAddr, GetAddr1Ptr(buf), ETH_ALEN);
+	memcpy(pwdinfo->tx_prov_disc_info.peerIFAddr, hdr->addr1, ETH_ALEN);
+	memcpy(pwdinfo->tx_prov_disc_info.peerDevAddr, hdr->addr1, ETH_ALEN);
 
 	pwdinfo->tx_prov_disc_info.wps_config_method_request = WPS_CM_PUSH_BUTTON;
 
@@ -3502,8 +3503,7 @@ void rtw_cfg80211_issue_p2p_provision_request(struct rtw_adapter *padapter, cons
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_control);
-	*(fctrl) = 0;
+	pwlanhdr->frame_control = 0;
 
 	memcpy(pwlanhdr->addr1, pwdinfo->tx_prov_disc_info.peerDevAddr, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
@@ -3876,6 +3876,7 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 	struct ieee80211_channel *chan = params->chan;
 	const u8 *buf = params->buf;
 #endif
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) buf;
 	u8 tx_ch = (u8)ieee80211_frequency_to_channel(chan->center_freq);
 
 	/* cookie generation */
@@ -3889,23 +3890,27 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
 #endif /* CONFIG_DEBUG_CFG80211 */
 
 	/* indicate ack before issue frame to avoid racing with rsp frame */
-	rtw_cfg80211_mgmt_tx_status(padapter, *cookie, buf, len, ack, GFP_KERNEL);
+	rtw_cfg80211_mgmt_tx_status(padapter, *cookie, buf, len, ack,
+				    GFP_KERNEL);
 
 	if (rtw_action_frame_parse(buf, len, &category, &action) == false) {
-		DBG_8723A(FUNC_ADPT_FMT" frame_control:0x%x\n", FUNC_ADPT_ARG(padapter),
-			le16_to_cpu(((struct ieee80211_hdr_3addr *)buf)->frame_control));
+		DBG_8723A(FUNC_ADPT_FMT" frame_control:0x%x\n",
+			  FUNC_ADPT_ARG(padapter),
+			  le16_to_cpu(hdr->frame_control));
 		goto exit;
 	}
 
-	DBG_8723A("RTW_Tx:tx_ch=%d, da="MAC_FMT"\n", tx_ch, MAC_ARG(GetAddr1Ptr(buf)));
-	#ifdef CONFIG_8723AU_P2P
+	DBG_8723A("RTW_Tx:tx_ch=%d, da="MAC_FMT"\n", tx_ch,
+		  MAC_ARG(hdr->addr1));
+#ifdef CONFIG_8723AU_P2P
 	if((type = rtw_p2p_check_frames(padapter, buf, len, true)) >= 0)
 		goto dump;
-	#endif
+#endif
 	if (category == WLAN_CATEGORY_PUBLIC)
 		DBG_8723A("RTW_Tx:%s\n", action_public_str(action));
 	else
-		DBG_8723A("RTW_Tx:category(%u), action(%u)\n", category, action);
+		DBG_8723A("RTW_Tx:category(%u), action(%u)\n",
+			  category, action);
 
 dump:
 	do {
