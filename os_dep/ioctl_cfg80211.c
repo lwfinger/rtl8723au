@@ -2600,7 +2600,7 @@ void rtw_cfg80211_indicate_sta_assoc(struct rtw_adapter *padapter, u8 *pmgmt_fra
 		sinfo.filled = STATION_INFO_ASSOC_REQ_IES;
 		sinfo.assoc_req_ies = pmgmt_frame + WLAN_HDR_A3_LEN + ie_offset;
 		sinfo.assoc_req_ies_len = frame_len - WLAN_HDR_A3_LEN - ie_offset;
-		cfg80211_new_sta(ndev, GetAddr2Ptr(pmgmt_frame), &sinfo, GFP_ATOMIC);
+		cfg80211_new_sta(ndev, hdr->addr2, &sinfo, GFP_ATOMIC);
 	}
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
@@ -2694,7 +2694,6 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 	int dot11_hdr_len = 24;
 	int snap_len = 6;
 	unsigned char *pdata;
-	u16 frame_ctl;
 	unsigned char src_mac_addr[6];
 	unsigned char dst_mac_addr[6];
 	struct ieee80211_hdr *dot11_hdr;
@@ -2724,15 +2723,14 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 	skb_pull(skb, rtap_len);
 
 	dot11_hdr = (struct ieee80211_hdr *)skb->data;
-	frame_ctl = le16_to_cpu(dot11_hdr->frame_control);
 	/* Check if the QoS bit is set */
-	if ((frame_ctl & IEEE80211_FCTL_FTYPE) == IEEE80211_FTYPE_DATA) {
+	if (ieee80211_is_data(dot11_hdr->frame_control)) {
 		/* Check if this ia a Wireless Distribution System (WDS) frame
 		 * which has 4 MAC addresses
 		 */
-		if (dot11_hdr->frame_control & 0x0080)
-			qos_len = 2;
-		if ((dot11_hdr->frame_control & 0x0300) == 0x0300)
+		if (ieee80211_is_data_qos(dot11_hdr->frame_control))
+			qos_len = IEEE80211_QOS_CTL_LEN;
+		if (ieee80211_has_a4(dot11_hdr->frame_control))
 			dot11_hdr_len += 6;
 
 		memcpy(dst_mac_addr, dot11_hdr->addr1, sizeof(dst_mac_addr));
@@ -2741,10 +2739,11 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 		/* Skip the 802.11 header, QoS (if any) and SNAP, but leave spaces for
 		 * for two MAC addresses
 		 */
-		skb_pull(skb, dot11_hdr_len + qos_len + snap_len - sizeof(src_mac_addr) * 2);
+		skb_pull(skb, dot11_hdr_len + qos_len + snap_len -
+			 ETH_ALEN * 2);
 		pdata = (unsigned char*)skb->data;
-		memcpy(pdata, dst_mac_addr, sizeof(dst_mac_addr));
-		memcpy(pdata + sizeof(dst_mac_addr), src_mac_addr, sizeof(src_mac_addr));
+		memcpy(pdata, dst_mac_addr, ETH_ALEN);
+		memcpy(pdata + ETH_ALEN, src_mac_addr, ETH_ALEN);
 
 		DBG_8723A("should be eapol packet\n");
 
@@ -2753,37 +2752,34 @@ static int rtw_cfg80211_monitor_if_xmit_entry(struct sk_buff *skb, struct net_de
 
 		return ret;
 
-	}
-	else if ((frame_ctl & (IEEE80211_FCTL_FTYPE|IEEE80211_FCTL_STYPE))
-		== (IEEE80211_FTYPE_MGMT|IEEE80211_STYPE_ACTION)
-	)
-	{
+	} else if (ieee80211_is_action(dot11_hdr->frame_control)) {
 		/* only for action frames */
 		struct xmit_frame		*pmgntframe;
 		struct pkt_attrib	*pattrib;
 		unsigned char	*pframe;
 		/* u8 category, action, OUI_Subtype, dialogToken=0; */
 		/* unsigned char	*frame_body; */
-		struct ieee80211_hdr *pwlanhdr;
 		struct xmit_priv	*pxmitpriv = &(padapter->xmitpriv);
 		struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-		u8 *buf = skb->data;
 		u32 len = skb->len;
 		u8 category, action;
 		int type = -1;
 
-		if (rtw_action_frame_parse(buf, len, &category, &action) == false) {
-			DBG_8723A(FUNC_NDEV_FMT" frame_control:0x%x\n", FUNC_NDEV_ARG(ndev),
-				le16_to_cpu(((struct ieee80211_hdr_3addr *)buf)->frame_control));
+		if (rtw_action_frame_parse(skb->data, len, &category,
+					   &action) == false) {
+			DBG_8723A(FUNC_NDEV_FMT" frame_control:0x%x\n",
+				  FUNC_NDEV_ARG(ndev),
+				  le16_to_cpu(dot11_hdr->frame_control));
 			goto fail;
 		}
 
 		DBG_8723A("RTW_Tx:da="MAC_FMT" via "FUNC_NDEV_FMT"\n",
-			MAC_ARG(GetAddr1Ptr(buf)), FUNC_NDEV_ARG(ndev));
-		#ifdef CONFIG_8723AU_P2P
-		if((type = rtw_p2p_check_frames(padapter, buf, len, true)) >= 0)
+			MAC_ARG(dot11_hdr->addr1), FUNC_NDEV_ARG(ndev));
+#ifdef CONFIG_8723AU_P2P
+		if ((type = rtw_p2p_check_frames(padapter, skb->data, len,
+						 true)) >= 0)
 			goto dump;
-		#endif
+#endif
 		if (category == WLAN_CATEGORY_PUBLIC)
 			DBG_8723A("RTW_Tx:%s\n", action_public_str(action));
 		else
@@ -2805,8 +2801,8 @@ dump:
 
 		pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 
-		memcpy(pframe, (void*)buf, len);
-		#ifdef CONFIG_8723AU_P2P
+		memcpy(pframe, skb->data, len);
+#ifdef CONFIG_8723AU_P2P
 		if (type >= 0)
 		{
 			struct wifi_display_info		*pwfd_info;
@@ -2818,30 +2814,24 @@ dump:
 				rtw_append_wfd_ie( padapter, pframe, &len );
 			}
 		}
-		#endif /*  CONFIG_8723AU_P2P */
+#endif /*  CONFIG_8723AU_P2P */
 		pattrib->pktlen = len;
 
-		pwlanhdr = (struct ieee80211_hdr *)pframe;
 		/* update seq number */
-		pmlmeext->mgnt_seq = le16_to_cpu(pwlanhdr->seq_ctrl) >> 4;
+		pmlmeext->mgnt_seq = le16_to_cpu(dot11_hdr->seq_ctrl) >> 4;
 		pattrib->seqnum = pmlmeext->mgnt_seq;
 		pmlmeext->mgnt_seq++;
 
 		pattrib->last_txcmdsz = pattrib->pktlen;
 
 		dump_mgntframe(padapter, pmgntframe);
-	} else {
-		DBG_8723A("frame_ctl=0x%x\n", frame_ctl &
-			  (IEEE80211_FCTL_FTYPE|IEEE80211_FCTL_STYPE));
 	}
-
 
 fail:
 
 	dev_kfree_skb(skb);
 
 	return 0;
-
 }
 
 static void rtw_cfg80211_monitor_if_set_multicast_list(struct net_device *ndev)
