@@ -33,7 +33,7 @@ enum ndis_802_11_net_type {
 	Ndis802_11DS,
 	Ndis802_11OFDM5,
 	Ndis802_11OFDM24,
-	Ndis802_11NetworkTypeMax    /*  not a real type, defined as an upper bound */
+	Ndis802_11NetworkTypeMax    /*  just an upper bound */
 };
 
 struct ndis_802_11_configuration_fh {
@@ -76,15 +76,15 @@ struct ndis_802_11_var_ies {
 	u8  data[1];
 };
 
-/* Length is the 4 bytes multiples of the sume of
-	sizeof (6 * sizeof(unsigned char)) + 2 + sizeof (struct ndis_802_11_ssid) + sizeof (u32)
-+   sizeof (long) + sizeof (enum ndis_802_11_net_type) + sizeof (struct ndis_802_11_config)
-+   sizeof (sizeof(unsigned char) * NDIS_802_11_LENGTH_RATES_EX) + IELength
-
-Except the IELength, all other fields are fixed length. Therefore, we can define a marco to present the
-partial sum.
-
-*/
+/* Length is the 4 bytes multiples of the sum of
+ * sizeof(6 * sizeof(unsigned char)) + 2 + sizeof(struct ndis_802_11_ssid) +
+ * sizeof(u32) + sizeof(long) + sizeof(enum ndis_802_11_net_type) +
+ * sizeof(struct ndis_802_11_config) + sizeof(sizeof(unsigned char) *
+ * NDIS_802_11_LENGTH_RATES_EX) + IELength
+ *
+ * Except the IELength, all other fields are fixed length. Therefore,
+ * we can define a macro to present the partial sum.
+ */
 
 enum ndis_802_11_auth_mode {
 	Ndis802_11AuthModeOpen,
@@ -113,17 +113,17 @@ enum  {
 
 /*  Key mapping keys require a BSSID */
 struct ndis_802_11_key {
-	u32           Length;             /*  Length of this structure */
-	u32           KeyIndex;
-	u32           KeyLength;          /*  length of key in bytes */
+	u32 Length;             /*  Length of this structure */
+	u32 KeyIndex;
+	u32 KeyLength;          /*  length of key in bytes */
 	unsigned char BSSID[6];
 	unsigned long long KeyRSC;
-	u8           KeyMaterial[32];     /*  variable length depending on above field */
+	u8 KeyMaterial[32]; /*  variable length depending on above field */
 };
 
 struct ndis_802_11_wep {
 	u32     Length;        /*  Length of this structure */
-	u32     KeyIndex;      /*  0 is the per-client key, 1-N are the global keys */
+	u32     KeyIndex;      /*  0 is the per-client key, 1-N are global */
 	u32     KeyLength;     /*  length of key in bytes */
 	u8     KeyMaterial[16];/*  variable length depending on above field */
 };
@@ -132,7 +132,7 @@ enum NDIS_802_11_STATUS_TYPE {
 	Ndis802_11StatusType_Authentication,
 	Ndis802_11StatusType_MediaStreamMode,
 	Ndis802_11StatusType_PMKID_CandidateList,
-	Ndis802_11StatusTypeMax    /*  not a real type, defined as an upper bound */
+	Ndis802_11StatusTypeMax    /*  not a real type, just an upper bound */
 };
 
 /*  mask for authentication/integrity fields */
@@ -182,12 +182,12 @@ struct wlan_bssid_ex {
 	unsigned char SupportedRates[NDIS_802_11_LENGTH_RATES_EX];
 	struct wlan_phy_info	PhyInfo;
 	u32  IELength;
-	u8  IEs[MAX_IE_SZ];	/* timestamp, beacon interval, and capability info) */
+	u8  IEs[MAX_IE_SZ]; /* timestamp, beacon interval, and capability info*/
 } __packed;
 
-inline  static uint get_wlan_bssid_ex_sz(struct wlan_bssid_ex *bss)
+static inline uint get_wlan_bssid_ex_sz(struct wlan_bssid_ex *bss)
 {
-	return (sizeof(struct wlan_bssid_ex) -MAX_IE_SZ + bss->IELength);
+	return sizeof(struct wlan_bssid_ex) - MAX_IE_SZ + bss->IELength;
 }
 
 struct	wlan_network {

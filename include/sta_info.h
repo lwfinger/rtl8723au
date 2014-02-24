@@ -42,16 +42,15 @@ struct wlan_acl_pool {
 	_queue	acl_node_q;
 };
 
-typedef struct _RSSI_STA{
+struct rssi_sta  {
 	s32	UndecoratedSmoothedPWDB;
 	s32	UndecoratedSmoothedCCK;
 	s32	UndecoratedSmoothedOFDM;
 	u64	PacketMap;
 	u8	ValidBit;
-}RSSI_STA, *PRSSI_STA;
+};
 
 struct	stainfo_stats	{
-
 	u64 rx_mgnt_pkts;
 		u64 rx_beacon_pkts;
 		u64 rx_probereq_pkts;
@@ -80,7 +79,6 @@ struct	stainfo_stats	{
 };
 
 struct sta_info {
-
 	spinlock_t	lock;
 	struct list_head	list; /* free_sta_queue */
 	struct list_head	hash_list; /* sta_hash */
@@ -209,7 +207,7 @@ struct sta_info {
 	u32 assoc_req_len;
 
 	/* for DM */
-	RSSI_STA	 rssi_stat;
+	struct rssi_sta	 rssi_stat;
 
 	/*  */
 	/*  ================ODM Relative Info======================= */
@@ -300,7 +298,7 @@ struct sta_info {
 		sta->sta_stats.last_rx_probersp_uo_pkts = sta->sta_stats.rx_probersp_uo_pkts; \
 		sta->sta_stats.last_rx_ctrl_pkts = sta->sta_stats.rx_ctrl_pkts; \
 		sta->sta_stats.last_rx_data_pkts = sta->sta_stats.rx_data_pkts; \
-	} while(0)
+	} while (0)
 
 #define STA_RX_PKTS_ARG(sta) \
 	sta->sta_stats.rx_mgnt_pkts \
@@ -308,19 +306,18 @@ struct sta_info {
 	, sta->sta_stats.rx_data_pkts
 
 #define STA_LAST_RX_PKTS_ARG(sta) \
-	sta->sta_stats.last_rx_mgnt_pkts \
-	, sta->sta_stats.last_rx_ctrl_pkts \
-	, sta->sta_stats.last_rx_data_pkts
+	sta->sta_stats.last_rx_mgnt_pkts, \
+	sta->sta_stats.last_rx_ctrl_pkts, \
+	sta->sta_stats.last_rx_data_pkts
 
 #define STA_RX_PKTS_DIFF_ARG(sta) \
-	sta->sta_stats.rx_mgnt_pkts - sta->sta_stats.last_rx_mgnt_pkts \
-	, sta->sta_stats.rx_ctrl_pkts - sta->sta_stats.last_rx_ctrl_pkts \
-	, sta->sta_stats.rx_data_pkts -sta->sta_stats.last_rx_data_pkts
+	sta->sta_stats.rx_mgnt_pkts - sta->sta_stats.last_rx_mgnt_pkts, \
+	sta->sta_stats.rx_ctrl_pkts - sta->sta_stats.last_rx_ctrl_pkts, \
+	sta->sta_stats.rx_data_pkts -sta->sta_stats.last_rx_data_pkts
 
 #define STA_PKTS_FMT "(m:%llu, c:%llu, d:%llu)"
 
 struct	sta_priv {
-
 	u8 *pallocated_stainfo_buf;
 	u8 *pstainfo_buf;
 	_queue	free_sta_queue;
@@ -352,48 +349,48 @@ struct	sta_priv {
 	 */
 	struct sta_info *sta_aid[NUM_STA];
 
-	u16 sta_dz_bitmap;/* only support 15 stations, staion aid bitmap for sleeping sta. */
-	u16 tim_bitmap;/* only support 15 stations, aid=0~15 mapping bit0~bit15 */
+	u16 sta_dz_bitmap;/* only support 15 stations, staion aid bitmap 
+			   * for sleeping sta. */
+	u16 tim_bitmap;/* only support 15 stations,
+			* aid=0~15 mapping bit0~bit15 */
 
 	u16 max_num_sta;
 
 	struct wlan_acl_pool acl_list;
 #endif
-
 };
-
 
 static inline u32 wifi_mac_hash(u8 *mac)
 {
-        u32 x;
+	u32 x;
 
-        x = mac[0];
-        x = (x << 2) ^ mac[1];
-        x = (x << 2) ^ mac[2];
-        x = (x << 2) ^ mac[3];
-        x = (x << 2) ^ mac[4];
-        x = (x << 2) ^ mac[5];
+	x = mac[0];
+	x = (x << 2) ^ mac[1];
+	x = (x << 2) ^ mac[2];
+	x = (x << 2) ^ mac[3];
+	x = (x << 2) ^ mac[4];
+	x = (x << 2) ^ mac[5];
 
-        x ^= x >> 8;
-        x  = x & (NUM_STA - 1);
+	x ^= x >> 8;
+	x  = x & (NUM_STA - 1);
 
-        return x;
+	return x;
 }
-
 
 u32	_rtw_init_sta_priv(struct sta_priv *pstapriv);
 u32	_rtw_free_sta_priv(struct sta_priv *pstapriv);
 
 #define stainfo_offset_valid(offset) (offset < NUM_STA && offset >= 0)
 int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta);
-struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int offset);
+struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv,
+					   int offset);
 
 struct sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
 u32 rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta);
 void rtw_free_all_stainfo(struct rtw_adapter *padapter);
 struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr);
-u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter);
-struct sta_info* rtw_get_bcmc_stainfo(struct rtw_adapter* padapter);
+u32 rtw_init_bcmc_stainfo(struct rtw_adapter *padapter);
+struct sta_info *rtw_get_bcmc_stainfo(struct rtw_adapter *padapter);
 u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr);
 
 #endif /* _STA_INFO_H_ */
