@@ -2380,48 +2380,55 @@ u32 process_p2p_devdisc_resp(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	return true;
 }
 
-u8 process_p2p_provdisc_req(struct wifidirect_info *pwdinfo,  u8 *pframe, uint len )
+u8 process_p2p_provdisc_req(struct wifidirect_info *pwdinfo,
+			    u8 *pframe, uint len)
 {
 	u8 *frame_body;
 	u8 *wpsie;
+	u8 *ptr = NULL;
 	uint	wps_ielen = 0, attr_contentlen = 0;
 	u16	uconfig_method = 0;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)pframe;
 
 	frame_body = (pframe + sizeof(struct ieee80211_hdr_3addr));
 
-	if ((wpsie = rtw_get_wps_ie(frame_body + _PUBLIC_ACTION_IE_OFFSET_,
-				    len - _PUBLIC_ACTION_IE_OFFSET_,
-				    NULL, &wps_ielen))) {
-		if (rtw_get_wps_attr_content(wpsie, wps_ielen,
-					     WPS_ATTR_CONF_METHOD,
-					     (u8 *)&uconfig_method,
-					     &attr_contentlen))	{
-			uconfig_method = be16_to_cpu(uconfig_method);
-			switch(uconfig_method)
-			{
-			case WPS_CM_DISPLYA:
-				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "dis", 3);
-				break;
+	wpsie = rtw_get_wps_ie(frame_body + _PUBLIC_ACTION_IE_OFFSET_,
+			       len - _PUBLIC_ACTION_IE_OFFSET_, NULL,
+			       &wps_ielen);
+	if (!wpsie)
+		goto out;
 
-			case WPS_CM_LABEL:
-				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "lab", 3 );
-				break;
+	if (!rtw_get_wps_attr_content(wpsie, wps_ielen, WPS_ATTR_CONF_METHOD,
+				     (u8 *)&uconfig_method, &attr_contentlen))
+		goto out;
 
-			case WPS_CM_PUSH_BUTTON:
-				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pbc", 3 );
-				break;
+	uconfig_method = be16_to_cpu(uconfig_method);
+	ptr = pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req;
 
-			case WPS_CM_KEYPAD:
-				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pad", 3 );
-				break;
-			}
-			issue_p2p_provision_resp(pwdinfo, hdr->addr2,
-						 frame_body, uconfig_method);
-		}
+	switch(uconfig_method)
+	{
+	case WPS_CM_DISPLYA:
+		memcpy(ptr, "dis", 3);
+		break;
+
+	case WPS_CM_LABEL:
+		memcpy(ptr, "lab", 3 );
+		break;
+
+	case WPS_CM_PUSH_BUTTON:
+		memcpy(ptr, "pbc", 3 );
+		break;
+
+	case WPS_CM_KEYPAD:
+		memcpy(ptr, "pad", 3 );
+		break;
 	}
-	DBG_8723A( "[%s] config method = %s\n", __FUNCTION__,
-		   pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req);
+	issue_p2p_provision_resp(pwdinfo, hdr->addr2, frame_body,
+				 uconfig_method);
+
+out:
+	DBG_8723A("[%s] config method = %s\n", __FUNCTION__, ptr);
+
 	return true;
 }
 
