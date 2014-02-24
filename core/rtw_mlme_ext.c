@@ -7614,7 +7614,7 @@ bool IsLegal5GChannel(struct rtw_adapter *Adapter, u8 channel)
 void site_survey(struct rtw_adapter *padapter)
 {
 	unsigned char		survey_channel = 0, val8;
-	RT_SCAN_TYPE	ScanType = SCAN_PASSIVE;
+	enum rt_scan_type ScanType = SCAN_PASSIVE;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	u32 initialgain = 0;

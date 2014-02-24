@@ -1020,7 +1020,7 @@ bthci_ConstructScanList(
 	PBT30Info		pBTInfo,
 	u8			*pChannels,
 	u8			*pNChannels,
-	PRT_SCAN_TYPE	pScanType,
+	enum rt_scan_type *pScanType,
 	u16			*pDuration
 	)
 {
