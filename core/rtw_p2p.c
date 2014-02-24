@@ -2301,7 +2301,8 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	return status_code;
 }
 
-u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint len)
+u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe,
+			    uint len)
 {
 	u8 *frame_body;
 	u8 status, dialogToken;
@@ -2310,26 +2311,33 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 *p2p_ie;
 	u32	p2p_ielen = 0;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
 
-	frame_body = (unsigned char *)(pframe + sizeof(struct ieee80211_hdr_3addr));
+	frame_body = (unsigned char *)
+		(pframe + sizeof(struct ieee80211_hdr_3addr));
 
 	dialogToken = frame_body[7];
 	status = P2P_STATUS_FAIL_UNKNOWN_P2PGROUP;
 
-	if ( (p2p_ie=rtw_get_p2p_ie( frame_body + _PUBLIC_ACTION_IE_OFFSET_, len - _PUBLIC_ACTION_IE_OFFSET_, NULL, &p2p_ielen)) )
-	{
-		u8 groupid[ 38 ] = { 0x00 };
+	if ((p2p_ie = rtw_get_p2p_ie(frame_body + _PUBLIC_ACTION_IE_OFFSET_,
+				     len - _PUBLIC_ACTION_IE_OFFSET_, NULL,
+				     &p2p_ielen))) {
+		u8 groupid[38] = { 0x00 };
 		u8 dev_addr[ETH_ALEN] = { 0x00 };
-		u32	attr_contentlen = 0;
+		u32 attr_contentlen = 0;
 
-		if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GROUP_ID, groupid, &attr_contentlen))
-		{
+		if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen,
+					     P2P_ATTR_GROUP_ID, groupid,
+					     &attr_contentlen)) {
 			if (!memcmp(pwdinfo->device_addr, groupid, ETH_ALEN) &&
 			    !memcmp(pwdinfo->p2p_group_ssid, groupid + ETH_ALEN,
 				    pwdinfo->p2p_group_ssid_len)) {
-				attr_contentlen=0;
-				if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_ID, dev_addr, &attr_contentlen))
-				{
+				attr_contentlen = 0;
+
+				if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen,
+							     P2P_ATTR_DEVICE_ID,
+							     dev_addr,
+							     &attr_contentlen)){
 					struct list_head *phead, *plist, *ptmp;
 
 					spin_lock_bh(&pstapriv->asoc_list_lock);
@@ -2341,42 +2349,28 @@ u32 process_p2p_devdisc_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint le
 						if(psta->is_p2p_device && (psta->dev_cap&P2P_DEVCAP_CLIENT_DISCOVERABILITY) &&
 						   !memcmp(psta->dev_addr, dev_addr, ETH_ALEN))
 						{
-
 							/* spin_unlock_bh(&pstapriv->asoc_list_lock); */
 							/* issue GO Discoverability Request */
 							issue_group_disc_req(pwdinfo, psta->hwaddr);
 							/* spin_lock_bh(&pstapriv->asoc_list_lock); */
-
 							status = P2P_STATUS_SUCCESS;
-
 							break;
-						}
-						else
-						{
+						} else {
 							status = P2P_STATUS_FAIL_INFO_UNAVAILABLE;
 						}
-
 					}
 					spin_unlock_bh(&pstapriv->asoc_list_lock);
-
-				}
-				else
-				{
+				} else {
 					status = P2P_STATUS_FAIL_INVALID_PARAM;
 				}
-
-			}
-			else
-			{
+			} else {
 				status = P2P_STATUS_FAIL_INVALID_PARAM;
 			}
-
 		}
-
 	}
 
 	/* issue Device Discoverability Response */
-	issue_p2p_devdisc_resp(pwdinfo, GetAddr2Ptr(pframe), status, dialogToken);
+	issue_p2p_devdisc_resp(pwdinfo, hdr->addr2, status, dialogToken);
 
 	return (status==P2P_STATUS_SUCCESS) ? true:false;
 }
@@ -2392,41 +2386,42 @@ u8 process_p2p_provdisc_req(struct wifidirect_info *pwdinfo,  u8 *pframe, uint l
 	u8 *wpsie;
 	uint	wps_ielen = 0, attr_contentlen = 0;
 	u16	uconfig_method = 0;
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)pframe;
 
 	frame_body = (pframe + sizeof(struct ieee80211_hdr_3addr));
 
-	if ( (wpsie=rtw_get_wps_ie( frame_body + _PUBLIC_ACTION_IE_OFFSET_, len - _PUBLIC_ACTION_IE_OFFSET_, NULL, &wps_ielen)) )
-	{
-		if ( rtw_get_wps_attr_content( wpsie, wps_ielen, WPS_ATTR_CONF_METHOD , ( u8* ) &uconfig_method, &attr_contentlen) )
-		{
-			uconfig_method = be16_to_cpu( uconfig_method );
-			switch( uconfig_method )
+	if ((wpsie = rtw_get_wps_ie(frame_body + _PUBLIC_ACTION_IE_OFFSET_,
+				    len - _PUBLIC_ACTION_IE_OFFSET_,
+				    NULL, &wps_ielen))) {
+		if (rtw_get_wps_attr_content(wpsie, wps_ielen,
+					     WPS_ATTR_CONF_METHOD,
+					     (u8 *)&uconfig_method,
+					     &attr_contentlen))	{
+			uconfig_method = be16_to_cpu(uconfig_method);
+			switch(uconfig_method)
 			{
-				case WPS_CM_DISPLYA:
-				{
-					memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "dis", 3 );
-					break;
-				}
-				case WPS_CM_LABEL:
-				{
-					memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "lab", 3 );
-					break;
-				}
-				case WPS_CM_PUSH_BUTTON:
-				{
-					memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pbc", 3 );
-					break;
-				}
-				case WPS_CM_KEYPAD:
-				{
-					memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pad", 3 );
-					break;
-				}
+			case WPS_CM_DISPLYA:
+				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "dis", 3);
+				break;
+
+			case WPS_CM_LABEL:
+				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "lab", 3 );
+				break;
+
+			case WPS_CM_PUSH_BUTTON:
+				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pbc", 3 );
+				break;
+
+			case WPS_CM_KEYPAD:
+				memcpy(pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req, "pad", 3 );
+				break;
 			}
-			issue_p2p_provision_resp( pwdinfo, GetAddr2Ptr(pframe), frame_body, uconfig_method);
+			issue_p2p_provision_resp(pwdinfo, hdr->addr2,
+						 frame_body, uconfig_method);
 		}
 	}
-	DBG_8723A( "[%s] config method = %s\n", __FUNCTION__, pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req );
+	DBG_8723A( "[%s] config method = %s\n", __FUNCTION__,
+		   pwdinfo->rx_prov_disc_info.strconfig_method_desc_of_prov_disc_req);
 	return true;
 }
 
