@@ -20,13 +20,13 @@
 
 
 #define _NO_PRIVACY_		0x0
-#define _WEP40_				0x1
-#define _TKIP_				0x2
+#define _WEP40_			0x1
+#define _TKIP_			0x2
 #define _TKIP_WTMIC_		0x3
-#define _AES_				0x4
-#define _WEP104_			0x5
+#define _AES_			0x4
+#define _WEP104_		0x5
 #define _WEP_WPA_MIXED_	0x07  /*  WEP + WPA */
-#define _SMS4_				0x06
+#define _SMS4_			0x06
 
 #define is_wep_enc(alg) (((alg) == _WEP40_) || ((alg) == _WEP104_))
 
@@ -37,14 +37,13 @@
 #define AES_BLOCK_SIZE 16
 #define AES_PRIV_SIZE (4 * 44)
 
-typedef enum {
+enum ENCRYP_PROTOCOL {
 	ENCRYP_PROTOCOL_OPENSYS,   /* open system */
 	ENCRYP_PROTOCOL_WEP,       /* WEP */
 	ENCRYP_PROTOCOL_WPA,       /* WPA */
 	ENCRYP_PROTOCOL_WPA2,      /* WPA2 */
 	ENCRYP_PROTOCOL_MAX
-}ENCRYP_PROTOCOL_E;
-
+};
 
 #ifndef Ndis802_11AuthModeWPA2
 #define Ndis802_11AuthModeWPA2 (Ndis802_11AuthModeWPANone + 1)
@@ -54,34 +53,34 @@ typedef enum {
 #define Ndis802_11AuthModeWPA2PSK (Ndis802_11AuthModeWPANone + 2)
 #endif
 
-union pn48	{
+union pn48 {
 
 	u64	val;
 
 #ifdef __LITTLE_ENDIAN
 
 struct {
-  u8 TSC0;
-  u8 TSC1;
-  u8 TSC2;
-  u8 TSC3;
-  u8 TSC4;
-  u8 TSC5;
-  u8 TSC6;
-  u8 TSC7;
+	u8 TSC0;
+	u8 TSC1;
+	u8 TSC2;
+	u8 TSC3;
+	u8 TSC4;
+	u8 TSC5;
+	u8 TSC6;
+	u8 TSC7;
 } _byte_;
 
 #elif defined(__BIG_ENDIAN)
 
 struct {
-  u8 TSC7;
-  u8 TSC6;
-  u8 TSC5;
-  u8 TSC4;
-  u8 TSC3;
-  u8 TSC2;
-  u8 TSC1;
-  u8 TSC0;
+	u8 TSC7;
+	u8 TSC6;
+	u8 TSC5;
+	u8 TSC4;
+	u8 TSC3;
+	u8 TSC2;
+	u8 TSC1;
+	u8 TSC0;
 } _byte_;
 #else
 #error Need BIG or LITTLE endian
@@ -96,34 +95,39 @@ union Keytype {
 };
 
 
-typedef struct _RT_PMKID_LIST
-{
-	u8						bUsed;
-	u8						Bssid[6];
-	u8						PMKID[16];
-	u8						SsidBuf[33];
-	u8*						ssid_octet;
-	u16						ssid_length;
-} RT_PMKID_LIST, *PRT_PMKID_LIST;
+struct rt_pmkid_list {
+	u8	bUsed;
+	u8	Bssid[6];
+	u8	PMKID[16];
+	u8	SsidBuf[33];
+	u8	*ssid_octet;
+	u16	ssid_length;
+};
 
-
-struct security_priv
-{
-	u32	  dot11AuthAlgrthm;		/*  802.11 auth, could be open, shared, 8021x and authswitch */
-	u32	  dot11PrivacyAlgrthm;	/*  This specify the privacy for shared auth. algorithm. */
-
+struct security_priv {
+	u32	  dot11AuthAlgrthm;	/*  802.11 auth, could be open, shared,
+					 * 8021x and authswitch */
+	u32	  dot11PrivacyAlgrthm;	/* This specifies the privacy for
+					 * shared auth. algorithm.
+					 */
 	/* WEP */
-	u32	  dot11PrivacyKeyIndex;	/*  this is only valid for legendary wep, 0~3 for key id. (tx key index) */
-	union Keytype dot11DefKey[4];			/*  this is only valid for def. key */
+	u32	  dot11PrivacyKeyIndex;	/*  this is only valid for legendary
+					 * wep, 0~3 for key id. (tx key index)
+					 */
+	union Keytype dot11DefKey[4];	/*  this is only valid for def. key */
 	u32	dot11DefKeylen[4];
 
-	u32 dot118021XGrpPrivacy;	/*  This specify the privacy algthm. used for Grp key */
-	u32	dot118021XGrpKeyid;		/*  key id used for Grp Key ( tx key index) */
-	union Keytype	dot118021XGrpKey[4];	/*  802.1x Group Key, for inx0 and inx1 */
+	u32 dot118021XGrpPrivacy;	/* specify the privacy algthm.
+					 * used for Grp key
+					 */
+	u32	dot118021XGrpKeyid;	/*  key id used for Grp Key
+					 * (tx key index)
+					 */
+	union Keytype	dot118021XGrpKey[4];/*  802.1x Grp Key, for inx0 and inx1 */
 	union Keytype	dot118021XGrptxmickey[4];
 	union Keytype	dot118021XGrprxmickey[4];
-	union pn48		dot11Grptxpn;			/*  PN48 used for Grp Key xmit. */
-	union pn48		dot11Grprxpn;			/*  PN48 used for Grp Key recv. */
+	union pn48	dot11Grptxpn;		/* PN48 used for Grp Key xmit.*/
+	union pn48	dot11Grprxpn;		/* PN48 used for Grp Key recv.*/
 
 #ifdef CONFIG_8723AU_AP_MODE
 	/* extend security capabilities for AP_MODE */
@@ -137,32 +141,21 @@ struct security_priv
 
 	u8 wps_ie[MAX_WPS_IE_LEN];/* added in assoc req */
 	int wps_ie_len;
-
-
 	u8	binstallGrpkey;
 	u8	busetkipkey;
 	u8	bcheck_grpkey;
 	u8	bgrpkey_handshake;
-
-	/* u8	packet_cnt; unused, removed */
-
 	s32	hw_decrypted;/* if the rx packets is hw_decrypted==false, it means the hw has not been ready. */
-
-
 	/* keeps the auth_type & enc_status from upper layer ioctl(wpa_supplicant or wzc) */
 	u32 ndisauthtype;	/*  enum ndis_802_11_auth_mode */
 	u32 ndisencryptstatus;	/*  NDIS_802_11_ENCRYPTION_STATUS */
-
 	struct wlan_bssid_ex sec_bss;  /* for joinbss (h2c buffer) usage */
-
 	struct ndis_802_11_wep ndiswep;
-
 	u8 assoc_info[600];
 	u8 szofcapability[256]; /* for wpa2 usage */
 	u8 oidassociation[512]; /* for wpa/wpa2 usage */
 	u8 authenticator_ie[256];  /* store ap security information element */
 	u8 supplicant_ie[256];  /* store sta security information element */
-
 
 	/* for tkip countermeasure */
 	u32 last_mic_err_time;
@@ -170,16 +163,9 @@ struct security_priv
 	u8	btkip_wait_report;
 	u32 btkip_countermeasure_time;
 
-	/*  */
 	/*  For WPA2 Pre-Authentication. */
-	/*  */
-	/* u8				RegEnablePreAuth; Default value: Pre-Authentication enabled or not, from registry "EnablePreAuth". Added by Annie, 2005-11-01. */
-	/* u8				EnablePreAuthentication;			Current Value: Pre-Authentication enabled or not. */
-	RT_PMKID_LIST		PMKIDList[NUM_PMKID_CACHE];	/*  Renamed from PreAuthKey[NUM_PRE_AUTH_KEY]. Annie, 2006-10-13. */
-	u8				PMKIDIndex;
-	/* u32				PMKIDCount;						Added by Annie, 2006-10-13. */
-	/* u8				szCapability[256];				For WPA2-PSK using zero-config, by Annie, 2005-09-20. */
-
+	struct rt_pmkid_list PMKIDList[NUM_PMKID_CACHE];
+	u8 PMKIDIndex;
 	u8 bWepDefaultKeyIdxSet;
 };
 
@@ -190,40 +176,36 @@ struct sha256_state {
 };
 
 #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)\
-do{\
-	switch(psecuritypriv->dot11AuthAlgrthm)\
-	{\
-		case dot11AuthAlgrthm_Open:\
-		case dot11AuthAlgrthm_Shared:\
-		case dot11AuthAlgrthm_Auto:\
-			encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
-			break;\
-		case dot11AuthAlgrthm_8021X:\
-			if(bmcst)\
-				encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
-			else\
-				encry_algo =(u8) psta->dot118021XPrivacy;\
-			break;\
+do {\
+	switch(psecuritypriv->dot11AuthAlgrthm) {\
+	case dot11AuthAlgrthm_Open:\
+	case dot11AuthAlgrthm_Shared:\
+	case dot11AuthAlgrthm_Auto:\
+		encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
+		break;\
+	case dot11AuthAlgrthm_8021X:\
+		if(bmcst)\
+			encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
+		else\
+			encry_algo =(u8) psta->dot118021XPrivacy;\
+		break;\
 	}\
-}while(0)
+} while (0)
 
-
-#define GET_TKIP_PN(iv,dot11txpn)\
-do{\
+#define GET_TKIP_PN(iv, dot11txpn)\
+do {\
 	dot11txpn._byte_.TSC0=iv[2];\
 	dot11txpn._byte_.TSC1=iv[0];\
 	dot11txpn._byte_.TSC2=iv[4];\
 	dot11txpn._byte_.TSC3=iv[5];\
 	dot11txpn._byte_.TSC4=iv[6];\
 	dot11txpn._byte_.TSC5=iv[7];\
-}while(0)
+} while (0)
 
+#define ROL32(A, n)  (((A) << (n)) | (((A)>>(32-(n)))  & ( (1UL << (n)) - 1)))
+#define ROR32(A, n)  ROL32( (A), 32-(n) )
 
-#define ROL32( A, n )	( ((A) << (n)) | ( ((A)>>(32-(n)))  & ( (1UL << (n)) - 1 ) ) )
-#define ROR32( A, n )	ROL32( (A), 32-(n) )
-
-struct mic_data
-{
+struct mic_data {
 	u32  K0, K1;         /*  Key */
 	u32  L, R;           /*  Current state */
 	u32  M;              /*  Message accumulator (single word) */
@@ -339,10 +321,10 @@ static const unsigned long K[64] = {
 
 /* Various logical functions */
 #define RORc(x, y) \
-( ((((unsigned long) (x) & 0xFFFFFFFFUL) >> (unsigned long) ((y) & 31)) | \
-   ((unsigned long) (x) << (unsigned long) (32 - ((y) & 31)))) & 0xFFFFFFFFUL)
-#define Ch(x,y,z)       (z ^ (x & (y ^ z)))
-#define Maj(x,y,z)      (((x | y) & z) | (x & y))
+(((((unsigned long)(x) & 0xFFFFFFFFUL) >> (unsigned long) ((y) & 31)) | \
+ ((unsigned long)(x) << (unsigned long) (32 - ((y) & 31)))) & 0xFFFFFFFFUL)
+#define Ch(x, y, z)     (z ^ (x & (y ^ z)))
+#define Maj(x, y, z)    (((x | y) & z) | (x & y))
 #define S(x, n)         RORc((x), (n))
 #define R(x, n)         (((x)&0xFFFFFFFFUL)>>(n))
 #define Sigma0(x)       (S(x, 2) ^ S(x, 13) ^ S(x, 22))
@@ -353,27 +335,32 @@ static const unsigned long K[64] = {
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-void rtw_secmicsetkey(struct mic_data *pmicdata, u8 * key );
-void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b );
-void rtw_secmicappend(struct mic_data *pmicdata, u8 * src, u32 nBytes );
-void rtw_secgetmic(struct mic_data *pmicdata, u8 * dst );
+void rtw_secmicsetkey(struct mic_data *pmicdata, u8 *key);
+void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b);
+void rtw_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nBytes);
+void rtw_secgetmic(struct mic_data *pmicdata, u8 *dst);
 
-void rtw_seccalctkipmic(
-	u8 * key,
+void rtw_seccalctkipmic (
+	u8 *key,
 	u8 *header,
 	u8 *data,
 	u32 data_len,
 	u8 *Miccode,
-	u8   priority);
+	u8   priorityi
+);
 
-u32 rtw_aes_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
-u32 rtw_tkip_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
-void rtw_wep_encrypt(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
-
-u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
-u32 rtw_tkip_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
+u32 rtw_aes_encrypt(struct rtw_adapter *padapter,
+		    struct xmit_frame *pxmitframe);
+u32 rtw_tkip_encrypt(struct rtw_adapter *padapter,
+		     struct xmit_frame *pxmitframe);
+void rtw_wep_encrypt(struct rtw_adapter *padapter,
+		     struct xmit_frame *pxmitframe);
+u32 rtw_aes_decrypt(struct rtw_adapter *padapter,
+		    struct recv_frame *precvframe);
+u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
+		     struct recv_frame *precvframe);
 void rtw_wep_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
 
-void rtw_use_tkipkey_handler(void* FunctionContext);
+void rtw_use_tkipkey_handler(void *FunctionContext);
 
 #endif	/* __RTL871X_SECURITY_H_ */
