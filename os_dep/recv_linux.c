@@ -128,7 +128,7 @@ void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter,u8 bgroup)
 	}
 
 	ev.src_addr.sa_family = ARPHRD_ETHER;
-	memcpy(ev.src_addr.sa_data, &pmlmepriv->assoc_bssid[ 0 ], ETH_ALEN );
+	ether_addr_copy(ev.src_addr.sa_data, &pmlmepriv->assoc_bssid[0]);
 
 	memset(&wrqu, 0x00, sizeof(wrqu));
 	wrqu.data.length = sizeof(ev);
@@ -178,8 +178,8 @@ _func_enter_;
 
 		/* DBG_8723A("bmcast=%d\n", bmcast); */
 
-		if (memcmp(pattrib->dst, myid(&padapter->eeprompriv),
-			   ETH_ALEN)){
+		if (!ether_addr_equal(pattrib->dst,
+				      myid(&padapter->eeprompriv))) {
 			/* DBG_8723A("not ap psta=%p, addr=%pM\n", psta, pattrib->dst); */
 			if (bmcast) {
 				psta = rtw_get_bcmc_stainfo(padapter);

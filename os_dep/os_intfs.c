@@ -21,6 +21,7 @@
 #include <hal_intf.h>
 #include <rtw_ioctl.h>
 #include <rtw_version.h>
+#include <ethernet.h>
 
 #include <usb_osintf.h>
 #include <linux/version.h>
@@ -677,7 +678,7 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 	{
 		/* DBG_8723A("r8711_net_set_mac_address(), MAC=%x:%x:%x:%x:%x:%x\n", addr->sa_data[0], addr->sa_data[1], addr->sa_data[2], addr->sa_data[3], */
 		/* addr->sa_data[4], addr->sa_data[5]); */
-		memcpy(padapter->eeprompriv.mac_addr, addr->sa_data, ETH_ALEN);
+		ether_addr_copy(padapter->eeprompriv.mac_addr, addr->sa_data);
 		/* memcpy(pnetdev->dev_addr, addr->sa_data, ETH_ALEN); */
 		/* padapter->bset_hwaddr = true; */
 	}
@@ -1170,7 +1171,7 @@ static int _rtw_drv_register_netdev(struct rtw_adapter *padapter, char *name)
 	/* alloc netdev name */
 	rtw_init_netdev_name(pnetdev, name);
 
-	memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
+	ether_addr_copy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr);
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0) {
