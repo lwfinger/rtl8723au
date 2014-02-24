@@ -1414,25 +1414,12 @@ _PHY_SetBWMode92C(
 	struct rtw_adapter *	Adapter
 )
 {
-/*	struct rtw_adapter *			Adapter = (struct rtw_adapter *)pTimer->Adapter; */
 	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
 	u8				regBwOpMode;
 	u8				regRRSR_RSC;
 
-	/* return; */
-
-	/*  Added it for 20/40 mhz switch time evaluation by guangan 070531 */
-	/* u32				NowL, NowH; */
-	/* u64				BeginTime, EndTime; */
-
-	/*RT_TRACE(COMP_SCAN, DBG_LOUD, ("==>PHY_SetBWModeCallback8192C()  Switch to %s bandwidth\n", \
-					pHalData->CurrentChannelBW == HT_CHANNEL_WIDTH_20?"20MHz":"40MHz"))*/
-
 	if(pHalData->rf_chip == RF_PSEUDO_11N)
-	{
-		/* pHalData->SetBWModeInProgress= false; */
 		return;
-	}
 
 	/*  There is no 40MHz mode in RF_8225. */
 	if(pHalData->rf_chip==RF_8225)
@@ -1441,41 +1428,27 @@ _PHY_SetBWMode92C(
 	if(Adapter->bDriverStopped)
 		return;
 
-	/*  Added it for 20/40 mhz switch time evaluation by guangan 070531 */
-	/* NowL = PlatformEFIORead4Byte(Adapter, TSFR); */
-	/* NowH = PlatformEFIORead4Byte(Adapter, TSFR+4); */
-	/* BeginTime = ((u64)NowH << 32) + NowL; */
-
 	/* 3 */
 	/* 3<1>Set MAC register */
 	/* 3 */
-	/* Adapter->HalFunc.SetBWModeHandler(); */
 
 	regBwOpMode = rtw_read8(Adapter, REG_BWOPMODE);
 	regRRSR_RSC = rtw_read8(Adapter, REG_RRSR+2);
-	/* regBwOpMode = rtw_hal_get_hwreg(Adapter,HW_VAR_BWMODE,(u8 *)&regBwOpMode); */
 
-	switch(pHalData->CurrentChannelBW)
-	{
-		case HT_CHANNEL_WIDTH_20:
-			regBwOpMode |= BW_OPMODE_20MHZ;
-			   /*  2007/02/07 Mark by Emily becasue we have not verify whether this register works */
-			rtw_write8(Adapter, REG_BWOPMODE, regBwOpMode);
-			break;
+	switch (pHalData->CurrentChannelBW) {
+	case HT_CHANNEL_WIDTH_20:
+		regBwOpMode |= BW_OPMODE_20MHZ;
+		rtw_write8(Adapter, REG_BWOPMODE, regBwOpMode);
+		break;
+	case HT_CHANNEL_WIDTH_40:
+		regBwOpMode &= ~BW_OPMODE_20MHZ;
+		rtw_write8(Adapter, REG_BWOPMODE, regBwOpMode);
+		regRRSR_RSC = (regRRSR_RSC&0x90) |(pHalData->nCur40MhzPrimeSC<<5);
+		rtw_write8(Adapter, REG_RRSR+2, regRRSR_RSC);
+		break;
 
-		case HT_CHANNEL_WIDTH_40:
-			regBwOpMode &= ~BW_OPMODE_20MHZ;
-				/*  2007/02/07 Mark by Emily becasue we have not verify whether this register works */
-			rtw_write8(Adapter, REG_BWOPMODE, regBwOpMode);
-
-			regRRSR_RSC = (regRRSR_RSC&0x90) |(pHalData->nCur40MhzPrimeSC<<5);
-			rtw_write8(Adapter, REG_RRSR+2, regRRSR_RSC);
-			break;
-
-		default:
-			/*RT_TRACE(COMP_DBG, DBG_LOUD, ("PHY_SetBWModeCallback8192C():
-						unknown Bandwidth: %#X\n",pHalData->CurrentChannelBW));*/
-			break;
+	default:
+		break;
 	}
 
 	/* 3 */
@@ -1564,7 +1537,7 @@ _PHY_SetBWMode92C(
  * Overview:  This function is export to "HalCommon" moudule
  *
  * Input:		struct rtw_adapter *			Adapter
- *			HT_CHANNEL_WIDTH	Bandwidth	20M or 40M
+ *			enum ht_channel_width	Bandwidth	20M or 40M
  *
  * Output:      NONE
  *
@@ -1575,12 +1548,12 @@ _PHY_SetBWMode92C(
 void
 PHY_SetBWMode8723A(
 	struct rtw_adapter *					Adapter,
-	HT_CHANNEL_WIDTH	Bandwidth,	/*  20M or 40M */
+	enum ht_channel_width	Bandwidth,	/*  20M or 40M */
 	unsigned char	Offset		/*  Upper, Lower, or Don't care */
 )
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	HT_CHANNEL_WIDTH	tmpBW= pHalData->CurrentChannelBW;
+	enum ht_channel_width	tmpBW = pHalData->CurrentChannelBW;
 
 	pHalData->CurrentChannelBW = Bandwidth;
 

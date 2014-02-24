@@ -218,7 +218,7 @@ void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel);
 /*  Switch bandwidth for 8723A */
 /*  */
 void	PHY_SetBWMode8723A(struct rtw_adapter *pAdapter,
-			   HT_CHANNEL_WIDTH ChnlWidth,
+			   enum ht_channel_width ChnlWidth,
 			   unsigned char Offset);
 
 /*  */

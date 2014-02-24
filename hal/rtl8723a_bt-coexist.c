@@ -4474,24 +4474,14 @@ bthci_CmdWIFICurrentChannel(struct rtw_adapter *padapter,
 			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-/*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-/*	u8		chnl = pMgntInfo->dot11CurrentChannelNumber; */
 	u8		chnl = pmlmeext->cur_channel;
 
-/*	if (pMgntInfo->pHTInfo->bCurBW40MHz == HT_CHANNEL_WIDTH_20_40) */
-	if (pmlmeext->cur_bwmode == HT_CHANNEL_WIDTH_40)
-	{
-/*		if (pMgntInfo->pHTInfo->CurSTAExtChnlOffset == HT_EXTCHNL_OFFSET_UPPER) */
+	if (pmlmeext->cur_bwmode == HT_CHANNEL_WIDTH_40) {
 		if (pmlmeext->cur_ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
-		{
 			chnl += 2;
-		}
-/*		else if (pMgntInfo->pHTInfo->CurSTAExtChnlOffset == HT_EXTCHNL_OFFSET_LOWER) */
 		else if (pmlmeext->cur_ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
-		{
 			chnl -= 2;
-		}
 	}
 
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_EXT, ("Current Channel  = 0x%x\n", chnl));
@@ -4527,21 +4517,15 @@ bthci_CmdWIFICurrentBandwidth(struct rtw_adapter *padapter,
 			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-	HT_CHANNEL_WIDTH bw;
+	enum ht_channel_width bw;
 	u8	CurrentBW = 0;
 
-
-/*	rtw_hal_get_hwreg(padapter, HW_VAR_BW_MODE, (u8*)(&bw)); */
 	bw = padapter->mlmeextpriv.cur_bwmode;
 
 	if (bw == HT_CHANNEL_WIDTH_20)
-	{
 		CurrentBW = 0;
-	}
 	else if (bw == HT_CHANNEL_WIDTH_40)
-	{
 		CurrentBW = 1;
-	}
 
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_EXT, ("Current BW = 0x%x\n",
 		CurrentBW));
@@ -16169,21 +16153,17 @@ void BTDM_RejectAPAggregatedPacket(struct rtw_adapter *padapter, u8 bReject)
 
 u8 BTDM_IsHT40(struct rtw_adapter *padapter)
 {
-	u8 isHT40 = true;
-	HT_CHANNEL_WIDTH bw;
+	u8 isht40 = true;
+	enum ht_channel_width bw;
 
 	bw = padapter->mlmeextpriv.cur_bwmode;
 
 	if (bw == HT_CHANNEL_WIDTH_20)
-	{
-		isHT40 = false;
-	}
+		isht40 = false;
 	else if (bw == HT_CHANNEL_WIDTH_40)
-	{
-		isHT40 = true;
-	}
+		isht40 = true;
 
-	return isHT40;
+	return isht40;
 }
 
 u8 BTDM_Legacy(struct rtw_adapter *padapter)

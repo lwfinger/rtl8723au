@@ -423,36 +423,31 @@ void SetBWMode(struct rtw_adapter *padapter, unsigned short bwmode, unsigned cha
 	rtw_set_oper_bw(padapter, bwmode);
 	rtw_set_oper_choffset(padapter, channel_offset);
 
-	rtw_hal_set_bwmode(padapter, (HT_CHANNEL_WIDTH)bwmode, channel_offset);
+	rtw_hal_set_bwmode(padapter, (enum ht_channel_width)bwmode,
+			   channel_offset);
 
 	mutex_unlock(&(adapter_to_dvobj(padapter)->setbw_mutex));
 }
 
-void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel, unsigned char channel_offset, unsigned short bwmode)
+void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel,
+		        unsigned char channel_offset, unsigned short bwmode)
 {
 	u8 center_ch;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
 	if ( padapter->bNotifyChannelChange )
-	{
-		DBG_8723A( "[%s] ch = %d, offset = %d, bwmode = %d\n", __FUNCTION__, channel, channel_offset, bwmode );
-	}
+		DBG_8723A( "[%s] ch = %d, offset = %d, bwmode = %d\n", __func__, channel, channel_offset, bwmode );
 
-	if((bwmode == HT_CHANNEL_WIDTH_20)||(channel_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE))
-	{
+	if ((bwmode == HT_CHANNEL_WIDTH_20) ||
+	    (channel_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)) {
 		/* SelectChannel(padapter, channel); */
 		center_ch = channel;
-	}
-	else
-	{
+	} else {
 		/* switch to the proper channel */
-		if (channel_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
-		{
+		if (channel_offset == HAL_PRIME_CHNL_OFFSET_LOWER) {
 			/* SelectChannel(padapter, channel + 2); */
 			center_ch = channel + 2;
-		}
-		else
-		{
+		} else {
 			/* SelectChannel(padapter, channel - 2); */
 			center_ch = channel - 2;
 		}
@@ -619,7 +614,7 @@ void write_cam(struct rtw_adapter *padapter, u8 entry, u16 ctrl, u8 *mac, u8 *ke
 		/* cmd = CAM_POLLINIG | CAM_WRITE | (addr + j); */
 		/* rtw_write32(padapter, RWCAM, cmd); */
 
-		/* DBG_8723A("%s=> cam write: %x, %x\n",__FUNCTION__, cmd, val); */
+		/* DBG_8723A("%s=> cam write: %x, %x\n",__func__, cmd, val); */
 
 	}
 }
@@ -679,18 +674,18 @@ int WFD_info_handler(struct rtw_adapter *padapter, struct ndis_802_11_var_ies *	
 		u8	attr_content[ 10 ] = { 0x00 };
 		u32	attr_contentlen = 0;
 
-		DBG_8723A( "[%s] Found WFD IE\n", __FUNCTION__ );
+		DBG_8723A( "[%s] Found WFD IE\n", __func__ );
 		rtw_get_wfd_attr_content( wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, attr_content, &attr_contentlen);
 		if ( attr_contentlen )
 		{
 			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16( attr_content + 2 );
-			DBG_8723A( "[%s] Peer PORT NUM = %d\n", __FUNCTION__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
+			DBG_8723A( "[%s] Peer PORT NUM = %d\n", __func__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
 			return( true );
 		}
 	}
 	else
 	{
-		DBG_8723A( "[%s] NO WFD IE\n", __FUNCTION__ );
+		DBG_8723A( "[%s] NO WFD IE\n", __func__ );
 
 	}
 	return( _FAIL );
@@ -1023,7 +1018,7 @@ void HTOnAssocRsp(struct rtw_adapter *padapter)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
-	DBG_8723A("%s\n", __FUNCTION__);
+	DBG_8723A("%s\n", __func__);
 
 	if ((pmlmeinfo->HT_info_enable) && (pmlmeinfo->HT_caps_enable))
 	{
@@ -2035,13 +2030,13 @@ int rtw_handle_dualmac(struct rtw_adapter *adapter, bool init)
 	if (init) {
 		if (pbuddy_padapter == NULL) {
 			pbuddy_padapter = adapter;
-			DBG_8723A("%s(): pbuddy_padapter == NULL, Set pbuddy_padapter\n",__FUNCTION__);
+			DBG_8723A("%s(): pbuddy_padapter == NULL, Set pbuddy_padapter\n",__func__);
 		} else {
 			adapter->pbuddy_adapter = pbuddy_padapter;
 			pbuddy_padapter->pbuddy_adapter = adapter;
 			/*  clear global value */
 			pbuddy_padapter = NULL;
-			DBG_8723A("%s(): pbuddy_padapter exist, Exchange Information\n",__FUNCTION__);
+			DBG_8723A("%s(): pbuddy_padapter exist, Exchange Information\n",__func__);
 		}
 	}else {
 		pbuddy_padapter = NULL;

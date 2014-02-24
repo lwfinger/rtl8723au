@@ -84,7 +84,7 @@ static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
  *---------------------------------------------------------------------------*/
 void rtl8723a_phy_rf6052set_bw(
 	struct rtw_adapter *				Adapter,
-	HT_CHANNEL_WIDTH		Bandwidth)	/* 20M or 40M */
+	enum ht_channel_width Bandwidth)	/* 20M or 40M */
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
@@ -514,12 +514,6 @@ phy_RF6052_Config_HardCode(
 	struct rtw_adapter *		Adapter
 	)
 {
-
-	/*  Set Default Bandwidth to 20M */
-	/* Adapter->HalFunc	.SetBWModeHandler(Adapter, HT_CHANNEL_WIDTH_20); */
-
-	/*  TODO: Set Default Channel to channel one for RTL8225 */
-
 }
 
 static int

@@ -54,7 +54,6 @@ enum ENCRYP_PROTOCOL {
 #endif
 
 union pn48 {
-
 	u64	val;
 
 #ifdef __LITTLE_ENDIAN
@@ -90,8 +89,8 @@ struct {
 };
 
 union Keytype {
-        u8   skey[16];
-        u32    lkey[4];
+	u8   skey[16];
+	u32    lkey[4];
 };
 
 
@@ -123,7 +122,7 @@ struct security_priv {
 	u32	dot118021XGrpKeyid;	/*  key id used for Grp Key
 					 * (tx key index)
 					 */
-	union Keytype	dot118021XGrpKey[4];/*  802.1x Grp Key, for inx0 and inx1 */
+	union Keytype	dot118021XGrpKey[4];/* 802.1x Grp Key, inx0 and inx1 */
 	union Keytype	dot118021XGrptxmickey[4];
 	union Keytype	dot118021XGrprxmickey[4];
 	union pn48	dot11Grptxpn;		/* PN48 used for Grp Key xmit.*/
@@ -145,8 +144,7 @@ struct security_priv {
 	u8	busetkipkey;
 	u8	bcheck_grpkey;
 	u8	bgrpkey_handshake;
-	s32	hw_decrypted;/* if the rx packets is hw_decrypted==false, it means the hw has not been ready. */
-	/* keeps the auth_type & enc_status from upper layer ioctl(wpa_supplicant or wzc) */
+	s32	hw_decrypted;
 	u32 ndisauthtype;	/*  enum ndis_802_11_auth_mode */
 	u32 ndisencryptstatus;	/*  NDIS_802_11_ENCRYPTION_STATUS */
 	struct wlan_bssid_ex sec_bss;  /* for joinbss (h2c buffer) usage */
@@ -177,7 +175,7 @@ struct sha256_state {
 
 #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)\
 do {\
-	switch(psecuritypriv->dot11AuthAlgrthm) {\
+	switch (psecuritypriv->dot11AuthAlgrthm) {\
 	case dot11AuthAlgrthm_Open:\
 	case dot11AuthAlgrthm_Shared:\
 	case dot11AuthAlgrthm_Auto:\
@@ -187,23 +185,23 @@ do {\
 		if(bmcst)\
 			encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
 		else\
-			encry_algo =(u8) psta->dot118021XPrivacy;\
+			encry_algo = (u8)psta->dot118021XPrivacy;\
 		break;\
 	}\
 } while (0)
 
 #define GET_TKIP_PN(iv, dot11txpn)\
 do {\
-	dot11txpn._byte_.TSC0=iv[2];\
-	dot11txpn._byte_.TSC1=iv[0];\
-	dot11txpn._byte_.TSC2=iv[4];\
-	dot11txpn._byte_.TSC3=iv[5];\
-	dot11txpn._byte_.TSC4=iv[6];\
-	dot11txpn._byte_.TSC5=iv[7];\
+	dot11txpn._byte_.TSC0 = iv[2];\
+	dot11txpn._byte_.TSC1 = iv[0];\
+	dot11txpn._byte_.TSC2 = iv[4];\
+	dot11txpn._byte_.TSC3 = iv[5];\
+	dot11txpn._byte_.TSC4 = iv[6];\
+	dot11txpn._byte_.TSC5 = iv[7];\
 } while (0)
 
-#define ROL32(A, n)  (((A) << (n)) | (((A)>>(32-(n)))  & ( (1UL << (n)) - 1)))
-#define ROR32(A, n)  ROL32( (A), 32-(n) )
+#define ROL32(A, n)  (((A) << (n)) | (((A)>>(32-(n)))  & ((1UL << (n)) - 1)))
+#define ROR32(A, n)  ROL32( (A), 32-(n))
 
 struct mic_data {
 	u32  K0, K1;         /*  Key */
@@ -318,11 +316,10 @@ static const unsigned long K[64] = {
 	0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL
 };
 
-
 /* Various logical functions */
 #define RORc(x, y) \
 (((((unsigned long)(x) & 0xFFFFFFFFUL) >> (unsigned long) ((y) & 31)) | \
- ((unsigned long)(x) << (unsigned long) (32 - ((y) & 31)))) & 0xFFFFFFFFUL)
+((unsigned long)(x) << (unsigned long) (32 - ((y) & 31)))) & 0xFFFFFFFFUL)
 #define Ch(x, y, z)     (z ^ (x & (y ^ z)))
 #define Maj(x, y, z)    (((x | y) & z) | (x & y))
 #define S(x, n)         RORc((x), (n))
@@ -337,17 +334,11 @@ static const unsigned long K[64] = {
 
 void rtw_secmicsetkey(struct mic_data *pmicdata, u8 *key);
 void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b);
-void rtw_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nBytes);
+void rtw_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nbBytes);
 void rtw_secgetmic(struct mic_data *pmicdata, u8 *dst);
 
-void rtw_seccalctkipmic (
-	u8 *key,
-	u8 *header,
-	u8 *data,
-	u32 data_len,
-	u8 *Miccode,
-	u8   priorityi
-);
+void rtw_seccalctkipmic(u8 *key, u8 *header, u8 *data, u32 data_len,
+			u8 *Miccode, u8 priorityi);
 
 u32 rtw_aes_encrypt(struct rtw_adapter *padapter,
 		    struct xmit_frame *pxmitframe);

@@ -18,20 +18,18 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
+#define NR_RECVFRAME		256
 
-#define NR_RECVFRAME 256
-
-#define MAX_RXFRAME_CNT	512
+#define MAX_RXFRAME_CNT		512
 #define MAX_RX_NUMBLKS		(32)
-#define RECVFRAME_HDR_ALIGN 128
+#define RECVFRAME_HDR_ALIGN	128
 
 #define SNAP_SIZE sizeof(struct ieee80211_snap_hdr)
 
 #define MAX_SUBFRAME_COUNT	64
 
 /* for Rx reordering buffer control */
-struct recv_reorder_ctrl
-{
+struct recv_reorder_ctrl {
 	struct rtw_adapter	*padapter;
 	u8 enable;
 	u16 indicate_seq;/* wstart_b, init_value=0xffff */
@@ -63,7 +61,6 @@ struct	stainfo_rxcache	{
 */
 };
 
-
 struct smooth_rssi_data {
 	u32	elements[100];	/* array to store values */
 	u32	index;			/* index to current array to store */
@@ -77,15 +74,19 @@ struct signal_stat {
 	u32	total_num;		/* num of valid elements */
 	u32	total_val;		/* sum of valid elements */
 };
+
 #define MAX_PATH_NUM_92CS		2
-struct phy_info /* ODM_PHY_INFO_T */
-{
+
+struct phy_info {
 	u8		RxPWDBAll;
 	u8		SignalQuality;	 /*  in 0-100 index. */
 	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
-	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/*  in 0~100 index */
+	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/* 0~100 */
 	s8		RxPower; /*  in dBm Translate from PWdB */
-	s8		RecvSignalPower;/*  Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures. */
+	/* Real power in dBm for this packet, no beautification and aggregation.
+	 * Keep this raw info to be used for the other procedures.
+	 */
+	s8		RecvSignalPower;
 	u8		BTRxRSSIPercentage;
 	u8		SignalStrength; /*  in 0-100 index. */
 	u8		RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
@@ -111,7 +112,8 @@ struct rx_pkt_attrib	{
 	u8	order;
 	u8	privacy; /* in frame_ctrl field */
 	u8	bdecrypted;
-	u8	encrypt; /* when 0 indicate no encrypt. when non-zero, indicate the encrypt algorith */
+	/* when 0 indicate no encrypt. when non-zero, indicate the algorith */
+	u8	encrypt;
 	u8	iv_len;
 	u8	icv_len;
 	u8	crc_err;
@@ -140,12 +142,9 @@ struct rx_pkt_attrib	{
 	struct phy_info phy_info;
 };
 
-
 /* These definition is used for Rx packet reordering. */
-#define SN_LESS(a, b)		(((a-b)&0x800)!=0)
-#define SN_EQUAL(a, b)	(a == b)
-/* define REORDER_WIN_SIZE	128 */
-/* define REORDER_ENTRY_NUM	128 */
+#define SN_LESS(a, b)		(((a-b) & 0x800) != 0)
+#define SN_EQUAL(a, b)		(a == b)
 #define REORDER_WAIT_TIME	(50) /*  (ms) */
 
 #define RECVBUFF_ALIGN_SZ 8
@@ -153,29 +152,21 @@ struct rx_pkt_attrib	{
 #define RXDESC_SIZE	24
 #define RXDESC_OFFSET RXDESC_SIZE
 
-struct recv_stat
-{
+struct recv_stat {
 	unsigned int rxdw0;
-
 	unsigned int rxdw1;
-
 	unsigned int rxdw2;
-
 	unsigned int rxdw3;
-
 	unsigned int rxdw4;
-
 	unsigned int rxdw5;
 };
 
-/*
-accesser of recv_priv: rtw_recv_entry(dispatch / passive level); recv_thread(passive) ; returnpkt(dispatch)
-; halt(passive) ;
-
-using enter_critical section to protect
-*/
-struct recv_priv
-{
+/* accesser of recv_priv: rtw_recv_entry(dispatch / passive level);	\
+ * recv_thread(passive) ; returnpkt(dispatch) ; halt(passive) ;
+ *
+ * using enter_critical section to protect
+ */
+struct recv_priv {
 	spinlock_t	lock;
 
 	_queue	free_recv_queue;
@@ -235,10 +226,11 @@ struct recv_priv
 	struct signal_stat signal_strength_data;
 };
 
-#define rtw_set_signal_stat_timer(recvpriv) mod_timer(&(recvpriv)->signal_stat_timer, jiffies + msecs_to_jiffies((recvpriv)->signal_stat_sampling_interval))
+#define rtw_set_signal_stat_timer(recvpriv)			\
+	 mod_timer(&(recvpriv)->signal_stat_timer, jiffies +	\
+		   msecs_to_jiffies((recvpriv)->signal_stat_sampling_interval))
 
 struct sta_recv_priv {
-
 	spinlock_t	lock;
 	int	option;
 
@@ -264,24 +256,20 @@ struct recv_buf
 	struct sk_buff *pskb;
 };
 
-
-/*
-	head  ----->
-
-		data  ----->
-
-			payload
-
-		tail  ----->
-
-
-	end   ----->
-
-	len = (unsigned int )(tail - data);
-
-*/
-struct recv_frame
-{
+/*	head  ----->
+ *
+ *		data  ----->
+ *
+ *			payload
+ *
+ *		tail  ----->
+ *
+ *	end   ----->
+ *
+ *	len = (unsigned int )(tail - data);
+ *
+ */
+struct recv_frame {
 	struct list_head	list;
 	struct sk_buff *pkt;
 
@@ -295,8 +283,8 @@ struct recv_frame
 	struct recv_reorder_ctrl *preorder_ctrl;
 };
 
-
-struct recv_frame *rtw_alloc_recvframe (_queue *pfree_recv_queue);  /* get a free recv_frame from pfree_recv_queue */
+/* get a free recv_frame from pfree_recv_queue */
+struct recv_frame *rtw_alloc_recvframe(_queue *pfree_recv_queue);
 int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue);
 
 int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue);
@@ -306,7 +294,7 @@ u32 rtw_free_uc_swdec_pending_queue(struct rtw_adapter *adapter);
 
 int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue);
 int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue);
-struct recv_buf *rtw_dequeue_recvbuf (_queue *queue);
+struct recv_buf *rtw_dequeue_recvbuf(_queue *queue);
 
 void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
 
