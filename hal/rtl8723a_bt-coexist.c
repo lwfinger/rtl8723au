@@ -1001,21 +1001,17 @@ bthci_ReservedForTestingPLV(
 static u8 bthci_CheckRfStateBeforeConnect(struct rtw_adapter *padapter)
 {
 	PBT30Info				pBTInfo;
-	rt_rf_power_state		RfState;
-
+	enum rt_rf_power_state		RfState;
 
 	pBTInfo = GET_BT_INFO(padapter);
 
-/*	rtw_hal_get_hwreg(padapter, HW_VAR_RF_STATE, (u8*)(&RfState)); */
 	RfState = padapter->pwrctrlpriv.rf_pwrstate;
 
-	if (RfState != rf_on)
-	{
+	if (RfState != rf_on) {
 		mod_timer(&pBTInfo->BTPsDisableTimer,
 			  jiffies + msecs_to_jiffies(50));
 		return false;
 	}
-
 	return true;
 }
 
@@ -1024,7 +1020,7 @@ bthci_ConstructScanList(
 	PBT30Info		pBTInfo,
 	u8			*pChannels,
 	u8			*pNChannels,
-	PRT_SCAN_TYPE	pScanType,
+	enum rt_scan_type *pScanType,
 	u16			*pDuration
 	)
 {
@@ -4474,24 +4470,14 @@ bthci_CmdWIFICurrentChannel(struct rtw_adapter *padapter,
 			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-/*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-/*	u8		chnl = pMgntInfo->dot11CurrentChannelNumber; */
 	u8		chnl = pmlmeext->cur_channel;
 
-/*	if (pMgntInfo->pHTInfo->bCurBW40MHz == HT_CHANNEL_WIDTH_20_40) */
-	if (pmlmeext->cur_bwmode == HT_CHANNEL_WIDTH_40)
-	{
-/*		if (pMgntInfo->pHTInfo->CurSTAExtChnlOffset == HT_EXTCHNL_OFFSET_UPPER) */
+	if (pmlmeext->cur_bwmode == HT_CHANNEL_WIDTH_40) {
 		if (pmlmeext->cur_ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
-		{
 			chnl += 2;
-		}
-/*		else if (pMgntInfo->pHTInfo->CurSTAExtChnlOffset == HT_EXTCHNL_OFFSET_LOWER) */
 		else if (pmlmeext->cur_ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
-		{
 			chnl -= 2;
-		}
 	}
 
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_EXT, ("Current Channel  = 0x%x\n", chnl));
@@ -4527,21 +4513,15 @@ bthci_CmdWIFICurrentBandwidth(struct rtw_adapter *padapter,
 			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	HCI_STATUS status = HCI_STATUS_SUCCESS;
-	HT_CHANNEL_WIDTH bw;
+	enum ht_channel_width bw;
 	u8	CurrentBW = 0;
 
-
-/*	rtw_hal_get_hwreg(padapter, HW_VAR_BW_MODE, (u8*)(&bw)); */
 	bw = padapter->mlmeextpriv.cur_bwmode;
 
 	if (bw == HT_CHANNEL_WIDTH_20)
-	{
 		CurrentBW = 0;
-	}
 	else if (bw == HT_CHANNEL_WIDTH_40)
-	{
 		CurrentBW = 1;
-	}
 
 	RTPRINT(FIOCTL, IOCTL_BT_HCICMD_EXT, ("Current BW = 0x%x\n",
 		CurrentBW));
@@ -5890,30 +5870,24 @@ static u8 bthci_WaitForRfReady(struct rtw_adapter *padapter)
 	u8 bRet = false;
 
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
-	rt_rf_power_state			RfState;
-	u32						waitcnt = 0;
+	enum rt_rf_power_state RfState;
+	u32 waitcnt = 0;
 
-	while(1)
-	{
+	while (1) {
 		RfState = ppwrctrl->rf_pwrstate;
 
-		if ((RfState != rf_on) || (ppwrctrl->bips_processing))
-		{
+		if ((RfState != rf_on) || (ppwrctrl->bips_processing)) {
 			mdelay(10);
-			if (waitcnt++ >= 200)
-			{
+			if (waitcnt++ >= 200) {
 				bRet = false;
 				break;
 			}
-		}
-		else
-		{
+		} else {
 			RTPRINT(FIOCTL, IOCTL_STATE, ("bthci_WaitForRfReady(), Rf is on, wait %d times\n", waitcnt));
 			bRet = true;
 			break;
 		}
 	}
-
 	return bRet;
 }
 
@@ -6048,7 +6022,7 @@ static void BTHCI_StatusWatchdog(struct rtw_adapter *padapter)
 }
 
 static void
-BTHCI_NotifyRFState(struct rtw_adapter *padapter, rt_rf_power_state StateToSet,
+BTHCI_NotifyRFState(struct rtw_adapter *padapter, enum rt_rf_power_state StateToSet,
 		    RT_RF_CHANGE_SOURCE ChangeSource)
 {
 	struct pwrctrl_priv *ppwrctrl = &padapter->pwrctrlpriv;
@@ -16169,21 +16143,17 @@ void BTDM_RejectAPAggregatedPacket(struct rtw_adapter *padapter, u8 bReject)
 
 u8 BTDM_IsHT40(struct rtw_adapter *padapter)
 {
-	u8 isHT40 = true;
-	HT_CHANNEL_WIDTH bw;
+	u8 isht40 = true;
+	enum ht_channel_width bw;
 
 	bw = padapter->mlmeextpriv.cur_bwmode;
 
 	if (bw == HT_CHANNEL_WIDTH_20)
-	{
-		isHT40 = false;
-	}
+		isht40 = false;
 	else if (bw == HT_CHANNEL_WIDTH_40)
-	{
-		isHT40 = true;
-	}
+		isht40 = true;
 
-	return isHT40;
+	return isht40;
 }
 
 u8 BTDM_Legacy(struct rtw_adapter *padapter)

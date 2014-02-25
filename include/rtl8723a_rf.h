@@ -45,7 +45,7 @@
 /*  RF RL6052 Series API */
 /*  */
 void rtl8723a_phy_rf6052set_bw(struct rtw_adapter *Adapter,
-				     HT_CHANNEL_WIDTH Bandwidth);
+			       enum ht_channel_width Bandwidth);
 void rtl823a_phy_rf6052setccktxpower(struct rtw_adapter *Adapter,
 				      u8* pPowerlevel);
 void rtl8723a_PHY_RF6052SetOFDMTxPower(struct rtw_adapter *Adapter,

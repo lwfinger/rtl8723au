@@ -181,7 +181,8 @@ struct hal_ops {
 #ifdef CONFIG_WOWLAN
     void    (*clear_interrupt)(struct rtw_adapter *padapter);
 #endif
-	void	(*set_bwmode_handler)(struct rtw_adapter *padapter, HT_CHANNEL_WIDTH Bandwidth, u8 Offset);
+	void	(*set_bwmode_handler)(struct rtw_adapter *padapter,
+				      enum ht_channel_width Bandwidth, u8 Offset);
 	void	(*set_channel_handler)(struct rtw_adapter *padapter, u8 channel);
 
 	void	(*hal_dm_watchdog)(struct rtw_adapter *padapter);
@@ -189,13 +190,18 @@ struct hal_ops {
 	void	(*SetHwRegHandler)(struct rtw_adapter *padapter, u8	variable,u8* val);
 	void	(*GetHwRegHandler)(struct rtw_adapter *padapter, u8	variable,u8* val);
 
-	u8	(*GetHalDefVarHandler)(struct rtw_adapter *padapter, HAL_DEF_VARIABLE eVariable, void * pValue);
-	u8	(*SetHalDefVarHandler)(struct rtw_adapter *padapter, HAL_DEF_VARIABLE eVariable, void * pValue);
+	u8	(*GetHalDefVarHandler)(struct rtw_adapter *padapter,
+				       HAL_DEF_VARIABLE eVariable, void * pValue);
+	u8	(*SetHalDefVarHandler)(struct rtw_adapter *padapter,
+				       HAL_DEF_VARIABLE eVariable, void * pValue);
 
-	void	(*GetHalODMVarHandler)(struct rtw_adapter *padapter, HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
-	void	(*SetHalODMVarHandler)(struct rtw_adapter *padapter, HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
+	void	(*GetHalODMVarHandler)(struct rtw_adapter *padapter,
+				       HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
+	void	(*SetHalODMVarHandler)(struct rtw_adapter *padapter,
+				       HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
 
-	void	(*UpdateRAMaskHandler)(struct rtw_adapter *padapter, u32 mac_id, u8 rssi_level);
+	void	(*UpdateRAMaskHandler)(struct rtw_adapter *padapter,
+				       u32 mac_id, u8 rssi_level);
 	void	(*SetBeaconRelatedRegistersHandler)(struct rtw_adapter *padapter);
 
 	void	(*Add_RateATid)(struct rtw_adapter *padapter, u32 bitmap, u8 arg, u8 rssi_level);
@@ -373,7 +379,8 @@ void	rtw_hal_write_rfreg(struct rtw_adapter *padapter, u32 eRFPath, u32 RegAddr,
 
 s32	rtw_hal_interrupt_handler(struct rtw_adapter *padapter);
 
-void	rtw_hal_set_bwmode(struct rtw_adapter *padapter, HT_CHANNEL_WIDTH Bandwidth, u8 Offset);
+void	rtw_hal_set_bwmode(struct rtw_adapter *padapter,
+			   enum ht_channel_width Bandwidth, u8 Offset);
 void	rtw_hal_set_chan(struct rtw_adapter *padapter, u8 channel);
 void	rtw_hal_dm_watchdog(struct rtw_adapter *padapter);
 

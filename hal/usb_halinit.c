@@ -960,11 +960,11 @@ HwSuspendModeEnable92Cu(
 {
 }	/*  HwSuspendModeEnable92Cu */
 
-rt_rf_power_state RfOnOffDetect(struct rtw_adapter *pAdapter )
+enum rt_rf_power_state RfOnOffDetect(struct rtw_adapter *pAdapter)
 {
 	/* struct hal_data_8723a		*pHalData = GET_HAL_DATA(pAdapter); */
 	u8	val8;
-	rt_rf_power_state rfpowerstate = rf_off;
+	enum rt_rf_power_state rfpowerstate = rf_off;
 
 	if(pAdapter->pwrctrlpriv.bHWPowerdown)
 	{
@@ -992,7 +992,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 	struct pwrctrl_priv		*pwrctrlpriv = &Adapter->pwrctrlpriv;
 	struct registry_priv	*pregistrypriv = &Adapter->registrypriv;
 	u8	is92C = IS_92C_SERIAL(pHalData->VersionID);
-	rt_rf_power_state		eRfPowerStateToSet;
+	enum rt_rf_power_state		eRfPowerStateToSet;
 	u32 NavUpper = WiFiNavUpperUs;
 
 	u32 init_start_time = rtw_get_current_time();
@@ -1410,7 +1410,7 @@ _func_exit_;
 #ifdef SYNC_SD7_20110802_phy_SsPwrSwitch92CU
 static void phy_SsPwrSwitch92CU(
 	struct rtw_adapter *			Adapter,
-	rt_rf_power_state	eRFPowerState,
+	enum rt_rf_power_state	eRFPowerState,
 	int bRegSSPwrLvl
 	)
 {
