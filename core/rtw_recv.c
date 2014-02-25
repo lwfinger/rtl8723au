@@ -857,9 +857,6 @@ void count_rx_stats(struct rtw_adapter *padapter,
 
 int sta2sta_data_frame(struct rtw_adapter *adapter,
 		       struct recv_frame *precv_frame,
-		       struct sta_info**psta);
-int sta2sta_data_frame(struct rtw_adapter *adapter,
-		       struct recv_frame *precv_frame,
 		       struct sta_info**psta)
 {
 	struct sk_buff *skb = precv_frame->pkt;
@@ -868,6 +865,7 @@ int sta2sta_data_frame(struct rtw_adapter *adapter,
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	struct sta_priv *pstapriv = &adapter->stapriv;
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
+	u8 *ptr = skb->data;
 	u8 *mybssid  = get_bssid(pmlmepriv);
 	u8 *myhwaddr = myid(&adapter->eeprompriv);
 	u8 *sta_addr = NULL;
