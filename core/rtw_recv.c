@@ -966,6 +966,7 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 {
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u8 *ptr = skb->data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	int ret = _SUCCESS;
 	struct sta_priv *pstapriv = &adapter->stapriv;
