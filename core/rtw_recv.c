@@ -1435,6 +1435,7 @@ _func_enter_;
 	}
 
 	if ((ret ==_FAIL) || (ret == RTW_RX_HANDLED))
+		goto exit;
 
 	if (!psta) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
