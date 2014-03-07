@@ -1593,8 +1593,8 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(struct rtw_adapter *padapter, cha
 
 }
 
-static int cfg80211_rtw_scan(struct wiphy *wiphy,
-			     struct cfg80211_scan_request *request)
+static int cfg80211_rtw_scan(struct wiphy *wiphy
+	, struct cfg80211_scan_request *request)
 {
 	int i;
 	u8 _status = false;
@@ -1602,7 +1602,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy,
 	struct rtw_adapter *padapter = wiphy_to_adapter(wiphy);
 	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
 	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
-	struct ieee80211_channel *ch;
+	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 	unsigned long	irqL;
 	u8 *wps_ie=NULL;
 	uint wps_ielen=0;
@@ -1619,12 +1619,6 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy,
 #ifdef CONFIG_DEBUG_CFG80211
 	DBG_8723A(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 #endif
-	ch = kzalloc(sizeof(struct ieee80211_channel) *
-		     RTW_CHANNEL_SCAN_AMOUNT, GFP_KERNEL);
-	if (!ch) {
-		printk(KERN_DEBUG "oh dear! out of memory\n");
-		return -ENOMEM;
-	}
 
 	spin_lock_bh(&pwdev_priv->scan_req_lock);
 	pwdev_priv->scan_request = request;
@@ -1724,24 +1718,23 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy,
 
 
 	/* parsing channels, n_channels */
+	memset(ch, 0, sizeof(struct rtw_ieee80211_channel)*RTW_CHANNEL_SCAN_AMOUNT);
 	if (request->n_channels == 1)
 	for (i=0;i<request->n_channels && i<RTW_CHANNEL_SCAN_AMOUNT;i++) {
-#ifdef CONFIG_DEBUG_CFG80211
+		#ifdef CONFIG_DEBUG_CFG80211
 		DBG_8723A(FUNC_ADPT_FMT CHAN_FMT"\n", FUNC_ADPT_ARG(padapter), CHAN_ARG(request->channels[i]));
-#endif
+		#endif
 		ch[i].hw_value = request->channels[i]->hw_value;
 		ch[i].flags = request->channels[i]->flags;
 	}
 
 	spin_lock_bh(&pmlmepriv->lock);
 	if (request->n_channels == 1) {
-		memcpy(&ch[1], &ch[0], sizeof(struct ieee80211_channel));
-		memcpy(&ch[2], &ch[0], sizeof(struct ieee80211_channel));
-		_status = rtw_sitesurvey_cmd(padapter, ssid,
-					     RTW_SSID_SCAN_AMOUNT, ch, 3);
+		memcpy(&ch[1], &ch[0], sizeof(struct rtw_ieee80211_channel));
+		memcpy(&ch[2], &ch[0], sizeof(struct rtw_ieee80211_channel));
+		_status = rtw_sitesurvey_cmd(padapter, ssid, RTW_SSID_SCAN_AMOUNT, ch, 3);
 	} else {
-		_status = rtw_sitesurvey_cmd(padapter, ssid,
-					     RTW_SSID_SCAN_AMOUNT, NULL, 0);
+		_status = rtw_sitesurvey_cmd(padapter, ssid, RTW_SSID_SCAN_AMOUNT, NULL, 0);
 	}
 	spin_unlock_bh(&pmlmepriv->lock);
 
@@ -1756,7 +1749,7 @@ check_need_indicate_scan_done:
 		rtw_cfg80211_surveydone_event_callback(padapter);
 
 exit:
-	kfree(ch);
+
 	return ret;
 
 }

@@ -7657,11 +7657,11 @@ void site_survey(struct rtw_adapter *padapter)
 	else
 #endif /* CONFIG_8723AU_P2P */
 	{
-		struct ieee80211_channel *ch;
+		struct rtw_ieee80211_channel *ch;
 		if (pmlmeext->sitesurvey_res.channel_idx < pmlmeext->sitesurvey_res.ch_num) {
 			ch = &pmlmeext->sitesurvey_res.ch[pmlmeext->sitesurvey_res.channel_idx];
 			survey_channel = ch->hw_value;
-			ScanType = (ch->flags & IEEE80211_CHAN_PASSIVE_SCAN) ? SCAN_PASSIVE : SCAN_ACTIVE;
+			ScanType = (ch->flags & RTW_IEEE80211_CHAN_PASSIVE_SCAN) ? SCAN_PASSIVE : SCAN_ACTIVE;
 		}
 	}
 
@@ -9593,9 +9593,8 @@ u8 disconnect_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	return	H2C_SUCCESS;
 }
 
-static int rtw_scan_ch_decision(struct rtw_adapter *padapter,
-				struct ieee80211_channel *out, u32 out_num,
-				struct ieee80211_channel *in, u32 in_num)
+static int rtw_scan_ch_decision(struct rtw_adapter *padapter, struct rtw_ieee80211_channel *out,
+	u32 out_num, struct rtw_ieee80211_channel *in, u32 in_num)
 {
 	int i, j;
 	int scan_ch_num = 0;
@@ -9603,27 +9602,25 @@ static int rtw_scan_ch_decision(struct rtw_adapter *padapter,
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 
 	/* clear out first */
-	memset(out, 0, sizeof(struct ieee80211_channel) * out_num);
+	memset(out, 0, sizeof(struct rtw_ieee80211_channel)*out_num);
 
 	/* acquire channels from in */
 	j = 0;
-	for (i = 0; i < in_num; i++) {
+	for (i=0;i<in_num;i++) {
 		if (0)
-		DBG_8723A(FUNC_ADPT_FMT" "CHAN_FMT"\n",
-			  FUNC_ADPT_ARG(padapter), CHAN_ARG(&in[i]));
-		if(in[i].hw_value && !(in[i].flags & IEEE80211_CHAN_DISABLED) &&
-		   (set_idx = rtw_ch_set_search_ch(pmlmeext->channel_set,
-						   in[i].hw_value)) >=0) {
-			memcpy(&out[j], &in[i],
-			       sizeof(struct ieee80211_channel));
+		DBG_8723A(FUNC_ADPT_FMT" "CHAN_FMT"\n", FUNC_ADPT_ARG(padapter), CHAN_ARG(&in[i]));
+		if(in[i].hw_value && !(in[i].flags & RTW_IEEE80211_CHAN_DISABLED)
+			&& (set_idx=rtw_ch_set_search_ch(pmlmeext->channel_set, in[i].hw_value)) >=0
+		)
+		{
+			memcpy(&out[j], &in[i], sizeof(struct rtw_ieee80211_channel));
 
-			if (pmlmeext->channel_set[set_idx].ScanType ==
-			    SCAN_PASSIVE)
-				out[j].flags &= IEEE80211_CHAN_PASSIVE_SCAN;
+			if(pmlmeext->channel_set[set_idx].ScanType == SCAN_PASSIVE)
+				out[j].flags &= RTW_IEEE80211_CHAN_PASSIVE_SCAN;
 
 			j++;
 		}
-		if (j >= out_num)
+		if(j>=out_num)
 			break;
 	}
 
@@ -9633,26 +9630,24 @@ static int rtw_scan_ch_decision(struct rtw_adapter *padapter,
 			out[i].hw_value = pmlmeext->channel_set[i].ChannelNum;
 
 			if(pmlmeext->channel_set[i].ScanType == SCAN_PASSIVE)
-				out[i].flags &= IEEE80211_CHAN_PASSIVE_SCAN;
+				out[i].flags &= RTW_IEEE80211_CHAN_PASSIVE_SCAN;
 
 			j++;
 		}
 	}
 
-	if (padapter->setband == GHZ_24) {			/*  2.4G */
+	if (padapter->setband == GHZ_24) {				/*  2.4G */
 		for (i=0; i < j ; i++) {
 			if (out[i].hw_value > 35)
-				memset(&out[i], 0 ,
-				       sizeof(struct ieee80211_channel));
+				memset(&out[i], 0 , sizeof(struct rtw_ieee80211_channel));
 			else
 				scan_ch_num++;
 		}
 		j = scan_ch_num;
-	} else if  (padapter->setband == GHZ_50) {		/*  5G */
+	} else if  (padapter->setband == GHZ_50) {			/*  5G */
 		for (i=0; i < j ; i++) {
 			if (out[i].hw_value > 35) {
-				memcpy(&out[scan_ch_num++], &out[i],
-				       sizeof(struct ieee80211_channel));
+				memcpy(&out[scan_ch_num++], &out[i], sizeof(struct rtw_ieee80211_channel));
 			}
 		}
 		j = scan_ch_num;
@@ -9705,8 +9700,7 @@ u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		{
 			pmlmeext->sitesurvey_res.state = SCAN_TXNULL;
 
-			/* switch to correct channel of current network
-			   before issue keep-alive frames */
+			/* switch to correct channel of current network  before issue keep-alive frames */
 			if (rtw_get_oper_ch(padapter) != pmlmeext->cur_channel) {
 				SelectChannel(padapter, pmlmeext->cur_channel);
 			}

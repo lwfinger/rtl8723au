@@ -221,7 +221,7 @@ struct sitesurvey_parm {
 	u8 ssid_num;
 	u8 ch_num;
 	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
-	struct ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
+	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 };
 
 /*
@@ -765,7 +765,7 @@ Result:
 
 u8 rtw_setassocsta_cmd(struct rtw_adapter  *padapter, u8 *mac_addr);
 u8 rtw_setstandby_cmd(struct rtw_adapter *padapter, uint action);
-u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num, struct ieee80211_channel *ch, int ch_num);
+u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num, struct rtw_ieee80211_channel *ch, int ch_num);
 u8 rtw_createbss_cmd(struct rtw_adapter  *padapter);
 u8 rtw_createbss_cmd_ex(struct rtw_adapter  *padapter, unsigned char *pbss, unsigned int sz);
 u8 rtw_setphy_cmd(struct rtw_adapter  *padapter, u8 modem, u8 ch);
