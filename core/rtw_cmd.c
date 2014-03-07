@@ -675,7 +675,7 @@ _func_enter_;
 	if (ch) {
 		int i;
 		for (i=0; i<ch_num && i< RTW_CHANNEL_SCAN_AMOUNT; i++) {
-			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
+			if (ch[i].hw_value && !(ch[i].flags & IEEE80211_CHAN_DISABLED)) {
 				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
 				psurveyPara->ch_num++;
 				if (0)
