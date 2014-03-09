@@ -1922,128 +1922,34 @@ _func_exit_;
 int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe);
 int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 {
-	int	a_len, padding_len;
-	u16	eth_type, nSubframe_Length;
-	u8	nr_subframes, i;
-	unsigned char *pdata;
 	struct rx_pkt_attrib *pattrib;
-	unsigned char *data_ptr;
-	struct sk_buff *sub_skb,*subframes[MAX_SUBFRAME_COUNT];
+	struct sk_buff *skb, *sub_skb;
+	struct sk_buff_head skb_list;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-	_queue *pfree_recv_queue = &(precvpriv->free_recv_queue);
-	int ret = _SUCCESS;
-	nr_subframes = 0;
+	_queue *pfree_recv_queue = &precvpriv->free_recv_queue;
 
 	pattrib = &prframe->attrib;
 
-	skb_pull(prframe->pkt, prframe->attrib.hdrlen);
+	skb = prframe->pkt;
+	skb_pull(skb, prframe->attrib.hdrlen);
+	__skb_queue_head_init(&skb_list);
 
-	a_len = prframe->pkt->len;
+	ieee80211_amsdu_to_8023s(skb, &skb_list, NULL, 0, 0, false);
 
-	pdata = prframe->pkt->data;
+	while (!skb_queue_empty(&skb_list)) {
+		sub_skb = __skb_dequeue(&skb_list);
 
-	while (a_len > ETH_HLEN) {
-		struct ethhdr *ethhdr = (struct ethhdr *)pdata;
-
-		nSubframe_Length = ntohs(ethhdr->h_proto);
-
-		if (a_len < (ETH_HLEN + nSubframe_Length)) {
-			DBG_8723A("nRemain_Length is %d and nSubframe_Length "
-				  "is : %d\n",a_len,nSubframe_Length);
-			goto exit;
-		}
-
-		/* move the data point to data content */
-		pdata += ETH_HLEN;
-		a_len -= ETH_HLEN;
-
-		/* Allocate new skb for releasing to upper layer */
-		sub_skb = netdev_alloc_skb(padapter->pnetdev,
-					   nSubframe_Length + 12);
-		if(sub_skb) {
-			skb_reserve(sub_skb, 12);
-			data_ptr = (u8 *)skb_put(sub_skb, nSubframe_Length);
-			memcpy(data_ptr, pdata, nSubframe_Length);
-		} else {
-			sub_skb = skb_clone(prframe->pkt, GFP_ATOMIC);
-			if (sub_skb) {
-				sub_skb->data = pdata;
-				sub_skb->len = nSubframe_Length;
-				skb_set_tail_pointer(sub_skb, nSubframe_Length);
-			} else {
-				DBG_8723A("skb_clone() Fail!!! , nr_subframes "
-					  "= %d\n",nr_subframes);
-				break;
-			}
-		}
-
-
-		/* sub_skb->dev = padapter->pnetdev; */
-		subframes[nr_subframes++] = sub_skb;
-
-		if (nr_subframes >= MAX_SUBFRAME_COUNT) {
-			DBG_8723A("ParseSubframe(): Too many Subframes! "
-				  "Packets dropped!\n");
-			break;
-		}
-
-		pdata += nSubframe_Length;
-		a_len -= nSubframe_Length;
-		if(a_len != 0) {
-			padding_len =
-				4 - ((nSubframe_Length + ETH_HLEN) & (4 - 1));
-			if (padding_len == 4) {
-				padding_len = 0;
-			}
-
-			if (a_len < padding_len) {
-				goto exit;
-			}
-			pdata += padding_len;
-			a_len -= padding_len;
-		}
-	}
-
-	for(i = 0; i < nr_subframes; i++) {
-		sub_skb = subframes[i];
-		/* convert hdr + possible LLC headers into Ethernet header */
-		/* eth_type = ntohs(*(u16*)&sub_skb->data[6]); */
-		eth_type = RTW_GET_BE16(&sub_skb->data[6]);
-		if (sub_skb->len >= 8 &&
-		    ((!memcmp(sub_skb->data, rfc1042_header, SNAP_SIZE) &&
-		      eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
-		     !memcmp(sub_skb->data, bridge_tunnel_header, SNAP_SIZE) )){
-			/* remove RFC1042 or Bridge-Tunnel encapsulation
-			   and replace EtherType */
-			skb_pull(sub_skb, SNAP_SIZE);
-			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
-					pattrib->src);
-			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
-					pattrib->dst);
-		} else {
-			u16 len;
-			/* Leave Ethernet header part of hdr and full payload */
-			len = htons(sub_skb->len);
-			memcpy(skb_push(sub_skb, 2), &len, 2);
-			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
-					pattrib->src);
-			ether_addr_copy(skb_push(sub_skb, ETH_ALEN),
-					pattrib->dst);
-		}
-
-		/* Indicat the packets to upper layer */
 		sub_skb->protocol = eth_type_trans(sub_skb, padapter->pnetdev);
 		sub_skb->dev = padapter->pnetdev;
 
 		sub_skb->ip_summed = CHECKSUM_NONE;
+
 		netif_rx(sub_skb);
 	}
 
-exit:
-
-	rtw_free_recvframe(prframe, pfree_recv_queue);/* free this recv_frame */
-
-	return ret;
+	prframe->pkt = NULL;
+	rtw_free_recvframe(prframe, pfree_recv_queue);
+	return _SUCCESS;
 }
 
 int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num);
