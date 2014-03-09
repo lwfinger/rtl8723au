@@ -24,10 +24,6 @@
 #include <linux/ieee80211.h>
 #include <wifi.h>
 
-static u8 rtw_rfc1042_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00 };
-/* Bridge-Tunnel header (for EtherTypes ETH_P_AARP and ETH_P_IPX) */
-static u8 rtw_bridge_tunnel_header[] = { 0xaa, 0xaa, 0x03, 0x00, 0x00, 0xf8 };
-
 void rtw_signal_stat_timer_hdl(unsigned long data);
 
 void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
@@ -1672,9 +1668,9 @@ _func_enter_;
 	eth_type = (psnap[6] << 8) | psnap[7];
 	/* convert hdr + possible LLC headers into Ethernet header */
 	/* eth_type = (psnap_type[0] << 8) | psnap_type[1]; */
-	if ((ether_addr_equal(psnap, rtw_rfc1042_header) &&
+	if ((ether_addr_equal(psnap, rfc1042_header) &&
 	     eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
-	    ether_addr_equal(psnap, rtw_bridge_tunnel_header)) {
+	    ether_addr_equal(psnap, bridge_tunnel_header)) {
 		/* remove RFC1042 or Bridge-Tunnel encapsulation
 		   and replace EtherType */
 		bsnaphdr = true;
@@ -2015,9 +2011,9 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 		/* eth_type = ntohs(*(u16*)&sub_skb->data[6]); */
 		eth_type = RTW_GET_BE16(&sub_skb->data[6]);
 		if (sub_skb->len >= 8 &&
-		    ((!memcmp(sub_skb->data, rtw_rfc1042_header, SNAP_SIZE) &&
+		    ((!memcmp(sub_skb->data, rfc1042_header, SNAP_SIZE) &&
 		      eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
-		     !memcmp(sub_skb->data, rtw_bridge_tunnel_header, SNAP_SIZE) )) {
+		     !memcmp(sub_skb->data, bridge_tunnel_header, SNAP_SIZE) )){
 			/* remove RFC1042 or Bridge-Tunnel encapsulation
 			   and replace EtherType */
 			skb_pull(sub_skb, SNAP_SIZE);
