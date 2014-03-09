@@ -1906,7 +1906,7 @@ static int rtw_cfg80211_set_key_mgt(struct security_priv *psecuritypriv, u32 key
 	return 0;
 }
 
-static int rtw_cfg80211_set_wpa_ie(struct rtw_adapter *padapter, u8 *pie, size_t ielen)
+static int rtw_cfg80211_set_wpa_ie(struct rtw_adapter *padapter, const u8 *pie, size_t ielen)
 {
 	u8 *buf=NULL, *pos=NULL;
 	u32 left;
@@ -2140,8 +2140,10 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	struct wlan_network *pnetwork = NULL;
 	enum ndis_802_11_auth_mode authmode;
 	struct ndis_802_11_ssid ndis_ssid;
-	u8 *dst_ssid, *src_ssid;
-	u8 *dst_bssid, *src_bssid;
+	u8 *dst_ssid;
+	u8 *src_ssid;
+	u8 *dst_bssid;
+	const u8 *src_bssid;
 	/* u8 matched_by_bssid=false; */
 	/* u8 matched_by_ssid=false; */
 	u8 matched=false;
