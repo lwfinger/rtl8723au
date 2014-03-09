@@ -1943,10 +1943,9 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	pdata = prframe->pkt->data;
 
 	while (a_len > ETH_HLEN) {
+		struct ethhdr *ethhdr = (struct ethhdr *)pdata;
 
-		/* Offset 12 denote 2 mac address */
-		/* nSubframe_Length = ntohs(*((u16*)(pdata + 12))); */
-		nSubframe_Length = RTW_GET_BE16(pdata + 12);
+		nSubframe_Length = ntohs(ethhdr->h_proto);
 
 		if (a_len < (ETH_HLEN + nSubframe_Length)) {
 			DBG_8723A("nRemain_Length is %d and nSubframe_Length "
