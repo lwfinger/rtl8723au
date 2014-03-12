@@ -528,6 +528,10 @@ _func_enter_;
 
 #ifdef CONFIG_NATIVEAP_MLME
 
+	if (psta->aid > 31) {
+		pr_err("***** psta->aid (%d) out of bounds\n", psta->aid);
+		return _FAIL;
+	}
 	pstapriv->sta_dz_bitmap &=~BIT(psta->aid);
 	pstapriv->tim_bitmap &=~BIT(psta->aid);
 
