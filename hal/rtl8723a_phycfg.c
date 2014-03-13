@@ -101,10 +101,6 @@ PHY_QueryBBReg(
 	u32	ReturnValue = 0, OriginalValue, BitShift;
 	u16	BBWaitCounter = 0;
 
-#if (DISABLE_BB_RF == 1)
-	return 0;
-#endif
-
 	/* RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_QueryBBReg(): RegAddr(%#lx), BitMask(%#lx)\n", RegAddr, BitMask)); */
 
 	OriginalValue = rtw_read32(Adapter, RegAddr);
@@ -148,10 +144,6 @@ PHY_SetBBReg(
 	struct hal_data_8723a	*pHalData		= GET_HAL_DATA(Adapter);
 	/* u16			BBWaitCounter	= 0; */
 	u32			OriginalValue, BitShift;
-
-#if (DISABLE_BB_RF == 1)
-	return;
-#endif
 
 	/* RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_SetBBReg(): RegAddr(%#lx), BitMask(%#lx), Data(%#lx)\n", RegAddr, BitMask, Data)); */
 
@@ -441,9 +433,6 @@ PHY_QueryRFReg(
 	/* u8	RFWaitCounter = 0; */
 	/* _irqL	irqL; */
 
-#if (DISABLE_BB_RF == 1)
-	return 0;
-#endif
 	Original_Value = phy_RFSerialRead(Adapter, eRFPath, RegAddr);
 
 	BitShift =  phy_CalculateBitShift(BitMask);
@@ -485,9 +474,6 @@ PHY_SetRFReg(
 	u32		Original_Value, BitShift;
 	/* _irqL	irqL; */
 
-#if (DISABLE_BB_RF == 1)
-	return;
-#endif
 	/*  RF data is 12 bits only */
 	if (BitMask != bRFRegOffsetMask)
 	{

@@ -33,15 +33,9 @@
 #include <usb_hal.h>
 #include <usb_osintf.h>
 
-#if DISABLE_BB_RF
-	#define		HAL_MAC_ENABLE	0
-	#define		HAL_BB_ENABLE		0
-	#define		HAL_RF_ENABLE		0
-#else
-	#define		HAL_MAC_ENABLE	1
-	#define		HAL_BB_ENABLE		1
-	#define		HAL_RF_ENABLE		1
-#endif
+#define		HAL_MAC_ENABLE	1
+#define		HAL_BB_ENABLE		1
+#define		HAL_RF_ENABLE		1
 
 
 static void
@@ -832,11 +826,6 @@ _InitRFType(
 	struct hal_data_8723a	*pHalData	= GET_HAL_DATA(Adapter);
 	bool			is92CU		= IS_92C_SERIAL(pHalData->VersionID);
 
-#if	DISABLE_BB_RF
-	pHalData->rf_chip	= RF_PSEUDO_11N;
-	return;
-#endif
-
 	pHalData->rf_chip	= RF_6052;
 
 	if(false == is92CU){
@@ -857,10 +846,6 @@ static void _BBTurnOnBlock(
 	struct rtw_adapter *		Adapter
 	)
 {
-#if (DISABLE_BB_RF)
-	return;
-#endif
-
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bCCKEn, 0x1);
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
 }
@@ -2355,11 +2340,7 @@ _ReadRFType(
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
-#if DISABLE_BB_RF
-	pHalData->rf_chip = RF_PSEUDO_11N;
-#else
 	pHalData->rf_chip = RF_6052;
-#endif
 }
 
 static void _ReadSilmComboMode(struct rtw_adapter *Adapter)

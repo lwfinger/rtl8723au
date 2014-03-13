@@ -1203,10 +1203,6 @@ rtl8723a_phy_iq_calibrate(
 	if(bStartContTx || bSingleTone || bCarrierSuppression)
 		return;
 
-#if DISABLE_BB_RF
-	return;
-#endif
-
 	if(bReCovery)
 	{
 		_PHY_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pdmpriv->IQK_BB_backup_recover, 9);
@@ -1324,10 +1320,6 @@ rtl8723a_phy_lc_calibrate(
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct mlme_ext_priv	*pmlmeext = &pAdapter->mlmeextpriv;
 	bool	bStartContTx = false, bSingleTone = false, bCarrierSuppression = false;
-
-#if DISABLE_BB_RF
-	return;
-#endif
 
 	/* ignore IQK when continuous Tx */
 	if(bStartContTx || bSingleTone || bCarrierSuppression)

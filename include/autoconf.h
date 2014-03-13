@@ -56,8 +56,6 @@
 
 #define ENABLE_USB_DROP_INCORRECT_OUT	0
 
-#define DISABLE_BB_RF	0
-
 #define MP_DRIVER 0
 
 /*
