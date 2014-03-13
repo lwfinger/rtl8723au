@@ -60,10 +60,6 @@ enum _NIC_VERSION {
 #include <rtw_p2p.h>
 #include <rtw_ap.h>
 
-#ifdef CONFIG_BR_EXT
-#include <rtw_br_ext.h>
-#endif	/*  CONFIG_BR_EXT */
-
 #include "ioctl_cfg80211.h"
 
 #define SPEC_DEV_ID_NONE BIT(0)
