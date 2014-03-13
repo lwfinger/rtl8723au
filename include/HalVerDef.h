@@ -72,12 +72,12 @@ struct hal_version {
 };
 
 /*  Get element */
-#define GET_CVID_IC_TYPE(version)		((enum hal_ic_type)(((struct hal_version)version).ICType))
-#define GET_CVID_CHIP_TYPE(version)		((enum hal_chip_type)(((struct hal_version)version).ChipType))
-#define GET_CVID_RF_TYPE(version)		((enum hal_rf_type)(((struct hal_version)version).RFType))
-#define GET_CVID_MANUFACTUER(version)		((enum hal_vendor)(((struct hal_version)version).VendorType))
-#define GET_CVID_CUT_VERSION(version)		((enum hal_cut_version)(((struct hal_version)version).CUTVersion))
-#define GET_CVID_ROM_VERSION(version)		((((struct hal_version)version).ROMVer) & ROM_VERSION_MASK)
+#define GET_CVID_IC_TYPE(version)		((version).ICType)
+#define GET_CVID_CHIP_TYPE(version)		((version).ChipType)
+#define GET_CVID_RF_TYPE(version)		((version).RFType)
+#define GET_CVID_MANUFACTUER(version)		((version).VendorType)
+#define GET_CVID_CUT_VERSION(version)		((version).CUTVersion)
+#define GET_CVID_ROM_VERSION(version)		(((version).ROMVer) & ROM_VERSION_MASK)
 
 /*  */
 /* Common Macro. -- */
