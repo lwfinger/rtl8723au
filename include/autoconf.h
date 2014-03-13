@@ -48,10 +48,6 @@
 
 #define CONFIG_IPS
 
-#ifdef CONFIG_BR_EXT
-#define CONFIG_BR_EXT_BRNAME	"br0"
-#endif	/*  CONFIG_BR_EXT */
-
 /*
  * HAL  Related Config
  */
