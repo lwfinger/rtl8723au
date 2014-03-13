@@ -9392,14 +9392,10 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		/* clear CAM */
 		flush_all_cam_entry(padapter);
 
-		memcpy(pnetwork, pparm,
-		       FIELD_OFFSET(struct wlan_bssid_ex, IELength));
-		pnetwork->IELength = pparm->IELength;
-
-		if(pnetwork->IELength>MAX_IE_SZ)/* Check pbuf->IELength */
+		if (pparm->IELength > MAX_IE_SZ)/* Check pbuf->IELength */
 			return H2C_PARAMETERS_ERROR;
 
-		memcpy(pnetwork->IEs, pparm->IEs, pnetwork->IELength);
+		memcpy(pnetwork, pparm, sizeof(struct wlan_bssid_ex));
 
 		start_create_ibss(padapter);
 	}
