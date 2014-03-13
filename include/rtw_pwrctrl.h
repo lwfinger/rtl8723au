@@ -257,11 +257,9 @@ void rtw_ps_processor(struct rtw_adapter *padapter);
 
 enum rt_rf_power_state RfOnOffDetect(struct rtw_adapter *adapter);
 
-#ifdef CONFIG_LPS
 s32 LPS_RF_ON_check(struct rtw_adapter *padapter, u32 delay_ms);
 void LPS_Enter(struct rtw_adapter *padapter);
 void LPS_Leave(struct rtw_adapter *padapter);
-#endif
 
 u8 rtw_interface_ps_func(struct rtw_adapter *padapter,
 			 HAL_INTF_PS_FUNC efunc_id, u8 *val);

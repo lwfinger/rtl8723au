@@ -1044,12 +1044,10 @@ _func_enter_;
 	p2p_ps_wk_cmd(padapter, P2P_PS_DISABLE, 1);
 #endif /*  CONFIG_8723AU_P2P */
 
-#ifdef CONFIG_LPS
 #ifdef CONFIG_WOWLAN
 	if(padapter->pwrctrlpriv.wowlan_mode==false)
 #endif /* CONFIG_WOWLAN */
 	rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_DISCONNECT, 1);
-#endif
 
 _func_exit_;
 }

@@ -128,11 +128,7 @@ typedef enum _RT_JOIN_ACTION{
 #define IPSReturn(...)
 #define IPSDisable(...)
 #endif
-#ifdef CONFIG_LPS
 #define LeisurePSLeave(padapter, b)	LPS_Leave(padapter)
-#else
-#define LeisurePSLeave(...)
-#endif
 
 #ifdef __BT_C__ /*  COMMOM/BT.c */
 /*  ===== Below this line is sync from SD7 driver COMMOM/BT.c ===== */

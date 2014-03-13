@@ -1058,9 +1058,7 @@ odm_DIGbyRSSI_LPS(
 		return;
 
 	CurrentIGI=CurrentIGI+RSSI_OFFSET_DIG;
-#ifdef CONFIG_LPS
 	bFwCurrentInPSMode = pAdapter->pwrctrlpriv.bFwCurrentInPSMode;
-#endif
 
 	/* ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG_LPS, ODM_DBG_LOUD, ("odm_DIG()==>\n")); */
 

@@ -626,11 +626,9 @@ u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ss
 
 _func_enter_;
 
-#ifdef CONFIG_LPS
 	if(check_fwstate(pmlmepriv, _FW_LINKED) == true){
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_SCAN, 1);
 	}
-#endif
 
 #ifdef CONFIG_8723AU_P2P
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
@@ -1805,9 +1803,7 @@ _func_exit_;
 
 static void traffic_status_watchdog(struct rtw_adapter *padapter)
 {
-#ifdef CONFIG_LPS
 	u8	bEnterPS;
-#endif
 	u16	BusyThreshold = 100;
 	u8	bBusyTraffic = false, bTxBusyTraffic = false, bRxBusyTraffic = false;
 	u8	bHigherBusyTraffic = false, bHigherBusyRxTraffic = false, bHigherBusyTxTraffic = false;
@@ -1851,39 +1847,27 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 				bHigherBusyTxTraffic = true;
 		}
 
-#ifdef CONFIG_LPS
 #ifdef CONFIG_8723AU_BT_COEXIST
 		if (BT_1Ant(padapter) == false)
 #endif
 		{
 		/*  check traffic for  powersaving. */
-		if( ((pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod + pmlmepriv->LinkDetectInfo.NumTxOkInPeriod) > 8 ) ||
-			(pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 2) )
-		{
+		if (((pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod + pmlmepriv->LinkDetectInfo.NumTxOkInPeriod) > 8 ) ||
+			(pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 2)){
 			bEnterPS= false;
-		}
-		else
-		{
+		} else {
 			bEnterPS= true;
 		}
 
 		/*  LeisurePS only work in infra mode. */
-		if(bEnterPS)
-		{
+		if (bEnterPS) {
 			LPS_Enter(padapter);
-		}
-		else
-		{
+		} else {
 			LPS_Leave(padapter);
 		}
 		}
-#endif /*  CONFIG_LPS */
-	}
-	else
-	{
-#ifdef CONFIG_LPS
+	} else {
 		LPS_Leave(padapter);
-#endif
 	}
 
 	pmlmepriv->LinkDetectInfo.NumRxOkInPeriod = 0;
@@ -1927,7 +1911,6 @@ void dynamic_chk_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 #endif
 }
 
-#ifdef CONFIG_LPS
 
 void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type);
 void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
@@ -2051,8 +2034,6 @@ _func_exit_;
 
 	return res;
 }
-
-#endif
 
 #if (RATE_ADAPTIVE_SUPPORT==1)
 void rpt_timer_setting_wk_hdl(struct rtw_adapter *padapter, u16 minRptTime)
@@ -2377,11 +2358,9 @@ u8 rtw_drvextra_cmd_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 		case POWER_SAVING_CTRL_WK_CID:
 			power_saving_wk_hdl(padapter, pdrvextra_cmd->pbuf, pdrvextra_cmd->type_size);
 			break;
-#ifdef CONFIG_LPS
 		case LPS_CTRL_WK_CID:
 			lps_ctrl_wk_hdl(padapter, (u8)pdrvextra_cmd->type_size);
 			break;
-#endif
 #if (RATE_ADAPTIVE_SUPPORT==1)
 		case RTP_TIMER_CFG_WK_CID:
 			rpt_timer_setting_wk_hdl(padapter, pdrvextra_cmd->type_size);

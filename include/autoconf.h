@@ -40,8 +40,6 @@
  */
 
 #undef CONFIG_MP_IWPRIV_SUPPORT
-#define CONFIG_LPS		1
-
 
 
 #ifdef CONFIG_LED
