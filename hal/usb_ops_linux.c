@@ -408,8 +408,8 @@ static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 					DBG_8723A("%s rtw_cbuf_push fail\n",
 						  __func__);
 				schedule_work(&padapter->evtpriv.c2h_wk);
-			} else if ((c2h_evt =
-				    (struct c2h_evt_hdr *)rtw_malloc(16))) {
+			} else if ((c2h_evt = (struct c2h_evt_hdr *)
+				    kmalloc(16, GFP_ATOMIC))) {
 				memcpy(c2h_evt, purb->transfer_buffer, 16);
 				if (rtw_cbuf_push(padapter->evtpriv.c2h_queue,
 						  (void*)c2h_evt) != _SUCCESS)

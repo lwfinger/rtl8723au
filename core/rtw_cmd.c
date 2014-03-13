@@ -246,9 +246,9 @@ _func_enter_;
 
 	while (!rtw_cbuf_empty(pevtpriv->c2h_queue)) {
 		void *c2h;
-		if ((c2h = rtw_cbuf_pop(pevtpriv->c2h_queue)) != NULL
-			&& c2h != (void *)pevtpriv) {
-			rtw_mfree(c2h, 16);
+		if ((c2h = rtw_cbuf_pop(pevtpriv->c2h_queue)) != NULL &&
+		    c2h != (void *)pevtpriv) {
+			kfree(c2h);
 		}
 	}
 
@@ -2344,7 +2344,8 @@ static void c2h_wk_callback(struct work_struct *work)
 		if ((c2h_evt = (struct c2h_evt_hdr *)rtw_cbuf_pop(evtpriv->c2h_queue)) != NULL) {
 			/* This C2H event is read, clear it */
 			c2h_evt_clear(adapter);
-		} else if ((c2h_evt = (struct c2h_evt_hdr *)rtw_malloc(16)) != NULL) {
+		} else if ((c2h_evt = (struct c2h_evt_hdr *)
+			    kmalloc(16, GFP_ATOMIC))) {
 			/* This C2H event is not read, read & clear now */
 			if (c2h_evt_read(adapter, (u8*)c2h_evt) != _SUCCESS)
 				continue;
@@ -2355,14 +2356,14 @@ static void c2h_wk_callback(struct work_struct *work)
 			continue;
 
 		if (!c2h_evt_exist(c2h_evt)) {
-			rtw_mfree((u8*)c2h_evt, 16);
+			kfree(c2h_evt);
 			continue;
 		}
 
 		if (ccx_id_filter(c2h_evt->id) == true) {
 			/* Handle CCX report here */
 			rtw_hal_c2h_handler(adapter, c2h_evt);
-			rtw_mfree((u8*)c2h_evt, 16);
+			kfree(c2h_evt);
 		} else {
 			/* Enqueue into cmd_thread for others */
 			rtw_c2h_wk_cmd(adapter, (u8 *)c2h_evt);
