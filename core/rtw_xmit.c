@@ -1821,12 +1821,6 @@ _func_enter_;
 		pxmitframe->pkt = NULL;
 	}
 
-	if (pxmitframe->alloc_addr) {
-		DBG_8723A("################## %s with alloc_addr ##################\n", __func__);
-		rtw_mfree(pxmitframe->alloc_addr, sizeof(struct xmit_frame) + 4);
-		goto check_pkt_complete;
-	}
-
 	if (pxmitframe->ext_tag == 0)
 		queue = &pxmitpriv->free_xmit_queue;
 	else if(pxmitframe->ext_tag == 1)

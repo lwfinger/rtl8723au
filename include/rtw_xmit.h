@@ -235,7 +235,6 @@ struct xmit_frame {
 
 	u8 ack_report;
 
-	u8 *alloc_addr; /* the actual address this xmitframe allocated */
 	u8 ext_tag; /* 0:data, 1:mgmt */
 };
 
