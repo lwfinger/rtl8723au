@@ -161,12 +161,6 @@ static uint rtw_max_roaming_times=2;
 module_param(rtw_max_roaming_times, uint, 0644);
 MODULE_PARM_DESC(rtw_max_roaming_times,"The max roaming times to try");
 
-#ifdef CONFIG_IOL
-int rtw_fw_iol=1;/*  0:Disable, 1:enable, 2:by usb speed */
-module_param(rtw_fw_iol, int, 0644);
-MODULE_PARM_DESC(rtw_fw_iol,"FW IOL");
-#endif /* CONFIG_IOL */
-
 module_param(rtw_80211d, int, 0644);
 MODULE_PARM_DESC(rtw_80211d, "Enable 802.11d mechanism");
 
@@ -650,10 +644,6 @@ _func_enter_;
 	registry_par->hw_wps_pbc = (u8)rtw_hw_wps_pbc;
 
 	registry_par->max_roaming_times = (u8)rtw_max_roaming_times;
-
-#ifdef CONFIG_IOL
-	registry_par->fw_iol = rtw_fw_iol;
-#endif
 
 	registry_par->enable80211d = (u8)rtw_80211d;
 

@@ -25,10 +25,6 @@
 #include <rtl8723a_led.h>
 #include <linux/ieee80211.h>
 
-#ifdef CONFIG_IOL
-#include <rtw_iol.h>
-#endif
-
 #include <usb_ops.h>
 #include <usb_hal.h>
 #include <usb_osintf.h>

@@ -406,15 +406,6 @@ bool rtw_hal_sreset_inprogress(struct rtw_adapter *padapter)
 	return inprogress;
 }
 
-#ifdef CONFIG_IOL
-int rtw_hal_iol_cmd(ADAPTER *adapter, struct xmit_frame *xmit_frame, u32 max_wating_ms, u32 bndy_cnt)
-{
-	if(adapter->HalFunc.IOL_exec_cmds_sync)
-		return adapter->HalFunc.IOL_exec_cmds_sync(adapter, xmit_frame, max_wating_ms,bndy_cnt);
-	return _FAIL;
-}
-#endif
-
 void rtw_hal_notch_filter(struct rtw_adapter *adapter, bool enable)
 {
 	if(adapter->HalFunc.hal_notch_filter)

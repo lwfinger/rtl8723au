@@ -17,10 +17,6 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-#ifdef CONFIG_IOL
-#include <rtw_iol.h>
-#endif
-
 #include <rtl8723a_hal.h>
 
 
