@@ -36,8 +36,6 @@ static int rtw_chip_version = 0x00;
 static int rtw_rfintfs = HWPI;
 static int rtw_debug = 1;
 
-static int rtw_network_mode = Ndis802_11IBSS;/* Ndis802_11Infrastructure;infra, ad-hoc, auto */
-/* struct ndis_802_11_ssid	ssid; */
 static int rtw_channel = 1;/* ad-hoc support requirement */
 static int rtw_wireless_mode = WIRELESS_11BG_24N;
 static int rtw_vrtl_carrier_sense = AUTO_VCS;
@@ -56,7 +54,6 @@ static int rtw_smart_ps = 2;
 module_param(rtw_ips_mode, int, 0644);
 MODULE_PARM_DESC(rtw_ips_mode,"The default IPS mode");
 
-static int rtw_radio_enable = 1;
 static int rtw_long_retry_lmt = 7;
 static int rtw_short_retry_lmt = 7;
 static int rtw_busy_thresh = 40;
@@ -127,7 +124,6 @@ module_param(rtw_initmac, charp, 0644);
 module_param(rtw_channel_plan, int, 0644);
 module_param(rtw_chip_version, int, 0644);
 module_param(rtw_rfintfs, int, 0644);
-module_param(rtw_network_mode, int, 0644);
 module_param(rtw_channel, int, 0644);
 module_param(rtw_wmm_enable, int, 0644);
 module_param(rtw_vrtl_carrier_sense, int, 0644);
@@ -569,7 +565,6 @@ _func_enter_;
 	GlobalDebugLevel = rtw_debug;
 	registry_par->chip_version = (u8)rtw_chip_version;
 	registry_par->rfintfs = (u8)rtw_rfintfs;
-	registry_par->network_mode  = (u8)rtw_network_mode;
 
 	memcpy(registry_par->ssid.Ssid, "ANY", 3);
 	registry_par->ssid.SsidLength = 3;
@@ -587,7 +582,6 @@ _func_enter_;
 	registry_par->smart_ps =  (u8)rtw_smart_ps;
 	registry_par->power_mgnt = (u8)rtw_power_mgnt;
 	registry_par->ips_mode = (u8)rtw_ips_mode;
-	registry_par->radio_enable = (u8)rtw_radio_enable;
 	registry_par->long_retry_lmt = (u8)rtw_long_retry_lmt;
 	registry_par->short_retry_lmt = (u8)rtw_short_retry_lmt;
 	registry_par->busy_thresh = (u16)rtw_busy_thresh;
