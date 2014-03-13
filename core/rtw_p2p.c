@@ -3725,7 +3725,8 @@ _func_enter_;
 			goto exit;
 		}
 
-		pdrvextra_cmd_parm = (struct drvextra_cmd_parm*)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
+		pdrvextra_cmd_parm = (struct drvextra_cmd_parm *)
+			kzalloc(sizeof(struct drvextra_cmd_parm), GFP_ATOMIC);
 		if(pdrvextra_cmd_parm==NULL){
 			kfree(ph2c);
 			res = _FAIL;

@@ -8494,7 +8494,8 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 		return;
 
 	cmdsz = (sizeof(struct survey_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL) {
+	pevtcmd = kzalloc(cmdsz, GFP_ATOMIC);
+	if (!pevtcmd) {
 		kfree(pcmd_obj);
 		return;
 	}
@@ -8517,7 +8518,7 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 
 	if (collect_bss_info(padapter, precv_frame, &psurvey_evt->bss) == _FAIL) {
 		kfree(pcmd_obj);
-		rtw_mfree((u8 *)pevtcmd, cmdsz);
+		kfree(pevtcmd);
 		return;
 	}
 
@@ -8546,8 +8547,8 @@ void report_surveydone_event(struct rtw_adapter *padapter)
 		return;
 
 	cmdsz = (sizeof(struct surveydone_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
-	{
+	pevtcmd = kzalloc(cmdsz, GFP_ATOMIC);
+	if (!pevtcmd) {
 		kfree(pcmd_obj);
 		return;
 	}
@@ -8593,8 +8594,8 @@ void report_join_res(struct rtw_adapter *padapter, int res)
 		return;
 
 	cmdsz = (sizeof(struct joinbss_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
-	{
+	pevtcmd = kzalloc(cmdsz, GFP_ATOMIC);
+	if (!pevtcmd) {
 		kfree(pcmd_obj);
 		return;
 	}
@@ -8644,8 +8645,8 @@ void report_del_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, 
 		return;
 
 	cmdsz = (sizeof(struct stadel_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
-	{
+	pevtcmd = kzalloc(cmdsz, GFP_ATOMIC);
+	if (!pevtcmd) {
 		kfree(pcmd_obj);
 		return;
 	}
@@ -8699,8 +8700,8 @@ void report_add_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, 
 		return;
 
 	cmdsz = (sizeof(struct stassoc_event) + sizeof(struct C2HEvent_Header));
-	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
-	{
+	pevtcmd = kzalloc(cmdsz, GFP_ATOMIC);
+	if (!pevtcmd) {
 		kfree(pcmd_obj);
 		return;
 	}
@@ -9211,8 +9212,9 @@ static void survey_timer_hdl(unsigned long data)
 		if (!ph2c)
 			goto exit_survey_timer_hdl;
 
-		if ((psurveyPara = (struct sitesurvey_parm*)rtw_zmalloc(sizeof(struct sitesurvey_parm))) == NULL)
-		{
+		psurveyPara = (struct sitesurvey_parm*)
+			kzalloc(sizeof(struct sitesurvey_parm), GFP_ATOMIC);
+		if (!psurveyPara) {
 			kfree(ph2c);
 			goto exit_survey_timer_hdl;
 		}
@@ -9924,8 +9926,9 @@ _func_enter_;
 		goto exit;
 	}
 
-	if ((ptxBeacon_parm = (struct Tx_Beacon_param *)rtw_zmalloc(sizeof(struct Tx_Beacon_param))) == NULL)
-	{
+	ptxBeacon_parm = (struct Tx_Beacon_param *)
+		kzalloc(sizeof(struct Tx_Beacon_param), GFP_ATOMIC);
+	if (!ptxBeacon_parm) {
 		kfree(ph2c);
 		res = _FAIL;
 		goto exit;

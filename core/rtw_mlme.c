@@ -2009,7 +2009,7 @@ _func_enter_;
 	}
 
 	psetauthparm = (struct setauth_parm*)
-		rtw_zmalloc(sizeof(struct setauth_parm));
+		kzalloc(sizeof(struct setauth_parm), GFP_KERNEL);
 	if (!psetauthparm) {
 		kfree(pcmd);
 		res = _FAIL;
@@ -2057,7 +2057,7 @@ _func_enter_;
 		goto exit;
 	}
 	psetkeyparm = (struct setkey_parm *)
-		rtw_zmalloc(sizeof(struct setkey_parm));
+		kzalloc(sizeof(struct setkey_parm), GFP_KERNEL);
 	if (!psetkeyparm) {
 		kfree(pcmd);
 		res = _FAIL;
