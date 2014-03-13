@@ -9410,7 +9410,8 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
+	struct wlan_bssid_ex *pparm = (struct wlan_bssid_ex *)pbuf;
 	u32 i;
         /* u32	initialgain; */
 	/* u32	acparm; */
@@ -9451,13 +9452,10 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	pmlmeinfo->bwmode_updated = false;
 	/* pmlmeinfo->assoc_AP_vendor = HT_IOT_PEER_MAX; */
 
-	memcpy(pnetwork, pbuf, FIELD_OFFSET(struct wlan_bssid_ex, IELength));
-	pnetwork->IELength = ((struct wlan_bssid_ex *)pbuf)->IELength;
-
-	if(pnetwork->IELength>MAX_IE_SZ)/* Check pbuf->IELength */
+	if (pparm->IELength > MAX_IE_SZ)/* Check pbuf->IELength */
 		return H2C_PARAMETERS_ERROR;
 
-	memcpy(pnetwork->IEs, ((struct wlan_bssid_ex *)pbuf)->IEs, pnetwork->IELength);
+	memcpy(pnetwork, pbuf, sizeof(struct wlan_bssid_ex));
 
 	/* Check AP vendor to move rtw_joinbss_cmd() */
 	/* pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pnetwork->IEs, pnetwork->IELength); */
