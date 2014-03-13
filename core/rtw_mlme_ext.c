@@ -1929,10 +1929,16 @@ unsigned int OnAssocRsp(struct rtw_adapter *padapter, struct recv_frame *precv_f
 	UpdateBrateTbl(padapter, pmlmeinfo->network.SupportedRates);
 
 report_assoc_result:
+	pmlmepriv->assoc_rsp_len = 0;
 	if (res > 0) {
-		rtw_buf_update(&pmlmepriv->assoc_rsp, &pmlmepriv->assoc_rsp_len, pframe, pkt_len);
+		kfree(pmlmepriv->assoc_rsp);
+		pmlmepriv->assoc_rsp = kmalloc(pkt_len, GFP_ATOMIC);
+		if (pmlmepriv->assoc_rsp) {
+			memcpy(pmlmepriv->assoc_rsp, pframe, pkt_len);
+			pmlmepriv->assoc_rsp_len = pkt_len;
+		}
 	} else {
-		rtw_buf_free(&pmlmepriv->assoc_rsp, &pmlmepriv->assoc_rsp_len);
+		kfree(pmlmepriv->assoc_rsp);
 	}
 
 	report_join_res(padapter, res);
@@ -6749,10 +6755,17 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	ret = _SUCCESS;
 
 exit:
-	if (ret == _SUCCESS)
-		rtw_buf_update(&pmlmepriv->assoc_req, &pmlmepriv->assoc_req_len, (u8 *)pwlanhdr, pattrib->pktlen);
-	else
-		rtw_buf_free(&pmlmepriv->assoc_req, &pmlmepriv->assoc_req_len);
+	pmlmepriv->assoc_req_len = 0;
+	if (ret == _SUCCESS) {
+		kfree(pmlmepriv->assoc_req);
+		pmlmepriv->assoc_req = kmalloc(pattrib->pktlen, GFP_ATOMIC);
+		if (pmlmepriv->assoc_req) {
+			memcpy(pmlmepriv->assoc_req, pwlanhdr,
+			       pattrib->pktlen);
+			pmlmepriv->assoc_req_len = pattrib->pktlen;
+		}
+	} else
+		kfree(pmlmepriv->assoc_req);
 
 	return;
 }
