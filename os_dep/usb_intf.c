@@ -20,25 +20,17 @@
 #include <xmit_osdep.h>
 #include <hal_intf.h>
 #include <rtw_version.h>
+#include <osdep_intf.h>
 
 #include <usb_vendor_req.h>
 #include <usb_ops.h>
 #include <usb_osintf.h>
 #include <usb_hal.h>
 
-extern int rtw_ht_enable;
-extern int rtw_cbw40_enable;
-extern int rtw_ampdu_enable;/* for enable tx_ampdu */
-
-int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 static int rtw_suspend(struct usb_interface *intf, pm_message_t message);
 static int rtw_resume(struct usb_interface *intf);
-int rtw_resume_process(struct rtw_adapter *padapter);
-
-
 static int rtw_drv_init(struct usb_interface *pusb_intf,const struct usb_device_id *pdid);
 static void rtw_disconnect(struct usb_interface *pusb_intf);
-
 
 #define USB_VENDER_ID_REALTEK		0x0BDA
 

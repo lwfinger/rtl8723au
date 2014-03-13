@@ -320,7 +320,13 @@ struct wowlan_ioctl_param{
 #define Rx_PatternPkt			0x23
 #endif /*  CONFIG_WOWLAN */
 
+extern int rtw_ht_enable;
+extern int rtw_cbw40_enable;
+extern int rtw_ampdu_enable;/* for enable tx_ampdu */
+
 void rtw_hal_def_value_init(struct rtw_adapter *padapter);
+int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
+int rtw_resume_process(struct rtw_adapter *padapter);
 
 void	rtw_hal_free_data(struct rtw_adapter *padapter);
 

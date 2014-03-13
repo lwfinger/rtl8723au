@@ -19,6 +19,9 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
+int rtw_hw_suspend(struct rtw_adapter *padapter);
+int rtw_hw_resume(struct rtw_adapter *padapter);
+
 u8 rtw_init_drv_sw(struct rtw_adapter *padapter);
 u8 rtw_free_drv_sw(struct rtw_adapter *padapter);
 u8 rtw_reset_drv_sw(struct rtw_adapter *padapter);

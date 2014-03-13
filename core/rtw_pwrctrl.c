@@ -105,9 +105,6 @@ int ips_leave(struct rtw_adapter * padapter)
 
 #endif
 
-int rtw_hw_suspend(struct rtw_adapter *padapter );
-int rtw_hw_resume(struct rtw_adapter *padapter);
-
 static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 {
 	struct rtw_adapter *buddy = adapter->pbuddy_adapter;

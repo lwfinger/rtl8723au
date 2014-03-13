@@ -869,7 +869,7 @@ void rtw_stop_drv_threads (struct rtw_adapter *padapter)
 	rtw_hal_stop_thread(padapter);
 }
 
-u8 rtw_init_default_value(struct rtw_adapter *padapter)
+static u8 rtw_init_default_value(struct rtw_adapter *padapter)
 {
 	u8 ret  = _SUCCESS;
 	struct registry_priv* pregistrypriv = &padapter->registrypriv;
