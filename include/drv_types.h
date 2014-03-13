@@ -258,14 +258,7 @@ enum _ADAPTER_TYPE {
 	MAX_ADAPTER,
 };
 
-typedef enum _DRIVER_STATE{
-	DRIVER_NORMAL = 0,
-	DRIVER_DISAPPEAR = 1,
-	DRIVER_REPLACE_DONGLE = 2,
-}DRIVER_STATE;
-
 struct rtw_adapter {
-	int	DriverState;/*  for disable driver using module, use dongle to replace module. */
 	int	pid[3];/* process id from UI, 0:wps, 1:hostapd, 2:dhcpcd */
 	int	bDongle;/* build-in module or external dongle */
 	u16	chip_type;
