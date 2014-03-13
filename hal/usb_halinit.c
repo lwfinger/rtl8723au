@@ -33,10 +33,6 @@
 #include <usb_hal.h>
 #include <usb_osintf.h>
 
-#define		HAL_MAC_ENABLE	1
-#define		HAL_BB_ENABLE		1
-#define		HAL_RF_ENABLE		1
-
 
 static void
 _ConfigChipOutEP(struct rtw_adapter *pAdapter, u8 NumOutPipe)
@@ -1161,28 +1157,22 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
-#if (HAL_MAC_ENABLE == 1)
 	status = PHY_MACConfig8723A(Adapter);
-	if(status == _FAIL)
-	{
+	if (status == _FAIL) {
 		DBG_8723A("PHY_MACConfig8723A fault !!\n");
 		goto exit;
 	}
-#endif
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	/*  */
 	/* d. Initialize BB related configurations. */
 	/*  */
-#if (HAL_BB_ENABLE == 1)
 	status = PHY_BBConfig8723A(Adapter);
-	if(status == _FAIL)
-	{
+	if (status == _FAIL) {
 		DBG_8723A("PHY_BBConfig8723A fault !!\n");
 		goto exit;
 	}
-#endif
 
 	/*  */
 	/*  2011/11/15 MH Add for tx power by rate fine tune. We need to call the function after BB config. */
@@ -1192,10 +1182,8 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 /*	HAL_AdjustPwrIndexbyRegistry(Adapter); */
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
-#if (HAL_RF_ENABLE == 1)
 	status = PHY_RFConfig8723A(Adapter);
-	if(status == _FAIL)
-	{
+	if (status == _FAIL) {
 		DBG_8723A("PHY_RFConfig8723A fault !!\n");
 		goto exit;
 	}
@@ -1212,8 +1200,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, bMaskDWord, 0x66F60210); /* 0x860[6:5]=b'00 */
 
 	RT_TRACE(_module_hci_hal_init_c_, _drv_info_, ("%s: 0x870 = value 0x%x\n", __FUNCTION__, PHY_QueryBBReg(Adapter, 0x870, bMaskDWord)));
-
-#endif
 
 	/*  */
 	/*  Joseph Note: Keep RfRegChnlVal for later use. */
