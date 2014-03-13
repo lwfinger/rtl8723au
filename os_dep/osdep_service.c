@@ -74,17 +74,6 @@ u8* _rtw_malloc(u32 sz)
 }
 
 
-u8* _rtw_zmalloc(u32 sz)
-{
-	u8	*pbuf = _rtw_malloc(sz);
-
-	if (pbuf != NULL) {
-		memset(pbuf, 0, sz);
-	}
-
-	return pbuf;
-}
-
 void	_rtw_mfree(u8 *pbuf, u32 sz)
 {
 	kfree(pbuf);
