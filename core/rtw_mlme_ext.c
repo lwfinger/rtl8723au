@@ -7447,7 +7447,7 @@ static void issue_action_BSSCoexistPacket(struct rtw_adapter *padapter)
 			pnetwork = container_of(plist, struct wlan_network,
 						list);
 
-			pbss_network = (struct wlan_bssid_ex *)&pnetwork->network;
+			pbss_network = &pnetwork->network;
 
 			p = rtw_get_ie(pbss_network->IEs + _FIXED_IE_LENGTH_, _HT_CAPABILITY_IE_, &len, pbss_network->IELength - _FIXED_IE_LENGTH_);
 			if((p==NULL) || (len==0))/* non-HT */
@@ -7968,7 +7968,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	memcpy(&bssid->Configuration.BeaconPeriod, rtw_get_beacon_interval_from_ie(bssid->IEs), 2);
 	bssid->Configuration.BeaconPeriod = le32_to_cpu(bssid->Configuration.BeaconPeriod);
 
-	val16 = rtw_get_capability((struct wlan_bssid_ex *)bssid);
+	val16 = rtw_get_capability(bssid);
 
 	if (val16 & BIT(0)) {
 		bssid->InfrastructureMode = Ndis802_11Infrastructure;
@@ -8033,7 +8033,7 @@ void start_create_ibss(struct rtw_adapter* padapter)
 	u8	join_type;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	pmlmeext->cur_channel = (u8)pnetwork->Configuration.DSConfig;
 	pmlmeinfo->bcn_interval = get_beacon_interval(pnetwork);
 
@@ -8041,7 +8041,7 @@ void start_create_ibss(struct rtw_adapter* padapter)
 	update_wireless_mode(padapter);
 
 	/* udpate capability */
-	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+	caps = rtw_get_capability(pnetwork);
 	update_capinfo(padapter, caps);
 	if(caps&cap_IBSS)/* adhoc master */
 	{
@@ -8089,7 +8089,7 @@ void start_clnt_join(struct rtw_adapter* padapter)
 	u8	val8;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	int beacon_timeout;
 
 	pmlmeext->cur_channel = (u8)pnetwork->Configuration.DSConfig;
@@ -8099,7 +8099,7 @@ void start_clnt_join(struct rtw_adapter* padapter)
 	update_wireless_mode(padapter);
 
 	/* udpate capability */
-	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+	caps = rtw_get_capability(pnetwork);
 	update_capinfo(padapter, caps);
 	if (caps&cap_ESS) {
 		/* switch channel */
@@ -8505,7 +8505,7 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 
 	psurvey_evt = (struct survey_event*)(pevtcmd + sizeof(struct C2HEvent_Header));
 
-	if (collect_bss_info(padapter, precv_frame, (struct wlan_bssid_ex *)&psurvey_evt->bss) == _FAIL) {
+	if (collect_bss_info(padapter, precv_frame, &psurvey_evt->bss) == _FAIL) {
 		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
 		rtw_mfree((u8 *)pevtcmd, cmdsz);
 		return;
@@ -9349,7 +9349,7 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex	*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	struct wlan_bssid_ex *pparm = (struct wlan_bssid_ex *)pbuf;
 	/* u32	initialgain; */
 
@@ -9538,7 +9538,7 @@ u8 disconnect_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	struct disconnect_parm *param = (struct disconnect_parm *)pbuf;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
+	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	u8	val8;
 
 	if (is_client_associated_to_ap(padapter))
