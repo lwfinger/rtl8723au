@@ -1145,7 +1145,8 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 		return true;
 	}
 
-	bssid = (struct wlan_bssid_ex *)rtw_zmalloc(sizeof(struct wlan_bssid_ex));
+	bssid = (struct wlan_bssid_ex *)kzalloc(sizeof(struct wlan_bssid_ex),
+		GFP_ATOMIC);
 
 	if (ieee80211_is_beacon(hdr->frame_control))
 		bssid->Reserved[0] = 1;
@@ -1308,11 +1309,11 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 		}
 	}
 
-	rtw_mfree((u8 *)bssid, sizeof(struct wlan_bssid_ex));
+	kfree(bssid);
 	return _SUCCESS;
 
 _mismatch:
-	rtw_mfree((u8 *)bssid, sizeof(struct wlan_bssid_ex));
+	kfree(bssid);
 	_func_exit_;
 	return _FAIL;
 }
