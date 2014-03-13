@@ -52,7 +52,7 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 	DBG_8723A("%s\n", __FUNCTION__);
 
-	pdata_attr = rtw_zmalloc(MAX_P2P_IE_LEN);
+	pdata_attr = kzalloc(MAX_P2P_IE_LEN, GFP_ATOMIC);
 
 	pstart = pdata_attr;
 	pcur = pdata_attr;
@@ -126,7 +126,7 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 		len = rtw_set_p2p_attr_content(pbuf, P2P_ATTR_GROUP_INFO, attr_len, pdata_attr);
 	}
 
-	rtw_mfree(pdata_attr, MAX_P2P_IE_LEN);
+	kfree(pdata_attr);
 
 	return len;
 }
@@ -2235,9 +2235,9 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 		if(rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_INFO, NULL, (uint*)&attr_contentlen))
 		{
 			DBG_8723A( "[%s] Got P2P DEVICE INFO Attr!!\n", __FUNCTION__ );
-			pattr_content = pbuf = rtw_zmalloc(attr_contentlen);
-			if(pattr_content)
-			{
+			pattr_content = pbuf = kzalloc(attr_contentlen,
+						       GFP_ATOMIC);
+			if (pattr_content) {
 				u8 num_of_secdev_type;
 				u16 dev_name_len;
 
@@ -2287,7 +2287,7 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 					memcpy(psta->dev_name, pattr_content+4, psta->dev_name_len);
 				}
 
-				rtw_mfree(pbuf, attr_contentlen);
+				kfree(pbuf);
 
 			}
 
