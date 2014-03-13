@@ -46,8 +46,6 @@
 	#define CONFIG_SW_LED
 #endif /*  CONFIG_LED */
 
-#define CONFIG_IPS
-
 /*
  * HAL  Related Config
  */

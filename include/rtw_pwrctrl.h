@@ -248,10 +248,8 @@ void rtw_set_ps_mode(struct rtw_adapter *padapter, u8 ps_mode,
 		     u8 smart_ps, u8 bcn_ant_mode);
 void rtw_set_rpwm(struct rtw_adapter *padapter, u8 val8);
 void LeaveAllPowerSaveMode(struct rtw_adapter *adapter);
-#ifdef CONFIG_IPS
 void ips_enter(struct rtw_adapter *padapter);
 int ips_leave(struct rtw_adapter *padapter);
-#endif
 
 void rtw_ps_processor(struct rtw_adapter *padapter);
 

@@ -121,13 +121,9 @@ typedef enum _RT_JOIN_ACTION{
 } RT_JOIN_ACTION;
 
 /*  power saving */
-#ifdef CONFIG_IPS
 #define IPSReturn(padapter, b)		ips_enter(padapter)
 #define IPSDisable(padapter, b, c)	ips_leave(padapter)
-#else
-#define IPSReturn(...)
-#define IPSDisable(...)
-#endif
+
 #define LeisurePSLeave(padapter, b)	LPS_Leave(padapter)
 
 #ifdef __BT_C__ /*  COMMOM/BT.c */

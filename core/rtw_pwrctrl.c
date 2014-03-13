@@ -22,7 +22,6 @@
 #include <rtl8723a_hal.h>
 #endif
 
-#ifdef CONFIG_IPS
 void ips_enter(struct rtw_adapter * padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
@@ -103,7 +102,8 @@ int ips_leave(struct rtw_adapter * padapter)
 	return result;
 }
 
-#endif
+int rtw_hw_suspend(struct rtw_adapter *padapter );
+int rtw_hw_resume(struct rtw_adapter *padapter);
 
 static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 {
@@ -204,9 +204,7 @@ void rtw_ps_processor(struct rtw_adapter*padapter)
 	{
 		DBG_8723A("==>%s .fw_state(%x)\n",__FUNCTION__,get_fwstate(pmlmepriv));
 		pwrpriv->change_rfpwrstate = rf_off;
-		#ifdef CONFIG_IPS
 		ips_enter(padapter);
-		#endif
 	}
 exit:
 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
@@ -658,16 +656,13 @@ int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char 
 		goto exit;
 	}
 
-	if(rf_off == pwrpriv->rf_pwrstate )
-	{
-#ifdef CONFIG_IPS
+	if (rf_off == pwrpriv->rf_pwrstate) {
 		DBG_8723A("%s call ips_leave....\n",__FUNCTION__);
 		if(_FAIL ==  ips_leave(padapter)) {
 			DBG_8723A("======> ips_leave fail.............\n");
 			ret = _FAIL;
 			goto exit;
 		}
-#endif
 	}
 
 	/* TODO: the following checking need to be merged... */

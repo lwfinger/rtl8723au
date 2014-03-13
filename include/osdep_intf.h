@@ -50,10 +50,8 @@ static void rtw_proc_remove_one(struct net_device *dev){}
 
 void rtw_ips_dev_unload(struct rtw_adapter *padapter);
 
-#ifdef CONFIG_IPS
 int rtw_ips_pwr_up(struct rtw_adapter *padapter);
 void rtw_ips_pwr_down(struct rtw_adapter *padapter);
-#endif
 
 int rtw_drv_register_netdev(struct rtw_adapter *padapter);
 void rtw_ndev_destructor(struct net_device *ndev);
