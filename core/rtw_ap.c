@@ -119,9 +119,9 @@ static void update_BCNTIM(struct rtw_adapter *padapter)
 		dst_ie = pie + offset;
 	}
 
-	if(remainder_ielen>0) {
-		pbackup_remainder_ie = rtw_malloc(remainder_ielen);
-		if(pbackup_remainder_ie && premainder_ie)
+	if (remainder_ielen > 0) {
+		pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
+		if (pbackup_remainder_ie && premainder_ie)
 			memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
 	}
 
@@ -150,10 +150,10 @@ static void update_BCNTIM(struct rtw_adapter *padapter)
 	}
 
 	/* copy remainder IE */
-	if(pbackup_remainder_ie) {
+	if (pbackup_remainder_ie) {
 		memcpy(dst_ie, pbackup_remainder_ie, remainder_ielen);
 
-		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
+		kfree(pbackup_remainder_ie);
 	}
 
 	offset =  (uint)(dst_ie - pie);
@@ -207,11 +207,11 @@ void rtw_add_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetwork
 			dst_ie = (p+ielen);
 	}
 
-	if(remainder_ielen>0)
-	{
-		pbackup_remainder_ie = rtw_malloc(remainder_ielen);
-		if(pbackup_remainder_ie && premainder_ie)
-			memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
+	if (remainder_ielen > 0) {
+		pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
+		if (pbackup_remainder_ie && premainder_ie)
+			memcpy(pbackup_remainder_ie, premainder_ie,
+			       remainder_ielen);
 	}
 
 	*dst_ie++=index;
@@ -221,11 +221,10 @@ void rtw_add_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetwork
 	dst_ie+=len;
 
 	/* copy remainder IE */
-	if(pbackup_remainder_ie)
-	{
+	if (pbackup_remainder_ie) {
 		memcpy(dst_ie, pbackup_remainder_ie, remainder_ielen);
 
-		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
+		kfree(pbackup_remainder_ie);
 	}
 
 	offset =  (uint)(dst_ie - pie);
@@ -252,19 +251,18 @@ void rtw_remove_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetw
 		dst_ie = p;
 	}
 
-	if(remainder_ielen>0)
-	{
-		pbackup_remainder_ie = rtw_malloc(remainder_ielen);
-		if(pbackup_remainder_ie && premainder_ie)
-			memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
+	if (remainder_ielen > 0) {
+		pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
+		if (pbackup_remainder_ie && premainder_ie)
+			memcpy(pbackup_remainder_ie, premainder_ie,
+			       remainder_ielen);
 	}
 
 	/* copy remainder IE */
-	if(pbackup_remainder_ie)
-	{
+	if (pbackup_remainder_ie) {
 		memcpy(dst_ie, pbackup_remainder_ie, remainder_ielen);
 
-		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
+		kfree(pbackup_remainder_ie);
 	}
 
 	offset =  (uint)(dst_ie - pie);
@@ -1468,11 +1466,11 @@ static void update_bcn_wps_ie(struct rtw_adapter *padapter)
 
 	remainder_ielen = ielen - wps_offset - wps_ielen;
 
-	if(remainder_ielen>0)
-	{
-		pbackup_remainder_ie = rtw_malloc(remainder_ielen);
-		if(pbackup_remainder_ie)
-			memcpy(pbackup_remainder_ie, premainder_ie, remainder_ielen);
+	if (remainder_ielen > 0) {
+		pbackup_remainder_ie = kmalloc(remainder_ielen, GFP_ATOMIC);
+		if (pbackup_remainder_ie)
+			memcpy(pbackup_remainder_ie, premainder_ie,
+			       remainder_ielen);
 	}
 
 	pwps_ie_src = pmlmepriv->wps_beacon_ie;
@@ -1492,8 +1490,8 @@ static void update_bcn_wps_ie(struct rtw_adapter *padapter)
 		pnetwork->IELength = wps_offset + (wps_ielen+2) + remainder_ielen;
 	}
 
-	if(pbackup_remainder_ie)
-		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
+	if (pbackup_remainder_ie)
+		kfree(pbackup_remainder_ie);
 }
 
 static void update_bcn_p2p_ie(struct rtw_adapter *padapter)
