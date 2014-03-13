@@ -63,7 +63,7 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 	vfree(pbuf);
 }
 
-u8* _rtw_malloc(u32 sz)
+static u8 *rtw_malloc(u32 sz)
 {
 
 	u8	*pbuf=NULL;
@@ -74,7 +74,7 @@ u8* _rtw_malloc(u32 sz)
 }
 
 
-void	_rtw_mfree(u8 *pbuf, u32 sz)
+static void rtw_mfree(u8 *pbuf, u32 sz)
 {
 	kfree(pbuf);
 }
