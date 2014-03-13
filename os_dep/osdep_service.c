@@ -63,23 +63,6 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 	vfree(pbuf);
 }
 
-static u8 *rtw_malloc(u32 sz)
-{
-
-	u8	*pbuf=NULL;
-
-	pbuf = kmalloc(sz,in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
-
-	return pbuf;
-}
-
-
-static void rtw_mfree(u8 *pbuf, u32 sz)
-{
-	kfree(pbuf);
-}
-
-
 void	_rtw_init_queue(_queue	*pqueue)
 {
 	INIT_LIST_HEAD(&(pqueue->queue));
@@ -434,7 +417,8 @@ struct rtw_cbuf *rtw_cbuf_alloc(u32 size)
 {
 	struct rtw_cbuf *cbuf;
 
-	cbuf = (struct rtw_cbuf *)rtw_malloc(sizeof(*cbuf) + sizeof(void*)*size);
+	cbuf = (struct rtw_cbuf *)kmalloc(sizeof(*cbuf) + sizeof(void*)*size,
+					  GFP_KERNEL);
 
 	if (cbuf) {
 		cbuf->write = cbuf->read = 0;
@@ -450,5 +434,5 @@ struct rtw_cbuf *rtw_cbuf_alloc(u32 size)
  */
 void rtw_cbuf_free(struct rtw_cbuf *cbuf)
 {
-	rtw_mfree((u8*)cbuf, sizeof(*cbuf) + sizeof(void*)*cbuf->size);
+	kfree(cbuf);
 }
