@@ -1292,7 +1292,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
-#ifdef USB_INTERFERENCE_ISSUE
  /* fixed USB interface interference issue */
 	rtw_write8(Adapter, 0xfe40, 0xe0);
 	rtw_write8(Adapter, 0xfe41, 0x8d);
@@ -1322,8 +1321,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 		rtw_write8(Adapter, 0xFE42, 0x80);
 
 	}
-
-#endif /* USB_INTERFERENCE_ISSUE */
 
 /* HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS); */
 /*	_InitPABias(Adapter); */
