@@ -38,9 +38,6 @@
  * Auto Config Section
  */
 
-#undef CONFIG_MP_IWPRIV_SUPPORT
-
-
 #ifdef CONFIG_LED
 	#define CONFIG_SW_LED
 #endif /*  CONFIG_LED */
