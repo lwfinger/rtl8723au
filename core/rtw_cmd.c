@@ -437,7 +437,7 @@ int rtw_cmd_thread(void *context)
 	u8 (*cmd_hdl)(struct rtw_adapter *padapter, u8* pbuf);
 	void (*pcmd_callback)(struct rtw_adapter *dev, struct cmd_obj *pcmd);
 	struct rtw_adapter *padapter = (struct rtw_adapter *)context;
-	struct cmd_priv *pcmdpriv = &(padapter->cmdpriv);
+	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 
 _func_enter_;
 
@@ -446,85 +446,79 @@ _func_enter_;
 	pcmdbuf = pcmdpriv->cmd_buf;
 	prspbuf = pcmdpriv->rsp_buf;
 
-	pcmdpriv->cmdthd_running=true;
+	pcmdpriv->cmdthd_running = true;
 	up(&pcmdpriv->terminate_cmdthread_sema);
 
-	RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,("start r871x rtw_cmd_thread !!!!\n"));
+	RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,
+		 ("start r871x rtw_cmd_thread !!!!\n"));
 
 	while(1)
 	{
 		if (down_interruptible(&pcmdpriv->cmd_queue_sema))
 			break;
 
-		if ((padapter->bDriverStopped == true)||(padapter->bSurpriseRemoved == true))
-		{
-			DBG_8723A("%s: DriverStopped(%d) SurpriseRemoved(%d) break at line %d\n",
-				__FUNCTION__, padapter->bDriverStopped, padapter->bSurpriseRemoved, __LINE__);
-			break;
-		}
-
 _next:
-		if ((padapter->bDriverStopped == true)||(padapter->bSurpriseRemoved== true))
-		{
-			DBG_8723A("%s: DriverStopped(%d) SurpriseRemoved(%d) break at line %d\n",
-				__FUNCTION__, padapter->bDriverStopped, padapter->bSurpriseRemoved, __LINE__);
+		if ((padapter->bDriverStopped == true) ||
+		    (padapter->bSurpriseRemoved == true)) {
+			DBG_8723A("%s: DriverStopped(%d) SurpriseRemoved(%d) "
+				  "break at line %d\n",	__FUNCTION__,
+				  padapter->bDriverStopped,
+				  padapter->bSurpriseRemoved, __LINE__);
 			break;
 		}
 
-		if(!(pcmd = rtw_dequeue_cmd(pcmdpriv)))
+		if (!(pcmd = rtw_dequeue_cmd(pcmdpriv)))
 			continue;
 
-		if( _FAIL == rtw_cmd_filter(pcmdpriv, pcmd) )
-		{
+		if (rtw_cmd_filter(pcmdpriv, pcmd) == _FAIL) {
 			pcmd->res = H2C_DROPPED;
 			goto post_process;
 		}
 
 		pcmdpriv->cmd_issued_cnt++;
 
-		pcmd->cmdsz = _RND4((pcmd->cmdsz));/* _RND4 */
+		pcmd->cmdsz = _RND4(pcmd->cmdsz);/* _RND4 */
 
 		memcpy(pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
 
-		if(pcmd->cmdcode < (sizeof(wlancmds) /sizeof(struct cmd_hdl)))
-		{
+		if (pcmd->cmdcode < (sizeof(wlancmds)/sizeof(struct cmd_hdl))) {
 			cmd_hdl = wlancmds[pcmd->cmdcode].h2cfuns;
 
-			if (cmd_hdl)
-			{
+			if (cmd_hdl) {
 				ret = cmd_hdl(pcmd->padapter, pcmdbuf);
 				pcmd->res = ret;
 			}
 
 			pcmdpriv->cmd_seq++;
-		}
-		else
-		{
+		} else {
 			pcmd->res = H2C_PARAMETERS_ERROR;
 		}
 
 		cmd_hdl = NULL;
 
 post_process:
-
 		/* call callback function for post-processed */
-		if(pcmd->cmdcode < (sizeof(rtw_cmd_callback) /sizeof(struct _cmd_callback)))
-		{
-			pcmd_callback = rtw_cmd_callback[pcmd->cmdcode].callback;
-			if(pcmd_callback == NULL)
-			{
-				RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,("mlme_cmd_hdl(): pcmd_callback=0x%p, cmdcode=0x%x\n", pcmd_callback, pcmd->cmdcode));
+		if (pcmd->cmdcode < (sizeof(rtw_cmd_callback) /
+				     sizeof(struct _cmd_callback))) {
+			pcmd_callback =
+				rtw_cmd_callback[pcmd->cmdcode].callback;
+			if (!pcmd_callback) {
+				RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,
+					 ("mlme_cmd_hdl(): pcmd_callback=0x%p, "
+					  "cmdcode=0x%x\n",
+					  pcmd_callback, pcmd->cmdcode));
 				rtw_free_cmd_obj(pcmd);
+			} else {
+				/* todo: !!! fill rsp_buf to pcmd->rsp
+				   if (pcmd->rsp!=NULL) */
+				/* need conider that free cmd_obj in
+				   rtw_cmd_callback */
+				pcmd_callback(pcmd->padapter, pcmd);
 			}
-			else
-			{
-				/* todo: !!! fill rsp_buf to pcmd->rsp if (pcmd->rsp!=NULL) */
-				pcmd_callback(pcmd->padapter, pcmd);/* need conider that free cmd_obj in rtw_cmd_callback */
-			}
-		}
-		else
-		{
-			RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("%s: cmdcode=0x%x callback not defined!\n", __FUNCTION__, pcmd->cmdcode));
+		} else {
+			RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+				 ("%s: cmdcode=0x%x callback not defined!\n",
+				  __FUNCTION__, pcmd->cmdcode));
 			rtw_free_cmd_obj(pcmd);
 		}
 
@@ -533,16 +527,16 @@ post_process:
 		goto _next;
 
 	}
-	pcmdpriv->cmdthd_running=false;
+	pcmdpriv->cmdthd_running = false;
 
 	/*  free all cmd_obj resources */
-	do{
+	do {
 		pcmd = rtw_dequeue_cmd(pcmdpriv);
-		if(pcmd==NULL)
+		if (!pcmd)
 			break;
 
 		rtw_free_cmd_obj(pcmd);
-	}while(1);
+	} while(1);
 
 	up(&pcmdpriv->terminate_cmdthread_sema);
 
