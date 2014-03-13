@@ -8488,12 +8488,14 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 	pmlmeext = &padapter->mlmeextpriv;
 	pcmdpriv = &padapter->cmdpriv;
 
-	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
+	pcmd_obj = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+					     GFP_ATOMIC);
+	if (!pcmd_obj)
 		return;
 
 	cmdsz = (sizeof(struct survey_event) + sizeof(struct C2HEvent_Header));
 	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL) {
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		return;
 	}
 
@@ -8514,7 +8516,7 @@ void report_survey_event(struct rtw_adapter *padapter, struct recv_frame *precv_
 	psurvey_evt = (struct survey_event*)(pevtcmd + sizeof(struct C2HEvent_Header));
 
 	if (collect_bss_info(padapter, precv_frame, &psurvey_evt->bss) == _FAIL) {
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		rtw_mfree((u8 *)pevtcmd, cmdsz);
 		return;
 	}
@@ -8538,15 +8540,15 @@ void report_surveydone_event(struct rtw_adapter *padapter)
 	struct mlme_ext_priv		*pmlmeext = &padapter->mlmeextpriv;
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 
-	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
+	pcmd_obj = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+					     GFP_ATOMIC);
+	if (!pcmd_obj)
 		return;
-	}
 
 	cmdsz = (sizeof(struct surveydone_event) + sizeof(struct C2HEvent_Header));
 	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
 	{
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		return;
 	}
 
@@ -8585,15 +8587,15 @@ void report_join_res(struct rtw_adapter *padapter, int res)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 
-	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
+	pcmd_obj = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+					     GFP_ATOMIC);
+	if (!pcmd_obj)
 		return;
-	}
 
 	cmdsz = (sizeof(struct joinbss_event) + sizeof(struct C2HEvent_Header));
 	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
 	{
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		return;
 	}
 
@@ -8636,15 +8638,15 @@ void report_del_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, 
 	struct mlme_ext_priv		*pmlmeext = &padapter->mlmeextpriv;
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 
-	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
+	pcmd_obj = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+					     GFP_ATOMIC);
+	if (!pcmd_obj)
 		return;
-	}
 
 	cmdsz = (sizeof(struct stadel_event) + sizeof(struct C2HEvent_Header));
 	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
 	{
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		return;
 	}
 
@@ -8691,15 +8693,15 @@ void report_add_sta_event(struct rtw_adapter *padapter, unsigned char* MacAddr, 
 	struct mlme_ext_priv		*pmlmeext = &padapter->mlmeextpriv;
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 
-	if ((pcmd_obj = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
+	pcmd_obj = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+					     GFP_ATOMIC);
+	if (!pcmd_obj)
 		return;
-	}
 
 	cmdsz = (sizeof(struct stassoc_event) + sizeof(struct C2HEvent_Header));
 	if ((pevtcmd = (u8*)rtw_zmalloc(cmdsz)) == NULL)
 	{
-		rtw_mfree((u8 *)pcmd_obj, sizeof(struct cmd_obj));
+		kfree(pcmd_obj);
 		return;
 	}
 
@@ -9204,14 +9206,14 @@ static void survey_timer_hdl(unsigned long data)
 			pmlmeext->scan_abort = false;/* reset */
 		}
 
-		if ((ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-		{
+		ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+			GFP_ATOMIC);
+		if (!ph2c)
 			goto exit_survey_timer_hdl;
-		}
 
 		if ((psurveyPara = (struct sitesurvey_parm*)rtw_zmalloc(sizeof(struct sitesurvey_parm))) == NULL)
 		{
-			rtw_mfree((unsigned char *)ph2c, sizeof(struct cmd_obj));
+			kfree(ph2c);
 			goto exit_survey_timer_hdl;
 		}
 
@@ -9916,16 +9918,16 @@ u8 set_tx_beacon_cmd(struct rtw_adapter* padapter)
 
 _func_enter_;
 
-	if ((ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
+	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
+	if (!ph2c) {
 		res= _FAIL;
 		goto exit;
 	}
 
 	if ((ptxBeacon_parm = (struct Tx_Beacon_param *)rtw_zmalloc(sizeof(struct Tx_Beacon_param))) == NULL)
 	{
-		rtw_mfree((unsigned char *)ph2c, sizeof(struct	cmd_obj));
-		res= _FAIL;
+		kfree(ph2c);
+		res = _FAIL;
 		goto exit;
 	}
 

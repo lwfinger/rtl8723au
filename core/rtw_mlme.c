@@ -2002,8 +2002,8 @@ int rtw_set_auth(struct rtw_adapter * adapter,
 
 _func_enter_;
 
-	pcmd = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
-	if (!pcmd){
+	pcmd = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
+	if (!pcmd) {
 		res = _FAIL;  /* try again */
 		goto exit;
 	}
@@ -2011,7 +2011,7 @@ _func_enter_;
 	psetauthparm = (struct setauth_parm*)
 		rtw_zmalloc(sizeof(struct setauth_parm));
 	if (!psetauthparm) {
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
+		kfree(pcmd);
 		res = _FAIL;
 		goto exit;
 	}
@@ -2051,7 +2051,7 @@ int rtw_set_key(struct rtw_adapter *adapter,
 
 _func_enter_;
 
-	pcmd = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
+	pcmd = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
 	if (!pcmd) {
 		res = _FAIL;  /* try again */
 		goto exit;
@@ -2059,7 +2059,7 @@ _func_enter_;
 	psetkeyparm = (struct setkey_parm *)
 		rtw_zmalloc(sizeof(struct setkey_parm));
 	if (!psetkeyparm) {
-		rtw_mfree((unsigned char *)pcmd, sizeof(struct cmd_obj));
+		kfree(pcmd);
 		res = _FAIL;
 		goto exit;
 	}

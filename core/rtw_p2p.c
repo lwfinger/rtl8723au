@@ -3718,16 +3718,17 @@ _func_enter_;
 		return res;
 
 	if(enqueue) {
-		ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
-		if(ph2c==NULL){
-			res= _FAIL;
+		ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj),
+						 GFP_ATOMIC);
+		if (!ph2c) {
+			res = _FAIL;
 			goto exit;
 		}
 
 		pdrvextra_cmd_parm = (struct drvextra_cmd_parm*)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
 		if(pdrvextra_cmd_parm==NULL){
-			rtw_mfree((unsigned char *)ph2c, sizeof(struct cmd_obj));
-			res= _FAIL;
+			kfree(ph2c);
+			res = _FAIL;
 			goto exit;
 		}
 
