@@ -162,6 +162,7 @@ static void update_BCNTIM(struct rtw_adapter *padapter)
 	set_tx_beacon_cmd(padapter);
 }
 
+#if 0 /* Unused */
 void rtw_add_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetwork, u8 index, u8 *data, u8 len)
 {
 	struct ndis_802_11_var_ies *	pIE;
@@ -268,6 +269,7 @@ void rtw_remove_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetw
 	offset =  (uint)(dst_ie - pie);
 	pnetwork->IELength = offset + remainder_ielen;
 }
+#endif
 
 u8 chk_sta_is_alive(struct sta_info *psta)
 {
