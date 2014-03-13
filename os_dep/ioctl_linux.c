@@ -3175,14 +3175,14 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 	kfree(pmlmepriv->wps_beacon_ie);
 	pmlmepriv->wps_beacon_ie = NULL;
 
-	if(ie_len>0)
-	{
+	if (ie_len > 0) {
 		pmlmepriv->wps_beacon_ie = kmalloc(ie_len, GFP_KERNEL);
-		pmlmepriv->wps_beacon_ie_len = ie_len;
-		if ( pmlmepriv->wps_beacon_ie == NULL) {
-			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n", __func__, __LINE__);
+		if (!pmlmepriv->wps_beacon_ie) {
+			DBG_8723A("%s()-%d: Unable to allocate memory!\n",
+				  __func__, __LINE__);
 			return -EINVAL;
 		}
+		pmlmepriv->wps_beacon_ie_len = ie_len;
 
 		memcpy(pmlmepriv->wps_beacon_ie, param->u.bcn_ie.buf, ie_len);
 
@@ -3214,12 +3214,12 @@ static int rtw_set_wps_probe_resp(struct net_device *dev,
 
 	if (ie_len > 0) {
 		pmlmepriv->wps_probe_resp_ie = kmalloc(ie_len, GFP_KERNEL);
-		pmlmepriv->wps_probe_resp_ie_len = ie_len;
 		if (!pmlmepriv->wps_probe_resp_ie) {
-			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n",
+			DBG_8723A("%s()-%d: Unable to allocate memory!\n",
 				  __func__, __LINE__);
 			return -EINVAL;
 		}
+		pmlmepriv->wps_probe_resp_ie_len = ie_len;
 		memcpy(pmlmepriv->wps_probe_resp_ie, param->u.bcn_ie.buf,
 		       ie_len);
 	}
@@ -3248,12 +3248,12 @@ static int rtw_set_wps_assoc_resp(struct net_device *dev,
 
 	if (ie_len > 0) {
 		pmlmepriv->wps_assoc_resp_ie = kmalloc(ie_len, GFP_KERNEL);
-		pmlmepriv->wps_assoc_resp_ie_len = ie_len;
 		if (pmlmepriv->wps_assoc_resp_ie == NULL) {
-			DBG_8723A("%s()-%d: rtw_malloc() ERROR!\n",
+			DBG_8723A("%s()-%d: Unable to allocate memory!\n",
 				  __func__, __LINE__);
 			return -EINVAL;
 		}
+		pmlmepriv->wps_assoc_resp_ie_len = ie_len;
 
 		memcpy(pmlmepriv->wps_assoc_resp_ie, param->u.bcn_ie.buf,
 		       ie_len);
