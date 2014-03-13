@@ -9350,11 +9350,10 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct wlan_bssid_ex	*pnetwork = (struct wlan_bssid_ex*)(&(pmlmeinfo->network));
-	struct joinbss_parm *pparm = (struct joinbss_parm *)pbuf;
+	struct wlan_bssid_ex *pparm = (struct wlan_bssid_ex *)pbuf;
 	/* u32	initialgain; */
 
-	if(pparm->network.InfrastructureMode == Ndis802_11APMode)
-	{
+	if (pparm->InfrastructureMode == Ndis802_11APMode) {
 #ifdef CONFIG_8723AU_AP_MODE
 
 		if(pmlmeinfo->state == WIFI_FW_AP_STATE)
@@ -9366,8 +9365,7 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	}
 
 	/* below is for ad-hoc master */
-	if(pparm->network.InfrastructureMode == Ndis802_11IBSS)
-	{
+	if (pparm->InfrastructureMode == Ndis802_11IBSS) {
 		rtw_joinbss_reset(padapter);
 
 		pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_20;
@@ -9394,16 +9392,16 @@ u8 createbss_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		/* clear CAM */
 		flush_all_cam_entry(padapter);
 
-		memcpy(pnetwork, pbuf, FIELD_OFFSET(struct wlan_bssid_ex, IELength));
-		pnetwork->IELength = ((struct wlan_bssid_ex *)pbuf)->IELength;
+		memcpy(pnetwork, pparm,
+		       FIELD_OFFSET(struct wlan_bssid_ex, IELength));
+		pnetwork->IELength = pparm->IELength;
 
 		if(pnetwork->IELength>MAX_IE_SZ)/* Check pbuf->IELength */
 			return H2C_PARAMETERS_ERROR;
 
-		memcpy(pnetwork->IEs, ((struct wlan_bssid_ex *)pbuf)->IEs, pnetwork->IELength);
+		memcpy(pnetwork->IEs, pparm->IEs, pnetwork->IELength);
 
 		start_create_ibss(padapter);
-
 	}
 
 	return H2C_SUCCESS;
