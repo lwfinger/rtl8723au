@@ -714,7 +714,6 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 
 #ifndef RTW_DVOBJ_CHIP_HW_TYPE
 	/* step 1-1., decide the chip_type via vid/pid */
-	padapter->interface_type = RTW_USB;
 	decide_chip_type_by_usb_device_id(padapter, pdid);
 #endif
 

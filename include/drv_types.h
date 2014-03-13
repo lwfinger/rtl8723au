@@ -263,7 +263,6 @@ struct rtw_adapter {
 	int	bDongle;/* build-in module or external dongle */
 	u16	chip_type;
 	u16	HardwareType;
-	u16	interface_type;/* USB,SDIO,SPI,PCI */
 
 	struct dvobj_priv *dvobj;
 	struct	mlme_priv mlmepriv;

@@ -126,10 +126,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 
 	pDM_Odm->Adapter = Adapter;
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PLATFORM, 0x04);
-	if(Adapter->interface_type == RTW_GSPI )
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,ODM_ITRF_SDIO);
-	else
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,Adapter->interface_type);/* RTL871X_HCI_TYPE */
+	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE, RTW_USB);/* RTL871X_HCI_TYPE */
 
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_IC_TYPE,ODM_RTL8723A);
 
