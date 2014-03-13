@@ -121,10 +121,6 @@ typedef enum _RT_JOIN_ACTION{
 } RT_JOIN_ACTION;
 
 /*  power saving */
-#define IPSReturn(padapter, b)		ips_enter(padapter)
-#define IPSDisable(padapter, b, c)	ips_leave(padapter)
-
-#define LeisurePSLeave(padapter, b)	LPS_Leave(padapter)
 
 #ifdef __BT_C__ /*  COMMOM/BT.c */
 /*  ===== Below this line is sync from SD7 driver COMMOM/BT.c ===== */
@@ -5618,8 +5614,8 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 			}
 
 			RTPRINT(FIOCTL, IOCTL_STATE, ("[BT PS], Disable IPS and LPS\n"));
-			IPSDisable(padapter, false, IPS_DISABLE_BT_ON);
-			LeisurePSLeave(padapter, LPS_DISABLE_BT_HS_CONNECTION);
+			ips_leave(padapter);
+			LPS_Leave(padapter);
 
 			pBtMgnt->bPhyLinkInProgress =true;
 			pBtMgnt->BTCurrentConnectType=BT_DISCONNECT;
@@ -6462,8 +6458,8 @@ BTHCI_StateMachine(
 	/*  20100325 Joseph: Disable/Enable IPS/LPS according to BT status. */
 	if (!pBtMgnt->bBTConnectInProgress && !pBtMgnt->BtOperationOn)
 	{
-		RTPRINT(FIOCTL, IOCTL_STATE, ("[BT PS], IPSReturn()\n"));
-		IPSReturn(padapter, IPS_DISABLE_BT_ON);
+		RTPRINT(FIOCTL, IOCTL_STATE, ("[BT PS], ips_enter()\n"));
+		ips_enter(padapter);
 	}
 }
 
