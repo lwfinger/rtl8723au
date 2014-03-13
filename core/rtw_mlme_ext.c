@@ -559,11 +559,11 @@ static u8 cmp_pkt_chnl_diff(struct rtw_adapter *padapter,u8* pframe,uint packet_
 		channel = *(p + 2);
 		if(padapter->mlmeextpriv.cur_channel >= channel)
 		{
-			return (padapter->mlmeextpriv.cur_channel - channel);
+			return padapter->mlmeextpriv.cur_channel - channel;
 		}
 		else
 		{
-			return (channel-padapter->mlmeextpriv.cur_channel);
+			return channel-padapter->mlmeextpriv.cur_channel;
 		}
 	}
 	else
@@ -3899,7 +3899,7 @@ static u8 is_matched_in_profilelist( u8* peermacaddr, struct profile_info* profi
 		}
 	}
 
-	return (match_result );
+	return match_result;
 }
 
 void issue_probersp_p2p(struct rtw_adapter *padapter, unsigned char *da)

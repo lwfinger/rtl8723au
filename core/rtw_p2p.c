@@ -32,7 +32,7 @@ static int rtw_p2p_is_channel_list_ok( u8 desired_ch, u8* ch_list, u8 ch_cnt )
 			break;
 		}
 	}
-	return( found );
+	return found;
 }
 
 static int is_any_client_associated(struct rtw_adapter *padapter)
@@ -2544,14 +2544,14 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 		DBG_8723A( "[%s] WPS IE not Found!!\n", __FUNCTION__ );
 		result = P2P_STATUS_FAIL_INCOMPATIBLE_PARAM;
 		rtw_p2p_set_state(pwdinfo, P2P_STATE_GONEGO_FAIL);
-		return( result );
+		return result;
 	}
 
 	if ( pwdinfo->ui_got_wps_info == P2P_NO_WPSINFO )
 	{
 		result = P2P_STATUS_FAIL_INFO_UNAVAILABLE;
 		rtw_p2p_set_state(pwdinfo, P2P_STATE_TX_INFOR_NOREADY);
-		return( result );
+		return result;
 	}
 
 	ies = pframe + _PUBLIC_ACTION_IE_OFFSET_;
@@ -2705,7 +2705,7 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 	}
 #endif /*  CONFIG_8723AU_P2P */
 
-	return( result );
+	return result;
 }
 
 u8 process_p2p_group_negotation_resp( struct wifidirect_info *pwdinfo, u8 *pframe, uint len )
@@ -2948,7 +2948,7 @@ u8 process_p2p_group_negotation_resp( struct wifidirect_info *pwdinfo, u8 *pfram
 	}
 #endif /*  CONFIG_8723AU_P2P */
 
-	return( result );
+	return result;
 }
 
 u8 process_p2p_group_negotation_confirm( struct wifidirect_info *pwdinfo, u8 *pframe, uint len )
@@ -3034,7 +3034,7 @@ u8 process_p2p_group_negotation_confirm( struct wifidirect_info *pwdinfo, u8 *pf
 
 	}
 
-	return( result );
+	return result;
 }
 
 u8 process_p2p_presence_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint len)

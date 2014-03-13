@@ -473,7 +473,7 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 
 error_exit:
 	DBG_8723A("%s, failed \n",__FUNCTION__);
-	return (-1);
+	return -1;
 
 }
 
@@ -524,7 +524,7 @@ int rtw_hw_resume(struct rtw_adapter *padapter)
 	return 0;
 error_exit:
 	DBG_8723A("%s, Open net dev failed \n",__FUNCTION__);
-	return (-1);
+	return -1;
 }
 
 static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)

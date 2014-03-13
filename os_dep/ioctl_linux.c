@@ -1999,7 +1999,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	else
 	{
 		DBG_8723A( "[%s] Unknown WPS config methodn", __func__ );
-		return( ret );
+		return ret;
 	}
 
 	spin_lock_bh(&(pmlmepriv->scanned_queue.lock));

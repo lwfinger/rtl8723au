@@ -1288,7 +1288,7 @@ int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr)
 	DBG_8723A("%s(acl_num=%d)=" MAC_FMT "\n", __func__, pacl_list->num, MAC_ARG(addr));
 
 	if((NUM_ACL-1) < pacl_list->num)
-		return (-1);
+		return -1;
 
 	spin_lock_bh(&(pacl_node_q->lock));
 

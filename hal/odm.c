@@ -2571,7 +2571,7 @@ ConvertTo_dB(
 
 	if (i >= 8)
 	{
-		return (96);	/*  maximum 96 dB */
+		return 96;	/*  maximum 96 dB */
 	}
 
 	for (j=0;j<12;j++)
@@ -2584,7 +2584,7 @@ ConvertTo_dB(
 
 	dB = i*12 + j + 1;
 
-	return (dB);
+	return dB;
 }
 
 /*  */

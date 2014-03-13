@@ -486,7 +486,7 @@ int get_bsstype(unsigned short capability)
 
 inline u8 *get_my_bssid(struct wlan_bssid_ex *pnetwork)
 {
-	return (pnetwork->MacAddress);
+	return pnetwork->MacAddress;
 }
 
 u16 get_beacon_interval(struct wlan_bssid_ex *bss)
@@ -562,7 +562,7 @@ unsigned int decide_wait_for_beacon_timeout(unsigned int bcn_interval)
 	}
 	else
 	{
-		return ((bcn_interval << 2));
+		return bcn_interval << 2;
 	}
 }
 
@@ -680,7 +680,7 @@ int WFD_info_handler(struct rtw_adapter *padapter, struct ndis_802_11_var_ies *	
 		{
 			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16( attr_content + 2 );
 			DBG_8723A( "[%s] Peer PORT NUM = %d\n", __func__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
-			return( true );
+			return true;
 		}
 	}
 	else
@@ -688,7 +688,7 @@ int WFD_info_handler(struct rtw_adapter *padapter, struct ndis_802_11_var_ies *	
 		DBG_8723A( "[%s] NO WFD IE\n", __func__ );
 
 	}
-	return( _FAIL );
+	return _FAIL;
 }
 #endif
 

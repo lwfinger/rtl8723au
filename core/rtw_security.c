@@ -92,9 +92,13 @@ _func_exit_;
 static int bcrc32initialized = 0;
 static u32 crc32_table[256];
 
-static u8 crc32_reverseBit( u8 data)
+static u8 crc32_reverseBit(u8 data)
 {
-	return( (u8)((data<<7)&0x80) | ((data<<5)&0x40) | ((data<<3)&0x20) | ((data<<1)&0x10) | ((data>>1)&0x08) | ((data>>3)&0x04) | ((data>>5)&0x02) | ((data>>7)&0x01) );
+	u8 retval = ((data << 7) & 0x80) | ((data << 5) & 0x40) |
+		((data << 3) & 0x20) | ((data << 1) & 0x10) |
+		((data >> 1) & 0x08) | ((data >> 3) & 0x04) |
+		((data >> 5) & 0x02) | ((data >> 7) & 0x01);
+	return retval;
 }
 
 static void crc32_init(void)

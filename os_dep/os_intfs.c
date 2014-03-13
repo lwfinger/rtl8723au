@@ -1301,7 +1301,7 @@ netdev_open_error:
 		 ("-871x_drv - dev_open, fail!\n"));
 	DBG_8723A("-871x_drv - drv_open fail, bup=%d\n", padapter->bup);
 
-	return (-1);
+	return -1;
 
 }
 

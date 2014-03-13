@@ -846,7 +846,7 @@ bthci_AssocMACAddr(
 	/* memcpy(&pAssoStrc->Data[0], FakeAddress, 6); */
 	RTPRINT_DATA(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_HCICMD_DETAIL|IOCTL_BT_LOGO), ("AssocMACAddr : \n"), pAssoStrc, pAssoStrc->Length+3);
 
-	return (pAssoStrc->Length+3);
+	return pAssoStrc->Length + 3;
 }
 
 static u16
@@ -870,7 +870,7 @@ bthci_PALCapabilities(
 		pAssoStrc->TypeID,
 		pAssoStrc->Length));
 
-	return (pAssoStrc->Length+3);
+	return pAssoStrc->Length + 3;
 }
 
 static u16
@@ -928,7 +928,7 @@ bthci_AssocPreferredChannelList(
 	pAssoStrc->Length = (u16)len;
 	RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, ("AssocPreferredChannelList : \n"), pAssoStrc, pAssoStrc->Length+3);
 
-	return (pAssoStrc->Length+3);
+	return pAssoStrc->Length + 3;
 }
 
 static u16 bthci_AssocPALVer(struct rtw_adapter *padapter, void *pbuf)
@@ -952,7 +952,7 @@ static u16 bthci_AssocPALVer(struct rtw_adapter *padapter, void *pbuf)
 	RTPRINT(FIOCTL, IOCTL_BT_LOGO, (" TypeID = 0x%x,\n Length = 0x%x,\n PAL Version = 0x01,\n PAL vendor = 0x01,\n PAL Sub-version specifier = 0x01\n",
 		pAssoStrc->TypeID,
 		pAssoStrc->Length));
-	return (pAssoStrc->Length+3);
+	return pAssoStrc->Length + 3;
 }
 
 static u16
@@ -983,7 +983,7 @@ bthci_ReservedForTestingPLV(
 	pAssoStrc->Data[14] = 0x0e;
 	pAssoStrc->Data[15] = 0x0f;
 
-	return (pAssoStrc->Length+3);
+	return pAssoStrc->Length + 3;
 }
 
 static u8 bthci_CheckRfStateBeforeConnect(struct rtw_adapter *padapter)

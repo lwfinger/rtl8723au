@@ -132,7 +132,7 @@ odm_EVMdbToPercentage(
 	if(ret_val == 99)
 		ret_val = 100;
 
-	return(ret_val);
+	return ret_val;
 }
 
 

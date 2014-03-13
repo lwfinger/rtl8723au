@@ -127,7 +127,7 @@ u8 *rtw_set_fixed_ie(unsigned char *pbuf, unsigned int len,
 {
 	memcpy((void *)pbuf, (void *)source, len);
 	*frlen = *frlen + len;
-	return (pbuf + len);
+	return pbuf + len;
 }
 
 /*  rtw_set_ie will update frame length */
@@ -144,7 +144,7 @@ _func_enter_;
 	*frlen = *frlen + (len + 2);
 
 _func_exit_;
-	return (pbuf + len + 2);
+	return pbuf + len + 2;
 }
 
 inline u8 *rtw_set_ie_ch_switch(u8 *buf, u32 *buf_len, u8 ch_switch_mode,
@@ -775,7 +775,7 @@ _func_enter_;
 
 _func_exit_;
 
-	return (*rsn_len + *wpa_len);
+	return *rsn_len + *wpa_len;
 }
 
 u8 rtw_is_wps_ie(u8 *ie_ptr, uint *wps_ielen)
@@ -1184,19 +1184,19 @@ static u8 key_char2num(u8 ch)
 u8 str_2char2num(u8 hch, u8 lch);
 u8 str_2char2num(u8 hch, u8 lch)
 {
-	return ((key_char2num(hch) * 10 ) + key_char2num(lch));
+	return (key_char2num(hch) * 10 ) + key_char2num(lch);
 }
 
 u8 key_2char2num(u8 hch, u8 lch);
 u8 key_2char2num(u8 hch, u8 lch)
 {
-	return ((key_char2num(hch) << 4) | key_char2num(lch));
+	return (key_char2num(hch) << 4) | key_char2num(lch);
 }
 
 u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
 {
-	return ((key_char2num(hch) * 100) + (key_char2num(mch) * 10) +
-		key_char2num(lch));
+	return (key_char2num(hch) * 100) + (key_char2num(mch) * 10) +
+		key_char2num(lch);
 }
 
 extern char* rtw_initmac;
