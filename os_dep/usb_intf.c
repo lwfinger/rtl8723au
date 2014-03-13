@@ -353,26 +353,14 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 		/* s5. */
 		if(padapter->bSurpriseRemoved == false)
 		{
-#ifdef CONFIG_WOWLAN
-			if((padapter->pwrctrlpriv.bSupportRemoteWakeup==true)&&(padapter->pwrctrlpriv.wowlan_mode==true)){
-				DBG_8723A("%s bSupportWakeOnWlan==true  do not run rtw_hal_deinit()\n",__FUNCTION__);
-			}
-			else
-#endif /* CONFIG_WOWLAN */
-			{
-				rtw_hal_deinit(padapter);
-			}
+			rtw_hal_deinit(padapter);
 			padapter->bSurpriseRemoved = true;
 		}
 
 		padapter->bup = false;
-#ifdef CONFIG_WOWLAN
-		padapter->hw_init_completed=false;
-#endif /* CONFIG_WOWLAN */
-	}
-	else
-	{
-		RT_TRACE(_module_hci_intfs_c_,_drv_err_,("r871x_dev_unload():padapter->bup == false\n" ));
+	} else {
+		RT_TRACE(_module_hci_intfs_c_,_drv_err_,
+			 ("r871x_dev_unload():padapter->bup == false\n" ));
 	}
 
 	DBG_8723A("<=== rtw_dev_unload\n");
@@ -535,9 +523,6 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct usb_device *usb_dev = interface_to_usbdev(pusb_intf);
-#ifdef CONFIG_WOWLAN
-	struct wowlan_ioctl_param poidparam;
-#endif /*  CONFIG_WOWLAN */
 
 	int ret = 0;
 	u32 start_time = rtw_get_current_time();
@@ -545,13 +530,6 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	_func_enter_;
 
 	DBG_8723A("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
-
-#ifdef CONFIG_WOWLAN
-	if (check_fwstate(pmlmepriv, _FW_LINKED))
-		padapter->pwrctrlpriv.wowlan_mode = true;
-	else
-		padapter->pwrctrlpriv.wowlan_mode = false;
-#endif
 
 	if((!padapter->bup) || (padapter->bDriverStopped)||(padapter->bSurpriseRemoved))
 	{
@@ -572,19 +550,8 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 		rtw_netif_stop_queue(pnetdev);
 	}
 
-#ifdef CONFIG_WOWLAN
-	if(padapter->pwrctrlpriv.bSupportRemoteWakeup==true&&padapter->pwrctrlpriv.wowlan_mode==true){
-		/* set H2C command */
-		poidparam.subcode=WOWLAN_ENABLE;
-		padapter->HalFunc.SetHwRegHandler(padapter,HW_VAR_WOWLAN,(u8 *)&poidparam);
-	}
-	else
-#else
-	{
 	/* s2. */
 	rtw_disassoc_cmd(padapter, 0, false);
-	}
-#endif /* CONFIG_WOWLAN */
 
 	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) && check_fwstate(pmlmepriv, _FW_LINKED) )
 	{
@@ -821,10 +788,6 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 	}
 
 	rtw_cancel_all_timer(if1);
-
-#ifdef CONFIG_WOWLAN
-	if1->pwrctrlpriv.wowlan_mode=false;
-#endif /* CONFIG_WOWLAN */
 
 	rtw_dev_unload(if1);
 

@@ -28,9 +28,6 @@ u8 rtw_reset_drv_sw(struct rtw_adapter *padapter);
 
 u32 rtw_start_drv_threads(struct rtw_adapter *padapter);
 void rtw_stop_drv_threads (struct rtw_adapter *padapter);
-#ifdef CONFIG_WOWLAN
-void rtw_cancel_dynamic_chk_timer(struct rtw_adapter *padapter);
-#endif
 void rtw_cancel_all_timer(struct rtw_adapter *padapter);
 
 int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);

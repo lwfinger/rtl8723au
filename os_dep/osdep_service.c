@@ -150,12 +150,6 @@ inline void rtw_unlock_suspend(void)
 {
 }
 
-#ifdef CONFIG_WOWLAN
-inline void rtw_lock_suspend_timeout(long timeout)
-{
-}
-#endif /* CONFIG_WOWLAN */
-
 /*
 * Open a file with the specific @param path, @param flag, @param mode
 * @param fpp the pointer of struct file pointer to get struct file pointer while file opening is success

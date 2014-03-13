@@ -274,9 +274,6 @@ void rtw_suspend_lock_init(void);
 void rtw_suspend_lock_uninit(void);
 void rtw_lock_suspend(void);
 void rtw_unlock_suspend(void);
-#ifdef CONFIG_WOWLAN
-void rtw_lock_suspend_timeout(long timeout);
-#endif /* CONFIG_WOWLAN */
 
 /* File operation APIs, just for linux now */
 int rtw_is_file_readable(char *path);

@@ -303,15 +303,8 @@ u8 PS_RDY_CHECK(struct rtw_adapter * padapter)
 		(check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) ||
 		(check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) )
 		return false;
-#ifdef CONFIG_WOWLAN
-	if(true == pwrpriv->bInSuspend && pwrpriv->wowlan_mode)
-		return true;
-	else
+	if (true == pwrpriv->bInSuspend)
 		return false;
-#else
-	if(true == pwrpriv->bInSuspend )
-		return false;
-#endif
 	if( (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X) && (padapter->securitypriv.binstallGrpkey == false) )
 	{
 		DBG_8723A("Group handshake still in progress !!!\n");

@@ -1044,9 +1044,6 @@ _func_enter_;
 	p2p_ps_wk_cmd(padapter, P2P_PS_DISABLE, 1);
 #endif /*  CONFIG_8723AU_P2P */
 
-#ifdef CONFIG_WOWLAN
-	if(padapter->pwrctrlpriv.wowlan_mode==false)
-#endif /* CONFIG_WOWLAN */
 	rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_DISCONNECT, 1);
 
 _func_exit_;
@@ -1964,9 +1961,6 @@ _func_enter_;
 
 	if (!candidate) {
 		DBG_8723A("%s: return _FAIL(candidate == NULL)\n", __func__);
-#ifdef CONFIG_WOWLAN
-		_clr_fwstate_(pmlmepriv, _FW_LINKED|_FW_UNDER_LINKING);
-#endif
 		ret = _FAIL;
 		goto exit;
 	} else {
