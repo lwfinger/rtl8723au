@@ -14,6 +14,7 @@
  ******************************************************************************/
 
 #include <drv_types.h>
+#include <rtl8723a_led.h>
 
 /*  */
 /*	Description: */
@@ -103,9 +104,6 @@ DeInitLed871x(
 /*		Implementation of LED blinking behavior. */
 /*		It toggle off LED and schedule corresponding timer if necessary. */
 /*  */
-
-void SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed);
-void SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed);
 
 static void
 SwLedBlink(

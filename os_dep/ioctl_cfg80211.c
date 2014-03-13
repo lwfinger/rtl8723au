@@ -549,7 +549,7 @@ static int set_group_key(struct rtw_adapter *padapter, u8 *key, u8 alg, int keyi
 
 	psetkeyparm->keyid=(u8)keyid;
 	if (is_wep_enc(alg))
-		padapter->mlmepriv.key_mask |= BIT(psetkeyparm->keyid);
+		padapter->mlmepriv.key_mask |= CHKBIT(psetkeyparm->keyid);
 
 	psetkeyparm->algorithm = alg;
 
@@ -4432,17 +4432,17 @@ static void rtw_cfg80211_preinit_wiphy(struct rtw_adapter *padapter, struct wiph
 
 	wiphy->max_remain_on_channel_duration = RTW_MAX_REMAIN_ON_CHANNEL_DURATION;
 
-	wiphy->interface_modes =	BIT(NL80211_IFTYPE_STATION)
-								| BIT(NL80211_IFTYPE_ADHOC)
+	wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION)	|
+				 BIT(NL80211_IFTYPE_ADHOC)	|
 #ifdef CONFIG_8723AU_AP_MODE
-								| BIT(NL80211_IFTYPE_AP)
-								| BIT(NL80211_IFTYPE_MONITOR)
+				 BIT(NL80211_IFTYPE_AP)		|
+				 BIT(NL80211_IFTYPE_MONITOR)	|
 #endif
 #if defined(CONFIG_8723AU_P2P)
-								| BIT(NL80211_IFTYPE_P2P_CLIENT)
-								| BIT(NL80211_IFTYPE_P2P_GO)
+				 BIT(NL80211_IFTYPE_P2P_CLIENT)	|
+				 BIT(NL80211_IFTYPE_P2P_GO)	|
 #endif
-								;
+				 0;
 
 #ifdef CONFIG_8723AU_AP_MODE
 	wiphy->mgmt_stypes = rtw_cfg80211_default_mgmt_stypes;

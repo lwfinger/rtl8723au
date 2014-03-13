@@ -339,7 +339,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
  *	If any interrupt matches the mask (IMR), return true, and
  *	return false otherwise.
  */
-bool
+static bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 			  u32 ContentLen)
 {

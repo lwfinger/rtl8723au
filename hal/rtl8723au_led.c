@@ -15,6 +15,7 @@
 
 #include "drv_types.h"
 #include "rtl8723a_hal.h"
+#include "rtl8723a_led.h"
 
 /*  */
 /*  LED object. */

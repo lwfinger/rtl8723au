@@ -104,6 +104,12 @@ static inline void rtw_netif_stop_queue(struct net_device *pnetdev)
 #ifndef BIT
 #define BIT(x)	( 1 << (x))
 #endif
+static inline u32 CHKBIT(u32 x)
+{
+	if (x >= 32)
+		return 0;
+	return BIT(x);
+}
 
 #define BIT0	0x00000001
 #define BIT1	0x00000002

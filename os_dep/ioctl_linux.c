@@ -2193,44 +2193,6 @@ static void mac_reg_dump(struct rtw_adapter *padapter)
 		if((j++)%4 == 0)	printk("\n");
 	}
 }
-void bb_reg_dump(struct rtw_adapter *padapter)
-{
-	int i,j=1;
-	printk("\n======= BB REG =======\n");
-	for(i=0x800;i<0x1000;i+=4)
-	{
-		if(j%4==1) printk("0x%02x",i);
-
-		printk(" 0x%08x ",rtw_read32(padapter,i));
-		if((j++)%4 == 0)	printk("\n");
-	}
-}
-void rf_reg_dump(struct rtw_adapter *padapter)
-{
-	int i,j=1,path;
-	u32 value;
-	u8 rf_type,path_nums = 0;
-	rtw_hal_get_hwreg(padapter, HW_VAR_RF_TYPE, (u8 *)(&rf_type));
-
-	printk("\n======= RF REG =======\n");
-	if((RF_1T2R == rf_type) ||(RF_1T1R ==rf_type ))
-		path_nums = 1;
-	else
-		path_nums = 2;
-
-	for(path=0;path<path_nums;path++)
-	{
-		printk("\nRF_Path(%x)\n",path);
-		for(i=0;i<0x100;i++)
-		{
-			/* value = PHY_QueryRFReg(padapter, (RF_RADIO_PATH_E)path,i, bMaskDWord); */
-			value = rtw_hal_read_rfreg(padapter, path, i, 0xffffffff);
-			if(j%4==1)	printk("0x%02x ",i);
-			printk(" 0x%08x ",value);
-			if((j++)%4==0)	printk("\n");
-		}
-	}
-}
 
 static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 {
@@ -2485,7 +2447,7 @@ static int set_group_key(struct rtw_adapter *padapter, u8 *key, u8 alg, int keyi
 
 	psetkeyparm->keyid=(u8)keyid;
 	if (is_wep_enc(alg))
-		padapter->mlmepriv.key_mask |= BIT(psetkeyparm->keyid);
+		padapter->mlmepriv.key_mask |= CHKBIT(psetkeyparm->keyid);
 	psetkeyparm->algorithm = alg;
 
 	psetkeyparm->set_tx = 1;

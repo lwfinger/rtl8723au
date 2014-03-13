@@ -2081,7 +2081,7 @@ _func_enter_;
 	psetkeyparm->keyid = (u8)keyid;/* 0~3 */
 	psetkeyparm->set_tx = set_tx;
 	if (is_wep_enc(psetkeyparm->algorithm))
-		pmlmepriv->key_mask |= BIT(psetkeyparm->keyid);
+		pmlmepriv->key_mask |= CHKBIT(psetkeyparm->keyid);
 
 	DBG_8723A("==> rtw_set_key algorithm(%x),keyid(%x),key_mask(%x)\n",
 		  psetkeyparm->algorithm, psetkeyparm->keyid,
@@ -2659,7 +2659,7 @@ void rtw_issue_addbareq_cmd(struct rtw_adapter *padapter, struct xmit_frame *pxm
 		if(0==issued)
 		{
 			DBG_8723A("rtw_issue_addbareq_cmd, p=%d\n", priority);
-			psta->htpriv.candidate_tid_bitmap |= BIT((u8)priority);
+			psta->htpriv.candidate_tid_bitmap |= CHKBIT((u8)priority);
 			rtw_addbareq_cmd(padapter,(u8) priority, pattrib->ra);
 		}
 	}

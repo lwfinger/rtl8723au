@@ -22,7 +22,7 @@ odm_ConfigRFReg_8723A(
 	PDM_ODM_T				pDM_Odm,
 	u32					Addr,
 	u32					Data,
-  ODM_RF_RADIO_PATH_E     RF_PATH,
+  RF_RADIO_PATH_E     RF_PATH,
 	u32				    RegAddr
 	)
 {
@@ -69,7 +69,7 @@ odm_ConfigRF_RadioA_8723A(
 	u32  content = 0x1000; /*  RF_Content: radioa_txt */
 	u32	maskforPhySet= (u32)(content&0xE000);
 
-    odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, ODM_RF_PATH_A, Addr|maskforPhySet);
+    odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, RF_PATH_A, Addr|maskforPhySet);
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigRFWithHeaderFile: [RadioA] %08X %08X\n", Addr, Data));
 }
@@ -84,7 +84,7 @@ odm_ConfigRF_RadioB_8723A(
 	u32  content = 0x1001; /*  RF_Content: radiob_txt */
 	u32	maskforPhySet= (u32)(content&0xE000);
 
-    odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, ODM_RF_PATH_B, Addr|maskforPhySet);
+    odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, RF_PATH_B, Addr|maskforPhySet);
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigRFWithHeaderFile: [RadioB] %08X %08X\n", Addr, Data));
 

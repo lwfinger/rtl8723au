@@ -137,7 +137,7 @@ static void update_BCNTIM(struct rtw_adapter *padapter)
 	*dst_ie++=0;/* DTIM count */
 	*dst_ie++=1;/* DTIM peroid */
 
-	if(pstapriv->tim_bitmap&BIT(0))/* for bc/mc frames */
+	if(pstapriv->tim_bitmap & BIT(0))/* for bc/mc frames */
 		*dst_ie++ = BIT(0);/* bitmap ctrl */
 	else
 		*dst_ie++ = 0;
@@ -382,7 +382,7 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 					psta->state |= WIFI_STA_ALIVE_CHK_STATE;
 
 					/* to update bcn with tim_bitmap for this station */
-					pstapriv->tim_bitmap |= BIT(psta->aid);
+					pstapriv->tim_bitmap |= CHKBIT(psta->aid);
 					update_beacon(padapter, _TIM_IE_, NULL, false);
 
 					if(!pmlmeext->active_keep_alive_check)
@@ -517,7 +517,7 @@ void add_RATid(struct rtw_adapter *padapter, struct sta_info *psta, u8 rssi_leve
 
 		for (i=0; i<limit; i++) {
 			if (psta_ht->ht_cap.mcs.rx_mask[i/8] & BIT(i%8))
-				tx_ra_bitmap |= BIT(i+12);
+				tx_ra_bitmap |= CHKBIT(i+12);
 		}
 
 		/* max short GI rate */

@@ -24,5 +24,7 @@
 /*  */
 void rtl8723au_InitSwLeds(struct rtw_adapter *padapter);
 void rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter);
+void SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed);
+void SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed);
 
 #endif

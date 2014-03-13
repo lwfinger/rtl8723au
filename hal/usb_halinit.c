@@ -2592,23 +2592,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 	return bResult;
 }
 
-void _update_response_rate(struct rtw_adapter *padapter,unsigned int mask)
-{
-	u8	RateIndex = 0;
-	/*  Set RRSR rate table. */
-	rtw_write8(padapter, REG_RRSR, mask&0xff);
-	rtw_write8(padapter,REG_RRSR+1, (mask>>8)&0xff);
-
-	/*  Set RTS initial rate */
-	while(mask > 0x1)
-	{
-		mask = (mask>> 1);
-		RateIndex++;
-	}
-	rtw_write8(padapter, REG_INIRTS_RATE_SEL, RateIndex);
-}
-
-void UpdateHalRAMask8192CUsb(struct rtw_adapter *padapter, u32 mac_id,u8 rssi_level )
+static void UpdateHalRAMask8192CUsb(struct rtw_adapter *padapter, u32 mac_id,u8 rssi_level )
 {
 	u8	init_rate=0;
 	u8	networkType, raid;

@@ -2224,9 +2224,9 @@ unsigned int OnAction_back(struct rtw_adapter *padapter, struct recv_frame *prec
 			if (status == 0) {	/* successful */
 				DBG_8723A("agg_enable for TID=%d\n", tid);
 				psta->htpriv.agg_enable_bitmap |= 1 << tid;
-				psta->htpriv.candidate_tid_bitmap &= ~BIT(tid);
+				psta->htpriv.candidate_tid_bitmap &= ~CHKBIT(tid);
 			} else {
-				psta->htpriv.agg_enable_bitmap &= ~BIT(tid);
+				psta->htpriv.agg_enable_bitmap &= ~CHKBIT(tid);
 			}
 
 			break;
@@ -7546,10 +7546,8 @@ unsigned int send_delba(struct rtw_adapter *padapter, u8 initiator, u8 *addr)
 	else if(initiator == 1)/*  originator */
 	{
 		/* DBG_8723A("tx agg_enable_bitmap(0x%08x)\n", psta->htpriv.agg_enable_bitmap); */
-		for(tid = 0;tid<MAXTID;tid++)
-		{
-			if(psta->htpriv.agg_enable_bitmap & BIT(tid))
-			{
+		for(tid = 0; tid < MAXTID; tid++) {
+			if(psta->htpriv.agg_enable_bitmap & BIT(tid)) {
 				DBG_8723A("tx agg disable tid(%d)\n",tid);
 				issue_action_BA(padapter, addr, WLAN_ACTION_DELBA, (((tid <<1) |initiator)&0x1F) );
 				psta->htpriv.agg_enable_bitmap &= ~BIT(tid);
@@ -7558,7 +7556,6 @@ unsigned int send_delba(struct rtw_adapter *padapter, u8 initiator, u8 *addr)
 			}
 		}
 	}
-
 	return _SUCCESS;
 }
 
@@ -7999,7 +7996,7 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 			struct HT_caps_element	*pHT_caps;
 			pHT_caps = (struct HT_caps_element	*)(p + 2);
 
-			if(pHT_caps->u.HT_cap_element.HT_caps_info&BIT(14))
+			if(pHT_caps->u.HT_cap_element.HT_caps_info & BIT(14))
 			{
 				pmlmepriv->num_FortyMHzIntolerant++;
 			}
@@ -9889,16 +9886,12 @@ u8 add_ba_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	if (((pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS) &&
 	     (pmlmeinfo->HT_enable)) ||
 	    ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE)) {
-		/* pmlmeinfo->ADDBA_retry_count = 0; */
-		/* pmlmeinfo->candidate_tid_bitmap |= (0x1 << pparm->tid); */
-		/* psta->htpriv.candidate_tid_bitmap |= BIT(pparm->tid); */
 		issue_action_BA(padapter, pparm->addr,
 				WLAN_ACTION_ADDBA_REQ, (u16)pparm->tid);
-		/* _set_timer(&pmlmeext->ADDBA_timer, ADDBA_TO); */
 		mod_timer(&psta->addba_retry_timer,
 			  jiffies + msecs_to_jiffies(ADDBA_TO));
 	} else {
-		psta->htpriv.candidate_tid_bitmap &= ~BIT(pparm->tid);
+		psta->htpriv.candidate_tid_bitmap &= ~CHKBIT(pparm->tid);
 	}
 	return	H2C_SUCCESS;
 }
@@ -10059,9 +10052,6 @@ u8 tx_beacon_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 				pxmitframe->attrib.qsel = 0x11;/* HIQ */
 
 				rtw_hal_xmitframe_enqueue(padapter, pxmitframe);
-
-				/* pstapriv->tim_bitmap &= ~BIT(0); */
-
 			}
 
 			/* spin_unlock_bh(&psta_bmc->sleep_q.lock); */

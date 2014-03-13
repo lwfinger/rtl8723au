@@ -735,23 +735,11 @@ void process_pwrbit_data(struct rtw_adapter *padapter,
 		pwrbit = ieee80211_has_pm(hdr->frame_control);
 
 		if (pwrbit) {
-			if (!(psta->state & WIFI_SLEEP_STATE)) {
-				/* psta->state |= WIFI_SLEEP_STATE; */
-				/* pstapriv->sta_dz_bitmap |= BIT(psta->aid); */
-
+			if (!(psta->state & WIFI_SLEEP_STATE))
 				stop_sta_xmit(padapter, psta);
-
-				/* DBG_8723A("to sleep, sta_dz_bitmap=%x\n", pstapriv->sta_dz_bitmap); */
-			}
 		} else {
-			if (psta->state & WIFI_SLEEP_STATE) {
-				/* psta->state ^= WIFI_SLEEP_STATE; */
-				/* pstapriv->sta_dz_bitmap &= ~BIT(psta->aid);*/
-
+			if (psta->state & WIFI_SLEEP_STATE)
 				wakeup_sta_to_xmit(padapter, psta);
-
-				/* DBG_8723A("to wakeup, sta_dz_bitmap=%x\n", pstapriv->sta_dz_bitmap); */
-			}
 		}
 	}
 
@@ -783,24 +771,23 @@ void process_wmmps_data(struct rtw_adapter *padapter,
 	if (psta->state & WIFI_SLEEP_STATE) {
 		u8 wmmps_ac = 0;
 
-		switch(pattrib->priority)
-		{
+		switch(pattrib->priority) {
 		case 1:
 		case 2:
-			wmmps_ac = psta->uapsd_bk&BIT(1);
+			wmmps_ac = psta->uapsd_bk & BIT(1);
 			break;
 		case 4:
 		case 5:
-			wmmps_ac = psta->uapsd_vi&BIT(1);
+			wmmps_ac = psta->uapsd_vi & BIT(1);
 			break;
 		case 6:
 		case 7:
-			wmmps_ac = psta->uapsd_vo&BIT(1);
+			wmmps_ac = psta->uapsd_vo & BIT(1);
 			break;
 		case 0:
 		case 3:
 		default:
-			wmmps_ac = psta->uapsd_be&BIT(1);
+			wmmps_ac = psta->uapsd_be & BIT(1);
 			break;
 		}
 
@@ -820,8 +807,8 @@ void process_wmmps_data(struct rtw_adapter *padapter,
 #endif
 }
 
-void count_rx_stats(struct rtw_adapter *padapter,
-		    struct recv_frame *prframe, struct sta_info *sta)
+static void count_rx_stats(struct rtw_adapter *padapter,
+			   struct recv_frame *prframe, struct sta_info *sta)
 {
 	int sz;
 	struct sta_info *psta = NULL;
@@ -1226,7 +1213,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 		}
 
 		if ((psta->state & WIFI_SLEEP_STATE) &&
-		    (pstapriv->sta_dz_bitmap&BIT(psta->aid))) {
+		    (pstapriv->sta_dz_bitmap & CHKBIT(psta->aid))) {
 			struct list_head *xmitframe_plist, *xmitframe_phead;
 			struct xmit_frame *pxmitframe;
 			struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -1260,7 +1247,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 				rtw_hal_xmitframe_enqueue(padapter, pxmitframe);
 
 				if (psta->sleepq_len==0) {
-					pstapriv->tim_bitmap &= ~BIT(psta->aid);
+					pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
 					/* DBG_8723A("after handling ps-poll, tim=%x\n", pstapriv->tim_bitmap); */
 
@@ -1278,7 +1265,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 				spin_unlock_bh(&pxmitpriv->lock);
 
 				/* DBG_8723A("no buffered packets to xmit\n"); */
-				if (pstapriv->tim_bitmap&BIT(psta->aid)) {
+				if (pstapriv->tim_bitmap & CHKBIT(psta->aid)) {
 					if (psta->sleepq_len == 0) {
 						DBG_8723A("no buffered packets "
 							  "to xmit\n");
@@ -1294,7 +1281,7 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 						psta->sleepq_len = 0;
 					}
 
-					pstapriv->tim_bitmap &= ~BIT(psta->aid);
+					pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
 					/* upate BCN for TIM IE */
 					/* update_BCNTIM(padapter); */

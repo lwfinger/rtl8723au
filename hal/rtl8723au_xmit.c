@@ -71,7 +71,7 @@ static int urb_zero_packet_chk(struct rtw_adapter *padapter, int sz)
 
 }
 
-void rtl8192cu_cal_txdesc_chksum(struct tx_desc	*ptxdesc)
+static void rtl8192cu_cal_txdesc_chksum(struct tx_desc	*ptxdesc)
 {
 		u16	*usPtr = (u16*)ptxdesc;
 		u32 count = 16;		/*  (32 bytes / 2 bytes per XOR) => 16 times */

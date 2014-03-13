@@ -17,6 +17,8 @@
 #ifndef	__HALHWOUTSRC_H__
 #define __HALHWOUTSRC_H__
 
+#include <Hal8723APhyCfg.h>
+
 /*  */
 /*  Definition */
 /*  */
@@ -168,8 +170,8 @@ ODM_MacStatusQuery(
 HAL_STATUS
 ODM_ConfigRFWithHeaderFile(
 	PDM_ODM_T	      pDM_Odm,
-	ODM_RF_RADIO_PATH_E	Content,
-	ODM_RF_RADIO_PATH_E	eRFPath
+	RF_RADIO_PATH_E	Content,
+	RF_RADIO_PATH_E	eRFPath
 	);
 
 HAL_STATUS

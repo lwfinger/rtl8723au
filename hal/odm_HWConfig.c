@@ -158,8 +158,8 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 
 	isCCKrate = (pPktinfo->Rate <= DESC92C_RATE11M) ? true : false;
 
-	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_A] = -1;
-	pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_B] = -1;
+	pPhyInfo->RxMIMOSignalQuality[RF_PATH_A] = -1;
+	pPhyInfo->RxMIMOSignalQuality[RF_PATH_B] = -1;
 
 
 	if(isCCKrate) {
@@ -269,8 +269,8 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 				SQ = ((64-SQ_rpt) * 100) / 44;
 
 			pPhyInfo->SignalQuality = SQ;
-			pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_A] = SQ;
-			pPhyInfo->RxMIMOSignalQuality[ODM_RF_PATH_B] = -1;
+			pPhyInfo->RxMIMOSignalQuality[RF_PATH_A] = SQ;
+			pPhyInfo->RxMIMOSignalQuality[RF_PATH_B] = -1;
 		}
 	}
 	else /* is OFDM rate */
@@ -281,7 +281,7 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 		/*  (1)Get RSSI for HT rate */
 		/*  */
 
-	 for(i = ODM_RF_PATH_A; i < ODM_RF_PATH_MAX; i++)
+	 for(i = RF_PATH_A; i < RF_PATH_MAX; i++)
 		{
 			/*  2008/01/30 MH we will judge RF RX path now. */
 			if (pDM_Odm->RFPathRxEnable & BIT(i))
@@ -342,7 +342,7 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 			EVM = odm_EVMdbToPercentage( (pPhyStaRpt->stream_rxevm[i] ));	/* dbm */
 
 			if(pPktinfo->bPacketMatchBSSID) {
-				if(i==ODM_RF_PATH_A) /*  Fill value in RFD, Get the first spatial stream only */
+				if(i==RF_PATH_A) /*  Fill value in RFD, Get the first spatial stream only */
 				{
 					pPhyInfo->SignalQuality = (u8)(EVM & 0xff);
 				}
@@ -406,20 +406,20 @@ static void odm_Process_RSSIForDM(
 
 		if(!isCCKrate)/* ofdm rate */
 		{
-			if(pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B] == 0){
-				RSSI_Ave = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_A];
+			if(pPhyInfo->RxMIMOSignalStrength[RF_PATH_B] == 0){
+				RSSI_Ave = pPhyInfo->RxMIMOSignalStrength[RF_PATH_A];
 			}
 			else
 			{
-				if(pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_A] > pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B])
+				if(pPhyInfo->RxMIMOSignalStrength[RF_PATH_A] > pPhyInfo->RxMIMOSignalStrength[RF_PATH_B])
 				{
-					RSSI_max = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_A];
-					RSSI_min = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B];
+					RSSI_max = pPhyInfo->RxMIMOSignalStrength[RF_PATH_A];
+					RSSI_min = pPhyInfo->RxMIMOSignalStrength[RF_PATH_B];
 				}
 				else
 				{
-					RSSI_max = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_B];
-					RSSI_min = pPhyInfo->RxMIMOSignalStrength[ODM_RF_PATH_A];
+					RSSI_max = pPhyInfo->RxMIMOSignalStrength[RF_PATH_B];
+					RSSI_min = pPhyInfo->RxMIMOSignalStrength[RF_PATH_A];
 				}
 				if((RSSI_max -RSSI_min) < 3)
 					RSSI_Ave = RSSI_max;
@@ -592,15 +592,15 @@ ODM_MacStatusQuery(
 HAL_STATUS
 ODM_ConfigRFWithHeaderFile(
 	PDM_ODM_T			pDM_Odm,
-	ODM_RF_RADIO_PATH_E	Content,
-	ODM_RF_RADIO_PATH_E	eRFPath
+	RF_RADIO_PATH_E	Content,
+	RF_RADIO_PATH_E	eRFPath
     )
 {
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===>ODM_ConfigRFWithHeaderFile\n"));
 #if (RTL8723A_SUPPORT == 1)
 	if (pDM_Odm->SupportICType == ODM_RTL8723A)
 	{
-		if(eRFPath == ODM_RF_PATH_A)
+		if(eRFPath == RF_PATH_A)
 			READ_AND_CONFIG_MP(8723A,_RadioA_1T_);
 
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, (" ===> ODM_ConfigRFWithHeaderFile() Radio_A:Rtl8723RadioA_1TArray\n"));

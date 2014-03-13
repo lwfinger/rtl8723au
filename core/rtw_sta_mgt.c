@@ -483,8 +483,8 @@ _func_enter_;
 
 	psta->has_legacy_ac = 0;
 
-	pstapriv->sta_dz_bitmap &=~BIT(psta->aid);
-	pstapriv->tim_bitmap &=~BIT(psta->aid);
+	pstapriv->sta_dz_bitmap &= ~CHKBIT(psta->aid);
+	pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
 	/* rtw_indicate_sta_disassoc_event(padapter, psta); */
 

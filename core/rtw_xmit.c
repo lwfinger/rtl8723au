@@ -441,11 +441,6 @@ static void update_attrib_phy_info(struct pkt_attrib *pattrib, struct sta_info *
 	pattrib->ch_offset = psta->htpriv.ch_offset;
 	pattrib->sgi= psta->htpriv.sgi;
 	pattrib->ampdu_en = false;
-	/* if(pattrib->ht_en && psta->htpriv.ampdu_enable) */
-	/*  */
-	/*	if(psta->htpriv.agg_enable_bitmap & BIT(pattrib->priority)) */
-	/*		pattrib->ampdu_en = true; */
-	/*  */
 
 	pattrib->retry_ctrl = false;
 }
@@ -1100,33 +1095,26 @@ _func_enter_;
 				SetSeqNum(hdr, pattrib->seqnum);
 
 				/* check if enable ampdu */
-				if(pattrib->ht_en && psta->htpriv.ampdu_enable)
-				{
-					if(psta->htpriv.agg_enable_bitmap & BIT(pattrib->priority))
+				if(pattrib->ht_en && psta->htpriv.ampdu_enable) {
+					if(psta->htpriv.agg_enable_bitmap & CHKBIT(pattrib->priority))
 					pattrib->ampdu_en = true;
 				}
 
 				/* re-check if enable ampdu by BA_starting_seqctrl */
-				if(pattrib->ampdu_en == true)
-				{
+				if(pattrib->ampdu_en == true) {
 					u16 tx_seq;
 
 					tx_seq = psta->BA_starting_seqctrl[pattrib->priority & 0x0f];
 
 					/* check BA_starting_seqctrl */
-					if(SN_LESS(pattrib->seqnum, tx_seq))
-					{
+					if(SN_LESS(pattrib->seqnum, tx_seq)) {
 						/* DBG_8723A("tx ampdu seqnum(%d) < tx_seq(%d)\n", pattrib->seqnum, tx_seq); */
 						pattrib->ampdu_en = false;/* AGG BK */
-					}
-					else if(SN_EQUAL(pattrib->seqnum, tx_seq))
-					{
+					} else if(SN_EQUAL(pattrib->seqnum, tx_seq)) {
 						psta->BA_starting_seqctrl[pattrib->priority & 0x0f] = (tx_seq+1)&0xfff;
 
 						pattrib->ampdu_en = true;/* AGG EN */
-					}
-					else
-					{
+					} else {
 						/* DBG_8723A("tx ampdu over run\n"); */
 						psta->BA_starting_seqctrl[pattrib->priority & 0x0f] = (pattrib->seqnum+1)&0xfff;
 						pattrib->ampdu_en = true;/* AGG EN */
@@ -2353,12 +2341,10 @@ int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit
 
 	spin_lock_bh(&psta->sleep_q.lock);
 
-	if(psta->state&WIFI_SLEEP_STATE)
-	{
+	if(psta->state&WIFI_SLEEP_STATE) {
 		u8 wmmps_ac=0;
 
-		if(pstapriv->sta_dz_bitmap&BIT(psta->aid))
-		{
+		if(pstapriv->sta_dz_bitmap & CHKBIT(psta->aid)) {
 			list_del_init(&pxmitframe->list);
 
 			/* spin_lock_bh(&psta->sleep_q.lock); */
@@ -2367,25 +2353,24 @@ int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit
 
 			psta->sleepq_len++;
 
-			switch(pattrib->priority)
-			{
-				case 1:
-				case 2:
-					wmmps_ac = psta->uapsd_bk&BIT(0);
-					break;
-				case 4:
-				case 5:
-					wmmps_ac = psta->uapsd_vi&BIT(0);
-					break;
-				case 6:
-				case 7:
-					wmmps_ac = psta->uapsd_vo&BIT(0);
-					break;
-				case 0:
-				case 3:
-				default:
-					wmmps_ac = psta->uapsd_be&BIT(0);
-					break;
+			switch(pattrib->priority) {
+			case 1:
+			case 2:
+				wmmps_ac = psta->uapsd_bk & BIT(0);
+				break;
+			case 4:
+			case 5:
+				wmmps_ac = psta->uapsd_vi & BIT(0);
+				break;
+			case 6:
+			case 7:
+				wmmps_ac = psta->uapsd_vo & BIT(0);
+				break;
+			case 0:
+			case 3:
+			default:
+				wmmps_ac = psta->uapsd_be & BIT(0);
+				break;
 			}
 
 			if(wmmps_ac)
@@ -2393,7 +2378,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter, struct xmit
 
 			if(((psta->has_legacy_ac) && (!wmmps_ac)) ||((!psta->has_legacy_ac)&&(wmmps_ac)))
 			{
-				pstapriv->tim_bitmap |= BIT(psta->aid);
+				pstapriv->tim_bitmap |= CHKBIT(psta->aid);
 
 				/* DBG_8723A("enqueue, sq_len=%d, tim=%x\n", psta->sleepq_len, pstapriv->tim_bitmap); */
 
@@ -2469,7 +2454,7 @@ void stop_sta_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 
 	psta->state |= WIFI_SLEEP_STATE;
 
-	pstapriv->sta_dz_bitmap |= BIT(psta->aid);
+	pstapriv->sta_dz_bitmap |= CHKBIT(psta->aid);
 
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta, &pstaxmitpriv->vo_q.sta_pending);
 	list_del_init(&(pstaxmitpriv->vo_q.tx_pending));
@@ -2512,20 +2497,20 @@ void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 		{
 			case 1:
 			case 2:
-				wmmps_ac = psta->uapsd_bk&BIT(1);
+				wmmps_ac = psta->uapsd_bk & BIT(1);
 				break;
 			case 4:
 			case 5:
-				wmmps_ac = psta->uapsd_vi&BIT(1);
+				wmmps_ac = psta->uapsd_vi & BIT(1);
 				break;
 			case 6:
 			case 7:
-				wmmps_ac = psta->uapsd_vo&BIT(1);
+				wmmps_ac = psta->uapsd_vo & BIT(1);
 				break;
 			case 0:
 			case 3:
 			default:
-				wmmps_ac = psta->uapsd_be&BIT(1);
+				wmmps_ac = psta->uapsd_be & BIT(1);
 				break;
 		}
 
@@ -2566,7 +2551,7 @@ void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 
 	if(psta->sleepq_len==0)
 	{
-		pstapriv->tim_bitmap &= ~BIT(psta->aid);
+		pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
 		/* upate BCN for TIM IE */
 		update_mask = BIT(0);
@@ -2580,7 +2565,7 @@ void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 			psta->state ^= WIFI_STA_ALIVE_CHK_STATE;
 		}
 
-		pstapriv->sta_dz_bitmap &= ~BIT(psta->aid);
+		pstapriv->sta_dz_bitmap &= ~CHKBIT(psta->aid);
 	}
 
 	/* spin_unlock_bh(&psta->sleep_q.lock); */
@@ -2664,25 +2649,24 @@ void xmit_delivery_enabled_frames(struct rtw_adapter *padapter, struct sta_info 
 	list_for_each_safe(plist, ptmp, phead) {
 		pxmitframe = container_of(plist, struct xmit_frame, list);
 
-		switch(pxmitframe->attrib.priority)
-		{
-			case 1:
-			case 2:
-				wmmps_ac = psta->uapsd_bk&BIT(1);
-				break;
-			case 4:
-			case 5:
-				wmmps_ac = psta->uapsd_vi&BIT(1);
-				break;
-			case 6:
-			case 7:
-				wmmps_ac = psta->uapsd_vo&BIT(1);
-				break;
-			case 0:
-			case 3:
-			default:
-				wmmps_ac = psta->uapsd_be&BIT(1);
-				break;
+		switch(pxmitframe->attrib.priority) {
+		case 1:
+		case 2:
+			wmmps_ac = psta->uapsd_bk & BIT(1);
+			break;
+		case 4:
+		case 5:
+			wmmps_ac = psta->uapsd_vi & BIT(1);
+			break;
+		case 6:
+		case 7:
+			wmmps_ac = psta->uapsd_vo & BIT(1);
+			break;
+		case 0:
+		case 3:
+		default:
+			wmmps_ac = psta->uapsd_be & BIT(1);
+			break;
 		}
 
 		if(!wmmps_ac)
@@ -2710,7 +2694,7 @@ void xmit_delivery_enabled_frames(struct rtw_adapter *padapter, struct sta_info 
 
 		if((psta->sleepq_ac_len==0) && (!psta->has_legacy_ac) && (wmmps_ac))
 		{
-			pstapriv->tim_bitmap &= ~BIT(psta->aid);
+			pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
 			/* upate BCN for TIM IE */
 			update_beacon(padapter, _TIM_IE_, NULL, false);

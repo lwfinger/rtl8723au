@@ -24,7 +24,7 @@
 #include <rtl8723a_hal.h>
 #endif /*  CONFIG_8723AU_BT_COEXIST */
 
-struct cmd_hdl wlancmds[] = {
+static struct cmd_hdl wlancmds[] = {
 	GEN_DRV_CMD_HANDLER(0, NULL) /*0*/
 	GEN_DRV_CMD_HANDLER(0, NULL)
 	GEN_DRV_CMD_HANDLER(0, NULL)
@@ -2104,7 +2104,7 @@ _func_exit_;
 
 #endif
 
-void power_saving_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
+static void power_saving_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 {
 	 rtw_ps_processor(padapter);
 }
