@@ -2382,13 +2382,12 @@ u8 rtw_drvextra_cmd_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 	return H2C_SUCCESS;
 }
 
-void rtw_survey_cmd_callback(struct rtw_adapter*	padapter ,  struct cmd_obj *pcmd)
+void rtw_survey_cmd_callback(struct rtw_adapter *padapter,
+			     struct cmd_obj *pcmd)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-_func_enter_;
-
-if (pcmd->res == H2C_DROPPED) {
+	if (pcmd->res == H2C_DROPPED) {
 		/* TODO: cancel timer and do timeout handler directly... */
 		/* need to make timeout handlerOS independent */
 		mod_timer(&pmlmepriv->scan_to_timer,
@@ -2396,14 +2395,15 @@ if (pcmd->res == H2C_DROPPED) {
 	} else if (pcmd->res != H2C_SUCCESS) {
 		mod_timer(&pmlmepriv->scan_to_timer,
 			  jiffies + msecs_to_jiffies(1));
-		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n ********Error: MgntActrtw_set_802_11_bssid_LIST_SCAN Fail ************\n\n."));
+		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+			 ("\n ********Error: MgntActrtw_set_802_11_bssid_LIST_"
+			  "SCAN Fail ************\n\n."));
 	}
 
 	/*  free cmd */
 	rtw_free_cmd_obj(pcmd);
-
-_func_exit_;
 }
+
 void rtw_disassoc_cmd_callback(struct rtw_adapter*	padapter,  struct cmd_obj *pcmd)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
