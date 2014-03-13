@@ -83,7 +83,7 @@ static void rtw_free_mlme_ie_data(u8 **ppie, u32 *plen)
 {
 	if(*ppie)
 	{
-		rtw_mfree(*ppie, *plen);
+		kfree(*ppie);
 		*plen = 0;
 		*ppie=NULL;
 	}
@@ -770,7 +770,7 @@ _func_enter_;
 	if (pmlmepriv->wps_probe_req_ie) {
 		u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 		pmlmepriv->wps_probe_req_ie_len = 0;
-		rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
+		kfree(pmlmepriv->wps_probe_req_ie);
 		pmlmepriv->wps_probe_req_ie = NULL;
 	}
 
