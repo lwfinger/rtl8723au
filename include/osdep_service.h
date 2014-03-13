@@ -106,6 +106,7 @@ static inline void rtw_netif_stop_queue(struct net_device *pnetdev)
 #endif
 static inline u32 CHKBIT(u32 x)
 {
+	WARN_ON(x >= 32);
 	if (x >= 32)
 		return 0;
 	return BIT(x);
