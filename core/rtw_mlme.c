@@ -949,19 +949,12 @@ _func_enter_;
 
 	pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 	if(pwlan)
-	{
 		pwlan->fixed = false;
-	}
 	else
-	{
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_free_assoc_resources : pwlan== NULL \n\n"));
-	}
 
-	if((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) && (adapter->stapriv.asoc_sta_count== 1))
-		/*||check_fwstate(pmlmepriv, WIFI_STATION_STATE)*/)
-	{
+	if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) && (adapter->stapriv.asoc_sta_count == 1))
 		rtw_free_network_nolock(pmlmepriv, pwlan);
-	}
 
 	if(lock_scanned_queue)
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));

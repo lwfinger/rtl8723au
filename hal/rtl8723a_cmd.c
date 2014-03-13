@@ -134,25 +134,6 @@ _func_exit_;
 	return ret;
 }
 
-u8 rtl8192c_h2c_msg_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
-{
-	u8 ElementID, CmdLen;
-	u8 *pCmdBuffer;
-	struct cmd_msg_parm  *pcmdmsg;
-
-	if(!pbuf)
-		return H2C_PARAMETERS_ERROR;
-
-	pcmdmsg = (struct cmd_msg_parm*)pbuf;
-	ElementID = pcmdmsg->eid;
-	CmdLen = pcmdmsg->sz;
-	pCmdBuffer = pcmdmsg->buf;
-
-	FillH2CCmd(padapter, ElementID, CmdLen, pCmdBuffer);
-
-	return H2C_SUCCESS;
-}
-
 u8 rtl8723a_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {
 	u8	res=_SUCCESS;

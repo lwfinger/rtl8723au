@@ -1193,12 +1193,6 @@ u8 key_2char2num(u8 hch, u8 lch)
 	return (key_char2num(hch) << 4) | key_char2num(lch);
 }
 
-u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
-{
-	return (key_char2num(hch) * 100) + (key_char2num(mch) * 10) +
-		key_char2num(lch);
-}
-
 extern char* rtw_initmac;
 void rtw_macaddr_cfg(u8 *mac_addr)
 {
@@ -1625,7 +1619,7 @@ int ieee80211_is_empty_essid(const char *essid, int essid_len)
 	return 1;
 }
 
-int rtw_get_cipher_info(struct wlan_network *pnetwork)
+static int rtw_get_cipher_info(struct wlan_network *pnetwork)
 {
 	u32 wpa_ielen;
 	unsigned char *pbuf;

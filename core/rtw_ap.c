@@ -271,7 +271,7 @@ void rtw_remove_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetw
 }
 #endif
 
-u8 chk_sta_is_alive(struct sta_info *psta)
+static u8 chk_sta_is_alive(struct sta_info *psta)
 {
 	u8 ret = false;
 	#ifdef DBG_EXPIRATION_CHK

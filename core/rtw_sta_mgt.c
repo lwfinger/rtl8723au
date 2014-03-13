@@ -241,95 +241,79 @@ _func_enter_;
 
 	pfree_sta_queue = &pstapriv->free_sta_queue;
 
-	/* spin_lock_bh(&(pfree_sta_queue->lock)); */
 	spin_lock_bh(&(pstapriv->sta_hash_lock));
 
-	if (_rtw_queue_empty(pfree_sta_queue) == true)
-	{
-		/* spin_unlock_bh(&(pfree_sta_queue->lock)); */
+	if (_rtw_queue_empty(pfree_sta_queue)) {
 		spin_unlock_bh(&(pstapriv->sta_hash_lock));
-		psta = NULL;
+		return NULL;
 	}
-	else
-	{
-		psta = container_of((&pfree_sta_queue->queue)->next, struct sta_info, list);
+	psta = container_of((&pfree_sta_queue->queue)->next, struct sta_info, list);
 
-		list_del_init(&(psta->list));
+	list_del_init(&(psta->list));
 
-		/* spin_unlock_bh(&(pfree_sta_queue->lock)); */
+	tmp_aid = psta->aid;
 
-		tmp_aid = psta->aid;
+	_rtw_init_stainfo(psta);
 
-		_rtw_init_stainfo(psta);
+	psta->padapter = pstapriv->padapter;
 
-		psta->padapter = pstapriv->padapter;
+	memcpy(psta->hwaddr, hwaddr, ETH_ALEN);
 
-		memcpy(psta->hwaddr, hwaddr, ETH_ALEN);
+	index = wifi_mac_hash(hwaddr);
 
-		index = wifi_mac_hash(hwaddr);
+	RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_info_, ("rtw_alloc_stainfo: index  = %x", index));
 
-		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_info_, ("rtw_alloc_stainfo: index  = %x", index));
+	if (index >= NUM_STA) {
+		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_err_, ("ERROR => rtw_alloc_stainfo: index >= NUM_STA"));
+		psta = NULL;
+		goto exit;
+	}
+	phash_list = &(pstapriv->sta_hash[index]);
 
-		if (index >= NUM_STA) {
-			RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_err_, ("ERROR => rtw_alloc_stainfo: index >= NUM_STA"));
-			psta = NULL;
-			goto exit;
-		}
-		phash_list = &(pstapriv->sta_hash[index]);
+	list_add_tail(&psta->hash_list, phash_list);
 
-		/* spin_lock_bh(&(pstapriv->sta_hash_lock)); */
+	pstapriv->asoc_sta_count ++ ;
 
-		list_add_tail(&psta->hash_list, phash_list);
-
-		pstapriv->asoc_sta_count ++ ;
-
-		/* spin_unlock_bh(&(pstapriv->sta_hash_lock)); */
-
-/*  Commented by Albert 2009/08/13 */
 /*  For the SMC router, the sequence number of first packet of WPS handshake will be 0. */
 /*  In this case, this packet will be dropped by recv_decache function if we use the 0x00 as the default value for tid_rxseq variable. */
 /*  So, we initialize the tid_rxseq variable as the 0xffff. */
 
-		for( i = 0; i < 16; i++ )
-		{
-                     memcpy(&psta->sta_recvpriv.rxcache.tid_rxseq[ i ], &wRxSeqInitialValue, 2 );
-		}
+	for( i = 0; i < 16; i++ )
+                    memcpy(&psta->sta_recvpriv.rxcache.tid_rxseq[ i ], &wRxSeqInitialValue, 2 );
 
-		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_info_, ("alloc number_%d stainfo  with hwaddr = %x %x %x %x %x %x  \n",
-		pstapriv->asoc_sta_count , hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]));
+	RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_info_, ("alloc number_%d stainfo  with hwaddr = %x %x %x %x %x %x  \n",
+	pstapriv->asoc_sta_count , hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]));
 
-		init_addba_retry_timer(psta);
+	init_addba_retry_timer(psta);
 
-		/* for A-MPDU Rx reordering buffer control */
-		for(i = 0; i < 16 ; i++)
-		{
-			preorder_ctrl = &psta->recvreorder_ctrl[i];
+	/* for A-MPDU Rx reordering buffer control */
+	for(i = 0; i < 16; i++) {
+		preorder_ctrl = &psta->recvreorder_ctrl[i];
 
-			preorder_ctrl->padapter = pstapriv->padapter;
+		preorder_ctrl->padapter = pstapriv->padapter;
 
-			preorder_ctrl->enable = false;
+		preorder_ctrl->enable = false;
 
-			preorder_ctrl->indicate_seq = 0xffff;
-			#ifdef DBG_RX_SEQ
-			DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d\n", __FUNCTION__, __LINE__,
-				preorder_ctrl->indicate_seq);
-			#endif
-			preorder_ctrl->wend_b = 0xffff;
-			/* preorder_ctrl->wsize_b = (NR_RECVBUFF-2); */
-			preorder_ctrl->wsize_b = 64;/* 64; */
+		preorder_ctrl->indicate_seq = 0xffff;
+		#ifdef DBG_RX_SEQ
+		DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d\n", __FUNCTION__, __LINE__,
+			preorder_ctrl->indicate_seq);
+		#endif
+		preorder_ctrl->wend_b = 0xffff;
+		/* preorder_ctrl->wsize_b = (NR_RECVBUFF-2); */
+		preorder_ctrl->wsize_b = 64;/* 64; */
 
-			_rtw_init_queue(&preorder_ctrl->pending_recvframe_queue);
+		_rtw_init_queue(&preorder_ctrl->pending_recvframe_queue);
 
-			rtw_init_recv_timer(preorder_ctrl);
-		}
-
-		/* init for DM */
-		psta->rssi_stat.UndecoratedSmoothedPWDB = (-1);
-		psta->rssi_stat.UndecoratedSmoothedCCK = (-1);
-
-		/* init for the sequence number of received management frame */
-		psta->RxMgmtFrameSeqNum = 0xffff;
+		rtw_init_recv_timer(preorder_ctrl);
 	}
+
+	/* init for DM */
+	psta->rssi_stat.UndecoratedSmoothedPWDB = (-1);
+	psta->rssi_stat.UndecoratedSmoothedCCK = (-1);
+
+	/* init for the sequence number of received management frame */
+	psta->RxMgmtFrameSeqNum = 0xffff;
 
 exit:
 

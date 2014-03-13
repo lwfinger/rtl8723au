@@ -838,9 +838,9 @@ static void count_rx_stats(struct rtw_adapter *padapter,
 	}
 }
 
-int sta2sta_data_frame(struct rtw_adapter *adapter,
-		       struct recv_frame *precv_frame,
-		       struct sta_info**psta)
+static int sta2sta_data_frame(struct rtw_adapter *adapter,
+			      struct recv_frame *precv_frame,
+			      struct sta_info**psta)
 {
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
@@ -1546,8 +1546,8 @@ static void dump_rx_pkt(struct sk_buff *skb, u16 type, int level)
 	}
 }
 
-int validate_recv_frame(struct rtw_adapter *adapter,
-			struct recv_frame *precv_frame)
+static int validate_recv_frame(struct rtw_adapter *adapter,
+			       struct recv_frame *precv_frame)
 {
 	/* shall check frame subtype, to / from ds, da, bssid */
 
@@ -2277,15 +2277,11 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter,
 		spin_unlock_bh(&ppending_recvframe_queue->lock);
 		del_timer_sync(&preorder_ctrl->reordering_ctrl_timer);
 	}
-
-_success_exit:
-
 	return _SUCCESS;
 
 _err_exit:
 
         spin_unlock_bh(&ppending_recvframe_queue->lock);
-
 	return _FAIL;
 }
 

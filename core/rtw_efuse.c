@@ -513,7 +513,7 @@ Efuse_PgPacketWrite(struct rtw_adapter *pAdapter,
 	return ret;
 }
 
-int
+static int
 Efuse_PgPacketWrite_BT(struct rtw_adapter *	pAdapter,
 		       u8			offset,
 		       u8			word_en,
