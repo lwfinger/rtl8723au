@@ -584,26 +584,24 @@ _func_exit_;
 /*
 rtw_sitesurvey_cmd(~)
 	### NOTE:#### (!!!!)
-	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
+	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC,
+	YOU SHOULD HAVE LOCKED pmlmepriv->lock
 */
 u8 rtw_sitesurvey_cmd(struct rtw_adapter *padapter,
 		      struct cfg80211_ssid *ssid, int ssid_num,
 		      struct rtw_ieee80211_channel *ch, int ch_num)
 {
 	u8 res = _FAIL;
-	struct cmd_obj		*ph2c;
-	struct sitesurvey_parm	*psurveyPara;
-	struct cmd_priv		*pcmdpriv = &padapter->cmdpriv;
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
+	struct cmd_obj *ph2c;
+	struct sitesurvey_parm *psurveyPara;
+	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 #ifdef CONFIG_8723AU_P2P
-	struct wifidirect_info *pwdinfo= &(padapter->wdinfo);
+	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 #endif /* CONFIG_8723AU_P2P */
 
-_func_enter_;
-
-	if(check_fwstate(pmlmepriv, _FW_LINKED) == true){
+	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_SCAN, 1);
-	}
 
 #ifdef CONFIG_8723AU_P2P
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
@@ -612,20 +610,23 @@ _func_enter_;
 #endif /* CONFIG_8723AU_P2P */
 
 	ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
-	if (ph2c == NULL)
+	if (!ph2c)
 		return _FAIL;
 
-	psurveyPara = (struct sitesurvey_parm*)rtw_zmalloc(sizeof(struct sitesurvey_parm));
-	if (psurveyPara == NULL) {
-		rtw_mfree((unsigned char*) ph2c, sizeof(struct cmd_obj));
+	psurveyPara = (struct sitesurvey_parm*)
+		rtw_zmalloc(sizeof(struct sitesurvey_parm));
+	if (!psurveyPara) {
+		rtw_mfree((u8 *)ph2c, sizeof(struct cmd_obj));
 		return _FAIL;
 	}
 
 	rtw_free_network_queue(padapter, false);
 
-	RT_TRACE(_module_rtl871x_cmd_c_, _drv_info_, ("%s: flush network queue\n", __FUNCTION__));
+	RT_TRACE(_module_rtl871x_cmd_c_, _drv_info_,
+		 ("%s: flush network queue\n", __FUNCTION__));
 
-	init_h2fwcmd_w_parm_no_rsp(ph2c, psurveyPara, GEN_CMD_CODE(_SiteSurvey));
+	init_h2fwcmd_w_parm_no_rsp(ph2c, psurveyPara,
+				   GEN_CMD_CODE(_SiteSurvey));
 
 	/* psurveyPara->bsslimit = 48; */
 	psurveyPara->scan_mode = pmlmepriv->scan_mode;
@@ -633,14 +634,16 @@ _func_enter_;
 	/* prepare ssid list */
 	if (ssid) {
 		int i;
-		for (i=0; i<ssid_num && i< RTW_SSID_SCAN_AMOUNT; i++) {
+		for (i = 0; i < ssid_num && i < RTW_SSID_SCAN_AMOUNT; i++) {
 			if (ssid[i].ssid_len) {
 				memcpy(&psurveyPara->ssid[i], &ssid[i],
 				       sizeof(struct cfg80211_ssid));
 				psurveyPara->ssid_num++;
 				if (0)
-				DBG_8723A(FUNC_ADPT_FMT" ssid:(%s, %d)\n", FUNC_ADPT_ARG(padapter),
-					psurveyPara->ssid[i].ssid, psurveyPara->ssid[i].ssid_len);
+				DBG_8723A(FUNC_ADPT_FMT" ssid:(%s, %d)\n",
+					  FUNC_ADPT_ARG(padapter),
+					  psurveyPara->ssid[i].ssid,
+					  psurveyPara->ssid[i].ssid_len);
 			}
 		}
 	}
@@ -648,13 +651,16 @@ _func_enter_;
 	/* prepare channel list */
 	if (ch) {
 		int i;
-		for (i=0; i<ch_num && i< RTW_CHANNEL_SCAN_AMOUNT; i++) {
-			if (ch[i].hw_value && !(ch[i].flags & IEEE80211_CHAN_DISABLED)) {
-				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
+		for (i = 0; i < ch_num && i < RTW_CHANNEL_SCAN_AMOUNT; i++) {
+			if (ch[i].hw_value &&
+			    !(ch[i].flags & IEEE80211_CHAN_DISABLED)) {
+				memcpy(&psurveyPara->ch[i], &ch[i],
+				       sizeof(struct rtw_ieee80211_channel));
 				psurveyPara->ch_num++;
 				if (0)
-				DBG_8723A(FUNC_ADPT_FMT" ch:%u\n", FUNC_ADPT_ARG(padapter),
-					psurveyPara->ch[i].hw_value);
+				DBG_8723A(FUNC_ADPT_FMT" ch:%u\n",
+					  FUNC_ADPT_ARG(padapter),
+					  psurveyPara->ch[i].hw_value);
 			}
 		}
 	}
@@ -664,7 +670,6 @@ _func_enter_;
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 
 	if (res == _SUCCESS) {
-
 		pmlmepriv->scan_start_time = rtw_get_current_time();
 
 		mod_timer(&pmlmepriv->scan_to_timer, jiffies +
@@ -673,11 +678,8 @@ _func_enter_;
 		rtw_led_control(padapter, LED_CTL_SITE_SURVEY);
 
 		pmlmepriv->scan_interval = SCAN_INTERVAL;/*  30*2 sec = 60sec */
-	} else {
+	} else
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
-	}
-
-_func_exit_;
 
 	return res;
 }
