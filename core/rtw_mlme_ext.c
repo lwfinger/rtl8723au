@@ -9412,6 +9412,7 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	struct wlan_bssid_ex *pparm = (struct wlan_bssid_ex *)pbuf;
+	struct HT_info_element *pht_info;
 	u32 i;
         /* u32	initialgain; */
 	/* u32	acparm; */
@@ -9420,9 +9421,8 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	if (pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS)
 	{
 		if (pmlmeinfo->state & WIFI_FW_STATION_STATE)
-		{
-			issue_deauth_ex(padapter, pnetwork->MacAddress, WLAN_REASON_DEAUTH_LEAVING, 5, 100);
-		}
+			issue_deauth_ex(padapter, pnetwork->MacAddress,
+					WLAN_REASON_DEAUTH_LEAVING, 5, 100);
 
 		pmlmeinfo->state = WIFI_FW_NULL_STATE;
 
@@ -9458,7 +9458,8 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	memcpy(pnetwork, pbuf, sizeof(struct wlan_bssid_ex));
 
 	/* Check AP vendor to move rtw_joinbss_cmd() */
-	/* pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pnetwork->IEs, pnetwork->IELength); */
+	/* pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pnetwork->IEs,
+	   pnetwork->IELength); */
 
 	for (i = sizeof(struct ndis_802_11_fixed_ies); i < pnetwork->IELength;)
 	{
@@ -9466,50 +9467,50 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 
 		switch (pIE->ElementID)
 		{
-			case _VENDOR_SPECIFIC_IE_:/* Get WMM IE. */
-				if (!memcmp(pIE->data, WMM_OUI, 4))
+		case _VENDOR_SPECIFIC_IE_:/* Get WMM IE. */
+			if (!memcmp(pIE->data, WMM_OUI, 4))
+				pmlmeinfo->WMM_enable = 1;
+			break;
+
+		case _HT_CAPABILITY_IE_:	/* Get HT Cap IE. */
+			pmlmeinfo->HT_caps_enable = 1;
+			break;
+
+		case _HT_EXTRA_INFO_IE_:	/* Get HT Info IE. */
+			pmlmeinfo->HT_info_enable = 1;
+
+			/* spec case only for cisco's ap because cisco's ap
+			 * issue assoc rsp using mcs rate @40MHz or @20MHz */
+			pht_info = (struct HT_info_element *)(pIE->data);
+
+			if ((pregpriv->cbw40_enable) &&
+			    (pht_info->infos[0] & BIT(2))) {
+				/* switch to the 40M Hz mode according to AP */
+				pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_40;
+				switch (pht_info->infos[0] & 0x3)
 				{
-					pmlmeinfo->WMM_enable = 1;
+				case 1:
+					pmlmeext->cur_ch_offset =
+						HAL_PRIME_CHNL_OFFSET_LOWER;
+					break;
+
+				case 3:
+					pmlmeext->cur_ch_offset =
+						HAL_PRIME_CHNL_OFFSET_UPPER;
+					break;
+
+				default:
+					pmlmeext->cur_ch_offset =
+						HAL_PRIME_CHNL_OFFSET_DONT_CARE;
+					break;
 				}
-				break;
 
-			case _HT_CAPABILITY_IE_:	/* Get HT Cap IE. */
-				pmlmeinfo->HT_caps_enable = 1;
-				break;
+				DBG_8723A("set ch/bw before connected\n");
+			}
+			break;
 
-			case _HT_EXTRA_INFO_IE_:	/* Get HT Info IE. */
-				pmlmeinfo->HT_info_enable = 1;
-
-				/* spec case only for cisco's ap because cisco's ap issue assoc rsp using mcs rate @40MHz or @20MHz */
-				{
-					struct HT_info_element *pht_info = (struct HT_info_element *)(pIE->data);
-
-					if ((pregpriv->cbw40_enable) &&	 (pht_info->infos[0] & BIT(2)))
-					{
-						/* switch to the 40M Hz mode according to the AP */
-						pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_40;
-						switch (pht_info->infos[0] & 0x3)
-						{
-							case 1:
-								pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
-								break;
-
-							case 3:
-								pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_UPPER;
-								break;
-
-							default:
-								pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-								break;
-						}
-
-						DBG_8723A("set ch/bw before connected\n");
-					}
-				}
-				break;
-
-			default:
-				break;
+		default:
+			break;
 		}
 
 		i += (pIE->Length + 2);
@@ -9517,11 +9518,14 @@ u8 join_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 	/* disable dynamic functions, such as high power, DIG */
 	/* Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, false); */
 
-	/* config the initial gain under linking, need to write the BB registers */
+	/* config the initial gain under linking, need to write the BB
+	   registers */
 	/* initialgain = 0x1E; */
-	/* rtw_hal_set_hwreg(padapter, HW_VAR_INITIAL_GAIN, (u8 *)(&initialgain)); */
+	/* rtw_hal_set_hwreg(padapter, HW_VAR_INITIAL_GAIN,
+	   (u8 *)(&initialgain)); */
 
-	rtw_hal_set_hwreg(padapter, HW_VAR_BSSID, pmlmeinfo->network.MacAddress);
+	rtw_hal_set_hwreg(padapter, HW_VAR_BSSID,
+			  pmlmeinfo->network.MacAddress);
 	join_type = 0;
 	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_JOIN, (u8 *)(&join_type));
 
