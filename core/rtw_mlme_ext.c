@@ -920,13 +920,15 @@ unsigned int OnBeacon(struct rtw_adapter *padapter,
 		if (pmlmeinfo->state & WIFI_FW_AUTH_NULL)
 		{
 			/* we should update current network before auth, or some IE is wrong */
-			pbss = (struct wlan_bssid_ex*)rtw_malloc(sizeof(struct wlan_bssid_ex));
+			pbss = (struct wlan_bssid_ex *)
+				kmalloc(sizeof(struct wlan_bssid_ex),
+					GFP_ATOMIC);
 			if (pbss) {
 				if (collect_bss_info(padapter, precv_frame, pbss) == _SUCCESS) {
 					update_network(&(pmlmepriv->cur_network.network), pbss, padapter, true);
 					rtw_get_bcn_info(&(pmlmepriv->cur_network));
 				}
-				rtw_mfree((u8*)pbss, sizeof(struct wlan_bssid_ex));
+				kfree(pbss);
 			}
 
 			/* check the vendor of the assoc AP */
