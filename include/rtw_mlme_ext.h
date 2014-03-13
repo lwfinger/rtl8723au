@@ -291,7 +291,7 @@ struct	ss_res
 	int	scan_mode;
 	u8 ssid_num;
 	u8 ch_num;
-	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
+	struct cfg80211_ssid ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 };
 
@@ -609,8 +609,8 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 void issue_assocreq(struct rtw_adapter *padapter);
 void issue_asocrsp(struct rtw_adapter *padapter, unsigned short status, struct sta_info *pstat, int pkt_type);
 void issue_auth(struct rtw_adapter *padapter, struct sta_info *psta, unsigned short status);
-void issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da);
-s32 issue_probereq_ex(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8* da, int try_cnt, int wait_ms);
+void issue_probereq(struct rtw_adapter *padapter, struct cfg80211_ssid *pssid, u8 *da);
+s32 issue_probereq_ex(struct rtw_adapter *padapter, struct cfg80211_ssid *pssid, u8* da, int try_cnt, int wait_ms);
 int issue_nulldata(struct rtw_adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms);
 int issue_qos_nulldata(struct rtw_adapter *padapter, unsigned char *da, u16 tid, int try_cnt, int wait_ms);
 int issue_deauth(struct rtw_adapter *padapter, unsigned char *da, unsigned short reason);

@@ -64,7 +64,7 @@ _func_enter_;
 	spin_lock_init(&(pmlmepriv->lock));
 	_rtw_init_queue(&(pmlmepriv->scanned_queue));
 
-	memset(&pmlmepriv->assoc_ssid,0,sizeof(struct ndis_802_11_ssid));
+	memset(&pmlmepriv->assoc_ssid, 0, sizeof(struct cfg80211_ssid));
 
 	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
 
@@ -337,7 +337,9 @@ void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork
 void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork, u8 is_freeall)/* struct	wlan_network *pnetwork, _queue	*free_queue) */
 {
 _func_enter_;
-	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_free_network==> ssid = %s \n\n" , pnetwork->network.Ssid.Ssid));
+	RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+		 ("rtw_free_network==> ssid = %s \n\n" ,
+		  pnetwork->network.Ssid.ssid));
 	_rtw_free_network(pmlmepriv, pnetwork, is_freeall);
 _func_exit_;
 }
@@ -346,7 +348,7 @@ void rtw_free_network_nolock(struct mlme_priv *pmlmepriv, struct wlan_network *p
 void rtw_free_network_nolock(struct mlme_priv *pmlmepriv, struct wlan_network *pnetwork )
 {
 _func_enter_;
-	/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_free_network==> ssid = %s \n\n" , pnetwork->network.Ssid.Ssid)); */
+	/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_free_network==> ssid = %s \n\n" , pnetwork->network.Ssid.ssid)); */
 	_rtw_free_network_nolock(pmlmepriv, pnetwork);
 _func_exit_;
 }
@@ -398,8 +400,8 @@ inline int is_same_ess(struct wlan_bssid_ex *a, struct wlan_bssid_ex *b)
 {
 	/* RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("(%s,%d)(%s,%d)\n", */
 	/*		a->Ssid.Ssid,a->Ssid.SsidLength,b->Ssid.Ssid,b->Ssid.SsidLength)); */
-	return (a->Ssid.SsidLength == b->Ssid.SsidLength) &&
-		!memcmp(a->Ssid.Ssid, b->Ssid.Ssid, a->Ssid.SsidLength);
+	return (a->Ssid.ssid_len == b->Ssid.ssid_len) &&
+		!memcmp(a->Ssid.ssid, b->Ssid.ssid, a->Ssid.ssid_len);
 }
 
 int is_same_network(struct wlan_bssid_ex *src, struct wlan_bssid_ex *dst)
@@ -416,10 +418,10 @@ _func_enter_;
 
 _func_exit_;
 
-	return ((src->Ssid.SsidLength == dst->Ssid.SsidLength) &&
+	return ((src->Ssid.ssid_len == dst->Ssid.ssid_len) &&
 		/*	(src->Configuration.DSConfig == dst->Configuration.DSConfig) && */
 		((!memcmp(src->MacAddress, dst->MacAddress, ETH_ALEN))) &&
-		((!memcmp(src->Ssid.Ssid, dst->Ssid.Ssid, src->Ssid.SsidLength))) &&
+		((!memcmp(src->Ssid.ssid, dst->Ssid.ssid, src->Ssid.ssid_len))) &&
 		((s_cap & WLAN_CAPABILITY_IBSS) ==
 		 (d_cap & WLAN_CAPABILITY_IBSS)) &&
 		((s_cap & WLAN_CAPABILITY_ESS) ==
@@ -466,7 +468,7 @@ void update_network(struct wlan_bssid_ex *dst, struct wlan_bssid_ex *src,
 _func_enter_;
 
 	DBG_8723A("%s %s(%pM, ch%u) ss_ori:%3u, sq_ori:%3u, rssi_ori:%3ld, ss_smp:%3u, sq_smp:%3u, rssi_smp:%3ld\n",
-		  __func__, src->Ssid.Ssid, src->MacAddress,
+		  __func__, src->Ssid.ssid, src->MacAddress,
 		  src->Configuration.DSConfig, ss_ori, sq_ori, rssi_ori,
 		  ss_smp, sq_smp, rssi_smp
 	);
@@ -504,7 +506,7 @@ _func_enter_;
 	dst->Rssi = rssi_final;
 
 	DBG_8723A("%s %s(%pM), SignalStrength:%u, SignalQuality:%u, RawRSSI:%ld\n",
-		  __func__, dst->Ssid.Ssid, dst->MacAddress,
+		  __func__, dst->Ssid.ssid, dst->MacAddress,
 		  dst->PhyInfo.SignalStrength,
 		  dst->PhyInfo.SignalQuality, dst->Rssi);
 _func_exit_;
@@ -706,7 +708,7 @@ _func_enter_;
 
 	pnetwork = (struct wlan_bssid_ex *)pbuf;
 
-	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("rtw_survey_event_callback, ssid=%s\n",  pnetwork->Ssid.Ssid));
+	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("rtw_survey_event_callback, ssid=%s\n",  pnetwork->Ssid.ssid));
 
 	len = get_wlan_bssid_ex_sz(pnetwork);
 	if(len > (sizeof(struct wlan_bssid_ex)))
@@ -742,10 +744,9 @@ _func_enter_;
 	/*  lock pmlmepriv->lock when you accessing network_q */
 	if ((check_fwstate(pmlmepriv, _FW_UNDER_LINKING)) == false)
 	{
-	        if( pnetwork->Ssid.Ssid[0] == 0 )
-		{
-			pnetwork->Ssid.SsidLength = 0;
-		}
+	        if (pnetwork->Ssid.ssid[0] == 0)
+			pnetwork->Ssid.ssid_len = 0;
+
 		rtw_add_network(adapter, pnetwork);
 	}
 
@@ -802,8 +803,8 @@ _func_enter_;
 
 					RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("switching to adhoc master\n"));
 
-					memset(&pdev_network->Ssid, 0, sizeof(struct ndis_802_11_ssid));
-					memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(struct ndis_802_11_ssid));
+					memset(&pdev_network->Ssid, 0, sizeof(struct cfg80211_ssid));
+					memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(struct cfg80211_ssid));
 
 					rtw_update_registrypriv_dev_network(adapter);
 					rtw_generate_random_ibss(pibss);
@@ -912,7 +913,7 @@ _func_enter_;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_, ("+rtw_free_assoc_resources\n"));
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("tgt_network->network.MacAddress="MAC_FMT" ssid=%s\n",
-		MAC_ARG(tgt_network->network.MacAddress), tgt_network->network.Ssid.Ssid));
+		MAC_ARG(tgt_network->network.MacAddress), tgt_network->network.Ssid.ssid));
 
 	if(check_fwstate( pmlmepriv, WIFI_STATION_STATE|WIFI_AP_STATE))
 	{
@@ -1252,13 +1253,12 @@ _func_enter_;
 
 	rtw_get_encrypt_decrypt_from_registrypriv(adapter);
 
-	if (pmlmepriv->assoc_ssid.SsidLength == 0)
-	{
+	if (pmlmepriv->assoc_ssid.ssid_len == 0) {
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("@@@@@   joinbss event call back  for Any SSid\n"));
-	}
-	else
-	{
-		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("@@@@@   rtw_joinbss_event_callback for SSid:%s\n", pmlmepriv->assoc_ssid.Ssid));
+	} else {
+		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
+			 ("@@@@@   rtw_joinbss_event_callback for SSid:%s\n",
+			  pmlmepriv->assoc_ssid.ssid));
 	}
 
 	if (!memcmp(pnetwork->network.MacAddress, cur_network->network.MacAddress, ETH_ALEN))
@@ -1664,8 +1664,10 @@ _func_enter_;
 
 			memcpy(pdev_network, &tgt_network->network, get_wlan_bssid_ex_sz(&tgt_network->network));
 
-			memset(&pdev_network->Ssid, 0, sizeof(struct ndis_802_11_ssid));
-			memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(struct ndis_802_11_ssid));
+			memset(&pdev_network->Ssid, 0,
+			       sizeof(struct cfg80211_ssid));
+			memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid,
+			       sizeof(struct cfg80211_ssid));
 
 			rtw_update_registrypriv_dev_network(adapter);
 
@@ -1882,12 +1884,12 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 	}
 
 	/* check ssid, if needed */
-	if (pmlmepriv->assoc_ssid.Ssid && pmlmepriv->assoc_ssid.SsidLength) {
-		if (competitor->network.Ssid.SsidLength !=
-		    pmlmepriv->assoc_ssid.SsidLength ||
-		    memcmp(competitor->network.Ssid.Ssid,
-			   pmlmepriv->assoc_ssid.Ssid,
-			   pmlmepriv->assoc_ssid.SsidLength))
+	if (pmlmepriv->assoc_ssid.ssid && pmlmepriv->assoc_ssid.ssid_len) {
+		if (competitor->network.Ssid.ssid_len !=
+		    pmlmepriv->assoc_ssid.ssid_len ||
+		    memcmp(competitor->network.Ssid.ssid,
+			   pmlmepriv->assoc_ssid.ssid,
+			   pmlmepriv->assoc_ssid.ssid_len))
 			goto exit;
 	}
 
@@ -1909,9 +1911,9 @@ static int rtw_check_join_candidate(struct mlme_priv *pmlmepriv
 	if(updated){
 		DBG_8723A("[by_bssid:%u][assoc_ssid:%s][to_roaming:%u] new candidate: %s("MAC_FMT") rssi:%d\n",
 			pmlmepriv->assoc_by_bssid,
-			pmlmepriv->assoc_ssid.Ssid,
+			pmlmepriv->assoc_ssid.ssid,
 			rtw_to_roaming(adapter),
-			(*candidate)->network.Ssid.Ssid,
+			(*candidate)->network.Ssid.ssid,
 			MAC_ARG((*candidate)->network.MacAddress),
 			(int)(*candidate)->network.Rssi);
 	}
@@ -1965,7 +1967,7 @@ _func_enter_;
 		goto exit;
 	} else {
 		DBG_8723A("%s: candidate: %s("MAC_FMT", ch:%u)\n", __func__,
-			  candidate->network.Ssid.Ssid,
+			  candidate->network.Ssid.ssid,
 			  MAC_ARG(candidate->network.MacAddress),
 			  candidate->network.Configuration.DSConfig);
 	}
@@ -2308,7 +2310,7 @@ _func_enter_;
 	memcpy(pdev_network->MacAddress, myhwaddr, ETH_ALEN);
 
 	memcpy(&pdev_network->Ssid, &pregistrypriv->ssid,
-	       sizeof(struct ndis_802_11_ssid));
+	       sizeof(struct cfg80211_ssid));
 
 	pdev_network->Configuration.Length=sizeof(struct ndis_802_11_config);
 	pdev_network->Configuration.BeaconPeriod = 100;
@@ -2697,9 +2699,11 @@ void _rtw_roaming(struct rtw_adapter *padapter, struct wlan_network *tgt_network
 
 	if(0 < rtw_to_roaming(padapter)) {
 		DBG_8723A("roaming from %s("MAC_FMT"), length:%d\n",
-				pnetwork->network.Ssid.Ssid, MAC_ARG(pnetwork->network.MacAddress),
-				pnetwork->network.Ssid.SsidLength);
-		memcpy(&pmlmepriv->assoc_ssid, &pnetwork->network.Ssid, sizeof(struct ndis_802_11_ssid));
+			  pnetwork->network.Ssid.ssid,
+			  MAC_ARG(pnetwork->network.MacAddress),
+			  pnetwork->network.Ssid.ssid_len);
+		memcpy(&pmlmepriv->assoc_ssid, &pnetwork->network.Ssid,
+		       sizeof(struct cfg80211_ssid));
 
 		pmlmepriv->assoc_by_bssid = false;
 

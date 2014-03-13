@@ -1583,7 +1583,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	int ret = 0;
 	struct rtw_adapter *padapter = wiphy_to_adapter(wiphy);
 	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
-	struct ndis_802_11_ssid ssid[RTW_SSID_SCAN_AMOUNT];
+	struct cfg80211_ssid ssid[RTW_SSID_SCAN_AMOUNT];
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 	unsigned long	irqL;
 	u8 *wps_ie=NULL;
@@ -1688,14 +1688,14 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 #endif /* CONFIG_8723AU_P2P */
 
 
-	memset(ssid, 0, sizeof(struct ndis_802_11_ssid)*RTW_SSID_SCAN_AMOUNT);
+	memset(ssid, 0, sizeof(struct cfg80211_ssid)*RTW_SSID_SCAN_AMOUNT);
 	/* parsing request ssids, n_ssids */
 	for (i = 0; i < request->n_ssids && i < RTW_SSID_SCAN_AMOUNT; i++) {
 #ifdef CONFIG_DEBUG_CFG80211
 		DBG_8723A("ssid=%s, len=%d\n", ssids[i].ssid, ssids[i].ssid_len);
 #endif
-		memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
-		ssid[i].SsidLength = ssids[i].ssid_len;
+		memcpy(ssid[i].ssid, ssids[i].ssid, ssids[i].ssid_len);
+		ssid[i].ssid_len = ssids[i].ssid_len;
 	}
 
 
@@ -2121,7 +2121,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	struct list_head *phead, *plist, *ptmp;
 	struct wlan_network *pnetwork = NULL;
 	enum ndis_802_11_auth_mode authmode;
-	struct ndis_802_11_ssid ndis_ssid;
+	struct cfg80211_ssid ndis_ssid;
 	u8 *dst_ssid;
 	u8 *src_ssid;
 	u8 *dst_bssid;
@@ -2168,11 +2168,11 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	}
 
 
-	memset(&ndis_ssid, 0, sizeof(struct ndis_802_11_ssid));
-	ndis_ssid.SsidLength = sme->ssid_len;
-	memcpy(ndis_ssid.Ssid, sme->ssid, sme->ssid_len);
+	memset(&ndis_ssid, 0, sizeof(struct cfg80211_ssid));
+	ndis_ssid.ssid_len = sme->ssid_len;
+	memcpy(ndis_ssid.ssid, sme->ssid, sme->ssid_len);
 
-	DBG_8723A("ssid=%s, len=%zu\n", ndis_ssid.Ssid, sme->ssid_len);
+	DBG_8723A("ssid=%s, len=%zu\n", ndis_ssid.ssid, sme->ssid_len);
 
 
 	if (sme->bssid)
@@ -2195,7 +2195,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	list_for_each_safe(plist, ptmp, phead) {
 		pnetwork = container_of(plist, struct wlan_network, list);
 
-		dst_ssid = pnetwork->network.Ssid.Ssid;
+		dst_ssid = pnetwork->network.Ssid.ssid;
 		dst_bssid = pnetwork->network.MacAddress;
 
 		if(sme->bssid)  {
@@ -2205,8 +2205,8 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		}
 
 		if(sme->ssid && sme->ssid_len) {
-			if (pnetwork->network.Ssid.SsidLength != sme->ssid_len||
-			     memcmp(pnetwork->network.Ssid.Ssid, sme->ssid,
+			if (pnetwork->network.Ssid.ssid_len != sme->ssid_len||
+			     memcmp(pnetwork->network.Ssid.ssid, sme->ssid,
 				    sme->ssid_len))
 				continue;
 		}
@@ -2216,27 +2216,27 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		{
 			src_bssid = sme->bssid;
 
-			if ((!memcmp(dst_bssid, src_bssid, ETH_ALEN)))
-			{
+			if ((!memcmp(dst_bssid, src_bssid, ETH_ALEN))) {
 				DBG_8723A("matched by bssid\n");
 
-				ndis_ssid.SsidLength = pnetwork->network.Ssid.SsidLength;
-				memcpy(ndis_ssid.Ssid, pnetwork->network.Ssid.Ssid, pnetwork->network.Ssid.SsidLength);
+				ndis_ssid.ssid_len =
+					pnetwork->network.Ssid.ssid_len;
+				memcpy(ndis_ssid.ssid,
+				       pnetwork->network.Ssid.ssid,
+				       pnetwork->network.Ssid.ssid_len);
 
-				matched=true;
+				matched = true;
 				break;
 			}
 
-		}
-		else if (sme->ssid && sme->ssid_len)
-		{
-			src_ssid = ndis_ssid.Ssid;
+		} else if (sme->ssid && sme->ssid_len) {
+			src_ssid = ndis_ssid.ssid;
 
-			if ((!memcmp(dst_ssid, src_ssid, ndis_ssid.SsidLength)) &&
-				(pnetwork->network.Ssid.SsidLength==ndis_ssid.SsidLength))
-			{
+			if ((!memcmp(dst_ssid, src_ssid, ndis_ssid.ssid_len)) &&
+				(pnetwork->network.Ssid.ssid_len ==
+				 ndis_ssid.ssid_len)) {
 				DBG_8723A("matched by ssid\n");
-				matched=true;
+				matched = true;
 				break;
 			}
 		}
@@ -3089,19 +3089,24 @@ static int cfg80211_rtw_start_ap(struct wiphy *wiphy, struct net_device *ndev,
 		struct wlan_bssid_ex *pbss_network_ext = &adapter->mlmeextpriv.mlmext_info.network;
 
 		if(0)
-		DBG_8723A(FUNC_ADPT_FMT" ssid:(%s,%d), from ie:(%s,%d)\n", FUNC_ADPT_ARG(adapter),
-			  settings->ssid, (int)settings->ssid_len,
-			  pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength);
+		DBG_8723A(FUNC_ADPT_FMT" ssid:(%s,%d), from ie:(%s,%d)\n",
+			  FUNC_ADPT_ARG(adapter), settings->ssid,
+			  (int)settings->ssid_len, pbss_network->Ssid.ssid,
+			  pbss_network->Ssid.ssid_len);
 
-		memcpy(pbss_network->Ssid.Ssid, (void *)settings->ssid, settings->ssid_len);
-		pbss_network->Ssid.SsidLength = settings->ssid_len;
-		memcpy(pbss_network_ext->Ssid.Ssid, (void *)settings->ssid, settings->ssid_len);
-		pbss_network_ext->Ssid.SsidLength = settings->ssid_len;
+		memcpy(pbss_network->Ssid.ssid, (void *)settings->ssid,
+		       settings->ssid_len);
+		pbss_network->Ssid.ssid_len = settings->ssid_len;
+		memcpy(pbss_network_ext->Ssid.ssid, (void *)settings->ssid,
+		       settings->ssid_len);
+		pbss_network_ext->Ssid.ssid_len = settings->ssid_len;
 
 		if(0)
-		DBG_8723A(FUNC_ADPT_FMT" after ssid:(%s,%d), (%s,%d)\n", FUNC_ADPT_ARG(adapter),
-			pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength,
-			pbss_network_ext->Ssid.Ssid, pbss_network_ext->Ssid.SsidLength);
+		DBG_8723A(FUNC_ADPT_FMT" after ssid:(%s,%d), (%s,%d)\n",
+			  FUNC_ADPT_ARG(adapter), pbss_network->Ssid.ssid,
+			  pbss_network->Ssid.ssid_len,
+			  pbss_network_ext->Ssid.ssid,
+			  pbss_network_ext->Ssid.ssid_len);
 	}
 
 	return ret;

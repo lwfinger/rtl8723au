@@ -23,23 +23,23 @@
 #include <usb_ops.h>
 #include <linux/ieee80211.h>
 
-u8 rtw_validate_ssid(struct ndis_802_11_ssid *ssid)
+u8 rtw_validate_ssid(struct cfg80211_ssid *ssid)
 {
 	u8	 i;
 	u8	ret=true;
 
 _func_enter_;
 
-	if (ssid->SsidLength > 32) {
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_, ("ssid length >32\n"));
+	if (ssid->ssid_len > 32) {
+		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
+			 ("ssid length >32\n"));
 		ret= false;
 		goto exit;
 	}
 
-	for(i = 0; i < ssid->SsidLength; i++)
-	{
+	for (i = 0; i < ssid->ssid_len; i++) {
 		/* wifi, printable ascii code must be supported */
-		if(!( (ssid->Ssid[i] >= 0x20) && (ssid->Ssid[i] <= 0x7e) )){
+		if(!( (ssid->ssid[i] >= 0x20) && (ssid->ssid[i] <= 0x7e) )){
 			RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_, ("ssid has nonprintabl ascii\n"));
 			ret= false;
 			break;
@@ -120,7 +120,9 @@ _func_enter_;
 
 				pibss = padapter->registrypriv.dev_network.MacAddress;
 
-				memcpy(&pdev_network->Ssid, &pmlmepriv->assoc_ssid, sizeof(struct ndis_802_11_ssid));
+				memcpy(&pdev_network->Ssid,
+				       &pmlmepriv->assoc_ssid,
+				       sizeof(struct cfg80211_ssid));
 
 				rtw_update_registrypriv_dev_network(padapter);
 
@@ -267,7 +269,7 @@ _func_exit_;
 	return status;
 }
 
-u8 rtw_set_802_11_ssid(struct rtw_adapter* padapter, struct ndis_802_11_ssid *ssid)
+u8 rtw_set_802_11_ssid(struct rtw_adapter* padapter, struct cfg80211_ssid *ssid)
 {
 	u8 status = _SUCCESS;
 	u32 cur_time = 0;
@@ -278,7 +280,7 @@ u8 rtw_set_802_11_ssid(struct rtw_adapter* padapter, struct ndis_802_11_ssid *ss
 _func_enter_;
 
 	DBG_8723A_LEVEL(_drv_always_, "set ssid [%s] fw_state=0x%08x\n",
-			ssid->Ssid, get_fwstate(pmlmepriv));
+			ssid->ssid, get_fwstate(pmlmepriv));
 
 	if(padapter->hw_init_completed==false){
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
@@ -301,9 +303,9 @@ _func_enter_;
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
 			 ("set_ssid: _FW_LINKED||WIFI_ADHOC_MASTER_STATE\n"));
 
-		if ((pmlmepriv->assoc_ssid.SsidLength == ssid->SsidLength) &&
-		    !memcmp(&pmlmepriv->assoc_ssid.Ssid, ssid->Ssid, ssid->SsidLength))
-		{
+		if ((pmlmepriv->assoc_ssid.ssid_len == ssid->ssid_len) &&
+		    !memcmp(&pmlmepriv->assoc_ssid.ssid, ssid->ssid,
+			    ssid->ssid_len)) {
 			if((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == false))
 			{
 				RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
@@ -331,9 +333,15 @@ _func_enter_;
 				rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_JOINBSS, 1);
 			}
 		} else {
-			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("Set SSID not the same ssid\n"));
-			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("set_ssid=[%s] len=0x%x\n", ssid->Ssid, (unsigned int)ssid->SsidLength));
-			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,("assoc_ssid=[%s] len=0x%x\n", pmlmepriv->assoc_ssid.Ssid, (unsigned int)pmlmepriv->assoc_ssid.SsidLength));
+			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,
+				 ("Set SSID not the same ssid\n"));
+			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,
+				 ("set_ssid=[%s] len=0x%x\n", ssid->ssid,
+				  (unsigned int)ssid->ssid_len));
+			RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_info_,
+				 ("assoc_ssid=[%s] len=0x%x\n",
+				  pmlmepriv->assoc_ssid.ssid,
+				  (unsigned int)pmlmepriv->assoc_ssid.ssid_len));
 
 			rtw_disassoc_cmd(padapter, 0, true);
 
@@ -366,7 +374,7 @@ handle_tkip_countermeasure:
 		}
 	}
 
-	memcpy(&pmlmepriv->assoc_ssid, ssid, sizeof(struct ndis_802_11_ssid));
+	memcpy(&pmlmepriv->assoc_ssid, ssid, sizeof(struct cfg80211_ssid));
 	pmlmepriv->assoc_by_bssid=false;
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true) {
@@ -499,7 +507,8 @@ _func_exit_;
 	return true;
 }
 
-u8 rtw_set_802_11_bssid_list_scan(struct rtw_adapter* padapter, struct ndis_802_11_ssid *pssid, int ssid_max_num)
+u8 rtw_set_802_11_bssid_list_scan(struct rtw_adapter *padapter,
+				  struct cfg80211_ssid *pssid, int ssid_max_num)
 {
 	struct	mlme_priv		*pmlmepriv= &padapter->mlmepriv;
 	u8	res=true;

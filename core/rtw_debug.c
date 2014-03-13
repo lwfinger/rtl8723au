@@ -305,7 +305,7 @@ int proc_get_ap_info(char *page, char **start,
 		int i;
 		struct recv_reorder_ctrl *preorder_ctrl;
 
-		len += snprintf(page + len, count - len, "SSID=%s\n", cur_network->network.Ssid.Ssid);
+		len += snprintf(page + len, count - len, "SSID=%s\n", cur_network->network.Ssid.ssid);
 		len += snprintf(page + len, count - len, "sta's macaddr:" MAC_FMT "\n", MAC_ARG(psta->hwaddr));
 		len += snprintf(page + len, count - len, "cur_channel=%d, cur_bwmode=%d, cur_ch_offset=%d\n", pmlmeext->cur_channel, pmlmeext->cur_bwmode, pmlmeext->cur_ch_offset);
 		len += snprintf(page + len, count - len, "rtsen=%d, cts2slef=%d\n", psta->rtsen, psta->cts2self);

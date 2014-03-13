@@ -586,8 +586,9 @@ rtw_sitesurvey_cmd(~)
 	### NOTE:#### (!!!!)
 	MUST TAKE CARE THAT BEFORE CALLING THIS FUNC, YOU SHOULD HAVE LOCKED pmlmepriv->lock
 */
-u8 rtw_sitesurvey_cmd(struct rtw_adapter  *padapter, struct ndis_802_11_ssid *ssid, int ssid_num,
-	struct rtw_ieee80211_channel *ch, int ch_num)
+u8 rtw_sitesurvey_cmd(struct rtw_adapter *padapter,
+		      struct cfg80211_ssid *ssid, int ssid_num,
+		      struct rtw_ieee80211_channel *ch, int ch_num)
 {
 	u8 res = _FAIL;
 	struct cmd_obj		*ph2c;
@@ -633,12 +634,13 @@ _func_enter_;
 	if (ssid) {
 		int i;
 		for (i=0; i<ssid_num && i< RTW_SSID_SCAN_AMOUNT; i++) {
-			if (ssid[i].SsidLength) {
-				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(struct ndis_802_11_ssid));
+			if (ssid[i].ssid_len) {
+				memcpy(&psurveyPara->ssid[i], &ssid[i],
+				       sizeof(struct cfg80211_ssid));
 				psurveyPara->ssid_num++;
 				if (0)
 				DBG_8723A(FUNC_ADPT_FMT" ssid:(%s, %d)\n", FUNC_ADPT_ARG(padapter),
-					psurveyPara->ssid[i].Ssid, psurveyPara->ssid[i].SsidLength);
+					psurveyPara->ssid[i].ssid, psurveyPara->ssid[i].ssid_len);
 			}
 		}
 	}
@@ -962,10 +964,14 @@ _func_enter_;
 
 	rtw_led_control(padapter, LED_CTL_START_TO_LINK);
 
-	if (pmlmepriv->assoc_ssid.SsidLength == 0){
-		RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,(" createbss for Any SSid:%s\n",pmlmepriv->assoc_ssid.Ssid));
+	if (pmlmepriv->assoc_ssid.ssid_len == 0) {
+		RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,
+			 (" createbss for Any SSid:%s\n",
+			  pmlmepriv->assoc_ssid.ssid));
 	} else {
-		RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,(" createbss for SSid:%s\n", pmlmepriv->assoc_ssid.Ssid));
+		RT_TRACE(_module_rtl871x_cmd_c_,_drv_info_,
+			 (" createbss for SSid:%s\n",
+			  pmlmepriv->assoc_ssid.ssid));
 	}
 
 	pcmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));
@@ -1042,10 +1048,13 @@ _func_enter_;
 
 	rtw_led_control(padapter, LED_CTL_START_TO_LINK);
 
-	if (pmlmepriv->assoc_ssid.SsidLength == 0){
-		RT_TRACE(_module_rtl871x_cmd_c_, _drv_info_, ("+Join cmd: Any SSid\n"));
+	if (pmlmepriv->assoc_ssid.ssid_len == 0){
+		RT_TRACE(_module_rtl871x_cmd_c_, _drv_info_,
+			 ("+Join cmd: Any SSid\n"));
 	} else {
-		RT_TRACE(_module_rtl871x_cmd_c_, _drv_notice_, ("+Join cmd: SSid=[%s]\n", pmlmepriv->assoc_ssid.Ssid));
+		RT_TRACE(_module_rtl871x_cmd_c_, _drv_notice_,
+			 ("+Join cmd: SSid=[%s]\n",
+			  pmlmepriv->assoc_ssid.ssid));
 	}
 
 	pcmd = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj));

@@ -413,8 +413,8 @@ _func_enter_;
 	ie += 2;
 
 	/* SSID */
-	ie = rtw_set_ie(ie, _SSID_IE_, pdev_network->Ssid.SsidLength,
-			pdev_network->Ssid.Ssid, &sz);
+	ie = rtw_set_ie(ie, _SSID_IE_, pdev_network->Ssid.ssid_len,
+			pdev_network->Ssid.ssid, &sz);
 
 	/* supported rates */
 	if (pregistrypriv->wireless_mode == WIRELESS_11ABGN) {
@@ -1705,12 +1705,12 @@ void rtw_get_bcn_info(struct wlan_network *pnetwork)
 	rtw_get_sec_ie(pnetwork->network.IEs, pnetwork->network.IELength,
 		       NULL, &rsn_len, NULL, &wpa_len);
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,
-		 ("rtw_get_bcn_info: ssid=%s\n", pnetwork->network.Ssid.Ssid));
+		 ("rtw_get_bcn_info: ssid=%s\n", pnetwork->network.Ssid.ssid));
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,
 		 ("rtw_get_bcn_info: wpa_len=%d rsn_len=%d\n",
 		  wpa_len,rsn_len));
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,
-		 ("rtw_get_bcn_info: ssid=%s\n", pnetwork->network.Ssid.Ssid));
+		 ("rtw_get_bcn_info: ssid=%s\n", pnetwork->network.Ssid.ssid));
 	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,
 		 ("rtw_get_bcn_info: wpa_len=%d rsn_len=%d\n",
 		  wpa_len,rsn_len));

@@ -194,7 +194,7 @@ struct wifi_display_info {
 struct tx_provdisc_req_info {
 	u16	wps_config_method_request;	/* Used when sending the provisioning request frame */
 	u16	peer_channel_num[2];		/* The channel number which the receiver stands. */
-	struct ndis_802_11_ssid	ssid;
+	struct	cfg80211_ssid ssid;
 	u8	peerDevAddr[ETH_ALEN];	/* Peer device address */
 	u8	peerIFAddr[ETH_ALEN];		/* Peer interface address */
 	u8	benable;			/* This provision discovery request frame is trigger to send or not */
@@ -360,7 +360,7 @@ struct mlme_priv {
 	u8	not_indic_disco;
 	_queue	scanned_queue;
 
-	struct ndis_802_11_ssid	assoc_ssid;
+	struct cfg80211_ssid assoc_ssid;
 	u8	assoc_bssid[6];
 
 	struct wlan_network	cur_network;

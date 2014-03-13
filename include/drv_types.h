@@ -82,7 +82,7 @@ struct registry_priv
 {
 	u8	chip_version;
 	u8	rfintfs;
-	struct ndis_802_11_ssid	ssid;
+	struct	cfg80211_ssid ssid;
 	u8	channel;/* ad-hoc support requirement */
 	u8	wireless_mode;/* A, B, G, auto */
 	u8	scan_mode;/* active, passive */

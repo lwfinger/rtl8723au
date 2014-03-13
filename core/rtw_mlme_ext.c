@@ -784,8 +784,8 @@ _continue:
 		}
 
 		if ((ielen != 0 &&
-		      memcmp((void *)(p+2), cur->Ssid.Ssid,
-			     cur->Ssid.SsidLength)) ||
+		     memcmp((void *)(p+2), cur->Ssid.ssid,
+			    cur->Ssid.ssid_len)) ||
 		    (ielen == 0 && pmlmeinfo->hidden_ssid_mode)) {
 			return _SUCCESS;
 		}
@@ -824,8 +824,8 @@ unsigned int OnProbeRsp(struct rtw_adapter *padapter,
 				if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT)){
 					pwdinfo->tx_prov_disc_info.benable = false;
 					issue_p2p_provision_request(padapter,
-												pwdinfo->tx_prov_disc_info.ssid.Ssid,
-												pwdinfo->tx_prov_disc_info.ssid.SsidLength,
+								    				pwdinfo->tx_prov_disc_info.ssid.ssid,
+												pwdinfo->tx_prov_disc_info.ssid.ssid_len,
 												pwdinfo->tx_prov_disc_info.peerDevAddr );
 				}
 				else if ( rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) || rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO) )
@@ -1422,10 +1422,10 @@ unsigned int OnAssocReq(struct rtw_adapter *padapter, struct recv_frame *precv_f
 		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 	else {
 		/*  check if ssid match */
-		if (memcmp((void *)(p+2), cur->Ssid.Ssid, cur->Ssid.SsidLength))
+		if (memcmp((void *)(p+2), cur->Ssid.ssid, cur->Ssid.ssid_len))
 			status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 
-		if (ie_len != cur->Ssid.SsidLength)
+		if (ie_len != cur->Ssid.ssid_len)
 			status = WLAN_STATUS_UNSPECIFIED_FAILURE;
 	}
 
@@ -4269,12 +4269,12 @@ static int _issue_probereq_p2p(struct rtw_adapter *padapter, u8 *da, int wait_ac
 	pframe += sizeof (struct ieee80211_hdr_3addr);
 	pattrib->pktlen = sizeof (struct ieee80211_hdr_3addr);
 
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ))
-	{
-		pframe = rtw_set_ie(pframe, _SSID_IE_, pwdinfo->tx_prov_disc_info.ssid.SsidLength, pwdinfo->tx_prov_disc_info.ssid.Ssid, &(pattrib->pktlen));
-	}
-	else
-	{
+	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ)) {
+		pframe = rtw_set_ie(pframe, _SSID_IE_,
+				    pwdinfo->tx_prov_disc_info.ssid.ssid_len,
+				    pwdinfo->tx_prov_disc_info.ssid.ssid,
+				    &(pattrib->pktlen));
+	} else {
 		pframe = rtw_set_ie(pframe, _SSID_IE_, P2P_WILDCARD_SSID_LEN, pwdinfo->p2p_wildcard_ssid, &(pattrib->pktlen));
 	}
 	/*	Use the OFDM rate in the P2P probe request frame. ( 6(B), 9(B), 12(B), 24(B), 36, 48, 54 ) */
@@ -5589,7 +5589,8 @@ void issue_beacon(struct rtw_adapter *padapter, int timeout_ms)
 	pattrib->pktlen += 2;
 
 	/*  SSID */
-	pframe = rtw_set_ie(pframe, _SSID_IE_, cur_network->Ssid.SsidLength, cur_network->Ssid.Ssid, &pattrib->pktlen);
+	pframe = rtw_set_ie(pframe, _SSID_IE_, cur_network->Ssid.ssid_len,
+			    cur_network->Ssid.ssid, &pattrib->pktlen);
 
 	/*  supported rates... */
 	rate_len = rtw_get_rateset_len(cur_network->SupportedRates);
@@ -5758,9 +5759,10 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 			ssid_ie = rtw_get_ie(ies+_FIXED_IE_LENGTH_, _SSID_IE_, &ssid_ielen,
 				(pframe-ies)-_FIXED_IE_LENGTH_);
 
-			ssid_ielen_diff = cur_network->Ssid.SsidLength - ssid_ielen;
+			ssid_ielen_diff = cur_network->Ssid.ssid_len -
+				ssid_ielen;
 
-			if (ssid_ie &&  cur_network->Ssid.SsidLength) {
+			if (ssid_ie &&  cur_network->Ssid.ssid_len) {
 				uint remainder_ielen;
 				u8 *remainder_ie;
 				remainder_ie = ssid_ie+2;
@@ -5773,8 +5775,9 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 
 				memcpy(buf, remainder_ie, remainder_ielen);
 				memcpy(remainder_ie+ssid_ielen_diff, buf, remainder_ielen);
-				*(ssid_ie+1) = cur_network->Ssid.SsidLength;
-				memcpy(ssid_ie+2, cur_network->Ssid.Ssid, cur_network->Ssid.SsidLength);
+				*(ssid_ie+1) = cur_network->Ssid.ssid_len;
+				memcpy(ssid_ie+2, cur_network->Ssid.ssid,
+				       cur_network->Ssid.ssid_len);
 
 				pframe += ssid_ielen_diff;
 				pattrib->pktlen += ssid_ielen_diff;
@@ -5806,7 +5809,9 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 		/* below for ad-hoc mode */
 
 		/*  SSID */
-		pframe = rtw_set_ie(pframe, _SSID_IE_, cur_network->Ssid.SsidLength, cur_network->Ssid.Ssid, &pattrib->pktlen);
+		pframe = rtw_set_ie(pframe, _SSID_IE_,
+				    cur_network->Ssid.ssid_len,
+				    cur_network->Ssid.ssid, &pattrib->pktlen);
 
 		/*  supported rates... */
 		rate_len = rtw_get_rateset_len(cur_network->SupportedRates);
@@ -5879,7 +5884,8 @@ void issue_probersp(struct rtw_adapter *padapter, unsigned char *da, u8 is_valid
 	return;
 }
 
-static int _issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da, int wait_ack)
+static int _issue_probereq(struct rtw_adapter *padapter,
+			   struct cfg80211_ssid *pssid, u8 *da, int wait_ack)
 {
 	int ret = _FAIL;
 	struct xmit_frame		*pmgntframe;
@@ -5940,9 +5946,11 @@ static int _issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid
 	pattrib->pktlen = sizeof (struct ieee80211_hdr_3addr);
 
 	if(pssid)
-		pframe = rtw_set_ie(pframe, _SSID_IE_, pssid->SsidLength, pssid->Ssid, &(pattrib->pktlen));
+		pframe = rtw_set_ie(pframe, _SSID_IE_, pssid->ssid_len,
+				    pssid->ssid, &pattrib->pktlen);
 	else
-		pframe = rtw_set_ie(pframe, _SSID_IE_, 0, NULL, &(pattrib->pktlen));
+		pframe = rtw_set_ie(pframe, _SSID_IE_, 0, NULL,
+				    &pattrib->pktlen);
 
 	get_rate_set(padapter, bssrate, &bssrate_len);
 
@@ -5979,13 +5987,15 @@ exit:
 	return ret;
 }
 
-inline void issue_probereq(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da)
+inline void issue_probereq(struct rtw_adapter *padapter,
+			   struct cfg80211_ssid *pssid, u8 *da)
 {
 	_issue_probereq(padapter, pssid, da, false);
 }
 
-int issue_probereq_ex(struct rtw_adapter *padapter, struct ndis_802_11_ssid *pssid, u8 *da,
-	int try_cnt, int wait_ms)
+int issue_probereq_ex(struct rtw_adapter *padapter,
+		      struct cfg80211_ssid *pssid, u8 *da,
+		      int try_cnt, int wait_ms)
 {
 	int ret;
 	int i = 0;
@@ -6395,7 +6405,8 @@ void issue_assocreq(struct rtw_adapter *padapter)
 	pattrib->pktlen += 2;
 
 	/* SSID */
-	pframe = rtw_set_ie(pframe, _SSID_IE_,  pmlmeinfo->network.Ssid.SsidLength, pmlmeinfo->network.Ssid.Ssid, &(pattrib->pktlen));
+	pframe = rtw_set_ie(pframe, _SSID_IE_, pmlmeinfo->network.Ssid.ssid_len,
+			    pmlmeinfo->network.Ssid.ssid, &pattrib->pktlen);
 
 	/* supported rate & extended supported rate */
 
@@ -7672,7 +7683,7 @@ void site_survey(struct rtw_adapter *padapter)
 		, pwdinfo->find_phase_state_exchange_cnt, pmlmeext->sitesurvey_res.channel_idx
 		, rtw_get_passing_time_ms(padapter->mlmepriv.scan_start_time)
 		, ScanType?'A':'P', pmlmeext->sitesurvey_res.scan_mode?'A':'P'
-		, pmlmeext->sitesurvey_res.ssid[0].SsidLength?'S':' '
+		, pmlmeext->sitesurvey_res.ssid[0].ssid_len?'S':' '
 		);
 		#ifdef DBG_FIXED_CHAN
 		DBG_8723A(FUNC_ADPT_FMT" fixed_chan:%u\n", pmlmeext->fixed_chan);
@@ -7720,7 +7731,7 @@ void site_survey(struct rtw_adapter *padapter)
 			{
 				int i;
 				for(i=0;i<RTW_SSID_SCAN_AMOUNT;i++){
-					if(pmlmeext->sitesurvey_res.ssid[i].SsidLength) {
+					if (pmlmeext->sitesurvey_res.ssid[i].ssid_len) {
 						/* todo: to issue two probe req??? */
 						issue_probereq(padapter, &(pmlmeext->sitesurvey_res.ssid[i]), NULL);
 						/* msleep(SURVEY_TO>>1); */
@@ -7882,19 +7893,16 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 		return _FAIL;
 	}
 
-	if (*(p + 1))
-	{
-		if (len > NDIS_802_11_LENGTH_SSID)
-		{
-			DBG_8723A("%s()-%d: IE too long (%d) for survey event\n", __FUNCTION__, __LINE__, len);
+	if (*(p + 1)) {
+		if (len > IEEE80211_MAX_SSID_LEN) {
+			DBG_8723A("%s()-%d: IE too long (%d) for survey "
+				  "event\n", __FUNCTION__, __LINE__, len);
 			return _FAIL;
 		}
-		memcpy(bssid->Ssid.Ssid, (p + 2), *(p + 1));
-		bssid->Ssid.SsidLength = *(p + 1);
-	}
-	else
-	{
-		bssid->Ssid.SsidLength = 0;
+		memcpy(bssid->Ssid.ssid, (p + 2), *(p + 1));
+		bssid->Ssid.ssid_len = *(p + 1);
+	} else {
+		bssid->Ssid.ssid_len = 0;
 	}
 
 	memset(bssid->SupportedRates, 0, NDIS_802_11_LENGTH_RATES_EX);
@@ -9674,11 +9682,13 @@ u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		pmlmeext->sitesurvey_res.channel_idx = 0;
 
 		for(i=0;i<RTW_SSID_SCAN_AMOUNT;i++){
-			if(pparm->ssid[i].SsidLength) {
-				memcpy(pmlmeext->sitesurvey_res.ssid[i].Ssid, pparm->ssid[i].Ssid, IW_ESSID_MAX_SIZE);
-				pmlmeext->sitesurvey_res.ssid[i].SsidLength= pparm->ssid[i].SsidLength;
+			if(pparm->ssid[i].ssid_len) {
+				memcpy(pmlmeext->sitesurvey_res.ssid[i].ssid,
+				       pparm->ssid[i].ssid, IW_ESSID_MAX_SIZE);
+				pmlmeext->sitesurvey_res.ssid[i].ssid_len =
+					pparm->ssid[i].ssid_len;
 			} else {
-				pmlmeext->sitesurvey_res.ssid[i].SsidLength= 0;
+				pmlmeext->sitesurvey_res.ssid[i].ssid_len = 0;
 			}
 		}
 

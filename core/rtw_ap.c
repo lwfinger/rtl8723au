@@ -929,8 +929,9 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 	memcpy(pnetwork_mlmeext, pnetwork, pnetwork->Length);
 
 #ifdef CONFIG_8723AU_P2P
-	memcpy(pwdinfo->p2p_group_ssid, pnetwork->Ssid.Ssid, pnetwork->Ssid.SsidLength);
-	pwdinfo->p2p_group_ssid_len = pnetwork->Ssid.SsidLength;
+	memcpy(pwdinfo->p2p_group_ssid, pnetwork->Ssid.ssid,
+	       pnetwork->Ssid.ssid_len);
+	pwdinfo->p2p_group_ssid_len = pnetwork->Ssid.ssid_len;
 #endif /* CONFIG_8723AU_P2P */
 
 	if(true == pmlmeext->bstart_bss)
@@ -1016,11 +1017,10 @@ int rtw_check_beacon_data(struct rtw_adapter *padapter, u8 *pbuf,  int len)
 
 	/* SSID */
 	p = rtw_get_ie(ie + _BEACON_IE_OFFSET_, _SSID_IE_, &ie_len, (pbss_network->IELength -_BEACON_IE_OFFSET_));
-	if(p && ie_len>0)
-	{
-		memset(&pbss_network->Ssid, 0, sizeof(struct ndis_802_11_ssid));
-		memcpy(pbss_network->Ssid.Ssid, (p + 2), ie_len);
-		pbss_network->Ssid.SsidLength = ie_len;
+	if (p && ie_len > 0) {
+		memset(&pbss_network->Ssid, 0, sizeof(struct cfg80211_ssid));
+		memcpy(pbss_network->Ssid.ssid, (p + 2), ie_len);
+		pbss_network->Ssid.ssid_len = ie_len;
 	}
 
 	/* chnnel */

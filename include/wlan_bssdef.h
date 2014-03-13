@@ -19,14 +19,8 @@
 #define MAX_IE_SZ	768
 
 
-#define NDIS_802_11_LENGTH_SSID         32
 #define NDIS_802_11_LENGTH_RATES        8
 #define NDIS_802_11_LENGTH_RATES_EX     16
-
-struct ndis_802_11_ssid {
-	u32  SsidLength;
-	u8  Ssid[32];
-};
 
 enum ndis_802_11_net_type {
 	Ndis802_11FH,
@@ -173,7 +167,7 @@ struct wlan_bssid_ex {
 	u32  Length;
 	unsigned char  MacAddress[6];
 	u8  Reserved[2];/* 0]: IS beacon frame */
-	struct ndis_802_11_ssid  Ssid;
+	struct cfg80211_ssid Ssid;
 	u32  Privacy;
 	long  Rssi;/* in dBM, raw data , get from PHY) */
 	enum ndis_802_11_net_type  NetworkTypeInUse;

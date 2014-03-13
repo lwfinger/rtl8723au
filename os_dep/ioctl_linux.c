@@ -1969,7 +1969,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		/*	Reset the content of struct tx_provdisc_req_info excluded the wps_config_method_request. */
 		memset( pwdinfo->tx_prov_disc_info.peerDevAddr, 0x00, ETH_ALEN );
 		memset( pwdinfo->tx_prov_disc_info.peerIFAddr, 0x00, ETH_ALEN );
-		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( struct ndis_802_11_ssid ) );
+		memset( &pwdinfo->tx_prov_disc_info.ssid, 0x00, sizeof( struct cfg80211_ssid ) );
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 0 ] = 0;
 		pwdinfo->tx_prov_disc_info.peer_channel_num[ 1 ] = 0;
 		pwdinfo->tx_prov_disc_info.benable = false;
@@ -2100,14 +2100,17 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 		rtw_p2p_set_pre_state(pwdinfo, rtw_p2p_state(pwdinfo));
 		rtw_p2p_set_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ);
 
-		if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT))
-		{
-			memcpy(&pwdinfo->tx_prov_disc_info.ssid, &pnetwork->network.Ssid, sizeof( struct ndis_802_11_ssid ) );
-		}
-		else if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) || rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
-		{
-			memcpy(pwdinfo->tx_prov_disc_info.ssid.Ssid, pwdinfo->p2p_wildcard_ssid, P2P_WILDCARD_SSID_LEN );
-			pwdinfo->tx_prov_disc_info.ssid.SsidLength= P2P_WILDCARD_SSID_LEN;
+		if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT)) {
+			memcpy(&pwdinfo->tx_prov_disc_info.ssid,
+			       &pnetwork->network.Ssid,
+			       sizeof(struct cfg80211_ssid));
+		} else if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) ||
+			  rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO)) {
+			memcpy(pwdinfo->tx_prov_disc_info.ssid.ssid,
+			       pwdinfo->p2p_wildcard_ssid,
+			       P2P_WILDCARD_SSID_LEN);
+			pwdinfo->tx_prov_disc_info.ssid.ssid_len =
+				P2P_WILDCARD_SSID_LEN;
 		}
 
 		set_channel_bwmode(padapter, uintPeerChannel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
@@ -3268,7 +3271,7 @@ static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param,
 	struct mlme_ext_info	*mlmeinfo = &(mlmeext->mlmext_info);
 	int ie_len;
 	u8 *ssid_ie;
-	char ssid[NDIS_802_11_LENGTH_SSID + 1];
+	char ssid[IEEE80211_MAX_SSID_LEN + 1];
 	int ssid_len;
 	u8 ignore_broadcast_ssid;
 
@@ -3288,23 +3291,25 @@ static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param,
 		struct wlan_bssid_ex *pbss_network_ext = &mlmeinfo->network;
 
 		memcpy(ssid, ssid_ie+2, ssid_len);
-		ssid[ssid_len>NDIS_802_11_LENGTH_SSID?NDIS_802_11_LENGTH_SSID:ssid_len] = 0x0;
+		ssid[ssid_len>IEEE80211_MAX_SSID_LEN?IEEE80211_MAX_SSID_LEN:ssid_len] = 0x0;
 
 		if(0)
 		DBG_8723A(FUNC_ADPT_FMT" ssid:(%s,%d), from ie:(%s,%d), (%s,%d)\n", FUNC_ADPT_ARG(adapter),
 			ssid, ssid_len,
-			pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength,
-			pbss_network_ext->Ssid.Ssid, pbss_network_ext->Ssid.SsidLength);
+			pbss_network->Ssid.ssid, pbss_network->Ssid.ssid_len,
+			pbss_network_ext->Ssid.ssid, pbss_network_ext->Ssid.ssid_len);
 
-		memcpy(pbss_network->Ssid.Ssid, (void *)ssid, ssid_len);
-		pbss_network->Ssid.SsidLength = ssid_len;
-		memcpy(pbss_network_ext->Ssid.Ssid, (void *)ssid, ssid_len);
-		pbss_network_ext->Ssid.SsidLength = ssid_len;
+		memcpy(pbss_network->Ssid.ssid, (void *)ssid, ssid_len);
+		pbss_network->Ssid.ssid_len = ssid_len;
+		memcpy(pbss_network_ext->Ssid.ssid, (void *)ssid, ssid_len);
+		pbss_network_ext->Ssid.ssid_len = ssid_len;
 
 		if(0)
-		DBG_8723A(FUNC_ADPT_FMT" after ssid:(%s,%d), (%s,%d)\n", FUNC_ADPT_ARG(adapter),
-			pbss_network->Ssid.Ssid, pbss_network->Ssid.SsidLength,
-			pbss_network_ext->Ssid.Ssid, pbss_network_ext->Ssid.SsidLength);
+		DBG_8723A(FUNC_ADPT_FMT" after ssid:(%s,%d), (%s,%d)\n",
+			  FUNC_ADPT_ARG(adapter), pbss_network->Ssid.ssid,
+			  pbss_network->Ssid.ssid_len,
+			  pbss_network_ext->Ssid.ssid,
+			  pbss_network_ext->Ssid.ssid_len);
 	}
 
 	DBG_8723A(FUNC_ADPT_FMT" ignore_broadcast_ssid:%d, %s,%d\n", FUNC_ADPT_ARG(adapter),
