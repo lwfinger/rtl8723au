@@ -50,8 +50,6 @@
  * HAL  Related Config
  */
 
-#define SUPPORTED_BLOCK_IO
-
 #define CONFIG_OUT_EP_WIFI_MODE	0
 
 #define ENABLE_USB_DROP_INCORRECT_OUT	0
