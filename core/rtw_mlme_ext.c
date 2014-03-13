@@ -9661,19 +9661,18 @@ static int rtw_scan_ch_decision(struct rtw_adapter *padapter, struct rtw_ieee802
 
 u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 {
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct sitesurvey_parm	*pparm = (struct sitesurvey_parm *)pbuf;
-	u8	bdelayscan = false;
-	u8	val8;
-	u32	initialgain;
-	u32	i;
+	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+	struct sitesurvey_parm *pparm = (struct sitesurvey_parm *)pbuf;
+	u8 bdelayscan = false;
+	u8 val8;
+	u32 initialgain;
+	u32 i;
 
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
 #endif
 
-	if (pmlmeext->sitesurvey_res.state == SCAN_DISABLE)
-	{
+	if (pmlmeext->sitesurvey_res.state == SCAN_DISABLE) {
 		/* for first time sitesurvey_cmd */
 		rtw_hal_set_hwreg(padapter, HW_VAR_CHECK_TXBUF, NULL);
 
@@ -9681,7 +9680,7 @@ u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 		pmlmeext->sitesurvey_res.bss_cnt = 0;
 		pmlmeext->sitesurvey_res.channel_idx = 0;
 
-		for(i=0;i<RTW_SSID_SCAN_AMOUNT;i++){
+		for (i = 0; i < RTW_SSID_SCAN_AMOUNT; i++) {
 			if(pparm->ssid[i].ssid_len) {
 				memcpy(pmlmeext->sitesurvey_res.ssid[i].ssid,
 				       pparm->ssid[i].ssid, IW_ESSID_MAX_SIZE);
@@ -9692,54 +9691,57 @@ u8 sitesurvey_cmd_hdl(struct rtw_adapter *padapter, u8 *pbuf)
 			}
 		}
 
-		pmlmeext->sitesurvey_res.ch_num = rtw_scan_ch_decision(padapter
-			, pmlmeext->sitesurvey_res.ch, RTW_CHANNEL_SCAN_AMOUNT
-			, pparm->ch, pparm->ch_num
-		);
+		pmlmeext->sitesurvey_res.ch_num =
+			rtw_scan_ch_decision(padapter,
+					     pmlmeext->sitesurvey_res.ch,
+					     RTW_CHANNEL_SCAN_AMOUNT,
+					     pparm->ch, pparm->ch_num);
 
 		pmlmeext->sitesurvey_res.scan_mode = pparm->scan_mode;
 
 		/* issue null data if associating to the AP */
-		if (is_client_associated_to_ap(padapter) == true)
-		{
+		if (is_client_associated_to_ap(padapter)) {
 			pmlmeext->sitesurvey_res.state = SCAN_TXNULL;
 
-			/* switch to correct channel of current network  before issue keep-alive frames */
-			if (rtw_get_oper_ch(padapter) != pmlmeext->cur_channel) {
+			/* switch to correct channel of current network
+			   before issue keep-alive frames */
+			if (rtw_get_oper_ch(padapter) != pmlmeext->cur_channel)
 				SelectChannel(padapter, pmlmeext->cur_channel);
-			}
 
 			issue_nulldata(padapter, NULL, 1, 3, 500);
 
 			bdelayscan = true;
 		}
-		if(bdelayscan)
-		{
+
+		if (bdelayscan) {
 			/* delay 50ms to protect nulldata(1). */
 			set_survey_timer(pmlmeext, 50);
 			return H2C_SUCCESS;
 		}
 	}
 
-	if ((pmlmeext->sitesurvey_res.state == SCAN_START) || (pmlmeext->sitesurvey_res.state == SCAN_TXNULL))
-	{
+	if ((pmlmeext->sitesurvey_res.state == SCAN_START) ||
+	    (pmlmeext->sitesurvey_res.state == SCAN_TXNULL)) {
 		/* disable dynamic functions, such as high power, DIG */
 		Save_DM_Func_Flag(padapter);
 		Switch_DM_Func(padapter, DYNAMIC_FUNC_DISABLE, false);
 
-		/* config the initial gain under scaning, need to write the BB registers */
+		/* config the initial gain under scaning, need to
+		   write the BB registers */
 		if ((wdev_to_priv(padapter->rtw_wdev))->p2p_enabled == true) {
 			initialgain = 0x30;
 		} else
 			initialgain = 0x1E;
 
-		rtw_hal_set_hwreg(padapter, HW_VAR_INITIAL_GAIN, (u8 *)(&initialgain));
+		rtw_hal_set_hwreg(padapter, HW_VAR_INITIAL_GAIN,
+				  (u8 *)(&initialgain));
 
 		/* set MSR to no link state */
 		Set_MSR(padapter, _HW_STATE_NOLINK_);
 
 		val8 = 1; /* under site survey */
-		rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+		rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY,
+				  (u8 *)(&val8));
 
 		pmlmeext->sitesurvey_res.state = SCAN_PROCESS;
 	}
