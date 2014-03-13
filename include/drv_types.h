@@ -82,8 +82,6 @@ struct registry_priv
 {
 	u8	chip_version;
 	u8	rfintfs;
-	u8	lbkmode;
-	u8	hci;
 	struct ndis_802_11_ssid	ssid;
 	u8	network_mode;	/* infra, ad-hoc, auto */
 	u8	channel;/* ad-hoc support requirement */

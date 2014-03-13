@@ -34,7 +34,6 @@ MODULE_VERSION(DRIVERVERSION);
 /* module param defaults */
 static int rtw_chip_version = 0x00;
 static int rtw_rfintfs = HWPI;
-static int rtw_lbkmode = 0;/* RTL8712_AIR_TRX; */
 static int rtw_debug = 1;
 
 static int rtw_network_mode = Ndis802_11IBSS;/* Ndis802_11Infrastructure;infra, ad-hoc, auto */
@@ -128,7 +127,6 @@ module_param(rtw_initmac, charp, 0644);
 module_param(rtw_channel_plan, int, 0644);
 module_param(rtw_chip_version, int, 0644);
 module_param(rtw_rfintfs, int, 0644);
-module_param(rtw_lbkmode, int, 0644);
 module_param(rtw_network_mode, int, 0644);
 module_param(rtw_channel, int, 0644);
 module_param(rtw_wmm_enable, int, 0644);
@@ -571,8 +569,6 @@ _func_enter_;
 	GlobalDebugLevel = rtw_debug;
 	registry_par->chip_version = (u8)rtw_chip_version;
 	registry_par->rfintfs = (u8)rtw_rfintfs;
-	registry_par->lbkmode = (u8)rtw_lbkmode;
-	/* registry_par->hci = (u8)hci; */
 	registry_par->network_mode  = (u8)rtw_network_mode;
 
 	memcpy(registry_par->ssid.Ssid, "ANY", 3);
