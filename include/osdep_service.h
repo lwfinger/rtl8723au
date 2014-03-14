@@ -177,20 +177,6 @@ u32	rtw_ms_to_systime(u32 ms);
 s32	rtw_get_passing_time_ms(u32 start);
 s32	rtw_get_time_interval_ms(u32 start, u32 end);
 
-static inline void thread_enter(char *name)
-{
-#ifdef daemonize
-	daemonize("%s", name);
-#endif
-	allow_signal(SIGTERM);
-}
-
-static inline void flush_signals_thread(void)
-{
-	if (signal_pending (current))
-		flush_signals(current);
-}
-
 #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
 #define RND4(x)	(((x >> 2) + (((x & 3) == 0) ?  0: 1)) << 2)
 

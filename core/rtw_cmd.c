@@ -437,7 +437,10 @@ int rtw_cmd_thread(void *context)
 
 _func_enter_;
 
-	thread_enter("RTW_CMD_THREAD");
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0))
+	daemonize("%s", "RTW_CMD_THREAD");
+#endif
+	allow_signal(SIGTERM);
 
 	pcmdbuf = pcmdpriv->cmd_buf;
 	prspbuf = pcmdpriv->rsp_buf;
@@ -518,7 +521,8 @@ post_process:
 			rtw_free_cmd_obj(pcmd);
 		}
 
-		flush_signals_thread();
+		if (signal_pending (current))
+			flush_signals(current);
 
 		goto _next;
 
