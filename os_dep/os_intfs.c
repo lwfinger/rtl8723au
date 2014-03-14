@@ -1260,9 +1260,9 @@ int _netdev_open(struct net_device *pnetdev)
 	/* netif_carrier_on(pnetdev);call this func when
 	   rtw_joinbss_event_callback return success */
 	if (!rtw_netif_queue_stopped(pnetdev))
-		rtw_netif_start_queue(pnetdev);
+		netif_tx_start_all_queues(pnetdev);
 	else
-		rtw_netif_wake_queue(pnetdev);
+		netif_tx_wake_all_queues(pnetdev);
 
 netdev_open_normal_process:
 
@@ -1276,7 +1276,7 @@ netdev_open_error:
 	padapter->bup = false;
 
 	netif_carrier_off(pnetdev);
-	rtw_netif_stop_queue(pnetdev);
+	netif_tx_stop_all_queues(pnetdev);
 
 	RT_TRACE(_module_os_intfs_c_,_drv_err_,
 		 ("-871x_drv - dev_open, fail!\n"));
@@ -1418,7 +1418,7 @@ static int netdev_close(struct net_device *pnetdev)
 		/* s1. */
 		if (pnetdev) {
 			if (!rtw_netif_queue_stopped(pnetdev))
-				rtw_netif_stop_queue(pnetdev);
+				netif_tx_stop_all_queues(pnetdev);
 		}
 
 		/* s2. */

@@ -415,10 +415,9 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 		pwrpriv->bips_processing = true;
 		/* padapter->net_closed = true; */
 		/* s1. */
-		if(pnetdev)
-		{
+		if (pnetdev) {
 			netif_carrier_off(pnetdev);
-			rtw_netif_stop_queue(pnetdev);
+			netif_tx_stop_all_queues(pnetdev);
 		}
 
 		/* s2. */
@@ -489,10 +488,10 @@ int rtw_hw_resume(struct rtw_adapter *padapter)
 		netif_device_attach(pnetdev);
 		netif_carrier_on(pnetdev);
 
-		if(!rtw_netif_queue_stopped(pnetdev))
-			rtw_netif_start_queue(pnetdev);
+		if (!rtw_netif_queue_stopped(pnetdev))
+			netif_tx_start_all_queues(pnetdev);
 		else
-			rtw_netif_wake_queue(pnetdev);
+			netif_tx_wake_all_queues(pnetdev);
 
 		pwrpriv->bkeepfwalive = false;
 		pwrpriv->brfoffbyhw = false;
@@ -544,10 +543,9 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	down(&pwrpriv->lock);
 	/* padapter->net_closed = true; */
 	/* s1. */
-	if(pnetdev)
-	{
+	if (pnetdev) {
 		netif_carrier_off(pnetdev);
-		rtw_netif_stop_queue(pnetdev);
+		netif_tx_stop_all_queues(pnetdev);
 	}
 
 	/* s2. */

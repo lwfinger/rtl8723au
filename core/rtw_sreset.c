@@ -201,7 +201,7 @@ static void sreset_stop_adapter(struct rtw_adapter *padapter)
 	DBG_8723A(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
 
 	if (!rtw_netif_queue_stopped(padapter->pnetdev))
-		rtw_netif_stop_queue(padapter->pnetdev);
+		netif_tx_stop_all_queues(padapter->pnetdev);
 
 	rtw_cancel_all_timer(padapter);
 
@@ -236,7 +236,7 @@ static void sreset_start_adapter(struct rtw_adapter *padapter)
 		  jiffies + msecs_to_jiffies(2000));
 
 	if (rtw_netif_queue_stopped(padapter->pnetdev))
-		rtw_netif_wake_queue(padapter->pnetdev);
+		netif_tx_wake_all_queues(padapter->pnetdev);
 }
 
 void sreset_reset(struct rtw_adapter *padapter)
