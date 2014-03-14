@@ -27,9 +27,9 @@
 /* if mode ==0, then the sta is allowed once the addr is hit. */
 /* if mode ==1, then the sta is rejected once the addr is non-hit. */
 struct rtw_wlan_acl_node {
-        struct list_head		        list;
-        u8       addr[ETH_ALEN];
-        u8       valid;
+	struct list_head	list;
+	u8       addr[ETH_ALEN];
+	u8       valid;
 };
 
 /* mode=0, disable */
@@ -313,7 +313,7 @@ struct sta_info {
 #define STA_RX_PKTS_DIFF_ARG(sta) \
 	sta->sta_stats.rx_mgnt_pkts - sta->sta_stats.last_rx_mgnt_pkts, \
 	sta->sta_stats.rx_ctrl_pkts - sta->sta_stats.last_rx_ctrl_pkts, \
-	sta->sta_stats.rx_data_pkts -sta->sta_stats.last_rx_data_pkts
+	sta->sta_stats.rx_data_pkts - sta->sta_stats.last_rx_data_pkts
 
 #define STA_PKTS_FMT "(m:%llu, c:%llu, d:%llu)"
 
@@ -349,7 +349,7 @@ struct	sta_priv {
 	 */
 	struct sta_info *sta_aid[NUM_STA];
 
-	u16 sta_dz_bitmap;/* only support 15 stations, staion aid bitmap 
+	u16 sta_dz_bitmap;/* only support 15 stations, staion aid bitmap
 			   * for sleeping sta. */
 	u16 tim_bitmap;/* only support 15 stations,
 			* aid=0~15 mapping bit0~bit15 */

@@ -60,7 +60,7 @@ static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
 	int ret = false;
 	int value;
 
-	value=atomic_inc_return(&dvobj->continual_urb_error);
+	value = atomic_inc_return(&dvobj->continual_urb_error);
 	if (value > MAX_CONTINUAL_URB_ERR) {
 		DBG_8723A("[dvobj:%p][ERROR] continual_urb_error:%d > %d\n",
 			  dvobj, value, MAX_CONTINUAL_URB_ERR);
@@ -84,7 +84,7 @@ static inline u8 rtw_usb_bulk_size_boundary(struct rtw_adapter *padapter,
 	u8 rst = true;
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
 
-	if (pdvobjpriv->ishighspeed == true)
+	if (pdvobjpriv->ishighspeed)
 		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE) ?
 		      true : false;
 	else

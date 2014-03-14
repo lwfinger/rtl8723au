@@ -41,39 +41,38 @@ enum WIFI_FRAME_TYPE {
 };
 
 enum WIFI_FRAME_SUBTYPE {
+	/*  below is for mgt frame */
+	WIFI_ASSOCREQ = (0 | WIFI_MGT_TYPE),
+	WIFI_ASSOCRSP = (BIT(4) | WIFI_MGT_TYPE),
+	WIFI_REASSOCREQ = (BIT(5) | WIFI_MGT_TYPE),
+	WIFI_REASSOCRSP = (BIT(5) | BIT(4) | WIFI_MGT_TYPE),
+	WIFI_PROBEREQ = (BIT(6) | WIFI_MGT_TYPE),
+	WIFI_PROBERSP = (BIT(6) | BIT(4) | WIFI_MGT_TYPE),
+	WIFI_BEACON = (BIT(7) | WIFI_MGT_TYPE),
+	WIFI_ATIM = (BIT(7) | BIT(4) | WIFI_MGT_TYPE),
+	WIFI_DISASSOC = (BIT(7) | BIT(5) | WIFI_MGT_TYPE),
+	WIFI_AUTH = (BIT(7) | BIT(5) | BIT(4) | WIFI_MGT_TYPE),
+	WIFI_DEAUTH = (BIT(7) | BIT(6) | WIFI_MGT_TYPE),
+	WIFI_ACTION = (BIT(7) | BIT(6) | BIT(4) | WIFI_MGT_TYPE),
 
-    /*  below is for mgt frame */
-    WIFI_ASSOCREQ       = (0 | WIFI_MGT_TYPE),
-    WIFI_ASSOCRSP       = (BIT(4) | WIFI_MGT_TYPE),
-    WIFI_REASSOCREQ     = (BIT(5) | WIFI_MGT_TYPE),
-    WIFI_REASSOCRSP     = (BIT(5) | BIT(4) | WIFI_MGT_TYPE),
-    WIFI_PROBEREQ       = (BIT(6) | WIFI_MGT_TYPE),
-    WIFI_PROBERSP       = (BIT(6) | BIT(4) | WIFI_MGT_TYPE),
-    WIFI_BEACON         = (BIT(7) | WIFI_MGT_TYPE),
-    WIFI_ATIM           = (BIT(7) | BIT(4) | WIFI_MGT_TYPE),
-    WIFI_DISASSOC       = (BIT(7) | BIT(5) | WIFI_MGT_TYPE),
-    WIFI_AUTH           = (BIT(7) | BIT(5) | BIT(4) | WIFI_MGT_TYPE),
-    WIFI_DEAUTH         = (BIT(7) | BIT(6) | WIFI_MGT_TYPE),
-    WIFI_ACTION         = (BIT(7) | BIT(6) | BIT(4) | WIFI_MGT_TYPE),
+	/*  below is for control frame */
+	WIFI_PSPOLL = (BIT(7) | BIT(5) | WIFI_CTRL_TYPE),
+	WIFI_RTS = (BIT(7) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
+	WIFI_CTS = (BIT(7) | BIT(6) | WIFI_CTRL_TYPE),
+	WIFI_ACK = (BIT(7) | BIT(6) | BIT(4) | WIFI_CTRL_TYPE),
+	WIFI_CFEND = (BIT(7) | BIT(6) | BIT(5) | WIFI_CTRL_TYPE),
+	WIFI_CFEND_CFACK = (BIT(7) | BIT(6) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
 
-    /*  below is for control frame */
-    WIFI_PSPOLL         = (BIT(7) | BIT(5) | WIFI_CTRL_TYPE),
-    WIFI_RTS            = (BIT(7) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
-    WIFI_CTS            = (BIT(7) | BIT(6) | WIFI_CTRL_TYPE),
-    WIFI_ACK            = (BIT(7) | BIT(6) | BIT(4) | WIFI_CTRL_TYPE),
-    WIFI_CFEND          = (BIT(7) | BIT(6) | BIT(5) | WIFI_CTRL_TYPE),
-    WIFI_CFEND_CFACK    = (BIT(7) | BIT(6) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
-
-    /*  below is for data frame */
-    WIFI_DATA           = (0 | WIFI_DATA_TYPE),
-    WIFI_DATA_CFACK     = (BIT(4) | WIFI_DATA_TYPE),
-    WIFI_DATA_CFPOLL    = (BIT(5) | WIFI_DATA_TYPE),
-    WIFI_DATA_CFACKPOLL = (BIT(5) | BIT(4) | WIFI_DATA_TYPE),
-    WIFI_DATA_NULL      = (BIT(6) | WIFI_DATA_TYPE),
-    WIFI_CF_ACK         = (BIT(6) | BIT(4) | WIFI_DATA_TYPE),
-    WIFI_CF_POLL        = (BIT(6) | BIT(5) | WIFI_DATA_TYPE),
-    WIFI_CF_ACKPOLL     = (BIT(6) | BIT(5) | BIT(4) | WIFI_DATA_TYPE),
-    WIFI_QOS_DATA_NULL	= (BIT(6) | WIFI_QOS_DATA_TYPE),
+	/*  below is for data frame */
+	WIFI_DATA = (0 | WIFI_DATA_TYPE),
+	WIFI_DATA_CFACK = (BIT(4) | WIFI_DATA_TYPE),
+	WIFI_DATA_CFPOLL = (BIT(5) | WIFI_DATA_TYPE),
+	WIFI_DATA_CFACKPOLL = (BIT(5) | BIT(4) | WIFI_DATA_TYPE),
+	WIFI_DATA_NULL = (BIT(6) | WIFI_DATA_TYPE),
+	WIFI_CF_ACK = (BIT(6) | BIT(4) | WIFI_DATA_TYPE),
+	WIFI_CF_POLL = (BIT(6) | BIT(5) | WIFI_DATA_TYPE),
+	WIFI_CF_ACKPOLL = (BIT(6) | BIT(5) | BIT(4) | WIFI_DATA_TYPE),
+	WIFI_QOS_DATA_NULL = (BIT(6) | WIFI_QOS_DATA_TYPE),
 };
 
 
@@ -132,19 +131,19 @@ enum WIFI_REG_DOMAIN {
 #define GetFrameType(pbuf)				\
 	(le16_to_cpu(*(unsigned short *)(pbuf)) & (BIT(3) | BIT(2)))
 
-#define SetFrameType(pbuf,type)	\
+#define SetFrameType(pbuf, type)	\
 	do {	\
 		*(unsigned short *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | BIT(2))); \
 		*(unsigned short *)(pbuf) |= __constant_cpu_to_le16(type); \
-	} while(0)
+	} while (0)
 
 #define GetFrameSubType(pbuf)	(cpu_to_le16(*(unsigned short *)(pbuf)) & (BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | BIT(2)))
 
-#define SetFrameSubType(pbuf,type) \
+#define SetFrameSubType(pbuf, type) \
 	do {    \
 		*(unsigned short *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
 		*(unsigned short *)(pbuf) |= cpu_to_le16(type); \
-	} while(0)
+	} while (0)
 
 #define GetTupleCache(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 22)))
 
@@ -153,14 +152,14 @@ enum WIFI_REG_DOMAIN {
 		*(unsigned short *)((unsigned long)(pbuf) + 22) = \
 			((*(unsigned short *)((unsigned long)(pbuf) + 22)) & le16_to_cpu(~(0x000f))) | \
 			cpu_to_le16(0x0f & (num));     \
-	} while(0)
+	} while (0)
 
 #define SetSeqNum(pbuf, num) \
 	do {    \
 		*(unsigned short *)((unsigned long)(pbuf) + 22) = \
 			((*(unsigned short *)((unsigned long)(pbuf) + 22)) & le16_to_cpu((unsigned short)0x000f)) | \
 			le16_to_cpu((unsigned short)(0xfff0 & (num << 4))); \
-	} while(0)
+	} while (0)
 
 #define SetDuration(pbuf, dur) \
 	(*(unsigned short *)((unsigned long)(pbuf) + 2) =		\
@@ -170,13 +169,13 @@ enum WIFI_REG_DOMAIN {
 	(*(unsigned short *)(pbuf) |= cpu_to_le16(tid & 0xf))
 
 #define SetEOSP(pbuf, eosp)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16( (eosp & 1) << 4))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16((eosp & 1) << 4))
 
 #define SetAckpolicy(pbuf, ack)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16( (ack & 3) << 5))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16((ack & 3) << 5))
 
 #define SetAMsdu(pbuf, amsdu)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16( (amsdu & 1) << 7))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16((amsdu & 1) << 7))
 
 #define GetAid(pbuf)							\
 	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 2)) &	\
@@ -187,7 +186,7 @@ enum WIFI_REG_DOMAIN {
 	 (((ieee80211_has_tods(pbuf)<<1) |				\
 	 ieee80211_has_fromds(pbuf)) == 3 ? 30 : 24))) & 0x000f)
 
-static inline unsigned char * get_hdr_bssid(unsigned char *pframe)
+static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 {
 	unsigned char	*sa;
 	unsigned int	to_fr_ds;

@@ -138,21 +138,20 @@ static u8 BT_Operation(struct rtw_adapter *padapter)
 
 static u8 BT_IsLegalChannel(struct rtw_adapter *padapter, u8 channel)
 {
-	PRT_CHANNEL_INFO pChanneList = NULL;
+	struct rt_channel_info *pChanneList = NULL;
 	u8 channelLen, i;
 
 
 	pChanneList = padapter->mlmeextpriv.channel_set;
 	channelLen = padapter->mlmeextpriv.max_chan_nums;
 
-	for (i = 0; i < channelLen; i++)
-	{
-		RTPRINT(FIOCTL, IOCTL_STATE, ("Check if chnl(%d) in channel plan contains bt target chnl(%d) for BT connection\n", pChanneList[i].ChannelNum, channel));
+	for (i = 0; i < channelLen; i++) {
+		RTPRINT(FIOCTL, IOCTL_STATE,
+			("Check if chnl(%d) in channel plan contains bt target chnl(%d) for BT connection\n",
+			 pChanneList[i].ChannelNum, channel));
 		if ((channel == pChanneList[i].ChannelNum) ||
-			(channel == pChanneList[i].ChannelNum + 2))
-		{
+		    (channel == pChanneList[i].ChannelNum + 2))
 			return channel;
-		}
 	}
 	return 0;
 }

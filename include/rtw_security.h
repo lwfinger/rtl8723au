@@ -182,12 +182,12 @@ do {\
 		encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
 		break;\
 	case dot11AuthAlgrthm_8021X:\
-		if(bmcst)\
+		if (bmcst)\
 			encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
 		else\
 			encry_algo = (u8)psta->dot118021XPrivacy;\
 		break;\
-	}\
+	}	\
 } while (0)
 
 #define GET_TKIP_PN(iv, dot11txpn)\
@@ -201,7 +201,7 @@ do {\
 } while (0)
 
 #define ROL32(A, n)  (((A) << (n)) | (((A)>>(32-(n)))  & ((1UL << (n)) - 1)))
-#define ROR32(A, n)  ROL32( (A), 32-(n))
+#define ROR32(A, n)  ROL32((A), 32-(n))
 
 struct mic_data {
 	u32  K0, K1;         /*  Key */
