@@ -71,5 +71,3 @@
 #define DBG	1
 
 #define CONFIG_DEBUG /* DBG_8723A, etc... */
-
-#define CONFIG_PROC_DEBUG
