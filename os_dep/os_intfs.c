@@ -63,11 +63,6 @@ static int rtw_acm_method;/*  0:By SW 1:By HW. */
 
 static int rtw_wmm_enable = 1;/*  default is set to enable the wmm. */
 static int rtw_uapsd_enable;
-static int rtw_uapsd_max_sp = NO_LIMIT;
-static int rtw_uapsd_acbk_en;
-static int rtw_uapsd_acbe_en;
-static int rtw_uapsd_acvi_en;
-static int rtw_uapsd_acvo_en;
 
 int rtw_ht_enable = 1;
 int rtw_cbw40_enable = 3; /*  0 :diable, bit(0): enable 2.4g, bit(1): enable 5g */
@@ -593,11 +588,6 @@ _func_enter_;
 	 /* UAPSD */
 	registry_par->wmm_enable = (u8)rtw_wmm_enable;
 	registry_par->uapsd_enable = (u8)rtw_uapsd_enable;
-	registry_par->uapsd_max_sp = (u8)rtw_uapsd_max_sp;
-	registry_par->uapsd_acbk_en = (u8)rtw_uapsd_acbk_en;
-	registry_par->uapsd_acbe_en = (u8)rtw_uapsd_acbe_en;
-	registry_par->uapsd_acvi_en = (u8)rtw_uapsd_acvi_en;
-	registry_par->uapsd_acvo_en = (u8)rtw_uapsd_acvo_en;
 
 	registry_par->ht_enable = (u8)rtw_ht_enable;
 	registry_par->cbw40_enable = (u8)rtw_cbw40_enable;

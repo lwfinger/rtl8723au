@@ -208,20 +208,6 @@ enum VCS_TYPE {
 	CTS_TO_SELF
 };
 
-#define PWR_CAM 0
-#define PWR_MINPS 1
-#define PWR_MAXPS 2
-#define PWR_UAPSD 3
-#define PWR_VOIP 4
-
-enum UAPSD_MAX_SP {
-	NO_LIMIT,
-	TWO_MSDU,
-	FOUR_MSDU,
-	SIX_MSDU
-};
-
-
 /* john */
 #define NUM_PRE_AUTH_KEY 16
 #define NUM_PMKID_CACHE NUM_PRE_AUTH_KEY

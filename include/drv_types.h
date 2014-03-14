@@ -106,11 +106,6 @@ struct registry_priv
 	  /* UAPSD */
 	u8	wmm_enable;
 	u8	uapsd_enable;
-	u8	uapsd_max_sp;
-	u8	uapsd_acbk_en;
-	u8	uapsd_acbe_en;
-	u8	uapsd_acvi_en;
-	u8	uapsd_acvo_en;
 
 	struct wlan_bssid_ex    dev_network;
 
