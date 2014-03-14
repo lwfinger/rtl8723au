@@ -17,12 +17,8 @@
  * Public  General Config
  */
 
-#define AUTOCONF_INCLUDED
-
 #define RTL871X_MODULE_NAME "8723AS-VAU"
 #define DRV_NAME "rtl8723as-vau"
-
-#define PLATFORM_LINUX
 
 /*
  * Functions Config
