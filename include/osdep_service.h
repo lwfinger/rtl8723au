@@ -70,9 +70,6 @@ struct	__queue	{
 
 typedef struct	__queue	_queue;
 
-typedef void timer_hdl_return;
-typedef void* timer_hdl_context;
-
 static inline struct list_head	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));
