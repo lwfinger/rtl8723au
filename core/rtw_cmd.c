@@ -2381,48 +2381,51 @@ u8 rtw_drvextra_cmd_hdl(struct rtw_adapter *padapter, unsigned char *pbuf)
 {
 	struct drvextra_cmd_parm *pdrvextra_cmd;
 
-	if(!pbuf)
+	if (!pbuf)
 		return H2C_PARAMETERS_ERROR;
 
 	pdrvextra_cmd = (struct drvextra_cmd_parm *)pbuf;
 
 	switch(pdrvextra_cmd->ec_id)
 	{
-		case DYNAMIC_CHK_WK_CID:
-			dynamic_chk_wk_hdl(padapter, pdrvextra_cmd->pbuf, pdrvextra_cmd->type_size);
-			break;
-		case POWER_SAVING_CTRL_WK_CID:
-			power_saving_wk_hdl(padapter, pdrvextra_cmd->pbuf, pdrvextra_cmd->type_size);
-			break;
-		case LPS_CTRL_WK_CID:
-			lps_ctrl_wk_hdl(padapter, (u8)pdrvextra_cmd->type_size);
-			break;
+	case DYNAMIC_CHK_WK_CID:
+		dynamic_chk_wk_hdl(padapter, pdrvextra_cmd->pbuf,
+				   pdrvextra_cmd->type_size);
+		break;
+	case POWER_SAVING_CTRL_WK_CID:
+		power_saving_wk_hdl(padapter, pdrvextra_cmd->pbuf,
+				    pdrvextra_cmd->type_size);
+		break;
+	case LPS_CTRL_WK_CID:
+		lps_ctrl_wk_hdl(padapter, (u8)pdrvextra_cmd->type_size);
+		break;
 #if (RATE_ADAPTIVE_SUPPORT==1)
-		case RTP_TIMER_CFG_WK_CID:
-			rpt_timer_setting_wk_hdl(padapter, pdrvextra_cmd->type_size);
-			break;
+	case RTP_TIMER_CFG_WK_CID:
+		rpt_timer_setting_wk_hdl(padapter, pdrvextra_cmd->type_size);
+		break;
 #endif
 #ifdef CONFIG_8723AU_P2P
-		case P2P_PS_WK_CID:
-			p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
-			break;
+	case P2P_PS_WK_CID:
+		p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type_size);
+		break;
 #endif /*  CONFIG_8723AU_P2P */
-		case P2P_PROTO_WK_CID:
-			/*	Commented by Albert 2011/07/01 */
-			/*	I used the type_size as the type command */
-			p2p_protocol_wk_hdl( padapter, pdrvextra_cmd->type_size );
-			break;
+	case P2P_PROTO_WK_CID:
+		/*	Commented by Albert 2011/07/01 */
+		/*	I used the type_size as the type command */
+		p2p_protocol_wk_hdl( padapter, pdrvextra_cmd->type_size );
+		break;
 #ifdef CONFIG_8723AU_AP_MODE
-		case CHECK_HIQ_WK_CID:
-			rtw_chk_hi_queue_hdl(padapter);
-			break;
+	case CHECK_HIQ_WK_CID:
+		rtw_chk_hi_queue_hdl(padapter);
+		break;
 #endif /* CONFIG_8723AU_AP_MODE */
-		case C2H_WK_CID:
-			c2h_evt_hdl(padapter, (struct c2h_evt_hdr *)pdrvextra_cmd->pbuf, NULL);
-			break;
+	case C2H_WK_CID:
+		c2h_evt_hdl(padapter,
+			    (struct c2h_evt_hdr *)pdrvextra_cmd->pbuf, NULL);
+		break;
 
-		default:
-			break;
+	default:
+		break;
 	}
 
 	if (pdrvextra_cmd->pbuf && pdrvextra_cmd->type_size > 0) {
