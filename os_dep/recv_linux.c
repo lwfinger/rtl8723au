@@ -25,15 +25,6 @@
 
 #include <usb_ops.h>
 
-/* init os related resource in struct recv_priv */
-int rtw_os_recv_resource_init(struct recv_priv *precvpriv,
-			      struct rtw_adapter *padapter)
-{
-	int res = _SUCCESS;
-
-	return res;
-}
-
 /* alloc os related resource in struct recv_frame */
 int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 			       struct recv_frame *precvframe)
@@ -43,12 +34,6 @@ int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 	precvframe->pkt = NULL;
 
 	return res;
-}
-
-/* free os related resource in struct recv_frame */
-void rtw_os_recv_resource_free(struct recv_priv *precvpriv)
-{
-
 }
 
 

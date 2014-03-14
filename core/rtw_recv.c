@@ -64,8 +64,6 @@ _func_enter_;
 
 	precvpriv->free_recvframe_cnt = NR_RECVFRAME;
 
-	rtw_os_recv_resource_init(precvpriv, padapter);
-
 	precvpriv->pallocated_frame_buf =
 		rtw_zvmalloc(NR_RECVFRAME * sizeof(struct recv_frame));
 
@@ -115,8 +113,6 @@ void _rtw_free_recv_priv (struct recv_priv *precvpriv)
 _func_enter_;
 
 	rtw_free_uc_swdec_pending_queue(padapter);
-
-	rtw_os_recv_resource_free(precvpriv);
 
 	if (precvpriv->pallocated_frame_buf) {
 		rtw_vmfree(precvpriv->pallocated_frame_buf,
