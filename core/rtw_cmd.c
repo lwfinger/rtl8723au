@@ -2480,43 +2480,40 @@ exit:
 _func_exit_;
 }
 
-void rtw_joinbss_cmd_callback(struct rtw_adapter*	padapter,  struct cmd_obj *pcmd)
+void rtw_joinbss_cmd_callback(struct rtw_adapter *padapter,
+			      struct cmd_obj *pcmd)
 {
-	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-_func_enter_;
-
-	if(pcmd->res == H2C_DROPPED)
-	{
+	if (pcmd->res == H2C_DROPPED) {
 		/* TODO: cancel timer and do timeout handler directly... */
 		/* need to make timeout handlerOS independent */
 		mod_timer(&pmlmepriv->assoc_timer,
 			  jiffies + msecs_to_jiffies(1));
-	}
-	else if(pcmd->res != H2C_SUCCESS)
-	{
-		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("********Error:rtw_select_and_join_from_scanned_queue Wait Sema  Fail ************\n"));
+	} else if (pcmd->res != H2C_SUCCESS) {
+		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+			 ("********Error:rtw_select_and_join_from_scanned_"
+			  "queue Wait Sema  Fail ************\n"));
 		mod_timer(&pmlmepriv->assoc_timer,
 			  jiffies + msecs_to_jiffies(1));
 	}
 
 	rtw_free_cmd_obj(pcmd);
-
-_func_exit_;
 }
 
-void rtw_createbss_cmd_callback(struct rtw_adapter *padapter, struct cmd_obj *pcmd)
+void rtw_createbss_cmd_callback(struct rtw_adapter *padapter,
+				struct cmd_obj *pcmd)
 {
-	struct sta_info *psta = NULL;
-	struct wlan_network *pwlan = NULL;
-	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct sta_info *psta;
+	struct wlan_network *pwlan;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct wlan_bssid_ex *pnetwork = (struct wlan_bssid_ex *)pcmd->parmbuf;
-	struct wlan_network *tgt_network = &(pmlmepriv->cur_network);
+	struct wlan_network *tgt_network = &pmlmepriv->cur_network;
 
-_func_enter_;
-
-	if ((pcmd->res != H2C_SUCCESS)) {
-		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n ********Error: rtw_createbss_cmd_callback  Fail ************\n\n."));
+	if (pcmd->res != H2C_SUCCESS) {
+		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+			 ("\n ********Error: rtw_createbss_cmd_callback  "
+			  "Fail ************\n\n."));
 		mod_timer(&pmlmepriv->assoc_timer,
 			  jiffies + msecs_to_jiffies(1));
 	}
@@ -2525,53 +2522,58 @@ _func_enter_;
 
 	spin_lock_bh(&pmlmepriv->lock);
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) ) {
-		psta = rtw_get_stainfo(&padapter->stapriv, pnetwork->MacAddress);
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+		psta = rtw_get_stainfo(&padapter->stapriv,
+				       pnetwork->MacAddress);
 		if (!psta) {
-			psta = rtw_alloc_stainfo(&padapter->stapriv, pnetwork->MacAddress);
-			if (psta == NULL) {
-				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\nCan't alloc sta_info when createbss_cmd_callback\n"));
+			psta = rtw_alloc_stainfo(&padapter->stapriv,
+						 pnetwork->MacAddress);
+			if (!psta) {
+				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+					 ("\nCan't alloc sta_info when "
+					  "createbss_cmd_callback\n"));
 				goto createbss_cmd_fail ;
 			}
 		}
 
-		rtw_indicate_connect( padapter);
+		rtw_indicate_connect(padapter);
 	} else {
-
 		pwlan = rtw_alloc_network(pmlmepriv);
-		spin_lock_bh(&(pmlmepriv->scanned_queue.lock));
-		if ( pwlan == NULL)
-		{
+		spin_lock_bh(&pmlmepriv->scanned_queue.lock);
+		if (!pwlan) {
 			pwlan = rtw_get_oldest_wlan_network(&pmlmepriv->scanned_queue);
-			if( pwlan == NULL)
-			{
-				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n Error:  can't get pwlan in rtw_joinbss_event_callback \n"));
-				spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
+			if (!pwlan) {
+				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,
+					 ("\n Error:  can't get pwlan in "
+					  "rtw_joinbss_event_callback \n"));
+				spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
 				goto createbss_cmd_fail;
 			}
 			pwlan->last_scanned = rtw_get_current_time();
-		}
-		else
-		{
-			list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue);
+		} else {
+			list_add_tail(&pwlan->list,
+				      &pmlmepriv->scanned_queue.queue);
 		}
 
 		pnetwork->Length = get_wlan_bssid_ex_sz(pnetwork);
-		memcpy(&(pwlan->network), pnetwork, pnetwork->Length);
+		memcpy(&pwlan->network, pnetwork, pnetwork->Length);
 		/* pwlan->fixed = true; */
 
-		/* list_add_tail(&(pwlan->list), &pmlmepriv->scanned_queue.queue); */
+		/* list_add_tail(&(pwlan->list),
+		   &pmlmepriv->scanned_queue.queue); */
 
-		/*  copy pdev_network information to	pmlmepriv->cur_network */
-		memcpy(&tgt_network->network, pnetwork, (get_wlan_bssid_ex_sz(pnetwork)));
+		/*  copy pdev_network information to
+		    pmlmepriv->cur_network */
+		memcpy(&tgt_network->network, pnetwork,
+		       get_wlan_bssid_ex_sz(pnetwork));
 
 		/*  reset DSConfig */
 
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
-		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
-		/*  we will set _FW_LINKED when there is one more sat to join us (rtw_stassoc_event_callback) */
-
+		spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
+		/*  we will set _FW_LINKED when there is one more sat to
+		    join us (rtw_stassoc_event_callback) */
 	}
 
 createbss_cmd_fail:
@@ -2579,8 +2581,6 @@ createbss_cmd_fail:
 	spin_unlock_bh(&pmlmepriv->lock);
 
 	rtw_free_cmd_obj(pcmd);
-
-_func_exit_;
 }
 
 void rtw_setstaKey_cmdrsp_callback(struct rtw_adapter*	padapter ,  struct cmd_obj *pcmd)
