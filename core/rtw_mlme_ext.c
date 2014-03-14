@@ -7851,18 +7851,18 @@ u8 collect_bss_info(struct rtw_adapter *padapter, struct recv_frame *precv_frame
 	memset(bssid, 0, sizeof(struct wlan_bssid_ex));
 
 	if (ieee80211_is_beacon(hdr->frame_control)) {
-		bssid->Reserved[0] = 1;
+		bssid->reserved = 1;
 		ie_offset = _BEACON_IE_OFFSET_;
 	} else {
 		/*  FIXME : more type */
 		if (ieee80211_is_probe_req(hdr->frame_control)) {
 			ie_offset = _PROBEREQ_IE_OFFSET_;
-			bssid->Reserved[0] = 2;
+			bssid->reserved = 2;
 		} else if (ieee80211_is_probe_resp(hdr->frame_control)) {
 			ie_offset = _PROBERSP_IE_OFFSET_;
-			bssid->Reserved[0] = 3;
+			bssid->reserved = 3;
 		} else {
-			bssid->Reserved[0] = 0;
+			bssid->reserved = 0;
 			ie_offset = _FIXED_IE_LENGTH_;
 		}
 	}

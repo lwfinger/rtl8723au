@@ -606,10 +606,10 @@ _func_enter_;
 
 		pnetwork->last_scanned = rtw_get_current_time();
 
-		/* target.Reserved[0]==1, means that scaned network is
+		/* target.reserved == 1, means that scanned network is
 		 * a bcn frame. */
 		if ((pnetwork->network.IELength>target->IELength) &&
-		    (target->Reserved[0] == 1))
+		    (target->reserved == 1))
 			update_ie = false;
 
 		update_network(&pnetwork->network, target,adapter, update_ie);

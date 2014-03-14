@@ -1149,7 +1149,7 @@ int rtw_check_bcn_info(struct rtw_adapter *Adapter, u8 *pframe, u32 packet_len)
 		GFP_ATOMIC);
 
 	if (ieee80211_is_beacon(hdr->frame_control))
-		bssid->Reserved[0] = 1;
+		bssid->reserved = 1;
 
 	bssid->Length = sizeof(struct wlan_bssid_ex) - MAX_IE_SZ + len;
 

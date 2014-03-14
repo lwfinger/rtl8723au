@@ -165,8 +165,8 @@ struct wlan_bcn_info {
 
 struct wlan_bssid_ex {
 	u32  Length;
-	unsigned char  MacAddress[6];
-	u8  Reserved[2];/* 0]: IS beacon frame */
+	unsigned char MacAddress[ETH_ALEN];
+	u16 reserved;
 	struct cfg80211_ssid Ssid;
 	u32  Privacy;
 	long  Rssi;/* in dBM, raw data , get from PHY) */

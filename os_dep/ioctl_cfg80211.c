@@ -345,7 +345,7 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 	SetSeqNum(pwlanhdr, 0/*pmlmeext->mgnt_seq*/);
 	/* pmlmeext->mgnt_seq++; */
 
-	if (pnetwork->network.Reserved[0] == 1) { /*  WIFI_BEACON */
+	if (pnetwork->network.reserved == 1) { /*  WIFI_BEACON */
 		memcpy(pwlanhdr->addr1, bc_addr, ETH_ALEN);
 		SetFrameSubType(pbuf, WIFI_BEACON);
 	} else {
