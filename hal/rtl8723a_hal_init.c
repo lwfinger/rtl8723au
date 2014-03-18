@@ -3254,8 +3254,7 @@ static void hw_var_set_opmode(struct rtw_adapter *padapter, u8 mode)
 	rtw_write8(padapter, MSR, val8);
 }
 
-static void hw_var_set_macaddr(struct rtw_adapter *padapter, u8 variable,
-			       u8 *val)
+static void hw_var_set_macaddr(struct rtw_adapter *padapter, u8 *val)
 {
 	u8 idx = 0;
 	u32 reg_macid;
@@ -3266,8 +3265,7 @@ static void hw_var_set_macaddr(struct rtw_adapter *padapter, u8 variable,
 		rtw_write8(padapter, (reg_macid + idx), val[idx]);
 }
 
-static void hw_var_set_bssid(struct rtw_adapter *padapter, u8 variable,
-			     u8 *val)
+static void hw_var_set_bssid(struct rtw_adapter *padapter, u8 *val)
 {
 	u8 idx = 0;
 	u32 reg_bssid;
@@ -3278,8 +3276,7 @@ static void hw_var_set_bssid(struct rtw_adapter *padapter, u8 variable,
 		rtw_write8(padapter, (reg_bssid + idx), val[idx]);
 }
 
-static void hw_var_set_correct_tsf(struct rtw_adapter *padapter, u8 variable,
-				   u8 *val)
+static void hw_var_set_correct_tsf(struct rtw_adapter *padapter, u8 *val)
 {
 	u64 tsf;
 	u32 reg_tsftr;
@@ -3316,8 +3313,7 @@ static void hw_var_set_correct_tsf(struct rtw_adapter *padapter, u8 variable,
 		ResumeTxBeacon(padapter);
 }
 
-static void hw_var_set_mlme_disconnect(struct rtw_adapter *padapter,
-				       u8 variable, u8 *val)
+static void hw_var_set_mlme_disconnect(struct rtw_adapter *padapter, u8 *val)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	/*  reject all data frames */
@@ -3330,8 +3326,7 @@ static void hw_var_set_mlme_disconnect(struct rtw_adapter *padapter,
 	SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
 }
 
-static void hw_var_set_mlme_join(struct rtw_adapter *padapter, u8 variable,
-				 u8 *val)
+static void hw_var_set_mlme_join(struct rtw_adapter *padapter, u8 *val)
 {
 	u8 RetryLimit = 0x30;
 	u8 type = *val;
@@ -3397,11 +3392,11 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_MAC_ADDR:
-		hw_var_set_macaddr(padapter, variable, val);
+		hw_var_set_macaddr(padapter, val);
 		break;
 
 	case HW_VAR_BSSID:
-		hw_var_set_bssid(padapter, variable, val);
+		hw_var_set_bssid(padapter, val);
 		break;
 
 	case HW_VAR_BASIC_RATE:
@@ -3422,7 +3417,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_CORRECT_TSF:
-		hw_var_set_correct_tsf(padapter, variable, val);
+		hw_var_set_correct_tsf(padapter, val);
 		break;
 
 	case HW_VAR_CHECK_BSSID:
@@ -3438,7 +3433,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_MLME_DISCONNECT:
-		hw_var_set_mlme_disconnect(padapter, variable, val);
+		hw_var_set_mlme_disconnect(padapter, val);
 		break;
 
 	case HW_VAR_MLME_SITESURVEY:
@@ -3484,7 +3479,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_MLME_JOIN:
-		hw_var_set_mlme_join(padapter, variable, val);
+		hw_var_set_mlme_join(padapter, val);
 
 #ifdef CONFIG_8723AU_BT_COEXIST
 		switch (*val) {
