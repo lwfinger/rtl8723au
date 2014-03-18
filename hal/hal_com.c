@@ -730,3 +730,11 @@ void rtl8723a_fifo_cleanup(struct rtw_adapter *padapter)
 		mdelay(10);
 	}
 }
+
+void rtl8723a_set_apfm_on_mac(struct rtw_adapter *padapter, u8 val)
+{
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
+
+	pHalData->bMacPwrCtrlOn = val;
+	DBG_8723A("%s: bMacPwrCtrlOn=%d\n", __func__, pHalData->bMacPwrCtrlOn);
+}

@@ -3615,10 +3615,9 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 	case HW_VAR_CHECK_TXBUF:
 		break;
 	case HW_VAR_APFM_ON_MAC:
-		pHalData->bMacPwrCtrlOn = *val;
-		DBG_8723A("%s: bMacPwrCtrlOn=%d\n", __func__,
-			  pHalData->bMacPwrCtrlOn);
+		rtl8723a_set_apfm_on_mac(padapter, *val);
 		break;
+
 	case HW_VAR_NAV_UPPER:
 	{
 		u32 usNavUpper = *((u32 *) val);
