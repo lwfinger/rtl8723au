@@ -614,3 +614,27 @@ void rtl8723a_off_rcr_am(struct rtw_adapter *padapter)
 	DBG_8723A("%s, %d, RCR= %x \n", __FUNCTION__, __LINE__,
 		  rtw_read32(padapter, REG_RCR));
 }
+
+void rtl8723a_set_slot_time(struct rtw_adapter *padapter, u8 slottime)
+{
+	u8 u1bAIFS, aSifsTime;
+	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
+
+	rtw_write8(padapter, REG_SLOT, slottime);
+
+	if (pmlmeinfo->WMM_enable == 0) {
+		if (pmlmeext->cur_wireless_mode == WIRELESS_11B)
+			aSifsTime = 10;
+		else
+			aSifsTime = 16;
+
+		u1bAIFS = aSifsTime + (2 * pmlmeinfo->slotTime);
+
+		/*  <Roger_EXP> Temporary removed, 2008.06.20. */
+		rtw_write8(padapter, REG_EDCA_VO_PARAM, u1bAIFS);
+		rtw_write8(padapter, REG_EDCA_VI_PARAM, u1bAIFS);
+		rtw_write8(padapter, REG_EDCA_BE_PARAM, u1bAIFS);
+		rtw_write8(padapter, REG_EDCA_BK_PARAM, u1bAIFS);
+	}
+}
