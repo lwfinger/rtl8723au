@@ -652,3 +652,8 @@ void rtl8723a_ack_preamble(struct rtw_adapter *padapter, u8 bShortPreamble)
 		regTmp |= 0x80;
 	rtw_write8(padapter, REG_RRSR + 2, regTmp);
 }
+
+void rtl8723a_set_sec_cfg(struct rtw_adapter *padapter, u8 sec)
+{
+	rtw_write8(padapter, REG_SECCFG, sec);
+}

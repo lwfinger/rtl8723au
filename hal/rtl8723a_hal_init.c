@@ -3482,8 +3482,9 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_SEC_CFG:
-		rtw_write8(padapter, REG_SECCFG, *val);
+		rtl8723a_set_sec_cfg(padapter, *val);
 		break;
+
 	case HW_VAR_DM_FLAG:
 		pHalData->odmpriv.SupportAbility = *((u32 *) val);
 		break;

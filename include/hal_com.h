@@ -179,5 +179,6 @@ void rtl8723a_on_rcr_am(struct rtw_adapter *padapter);
 void rtl8723a_off_rcr_am(struct rtw_adapter *padapter);
 void rtl8723a_set_slot_time(struct rtw_adapter *padapter, u8 slottime);
 void rtl8723a_ack_preamble(struct rtw_adapter *padapter, u8 bShortPreamble);
+void rtl8723a_set_sec_cfg(struct rtw_adapter *padapter, u8 sec);
 
 #endif /* __HAL_COMMON_H__ */
