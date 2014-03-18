@@ -3369,6 +3369,23 @@ static void hw_var_set_mlme_join(struct rtw_adapter *padapter, u8 type)
 	rtw_write16(padapter, REG_RL,
 		    RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit <<
 		    RETRY_LIMIT_LONG_SHIFT);
+
+#ifdef CONFIG_8723AU_BT_COEXIST
+	switch (type) {
+	case 0:
+		/*  prepare to join */
+		BT_WifiAssociateNotify(padapter, true);
+		break;
+	case 1:
+		/*  joinbss_event callback when join res < 0 */
+		BT_WifiAssociateNotify(padapter, false);
+		break;
+	case 2:
+		/*  sta add event callback */
+/*		BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
+		break;
+	}
+#endif
 }
 
 void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
@@ -3428,23 +3445,6 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 
 	case HW_VAR_MLME_JOIN:
 		hw_var_set_mlme_join(padapter, *val);
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-		switch (*val) {
-		case 0:
-			/*  prepare to join */
-			BT_WifiAssociateNotify(padapter, true);
-			break;
-		case 1:
-			/*  joinbss_event callback when join res < 0 */
-			BT_WifiAssociateNotify(padapter, false);
-			break;
-		case 2:
-			/*  sta add event callback */
-/*			BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
-			break;
-		}
-#endif
 		break;
 
 	case HW_VAR_ON_RCR_AM:
