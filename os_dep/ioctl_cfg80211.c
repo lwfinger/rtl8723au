@@ -297,9 +297,11 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter, struct wlan_net
 	notify_ie = pnetwork->network.IEs+_FIXED_IE_LENGTH_;
 	notify_ielen = pnetwork->network.IELength-_FIXED_IE_LENGTH_;
 
-	/* We've set wiphy's signal_type as CFG80211_SIGNAL_TYPE_MBM: signal strength in mBm (100*dBm) */
-	if ( check_fwstate(pmlmepriv, _FW_LINKED)== true &&
-		is_same_network(&pmlmepriv->cur_network.network, &pnetwork->network)) {
+	/* We've set wiphy's signal_type as CFG80211_SIGNAL_TYPE_MBM:
+	   signal strength in mBm (100*dBm) */
+	if (check_fwstate(pmlmepriv, _FW_LINKED) &&
+	    is_same_network(&pmlmepriv->cur_network.network,
+			    &pnetwork->network)){
 		notify_signal = 100*translate_percentage_to_dbm(padapter->recvpriv.signal_strength);/* dbm */
 	} else {
 		notify_signal = 100*translate_percentage_to_dbm(pnetwork->network.PhyInfo.SignalStrength);/* dbm */
@@ -373,7 +375,7 @@ void rtw_cfg80211_indicate_connect(struct rtw_adapter *padapter)
 	    pwdev->iftype != NL80211_IFTYPE_P2P_CLIENT)
 		return;
 
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
 		return;
 
 #ifdef CONFIG_8723AU_P2P
@@ -433,7 +435,7 @@ void rtw_cfg80211_indicate_disconnect(struct rtw_adapter *padapter)
 	    pwdev->iftype != NL80211_IFTYPE_P2P_CLIENT)
 		return;
 
-	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
 		return;
 
 #ifdef CONFIG_8723AU_P2P
@@ -960,8 +962,9 @@ _func_enter_;
 
 		/* DBG_8723A("%s, : dot11AuthAlgrthm == dot11AuthAlgrthm_8021X \n", __func__); */
 
-		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_MP_STATE) == true) /* sta mode */
-		{
+		if (check_fwstate(pmlmepriv,
+				  WIFI_STATION_STATE | WIFI_MP_STATE)) {
+			/* sta mode */
 			psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 			if (psta == NULL) {
 				/* DEBUG_ERR( ("Set wpa_set_encryption: Obtain Sta_info fail \n")); */
@@ -1129,12 +1132,9 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev,
 		memcpy(param->u.crypt.key, params->key, params->key_len);
 	}
 
-	if(check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true)
-	{
+	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
 		ret =  rtw_cfg80211_set_encryption(ndev, param, param_len);
-	}
-	else if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-	{
+	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 #ifdef CONFIG_8723AU_AP_MODE
 		if(mac_addr)
 			memcpy(param->sta_addr, (void*)mac_addr, ETH_ALEN);
@@ -1587,7 +1587,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy,
 	pwdev_priv->scan_request = request;
 	spin_unlock_bh(&pwdev_priv->scan_req_lock);
 
-	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 
 #ifdef CONFIG_DEBUG_CFG80211
 		DBG_8723A("%s under WIFI_AP_STATE\n", __FUNCTION__);
@@ -2123,8 +2123,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		sme->privacy, sme->key, sme->key_len, sme->key_idx);
 
 
-	if(wdev_to_priv(padapter->rtw_wdev)->block == true)
-	{
+	if (wdev_to_priv(padapter->rtw_wdev)->block) {
 		ret = -EBUSY;
 		DBG_8723A("%s wdev_priv.block is set\n", __FUNCTION__);
 		goto exit;
@@ -2163,12 +2162,12 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 		DBG_8723A("bssid="MAC_FMT"\n", MAC_ARG(sme->bssid));
 
 
-	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true) {
+	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING)) {
 		ret = -EBUSY;
 		DBG_8723A("%s, fw_state=0x%x, goto exit\n", __FUNCTION__, pmlmepriv->fw_state);
 		goto exit;
 	}
-	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true) {
+	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
 		rtw_scan_abort(padapter);
 	}
 
