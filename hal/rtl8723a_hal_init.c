@@ -3610,43 +3610,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 #endif
 		break;
 	case HW_VAR_FIFO_CLEARN_UP:
-	{
-#define RW_RELEASE_EN		BIT(18)
-#define RXDMA_IDLE			BIT(17)
-
-		struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-		u8 trycnt = 100;
-
-		/*  pause tx */
-		rtw_write8(padapter, REG_TXPAUSE, 0xff);
-
-		/*  keep sn */
-		padapter->xmitpriv.nqos_ssn =
-			rtw_read16(padapter, REG_NQOS_SEQ);
-
-		if (pwrpriv->bkeepfwalive != true) {
-			u32 v32;
-
-			/*  RX DMA stop */
-			v32 = rtw_read32(padapter, REG_RXPKT_NUM);
-			v32 |= RW_RELEASE_EN;
-			rtw_write32(padapter, REG_RXPKT_NUM, v32);
-			do {
-				v32 = rtw_read32(padapter, REG_RXPKT_NUM) &
-					RXDMA_IDLE;
-				if (!v32)
-					break;
-			} while (trycnt--);
-			if (trycnt == 0) {
-				DBG_8723A("Stop RX DMA failed......\n");
-			}
-
-			/*  RQPN Load 0 */
-			rtw_write16(padapter, REG_RQPN_NPQ, 0);
-			rtw_write32(padapter, REG_RQPN, 0x80000000);
-			mdelay(10);
-		}
-	}
+		rtl8723a_fifo_cleanup(padapter);
 		break;
 	case HW_VAR_CHECK_TXBUF:
 		break;
