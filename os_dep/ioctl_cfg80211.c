@@ -26,7 +26,6 @@
 
 #define RTW_MAX_MGMT_TX_CNT (8)
 
-#define RTW_SCAN_IE_LEN_MAX      2304
 #define RTW_MAX_REMAIN_ON_CHANNEL_DURATION 65535 /* ms */
 #define RTW_MAX_NUM_PMKIDS 4
 
@@ -4427,7 +4426,7 @@ static void rtw_cfg80211_preinit_wiphy(struct rtw_adapter *padapter, struct wiph
 	wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
 
 	wiphy->max_scan_ssids = RTW_SSID_SCAN_AMOUNT;
-	wiphy->max_scan_ie_len = RTW_SCAN_IE_LEN_MAX;
+	wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
 	wiphy->max_num_pmkids = RTW_MAX_NUM_PMKIDS;
 
 	wiphy->max_remain_on_channel_duration = RTW_MAX_REMAIN_ON_CHANNEL_DURATION;
