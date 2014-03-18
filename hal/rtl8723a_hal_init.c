@@ -3478,18 +3478,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_ACK_PREAMBLE:
-	{
-		u8 regTmp;
-		u8 bShortPreamble = *val;
-
-		/*  Joseph marked out for Netgear 3500 TKIP
-		    channel 7 issue.(Temporarily) */
-		regTmp = (pHalData->nCur40MhzPrimeSC) << 5;
-		/* regTmp = 0; */
-			if (bShortPreamble)
-				regTmp |= 0x80;
-			rtw_write8(padapter, REG_RRSR + 2, regTmp);
-	}
+		rtl8723a_ack_preamble(padapter, *val);
 		break;
 
 	case HW_VAR_SEC_CFG:

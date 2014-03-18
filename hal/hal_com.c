@@ -638,3 +638,17 @@ void rtl8723a_set_slot_time(struct rtw_adapter *padapter, u8 slottime)
 		rtw_write8(padapter, REG_EDCA_BK_PARAM, u1bAIFS);
 	}
 }
+
+void rtl8723a_ack_preamble(struct rtw_adapter *padapter, u8 bShortPreamble)
+{
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
+	u8 regTmp;
+
+	/*  Joseph marked out for Netgear 3500 TKIP
+	    channel 7 issue.(Temporarily) */
+	regTmp = (pHalData->nCur40MhzPrimeSC) << 5;
+	/* regTmp = 0; */
+	if (bShortPreamble)
+		regTmp |= 0x80;
+	rtw_write8(padapter, REG_RRSR + 2, regTmp);
+}
