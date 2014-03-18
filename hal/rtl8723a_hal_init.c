@@ -3423,45 +3423,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_MLME_SITESURVEY:
-		if (*val) {	/* under sitesurvey */
-			u32 v32;
-
-			/*  config RCR to receive different BSSID & not
-			    to receive data frame */
-			v32 = rtw_read32(padapter, REG_RCR);
-			v32 &= ~(RCR_CBSSID_BCN);
-			rtw_write32(padapter, REG_RCR, v32);
-			/*  reject all data frame */
-			rtw_write16(padapter, REG_RXFLTMAP2, 0);
-
-			/*  disable update TSF */
-			SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
-		} else {	/* sitesurvey done */
-
-			struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-			struct mlme_ext_info *pmlmeinfo;
-			u32 v32;
-
-			pmlmeinfo = &pmlmeext->mlmext_info;
-
-			if ((is_client_associated_to_ap(padapter) == true) ||
-			    ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)||
-			    ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE)) {
-				/*  enable to rx data frame */
-				rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
-
-				/*  enable update TSF */
-				SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
-			}
-
-			v32 = rtw_read32(padapter, REG_RCR);
-			v32 |= RCR_CBSSID_BCN;
-			rtw_write32(padapter, REG_RCR, v32);
-		}
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-		BT_WifiScanNotify(padapter, *val ? true : false);
-#endif
+		rtl8723a_mlme_sitesurvey(padapter, *val);
 		break;
 
 	case HW_VAR_MLME_JOIN:
