@@ -176,5 +176,6 @@ void rtl8723a_set_bcn_func(struct rtw_adapter *padapter, u8 val);
 void rtl8723a_check_bssid(struct rtw_adapter *padapter, u8 val);
 void rtl8723a_mlme_sitesurvey(struct rtw_adapter *padapter, u8 flag);
 void rtl8723a_on_rcr_am(struct rtw_adapter *padapter);
+void rtl8723a_off_rcr_am(struct rtw_adapter *padapter);
 
 #endif /* __HAL_COMMON_H__ */

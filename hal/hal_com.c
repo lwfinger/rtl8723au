@@ -606,3 +606,11 @@ void rtl8723a_on_rcr_am(struct rtw_adapter *padapter)
 	DBG_8723A("%s, %d, RCR= %x \n", __FUNCTION__, __LINE__,
 		  rtw_read32(padapter, REG_RCR));
 }
+
+void rtl8723a_off_rcr_am(struct rtw_adapter *padapter)
+{
+	rtw_write32(padapter, REG_RCR,
+		    rtw_read32(padapter, REG_RCR) & (~RCR_AM));
+	DBG_8723A("%s, %d, RCR= %x \n", __FUNCTION__, __LINE__,
+		  rtw_read32(padapter, REG_RCR));
+}

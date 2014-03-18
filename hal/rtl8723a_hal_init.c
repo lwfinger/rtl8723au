@@ -3452,10 +3452,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_OFF_RCR_AM:
-		rtw_write32(padapter, REG_RCR,
-			    rtw_read32(padapter, REG_RCR) & (~RCR_AM));
-		DBG_8723A("%s, %d, RCR= %x \n", __FUNCTION__, __LINE__,
-			  rtw_read32(padapter, REG_RCR));
+		rtl8723a_off_rcr_am(padapter);
 		break;
 
 	case HW_VAR_BEACON_INTERVAL:
