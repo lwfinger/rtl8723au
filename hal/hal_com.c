@@ -154,10 +154,12 @@ u8 MRateToHwRate(u8 rate)
 	return ret;
 }
 
-u16 HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS)
+void HalSetBrateCfg(struct rtw_adapter *padapter, u8 *mBratesOS)
 {
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	u8 i, is_brate, brate;
 	u16 brate_cfg = 0;
+	u8 rate_index;
 
 	for (i = 0; i < NDIS_802_11_LENGTH_RATES_EX; i++) {
 		is_brate = mBratesOS[i] & IEEE80211_BASIC_RATE_MASK;
@@ -205,7 +207,38 @@ u16 HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS)
 		}
 	}
 
-	return brate_cfg;
+	/*  2007.01.16, by Emily */
+	/*  Select RRSR (in Legacy-OFDM and CCK) */
+	/*  For 8190, we select only 24M, 12M, 6M, 11M, 5.5M, 2M,
+	    and 1M from the Basic rate. */
+	/*  We do not use other rates. */
+	/* 2011.03.30 add by Luke Lee */
+	/* CCK 2M ACK should be disabled for some BCM and Atheros AP IOT */
+	/* because CCK 2M has poor TXEVM */
+	/* CCK 5.5M & 11M ACK should be enabled for better
+	   performance */
+
+	brate_cfg = (brate_cfg | 0xd) & 0x15d;
+	pHalData->BasicRateSet = brate_cfg;
+	brate_cfg |= 0x01;	/*  default enable 1M ACK rate */
+	DBG_8723A("HW_VAR_BASIC_RATE: BrateCfg(%#x)\n", brate_cfg);
+
+	/*  Set RRSR rate table. */
+	rtw_write8(padapter, REG_RRSR, brate_cfg & 0xff);
+	rtw_write8(padapter, REG_RRSR + 1, (brate_cfg >> 8) & 0xff);
+	rtw_write8(padapter, REG_RRSR + 2,
+		   rtw_read8(padapter, REG_RRSR + 2) & 0xf0);
+
+	rate_index = 0;
+	/*  Set RTS initial rate */
+	while (brate_cfg > 0x1) {
+		brate_cfg = (brate_cfg >> 1);
+		rate_index++;
+	}
+		/*  Ziv - Check */
+	rtw_write8(padapter, REG_INIRTS_RATE_SEL, rate_index);
+
+	return;
 }
 
 static void _OneOutPipeMapping(struct rtw_adapter *pAdapter)
