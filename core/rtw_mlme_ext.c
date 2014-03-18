@@ -29,24 +29,24 @@
 #endif
 
 static struct mlme_handler mlme_sta_tbl[]={
-	{WIFI_ASSOCREQ,		"OnAssocReq",	&OnAssocReq},
-	{WIFI_ASSOCRSP,		"OnAssocRsp",	&OnAssocRsp},
-	{WIFI_REASSOCREQ,	"OnReAssocReq",	&OnAssocReq},
-	{WIFI_REASSOCRSP,	"OnReAssocRsp",	&OnAssocRsp},
-	{WIFI_PROBEREQ,		"OnProbeReq",	&OnProbeReq},
-	{WIFI_PROBERSP,		"OnProbeRsp",		&OnProbeRsp},
+	{"OnAssocReq",		&OnAssocReq},
+	{"OnAssocRsp",		&OnAssocRsp},
+	{"OnReAssocReq",	&OnAssocReq},
+	{"OnReAssocRsp",	&OnAssocRsp},
+	{"OnProbeReq",		&OnProbeReq},
+	{"OnProbeRsp",		&OnProbeRsp},
 
 	/*----------------------------------------------------------
 					below 2 are reserved
 	-----------------------------------------------------------*/
-	{0,					"DoReserved",		&DoReserved},
-	{0,					"DoReserved",		&DoReserved},
-	{WIFI_BEACON,		"OnBeacon",		&OnBeacon},
-	{WIFI_ATIM,			"OnATIM",		&OnAtim},
-	{WIFI_DISASSOC,		"OnDisassoc",		&OnDisassoc},
-	{WIFI_AUTH,			"OnAuth",		&OnAuthClient},
-	{WIFI_DEAUTH,		"OnDeAuth",		&OnDeAuth},
-	{WIFI_ACTION,		"OnAction",		&OnAction},
+	{"DoReserved",		&DoReserved},
+	{"DoReserved",		&DoReserved},
+	{"OnBeacon",		&OnBeacon},
+	{"OnATIM",		&OnAtim},
+	{"OnDisassoc",		&OnDisassoc},
+	{"OnAuth",		&OnAuthClient},
+	{"OnDeAuth",		&OnDeAuth},
+	{"OnAction",		&OnAction},
 };
 
 static struct action_handler OnAction_tbl[]={

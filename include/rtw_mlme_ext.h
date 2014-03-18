@@ -272,8 +272,7 @@ enum SCAN_STATE
 };
 
 struct mlme_handler {
-	unsigned int   num;
-	char* str;
+	char *str;
 	unsigned int (*func)(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
 };
 
