@@ -602,6 +602,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	u16 stype;
 	u8 *pframe = skb->data;
 	struct sta_info *psta;
 
@@ -616,7 +617,8 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 
 	ptable = mlme_sta_tbl;
 
-	index = (le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE) >> 4;
+	stype = le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE;
+	index = stype >> 4;
 
 	if (index > 13) {
 		RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,
@@ -643,39 +645,38 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 	}
 
 #ifdef CONFIG_8723AU_AP_MODE
-	switch (GetFrameSubType(pframe))
+	switch (stype)
 	{
-		case WIFI_AUTH:
-			if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-				ptable->func = &OnAuth;
-			else
-				ptable->func = &OnAuthClient;
-			/* pass through */
-		case WIFI_ASSOCREQ:
-		case WIFI_REASSOCREQ:
+	case IEEE80211_STYPE_AUTH:
+		if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+			ptable->func = &OnAuth;
+		else
+			ptable->func = &OnAuthClient;
+		/* pass through */
+	case IEEE80211_STYPE_ASSOC_REQ:
+	case IEEE80211_STYPE_REASSOC_REQ:
+		_mgt_dispatcher(padapter, ptable, precv_frame);
+		break;
+	case IEEE80211_STYPE_PROBE_REQ:
+		if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
 			_mgt_dispatcher(padapter, ptable, precv_frame);
-			break;
-		case WIFI_PROBEREQ:
-			if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-				_mgt_dispatcher(padapter, ptable, precv_frame);
-			else
-				_mgt_dispatcher(padapter, ptable, precv_frame);
-			break;
-		case WIFI_BEACON:
+		else
 			_mgt_dispatcher(padapter, ptable, precv_frame);
-			break;
-		case WIFI_ACTION:
-			/* if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) */
-			_mgt_dispatcher(padapter, ptable, precv_frame);
-			break;
-		default:
-			_mgt_dispatcher(padapter, ptable, precv_frame);
-			if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
-				rtw_hostapd_mlme_rx(padapter, precv_frame);
-			break;
+		break;
+	case IEEE80211_STYPE_BEACON:
+		_mgt_dispatcher(padapter, ptable, precv_frame);
+		break;
+	case IEEE80211_STYPE_ACTION:
+		/* if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) */
+		_mgt_dispatcher(padapter, ptable, precv_frame);
+		break;
+	default:
+		_mgt_dispatcher(padapter, ptable, precv_frame);
+		if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+			rtw_hostapd_mlme_rx(padapter, precv_frame);
+		break;
 	}
 #else
-
 	_mgt_dispatcher(padapter, ptable, precv_frame);
 #endif
 }
