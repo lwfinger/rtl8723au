@@ -519,3 +519,12 @@ void rtl8723a_set_acm_ctrl(struct rtw_adapter *padapter, u8 ctrl)
 	DBG_8723A("[HW_VAR_ACM_CTRL] Write 0x%02X\n", hwctrl);
 	rtw_write8(padapter, REG_ACMHWCTRL, hwctrl);
 }
+
+void rtl8723a_set_media_status(struct rtw_adapter *padapter, u8 status)
+{
+	u8 val8;
+
+	val8 = rtw_read8(padapter, MSR) & 0x0c;
+	val8 |= status;
+	rtw_write8(padapter, MSR, val8);
+}

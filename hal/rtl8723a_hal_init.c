@@ -3387,13 +3387,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 
 	switch (variable) {
 	case HW_VAR_MEDIA_STATUS:
-	{
-		u8 val8;
-
-		val8 = rtw_read8(padapter, MSR) & 0x0c;
-		val8 |= *val;
-		rtw_write8(padapter, MSR, val8);
-	}
+		rtl8723a_set_media_status(padapter, *val);
 		break;
 
 	case HW_VAR_MEDIA_STATUS1:
