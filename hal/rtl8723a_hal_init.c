@@ -3437,7 +3437,8 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		/* CCK 5.5M & 11M ACK should be enabled for better
 		   performance */
 
-		pHalData->BasicRateSet = BrateCfg = (BrateCfg | 0xd) & 0x15d;
+		BrateCfg = (BrateCfg | 0xd) & 0x15d;
+		pHalData->BasicRateSet = BrateCfg;
 		BrateCfg |= 0x01;	/*  default enable 1M ACK rate */
 		DBG_8723A("HW_VAR_BASIC_RATE: BrateCfg(%#x)\n", BrateCfg);
 
