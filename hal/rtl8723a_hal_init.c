@@ -3415,15 +3415,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_CHECK_BSSID:
-	{
-		u32 val32;
-		val32 = rtw_read32(padapter, REG_RCR);
-		if (*val)
-			val32 |= RCR_CBSSID_DATA | RCR_CBSSID_BCN;
-		else
-			val32 &= ~(RCR_CBSSID_DATA | RCR_CBSSID_BCN);
-		rtw_write32(padapter, REG_RCR, val32);
-	}
+		rtl8723a_check_bssid(padapter, *val);
 		break;
 
 	case HW_VAR_MLME_DISCONNECT:

@@ -545,3 +545,14 @@ void rtl8723a_set_bcn_func(struct rtw_adapter *padapter, u8 val)
 	else
 		SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION | EN_TXBCN_RPT);
 }
+
+void rtl8723a_check_bssid(struct rtw_adapter *padapter, u8 val)
+{
+	u32 val32;
+	val32 = rtw_read32(padapter, REG_RCR);
+	if (val)
+		val32 |= RCR_CBSSID_DATA | RCR_CBSSID_BCN;
+	else
+		val32 &= ~(RCR_CBSSID_DATA | RCR_CBSSID_BCN);
+	rtw_write32(padapter, REG_RCR, val32);
+}
