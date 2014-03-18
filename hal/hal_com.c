@@ -154,9 +154,10 @@ u8 MRateToHwRate(u8 rate)
 	return ret;
 }
 
-void HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS, u16 *pBrateCfg)
+u16 HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS)
 {
 	u8 i, is_brate, brate;
+	u16 brate_cfg = 0;
 
 	for (i = 0; i < NDIS_802_11_LENGTH_RATES_EX; i++) {
 		is_brate = mBratesOS[i] & IEEE80211_BASIC_RATE_MASK;
@@ -165,44 +166,46 @@ void HalSetBrateCfg(struct rtw_adapter *Adapter, u8 *mBratesOS, u16 *pBrateCfg)
 		if (is_brate) {
 			switch (brate) {
 			case IEEE80211_CCK_RATE_1MB:
-				*pBrateCfg |= RATE_1M;
+				brate_cfg |= RATE_1M;
 				break;
 			case IEEE80211_CCK_RATE_2MB:
-				*pBrateCfg |= RATE_2M;
+				brate_cfg |= RATE_2M;
 				break;
 			case IEEE80211_CCK_RATE_5MB:
-				*pBrateCfg |= RATE_5_5M;
+				brate_cfg |= RATE_5_5M;
 				break;
 			case IEEE80211_CCK_RATE_11MB:
-				*pBrateCfg |= RATE_11M;
+				brate_cfg |= RATE_11M;
 				break;
 			case IEEE80211_OFDM_RATE_6MB:
-				*pBrateCfg |= RATE_6M;
+				brate_cfg |= RATE_6M;
 				break;
 			case IEEE80211_OFDM_RATE_9MB:
-				*pBrateCfg |= RATE_9M;
+				brate_cfg |= RATE_9M;
 				break;
 			case IEEE80211_OFDM_RATE_12MB:
-				*pBrateCfg |= RATE_12M;
+				brate_cfg |= RATE_12M;
 				break;
 			case IEEE80211_OFDM_RATE_18MB:
-				*pBrateCfg |= RATE_18M;
+				brate_cfg |= RATE_18M;
 				break;
 			case IEEE80211_OFDM_RATE_24MB:
-				*pBrateCfg |= RATE_24M;
+				brate_cfg |= RATE_24M;
 				break;
 			case IEEE80211_OFDM_RATE_36MB:
-				*pBrateCfg |= RATE_36M;
+				brate_cfg |= RATE_36M;
 				break;
 			case IEEE80211_OFDM_RATE_48MB:
-				*pBrateCfg |= RATE_48M;
+				brate_cfg |= RATE_48M;
 				break;
 			case IEEE80211_OFDM_RATE_54MB:
-				*pBrateCfg |= RATE_54M;
+				brate_cfg |= RATE_54M;
 				break;
 			}
 		}
 	}
+
+	return brate_cfg;
 }
 
 static void _OneOutPipeMapping(struct rtw_adapter *pAdapter)

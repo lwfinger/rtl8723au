@@ -3420,7 +3420,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 
 	case HW_VAR_BASIC_RATE:
 	{
-		u16 BrateCfg = 0;
+		u16 BrateCfg;
 		u8 RateIndex = 0;
 
 		/*  2007.01.16, by Emily */
@@ -3428,7 +3428,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		/*  For 8190, we select only 24M, 12M, 6M, 11M, 5.5M, 2M,
 		    and 1M from the Basic rate. */
 		/*  We do not use other rates. */
-		HalSetBrateCfg(padapter, val, &BrateCfg);
+		BrateCfg = HalSetBrateCfg(padapter, val);
 
 		/* 2011.03.30 add by Luke Lee */
 		/* CCK 2M ACK should be disabled for some BCM and
