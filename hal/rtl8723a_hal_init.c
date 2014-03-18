@@ -583,7 +583,7 @@ Hal_GetEfuseDefinition(struct rtw_adapter *padapter,
 	{
 		u8 *pu1Tmp;
 		pu1Tmp = (u8 *) pOut;
-		
+
 		if (efuseType == EFUSE_WIFI)
 			*pu1Tmp = EFUSE_OOB_PROTECT_BYTES;
 		else
@@ -625,7 +625,7 @@ Hal_EfusePowerSwitch(struct rtw_adapter *padapter, u8 bWrite, u8 PwrState)
 	if (PwrState == true) {
 		rtw_write8(padapter, REG_EFUSE_ACCESS, EFUSE_ACCESS_ON);
 
-		/*  1.2V Power: From VDDON with Power 
+		/*  1.2V Power: From VDDON with Power
 		    Cut(0x0000h[15]), defualt valid */
 		tmpV16 = rtw_read16(padapter, REG_SYS_ISO_CTRL);
 		if (!(tmpV16 & PWC_EV12V)) {
@@ -1680,7 +1680,7 @@ void rtl8723a_InitBeaconParameters(struct rtw_adapter *padapter)
 	/*  2ms */
 	rtw_write8(padapter, REG_BCNDMATIM, BCN_DMA_ATIME_INT_TIME);
 
-	/*  Suggested by designer timchen. Change beacon AIFS to the 
+	/*  Suggested by designer timchen. Change beacon AIFS to the
 	    largest number beacause test chip does not contension before
 	    sending beacon. by tynli. 2009.11.03 */
 	rtw_write16(padapter, REG_BCNTCFG, 0x660F);
