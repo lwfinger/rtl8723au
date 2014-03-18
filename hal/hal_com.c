@@ -457,3 +457,44 @@ rtl8723a_set_ampdu_min_space(struct rtw_adapter *padapter, u8 MinSpacingToSet)
 			   MinSpacingToSet);
 	}
 }
+
+void rtl8723a_set_ampdu_factor(struct rtw_adapter *padapter, u8 FactorToSet)
+{
+	u8 RegToSet_Normal[4] = { 0x41, 0xa8, 0x72, 0xb9 };
+	u8 MaxAggNum;
+	u8 *pRegToSet;
+	u8 index = 0;
+
+	pRegToSet = RegToSet_Normal;	/*  0xb972a841; */
+#ifdef CONFIG_8723AU_BT_COEXIST
+	if ((BT_IsBtDisabled(padapter) == false) &&
+	    (BT_1Ant(padapter) == true)) {
+		MaxAggNum = 0x8;
+	} else
+#endif /*  CONFIG_8723AU_BT_COEXIST */
+	{
+		MaxAggNum = 0xF;
+	}
+
+	if (FactorToSet <= 3) {
+		FactorToSet = (1 << (FactorToSet + 2));
+		if (FactorToSet > MaxAggNum)
+			FactorToSet = MaxAggNum;
+
+		for (index = 0; index < 4; index++) {
+			if ((pRegToSet[index] & 0xf0) > (FactorToSet << 4))
+				pRegToSet[index] = (pRegToSet[index] & 0x0f) |
+					(FactorToSet << 4);
+
+			if ((pRegToSet[index] & 0x0f) > FactorToSet)
+				pRegToSet[index] = (pRegToSet[index] & 0xf0) |
+					FactorToSet;
+
+			rtw_write8(padapter, REG_AGGLEN_LMT + index,
+				   pRegToSet[index]);
+		}
+
+		/* RT_TRACE(COMP_MLME, DBG_LOUD,
+		   ("Set HW_VAR_AMPDU_FACTOR: %#x\n", FactorToSet)); */
+	}
+}
