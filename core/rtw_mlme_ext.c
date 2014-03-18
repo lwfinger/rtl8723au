@@ -50,12 +50,12 @@ static struct mlme_handler mlme_sta_tbl[]={
 };
 
 static struct action_handler OnAction_tbl[]={
-	{WLAN_CATEGORY_SPECTRUM_MGMT,	 "ACTION_SPECTRUM_MGMT", on_action_spct},
+	{WLAN_CATEGORY_SPECTRUM_MGMT, "ACTION_SPECTRUM_MGMT", on_action_spct},
 	{WLAN_CATEGORY_QOS, "ACTION_QOS", &OnAction_qos},
 	{WLAN_CATEGORY_DLS, "ACTION_DLS", &OnAction_dls},
 	{WLAN_CATEGORY_BACK, "ACTION_BACK", &OnAction_back},
 	{WLAN_CATEGORY_PUBLIC, "ACTION_PUBLIC", on_action_public},
-	{WLAN_CATEGORY_HT,	"ACTION_HT",	&OnAction_ht},
+	{WLAN_CATEGORY_HT, "ACTION_HT",	&OnAction_ht},
 	{WLAN_CATEGORY_SA_QUERY, "ACTION_SA_QUERY", &DoReserved},
 	{WLAN_CATEGORY_WMM, "ACTION_WMM", &OnAction_wmm},
 	{WLAN_CATEGORY_VENDOR_SPECIFIC, "ACTION_P2P", &OnAction_p2p},
@@ -553,7 +553,6 @@ static void
 _mgt_dispatcher(struct rtw_adapter *padapter, struct mlme_handler *ptable,
 		struct recv_frame *precv_frame)
 {
-	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 
@@ -561,7 +560,7 @@ _mgt_dispatcher(struct rtw_adapter *padapter, struct mlme_handler *ptable,
 		/* receive the frames that ra(a1) is my address
 		   or ra(a1) is bc address. */
 		if (!ether_addr_equal(hdr->addr1, myid(&padapter->eeprompriv))&&
-		    !ether_addr_equal(hdr->addr1, bc_addr))
+		    !is_broadcast_ether_addr(hdr->addr1))
 			return;
 
 		ptable->func(padapter, precv_frame);
@@ -576,7 +575,6 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 #ifdef CONFIG_8723AU_AP_MODE
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 #endif /* CONFIG_8723AU_AP_MODE */
-	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u16 stype;
@@ -589,7 +587,7 @@ void mgt_dispatcher(struct rtw_adapter *padapter,
 	/* receive the frames that ra(a1) is my address or ra(a1) is
 	   bc address. */
 	if (!ether_addr_equal(hdr->addr1, myid(&padapter->eeprompriv)) &&
-	    !ether_addr_equal(hdr->addr1, bc_addr))
+	    !is_broadcast_ether_addr(hdr->addr1))
 		return;
 
 	ptable = mlme_sta_tbl;
