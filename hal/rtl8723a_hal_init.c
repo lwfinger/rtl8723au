@@ -3639,10 +3639,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 	}
 		break;
 	case HW_VAR_BCN_VALID:
-		/* BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2,
-		   write 1 to clear, Clear by sw */
-		rtw_write8(padapter, REG_TDECTRL + 2,
-			   rtw_read8(padapter, REG_TDECTRL + 2) | BIT0);
+		rtl8723a_bcn_valid(padapter);
 		break;
 	default:
 		break;

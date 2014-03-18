@@ -738,3 +738,11 @@ void rtl8723a_set_apfm_on_mac(struct rtw_adapter *padapter, u8 val)
 	pHalData->bMacPwrCtrlOn = val;
 	DBG_8723A("%s: bMacPwrCtrlOn=%d\n", __func__, pHalData->bMacPwrCtrlOn);
 }
+
+void rtl8723a_bcn_valid(struct rtw_adapter *padapter)
+{
+	/* BCN_VALID, BIT16 of REG_TDECTRL = BIT0 of REG_TDECTRL+2,
+	   write 1 to clear, Clear by sw */
+	rtw_write8(padapter, REG_TDECTRL + 2,
+		   rtw_read8(padapter, REG_TDECTRL + 2) | BIT0);
+}
