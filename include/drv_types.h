@@ -152,18 +152,9 @@ struct registry_priv
 };
 
 
-/* For registry parameters */
-#define RGTRY_OFT(field) ((u32)FIELD_OFFSET(struct registry_priv,field))
-#define RGTRY_SZ(field)   sizeof(((struct registry_priv*) 0)->field)
-#define BSSID_OFT(field) ((u32)FIELD_OFFSET(struct wlan_bssid_ex,field))
-#define BSSID_SZ(field)   sizeof(((struct wlan_bssid_ex *) 0)->field)
-
 #define MAX_CONTINUAL_URB_ERR 4
 
 #define GET_PRIMARY_ADAPTER(padapter) (((struct rtw_adapter *)padapter)->dvobj->if1)
-
-#define GET_IFACE_NUMS(padapter) (((struct rtw_adapter *)padapter)->dvobj->iface_nums)
-#define GET_ADAPTER(padapter, iface_id) (((struct rtw_adapter *)padapter)->dvobj->padapters[iface_id])
 
 enum _IFACE_ID {
 	IFACE_ID0, /* maping to PRIMARY_ADAPTER */
