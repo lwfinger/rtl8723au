@@ -346,7 +346,7 @@ void Restore_DM_Func_Flag(struct rtw_adapter *padapter)
 	rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_OP, (u8 *)(&bSaveFlag));
 }
 
-void Switch_DM_Func(struct rtw_adapter *padapter, u32 mode, u8 enable)
+void Switch_DM_Func(struct rtw_adapter *padapter, unsigned long mode, u8 enable)
 {
 	if(enable == true)
 		rtw_hal_set_hwreg(padapter, HW_VAR_DM_FUNC_SET, (u8 *)(&mode));
@@ -1787,13 +1787,15 @@ void update_IOT_info(struct rtw_adapter *padapter)
 			pmlmeinfo->turboMode_cts2self = 0;
 			pmlmeinfo->turboMode_rtsen = 1;
 			/* disable high power */
-			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+			Switch_DM_Func(padapter, ~DYNAMIC_BB_DYNAMIC_TXPWR,
+				       false);
 			break;
 		case HT_IOT_PEER_REALTEK:
 			/* rtw_write16(padapter, 0x4cc, 0xffff); */
 			/* rtw_write16(padapter, 0x546, 0x01c0); */
 			/* disable high power */
-			Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+			Switch_DM_Func(padapter, ~DYNAMIC_BB_DYNAMIC_TXPWR,
+				       false);
 			break;
 		default:
 			pmlmeinfo->turboMode_cts2self = 0;

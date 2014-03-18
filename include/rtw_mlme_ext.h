@@ -492,7 +492,7 @@ void UpdateBrateTblForSoftAP(u8 *bssrateset, u32 bssratelen);
 
 void Save_DM_Func_Flag(struct rtw_adapter *padapter);
 void Restore_DM_Func_Flag(struct rtw_adapter *padapter);
-void Switch_DM_Func(struct rtw_adapter *padapter, u32 mode, u8 enable);
+void Switch_DM_Func(struct rtw_adapter *padapter, unsigned long mode, u8 enable);
 
 void Set_MSR(struct rtw_adapter *padapter, u8 type);
 
