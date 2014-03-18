@@ -498,3 +498,24 @@ void rtl8723a_set_ampdu_factor(struct rtw_adapter *padapter, u8 FactorToSet)
 		   ("Set HW_VAR_AMPDU_FACTOR: %#x\n", FactorToSet)); */
 	}
 }
+
+void rtl8723a_set_acm_ctrl(struct rtw_adapter *padapter, u8 ctrl)
+{
+	u8 hwctrl = 0;
+
+	if (ctrl != 0) {
+		hwctrl |= AcmHw_HwEn;
+
+		if (ctrl & BIT(1))	/*  BE */
+			hwctrl |= AcmHw_BeqEn;
+
+		if (ctrl & BIT(2))	/*  VI */
+			hwctrl |= AcmHw_ViqEn;
+
+		if (ctrl & BIT(3))	/*  VO */
+			hwctrl |= AcmHw_VoqEn;
+	}
+
+	DBG_8723A("[HW_VAR_ACM_CTRL] Write 0x%02X\n", hwctrl);
+	rtw_write8(padapter, REG_ACMHWCTRL, hwctrl);
+}

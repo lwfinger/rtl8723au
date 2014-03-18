@@ -3685,26 +3685,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_ACM_CTRL:
-	{
-		u8 ctrl = *((u8 *) val);
-		u8 hwctrl = 0;
-
-		if (ctrl != 0) {
-			hwctrl |= AcmHw_HwEn;
-
-			if (ctrl & BIT(1))	/*  BE */
-				hwctrl |= AcmHw_BeqEn;
-
-			if (ctrl & BIT(2))	/*  VI */
-				hwctrl |= AcmHw_ViqEn;
-
-			if (ctrl & BIT(3))	/*  VO */
-				hwctrl |= AcmHw_VoqEn;
-		}
-
-		DBG_8723A("[HW_VAR_ACM_CTRL] Write 0x%02X\n", hwctrl);
-		rtw_write8(padapter, REG_ACMHWCTRL, hwctrl);
-	}
+		rtl8723a_set_acm_ctrl(padapter, *val);
 		break;
 
 	case HW_VAR_AMPDU_MIN_SPACE:
