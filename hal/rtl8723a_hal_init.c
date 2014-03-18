@@ -3192,11 +3192,9 @@ void rtl8723a_fill_fake_txdesc(struct rtw_adapter *padapter, u8 *pDesc,
 	rtl8723a_cal_txdesc_chksum(ptxdesc);
 }
 
-static void hw_var_set_opmode(struct rtw_adapter *padapter, u8 variable,
-			      u8 *val)
+static void hw_var_set_opmode(struct rtw_adapter *padapter, u8 mode)
 {
 	u8 val8;
-	u8 mode = *val;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 
 	if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_)) {
@@ -3395,7 +3393,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_SET_OPMODE:
-		hw_var_set_opmode(padapter, variable, val);
+		hw_var_set_opmode(padapter, *val);
 		break;
 
 	case HW_VAR_MAC_ADDR:
