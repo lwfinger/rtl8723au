@@ -171,5 +171,6 @@ void rtl8723a_set_ampdu_min_space(struct rtw_adapter *padapter, u8 MinSpacingToS
 void rtl8723a_set_ampdu_factor(struct rtw_adapter *padapter, u8 FactorToSet);
 void rtl8723a_set_acm_ctrl(struct rtw_adapter *padapter, u8 ctrl);
 void rtl8723a_set_media_status(struct rtw_adapter *padapter, u8 status);
+void rtl8723a_set_media_status1(struct rtw_adapter *padapter, u8 status);
 
 #endif /* __HAL_COMMON_H__ */

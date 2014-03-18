@@ -528,3 +528,12 @@ void rtl8723a_set_media_status(struct rtw_adapter *padapter, u8 status)
 	val8 |= status;
 	rtw_write8(padapter, MSR, val8);
 }
+
+void rtl8723a_set_media_status1(struct rtw_adapter *padapter, u8 status)
+{
+	u8 val8;
+
+	val8 = rtw_read8(padapter, MSR) & 0x03;
+	val8 |= status << 2;
+	rtw_write8(padapter, MSR, val8);
+}
