@@ -3511,36 +3511,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_CAM_EMPTY_ENTRY:
-	{
-		u8 ucIndex = *val;
-		u8 i;
-		u32 ulCommand = 0;
-		u32 ulContent = 0;
-		u32 ulEncAlgo = CAM_AES;
-
-		for (i = 0; i < CAM_CONTENT_COUNT; i++) {
-			/*  filled id in CAM config 2 byte */
-			if (i == 0) {
-				ulContent |= (ucIndex & 0x03) |
-					     ((u16) (ulEncAlgo) << 2);
-					/* ulContent |= CAM_VALID; */
-			} else {
-				ulContent = 0;
-			}
-			/*  polling bit, and No Write enable, and address */
-			ulCommand = CAM_CONTENT_COUNT * ucIndex + i;
-			ulCommand = ulCommand | CAM_POLLINIG | CAM_WRITE;
-			/*  write content 0 is equall to mark invalid */
-			/* delay_ms(40); */
-			rtw_write32(padapter, WCAMI, ulContent);
-			/* RT_TRACE(COMP_SEC, DBG_LOUD,
-			   ("CAM_empty_entry(): WRITE A4: %lx \n",ulContent));*/
-			/* delay_ms(40); */
-			rtw_write32(padapter, RWCAM, ulCommand);
-			/* RT_TRACE(COMP_SEC, DBG_LOUD,
-			   ("CAM_empty_entry(): WRITE A0: %lx \n",ulCommand));*/
-		}
-	}
+		rtl8723a_cam_empty_entry(padapter, *val);
 		break;
 
 	case HW_VAR_CAM_INVALID_ALL:
