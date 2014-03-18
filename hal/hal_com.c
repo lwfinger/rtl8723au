@@ -421,3 +421,39 @@ clear_evt:
 exit:
 	return ret;
 }
+
+void
+rtl8723a_set_ampdu_min_space(struct rtw_adapter *padapter, u8 MinSpacingToSet)
+{
+	u8 SecMinSpace;
+
+	if (MinSpacingToSet <= 7) {
+		switch (padapter->securitypriv.dot11PrivacyAlgrthm) {
+		case _NO_PRIVACY_:
+		case _AES_:
+			SecMinSpace = 0;
+			break;
+
+		case _WEP40_:
+		case _WEP104_:
+		case _TKIP_:
+		case _TKIP_WTMIC_:
+			SecMinSpace = 6;
+			break;
+		default:
+			SecMinSpace = 7;
+			break;
+		}
+
+		if (MinSpacingToSet < SecMinSpace)
+			MinSpacingToSet = SecMinSpace;
+
+		/* RT_TRACE(COMP_MLME, DBG_LOUD,
+		   ("Set HW_VAR_AMPDU_MIN_SPACE: %#x\n",
+		   padapter->MgntInfo.MinSpaceCfg)); */
+		MinSpacingToSet |=
+			rtw_read8(padapter, REG_AMPDU_MIN_SPACE) & 0xf8;
+		rtw_write8(padapter, REG_AMPDU_MIN_SPACE,
+			   MinSpacingToSet);
+	}
+}

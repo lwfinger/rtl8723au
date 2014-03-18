@@ -167,4 +167,6 @@ void hal_init_macaddr(struct rtw_adapter *adapter);
 void c2h_evt_clear(struct rtw_adapter *adapter);
 s32 c2h_evt_read(struct rtw_adapter *adapter, u8 *buf);
 
+void rtl8723a_set_ampdu_min_space(struct rtw_adapter *padapter, u8 MinSpacingToSet);
+
 #endif /* __HAL_COMMON_H__ */
