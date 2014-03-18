@@ -193,25 +193,6 @@ exit:
 	return spt_band;
 }
 
-static void rtw_spt_band_free(struct ieee80211_supported_band *spt_band)
-{
-	u32 size;
-
-	if(!spt_band)
-		return;
-
-	if(spt_band->band == IEEE80211_BAND_2GHZ) {
-		size = sizeof(struct ieee80211_supported_band)
-			+ sizeof(struct ieee80211_channel)*RTW_2G_CHANNELS_NUM
-			+ sizeof(struct ieee80211_rate)*RTW_G_RATES_NUM;
-	} else if(spt_band->band == IEEE80211_BAND_5GHZ) {
-		size = sizeof(struct ieee80211_supported_band)
-			+ sizeof(struct ieee80211_channel)*RTW_5G_CHANNELS_NUM
-			+ sizeof(struct ieee80211_rate)*RTW_A_RATES_NUM;
-	}
-	kfree(spt_band);
-}
-
 static const struct ieee80211_txrx_stypes
 rtw_cfg80211_default_mgmt_stypes[NUM_NL80211_IFTYPES] = {
 	[NL80211_IFTYPE_ADHOC] = {
@@ -4553,8 +4534,8 @@ void rtw_wdev_free(struct wireless_dev *wdev)
 
 	pwdev_priv = wdev_to_priv(wdev);
 
-	rtw_spt_band_free(wdev->wiphy->bands[IEEE80211_BAND_2GHZ]);
-	rtw_spt_band_free(wdev->wiphy->bands[IEEE80211_BAND_5GHZ]);
+	kfree(wdev->wiphy->bands[IEEE80211_BAND_2GHZ]);
+	kfree(wdev->wiphy->bands[IEEE80211_BAND_5GHZ]);
 
 	wiphy_free(wdev->wiphy);
 
