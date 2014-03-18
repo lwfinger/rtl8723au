@@ -90,42 +90,33 @@ enum WIFI_REG_DOMAIN {
 	DOMAIN_MAX
 };
 
-#define _TO_DS_		BIT(8)
-#define _FROM_DS_	BIT(9)
-#define _MORE_FRAG_	BIT(10)
-#define _RETRY_		BIT(11)
-#define _PWRMGT_	BIT(12)
-#define _MORE_DATA_	BIT(13)
-#define _PRIVACY_	BIT(14)
-#define _ORDER_		BIT(15)
 
 #define SetToDs(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_TO_DS_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_TODS))
 
 #define SetFrDs(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_FROM_DS_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_FROMDS))
 
 #define get_tofr_ds(pframe)	((ieee80211_has_tods(pframe) << 1) | \
 				 ieee80211_has_fromds(pframe))
 
-
 #define SetMFrag(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_MORE_FRAG_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREFRAGS))
 
 #define ClearMFrag(pbuf)	\
-	(*(unsigned short *)(pbuf) &= (~cpu_to_le16(_MORE_FRAG_)))
+	(*(unsigned short *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)))
 
 #define SetRetry(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_RETRY_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_RETRY))
 
 #define SetPwrMgt(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_PWRMGT_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PM))
 
 #define SetMData(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_MORE_DATA_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREDATA))
 
 #define SetPrivacy(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_PRIVACY_))
+	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PROTECTED))
 
 #define SetFrameType(pbuf, type)	\
 	do {	\
