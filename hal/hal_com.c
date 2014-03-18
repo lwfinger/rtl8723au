@@ -688,3 +688,8 @@ void rtl8723a_cam_empty_entry(struct rtw_adapter *padapter, u8 ucIndex)
 		   ("CAM_empty_entry(): WRITE A0: %lx \n",ulCommand));*/
 	}
 }
+
+void rtl8723a_cam_invalid_all(struct rtw_adapter *padapter)
+{
+	rtw_write32(padapter, RWCAM, BIT(31) | BIT(30));
+}

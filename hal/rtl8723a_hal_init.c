@@ -3515,7 +3515,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_CAM_INVALID_ALL:
-		rtw_write32(padapter, RWCAM, BIT(31) | BIT(30));
+		rtl8723a_cam_invalid_all(padapter);
 		break;
 
 	case HW_VAR_CAM_WRITE:
