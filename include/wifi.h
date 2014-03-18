@@ -15,12 +15,6 @@
 #ifndef _WIFI_H_
 #define _WIFI_H_
 
-#ifdef BIT
-/* error	"BIT define occurred earlier elsewhere!\n" */
-#undef BIT
-#endif
-#define BIT(x)	(1 << (x))
-
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0))
 #define IEEE80211_CHAN_NO_IR	IEEE80211_CHAN_PASSIVE_SCAN
 #endif
