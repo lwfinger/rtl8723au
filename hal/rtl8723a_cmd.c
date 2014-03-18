@@ -207,11 +207,21 @@ void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 {
 	SETPWRMODE_PARM H2CSetPwrMode;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 
 _func_enter_;
 
 	DBG_8723A("%s: Mode=%d SmartPS=%d UAPSD=%d BcnMode=0x%02x\n", __FUNCTION__,
 			Mode, pwrpriv->smart_ps, padapter->registrypriv.uapsd_enable, pwrpriv->bcn_ant_mode);
+
+	/*  Forece leave RF low power mode for 1T1R to
+	    prevent conficting setting in Fw power */
+	/*  saving sequence. 2010.06.07. Added by tynli.
+	    Suggested by SD3 yschang. */
+	if ((Mode != PS_MODE_ACTIVE) &&
+	    (!IS_92C_SERIAL(pHalData->VersionID))) {
+		ODM_RF_Saving(&pHalData->odmpriv, true);
+	}
 
 	H2CSetPwrMode.Mode = Mode;
 	H2CSetPwrMode.SmartPS = pwrpriv->smart_ps;

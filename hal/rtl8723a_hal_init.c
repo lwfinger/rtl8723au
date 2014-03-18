@@ -3720,19 +3720,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_H2C_FW_PWRMODE:
-	{
-		u8 psmode = *val;
-
-		/*  Forece leave RF low power mode for 1T1R to
-		    prevent conficting setting in Fw power */
-		/*  saving sequence. 2010.06.07. Added by tynli.
-		    Suggested by SD3 yschang. */
-		if ((psmode != PS_MODE_ACTIVE) &&
-		    (!IS_92C_SERIAL(pHalData->VersionID))) {
-			ODM_RF_Saving(&pHalData->odmpriv, true);
-		}
-		rtl8723a_set_FwPwrMode_cmd(padapter, psmode);
-	}
+		rtl8723a_set_FwPwrMode_cmd(padapter, *val);
 		break;
 
 	case HW_VAR_H2C_FW_JOINBSSRPT:
