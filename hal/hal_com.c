@@ -537,3 +537,11 @@ void rtl8723a_set_media_status1(struct rtw_adapter *padapter, u8 status)
 	val8 |= status << 2;
 	rtw_write8(padapter, MSR, val8);
 }
+
+void rtl8723a_set_bcn_func(struct rtw_adapter *padapter, u8 val)
+{
+	if (val)
+		SetBcnCtrlReg(padapter, EN_BCN_FUNCTION | EN_TXBCN_RPT, 0);
+	else
+		SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION | EN_TXBCN_RPT);
+}

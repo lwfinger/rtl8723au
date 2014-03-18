@@ -3407,12 +3407,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_BCN_FUNC:
-		if (*val)
-			SetBcnCtrlReg(padapter, EN_BCN_FUNCTION | EN_TXBCN_RPT,
-				      0);
-		else
-			SetBcnCtrlReg(padapter, 0,
-				      EN_BCN_FUNCTION | EN_TXBCN_RPT);
+		rtl8723a_set_bcn_func(padapter, *val);
 		break;
 
 	case HW_VAR_CORRECT_TSF:
