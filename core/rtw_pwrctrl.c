@@ -567,7 +567,7 @@ void rtw_free_pwrctrl_priv(struct rtw_adapter *adapter)
 {
 }
 
-u8 rtw_interface_ps_func(struct rtw_adapter *padapter,HAL_INTF_PS_FUNC efunc_id,u8* val)
+u8 rtw_interface_ps_func(struct rtw_adapter *padapter,enum hal_intf_ps_func efunc_id,u8* val)
 {
 	u8 bResult = true;
 	rtw_hal_intf_ps_func(padapter,efunc_id,val);

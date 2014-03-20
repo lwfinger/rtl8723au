@@ -251,7 +251,7 @@ void LPS_Enter(struct rtw_adapter *padapter);
 void LPS_Leave(struct rtw_adapter *padapter);
 
 u8 rtw_interface_ps_func(struct rtw_adapter *padapter,
-			 HAL_INTF_PS_FUNC efunc_id, u8 *val);
+			 enum hal_intf_ps_func efunc_id, u8 *val);
 void rtw_set_ips_deny(struct rtw_adapter *padapter, u32 ms);
 int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms,
 		    const char *caller);

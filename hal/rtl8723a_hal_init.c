@@ -1787,7 +1787,7 @@ static void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter *padapter)
 }
 
 static void rtl8723a_GetHalODMVar(struct rtw_adapter *Adapter,
-				  HAL_ODM_VARIABLE eVariable,
+				  enum hal_odm_variable eVariable,
 				  void *pValue1, bool bSet)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
@@ -1801,7 +1801,7 @@ static void rtl8723a_GetHalODMVar(struct rtw_adapter *Adapter,
 }
 
 static void rtl8723a_SetHalODMVar(struct rtw_adapter *Adapter,
-				  HAL_ODM_VARIABLE eVariable,
+				  enum hal_odm_variable eVariable,
 				  void *pValue1, bool bSet)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
@@ -2464,7 +2464,7 @@ s32 CardDisableWithoutHWSM(struct rtw_adapter * padapter)
 
 void Hal_InitPGData(struct rtw_adapter *padapter, u8 *PROMContent)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
 /*	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u32 i;
 	u16 value16;
@@ -2499,7 +2499,7 @@ void Hal_InitPGData(struct rtw_adapter *padapter, u8 *PROMContent)
 
 void Hal_EfuseParseIDCode(struct rtw_adapter *padapter, u8 *hwinfo)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
 /*	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 	u16 EEPROMId;
 

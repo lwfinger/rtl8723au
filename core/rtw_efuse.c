@@ -944,7 +944,7 @@ efuse_ShadowRead1Byte(
 	u16		Offset,
 	u8		*Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	*Value = pEEPROM->efuse_eeprom_data[Offset];
 }	/*  EFUSE_ShadowRead1Byte */
@@ -956,7 +956,7 @@ efuse_ShadowRead2Byte(
 	u16		Offset,
 	u16		*Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	*Value = pEEPROM->efuse_eeprom_data[Offset];
 	*Value |= pEEPROM->efuse_eeprom_data[Offset+1]<<8;
@@ -969,7 +969,7 @@ efuse_ShadowRead4Byte(
 	u16		Offset,
 	u32		*Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	*Value = pEEPROM->efuse_eeprom_data[Offset];
 	*Value |= pEEPROM->efuse_eeprom_data[Offset+1]<<8;
@@ -1008,7 +1008,7 @@ efuse_ShadowWrite1Byte(
 	u16		Offset,
 	u8		Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	pEEPROM->efuse_eeprom_data[Offset] = Value;
 }	/*  efuse_ShadowWrite1Byte */
@@ -1020,7 +1020,7 @@ efuse_ShadowWrite2Byte(
 	u16		Offset,
 	u16		Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	pEEPROM->efuse_eeprom_data[Offset] = Value&0x00FF;
 	pEEPROM->efuse_eeprom_data[Offset+1] = Value>>8;
@@ -1033,7 +1033,7 @@ efuse_ShadowWrite4Byte(
 	u16		Offset,
 	u32		Value)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 
 	pEEPROM->efuse_eeprom_data[Offset] = (u8)(Value&0x000000FF);
 	pEEPROM->efuse_eeprom_data[Offset+1] = (u8)((Value>>8)&0x0000FF);
@@ -1062,7 +1062,7 @@ void EFUSE_ShadowMapUpdate(
  u8		efuseType,
  bool	bPseudoTest)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
 	u16	mapLen=0;
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (void *)&mapLen, bPseudoTest);

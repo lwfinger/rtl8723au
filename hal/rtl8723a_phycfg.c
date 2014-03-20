@@ -956,7 +956,7 @@ phy_BB8190_Config_HardCode(struct rtw_adapter *	Adapter)
 static int
 phy_BB8723a_Config_ParaFile(struct rtw_adapter *Adapter)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	int rtStatus = _SUCCESS;
 

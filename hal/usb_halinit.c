@@ -1733,7 +1733,7 @@ static void _ReadMACAddress(
 	bool		AutoloadFail
 	)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
 
 	if(false == AutoloadFail){
 		/* Read Permanent MAC address and set value to hardware */
@@ -1931,7 +1931,7 @@ Hal_EfuseParseMACAddr_8723AU(
 {
 	u16			i, usValue;
 	u8			sMacAddr[6] = {0x00, 0xE0, 0x4C, 0x87, 0x23, 0x00};
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
 
 	if (AutoLoadFail) {
 		for (i=0; i<6; i++)
@@ -1953,7 +1953,7 @@ readAdapterInfo(
 	struct rtw_adapter *	padapter
 	)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(padapter);
 	/* struct hal_data_8723a * pHalData = GET_HAL_DATA(padapter); */
 	u8			hwinfo[HWSET_MAX_SIZE];
 
@@ -1994,7 +1994,7 @@ static void _ReadPROMContent(
  struct rtw_adapter *		Adapter
 	)
 {
-	EEPROM_EFUSE_PRIV *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
+	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(Adapter);
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter); */
 	u8			PROMContent[HWSET_MAX_SIZE]={0};
 	u8			eeValue;
@@ -2178,7 +2178,7 @@ _func_exit_;
 /*  */
 static u8 GetHalDefVar8192CUsb(
 	struct rtw_adapter *				Adapter,
-	HAL_DEF_VARIABLE		eVariable,
+	enum hal_def_variable		eVariable,
 	void *					pValue
 	)
 {
@@ -2236,7 +2236,7 @@ static u8 GetHalDefVar8192CUsb(
 /*		Change default setting of specified variable. */
 /*  */
 static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
-		     HAL_DEF_VARIABLE eVariable, void *pValue)
+		     enum hal_def_variable eVariable, void *pValue)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8			bResult = _SUCCESS;
@@ -2429,7 +2429,7 @@ static void rtl8723au_init_default_value(struct rtw_adapter *padapter)
 	rtl8723a_init_default_value(padapter);
 }
 
-static u8 rtl8192cu_ps_func(struct rtw_adapter *Adapter,HAL_INTF_PS_FUNC efunc_id, u8 *val)
+static u8 rtl8192cu_ps_func(struct rtw_adapter *Adapter,enum hal_intf_ps_func efunc_id, u8 *val)
 {
 	return true;
 }

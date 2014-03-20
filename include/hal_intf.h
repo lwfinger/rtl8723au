@@ -109,7 +109,7 @@ enum HW_VARIABLES {
 	HW_VAR_READ_LLT_TAB,
 };
 
-typedef enum _HAL_DEF_VARIABLE{
+enum hal_def_variable {
 	HAL_DEF_UNDERCORATEDSMOOTHEDPWDB,
 	HAL_DEF_IS_SUPPORT_ANT_DIV,
 	HAL_DEF_CURRENT_ANTENNA,
@@ -126,18 +126,18 @@ typedef enum _HAL_DEF_VARIABLE{
 	HAL_DEF_DBG_DUMP_TXPKT,
 	HW_DEF_FA_CNT_DUMP,
 	HW_DEF_ODM_DBG_FLAG,
-}HAL_DEF_VARIABLE;
+};
 
-typedef enum _HAL_ODM_VARIABLE{
+enum hal_odm_variable {
 	HAL_ODM_STA_INFO,
 	HAL_ODM_P2P_STATE,
 	HAL_ODM_WIFI_DISPLAY_STATE,
-}HAL_ODM_VARIABLE;
+};
 
-typedef enum _HAL_INTF_PS_FUNC{
+enum hal_intf_ps_func {
 	HAL_USB_SELECT_SUSPEND,
 	HAL_MAX_ID,
-}HAL_INTF_PS_FUNC;
+};
 
 typedef s32 (*c2h_id_filter)(u8 id);
 
@@ -183,14 +183,14 @@ struct hal_ops {
 	void	(*GetHwRegHandler)(struct rtw_adapter *padapter, u8	variable,u8* val);
 
 	u8	(*GetHalDefVarHandler)(struct rtw_adapter *padapter,
-				       HAL_DEF_VARIABLE eVariable, void * pValue);
+				       enum hal_def_variable eVariable, void * pValue);
 	u8	(*SetHalDefVarHandler)(struct rtw_adapter *padapter,
-				       HAL_DEF_VARIABLE eVariable, void * pValue);
+				       enum hal_def_variable eVariable, void * pValue);
 
 	void	(*GetHalODMVarHandler)(struct rtw_adapter *padapter,
-				       HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
+				       enum hal_odm_variable eVariable, void * pValue1,bool bSet);
 	void	(*SetHalODMVarHandler)(struct rtw_adapter *padapter,
-				       HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
+				       enum hal_odm_variable eVariable, void * pValue1,bool bSet);
 
 	void	(*UpdateRAMaskHandler)(struct rtw_adapter *padapter,
 				       u32 mac_id, u8 rssi_level);
@@ -200,7 +200,7 @@ struct hal_ops {
 	void	(*run_thread)(struct rtw_adapter *padapter);
 	void	(*cancel_thread)(struct rtw_adapter *padapter);
 
-	u8	(*interface_ps_func)(struct rtw_adapter *padapter,HAL_INTF_PS_FUNC efunc_id, u8* val);
+	u8	(*interface_ps_func)(struct rtw_adapter *padapter,enum hal_intf_ps_func efunc_id, u8* val);
 
 	s32	(*hal_xmit)(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 	s32 (*mgnt_xmit)(struct rtw_adapter *padapter, struct xmit_frame *pmgntframe);
@@ -234,11 +234,11 @@ struct hal_ops {
 	c2h_id_filter c2h_id_filter_ccx;
 };
 
-typedef	enum _RT_EEPROM_TYPE{
+enum rt_eeprom_type {
 	EEPROM_93C46,
 	EEPROM_93C56,
 	EEPROM_BOOT_EFUSE,
-}RT_EEPROM_TYPE,*PRT_EEPROM_TYPE;
+};
 
 
 
@@ -248,7 +248,7 @@ typedef	enum _RT_EEPROM_TYPE{
 #define RF_CHANGE_BY_HW		BIT30
 #define RF_CHANGE_BY_SW		BIT31
 
-typedef enum _HARDWARE_TYPE{
+enum hardware_type {
 	HARDWARE_TYPE_RTL8180,
 	HARDWARE_TYPE_RTL8185,
 	HARDWARE_TYPE_RTL8187,
@@ -269,9 +269,8 @@ typedef enum _HARDWARE_TYPE{
 	HARDWARE_TYPE_RTL8188EU,
 	HARDWARE_TYPE_RTL8188ES,
 	HARDWARE_TYPE_MAX,
-}HARDWARE_TYPE;
+};
 
-typedef struct eeprom_priv EEPROM_EFUSE_PRIV, *PEEPROM_EFUSE_PRIV;
 #define GET_EEPROM_EFUSE_PRIV(adapter) (&adapter->eeprompriv)
 #define is_boot_from_eeprom(adapter) (adapter->eeprompriv.EepromOrEfuse)
 
@@ -301,11 +300,11 @@ void rtw_hal_chip_configure(struct rtw_adapter *padapter);
 void rtw_hal_read_chip_info(struct rtw_adapter *padapter);
 void rtw_hal_read_chip_version(struct rtw_adapter *padapter);
 
-u8 rtw_hal_set_def_var(struct rtw_adapter *padapter, HAL_DEF_VARIABLE eVariable, void * pValue);
-u8 rtw_hal_get_def_var(struct rtw_adapter *padapter, HAL_DEF_VARIABLE eVariable, void * pValue);
+u8 rtw_hal_set_def_var(struct rtw_adapter *padapter, enum hal_def_variable eVariable, void * pValue);
+u8 rtw_hal_get_def_var(struct rtw_adapter *padapter, enum hal_def_variable eVariable, void * pValue);
 
-void rtw_hal_set_odm_var(struct rtw_adapter *padapter, HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
-void	rtw_hal_get_odm_var(struct rtw_adapter *padapter, HAL_ODM_VARIABLE eVariable, void * pValue1,bool bSet);
+void rtw_hal_set_odm_var(struct rtw_adapter *padapter, enum hal_odm_variable eVariable, void * pValue1,bool bSet);
+void	rtw_hal_get_odm_var(struct rtw_adapter *padapter, enum hal_odm_variable eVariable, void * pValue1,bool bSet);
 
 void rtw_hal_enable_interrupt(struct rtw_adapter *padapter);
 void rtw_hal_disable_interrupt(struct rtw_adapter *padapter);
@@ -313,7 +312,7 @@ void rtw_hal_disable_interrupt(struct rtw_adapter *padapter);
 u32	rtw_hal_inirp_init(struct rtw_adapter *padapter);
 u32	rtw_hal_inirp_deinit(struct rtw_adapter *padapter);
 
-u8	rtw_hal_intf_ps_func(struct rtw_adapter *padapter,HAL_INTF_PS_FUNC efunc_id, u8* val);
+u8	rtw_hal_intf_ps_func(struct rtw_adapter *padapter,enum hal_intf_ps_func efunc_id, u8* val);
 
 s32	rtw_hal_xmitframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
 s32	rtw_hal_xmit(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe);
