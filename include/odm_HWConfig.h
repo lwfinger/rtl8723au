@@ -176,7 +176,7 @@ ODM_ConfigRFWithHeaderFile(
 HAL_STATUS
 ODM_ConfigBBWithHeaderFile(
 	PDM_ODM_T				pDM_Odm,
-	ODM_BB_Config_Type		ConfigType
+	enum odm_bb_config_type		ConfigType
 );
 
 HAL_STATUS

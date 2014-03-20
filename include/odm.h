@@ -374,8 +374,8 @@ enum odm_cmninfo {
 	ODM_CMNINFO_IC_TYPE,					/*  enum odm_ic_type_def */
 	ODM_CMNINFO_CUT_VER,					/*  enum odm_cut_version */
 	ODM_CMNINFO_FAB_VER,					/*  enum odm_fab_version */
-	ODM_CMNINFO_RF_TYPE,					/*  enum rf_path_def or ODM_RF_TYPE_E? */
-	ODM_CMNINFO_BOARD_TYPE,				/*  ODM_BOARD_TYPE_E */
+	ODM_CMNINFO_RF_TYPE,					/*  enum rf_path_def or enum odm_rf_type? */
+	ODM_CMNINFO_BOARD_TYPE,				/*  enum odm_board_type */
 	ODM_CMNINFO_EXT_LNA,					/*  true */
 	ODM_CMNINFO_EXT_PA,
 	ODM_CMNINFO_EXT_TRSW,
@@ -388,14 +388,14 @@ enum odm_cmninfo {
 	/*  */
 	/*  Dynamic value: */
 	/*  */
-	ODM_CMNINFO_MAC_PHY_MODE,			/*  ODM_MAC_PHY_MODE_E */
+	ODM_CMNINFO_MAC_PHY_MODE,			/*  enum odm_mac_phy_mode */
 	ODM_CMNINFO_TX_UNI,
 	ODM_CMNINFO_RX_UNI,
-	ODM_CMNINFO_WM_MODE,				/*  ODM_WIRELESS_MODE_E */
-	ODM_CMNINFO_BAND,					/*  ODM_BAND_TYPE_E */
-	ODM_CMNINFO_SEC_CHNL_OFFSET,		/*  ODM_SEC_CHNL_OFFSET_E */
-	ODM_CMNINFO_SEC_MODE,				/*  ODM_SECURITY_E */
-	ODM_CMNINFO_BW,						/*  ODM_BW_E */
+	ODM_CMNINFO_WM_MODE,				/*  enum odm_wireless_mode */
+	ODM_CMNINFO_BAND,					/*  enum odm_band_type */
+	ODM_CMNINFO_SEC_CHNL_OFFSET,		/*  enum odm_sec_chnl_offset */
+	ODM_CMNINFO_SEC_MODE,				/*  enum odm_security */
+	ODM_CMNINFO_BW,						/*  enum odm_band_width */
 	ODM_CMNINFO_CHNL,
 
 	ODM_CMNINFO_DMSP_GET_VALUE,
@@ -403,7 +403,7 @@ enum odm_cmninfo {
 	ODM_CMNINFO_DMSP_IS_MASTER,
 	ODM_CMNINFO_SCAN,
 	ODM_CMNINFO_POWER_SAVING,
-	ODM_CMNINFO_ONE_PATH_CCA,			/*  ODM_CCA_PATH_E */
+	ODM_CMNINFO_ONE_PATH_CCA,			/*  enum odm_cca_path */
 	ODM_CMNINFO_DRV_STOP,
 	ODM_CMNINFO_PNP_IN,
 	ODM_CMNINFO_INIT_ON,
@@ -505,9 +505,7 @@ enum odm_fab_version {
 };
 
 /*  ODM_CMNINFO_RF_TYPE */
-/*  */
 /*  For example 1T2R (A+AB = BIT0|BIT4|BIT5) */
-/*  */
 enum rf_path_def {
 	ODM_RF_TX_A	=	BIT0,
 	ODM_RF_TX_B	=	BIT1,
@@ -520,8 +518,7 @@ enum rf_path_def {
 };
 
 
-typedef enum tag_ODM_RF_Type_Definition
-{
+enum odm_rf_type {
 	ODM_1T1R	=	0,
 	ODM_1T2R	=	1,
 	ODM_2T2R	=	2,
@@ -530,116 +527,102 @@ typedef enum tag_ODM_RF_Type_Definition
 	ODM_3T3R	=	5,
 	ODM_3T4R	=	6,
 	ODM_4T4R	=	7,
-}ODM_RF_TYPE_E;
+};
 
-
-/*  */
 /*  ODM Dynamic common info value definition */
-/*  */
 
-typedef enum tag_ODM_MAC_PHY_Mode_Definition
-{
+enum odm_mac_phy_mode {
 	ODM_SMSP	= 0,
 	ODM_DMSP	= 1,
 	ODM_DMDP	= 2,
-}ODM_MAC_PHY_MODE_E;
+};
 
 
-typedef enum tag_BT_Coexist_Definition
-{
+enum odm_bt_coexist {
 	ODM_BT_BUSY		= 1,
-	ODM_BT_ON			= 2,
+	ODM_BT_ON		= 2,
 	ODM_BT_OFF		= 3,
 	ODM_BT_NONE		= 4,
-}ODM_BT_COEXIST_E;
+};
 
 /*  ODM_CMNINFO_OP_MODE */
-typedef enum tag_Operation_Mode_Definition
-{
+enum odm_operation_mode {
 	ODM_NO_LINK		= BIT0,
-	ODM_LINK			= BIT1,
-	ODM_SCAN			= BIT2,
-	ODM_POWERSAVE	= BIT3,
+	ODM_LINK		= BIT1,
+	ODM_SCAN		= BIT2,
+	ODM_POWERSAVE		= BIT3,
 	ODM_AP_MODE		= BIT4,
-	ODM_CLIENT_MODE	= BIT5,
+	ODM_CLIENT_MODE		= BIT5,
 	ODM_AD_HOC		= BIT6,
-	ODM_WIFI_DIRECT	= BIT7,
+	ODM_WIFI_DIRECT		= BIT7,
 	ODM_WIFI_DISPLAY	= BIT8,
-}ODM_OPERATION_MODE_E;
+};
 
 /*  ODM_CMNINFO_WM_MODE */
-typedef enum tag_Wireless_Mode_Definition
-{
-	ODM_WM_UNKNOW	= 0x0,
-	ODM_WM_B			= BIT0,
-	ODM_WM_G			= BIT1,
-	ODM_WM_A			= BIT2,
+enum odm_wireless_mode {
+	ODM_WM_UNKNOW		= 0x0,
+	ODM_WM_B		= BIT0,
+	ODM_WM_G		= BIT1,
+	ODM_WM_A		= BIT2,
 	ODM_WM_N24G		= BIT3,
 	ODM_WM_N5G		= BIT4,
 	ODM_WM_AUTO		= BIT5,
 	ODM_WM_AC		= BIT6,
-}ODM_WIRELESS_MODE_E;
+};
 
 /*  ODM_CMNINFO_BAND */
-typedef enum tag_Band_Type_Definition
-{
-	ODM_BAND_2_4G	= BIT0,
+enum odm_band_type {
+	ODM_BAND_2_4G		= BIT0,
 	ODM_BAND_5G		= BIT1,
 
-}ODM_BAND_TYPE_E;
+};
 
 /*  ODM_CMNINFO_SEC_CHNL_OFFSET */
-typedef enum tag_Secondary_Channel_Offset_Definition
-{
-	ODM_DONT_CARE	= 0,
+enum odm_sec_chnl_offset {
+	ODM_DONT_CARE		= 0,
 	ODM_BELOW		= 1,
-	ODM_ABOVE			= 2
-}ODM_SEC_CHNL_OFFSET_E;
+	ODM_ABOVE		= 2
+};
 
 /*  ODM_CMNINFO_SEC_MODE */
-typedef enum tag_Security_Definition
-{
-	ODM_SEC_OPEN			= 0,
+enum odm_security {
+	ODM_SEC_OPEN		= 0,
 	ODM_SEC_WEP40		= 1,
-	ODM_SEC_TKIP			= 2,
-	ODM_SEC_RESERVE			= 3,
-	ODM_SEC_AESCCMP			= 4,
+	ODM_SEC_TKIP		= 2,
+	ODM_SEC_RESERVE		= 3,
+	ODM_SEC_AESCCMP		= 4,
 	ODM_SEC_WEP104		= 5,
-	ODM_WEP_WPA_MIXED    = 6, /*  WEP + WPA */
-	ODM_SEC_SMS4			= 7,
-}ODM_SECURITY_E;
+	ODM_WEP_WPA_MIXED	= 6, /*  WEP + WPA */
+	ODM_SEC_SMS4		= 7,
+};
 
 /*  ODM_CMNINFO_BW */
-typedef enum tag_Bandwidth_Definition
-{
+enum odm_band_width {
 	ODM_BW20M		= 0,
 	ODM_BW40M		= 1,
 	ODM_BW80M		= 2,
 	ODM_BW160M		= 3,
 	ODM_BW10M		= 4,
-}ODM_BW_E;
+};
 
 /*  ODM_CMNINFO_CHNL */
 
 /*  ODM_CMNINFO_BOARD_TYPE */
-typedef enum tag_Board_Definition
-{
+enum odm_board_type {
 	ODM_BOARD_NORMAL	= 0,
 	ODM_BOARD_HIGHPWR	= 1,
 	ODM_BOARD_MINICARD	= 2,
 	ODM_BOARD_SLIM		= 3,
 	ODM_BOARD_COMBO		= 4,
 
-}ODM_BOARD_TYPE_E;
+};
 
 /*  ODM_CMNINFO_ONE_PATH_CCA */
-typedef enum tag_CCA_Path
-{
+enum odm_cca_path {
 	ODM_CCA_2R			= 0,
 	ODM_CCA_1R_A			= 1,
 	ODM_CCA_1R_B			= 2,
-}ODM_CCA_PATH_E;
-
+};
 
 typedef struct _ODM_RA_Info_
 {
@@ -778,25 +761,21 @@ typedef struct _FAST_ANTENNA_TRAINNING_
 	u32	AuxAnt_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
 	u8	RxIdleAnt;
 	bool		bBecomeLinked;
-
 }FAT_T,*pFAT_T;
 
-typedef enum _FAT_STATE
-{
-	FAT_NORMAL_STATE			= 0,
+enum fat_state {
+	FAT_NORMAL_STATE		= 0,
 	FAT_TRAINING_STATE		= 1,
-}FAT_STATE_E, *PFAT_STATE_E;
+};
 
-typedef enum _ANT_DIV_TYPE
-{
-	NO_ANTDIV					= 0xFF,
-	CG_TRX_HW_ANTDIV			= 0x01,
+enum ant_dif_type {
+	NO_ANTDIV			= 0xFF,
+	CG_TRX_HW_ANTDIV		= 0x01,
 	CGCS_RX_HW_ANTDIV		= 0x02,
-	FIXED_HW_ANTDIV				= 0x03,
+	FIXED_HW_ANTDIV			= 0x03,
 	CG_TRX_SMART_ANTDIV		= 0x04,
 	CGCS_RX_SW_ANTDIV		= 0x05,
-
-}ANT_DIV_TYPE_E, *PANT_DIV_TYPE_E;
+};
 
 /*  2011/09/22 MH Copy from SD4 defined structure. We use to support PHY DM integration. */
 typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
@@ -870,7 +849,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/* RX Unicast byte count */
 	u64			*pNumRxBytesUnicast;
 	/*  Wireless mode B/G/A/N = BIT0/BIT1/BIT2/BIT3 */
-	u8			*pWirelessMode; /* ODM_WIRELESS_MODE_E */
+	u8			*pWirelessMode; /* enum odm_wireless_mode */
 	/*  Frequence band 2.4G/5G = 0/1 */
 	u8			*pBandType;
 	/*  Secondary channel offset don't_care/below/above = 0/1/2 */
@@ -889,7 +868,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  Common info for Status */
 	bool			*pbScanInProcess;
 	bool			*pbPowerSaving;
-	/*  CCA Path 2-path/path-A/path-B = 0/1/2; using ODM_CCA_PATH_E. */
+	/*  CCA Path 2-path/path-A/path-B = 0/1/2; using enum odm_cca_path. */
 	u8			*pOnePathCCA;
 	/* pMgntInfo->AntennaTest */
 	u8			*pAntennaTest;
@@ -1008,23 +987,23 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  ODM relative workitem. */
 } DM_ODM_T, *PDM_ODM_T;		/*  DM_Dynamic_Mechanism_Structure */
 
-typedef enum _ODM_RF_CONTENT{
+enum odm_rf_content {
 	odm_radioa_txt = 0x1000,
 	odm_radiob_txt = 0x1001,
 	odm_radioc_txt = 0x1002,
 	odm_radiod_txt = 0x1003
-} ODM_RF_CONTENT;
+};
 
-typedef enum _ODM_BB_Config_Type{
+enum odm_bb_config_type {
     CONFIG_BB_PHY_REG,
     CONFIG_BB_AGC_TAB,
     CONFIG_BB_AGC_TAB_2G,
     CONFIG_BB_AGC_TAB_5G,
     CONFIG_BB_PHY_REG_PG,
-} ODM_BB_Config_Type, *PODM_BB_Config_Type;
+};
 
 /*  Status code */
-typedef enum _RT_STATUS{
+enum rt_status {
 	RT_STATUS_SUCCESS,
 	RT_STATUS_FAILURE,
 	RT_STATUS_PENDING,
@@ -1033,7 +1012,7 @@ typedef enum _RT_STATUS{
 	RT_STATUS_INVALID_PARAMETER,
 	RT_STATUS_NOT_SUPPORT,
 	RT_STATUS_OS_API_FAILED,
-}RT_STATUS,*PRT_STATUS;
+};
 
 /* include "odm_function.h" */
 
@@ -1041,8 +1020,7 @@ typedef enum _RT_STATUS{
 /* 3 DIG */
 /* 3=========================================================== */
 
-typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
-{
+enum dm_dig_op {
 	DIG_TYPE_THRESH_HIGH	= 0,
 	DIG_TYPE_THRESH_LOW	= 1,
 	DIG_TYPE_BACKOFF		= 2,
@@ -1051,7 +1029,7 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 	DIG_TYPE_ENABLE			= 5,
 	DIG_TYPE_DISABLE		= 6,
 	DIG_OP_TYPE_MAX
-}DM_DIG_OP_E;
+};
 
 #define		DM_DIG_THRESH_HIGH			40
 #define		DM_DIG_THRESH_LOW			35
@@ -1137,30 +1115,26 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 /* 3=========================================================== */
 
 
-typedef enum tag_1R_CCA_Type_Definition
-{
+enum dm_1r_cca {
 	CCA_1R =0,
 	CCA_2R = 1,
 	CCA_MAX = 2,
-}DM_1R_CCA_E;
+};
 
-typedef enum tag_RF_Type_Definition
-{
+enum dm_rf_def {
 	RF_Save =0,
 	RF_Normal = 1,
 	RF_MAX = 2,
-}DM_RF_E;
+};
 
 /* 3=========================================================== */
 /* 3 Antenna Diversity */
 /* 3=========================================================== */
-typedef enum tag_SW_Antenna_Switch_Definition
-{
+enum dm_swas {
 	Antenna_A = 1,
 	Antenna_B = 2,
 	Antenna_MAX = 3,
-}DM_SWAS_E;
-
+};
 
 /*  Maximal number of antenna detection mechanism needs to perform, added by Roger, 2011.12.28. */
 #define	MAX_ANTENNA_DETECTION_CNT	10

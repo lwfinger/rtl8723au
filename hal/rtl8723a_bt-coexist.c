@@ -250,13 +250,13 @@ static void BTPKT_TimerCallbackBeacon(unsigned long data)
 	(_os).Octet=(u8*)(_octet);			\
 	(_os).Length=(_len);
 
-static RT_STATUS PlatformIndicateBTEvent(
+static enum rt_status PlatformIndicateBTEvent(
 	struct rtw_adapter *					padapter,
 	void						*pEvntData,
 	u32						dataLen
 	)
 {
-	RT_STATUS	rt_status = RT_STATUS_FAILURE;
+	enum rt_status	rt_status = RT_STATUS_FAILURE;
 
 	RTPRINT(FIOCTL, IOCTL_BT_EVENT_DETAIL, ("BT event start, %d bytes data to Transferred!!\n", dataLen));
 	RTPRINT_DATA(FIOCTL, IOCTL_BT_EVENT_DETAIL, "To transfer Hex Data :\n",
@@ -1276,14 +1276,14 @@ static u8 bthci_ExtensionEventHeaderRtk(u8 *pbuf, u8 extensionEvent)
 	return 1;
 }
 
-static RT_STATUS
+static enum rt_status
 bthci_IndicateEvent(
 	struct rtw_adapter *	padapter,
 	void		*pEvntData,
 	u32		dataLen
 	)
 {
-	RT_STATUS	rt_status;
+	enum rt_status	rt_status;
 
 	rt_status = PlatformIndicateBTEvent(padapter, pEvntData, dataLen);
 
@@ -6129,11 +6129,11 @@ BTHCI_GetPhysicalLinkHandle(struct rtw_adapter *padapter, u8 EntryNum)
 	return handle;
 }
 
-static RT_STATUS
+static enum rt_status
 BTHCI_IndicateRxData(struct rtw_adapter *padapter, void *pData,
 		     u32 dataLen, u8 EntryNum)
 {
-	RT_STATUS	rt_status;
+	enum rt_status	rt_status;
 
 	rt_status = PlatformIndicateBTACLData(padapter, pData, dataLen, EntryNum);
 
