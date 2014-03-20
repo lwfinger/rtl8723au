@@ -356,11 +356,17 @@ _func_enter_;
 					  "key\n"));
 			}
 
-			/* We already pulled the crypto header/trailer
-			 * iv_len + icv_len */
-			datalen = precvframe->pkt->len - prxattrib->hdrlen - 8;
+			/* icv_len included the mic code */
+			datalen = precvframe->pkt->len-prxattrib->
+				hdrlen-prxattrib->iv_len-prxattrib->icv_len - 8;
 			pframe = precvframe->pkt->data;
-			payload = pframe + prxattrib->hdrlen;
+			payload = pframe + prxattrib->hdrlen +
+				prxattrib->iv_len;
+
+			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
+				 ("\n prxattrib->iv_len=%d prxattrib->icv_len="
+				  "%d\n", prxattrib->iv_len,
+				  prxattrib->icv_len));
 
 			/* care the length of the data */
 			rtw_seccalctkipmic(mickey, pframe, payload,
@@ -1307,11 +1313,6 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 	RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
 		 ("+validate_recv_mgnt_frame\n"));
 
-	if (precv_frame->attrib.icv_len)
-		printk(KERN_DEBUG "validate_recv_mgnt_frame: "
-		       "precv_frame->attrib.icv_len %i\n",
-		       precv_frame->attrib.icv_len);
-
 	precv_frame = recvframe_chk_defrag(padapter, precv_frame);
 	if (precv_frame == NULL) {
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_notice_,
@@ -1666,6 +1667,10 @@ _func_enter_;
 
 	len = skb->len - hdrlen;
 
+	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
+		 ("\n===pattrib->hdrlen: %x,  pattrib->iv_len:%x ===\n\n",
+		  pattrib->hdrlen,  pattrib->iv_len));
+
 	pattrib->eth_type = eth_type;
 	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)) {
 		ptr += hdrlen;
@@ -1755,17 +1760,21 @@ _func_enter_;
 		   first fragment */
 		/* get the 2nd~last fragment frame's payload */
 
-		wlanhdr_offset = pnfhdr->attrib.hdrlen;
+		wlanhdr_offset = pnfhdr->attrib.hdrlen + pnfhdr->attrib.iv_len;
 
 		skb_pull(pnfhdr->pkt, wlanhdr_offset);
 
 		/* append  to first fragment frame's tail
 		   (if privacy frame, pull the ICV) */
 
+		skb_trim(skb, skb->len - prframe->attrib.icv_len);
+
 		memcpy(skb_tail_pointer(skb), pnfhdr->pkt->data,
 		       pnfhdr->pkt->len);
 
 		skb_put(skb, pnfhdr->pkt->len);
+
+		prframe->attrib.icv_len = pnfhdr->attrib.icv_len;
 	};
 
 	/* free the defrag_q queue and return the prframe */
@@ -2405,6 +2414,13 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 		goto _recv_data_drop;
 	}
 
+	prframe = recvframe_chk_defrag(padapter, prframe);
+	if (!prframe) {
+		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
+			 ("recvframe_chk_defrag: drop pkt\n"));
+		goto _recv_data_drop;
+	}
+
 	/*
 	 * Pull off crypto headers
 	 */
@@ -2415,13 +2431,6 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	if (prframe->attrib.icv_len > 0) {
 		skb_trim(prframe->pkt,
 			 prframe->pkt->len - prframe->attrib.icv_len);
-	}
-
-	prframe = recvframe_chk_defrag(padapter, prframe);
-	if (!prframe) {
-		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
-			 ("recvframe_chk_defrag: drop pkt\n"));
-		goto _recv_data_drop;
 	}
 
 	prframe = portctrl(padapter, prframe);
