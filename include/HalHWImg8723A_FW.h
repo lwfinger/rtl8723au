@@ -14,7 +14,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723A_SUPPORT == 1)
 #ifndef __INC_FW_8723A_HW_IMG_H
 #define __INC_FW_8723A_HW_IMG_H
 
@@ -23,12 +22,7 @@
 *                           rtl8723fw_B.TXT
 ******************************************************************************/
 
-void
-ODM_ReadFirmware_8723A_rtl8723fw_B(
-	PDM_ODM_T    pDM_Odm,
-	u8       *pFirmware,
-	u32       *pFirmwareSize
-);
+void ODM_ReadFirmware_8723A_rtl8723fw_B(struct dm_odm_t *pDM_Odm,
+					u8 *pFirmware, u32 *pFirmwareSize);
 
-#endif
 #endif /*  end of HWIMG_SUPPORT */

@@ -624,8 +624,7 @@ enum odm_cca_path {
 	ODM_CCA_1R_B			= 2,
 };
 
-typedef struct _ODM_RA_Info_
-{
+struct odm_ra_info {
 	u8 RateID;
 	u32 RateMask;
 	u32 RAUseRate;
@@ -655,16 +654,14 @@ typedef struct _ODM_RA_Info_
 	u8 PTModeSS;  /*  decide whitch rate should do PT */
 	u8 RAstage;  /*  StageRA, decide how many times RA will be done between PT */
 	u8 PTSmoothFactor;
-} ODM_RA_INFO_T,*PODM_RA_INFO_T;
+};
 
-typedef struct _IQK_MATRIX_REGS_SETTING{
+struct iqk_matrix_regs_set {
 	bool	bIQKDone;
-	s32		Value[1][IQK_Matrix_REG_NUM];
-}IQK_MATRIX_REGS_SETTING,*PIQK_MATRIX_REGS_SETTING;
+	s32	Value[1][IQK_Matrix_REG_NUM];
+};
 
-
-typedef struct ODM_RF_Calibration_Structure
-{
+struct odm_rf_cal_t {
 	/* for tx power tracking */
 
 	u32	RegA24; /*  for TempCCK */
@@ -706,7 +703,7 @@ typedef struct ODM_RF_Calibration_Structure
 
 	u8	ThermalValue_HP[HP_THERMAL_NUM];
 	u8	ThermalValue_HP_index;
-	IQK_MATRIX_REGS_SETTING IQKMatrixRegSetting[IQK_Matrix_Settings_NUM];
+	struct iqk_matrix_regs_set IQKMatrixRegSetting[IQK_Matrix_Settings_NUM];
 
 	u8	Delta_IQK;
 	u8	Delta_LCK;
@@ -736,13 +733,10 @@ typedef struct ODM_RF_Calibration_Structure
 	u8	bDPdone;
 	u8	bDPPathAOK;
 	u8	bDPPathBOK;
-}ODM_RF_CAL_T,*PODM_RF_CAL_T;
-/*  */
-/*  ODM Dynamic common info value definition */
-/*  */
+};
 
-typedef struct _FAST_ANTENNA_TRAINNING_
-{
+/*  ODM Dynamic common info value definition */
+struct odm_fat_t {
 	u8	Bssid[6];
 	u8	antsel_rx_keep_0;
 	u8	antsel_rx_keep_1;
@@ -760,8 +754,8 @@ typedef struct _FAST_ANTENNA_TRAINNING_
 	u32	MainAnt_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
 	u32	AuxAnt_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
 	u8	RxIdleAnt;
-	bool		bBecomeLinked;
-}FAT_T,*pFAT_T;
+	bool	bBecomeLinked;
+};
 
 enum fat_state {
 	FAT_NORMAL_STATE		= 0,
@@ -778,8 +772,7 @@ enum ant_dif_type {
 };
 
 /*  2011/09/22 MH Copy from SD4 defined structure. We use to support PHY DM integration. */
-typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
-{
+struct dm_odm_t {
 	/* struct timer_list FastAntTrainingTimer; */
 	/*  */
 	/*	Add for different team use temporarily */
@@ -898,7 +891,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 #if (RATE_ADAPTIVE_SUPPORT == 1)
 	u16			CurrminRptTime;
-	ODM_RA_INFO_T   RAInfo[ODM_ASSOCIATE_ENTRY_NUM]; /* Use MacID as array index. STA MacID=0, VWiFi Client MacID={1, ODM_ASSOCIATE_ENTRY_NUM-1} */
+	struct odm_ra_info   RAInfo[ODM_ASSOCIATE_ENTRY_NUM]; /* Use MacID as array index. STA MacID=0, VWiFi Client MacID={1, ODM_ASSOCIATE_ENTRY_NUM-1} */
 #endif
 	/*  */
 	/*  2012/02/14 MH Add to share 88E ra with other SW team. */
@@ -926,7 +919,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  */
 	/* ODM Structure */
 	/*  */
-	FAT_T		DM_FatTable;
+	struct odm_fat_t		DM_FatTable;
 	struct dig_t	DM_DigTable;
 	struct dynamic_pwr_sav		DM_PSTable;
 	struct pri_cca	DM_PriCCA;
@@ -961,7 +954,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	struct odm_rate_adapt	RateAdaptive;
 
 
-	ODM_RF_CAL_T	RFCalibrateInfo;
+	struct odm_rf_cal_t	RFCalibrateInfo;
 
 	/*  */
 	/*  TX power tracking */
@@ -985,7 +978,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	struct timer_list FastAntTrainingTimer;
 
 	/*  ODM relative workitem. */
-} DM_ODM_T, *PDM_ODM_T;		/*  DM_Dynamic_Mechanism_Structure */
+};	/*  DM_Dynamic_Mechanism_Structure */
 
 enum odm_rf_content {
 	odm_radioa_txt = 0x1000,
@@ -1164,141 +1157,64 @@ extern	u8 CCKSwingTable_Ch14 [CCK_TABLE_SIZE][8];
 #define SWAW_STEP_PEAK		0
 #define SWAW_STEP_DETERMINE	1
 
-void ODM_Write_DIG(PDM_ODM_T	pDM_Odm,	u8	CurrentIGI);
-void ODM_Write_CCK_CCA_Thres(PDM_ODM_T	pDM_Odm, u8	CurCCK_CCAThres);
+void ODM_Write_DIG(struct dm_odm_t *pDM_Odm,	u8	CurrentIGI);
+void ODM_Write_CCK_CCA_Thres(struct dm_odm_t *pDM_Odm, u8	CurCCK_CCAThres);
 
-void
-ODM_SetAntenna(
-	PDM_ODM_T	pDM_Odm,
-	u8		Antenna);
+void ODM_SetAntenna(struct dm_odm_t *pDM_Odm, u8 Antenna);
 
 
 #define dm_RF_Saving	ODM_RF_Saving
-void ODM_RF_Saving(	PDM_ODM_T	pDM_Odm,
-							u8		bForceInNormal );
+void ODM_RF_Saving(struct dm_odm_t *pDM_Odm, u8 bForceInNormal);
 
 #define SwAntDivRestAfterLink	ODM_SwAntDivRestAfterLink
-void ODM_SwAntDivRestAfterLink(	PDM_ODM_T	pDM_Odm);
+void ODM_SwAntDivRestAfterLink(struct dm_odm_t *pDM_Odm);
 
 #define dm_CheckTXPowerTracking		ODM_TXPowerTrackingCheck
-void
-ODM_TXPowerTrackingCheck(
-		PDM_ODM_T		pDM_Odm
-	);
+void ODM_TXPowerTrackingCheck(struct dm_odm_t *pDM_Odm);
 
-bool
-ODM_RAStateCheck(
-		PDM_ODM_T		pDM_Odm,
-		s32			RSSI,
-		bool			bForceUpdate,
-		u8 *			pRATRState
-	);
+bool ODM_RAStateCheck(struct dm_odm_t *pDM_Odm, s32 RSSI, bool bForceUpdate,
+		      u8 *pRATRState);
 
 
 #define dm_SWAW_RSSI_Check	ODM_SwAntDivChkPerPktRssi
-void ODM_SwAntDivChkPerPktRssi(
-	PDM_ODM_T pDM_Odm,
-	u8 StationID,
-	struct odm_phy_info *pPhyInfo
-);
+void ODM_SwAntDivChkPerPktRssi(struct dm_odm_t *pDM_Odm, u8 StationID,
+			       struct odm_phy_info *pPhyInfo);
 
 u32 ConvertTo_dB(u32 Value);
 
-u32
-GetPSDData(
-	PDM_ODM_T	pDM_Odm,
-	unsigned int	point,
-	u8 initial_gain_psd);
+u32 GetPSDData(struct dm_odm_t *pDM_Odm, unsigned int point, u8 initial_gain_psd);
 
-void
-odm_DIGbyRSSI_LPS(
-		PDM_ODM_T		pDM_Odm
-	);
+void odm_DIGbyRSSI_LPS(struct dm_odm_t *pDM_Odm);
 
-u32 ODM_Get_Rate_Bitmap(
-	PDM_ODM_T	pDM_Odm,
-	u32		macid,
-	u32		ra_mask,
-	u8		rssi_level);
+u32 ODM_Get_Rate_Bitmap(struct dm_odm_t *pDM_Odm, u32 macid, u32 ra_mask, u8 rssi_level);
 
 
-void ODM_DMInit(PDM_ODM_T	pDM_Odm);
+void ODM_DMInit(struct dm_odm_t *pDM_Odm);
 
-void
-ODM_DMWatchdog(
-		PDM_ODM_T			pDM_Odm			/*  For common use in the future */
-	);
+void ODM_DMWatchdog(struct dm_odm_t *pDM_Odm); /*  For common use in the future */
 
-void
-ODM_CmnInfoInit(
-		PDM_ODM_T		pDM_Odm,
-		enum odm_cmninfo	CmnInfo,
-		u32			Value
-	);
+void ODM_CmnInfoInit(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u32 Value);
 
-void
-ODM_CmnInfoHook(
-		PDM_ODM_T		pDM_Odm,
-		enum odm_cmninfo	CmnInfo,
-		void *			pValue
-	);
+void ODM_CmnInfoHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, void *pValue);
 
-void
-ODM_CmnInfoPtrArrayHook(
-		PDM_ODM_T		pDM_Odm,
-		enum odm_cmninfo	CmnInfo,
-		u16			Index,
-		void *			pValue
-	);
+void ODM_CmnInfoPtrArrayHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u16 Index, void *pValue);
 
-void
-ODM_CmnInfoUpdate(
-		PDM_ODM_T		pDM_Odm,
-		u32			CmnInfo,
-		u64			Value
-	);
+void ODM_CmnInfoUpdate(struct dm_odm_t *pDM_Odm, u32 CmnInfo, u64 Value);
 
-void
-ODM_InitAllTimers(
-	PDM_ODM_T	pDM_Odm
-    );
+void ODM_InitAllTimers(struct dm_odm_t *pDM_Odm);
 
-void
-ODM_CancelAllTimers(
-	PDM_ODM_T    pDM_Odm
-    );
+void ODM_CancelAllTimers(struct dm_odm_t *pDM_Odm);
 
-void
-ODM_ReleaseAllTimers(
-	PDM_ODM_T	pDM_Odm
-    );
+void ODM_ReleaseAllTimers(struct dm_odm_t *pDM_Odm);
 
-void
-ODM_ResetIQKResult(
-	PDM_ODM_T pDM_Odm
-    );
+void ODM_ResetIQKResult(struct dm_odm_t *pDM_Odm);
 
+void ODM_AntselStatistics_88C(struct dm_odm_t *pDM_Odm, u8 MacId, u32 PWDBAll, bool isCCKrate);
 
-void
-ODM_AntselStatistics_88C(
-		PDM_ODM_T		pDM_Odm,
-		u8			MacId,
-		u32			PWDBAll,
-		bool			isCCKrate
-);
+void ODM_SingleDualAntennaDefaultSetting(struct dm_odm_t *pDM_Odm);
 
+bool ODM_SingleDualAntennaDetection(struct dm_odm_t *pDM_Odm, u8 mode);
 
-void
-ODM_SingleDualAntennaDefaultSetting(
-		PDM_ODM_T		pDM_Odm
-	);
-
-bool
-ODM_SingleDualAntennaDetection(
-		PDM_ODM_T		pDM_Odm,
-		u8			mode
-	);
-
-void odm_dtc(PDM_ODM_T pDM_Odm);
+void odm_dtc(struct dm_odm_t *pDM_Odm);
 
 #endif

@@ -7461,7 +7461,7 @@ static void btdm_1AntTdmaDurationAdjustForSCO(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a * pHalData;
 	PBTDM_8723A_1ANT pBtdm8723;
-	PDM_ODM_T podm;
+	struct dm_odm_t *podm;
 	struct dig_t *pDigTable;
 	u8 RSSITh_WiFi, RSSITh12_BT, RSSITh23_BT;
 	u8 Type, RSSIOffset;
@@ -17038,13 +17038,12 @@ void BTDM_PWDBMonitor(struct rtw_adapter *padapter)
 
 static u8 BTDM_DigByBtRssi(struct rtw_adapter *padapter)
 {
-/*	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo); */
 	PBT30Info		pBTInfo = GET_BT_INFO(GetDefaultAdapter(padapter));
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(padapter);
-	u8				bRet = false;
-	PDM_ODM_T		pDM_OutSrc = &pHalData->odmpriv;
-	u8				digForBtHs=0, cckCcaThres=0;
+	u8 bRet = false;
+	struct dm_odm_t *pDM_OutSrc = &pHalData->odmpriv;
+	u8 digForBtHs=0, cckCcaThres=0;
 
 
 	/*  */

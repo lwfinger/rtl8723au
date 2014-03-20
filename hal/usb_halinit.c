@@ -2215,7 +2215,7 @@ static u8 GetHalDefVar8192CUsb(
 		case HW_DEF_ODM_DBG_FLAG:
 			{
 				u64	DebugComponents = *((u32*)pValue);
-				PDM_ODM_T	pDM_Odm = &(pHalData->odmpriv);
+				struct dm_odm_t	*pDM_Odm = &(pHalData->odmpriv);
 				printk("pDM_Odm->DebugComponents = 0x%llx \n",pDM_Odm->DebugComponents );
 			}
 			break;
@@ -2250,7 +2250,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 			{
 				u8 dm_func = *(( u8*)pValue);
 				struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-				DM_ODM_T		*podmpriv = &pHalData->odmpriv;
+				struct dm_odm_t		*podmpriv = &pHalData->odmpriv;
 
 				if(dm_func == 0){ /* disable all dynamic func */
 					podmpriv->SupportAbility = DYNAMIC_FUNC_DISABLE;
@@ -2288,7 +2288,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 		case HW_DEF_FA_CNT_DUMP:
 			{
 				u8 bRSSIDump = *((u8*)pValue);
-				PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
+				struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
 				if(bRSSIDump)
 					pDM_Odm->DebugComponents	=	ODM_COMP_DIG|ODM_COMP_FA_CNT	;
 				else
@@ -2299,7 +2299,7 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 		case HW_DEF_ODM_DBG_FLAG:
 			{
 				u64	DebugComponents = *((u64*)pValue);
-				PDM_ODM_T	pDM_Odm = &(pHalData->odmpriv);
+				struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
 				pDM_Odm->DebugComponents = DebugComponents;
 			}
 			break;

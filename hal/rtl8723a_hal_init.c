@@ -1791,7 +1791,7 @@ static void rtl8723a_GetHalODMVar(struct rtw_adapter *Adapter,
 				  void *pValue1, bool bSet)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	PDM_ODM_T podmpriv = &pHalData->odmpriv;
+	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 	switch (eVariable) {
 	case HAL_ODM_STA_INFO:
 		break;
@@ -1805,7 +1805,7 @@ static void rtl8723a_SetHalODMVar(struct rtw_adapter *Adapter,
 				  void *pValue1, bool bSet)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	PDM_ODM_T podmpriv = &pHalData->odmpriv;
+	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 	switch (eVariable) {
 	case HAL_ODM_STA_INFO:
 	{
@@ -3673,7 +3673,7 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 
 	case HW_VAR_DM_FLAG:
 	{
-		PDM_ODM_T podmpriv = &pHalData->odmpriv;
+		struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 		*((u32 *) val) = podmpriv->SupportAbility;
 	}
 		break;
@@ -3734,7 +3734,7 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a *pHalData;
-	PDM_ODM_T pDM_Odm;
+	struct dm_odm_t *pDM_Odm;
 	struct sw_ant_sw *pDM_SWAT_Table;
 	u8 btAntNum;
 	u8 i;

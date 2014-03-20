@@ -14,7 +14,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723A_SUPPORT == 1)
 #ifndef __INC_MAC_8723A_HW_IMG_H
 #define __INC_MAC_8723A_HW_IMG_H
 
@@ -22,10 +21,6 @@
 *                           MAC_REG.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_MAC_REG_8723A(
-	PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_MAC_REG_8723A(struct dm_odm_t *pDM_Odm);
 
-#endif
 #endif /*  end of HWIMG_SUPPORT */

@@ -145,20 +145,17 @@ typedef struct _Phy_Status_Rpt_8195
 } PHY_STATUS_RPT_8195_T,*pPHY_STATUS_RPT_8195_T;
 
 
-void
-odm_Init_RSSIForDM(
-	PDM_ODM_T	pDM_Odm
-	);
+void odm_Init_RSSIForDM(struct dm_odm_t *pDM_Odm);
 
 void
 ODM_PhyStatusQuery(
-	DM_ODM_T *pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	struct odm_phy_info *pPhyInfo,
 	u8 *						pPhyStatus,
 	struct odm_packet_info *pPktinfo
 	);
 
-void ODM_MacStatusQuery(DM_ODM_T *pDM_Odm,
+void ODM_MacStatusQuery(struct dm_odm_t *pDM_Odm,
 	u8 *pMacStatus,
 	u8 MacID,
 	bool bPacketMatchBSSID,
@@ -166,22 +163,15 @@ void ODM_MacStatusQuery(DM_ODM_T *pDM_Odm,
 	bool bPacketBeacon
 );
 
-HAL_STATUS
-ODM_ConfigRFWithHeaderFile(
-	PDM_ODM_T	      pDM_Odm,
+HAL_STATUS ODM_ConfigRFWithHeaderFile(struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	Content,
 	enum RF_RADIO_PATH	eRFPath
 );
 
-HAL_STATUS
-ODM_ConfigBBWithHeaderFile(
-	PDM_ODM_T				pDM_Odm,
+HAL_STATUS ODM_ConfigBBWithHeaderFile(struct dm_odm_t *pDM_Odm,
 	enum odm_bb_config_type		ConfigType
 );
 
-HAL_STATUS
-ODM_ConfigMACWithHeaderFile(
-	PDM_ODM_T	pDM_Odm
-    );
+HAL_STATUS ODM_ConfigMACWithHeaderFile(struct dm_odm_t *pDM_Odm);
 
 #endif

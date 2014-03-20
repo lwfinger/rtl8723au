@@ -22,7 +22,7 @@
 /*  ODM IO Relative API. */
 /*  */
 
-u8 ODM_Read1Byte(PDM_ODM_T		pDM_Odm,
+u8 ODM_Read1Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
@@ -32,7 +32,7 @@ u8 ODM_Read1Byte(PDM_ODM_T		pDM_Odm,
 }
 
 
-u16 ODM_Read2Byte(PDM_ODM_T		pDM_Odm,
+u16 ODM_Read2Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
@@ -42,7 +42,7 @@ u16 ODM_Read2Byte(PDM_ODM_T		pDM_Odm,
 }
 
 
-u32 ODM_Read4Byte(PDM_ODM_T		pDM_Odm,
+u32 ODM_Read4Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
@@ -53,7 +53,7 @@ u32 ODM_Read4Byte(PDM_ODM_T		pDM_Odm,
 
 
 void ODM_Write1Byte(
-	PDM_ODM_T		pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32			RegAddr,
 	u8			Data
 	)
@@ -64,7 +64,7 @@ void ODM_Write1Byte(
 }
 
 void ODM_Write2Byte(
-	PDM_ODM_T		pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32			RegAddr,
 	u16			Data
 	)
@@ -75,7 +75,7 @@ void ODM_Write2Byte(
 }
 
 void ODM_Write4Byte(
-	PDM_ODM_T		pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32			RegAddr,
 	u32			Data
 	)
@@ -88,7 +88,7 @@ void ODM_Write4Byte(
 
 
 void ODM_SetMACReg(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		RegAddr,
 	u32		BitMask,
 	u32		Data
@@ -101,7 +101,7 @@ void ODM_SetMACReg(
 
 
 u32 ODM_GetMACReg(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		RegAddr,
 	u32		BitMask
 	)
@@ -112,7 +112,7 @@ u32 ODM_GetMACReg(
 }
 
 void ODM_SetBBReg(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		RegAddr,
 	u32		BitMask,
 	u32		Data
@@ -124,7 +124,7 @@ void ODM_SetBBReg(
 }
 
 u32 ODM_GetBBReg(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		RegAddr,
 	u32		BitMask
 	)
@@ -136,7 +136,7 @@ u32 ODM_GetBBReg(
 
 
 void ODM_SetRFReg(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	eRFPath,
 	u32				RegAddr,
 	u32				BitMask,
@@ -150,7 +150,7 @@ void ODM_SetRFReg(
 
 
 u32 ODM_GetRFReg(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	eRFPath,
 	u32				RegAddr,
 	u32				BitMask
@@ -165,7 +165,7 @@ u32 ODM_GetRFReg(
 /*  ODM Memory relative API. */
 /*  */
 void ODM_AllocateMemory(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	void *		*pPtr,
 	u32		length
 	)
@@ -175,7 +175,7 @@ void ODM_AllocateMemory(
 
 /*  length could be ignored, used to detect memory leakage. */
 void ODM_FreeMemory(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	void *		pPtr,
 	u32		length
 	)
@@ -188,14 +188,14 @@ void ODM_FreeMemory(
 /*  */
 void
 ODM_AcquireSpinLock(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	RT_SPINLOCK_TYPE	type
 	)
 {
 }
 
 void ODM_ReleaseSpinLock(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	RT_SPINLOCK_TYPE	type
 	)
 {
@@ -205,7 +205,7 @@ void ODM_ReleaseSpinLock(
 /*  Work item relative API. FOr MP driver only~! */
 /*  */
 void ODM_InitializeWorkItem(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	void *				pRtWorkItem,
 	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
 	void *						pContext,
@@ -217,12 +217,12 @@ void ODM_InitializeWorkItem(
 /*  */
 /*  ODM Timer relative API. */
 /*  */
-void ODM_SetTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer, u32 msDelay)
+void ODM_SetTimer(struct dm_odm_t *pDM_Odm, struct timer_list *pTimer, u32 msDelay)
 {
 	mod_timer(pTimer, jiffies + msecs_to_jiffies(msDelay)); /* ms */
 }
 
-void ODM_ReleaseTimer(PDM_ODM_T pDM_Odm, struct timer_list *pTimer)
+void ODM_ReleaseTimer(struct dm_odm_t *pDM_Odm, struct timer_list *pTimer)
 {
 }
 

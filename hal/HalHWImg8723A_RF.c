@@ -210,9 +210,7 @@ static u32 Array_RadioA_1T_8723A[] = {
 	0x000, 0x00030159,
 };
 
-void ODM_ReadAndConfig_RadioA_1T_8723A(
-	PDM_ODM_T  pDM_Odm
-	)
+void ODM_ReadAndConfig_RadioA_1T_8723A(struct dm_odm_t *pDM_Odm)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 

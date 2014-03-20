@@ -116,7 +116,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
-	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
 	u8	cut_ver,fab_ver;
 
 	/*  */
@@ -177,7 +177,7 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	struct mlme_priv		*pmlmepriv = &Adapter->mlmepriv;
 	struct pwrctrl_priv *pwrctrlpriv = &Adapter->pwrctrlpriv;
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
-	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int i;
 	pdmpriv->InitODMFlag =	ODM_BB_DIG		|
@@ -213,15 +213,11 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 		ODM_CmnInfoPtrArrayHook(pDM_Odm, ODM_CMNINFO_STA_STATUS,i,NULL);
 }
 
-void
-rtl8723a_InitHalDm(
-	struct rtw_adapter *	Adapter
-	)
+void rtl8723a_InitHalDm(struct rtw_adapter *Adapter)
 {
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-
+	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
 	u8	i;
 
 	pdmpriv->DM_Type = DM_Type_ByDriver;
@@ -318,7 +314,7 @@ void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 {
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
+	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 	memset(pdmpriv, 0, sizeof(struct dm_priv));
 	Init_ODM_ComInfo_8723a(Adapter);
 }
@@ -327,5 +323,5 @@ void rtl8723a_deinit_dm_priv(struct rtw_adapter *Adapter)
 {
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
+	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 }

@@ -13,7 +13,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723A_SUPPORT == 1)
 #ifndef __INC_RF_8723A_HW_IMG_H
 #define __INC_RF_8723A_HW_IMG_H
 
@@ -21,11 +20,6 @@
 *                           RadioA_1T.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_RadioA_1T_8723A(
-	PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_RadioA_1T_8723A(struct dm_odm_t *pDM_Odm);
 
-
-#endif
 #endif /*  end of HWIMG_SUPPORT */

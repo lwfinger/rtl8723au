@@ -386,7 +386,7 @@ odm_CheckTXPowerTracking_ThermalMeter(
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	DM_ODM_T		*podmpriv = &pHalData->odmpriv;
+	struct dm_odm_t		*podmpriv = &pHalData->odmpriv;
 
 	if(!(podmpriv->SupportAbility & ODM_RF_TX_PWR_TRACK))
 	{

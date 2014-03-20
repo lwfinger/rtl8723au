@@ -142,7 +142,7 @@ static u32 Array_MAC_REG_8723A[] = {
 
 void
 ODM_ReadAndConfig_MAC_REG_8723A(
-	PDM_ODM_T  pDM_Odm
+	struct dm_odm_t *pDM_Odm
 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)

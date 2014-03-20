@@ -19,7 +19,7 @@
 
 void
 odm_ConfigRFReg_8723A(
-	PDM_ODM_T				pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32					Addr,
 	u32					Data,
   enum RF_RADIO_PATH     RF_PATH,
@@ -61,7 +61,7 @@ odm_ConfigRFReg_8723A(
 
 void
 odm_ConfigRF_RadioA_8723A(
-	PDM_ODM_T				pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32					Addr,
 	u32					Data
 	)
@@ -76,7 +76,7 @@ odm_ConfigRF_RadioA_8723A(
 
 void
 odm_ConfigRF_RadioB_8723A(
-	PDM_ODM_T				pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32					Addr,
 	u32					Data
 	)
@@ -92,7 +92,7 @@ odm_ConfigRF_RadioB_8723A(
 
 void
 odm_ConfigMAC_8723A(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		Addr,
 	u8		Data
 	)
@@ -103,7 +103,7 @@ odm_ConfigMAC_8723A(
 
 void
 odm_ConfigBB_AGC_8723A(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		Addr,
 	u32		Bitmask,
 	u32		Data
@@ -118,7 +118,7 @@ odm_ConfigBB_AGC_8723A(
 
 void
 odm_ConfigBB_PHY_REG_PG_8723A(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		Addr,
 	u32		Bitmask,
 	u32		Data
@@ -144,7 +144,7 @@ odm_ConfigBB_PHY_REG_PG_8723A(
 
 void
 odm_ConfigBB_PHY_8723A(
-	PDM_ODM_T	pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	u32		Addr,
 	u32		Bitmask,
 	u32		Data

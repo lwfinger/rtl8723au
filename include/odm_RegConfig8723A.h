@@ -15,60 +15,20 @@
 #ifndef __INC_ODM_REGCONFIG_H_8723A
 #define __INC_ODM_REGCONFIG_H_8723A
 
-#if (RTL8723A_SUPPORT == 1)
+void odm_ConfigRFReg_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data,
+			   enum RF_RADIO_PATH RF_PATH, u32 RegAddr);
 
-void
-odm_ConfigRFReg_8723A(
-	PDM_ODM_T				pDM_Odm,
-	u32					Addr,
-	u32					Data,
-	enum RF_RADIO_PATH     RF_PATH,
-	u32				    RegAddr
-	);
+void odm_ConfigRF_RadioA_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data);
 
-void
-odm_ConfigRF_RadioA_8723A(
-	PDM_ODM_T				pDM_Odm,
-	u32					Addr,
-	u32					Data
-	);
+void odm_ConfigRF_RadioB_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data);
 
-void
-odm_ConfigRF_RadioB_8723A(
-	PDM_ODM_T				pDM_Odm,
-	u32					Addr,
-	u32					Data
-	);
+void odm_ConfigMAC_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u8 Data);
 
-void
-odm_ConfigMAC_8723A(
-	PDM_ODM_T	pDM_Odm,
-	u32		Addr,
-	u8		Data
-	);
+void odm_ConfigBB_AGC_8723A(struct dm_odm_t *pDM_Odm, u32 Addr,
+			    u32 Bitmask, u32 Data);
 
-void
-odm_ConfigBB_AGC_8723A(
-	PDM_ODM_T	pDM_Odm,
-	u32		Addr,
-	u32		Bitmask,
-	u32		Data
-    );
+void odm_ConfigBB_PHY_REG_PG_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Bitmask, u32 Data);
 
-void
-odm_ConfigBB_PHY_REG_PG_8723A(
-	PDM_ODM_T	pDM_Odm,
-	u32		Addr,
-	u32		Bitmask,
-	u32		Data
-    );
+void odm_ConfigBB_PHY_8723A(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Bitmask, u32 Data);
 
-void
-odm_ConfigBB_PHY_8723A(
-	PDM_ODM_T	pDM_Odm,
-	u32		Addr,
-	u32		Bitmask,
-	u32		Data
-    );
-#endif
 #endif /*  end of SUPPORT */

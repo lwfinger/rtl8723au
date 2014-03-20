@@ -215,10 +215,7 @@ static u32 Array_AGC_TAB_1T_8723A[] = {
 
 };
 
-void
-ODM_ReadAndConfig_AGC_TAB_1T_8723A(
-   PDM_ODM_T  pDM_Odm
-	)
+void ODM_ReadAndConfig_AGC_TAB_1T_8723A(struct dm_odm_t *pDM_Odm)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -486,10 +483,7 @@ static u32 Array_PHY_REG_1T_8723A[] = {
 
 };
 
-void
-ODM_ReadAndConfig_PHY_REG_1T_8723A(
-   PDM_ODM_T  pDM_Odm
-	)
+void ODM_ReadAndConfig_PHY_REG_1T_8723A(struct dm_odm_t *pDM_Odm)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -565,10 +559,7 @@ static u32 Array_PHY_REG_MP_8723A[] = {
 
 };
 
-void
-ODM_ReadAndConfig_PHY_REG_MP_8723A(
-   PDM_ODM_T  pDM_Odm
-	)
+void ODM_ReadAndConfig_PHY_REG_MP_8723A(struct dm_odm_t *pDM_Odm)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -754,10 +745,7 @@ static u32 Array_PHY_REG_PG_8723A[] = {
 
 };
 
-void
-ODM_ReadAndConfig_PHY_REG_PG_8723A(
-	PDM_ODM_T  pDM_Odm
-	)
+void ODM_ReadAndConfig_PHY_REG_PG_8723A(struct dm_odm_t *pDM_Odm)
 {
 	u32     hex = 0;
 	u32     i           = 0;

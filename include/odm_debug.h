@@ -146,6 +146,6 @@
 #endif
 
 
-void ODM_InitDebugSetting(PDM_ODM_T pDM_Odm);
+void ODM_InitDebugSetting(struct dm_odm_t *pDM_Odm);
 
 #endif	/*  __ODM_DBG_H__ */

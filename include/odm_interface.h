@@ -77,173 +77,55 @@ typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct *pContext);
 /*  */
 
 
-u8
-ODM_Read1Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr
-	);
+u8 ODM_Read1Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr);
 
-u16
-ODM_Read2Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr
-	);
+u16 ODM_Read2Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr);
 
-u32
-ODM_Read4Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr
-	);
+u32 ODM_Read4Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr);
 
-void
-ODM_Write1Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr,
-	u8			Data
-	);
+void ODM_Write1Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr, u8 Data);
 
-void
-ODM_Write2Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr,
-	u16			Data
-	);
+void ODM_Write2Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr, u16 Data);
 
-void
-ODM_Write4Byte(
-	PDM_ODM_T		pDM_Odm,
-	u32			RegAddr,
-	u32			Data
-	);
+void ODM_Write4Byte(struct dm_odm_t *pDM_Odm, u32 RegAddr, u32 Data);
 
-void
-ODM_SetMACReg(
-	PDM_ODM_T	pDM_Odm,
-	u32		RegAddr,
-	u32		BitMask,
-	u32		Data
-	);
+void ODM_SetMACReg(struct dm_odm_t *pDM_Odm, u32 RegAddr, u32 BitMask, u32 Data);
 
-u32
-ODM_GetMACReg(
-	PDM_ODM_T	pDM_Odm,
-	u32		RegAddr,
-	u32		BitMask
-	);
+u32 ODM_GetMACReg(struct dm_odm_t *pDM_Odm, u32 RegAddr, u32 BitMask);
 
-void
-ODM_SetBBReg(
-	PDM_ODM_T	pDM_Odm,
-	u32		RegAddr,
-	u32		BitMask,
-	u32		Data
-	);
+void ODM_SetBBReg(struct dm_odm_t *pDM_Odm, u32 RegAddr, u32 BitMask, u32 Data);
 
-u32
-ODM_GetBBReg(
-	PDM_ODM_T	pDM_Odm,
-	u32		RegAddr,
-	u32		BitMask
-	);
+u32 ODM_GetBBReg(struct dm_odm_t *pDM_Odm, u32 RegAddr, u32 BitMask);
 
-void
-ODM_SetRFReg(
-	PDM_ODM_T				pDM_Odm,
-	enum RF_RADIO_PATH	eRFPath,
-	u32					RegAddr,
-	u32					BitMask,
-	u32					Data
-	);
+void ODM_SetRFReg(struct dm_odm_t *pDM_Odm, enum RF_RADIO_PATH eRFPath,
+		  u32 RegAddr, u32 BitMask, u32 Data);
 
-u32
-ODM_GetRFReg(
-	PDM_ODM_T				pDM_Odm,
-	enum RF_RADIO_PATH	eRFPath,
-	u32					RegAddr,
-	u32					BitMask
-	);
+u32 ODM_GetRFReg(struct dm_odm_t *pDM_Odm, enum RF_RADIO_PATH eRFPath,
+		 u32 RegAddr, u32 BitMask);
 
-
-/*  */
 /*  Memory Relative Function. */
-/*  */
-void
-ODM_AllocateMemory(
-	PDM_ODM_T	pDM_Odm,
-	void *		*pPtr,
-	u32		length
-	);
-void
-ODM_FreeMemory(
-	PDM_ODM_T	pDM_Odm,
-	void *		pPtr,
-	u32		length
-	);
+void ODM_AllocateMemory(struct dm_odm_t *pDM_Odm, void **pPtr, u32 length);
+void ODM_FreeMemory(struct dm_odm_t *pDM_Odm, void *pPtr, u32 length);
 
-s32 ODM_CompareMemory(
-	PDM_ODM_T	pDM_Odm,
-	void *           pBuf1,
-	void *           pBuf2,
-	u32          length
-       );
+s32 ODM_CompareMemory(struct dm_odm_t *pDM_Odm, void *pBuf1, void *pBuf2, u32 length);
 
-/*  */
 /*  ODM MISC-spin lock relative API. */
-/*  */
-void
-ODM_AcquireSpinLock(
-	PDM_ODM_T			pDM_Odm,
-	RT_SPINLOCK_TYPE	type
-	);
+void ODM_AcquireSpinLock(struct dm_odm_t *pDM_Odm, RT_SPINLOCK_TYPE type);
 
-void
-ODM_ReleaseSpinLock(
-	PDM_ODM_T			pDM_Odm,
-	RT_SPINLOCK_TYPE	type
-	);
+void ODM_ReleaseSpinLock(struct dm_odm_t *pDM_Odm, RT_SPINLOCK_TYPE type);
 
-
-/*  */
 /*  ODM MISC-workitem relative API. */
-/*  */
-void
-ODM_InitializeWorkItem(
-	PDM_ODM_T					pDM_Odm,
-	void *				pRtWorkItem,
-	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
-	void *						pContext,
-	const char*					szID
-	);
+void ODM_InitializeWorkItem(struct dm_odm_t *pDM_Odm, void *pRtWorkItem,
+			    RT_WORKITEM_CALL_BACK RtWorkItemCallback, void *pContext, const char *szID);
 
-/*  */
 /*  ODM Timer relative API. */
-/*  */
-void
-ODM_SetTimer(
-	PDM_ODM_T		pDM_Odm,
-	struct timer_list	*pTimer,
-	u32			msDelay
-	);
+void ODM_SetTimer(struct dm_odm_t *pDM_Odm, struct timer_list *pTimer, u32 msDelay);
 
-void
-ODM_ReleaseTimer(
-	PDM_ODM_T		pDM_Odm,
-	struct timer_list	*pTimer
-	);
+void ODM_ReleaseTimer(struct dm_odm_t *pDM_Odm, struct timer_list *pTimer);
 
-
-/*  */
 /*  ODM FW relative API. */
-/*  */
-u32
-ODM_FillH2CCmd(
-	u8 *		pH2CBuffer,
-	u32		H2CBufferLen,
-	u32		CmdNum,
-	u32 *		pElementID,
-	u32 *		pCmdLen,
-	u8 **		pCmbBuffer,
-	u8 *		CmdStartSeq
-	);
+u32 ODM_FillH2CCmd(u8 *pH2CBuffer, u32 H2CBufferLen, u32 CmdNum,
+		   u32 *pElementID, u32 *pCmdLen, u8 **pCmbBuffer,
+		   u8 *CmdStartSeq);
 
 #endif	/*  __ODM_INTERFACE_H__ */

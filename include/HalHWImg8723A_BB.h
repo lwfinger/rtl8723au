@@ -14,7 +14,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723A_SUPPORT == 1)
 #ifndef __INC_BB_8723A_HW_IMG_H
 #define __INC_BB_8723A_HW_IMG_H
 
@@ -22,33 +21,24 @@
 *                           AGC_TAB_1T.TXT
 ******************************************************************************/
 
-void ODM_ReadAndConfig_AGC_TAB_1T_8723A (
-	PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_AGC_TAB_1T_8723A(struct dm_odm_t *pDM_Odm);
 
 /******************************************************************************
 *                           PHY_REG_1T.TXT
 ******************************************************************************/
 
-void ODM_ReadAndConfig_PHY_REG_1T_8723A (
-   PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_PHY_REG_1T_8723A(struct dm_odm_t *pDM_Odm);
 
 /******************************************************************************
 *                           PHY_REG_MP.TXT
 ******************************************************************************/
 
-void ODM_ReadAndConfig_PHY_REG_MP_8723A (
-   PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_PHY_REG_MP_8723A(struct dm_odm_t *pDM_Odm);
 
 /******************************************************************************
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-void ODM_ReadAndConfig_PHY_REG_PG_8723A (
-   PDM_ODM_T  pDM_Odm
-);
+void ODM_ReadAndConfig_PHY_REG_PG_8723A(struct dm_odm_t *pDM_Odm);
 
-#endif
 #endif /*  end of HWIMG_SUPPORT */

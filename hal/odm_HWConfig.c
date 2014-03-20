@@ -40,7 +40,7 @@ static u8 odm_QueryRxPwrPercentage(s8 AntPower)
 /*  */
 static s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
-	PDM_ODM_T pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	s32 CurrSig
 )
 {
@@ -50,7 +50,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 
 static s32
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
- PDM_ODM_T pDM_Odm,
+ struct dm_odm_t *pDM_Odm,
 	s32 CurrSig
 )
 {
@@ -61,7 +61,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
 
 static s32
 odm_SignalScaleMapping_92CSeries(
-	PDM_ODM_T pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	s32 CurrSig
 )
 {
@@ -88,14 +88,14 @@ odm_SignalScaleMapping_92CSeries(
 	return RetSig;
 }
 
-static s32 odm_SignalScaleMapping(PDM_ODM_T pDM_Odm, s32 CurrSig)
+static s32 odm_SignalScaleMapping(struct dm_odm_t *pDM_Odm, s32 CurrSig)
 {
 	return odm_SignalScaleMapping_92CSeries(pDM_Odm,CurrSig);
 }
 
 /* pMgntInfo->CustomerID == RT_CID_819x_Lenovo */
 static u8 odm_SQ_process_patch_RT_CID_819x_Lenovo(
- PDM_ODM_T	pDM_Odm,
+ struct dm_odm_t *pDM_Odm,
  u8		isCCKrate,
  u8		PWDB_ALL,
  u8		path,
@@ -138,7 +138,7 @@ odm_EVMdbToPercentage(
 
 
 static void odm_RxPhyStatus92CSeries_Parsing(
-	DM_ODM_T *pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	struct odm_phy_info *pPhyInfo,
 	u8 *pPhyStatus,
 	struct odm_packet_info *pPktinfo
@@ -362,16 +362,12 @@ static void odm_RxPhyStatus92CSeries_Parsing(
 	}
 }
 
-void
-odm_Init_RSSIForDM(
-	PDM_ODM_T	pDM_Odm
-	)
+void odm_Init_RSSIForDM(struct dm_odm_t *pDM_Odm)
 {
-
 }
 
 static void odm_Process_RSSIForDM(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 		struct odm_phy_info *pPhyInfo,
 		struct odm_packet_info *pPktinfo
 	)
@@ -521,7 +517,7 @@ static void odm_Process_RSSIForDM(
 /*  Endianness before calling this API */
 /*  */
 static void ODM_PhyStatusQuery_92CSeries(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 		struct odm_phy_info *pPhyInfo,
 		u8 *						pPhyStatus,
 		struct odm_packet_info *pPktinfo
@@ -553,7 +549,7 @@ static void ODM_PhyStatusQuery_92CSeries(
 /*  Endianness before calling this API */
 /*  */
 static void ODM_PhyStatusQuery_JaguarSeries(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 		struct odm_phy_info *pPhyInfo,
 		u8 *pPhyStatus,
 		struct odm_packet_info *pPktinfo
@@ -565,7 +561,7 @@ static void ODM_PhyStatusQuery_JaguarSeries(
 
 void
 ODM_PhyStatusQuery(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 		struct odm_phy_info	 *pPhyInfo,
 		u8 *pPhyStatus,
 		struct odm_packet_info *pPktinfo
@@ -577,7 +573,7 @@ ODM_PhyStatusQuery(
 /*  For future use. */
 void
 ODM_MacStatusQuery(
-	PDM_ODM_T					pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 		u8 *						pMacStatus,
 		u8						MacID,
 		bool						bPacketMatchBSSID,
@@ -591,7 +587,7 @@ ODM_MacStatusQuery(
 
 HAL_STATUS
 ODM_ConfigRFWithHeaderFile(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	Content,
 	enum RF_RADIO_PATH	eRFPath
     )
@@ -615,7 +611,7 @@ ODM_ConfigRFWithHeaderFile(
 
 HAL_STATUS
 ODM_ConfigBBWithHeaderFile(
-	PDM_ODM_T			pDM_Odm,
+	struct dm_odm_t *pDM_Odm,
 	enum odm_bb_config_type		ConfigType
 	)
 {
@@ -641,7 +637,7 @@ ODM_ConfigBBWithHeaderFile(
 
 HAL_STATUS
 ODM_ConfigMACWithHeaderFile(
-	PDM_ODM_T	pDM_Odm
+	struct dm_odm_t *pDM_Odm
 	)
 {
 	u8 result = HAL_STATUS_SUCCESS;

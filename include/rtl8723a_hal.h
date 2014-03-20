@@ -371,7 +371,7 @@ struct hal_data_8723a {
 	u8	RegReg542;
 
 	struct dm_priv	dmpriv;
-	DM_ODM_T		odmpriv;
+	struct dm_odm_t		odmpriv;
 	struct sreset_priv srestpriv;
 
 #ifdef CONFIG_8723AU_BT_COEXIST
