@@ -74,7 +74,7 @@ u8* _rtw_malloc(u32 sz)
 
 	u8	*pbuf=NULL;
 
-	pbuf = kmalloc(sz,in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
+	pbuf = kmalloc(sz,in_atomic() ? GFP_ATOMIC : GFP_KERNEL);
 
 	return pbuf;
 }
