@@ -169,7 +169,7 @@ PHY_SetBBReg(struct rtw_adapter *Adapter, u32 RegAddr, u32 BitMask, u32	Data)
  *
  *---------------------------------------------------------------------------*/
 static	u32
-phy_FwRFSerialRead(struct rtw_adapter * Adapter, RF_RADIO_PATH_E eRFPath,
+phy_FwRFSerialRead(struct rtw_adapter * Adapter, enum RF_RADIO_PATH eRFPath,
 		   u32 Offset)
 {
 	u32 retValue = 0;
@@ -196,7 +196,7 @@ phy_FwRFSerialRead(struct rtw_adapter * Adapter, RF_RADIO_PATH_E eRFPath,
  *
  *---------------------------------------------------------------------------*/
 static void
-phy_FwRFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
+phy_FwRFSerialWrite(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 		    u32 Offset, u32 Data)
 {
 	/* RT_ASSERT(false,("deprecate!\n")); */
@@ -210,7 +210,7 @@ phy_FwRFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *
 * Input:
 *		struct rtw_adapter *		Adapter,
-*		RF_RADIO_PATH_E	eRFPath,	Radio path of A/B/C/D
+*		enum RF_RADIO_PATH	eRFPath,	Radio path of A/B/C/D
 *		u32 Offset,			The target address to be read
 *
 * Output:	None
@@ -224,12 +224,12 @@ phy_FwRFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *		RFLSSIRead()
 */
 static u32
-phy_RFSerialRead(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
+phy_RFSerialRead(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 		 u32 Offset)
 {
 	u32 retValue = 0;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	BB_REGISTER_DEFINITION_T *pPhyReg = &pHalData->PHYRegDef[eRFPath];
+	struct bb_reg_define *pPhyReg = &pHalData->PHYRegDef[eRFPath];
 	u32 NewOffset;
 	u32 tmplong, tmplong2;
 	u8 RfPiEnable = 0;
@@ -307,7 +307,7 @@ phy_RFSerialRead(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *
 * Input:
 *	struct rtw_adapter *		Adapter,
-*	RF_RADIO_PATH_E	eRFPath,	Radio path of A/B/C/D
+*	enum RF_RADIO_PATH	eRFPath,	Radio path of A/B/C/D
 *	u32 Offset,			The target address to be read
 *	u32 Data			The new register Data in the target
 *					bit position of the target to be read
@@ -345,12 +345,12 @@ phy_RFSerialRead(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *	2008/09/02	MH	Add 92S RF definition
 */
 static	void
-phy_RFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
+phy_RFSerialWrite(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 		  u32 Offset, u32 Data)
 {
 	u32 DataAndAddr = 0;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	BB_REGISTER_DEFINITION_T *pPhyReg = &pHalData->PHYRegDef[eRFPath];
+	struct bb_reg_define *pPhyReg = &pHalData->PHYRegDef[eRFPath];
 	u32 NewOffset;
 
 
@@ -397,7 +397,7 @@ phy_RFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *
 * Input:
 *	struct rtw_adapter *		Adapter,
-*	RF_RADIO_PATH_E	eRFPath,	Radio path of A/B/C/D
+*	enum RF_RADIO_PATH	eRFPath,	Radio path of A/B/C/D
 *	u32 RegAddr,			The target address to be read
 *	u32BitMask			The target bit position in the target
 *					address	to be read
@@ -410,7 +410,7 @@ phy_RFSerialWrite(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *	This function is equal to "GetRFRegSetting" in PHY programming guide
 */
 u32
-PHY_QueryRFReg(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
+PHY_QueryRFReg(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 	       u32 RegAddr, u32 BitMask)
 {
 	u32 Original_Value, Readback_Value, BitShift;
@@ -433,7 +433,7 @@ PHY_QueryRFReg(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 *
 * Input:
 *	struct rtw_adapter *		Adapter,
-*	RF_RADIO_PATH_E	eRFPath,	Radio path of A/B/C/D
+*	enum RF_RADIO_PATH	eRFPath,	Radio path of A/B/C/D
 *	u32 RegAddr,			The target address to be modified
 *	u32 BitMask			The target bit position in the target
 *					address to be modified
@@ -447,7 +447,7 @@ PHY_QueryRFReg(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
 * Note:	This function is equal to "PutRFRegSetting" in PHY programming guide
 */
 void
-PHY_SetRFReg(struct rtw_adapter *Adapter, RF_RADIO_PATH_E eRFPath,
+PHY_SetRFReg(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 	     u32 RegAddr, u32 BitMask, u32 Data)
 {
 	/* struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter); */
@@ -1096,7 +1096,7 @@ PHY_RFConfig8723A(struct rtw_adapter *	Adapter)
 /*	By Bruce, 2008-01-29. */
 /*  */
 static u8
-phy_DbmToTxPwrIdx(struct rtw_adapter *Adapter, WIRELESS_MODE WirelessMode,
+phy_DbmToTxPwrIdx(struct rtw_adapter *Adapter, enum WIRELESS_MODE WirelessMode,
 		  int PowerInDbm)
 {
 	u8 TxPwrIdx = 0;
@@ -1392,7 +1392,7 @@ static void _PHY_SwChnl8723A(struct rtw_adapter * Adapter, u8 channel)
 	for (eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++) {
 		pHalData->RfRegChnlVal[eRFPath] =
 			(pHalData->RfRegChnlVal[eRFPath] & 0xfffffc00) | param2;
-		PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, param1,
+		PHY_SetRFReg(Adapter, (enum RF_RADIO_PATH)eRFPath, param1,
 			     bRFRegOffsetMask, pHalData->RfRegChnlVal[eRFPath]);
 	}
 

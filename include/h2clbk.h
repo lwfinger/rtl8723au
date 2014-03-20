@@ -14,20 +14,17 @@
  *
  ******************************************************************************/
 
-
 #ifndef _H2CLBK_H_
 #define _H2CLBK_H_
-
 
 #include <rtl8711_spec.h>
 #include <TypeDef.h>
 
+void _lbk_cmd(struct rtw_adapter *adapter);
 
-void _lbk_cmd(struct rtw_adapter *Adapter);
+void _lbk_rsp(struct rtw_adapter *adapter);
 
-void _lbk_rsp(struct rtw_adapter *Adapter);
-
-void _lbk_evt(struct rtw_adapter *Adapter);
+void _lbk_evt(struct rtw_adapter *adapter);
 
 void h2c_event_callback(unsigned char *dev, unsigned char *pbuf);
 

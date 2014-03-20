@@ -523,7 +523,7 @@ phy_RF6052_Config_ParaFile(
 {
 	u32					u4RegValue;
 	u8					eRFPath;
-	BB_REGISTER_DEFINITION_T	*pPhyReg;
+	struct bb_reg_define	*pPhyReg;
 
 	int					rtStatus = _SUCCESS;
 	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
@@ -578,11 +578,11 @@ phy_RF6052_Config_ParaFile(
 		switch(eRFPath)
 		{
 		case RF_PATH_A:
-			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(RF_RADIO_PATH_E)eRFPath, (RF_RADIO_PATH_E)eRFPath))
+			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
 				rtStatus= _FAIL;
 			break;
 		case RF_PATH_B:
-			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(RF_RADIO_PATH_E)eRFPath, (RF_RADIO_PATH_E)eRFPath))
+			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
 				rtStatus= _FAIL;
 			break;
 		case RF_PATH_C:

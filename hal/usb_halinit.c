@@ -993,8 +993,8 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	/*  */
 	/*  Joseph Note: Keep RfRegChnlVal for later use. */
 	/*  */
-	pHalData->RfRegChnlVal[0] = PHY_QueryRFReg(Adapter, (RF_RADIO_PATH_E)0, RF_CHNLBW, bRFRegOffsetMask);
-	pHalData->RfRegChnlVal[1] = PHY_QueryRFReg(Adapter, (RF_RADIO_PATH_E)1, RF_CHNLBW, bRFRegOffsetMask);
+	pHalData->RfRegChnlVal[0] = PHY_QueryRFReg(Adapter, (enum RF_RADIO_PATH)0, RF_CHNLBW, bRFRegOffsetMask);
+	pHalData->RfRegChnlVal[1] = PHY_QueryRFReg(Adapter, (enum RF_RADIO_PATH)1, RF_CHNLBW, bRFRegOffsetMask);
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
@@ -1258,7 +1258,7 @@ static void phy_SsPwrSwitch92CU(
 				{
 					/* u8			eRFPath = RF_PATH_A,value8 = 0, retry = 0; */
 					u8		bytetmp;
-					/* PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, 0x0, bMaskByte0, 0x0); */
+					/* PHY_SetRFReg(Adapter, (enum RF_RADIO_PATH)eRFPath, 0x0, bMaskByte0, 0x0); */
 					/*  2010/08/12 MH Add for B path under SS test. */
 					/* if (pHalData->RF_Type ==  RF_2T2R) */
 						/* PHY_SetRFReg(Adapter, RF_PATH_B, 0x0, bMaskByte0, 0x0); */
@@ -1336,7 +1336,7 @@ static void phy_SsPwrSwitch92CU(
 					{
 						u8			eRFPath = RF_PATH_A,value8 = 0;
 						rtw_write8(Adapter, REG_TXPAUSE, 0xFF);
-						PHY_SetRFReg(Adapter, (RF_RADIO_PATH_E)eRFPath, 0x0, bMaskByte0, 0x0);
+						PHY_SetRFReg(Adapter, (enum RF_RADIO_PATH)eRFPath, 0x0, bMaskByte0, 0x0);
 						/*  2010/08/12 MH Add for B path under SS test. */
 						/* if (pHalData->RF_Type ==  RF_2T2R) */
 							/* PHY_SetRFReg(Adapter, RF_PATH_B, 0x0, bMaskByte0, 0x0); */

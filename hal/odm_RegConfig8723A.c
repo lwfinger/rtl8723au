@@ -22,7 +22,7 @@ odm_ConfigRFReg_8723A(
 	PDM_ODM_T				pDM_Odm,
 	u32					Addr,
 	u32					Data,
-  RF_RADIO_PATH_E     RF_PATH,
+  enum RF_RADIO_PATH     RF_PATH,
 	u32				    RegAddr
 	)
 {

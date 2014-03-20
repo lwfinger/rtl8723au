@@ -2206,7 +2206,7 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		reset BB state machine
 
 	rtw_write8(padapter, REG_TXPAUSE, 0xFF);
 
-	PHY_SetRFReg(padapter, (RF_RADIO_PATH_E) eRFPath, 0x0, bMaskByte0, 0x0);
+	PHY_SetRFReg(padapter, (enum RF_RADIO_PATH) eRFPath, 0x0, bMaskByte0, 0x0);
 
 	value8 |= APSDOFF;
 	rtw_write8(padapter, REG_APSD_CTRL, value8);	/* 0x40 */

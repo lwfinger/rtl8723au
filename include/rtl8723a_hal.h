@@ -272,7 +272,7 @@ struct hal_data_8723a {
 
 	/* current WIFI_PHY values */
 	u32	ReceiveConfig;
-	WIRELESS_MODE		CurrentWirelessMode;
+	enum WIRELESS_MODE		CurrentWirelessMode;
 	enum ht_channel_width	CurrentChannelBW;
 	u8	CurrentChannel;
 	u8	nCur40MhzPrimeSC;/*  Control channel sub-carrier */
@@ -349,7 +349,7 @@ struct hal_data_8723a {
 	u8	CurrentCckTxPwrIdx;
 	u8	CurrentOfdm24GTxPwrIdx;
 
-	BB_REGISTER_DEFINITION_T	PHYRegDef[4];	/* Radio A/B/C/D */
+	struct bb_reg_define	PHYRegDef[4];	/* Radio A/B/C/D */
 
 	bool		bRFPathRxEnable[4];	/*  We support 4 RF path now. */
 

@@ -12,11 +12,11 @@
  * more details.
  *
  ******************************************************************************/
-/*-------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 
 	For type defines and data structure defines
 
---------------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 
 #ifndef __DRV_TYPES_H__
@@ -28,7 +28,6 @@
 
 
 enum _NIC_VERSION {
-
 	RTL8711_NIC,
 	RTL8712_NIC,
 	RTL8713_NIC,
@@ -69,8 +68,7 @@ enum _NIC_VERSION {
 #define SPEC_DEV_ID_RF_CONFIG_2T2R BIT(4)
 #define SPEC_DEV_ID_ASSIGN_IFNAME BIT(5)
 
-struct specific_device_id{
-
+struct specific_device_id {
 	u32		flags;
 
 	u16		idVendor;
@@ -78,8 +76,7 @@ struct specific_device_id{
 
 };
 
-struct registry_priv
-{
+struct registry_priv {
 	u8	chip_version;
 	u8	rfintfs;
 	struct	cfg80211_ssid ssid;
@@ -116,8 +113,8 @@ struct registry_priv
 	u8	ampdu_amsdu;/* A-MPDU Supports A-MSDU is permitted */
 	u8	lowrate_two_xmit;
 
-	u8	rf_config ;
-	u8	low_power ;
+	u8	rf_config;
+	u8	low_power;
 
 	u8	wifi_spec;/*  !turbo_mode */
 
@@ -139,7 +136,7 @@ struct registry_priv
 
 	u8	hw_wps_pbc;/* 0:disable,1:enable */
 
-	u8	max_roaming_times; /*  the max number driver will try to roaming */
+	u8	max_roaming_times; /* max number driver will try to roaming */
 
 	u8 enable80211d;
 
@@ -154,7 +151,8 @@ struct registry_priv
 
 #define MAX_CONTINUAL_URB_ERR 4
 
-#define GET_PRIMARY_ADAPTER(padapter) (((struct rtw_adapter *)padapter)->dvobj->if1)
+#define GET_PRIMARY_ADAPTER(padapter)					\
+	(((struct rtw_adapter *)padapter)->dvobj->if1)
 
 enum _IFACE_ID {
 	IFACE_ID0, /* maping to PRIMARY_ADAPTER */
@@ -164,8 +162,7 @@ enum _IFACE_ID {
 	IFACE_ID_MAX,
 };
 
-struct dvobj_priv
-{
+struct dvobj_priv {
 	struct rtw_adapter *if1; /* PRIMARY_ADAPTER */
 	struct rtw_adapter *if2; /* SECONDARY_ADAPTER */
 
@@ -175,7 +172,7 @@ struct dvobj_priv
 	struct mutex setch_mutex;
 	struct mutex setbw_mutex;
 
-	unsigned char	oper_channel; /* saved channel info when call set_channel_bw */
+	unsigned char	oper_channel; /* saved chan info when set chan bw */
 	unsigned char	oper_bwmode;
 	unsigned char	oper_ch_offset;/* PRIME_CHNL_OFFSET */
 
@@ -296,8 +293,8 @@ struct rtw_adapter {
 	void *xmitThread;
 	void *recvThread;
 
-	void (*intf_start)(struct rtw_adapter * adapter);
-	void (*intf_stop)(struct rtw_adapter * adapter);
+	void (*intf_start)(struct rtw_adapter *adapter);
+	void (*intf_stop)(struct rtw_adapter *adapter);
 
 	struct net_device *pnetdev;
 
@@ -322,12 +319,10 @@ struct rtw_adapter {
 	u8 bReadPortCancel;
 	u8 bWritePortCancel;
 	u8 bRxRSSIDisplay;
-	/*	Added by Albert 2012/10/26 */
-	/*	The driver will show up the desired channel number when this flag is 1. */
+	/* The driver will show the desired chan nor when this flag is 1. */
 	u8 bNotifyChannelChange;
 #ifdef CONFIG_8723AU_P2P
-	/*	Added by Albert 2012/12/06 */
-	/*	The driver will show the current P2P status when the upper application reads it. */
+	/* driver will show current P2P status when the  application reads it*/
 	u8 bShowGetP2PState;
 #endif
 	struct rtw_adapter *pbuddy_adapter;
@@ -352,7 +347,7 @@ struct rtw_adapter {
 	struct br_ext_info		ethBrExtInfo;
 #endif	/*  CONFIG_BR_EXT */
 
-        u8    fix_rate;
+	u8    fix_rate;
 
 	unsigned char     in_cta_test;
 
@@ -364,8 +359,7 @@ int rtw_handle_dualmac(struct rtw_adapter *adapter, bool init);
 
 static inline u8 *myid(struct eeprom_priv *peepriv)
 {
-	return (peepriv->mac_addr);
+	return peepriv->mac_addr;
 }
-
 
 #endif /* __DRV_TYPES_H__ */

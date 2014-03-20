@@ -150,7 +150,7 @@ ODM_GetBBReg(
 void
 ODM_SetRFReg(
 	PDM_ODM_T				pDM_Odm,
-	RF_RADIO_PATH_E	eRFPath,
+	enum RF_RADIO_PATH	eRFPath,
 	u32					RegAddr,
 	u32					BitMask,
 	u32					Data
@@ -159,7 +159,7 @@ ODM_SetRFReg(
 u32
 ODM_GetRFReg(
 	PDM_ODM_T				pDM_Odm,
-	RF_RADIO_PATH_E	eRFPath,
+	enum RF_RADIO_PATH	eRFPath,
 	u32					RegAddr,
 	u32					BitMask
 	);

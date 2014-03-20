@@ -22,12 +22,12 @@
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0))
 static inline void ether_addr_copy(u8 *dst, const u8 *src)
 {
-        u16 *a = (u16 *)dst;
-        const u16 *b = (const u16 *)src;
+	u16 *a = (u16 *)dst;
+	const u16 *b = (const u16 *)src;
 
-        a[0] = b[0];
-        a[1] = b[1];
-        a[2] = b[2];
+	a[0] = b[0];
+	a[1] = b[1];
+	a[2] = b[2];
 }
 #endif
 

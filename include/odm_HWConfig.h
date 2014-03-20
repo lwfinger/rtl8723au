@@ -170,8 +170,8 @@ ODM_MacStatusQuery(
 HAL_STATUS
 ODM_ConfigRFWithHeaderFile(
 	PDM_ODM_T	      pDM_Odm,
-	RF_RADIO_PATH_E	Content,
-	RF_RADIO_PATH_E	eRFPath
+	enum RF_RADIO_PATH	Content,
+	enum RF_RADIO_PATH	eRFPath
 	);
 
 HAL_STATUS
