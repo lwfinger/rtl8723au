@@ -2541,12 +2541,12 @@ static void Hal_EEValueCheck(u8 EEType, void *pInValue, void *pOutValue)
 }
 
 static void
-Hal_ReadPowerValueFromPROM_8723A(PTxPowerInfo pwrInfo,
+Hal_ReadPowerValueFromPROM_8723A(struct txpowerinfo *pwrInfo,
 				 u8 *PROMContent, bool AutoLoadFail)
 {
 	u32 rfPath, eeAddr, group, rfPathMax = 1;
 
-	memset(pwrInfo, 0, sizeof(TxPowerInfo));
+	memset(pwrInfo, 0, sizeof(*pwrInfo));
 
 	if (AutoLoadFail) {
 		for (group = 0; group < MAX_CHNL_GROUP; group++) {
@@ -2631,11 +2631,11 @@ static u8 Hal_GetChnlGroup(u8 chnl)
 }
 
 void
-Hal_EfuseParseTxPowerInfo_8723A(struct rtw_adapter *padapter,
+Hal_EfuseParsetxpowerinfo_8723A(struct rtw_adapter *padapter,
 				u8 *PROMContent, bool AutoLoadFail)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	TxPowerInfo pwrInfo;
+	struct txpowerinfo pwrInfo;
 	u8 rfPath, ch, group, rfPathMax = 1;
 	u8 pwr, diff;
 

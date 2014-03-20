@@ -1962,7 +1962,7 @@ readAdapterInfo(
 	Hal_EfuseParsePIDVID_8723AU(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	Hal_EfuseParseEEPROMVer(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	Hal_EfuseParseMACAddr_8723AU(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
-	Hal_EfuseParseTxPowerInfo_8723A(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
+	Hal_EfuseParsetxpowerinfo_8723A(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	_ReadBoardType(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 	Hal_EfuseParseBTCoexistInfo_8723A(padapter, hwinfo, pEEPROM->bautoload_fail_flag);
 

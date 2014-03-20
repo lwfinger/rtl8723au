@@ -69,8 +69,8 @@
 /*  */
 #define	MAX_RF_PATH_NUM	2
 #define	MAX_CHNL_GROUP		3+9
-typedef struct _TxPowerInfo
-{
+
+struct txpowerinfo {
 	u8 CCKIndex[MAX_RF_PATH_NUM][MAX_CHNL_GROUP];
 	u8 HT40_1SIndex[MAX_RF_PATH_NUM][MAX_CHNL_GROUP];
 	u8 HT40_2SIndexDiff[MAX_RF_PATH_NUM][MAX_CHNL_GROUP];
@@ -82,29 +82,26 @@ typedef struct _TxPowerInfo
 	u8 TSSI_B[3];
 	u8 TSSI_A_5G[3];		/* 5GL/5GM/5GH */
 	u8 TSSI_B_5G[3];
-} TxPowerInfo, *PTxPowerInfo;
+};
 
-typedef	enum _BT_Ant_NUM
-{
+enum bt_ant_num {
 	Ant_x2	= 0,
 	Ant_x1	= 1
-} BT_Ant_NUM, *PBT_Ant_NUM;
+};
 
-typedef	enum _BT_CoType
-{
+enum bt_cotype {
 	BT_2Wire		= 0,
-	BT_ISSC_3Wire	= 1,
+	BT_ISSC_3Wire		= 1,
 	BT_Accel		= 2,
 	BT_CSR_BC4		= 3,
 	BT_CSR_BC8		= 4,
 	BT_RTL8756		= 5,
 	BT_RTL8723A		= 6
-} BT_CoType, *PBT_CoType;
+};
 
-typedef	enum _BT_RadioShared
-{
+enum bt_radioshared {
 	BT_Radio_Shared		= 0,
 	BT_Radio_Individual	= 1,
-} BT_RadioShared, *PBT_RadioShared;
+};
 
 #endif

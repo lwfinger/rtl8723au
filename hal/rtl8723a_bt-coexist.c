@@ -17611,19 +17611,15 @@ void HALBT_InitBTVars8723A(struct rtw_adapter *padapter)
 	pHalData->bt_coexist.BT_Ant_Num = pHalData->EEPROMBluetoothAntNum;
 	pHalData->bt_coexist.BT_CoexistType = pHalData->EEPROMBluetoothType;
 	pHalData->bt_coexist.BT_Ant_isolation = pHalData->EEPROMBluetoothAntIsolation;
-	pHalData->bt_coexist.BT_RadioSharedType = pHalData->EEPROMBluetoothRadioShared;
+	pHalData->bt_coexist.bt_radiosharedtype = pHalData->EEPROMBluetoothRadioShared;
 
 	RT_TRACE(_module_hal_init_c_, _drv_info_, ("BT Coexistance = 0x%x\n", pHalData->bt_coexist.BluetoothCoexist));
-	if (pHalData->bt_coexist.BluetoothCoexist)
-	{
-		if (pHalData->bt_coexist.BT_Ant_Num == Ant_x2)
-		{
+	if (pHalData->bt_coexist.BluetoothCoexist) {
+		if (pHalData->bt_coexist.BT_Ant_Num == Ant_x2) {
 			BTDM_SetBtCoexCurrAntNum(padapter, 2);
 			RT_TRACE(_module_hal_init_c_, _drv_info_,("BlueTooth BT_Ant_Num = Antx2\n"));
 /*			DBG_8723A("%s WiFi BT coexist Ant_Num = Antx2\n",__func__); */
-		}
-		else if (pHalData->bt_coexist.BT_Ant_Num == Ant_x1)
-		{
+		} else if (pHalData->bt_coexist.BT_Ant_Num == Ant_x1) {
 			BTDM_SetBtCoexCurrAntNum(padapter, 1);
 			RT_TRACE(_module_hal_init_c_, _drv_info_,("BlueTooth BT_Ant_Num = Antx1\n"));
 /*			DBG_8723A("%s WiFi BT coexist Ant_Num Ant_Num = Antx1\n",__func__); */
@@ -17634,7 +17630,9 @@ void HALBT_InitBTVars8723A(struct rtw_adapter *padapter)
 		pHalData->bt_coexist.CurrentState = 0;
 		pHalData->bt_coexist.PreviousState = 0;
 
-		RT_TRACE(_module_hal_init_c_, _drv_info_,("BT_RadioSharedType = 0x%x\n", pHalData->bt_coexist.BT_RadioSharedType));
+		RT_TRACE(_module_hal_init_c_, _drv_info_,
+			 ("bt_radiosharedType = 0x%x\n",
+			 pHalData->bt_coexist.bt_radiosharedtype));
 	}
 }
 

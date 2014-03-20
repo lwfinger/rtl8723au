@@ -548,7 +548,7 @@ s32 CardDisableWithoutHWSM(struct rtw_adapter *padapter);
 u8 GetEEPROMSize8723A(struct rtw_adapter *padapter);
 void Hal_InitPGData(struct rtw_adapter *padapter, u8 *PROMContent);
 void Hal_EfuseParseIDCode(struct rtw_adapter *padapter, u8 *hwinfo);
-void Hal_EfuseParseTxPowerInfo_8723A(struct rtw_adapter *padapter, u8 *PROMContent, bool AutoLoadFail);
+void Hal_EfuseParsetxpowerinfo_8723A(struct rtw_adapter *padapter, u8 *PROMContent, bool AutoLoadFail);
 void Hal_EfuseParseBTCoexistInfo_8723A(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 void Hal_EfuseParseEEPROMVer(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 void rtl8723a_EfuseParseChnlPlan(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);

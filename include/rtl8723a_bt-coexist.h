@@ -1633,7 +1633,7 @@ typedef struct _BT_COEXIST_STR
 	u8					BT_Ant_Num;
 	u8					BT_CoexistType;
 	u8					BT_Ant_isolation;	/* 0:good, 1:bad */
-	u8					BT_RadioSharedType;
+	u8					bt_radiosharedtype;
 	u32					Ratio_Tx;
 	u32					Ratio_PRI;
 	u8					bInitlized;
