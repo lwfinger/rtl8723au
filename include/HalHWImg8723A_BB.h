@@ -22,17 +22,15 @@
 *                           AGC_TAB_1T.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_AGC_TAB_1T_8723A(
-   PDM_ODM_T  pDM_Odm
+void ODM_ReadAndConfig_AGC_TAB_1T_8723A (
+	PDM_ODM_T  pDM_Odm
 );
 
 /******************************************************************************
 *                           PHY_REG_1T.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_PHY_REG_1T_8723A(
+void ODM_ReadAndConfig_PHY_REG_1T_8723A (
    PDM_ODM_T  pDM_Odm
 );
 
@@ -40,8 +38,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 *                           PHY_REG_MP.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_PHY_REG_MP_8723A(
+void ODM_ReadAndConfig_PHY_REG_MP_8723A (
    PDM_ODM_T  pDM_Odm
 );
 
@@ -49,8 +46,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-void
-ODM_ReadAndConfig_PHY_REG_PG_8723A(
+void ODM_ReadAndConfig_PHY_REG_PG_8723A (
    PDM_ODM_T  pDM_Odm
 );
 

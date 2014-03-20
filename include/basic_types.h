@@ -25,7 +25,7 @@
 #define FIELD_OFFSET(s, field)	((__kernel_ssize_t)&((s *)(0))->field)
 
 /* port from fw by thomas */
-/*  TODO: Belows are Sync from SD7-Driver. It is necessary to check correctness */
+/*  TODO: Below are Sync from SD7-Driver. It is necessary to check correctness*/
 
 /*
  *	Call endian free function when
@@ -69,8 +69,10 @@
 	(EF4Byte(*((u32 *)(__start))))
 
 /*	Description: */
-/*		Translate subfield (continuous bits in little-endian) of 4-byte value in litten byte to */
-/*		4-byte value in host byte ordering. */
+/*		Translate subfield (continuous bits in little-endian) of
+ *		4-byte value in litten byte to
+ *		4-byte value in host byte ordering.
+ */
 #define LE_BITS_TO_4BYTE(__start, __offset, __bitLen) \
 	(\
 		(LE_P4BYTE_TO_HOST_4BYTE(__start) >> (__offset)) \
@@ -78,9 +80,10 @@
 		BIT_LEN_MASK_32(__bitLen) \
 	)
 
-/*	Description: */
-/*		Mask subfield (continuous bits in little-endian) of 4-byte value in litten byte oredering */
-/*		and return the result in 4-byte value in host byte ordering. */
+/*	Description:
+ *		Mask subfield (continuous bits in little-endian) of
+ *		4-byte value in litten byte ordering
+ *		and return the result in 4-byte value in host byte ordering. */
 #define LE_BITS_CLEARED_TO_4BYTE(__start, __offset, __bitLen) \
 	(\
 		LE_P4BYTE_TO_HOST_4BYTE(__start) \
@@ -88,8 +91,9 @@
 		(~BIT_OFFSET_LEN_MASK_32(__offset, __bitLen)) \
 	)
 
-/*	Description: */
-/*		Set subfield of little-endian 4-byte value to specified value. */
+/*	Description:
+ *		Set subfield of little-endian 4-byte value to specified value.
+ */
 #define SET_BITS_TO_LE_4BYTE(__start, __offset, __bitLen, __value) \
 	*((u32 *)(__start)) = \
 		EF4Byte(\
@@ -163,14 +167,14 @@
 
 /* pclint */
 #define LE_BITS_CLEARED_TO_1BYTE_8BIT(__start, __offset, __bitLen) \
-	( LE_P1BYTE_TO_HOST_1BYTE(__start))
+	(LE_P1BYTE_TO_HOST_1BYTE(__start))
 
 /* pclint */
 #define SET_BITS_TO_LE_1BYTE_8BIT(__start, __offset, __bitLen, __value) \
 {									\
 	*((u8 *)(__start)) =						\
 		EF1Byte(LE_BITS_CLEARED_TO_1BYTE_8BIT(__start, __offset,\
-			__bitLen) | ((u8)__value) 			\
+			__bitLen) | ((u8)__value)			\
 		);							 \
 }
 
