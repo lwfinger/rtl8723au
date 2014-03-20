@@ -65,8 +65,7 @@ ODM_REG(DIG,_pDM_Odm)
 /*  2012/02/17 MH For non-MP compile pass only. Linux does not support workitem. */
 /*  Suggest HW team to use thread instead of workitem. Windows also support the feature. */
 /*  */
-typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
-typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct * pContext);
+typedef void (*RT_WORKITEM_CALL_BACK)(struct work_struct *pContext);
 
 /*  */
 /*  =========== Extern Variable ??? It should be forbidden. */
