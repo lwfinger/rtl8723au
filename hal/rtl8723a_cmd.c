@@ -205,7 +205,7 @@ void rtl8723a_add_rateatid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 
 void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 {
-	SETPWRMODE_PARM H2CSetPwrMode;
+	struct setpwrmode_parm H2CSetPwrMode;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 
@@ -522,7 +522,7 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 	u8	PageNum, PageNeed, TxDescLen;
 	u16	BufIndex;
 	u32	TotalPacketLen;
-	RSVDPAGE_LOC	RsvdPageLoc;
+	struct rsvdpage_loc	RsvdPageLoc;
 
 
 	DBG_8723A("%s\n", __FUNCTION__);
@@ -645,7 +645,7 @@ exit:
 
 void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 {
-	JOINBSSRPT_PARM	JoinBssRptParm;
+	struct joinbssrpt_parm	JoinBssRptParm;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
@@ -735,7 +735,7 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 	u8	PageNum, PageNeed, TxDescLen;
 	u16	BufIndex;
 	u32	TotalPacketLen;
-	RSVDPAGE_LOC	RsvdPageLoc;
+	struct rsvdpage_loc	RsvdPageLoc;
 
 
 	DBG_8723A("+%s\n", __FUNCTION__);
