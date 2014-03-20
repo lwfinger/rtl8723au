@@ -1152,7 +1152,7 @@ odm_DIG(
 
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	struct false_alarm_stats *		pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
-	pRXHP_T				pRX_HP_Table  = &pDM_Odm->DM_RXHP_Table;
+	struct rx_hp *pRX_HP_Table  = &pDM_Odm->DM_RXHP_Table;
 	u8				DIG_Dynamic_MIN;
 	u8				DIG_MaxOfMin;
 	bool				FirstConnect, FirstDisConnect;
@@ -1733,7 +1733,7 @@ odm_RateAdaptiveMaskInit(
 	PDM_ODM_T	pDM_Odm
 	)
 {
-	PODM_RATE_ADAPTIVE	pOdmRA = &pDM_Odm->RateAdaptive;
+	struct odm_rate_adapt *pOdmRA = &pDM_Odm->RateAdaptive;
 
 	pOdmRA->Type = DM_Type_ByDriver;
 	if (pOdmRA->Type == DM_Type_ByDriver)
@@ -1940,7 +1940,7 @@ ODM_RAStateCheck(
 		u8 *			pRATRState
 	)
 {
-	PODM_RATE_ADAPTIVE pRA = &pDM_Odm->RateAdaptive;
+	struct odm_rate_adapt *pRA = &pDM_Odm->RateAdaptive;
 	const u8 GoUpGap = 5;
 	u8 HighRSSIThreshForRA = pRA->HighRSSIThresh;
 	u8 LowRSSIThreshForRA = pRA->LowRSSIThresh;
@@ -2231,7 +2231,7 @@ ODM_ReleaseAllTimers(
  PDM_ODM_T	pDM_Odm
 	)
 {
-	ODM_ReleaseTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
+	ODM_ReleaseTimer(pDM_Odm, &pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
 }
 
 /* endif */
@@ -2307,8 +2307,8 @@ odm_TXPowerTrackingCheckAP(
 /* antenna mapping info */
 /*  1: right-side antenna */
 /*  2/0: left-side antenna */
-/* PDM_SWAT_Table->CCK_Ant1_Cnt /OFDM_Ant1_Cnt:  for right-side antenna:   Ant:1    RxDefaultAnt1 */
-/* PDM_SWAT_Table->CCK_Ant2_Cnt /OFDM_Ant2_Cnt:  for left-side antenna:     Ant:0    RxDefaultAnt2 */
+/* PpDM_SWAT_Table->CCK_Ant1_Cnt /OFDM_Ant1_Cnt:  for right-side antenna:   Ant:1    RxDefaultAnt1 */
+/* PpDM_SWAT_Table->CCK_Ant2_Cnt /OFDM_Ant2_Cnt:  for left-side antenna:     Ant:0    RxDefaultAnt2 */
 /*  We select left antenna as default antenna in initial process, modify it as needed */
 /*  */
 
@@ -2323,7 +2323,7 @@ void odm_SwAntDivInit(PDM_ODM_T pDM_Odm)
 void ODM_SwAntDivChkPerPktRssi(
  PDM_ODM_T	pDM_Odm,
  u8		StationID,
- PODM_PHY_INFO_T pPhyInfo
+ struct odm_phy_info *pPhyInfo
 	)
 {
 }
@@ -2609,7 +2609,7 @@ ODM_SingleDualAntennaDefaultSetting(
 		PDM_ODM_T		pDM_Odm
 	)
 {
-	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
+	struct sw_ant_sw *pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	pDM_SWAT_Table->ANTA_ON=true;
 	pDM_SWAT_Table->ANTB_ON=true;
 }
@@ -2666,7 +2666,7 @@ ODM_SingleDualAntennaDetection(
 
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter); */
 	/* PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc; */
-	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
+	struct sw_ant_sw *pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	u32		CurrentChannel,RfLoopReg;
 	u8		n;
 	u32		Reg88c, Regc08, Reg874, Regc50;

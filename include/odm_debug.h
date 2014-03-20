@@ -65,32 +65,32 @@
 /*  */
 /*  */
 /* BB Functions */
-#define ODM_COMP_DIG					BIT0
-#define ODM_COMP_RA_MASK				BIT1
-#define ODM_COMP_DYNAMIC_TXPWR		BIT2
+#define ODM_COMP_DIG				BIT0
+#define ODM_COMP_RA_MASK			BIT1
+#define ODM_COMP_DYNAMIC_TXPWR			BIT2
 #define ODM_COMP_FA_CNT				BIT3
-#define ODM_COMP_RSSI_MONITOR		BIT4
+#define ODM_COMP_RSSI_MONITOR			BIT4
 #define ODM_COMP_CCK_PD				BIT5
-#define ODM_COMP_ANT_DIV				BIT6
+#define ODM_COMP_ANT_DIV			BIT6
 #define ODM_COMP_PWR_SAVE			BIT7
 #define ODM_COMP_PWR_TRAIN			BIT8
-#define ODM_COMP_RATE_ADAPTIVE		BIT9
-#define ODM_COMP_PATH_DIV				BIT10
-#define ODM_COMP_PSD					BIT11
-#define ODM_COMP_DYNAMIC_PRICCA		BIT12
+#define ODM_COMP_RATE_ADAPTIVE			BIT9
+#define ODM_COMP_PATH_DIV			BIT10
+#define ODM_COMP_PSD				BIT11
+#define ODM_COMP_DYNAMIC_PRICCA			BIT12
 #define ODM_COMP_RXHP				BIT13
 /* MAC Functions */
 #define ODM_COMP_EDCA_TURBO			BIT16
 #define ODM_COMP_EARLY_MODE			BIT17
 /* RF Functions */
-#define ODM_COMP_TX_PWR_TRACK		BIT24
-#define ODM_COMP_RX_GAIN_TRACK		BIT25
+#define ODM_COMP_TX_PWR_TRACK			BIT24
+#define ODM_COMP_RX_GAIN_TRACK			BIT25
 #define ODM_COMP_CALIBRATION			BIT26
 /* Common Functions */
 #define ODM_COMP_COMMON				BIT30
-#define ODM_COMP_INIT					BIT31
+#define ODM_COMP_INIT				BIT31
 
-/*------------------------Export Marco Definition---------------------------*/
+/*------------------------Export Macro Definition---------------------------*/
 	#define DbgPrint	printk
 	#define RT_PRINTK(fmt, args...)	DbgPrint( "%s(): " fmt, __FUNCTION__, ## args);
 

@@ -138,13 +138,13 @@ odm_EVMdbToPercentage(
 
 
 static void odm_RxPhyStatus92CSeries_Parsing(
-	PDM_ODM_T					pDM_Odm,
-	PODM_PHY_INFO_T			pPhyInfo,
-	u8 *						pPhyStatus,
-	PODM_PACKET_INFO_T			pPktinfo
+	DM_ODM_T *pDM_Odm,
+	struct odm_phy_info *pPhyInfo,
+	u8 *pPhyStatus,
+	ODM_PACKET_INFO_T *pPktinfo
 	)
 {
-	SWAT_T				*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
+	struct sw_ant_sw				*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	u8				i, Max_spatial_stream;
 	s8				rx_pwr[4], rx_pwr_all=0;
 	u8				EVM, PWDB_ALL = 0, PWDB_ALL_BT;
@@ -372,7 +372,7 @@ odm_Init_RSSIForDM(
 
 static void odm_Process_RSSIForDM(
 	PDM_ODM_T					pDM_Odm,
-		PODM_PHY_INFO_T			pPhyInfo,
+		struct odm_phy_info *pPhyInfo,
 		PODM_PACKET_INFO_T			pPktinfo
 	)
 {
@@ -522,7 +522,7 @@ static void odm_Process_RSSIForDM(
 /*  */
 static void ODM_PhyStatusQuery_92CSeries(
 	PDM_ODM_T					pDM_Odm,
-		PODM_PHY_INFO_T				pPhyInfo,
+		struct odm_phy_info *pPhyInfo,
 		u8 *						pPhyStatus,
 		PODM_PACKET_INFO_T			pPktinfo
 	)
@@ -554,7 +554,7 @@ static void ODM_PhyStatusQuery_92CSeries(
 /*  */
 static void ODM_PhyStatusQuery_JaguarSeries(
 	PDM_ODM_T					pDM_Odm,
-		PODM_PHY_INFO_T			pPhyInfo,
+		struct odm_phy_info *pPhyInfo,
 		u8 *						pPhyStatus,
 		PODM_PACKET_INFO_T			pPktinfo
 	)
@@ -566,7 +566,7 @@ static void ODM_PhyStatusQuery_JaguarSeries(
 void
 ODM_PhyStatusQuery(
 	PDM_ODM_T					pDM_Odm,
-		PODM_PHY_INFO_T				pPhyInfo,
+		struct odm_phy_info	 *pPhyInfo,
 		u8 *						pPhyStatus,
 		PODM_PACKET_INFO_T			pPktinfo
 	)

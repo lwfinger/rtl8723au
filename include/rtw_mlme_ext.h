@@ -59,7 +59,7 @@
 #define		DYNAMIC_BB_PSD				BIT(11)
 
 /*  MAC DM section BIT 16-23 */
-#define		DYNAMIC_MAC_EDCA_TURBO		BIT(16)
+#define		DYNAMIC_MAC_struct edca_turboURBO		BIT(16)
 #define		DYNAMIC_MAC_EARLY_MODE		BIT(17)
 
 /*  RF ODM section BIT 24-31 */

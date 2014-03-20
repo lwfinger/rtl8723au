@@ -152,36 +152,36 @@ odm_Init_RSSIForDM(
 
 void
 ODM_PhyStatusQuery(
-	PDM_ODM_T					pDM_Odm,
-	PODM_PHY_INFO_T			pPhyInfo,
+	DM_ODM_T *pDM_Odm,
+	struct odm_phy_info *pPhyInfo,
 	u8 *						pPhyStatus,
-	PODM_PACKET_INFO_T			pPktinfo
+	ODM_PACKET_INFO_T *pPktinfo
 	);
 
-void
-ODM_MacStatusQuery(
-	PDM_ODM_T					pDM_Odm,
-	u8 *						pMacStatus,
-	u8						MacID,
-	bool						bPacketMatchBSSID,
-	bool						bPacketToSelf,
-	bool						bPacketBeacon
-	);
+void ODM_MacStatusQuery(DM_ODM_T *pDM_Odm,
+	u8 *pMacStatus,
+	u8 MacID,
+	bool bPacketMatchBSSID,
+	bool bPacketToSelf,
+	bool bPacketBeacon
+);
+
 HAL_STATUS
 ODM_ConfigRFWithHeaderFile(
 	PDM_ODM_T	      pDM_Odm,
 	enum RF_RADIO_PATH	Content,
 	enum RF_RADIO_PATH	eRFPath
-	);
+);
 
 HAL_STATUS
 ODM_ConfigBBWithHeaderFile(
 	PDM_ODM_T				pDM_Odm,
 	ODM_BB_Config_Type		ConfigType
-    );
+);
 
 HAL_STATUS
 ODM_ConfigMACWithHeaderFile(
 	PDM_ODM_T	pDM_Odm
     );
+
 #endif

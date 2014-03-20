@@ -182,8 +182,7 @@ struct pri_cca {
 	u8		Monitor_flag;
 };
 
-typedef struct _RX_High_Power_
-{
+struct rx_hp {
 	u8		RXHP_flag;
 	u8		PSD_func_trigger;
 	u8		PSD_bitmap_RXHP[80];
@@ -195,7 +194,7 @@ typedef struct _RX_High_Power_
 	bool		RXHP_enable;
 	u8		TP_Mode;
 	struct timer_list PSDTimer;
-}RXHP_T, *pRXHP_T;
+};
 
 #define ASSOCIATE_ENTRY_NUM					32 /*  Max size of AsocEntry[]. */
 #define	ODM_ASSOCIATE_ENTRY_NUM				ASSOCIATE_ENTRY_NUM
@@ -212,8 +211,7 @@ typedef struct _RX_High_Power_
 #define	TRAFFIC_LOW	0
 #define	TRAFFIC_HIGH	1
 
-typedef struct _SW_Antenna_Switch_
-{
+struct sw_ant_sw {
 	u8		try_flag;
 	s32		PreRSSI;
 	u8		CurAntenna;
@@ -243,25 +241,22 @@ typedef struct _SW_Antenna_Switch_
 	u64		RXByteCnt_B;
 	u8		TrafficLoad;
 	struct timer_list SwAntennaSwitchTimer;
-}SWAT_T, *pSWAT_T;
+};
 
-typedef struct _EDCA_TURBO_
-{
+struct edca_turbo {
 	bool bCurrentTurboEDCA;
 	bool bIsCurRDLState;
 	u32	prv_traffic_idx; /*  edca turbo */
 
-}EDCA_T,*pEDCA_T;
+};
 
-typedef struct _ODM_RATE_ADAPTIVE
-{
-	u8				Type;				/*  DM_Type_ByFW/DM_Type_ByDriver */
-	u8				HighRSSIThresh;		/*  if RSSI > HighRSSIThresh	=> RATRState is DM_RATR_STA_HIGH */
-	u8				LowRSSIThresh;		/*  if RSSI <= LowRSSIThresh	=> RATRState is DM_RATR_STA_LOW */
-	u8				RATRState;			/*  Current RSSI level, DM_RATR_STA_HIGH/DM_RATR_STA_MIDDLE/DM_RATR_STA_LOW */
-	u32				LastRATR;			/*  RATR Register Content */
-
-} ODM_RATE_ADAPTIVE, *PODM_RATE_ADAPTIVE;
+struct odm_rate_adapt {
+	u8	Type;		/*  DM_Type_ByFW/DM_Type_ByDriver */
+	u8	HighRSSIThresh;	/*  if RSSI > HighRSSIThresh	=> RATRState is DM_RATR_STA_HIGH */
+	u8	LowRSSIThresh;	/*  if RSSI <= LowRSSIThresh	=> RATRState is DM_RATR_STA_LOW */
+	u8	RATRState;	/*  Current RSSI level, DM_RATR_STA_HIGH/DM_RATR_STA_MIDDLE/DM_RATR_STA_LOW */
+	u32	LastRATR;	/*  RATR Register Content */
+};
 
 #define IQK_MAC_REG_NUM		4
 #define IQK_ADDA_REG_NUM		16
@@ -283,8 +278,7 @@ typedef struct _ODM_RATE_ADAPTIVE
 /*  */
 #define MAX_PATH_NUM_92CS		2
 
-typedef struct _ODM_Phy_Status_Info_
-{
+struct odm_phy_info {
 	u8		RxPWDBAll;
 	u8		SignalQuality;	 /*  in 0-100 index. */
 	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
@@ -295,7 +289,7 @@ typedef struct _ODM_Phy_Status_Info_
 	u8		SignalStrength; /*  in 0-100 index. */
 	u8		RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
 	u8		RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
-}ODM_PHY_INFO_T,*PODM_PHY_INFO_T;
+};
 
 
 typedef struct _ODM_Phy_Dbg_Info_
@@ -456,19 +450,19 @@ typedef enum _ODM_Support_Ability_Definition
 	/*  */
 	/*  BB ODM section BIT 0-15 */
 	/*  */
-	ODM_BB_DIG					= BIT0,
+	ODM_BB_DIG				= BIT0,
 	ODM_BB_RA_MASK				= BIT1,
-	ODM_BB_DYNAMIC_TXPWR		= BIT2,
-	ODM_BB_FA_CNT					= BIT3,
+	ODM_BB_DYNAMIC_TXPWR			= BIT2,
+	ODM_BB_FA_CNT				= BIT3,
 	ODM_BB_RSSI_MONITOR			= BIT4,
-	ODM_BB_CCK_PD					= BIT5,
+	ODM_BB_CCK_PD				= BIT5,
 	ODM_BB_ANT_DIV				= BIT6,
 	ODM_BB_PWR_SAVE				= BIT7,
-	ODM_BB_PWR_TRAIN				= BIT8,
+	ODM_BB_PWR_TRAIN			= BIT8,
 	ODM_BB_RATE_ADAPTIVE			= BIT9,
 	ODM_BB_PATH_DIV				= BIT10,
-	ODM_BB_PSD					= BIT11,
-	ODM_BB_RXHP					= BIT12,
+	ODM_BB_PSD				= BIT11,
+	ODM_BB_RXHP				= BIT12,
 
 	/*  */
 	/*  MAC DM section BIT 16-23 */
@@ -481,7 +475,7 @@ typedef enum _ODM_Support_Ability_Definition
 	/*  */
 	ODM_RF_TX_PWR_TRACK			= BIT24,
 	ODM_RF_RX_GAIN_TRACK			= BIT25,
-	ODM_RF_CALIBRATION				= BIT26,
+	ODM_RF_CALIBRATION			= BIT26,
 
 }ODM_ABILITY_E;
 
@@ -823,21 +817,7 @@ typedef enum _ANT_DIV_TYPE
 
 }ANT_DIV_TYPE_E, *PANT_DIV_TYPE_E;
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*  */
 /*  2011/09/22 MH Copy from SD4 defined structure. We use to support PHY DM integration. */
-/*  */
 typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 {
 	/* struct timer_list FastAntTrainingTimer; */
@@ -860,23 +840,9 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	u8			ControlChannel;
 /*  ODM HANDLE, DRIVER NEEDS NOT TO HOOK------ */
 
-/* REMOVED COMMON INFO----------  */
-	/* u8				PseudoMacPhyMode; */
-	/* bool			*BTCoexist; */
-	/* bool			PseudoBtCoexist; */
-	/* u8				OPMode; */
-	/* bool			bAPMode; */
-	/* bool			bClientMode; */
-	/* bool			bAdHocMode; */
-	/* bool			bSlaveOfDMSP; */
-/* REMOVED COMMON INFO---------- */
-
-
 /* 1  COMMON INFORMATION */
 
-	/*  */
 	/*  Init Value */
-	/*  */
 /* HOOK BEFORE REG INIT----------- */
 	/*  ODM Support Ability DIG/RATR/TX_PWR_TRACK/ ¡K¡K = 1/2/3/¡K */
 	u32			SupportAbility;
@@ -1004,13 +970,13 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	struct dig_t	DM_DigTable;
 	struct dynamic_pwr_sav		DM_PSTable;
 	struct pri_cca	DM_PriCCA;
-	RXHP_T		DM_RXHP_Table;
+	struct rx_hp		DM_RXHP_Table;
 	struct false_alarm_stats	FalseAlmCnt;
 	struct false_alarm_stats	FlaseAlmCntBuddyAdapter;
-	SWAT_T		DM_SWAT_Table;
+	struct sw_ant_sw		DM_SWAT_Table;
 	bool		RSSI_test;
 
-	EDCA_T		DM_EDCA_Table;
+	struct edca_turbo		DM_EDCA_Table;
 	u32		WMMEDCA_BE;
 	/*  Copy from SD4 structure */
 	/*  */
@@ -1032,7 +998,7 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/* for rate adaptive, in fact,  88c/92c fw will handle this */
 	u8			bUseRAMask;
 
-	ODM_RATE_ADAPTIVE	RateAdaptive;
+	struct odm_rate_adapt	RateAdaptive;
 
 
 	ODM_RF_CAL_T	RFCalibrateInfo;
@@ -1276,10 +1242,10 @@ ODM_RAStateCheck(
 
 #define dm_SWAW_RSSI_Check	ODM_SwAntDivChkPerPktRssi
 void ODM_SwAntDivChkPerPktRssi(
- PDM_ODM_T		pDM_Odm,
- u8			StationID,
- PODM_PHY_INFO_T pPhyInfo
-	);
+	PDM_ODM_T pDM_Odm,
+	u8 StationID,
+	struct odm_phy_info *pPhyInfo
+);
 
 u32 ConvertTo_dB(u32 Value);
 

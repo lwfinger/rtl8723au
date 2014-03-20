@@ -3735,7 +3735,7 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a *pHalData;
 	PDM_ODM_T pDM_Odm;
-	pSWAT_T pDM_SWAT_Table;
+	struct sw_ant_sw *pDM_SWAT_Table;
 	u8 btAntNum;
 	u8 i;
 
