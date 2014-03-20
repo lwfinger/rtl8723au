@@ -50,7 +50,7 @@ struct phy_stat
 /*  Rx smooth factor */
 #define	Rx_Smooth_Factor (20)
 
-typedef struct _INTERRUPT_MSG_FORMAT_EX{
+struct interrupt_msg_format {
 	unsigned int C2H_MSG0;
 	unsigned int C2H_MSG1;
 	unsigned int C2H_MSG2;
@@ -58,7 +58,7 @@ typedef struct _INTERRUPT_MSG_FORMAT_EX{
 	unsigned int HISR; /*  from HISR Reg0x124, read to clear */
 	unsigned int HISRE;/*  from HISRE Reg0x12c, read to clear */
 	unsigned int  MSG_EX;
-}INTERRUPT_MSG_FORMAT_EX,*PINTERRUPT_MSG_FORMAT_EX;
+};
 
 void rtl8723au_init_recvbuf(struct rtw_adapter *padapter, struct recv_buf *precvbuf);
 int	rtl8723au_init_recv_priv(struct rtw_adapter * padapter);
