@@ -18,13 +18,10 @@
 #include <drv_types.h>
 
 
-typedef u8 NDIS_802_11_PMKID_VALUE[16];
-
-typedef struct _BSSIDInfo {
+struct bssid_info {
 	unsigned char  BSSID[6];
-	NDIS_802_11_PMKID_VALUE  PMKID;
-} BSSIDInfo, *PBSSIDInfo;
-
+	u8  PMKID[16];
+};
 
 u8 rtw_set_802_11_add_key(struct rtw_adapter *padapter,
 			  struct ndis_802_11_key *key);
