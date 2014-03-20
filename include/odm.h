@@ -292,8 +292,7 @@ struct odm_phy_info {
 };
 
 
-typedef struct _ODM_Phy_Dbg_Info_
-{
+struct odm_phy_dbg_info {
 	/* ODM Write,debug info */
 	s8		RxSNRdB[MAX_PATH_NUM_92CS];
 	u64		NumQryPhyStatus;
@@ -302,46 +301,43 @@ typedef struct _ODM_Phy_Dbg_Info_
 	/* Others */
 	s32		RxEVM[MAX_PATH_NUM_92CS];
 
-}ODM_PHY_DBG_INFO_T;
+};
 
-typedef struct _ODM_Per_Pkt_Info_
-{
+struct odm_packet_info {
 	u8		Rate;
 	u8		StationID;
 	bool		bPacketMatchBSSID;
 	bool		bPacketToSelf;
 	bool		bPacketBeacon;
-}ODM_PACKET_INFO_T,*PODM_PACKET_INFO_T;
+};
 
-typedef struct _ODM_Mac_Status_Info_
-{
+struct odm_mac_info {
 	u8	test;
 
-}ODM_MAC_INFO;
+};
 
 
-typedef enum tag_Dynamic_ODM_Support_Ability_Type
-{
+enum {
 	/*  BB Team */
-	ODM_DIG				= 0x00000001,
+	ODM_DIG			= 0x00000001,
 	ODM_HIGH_POWER		= 0x00000002,
 	ODM_CCK_CCA_TH		= 0x00000004,
-	ODM_FA_STATISTICS		= 0x00000008,
-	ODM_RAMASK			= 0x00000010,
-	ODM_RSSI_MONITOR		= 0x00000020,
+	ODM_FA_STATISTICS	= 0x00000008,
+	ODM_RAMASK		= 0x00000010,
+	ODM_RSSI_MONITOR	= 0x00000020,
 	ODM_SW_ANTDIV		= 0x00000040,
 	ODM_HW_ANTDIV		= 0x00000080,
-	ODM_BB_PWRSV			= 0x00000100,
-	ODM_2TPATHDIV			= 0x00000200,
-	ODM_1TPATHDIV			= 0x00000400,
-	ODM_PSD2AFH			= 0x00000800
-}ODM_Ability_E;
+	ODM_BB_PWRSV		= 0x00000100,
+	ODM_2TPATHDIV		= 0x00000200,
+	ODM_1TPATHDIV		= 0x00000400,
+	ODM_PSD2AFH		= 0x00000800
+};
 
 /*  */
 /*  2011/20/20 MH For MP driver RT_WLAN_STA =  STA_INFO_T */
 /*  Please declare below ODM relative info in your STA info structure. */
 /*  */
-typedef		struct _ODM_STA_INFO{
+struct odm_sta_info {
 	/*  Driver Write */
 	bool		bUsed;				/*  record the sta status link or not? */
 	u8		IOTPeer;			/*  Enum value.	HT_IOT_PEER_E */
@@ -361,24 +357,24 @@ typedef		struct _ODM_STA_INFO{
 	/*	Move To lower layer. */
 	/*  */
 	/*  ODM Write Wilson will handle this part(said by Luke.Lee) */
-}ODM_STA_INFO_T, *PODM_STA_INFO_T;
+};
 
 /*  */
 /*  2011/10/20 MH Define Common info enum for all team. */
 /*  */
-typedef enum _ODM_Common_Info_Definition
-{
+
+enum odm_cmninfo {
 	/*  Fixed value: */
 	/*  */
 
 	ODM_CMNINFO_PLATFORM = 0,
-	ODM_CMNINFO_ABILITY,					/*  ODM_ABILITY_E */
-	ODM_CMNINFO_INTERFACE,				/*  ODM_INTERFACE_E */
+	ODM_CMNINFO_ABILITY,					/*  enum odm_ability */
+	ODM_CMNINFO_INTERFACE,				/*  enum odm_interface_def */
 	ODM_CMNINFO_MP_TEST_CHIP,
-	ODM_CMNINFO_IC_TYPE,					/*  ODM_IC_TYPE_E */
-	ODM_CMNINFO_CUT_VER,					/*  ODM_CUT_VERSION_E */
-	ODM_CMNINFO_FAB_VER,					/*  ODM_FAB_E */
-	ODM_CMNINFO_RF_TYPE,					/*  RF_PATH_E or ODM_RF_TYPE_E? */
+	ODM_CMNINFO_IC_TYPE,					/*  enum odm_ic_type_def */
+	ODM_CMNINFO_CUT_VER,					/*  enum odm_cut_version */
+	ODM_CMNINFO_FAB_VER,					/*  enum odm_fab_version */
+	ODM_CMNINFO_RF_TYPE,					/*  enum rf_path_def or ODM_RF_TYPE_E? */
 	ODM_CMNINFO_BOARD_TYPE,				/*  ODM_BOARD_TYPE_E */
 	ODM_CMNINFO_EXT_LNA,					/*  true */
 	ODM_CMNINFO_EXT_PA,
@@ -438,18 +434,11 @@ typedef enum _ODM_Common_Info_Definition
 	ODM_CMNINFO_MAC_STATUS,
 
 	ODM_CMNINFO_MAX,
+};
 
-
-}ODM_CMNINFO_E;
-
-/*  */
-/*  2011/10/20 MH Define ODM support ability.  ODM_CMNINFO_ABILITY */
-/*  */
-typedef enum _ODM_Support_Ability_Definition
-{
-	/*  */
+/*  Define ODM support ability.  ODM_CMNINFO_ABILITY */
+enum {
 	/*  BB ODM section BIT 0-15 */
-	/*  */
 	ODM_BB_DIG				= BIT0,
 	ODM_BB_RA_MASK				= BIT1,
 	ODM_BB_DYNAMIC_TXPWR			= BIT2,
@@ -464,33 +453,27 @@ typedef enum _ODM_Support_Ability_Definition
 	ODM_BB_PSD				= BIT11,
 	ODM_BB_RXHP				= BIT12,
 
-	/*  */
 	/*  MAC DM section BIT 16-23 */
-	/*  */
 	ODM_MAC_EDCA_TURBO			= BIT16,
 	ODM_MAC_EARLY_MODE			= BIT17,
 
-	/*  */
 	/*  RF ODM section BIT 24-31 */
-	/*  */
 	ODM_RF_TX_PWR_TRACK			= BIT24,
 	ODM_RF_RX_GAIN_TRACK			= BIT25,
 	ODM_RF_CALIBRATION			= BIT26,
 
-}ODM_ABILITY_E;
+};
 
 /*	ODM_CMNINFO_INTERFACE */
-typedef enum tag_ODM_Support_Interface_Definition
-{
+enum odm_interface_def {
 	ODM_ITRF_PCIE	=	0x1,
 	ODM_ITRF_USB	=	0x2,
 	ODM_ITRF_SDIO	=	0x4,
 	ODM_ITRF_ALL	=	0x7,
-}ODM_INTERFACE_E;
+};
 
 /*  ODM_CMNINFO_IC_TYPE */
-typedef enum tag_ODM_Support_IC_Type_Definition
-{
+enum odm_ic_type_def {
 	ODM_RTL8192S	=	BIT0,
 	ODM_RTL8192C	=	BIT1,
 	ODM_RTL8192D	=	BIT2,
@@ -498,36 +481,34 @@ typedef enum tag_ODM_Support_IC_Type_Definition
 	ODM_RTL8188E	=	BIT4,
 	ODM_RTL8812	=	BIT5,
 	ODM_RTL8821	=	BIT6,
-}ODM_IC_TYPE_E;
+};
 
-#define ODM_IC_11N_SERIES		(ODM_RTL8192S|ODM_RTL8192C|ODM_RTL8192D|ODM_RTL8723A|ODM_RTL8188E)
+#define ODM_IC_11N_SERIES			\
+	(ODM_RTL8192S|ODM_RTL8192C|ODM_RTL8192D|ODM_RTL8723A|ODM_RTL8188E)
 #define ODM_IC_11AC_SERIES		(ODM_RTL8812)
 
 /* ODM_CMNINFO_CUT_VER */
-typedef enum tag_ODM_Cut_Version_Definition
-{
+enum odm_cut_version {
 	ODM_CUT_A		=	1,
 	ODM_CUT_B		=	2,
 	ODM_CUT_C		=	3,
 	ODM_CUT_D		=	4,
 	ODM_CUT_E		=	5,
 	ODM_CUT_F		=	6,
-	ODM_CUT_TEST	=	7,
-}ODM_CUT_VERSION_E;
+	ODM_CUT_TEST		=	7,
+};
 
 /*  ODM_CMNINFO_FAB_VER */
-typedef enum tag_ODM_Fab_Version_Definition
-{
+enum odm_fab_version {
 	ODM_TSMC	=	0,
 	ODM_UMC		=	1,
-}ODM_FAB_E;
+};
 
 /*  ODM_CMNINFO_RF_TYPE */
 /*  */
 /*  For example 1T2R (A+AB = BIT0|BIT4|BIT5) */
 /*  */
-typedef enum tag_ODM_RF_Path_Bit_Definition
-{
+enum rf_path_def {
 	ODM_RF_TX_A	=	BIT0,
 	ODM_RF_TX_B	=	BIT1,
 	ODM_RF_TX_C	=	BIT2,
@@ -536,7 +517,7 @@ typedef enum tag_ODM_RF_Path_Bit_Definition
 	ODM_RF_RX_B	=	BIT5,
 	ODM_RF_RX_C	=	BIT6,
 	ODM_RF_RX_D	=	BIT7,
-}RF_PATH_E;
+};
 
 
 typedef enum tag_ODM_RF_Type_Definition
@@ -949,11 +930,11 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 	/*  Define ........... */
 
 	/*  Latest packet phy info (ODM write) */
-	ODM_PHY_DBG_INFO_T	 PhyDbgInfo;
+	struct odm_phy_dbg_info	 PhyDbgInfo;
 	/* PHY_INFO_88E		PhyInfo; */
 
 	/*  Latest packet phy info (ODM write) */
-	ODM_MAC_INFO		*pMacInfo;
+	struct odm_mac_info		*pMacInfo;
 	/* MAC_INFO_88E		MacInfo; */
 
 	/*  Different Team independt structure?? */
@@ -1277,21 +1258,21 @@ ODM_DMWatchdog(
 void
 ODM_CmnInfoInit(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		u32			Value
 	);
 
 void
 ODM_CmnInfoHook(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		void *			pValue
 	);
 
 void
 ODM_CmnInfoPtrArrayHook(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		u16			Index,
 		void *			pValue
 	);

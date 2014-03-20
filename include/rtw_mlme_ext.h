@@ -42,7 +42,7 @@
 
 #define	DYNAMIC_FUNC_DISABLE			(0x0)
 
-/*  ====== ODM_ABILITY_E ======== */
+/*  ====== enum odm_ability ======== */
 /*  BB ODM section BIT 0-15 */
 #define	DYNAMIC_BB_DIG				BIT(0)
 #define	DYNAMIC_BB_RA_MASK			BIT(1)

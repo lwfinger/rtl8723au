@@ -153,8 +153,8 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
 	if(pHalData->BoardType == BOARD_USB_High_PA){
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,true);
-		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,true);
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA,true);
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA,true);
 	}
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
 	/*	ODM_CMNINFO_BINHCT_TEST only for MP Team */

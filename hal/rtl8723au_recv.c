@@ -187,7 +187,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
 	struct hal_data_8723a *pHalData= GET_HAL_DATA(padapter);
 	struct odm_phy_info *pPHYInfo = (struct odm_phy_info *)(&pattrib->phy_info);
-	ODM_PACKET_INFO_T pkt_info;
+	struct odm_packet_info pkt_info;
 	u8 *sa, *da;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;

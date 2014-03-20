@@ -155,7 +155,7 @@ ODM_PhyStatusQuery(
 	DM_ODM_T *pDM_Odm,
 	struct odm_phy_info *pPhyInfo,
 	u8 *						pPhyStatus,
-	ODM_PACKET_INFO_T *pPktinfo
+	struct odm_packet_info *pPktinfo
 	);
 
 void ODM_MacStatusQuery(DM_ODM_T *pDM_Odm,

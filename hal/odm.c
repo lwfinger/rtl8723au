@@ -600,7 +600,7 @@ ODM_DMWatchdog(
 void
 ODM_CmnInfoInit(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		u32			Value
 	)
 {
@@ -684,7 +684,7 @@ ODM_CmnInfoInit(
 void
 ODM_CmnInfoHook(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		void *			pValue
 	)
 {
@@ -788,7 +788,7 @@ ODM_CmnInfoHook(
 		/*	break; */
 
 		/* case	ODM_CMNINFO_MAC_STATUS: */
-		/*	pDM_Odm->pMacInfo = (ODM_MAC_INFO *)pValue; */
+		/*	pDM_Odm->pMacInfo = (struct odm_mac_info *)pValue; */
 		/*	break; */
 		/* To remove the compiler warning, must add an empty default statement to handle the other values. */
 		default:
@@ -803,7 +803,7 @@ ODM_CmnInfoHook(
 void
 ODM_CmnInfoPtrArrayHook(
 		PDM_ODM_T		pDM_Odm,
-		ODM_CMNINFO_E	CmnInfo,
+		enum odm_cmninfo	CmnInfo,
 		u16			Index,
 		void *			pValue
 	)
