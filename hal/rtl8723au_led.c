@@ -35,7 +35,7 @@
 /*		Turn on LED according to LedPin specified. */
 /*  */
 void
-SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
+SwLedOn(struct rtw_adapter *padapter, struct led_8723a * pLed)
 {
 	u8	LedCfg;
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
@@ -77,7 +77,7 @@ SwLedOn(struct rtw_adapter *padapter, PLED_871x pLed)
 /*		Turn off LED according to LedPin specified. */
 /*  */
 void
-SwLedOff(struct rtw_adapter *padapter, PLED_871x pLed)
+SwLedOff(struct rtw_adapter *padapter, struct led_8723a * pLed)
 {
 	u8	LedCfg;
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */

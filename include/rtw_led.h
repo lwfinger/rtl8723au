@@ -51,7 +51,7 @@
 /*  060421, rcnjko: Customized for Sercomm Printer Server case. */
 #define LED_CM3_BLINK_INTERVAL				1500
 
-typedef enum _LED_CTL_MODE{
+enum led_ctl_mode {
 	LED_CTL_POWER_ON = 1,
 	LED_CTL_LINK = 2,
 	LED_CTL_NO_LINK = 3,
@@ -66,9 +66,9 @@ typedef enum _LED_CTL_MODE{
 	LED_CTL_STOP_WPS_FAIL = 12, /* added for ALPHA */
 	LED_CTL_STOP_WPS_FAIL_OVERLAP = 13, /* added for BELKIN */
 	LED_CTL_CONNECTION_NO_TRANSFER = 14,
-}LED_CTL_MODE;
+};
 
-typedef enum _LED_STATE_871x{
+enum led_state_872x {
 	LED_UNKNOWN = 0,
 	RTW_LED_ON = 1,
 	RTW_LED_OFF = 2,
@@ -86,22 +86,22 @@ typedef enum _LED_STATE_871x{
 	LED_BLINK_CAMEO = 14,
 	LED_BLINK_XAVI = 15,
 	LED_BLINK_ALWAYS_ON = 16,
-}LED_STATE_871x;
+};
 
-typedef enum _LED_PIN_871x{
+enum led_pin_8723a {
 	LED_PIN_NULL = 0,
 	LED_PIN_LED0 = 1,
 	LED_PIN_LED1 = 2,
 	LED_PIN_LED2 = 3,
 	LED_PIN_GPIO0 = 4,
-}LED_PIN_871x;
+};
 
-typedef struct _LED_871x{
+struct led_8723a {
 	struct rtw_adapter				*padapter;
 
-	LED_PIN_871x		LedPin;	/*  Identify how to implement this SW led. */
-	LED_STATE_871x		CurrLedState; /*  Current LED state. */
-	LED_STATE_871x		BlinkingLedState; /*  Next state for blinking, either RTW_LED_ON or RTW_LED_OFF are. */
+	enum led_pin_8723a		LedPin;	/*  Identify how to implement this SW led. */
+	enum led_state_872x		CurrLedState; /*  Current LED state. */
+	enum led_state_872x		BlinkingLedState; /*  Next state for blinking, either RTW_LED_ON or RTW_LED_OFF are. */
 
 	u8					bLedOn; /*  true if LED is ON, false if LED is OFF. */
 
@@ -122,20 +122,20 @@ typedef struct _LED_871x{
 	u8					bLedScanBlinkInProgress;
 
 	struct work_struct			BlinkWorkItem; /*  Workitem used by BlinkTimer to manipulate H/W to blink LED. */
-} LED_871x, *PLED_871x;
+};
 
-#define IS_LED_WPS_BLINKING(_LED_871x)	(((PLED_871x)_LED_871x)->CurrLedState==LED_BLINK_WPS \
-					|| ((PLED_871x)_LED_871x)->CurrLedState==LED_BLINK_WPS_STOP \
-					|| ((PLED_871x)_LED_871x)->bLedWPSBlinkInProgress)
+#define IS_LED_WPS_BLINKING(_LED_871x)	(((struct led_8723a *)_LED_871x)->CurrLedState==LED_BLINK_WPS \
+					|| ((struct led_8723a *)_LED_871x)->CurrLedState==LED_BLINK_WPS_STOP \
+					|| ((struct led_8723a *)_LED_871x)->bLedWPSBlinkInProgress)
 
-#define IS_LED_BLINKING(_LED_871x)	(((PLED_871x)_LED_871x)->bLedWPSBlinkInProgress \
-					||((PLED_871x)_LED_871x)->bLedScanBlinkInProgress)
+#define IS_LED_BLINKING(_LED_871x)	(((struct led_8723a *)_LED_871x)->bLedWPSBlinkInProgress \
+					||((struct led_8723a *)_LED_871x)->bLedScanBlinkInProgress)
 
 /*  */
 /*  LED customization. */
 /*  */
 
-typedef	enum _LED_STRATEGY_871x{
+enum led_strategy_8723a {
 	SW_LED_MODE0 = 0, /*  SW control 1 LED via GPIO0. It is default option. */
 	SW_LED_MODE1= 1, /*  2 LEDs, through LED0 and LED1. For ALPHA. */
 	SW_LED_MODE2 = 2, /*  SW control 1 LED via GPIO0, customized for AzWave 8187 minicard. */
@@ -145,21 +145,17 @@ typedef	enum _LED_STRATEGY_871x{
 	SW_LED_MODE6 = 6, /* for 88CU minicard, porting from ce SW_LED_MODE7 */
 	HW_LED = 50, /*  HW control 2 LEDs, LED0 and LED1 (there are 4 different control modes, see MAC.CONFIG1 for details.) */
 	LED_ST_NONE = 99,
-}LED_STRATEGY_871x, *PLED_STRATEGY_871x;
+};
 
-void
-LedControl871x(
-	struct rtw_adapter				*padapter,
-	LED_CTL_MODE		LedAction
-	);
+void LedControl871x(struct rtw_adapter *padapter, enum led_ctl_mode LedAction);
 
 struct led_priv{
 	/* add for led controll */
-	LED_871x			SwLed0;
-	LED_871x			SwLed1;
-	LED_STRATEGY_871x	LedStrategy;
+	struct led_8723a			SwLed0;
+	struct led_8723a			SwLed1;
+	enum led_strategy_8723a	LedStrategy;
 	u8					bRegUseLed;
-	void (*LedControlHandler)(struct rtw_adapter *padapter, LED_CTL_MODE LedAction);
+	void (*LedControlHandler)(struct rtw_adapter *padapter, enum led_ctl_mode LedAction);
 	/* add for led controll */
 };
 
@@ -175,21 +171,21 @@ struct led_priv{
 
 void BlinkWorkItemCallback(struct work_struct *work);
 
-void ResetLedStatus(PLED_871x pLed);
+void ResetLedStatus(struct led_8723a *pLed);
 
 void
 InitLed871x(
 	struct rtw_adapter *padapter,
-	PLED_871x		pLed,
-	LED_PIN_871x	LedPin
-	);
+	struct led_8723a *pLed,
+	enum led_pin_8723a	LedPin
+);
 
 void
 DeInitLed871x(
-	PLED_871x			pLed
-	);
+	struct led_8723a *pLed
+);
 
 /* hal... */
-void BlinkHandler(PLED_871x	 pLed);
+void BlinkHandler(struct led_8723a *pLed);
 
 #endif /* __RTW_LED_H_ */
