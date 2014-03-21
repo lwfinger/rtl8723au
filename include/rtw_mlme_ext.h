@@ -107,8 +107,7 @@ extern unsigned char WMM_PARA_OUI[];
 /*	If you just wnat to customize the acitions(scan period or join actions) about one of the channel plan, */
 /*	customize them in struct rt_channel_info in the RT_CHANNEL_LIST. */
 /*  */
-typedef enum _RT_CHANNEL_DOMAIN
-{
+enum  { /* _RT_CHANNEL_DOMAIN */
 	/*  old channel plan mapping ===== */
 	RT_CHANNEL_DOMAIN_FCC = 0x00,
 	RT_CHANNEL_DOMAIN_IC = 0x01,
@@ -158,10 +157,9 @@ typedef enum _RT_CHANNEL_DOMAIN
 	/*  Add new channel plan above this line=============== */
 	RT_CHANNEL_DOMAIN_MAX,
 	RT_CHANNEL_DOMAIN_REALTEK_DEFINE = 0x7F,
-}RT_CHANNEL_DOMAIN, *PRT_CHANNEL_DOMAIN;
+};
 
-typedef enum _RT_CHANNEL_DOMAIN_2G
-{
+enum { /* _RT_CHANNEL_DOMAIN_2G */
 	RT_CHANNEL_DOMAIN_2G_WORLD = 0x00,		/* Worldwird 13 */
 	RT_CHANNEL_DOMAIN_2G_ETSI1 = 0x01,		/* Europe */
 	RT_CHANNEL_DOMAIN_2G_FCC1 = 0x02,		/* US */
@@ -170,10 +168,9 @@ typedef enum _RT_CHANNEL_DOMAIN_2G
 	RT_CHANNEL_DOMAIN_2G_NULL = 0x05,
 	/*  Add new channel plan above this line=============== */
 	RT_CHANNEL_DOMAIN_2G_MAX,
-}RT_CHANNEL_DOMAIN_2G, *PRT_CHANNEL_DOMAIN_2G;
+};
 
-typedef enum _RT_CHANNEL_DOMAIN_5G
-{
+enum { /* _RT_CHANNEL_DOMAIN_5G */
 	RT_CHANNEL_DOMAIN_5G_NULL = 0x00,
 	RT_CHANNEL_DOMAIN_5G_ETSI1 = 0x01,		/* Europe */
 	RT_CHANNEL_DOMAIN_5G_ETSI2 = 0x02,		/* Australia, New Zealand */
@@ -197,36 +194,31 @@ typedef enum _RT_CHANNEL_DOMAIN_5G
 	RT_CHANNEL_DOMAIN_5G_JAPAN_NO_DFS = 0x12,
 	RT_CHANNEL_DOMAIN_5G_FCC4_NO_DFS = 0x13,
 	RT_CHANNEL_DOMAIN_5G_MAX,
-}RT_CHANNEL_DOMAIN_5G, *PRT_CHANNEL_DOMAIN_5G;
+};
 
 #define rtw_is_channel_plan_valid(chplan) (chplan<RT_CHANNEL_DOMAIN_MAX || chplan == RT_CHANNEL_DOMAIN_REALTEK_DEFINE)
 
-typedef struct _RT_CHANNEL_PLAN
-{
+struct rt_channel_plan {
 	unsigned char	Channel[MAX_CHANNEL_NUM];
 	unsigned char	Len;
-}RT_CHANNEL_PLAN, *PRT_CHANNEL_PLAN;
+};
 
-typedef struct _RT_CHANNEL_PLAN_2G
-{
+struct rt_channel_plan_2g {
 	unsigned char	Channel[MAX_CHANNEL_NUM_2G];
 	unsigned char	Len;
-}RT_CHANNEL_PLAN_2G, *PRT_CHANNEL_PLAN_2G;
+};
 
-typedef struct _RT_CHANNEL_PLAN_5G
-{
+struct rt_channel_plan_5g {
 	unsigned char	Channel[MAX_CHANNEL_NUM_5G];
 	unsigned char	Len;
-}RT_CHANNEL_PLAN_5G, *PRT_CHANNEL_PLAN_5G;
+};
 
-typedef struct _RT_CHANNEL_PLAN_MAP
-{
+struct rt_channel_plan_map {
 	unsigned char	Index2G;
 	unsigned char	Index5G;
-}RT_CHANNEL_PLAN_MAP, *PRT_CHANNEL_PLAN_MAP;
+};
 
-enum Associated_AP
-{
+enum Associated_AP {
 	atherosAP	= 0,
 	broadcomAP	= 1,
 	ciscoAP		= 2,
@@ -238,31 +230,28 @@ enum Associated_AP
 	maxAP,
 };
 
-typedef enum _HT_IOT_PEER
-{
-	HT_IOT_PEER_UNKNOWN			= 0,
-	HT_IOT_PEER_REALTEK			= 1,
-	HT_IOT_PEER_REALTEK_92SE		= 2,
+enum { /* HT_IOT_PEER_E */
+	HT_IOT_PEER_UNKNOWN		= 0,
+	HT_IOT_PEER_REALTEK		= 1,
+	HT_IOT_PEER_REALTEK_92SE	= 2,
 	HT_IOT_PEER_BROADCOM		= 3,
-	HT_IOT_PEER_RALINK			= 4,
-	HT_IOT_PEER_ATHEROS			= 5,
-	HT_IOT_PEER_CISCO				= 6,
-	HT_IOT_PEER_MERU				= 7,
-	HT_IOT_PEER_MARVELL			= 8,
+	HT_IOT_PEER_RALINK		= 4,
+	HT_IOT_PEER_ATHEROS		= 5,
+	HT_IOT_PEER_CISCO		= 6,
+	HT_IOT_PEER_MERU		= 7,
+	HT_IOT_PEER_MARVELL		= 8,
 	HT_IOT_PEER_REALTEK_SOFTAP	= 9,/*  peer is RealTek SOFT_AP, by Bohn, 2009.12.17 */
-	HT_IOT_PEER_SELF_SOFTAP			= 10, /*  Self is SoftAP */
-	HT_IOT_PEER_AIRGO				= 11,
-	HT_IOT_PEER_INTEL				= 12,
-	HT_IOT_PEER_RTK_APCLIENT		= 13,
-	HT_IOT_PEER_REALTEK_81XX		= 14,
-	HT_IOT_PEER_REALTEK_WOW			= 15,
-	HT_IOT_PEER_TENDA				= 16,
-	HT_IOT_PEER_MAX					= 17
-}HT_IOT_PEER_E, *PHTIOT_PEER_E;
+	HT_IOT_PEER_SELF_SOFTAP		= 10, /*  Self is SoftAP */
+	HT_IOT_PEER_AIRGO		= 11,
+	HT_IOT_PEER_INTEL		= 12,
+	HT_IOT_PEER_RTK_APCLIENT	= 13,
+	HT_IOT_PEER_REALTEK_81XX	= 14,
+	HT_IOT_PEER_REALTEK_WOW		= 15,
+	HT_IOT_PEER_TENDA		= 16,
+	HT_IOT_PEER_MAX			= 17
+};
 
-
-enum SCAN_STATE
-{
+enum SCAN_STATE {
 	SCAN_DISABLE = 0,
 	SCAN_START = 1,
 	SCAN_TXNULL = 2,

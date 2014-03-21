@@ -91,7 +91,7 @@ unsigned char MCS_rate_1R[16] = {
 ChannelPlan definitions
 *********************************************************/
 
-static RT_CHANNEL_PLAN_2G	RTW_ChannelPlan2G[RT_CHANNEL_DOMAIN_2G_MAX] = {
+static struct rt_channel_plan_2g	RTW_ChannelPlan2G[RT_CHANNEL_DOMAIN_2G_MAX] = {
 	{{1,2,3,4,5,6,7,8,9,10,11,12,13},13},		/*  0x00, RT_CHANNEL_DOMAIN_2G_WORLD , Passive scan CH 12, 13 */
 	{{1,2,3,4,5,6,7,8,9,10,11,12,13},13},		/*  0x01, RT_CHANNEL_DOMAIN_2G_ETSI1 */
 	{{1,2,3,4,5,6,7,8,9,10,11},11},			/*  0x02, RT_CHANNEL_DOMAIN_2G_FCC1 */
@@ -100,7 +100,7 @@ static RT_CHANNEL_PLAN_2G	RTW_ChannelPlan2G[RT_CHANNEL_DOMAIN_2G_MAX] = {
 	{{},0},									/*  0x05, RT_CHANNEL_DOMAIN_2G_NULL */
 };
 
-static RT_CHANNEL_PLAN_5G	RTW_ChannelPlan5G[RT_CHANNEL_DOMAIN_5G_MAX] = {
+static struct rt_channel_plan_5g	RTW_ChannelPlan5G[RT_CHANNEL_DOMAIN_5G_MAX] = {
 	{{},0},																					/*  0x00, RT_CHANNEL_DOMAIN_5G_NULL */
 	{{36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140},19},						/*  0x01, RT_CHANNEL_DOMAIN_5G_ETSI1 */
 	{{36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140,149,153,157,161,165},24},	/*  0x02, RT_CHANNEL_DOMAIN_5G_ETSI2 */
@@ -125,7 +125,7 @@ static RT_CHANNEL_PLAN_5G	RTW_ChannelPlan5G[RT_CHANNEL_DOMAIN_5G_MAX] = {
 	{{36,40,44,48,149,153,157,161},8},																/*  0x13, RT_CHANNEL_DOMAIN_5G_FCC4_NO_DFS */
 };
 
-static RT_CHANNEL_PLAN_MAP	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
+static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
 	/*  0x00 ~ 0x1F , Old Define ===== */
 	{0x02,0x11},	/* 0x00, RT_CHANNEL_DOMAIN_FCC */
 	{0x02,0x0A},	/* 0x01, RT_CHANNEL_DOMAIN_IC */
@@ -196,7 +196,7 @@ static RT_CHANNEL_PLAN_MAP	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
 	{0x03,0x00},	/* 0x41, RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G */
 };
 
-static RT_CHANNEL_PLAN_MAP	RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03,0x02}; /* use the conbination for max channel numbers */
+static struct rt_channel_plan_map	RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03,0x02}; /* use the conbination for max channel numbers */
 
 static struct fwevent wlanevents[] =
 {
@@ -8211,7 +8211,7 @@ static void process_80211d(struct rtw_adapter *padapter, struct wlan_bssid_ex *b
 	{
 		u8 *ie, *p;
 		u32 len;
-		RT_CHANNEL_PLAN chplan_ap;
+		struct rt_channel_plan chplan_ap;
 		struct rt_channel_info chplan_sta[MAX_CHANNEL_NUM];
 		u8 country[4];
 		u8 fcn; /*  first channel number */
