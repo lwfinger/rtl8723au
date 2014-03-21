@@ -179,7 +179,7 @@ void BT_WifiAssociateNotify(struct rtw_adapter *padapter, u8 action)
 	BTDM_WifiAssociateNotify(padapter, action);
 }
 
-void BT_WifiMediaStatusNotify(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
+void BT_WifiMediaStatusNotify(struct rtw_adapter *padapter, enum rt_media_status mstatus)
 {
 	BTDM_MediaStatusNotify(padapter, mstatus);
 }
@@ -604,8 +604,8 @@ bthci_CheckLogLinkBehavior(
 static void
 bthci_SelectFlowType(
 	struct rtw_adapter *					padapter,
-	BT_LL_FLOWSPEC			TxLLFlowSpec,
-	BT_LL_FLOWSPEC			RxLLFlowSpec,
+	enum bt_ll_flowspec			TxLLFlowSpec,
+	enum bt_ll_flowspec			RxLLFlowSpec,
 	PHCI_FLOW_SPEC		TxFlowSpec,
 	PHCI_FLOW_SPEC		RxFlowSpec
 	)
@@ -1225,7 +1225,7 @@ bthci_CommandCompleteHeader(
 	u8		*pbuf,
 	u16		OGF,
 	u16		OCF,
-	HCI_STATUS	status
+	enum hci_status	status
 	)
 {
 	PPACKET_IRP_HCIEVENT_DATA PPacketIrpEvent = (PPACKET_IRP_HCIEVENT_DATA)pbuf;
@@ -1293,7 +1293,7 @@ bthci_IndicateEvent(
 static void
 bthci_EventWriteRemoteAmpAssoc(
 	struct rtw_adapter *	padapter,
-	HCI_STATUS	status,
+	enum hci_status	status,
 	u8		PLHandle
 	)
 {
@@ -1343,7 +1343,7 @@ bthci_EventEnhancedFlushComplete(
 static void
 bthci_EventShortRangeModeChangeComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
+	enum hci_status				HciStatus,
 	u8					ShortRangeState,
 	u8					EntryNum
 	)
@@ -1373,7 +1373,7 @@ bthci_EventShortRangeModeChangeComplete(
 static void
 bthci_EventSendFlowSpecModifyComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
+	enum hci_status				HciStatus,
 	u16					logicHandle
 	)
 {
@@ -1548,8 +1548,8 @@ bthci_EventChannelSelected(
 static void
 bthci_EventDisconnectPhyLinkComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
-	HCI_STATUS				Reason,
+	enum hci_status				HciStatus,
+	enum hci_status				Reason,
 	u8					EntryNum
 	)
 {
@@ -1577,7 +1577,7 @@ bthci_EventDisconnectPhyLinkComplete(
 static void
 bthci_EventPhysicalLinkComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
+	enum hci_status				HciStatus,
 	u8					EntryNum,
 	u8					PLHandle
 	)
@@ -1628,7 +1628,7 @@ bthci_EventCommandStatus(
 	struct rtw_adapter *					padapter,
 	u8					OGF,
 	u16					OCF,
-	HCI_STATUS				HciStatus
+	enum hci_status				HciStatus
 	)
 {
 
@@ -1653,7 +1653,7 @@ bthci_EventCommandStatus(
 static void
 bthci_EventLogicalLinkComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
+	enum hci_status				HciStatus,
 	u8					PhyLinkHandle,
 	u16					LogLinkHandle,
 	u8					LogLinkIndex,
@@ -1700,9 +1700,9 @@ bthci_EventLogicalLinkComplete(
 static void
 bthci_EventDisconnectLogicalLinkComplete(
 	struct rtw_adapter *					padapter,
-	HCI_STATUS				HciStatus,
+	enum hci_status				HciStatus,
 	u16					LogLinkHandle,
-	HCI_STATUS				Reason
+	enum hci_status				Reason
 	)
 {
 	u8 localBuf[6] = "";
@@ -1751,21 +1751,21 @@ bthci_EventFlushOccurred(
 	bthci_IndicateEvent(padapter, PPacketIrpEvent, 4);
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_BuildPhysicalLink(
 	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd,
 	u16							OCF
 )
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 	u8			EntryNum, PLH;
 
 	/* Send HCI Command status event to AMP. */
 	bthci_EventCommandStatus(padapter,
-			OGF_LINK_CONTROL_COMMANDS,
+			LINK_CONTROL_COMMANDS,
 			OCF,
 			HCI_STATUS_SUCCESS);
 
@@ -1829,7 +1829,7 @@ bthci_BuildLogicalLink(
 	u16						OCF
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTinfo->BtMgnt;
@@ -1875,7 +1875,7 @@ bthci_BuildLogicalLink(
 
 		/* When we receive Create/Accept logical link command, we should send command status event first. */
 		bthci_EventCommandStatus(padapter,
-			OGF_LINK_CONTROL_COMMANDS,
+			LINK_CONTROL_COMMANDS,
 			OCF,
 			status);
 		return;
@@ -1891,7 +1891,7 @@ bthci_BuildLogicalLink(
 			pBtMgnt->bPhyLinkInProgressStartLL = true;
 			/* When we receive Create/Accept logical link command, we should send command status event first. */
 			bthci_EventCommandStatus(padapter,
-				OGF_LINK_CONTROL_COMMANDS,
+				LINK_CONTROL_COMMANDS,
 				OCF,
 				status);
 
@@ -1905,7 +1905,7 @@ bthci_BuildLogicalLink(
 
 			/* When we receive Create/Accept logical link command, we should send command status event first. */
 			bthci_EventCommandStatus(padapter,
-				OGF_LINK_CONTROL_COMMANDS,
+				LINK_CONTROL_COMMANDS,
 				OCF,
 				status);
 		}
@@ -1916,7 +1916,7 @@ bthci_BuildLogicalLink(
 
 			/* When we receive Create/Accept logical link command, we should send command status event first. */
 			bthci_EventCommandStatus(padapter,
-				OGF_LINK_CONTROL_COMMANDS,
+				LINK_CONTROL_COMMANDS,
 				OCF,
 				status);
 
@@ -1938,7 +1938,7 @@ bthci_BuildLogicalLink(
 			{
 				if (pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].BtLogLinkhandle == 0)
 				{
-					HCI_STATUS LogCompEventstatus = HCI_STATUS_SUCCESS;
+					enum hci_status LogCompEventstatus = HCI_STATUS_SUCCESS;
 
 					pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].BtPhyLinkhandle = *((u8*)pHciCmd->Data);
 					pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].BtLogLinkhandle = AssignLogHandle;
@@ -2150,9 +2150,9 @@ static void bthci_ResetBtExtInfo(PBT_MGNT pBtMgnt)
 	pBtMgnt->ExtConfig.bBTA2DPBusy = false;
 }
 
-static HCI_STATUS bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEvent)
+static enum hci_status bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEvent)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	struct rtw_adapter *	padapter;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo;
@@ -2232,13 +2232,13 @@ static HCI_STATUS bthci_CmdReset(struct rtw_adapter *_padapter, u8 bNeedSendEven
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteRemoteAMPAssoc(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG			pBtDbg = &pBTInfo->BtDbg;
 	u8			CurrentAssocNum;
@@ -2299,9 +2299,9 @@ bthci_CmdWriteRemoteAMPAssoc(
 }
 
 /* 7.3.13 */
-static HCI_STATUS bthci_CmdReadConnectionAcceptTimeout(struct rtw_adapter *padapter)
+static enum hci_status bthci_CmdReadConnectionAcceptTimeout(struct rtw_adapter *padapter)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2335,25 +2335,25 @@ static HCI_STATUS bthci_CmdReadConnectionAcceptTimeout(struct rtw_adapter *padap
 }
 
 /* 7.3.3 */
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetEventFilter(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	return status;
 }
 
 /* 7.3.14 */
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteConnectionAcceptTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2390,13 +2390,13 @@ bthci_CmdWriteConnectionAcceptTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadPageTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2430,13 +2430,13 @@ bthci_CmdReadPageTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWritePageTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2473,13 +2473,13 @@ bthci_CmdWritePageTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLinkSupervisionTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
 	u8			physicalLinkHandle, EntryNum;
 
@@ -2527,13 +2527,13 @@ bthci_CmdReadLinkSupervisionTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteLinkSupervisionTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
 	u8			physicalLinkHandle, EntryNum;
 
@@ -2585,13 +2585,13 @@ bthci_CmdWriteLinkSupervisionTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdEnhancedFlush(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTinfo->BtHciInfo;
 	u16		logicHandle;
@@ -2627,13 +2627,13 @@ bthci_CmdEnhancedFlush(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLogicalLinkAcceptTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2667,13 +2667,13 @@ bthci_CmdReadLogicalLinkAcceptTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteLogicalLinkAcceptTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2705,13 +2705,13 @@ bthci_CmdWriteLogicalLinkAcceptTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetEventMask(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2749,13 +2749,13 @@ bthci_CmdSetEventMask(
 }
 
 /*  7.3.69 */
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetEventMaskPage2(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
 	u8	*pu8Temp;
@@ -2791,13 +2791,13 @@ bthci_CmdSetEventMaskPage2(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLocationData(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2837,13 +2837,13 @@ bthci_CmdReadLocationData(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteLocationData(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
 	u16	*pu2Temp;
@@ -2884,13 +2884,13 @@ bthci_CmdWriteLocationData(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadFlowControlMode(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -2919,13 +2919,13 @@ bthci_CmdReadFlowControlMode(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteFlowControlMode(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -2958,13 +2958,13 @@ bthci_CmdWriteFlowControlMode(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadBestEffortFlushTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info pBTinfo = GET_BT_INFO(padapter);
 	u16		i, j, logicHandle;
 	u32		BestEffortFlushTimeout = 0xffffffff;
@@ -3015,13 +3015,13 @@ bthci_CmdReadBestEffortFlushTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWriteBestEffortFlushTimeout(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info pBTinfo = GET_BT_INFO(padapter);
 	u16		i, j, logicHandle;
 	u32		BestEffortFlushTimeout = 0xffffffff;
@@ -3071,13 +3071,13 @@ bthci_CmdWriteBestEffortFlushTimeout(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdShortRangeMode(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	u8			PhyLinkHandle, EntryNum, ShortRangeMode;
 
@@ -3106,9 +3106,9 @@ bthci_CmdShortRangeMode(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadLocalSupportedCommands(struct rtw_adapter *padapter)
+static enum hci_status bthci_CmdReadLocalSupportedCommands(struct rtw_adapter *padapter)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	/*  send command complete event here when all data are received. */
 	{
@@ -3168,9 +3168,9 @@ static HCI_STATUS bthci_CmdReadLocalSupportedCommands(struct rtw_adapter *padapt
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadLocalSupportedFeatures(struct rtw_adapter *padapter)
+static enum hci_status bthci_CmdReadLocalSupportedFeatures(struct rtw_adapter *padapter)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	/* send command complete event here when all data are received. */
 	{
@@ -3200,13 +3200,13 @@ static HCI_STATUS bthci_CmdReadLocalSupportedFeatures(struct rtw_adapter *padapt
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLocalAMPAssoc(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
@@ -3294,14 +3294,14 @@ bthci_CmdReadLocalAMPAssoc(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadFailedContactCounter(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
 
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -3339,13 +3339,13 @@ bthci_CmdReadFailedContactCounter(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdResetFailedContactCounter(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS		status = HCI_STATUS_SUCCESS;
+	enum hci_status		status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO		pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO	pBtHciInfo = &pBTInfo->BtHciInfo;
@@ -3387,12 +3387,12 @@ bthci_CmdResetFailedContactCounter(
 /*  */
 /*  BT 3.0+HS [Vol 2] 7.4.1 */
 /*  */
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLocalVersionInformation(
 	struct rtw_adapter *	padapter
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	/* send command complete event here when all data are received. */
 	{
@@ -3441,9 +3441,9 @@ bthci_CmdReadLocalVersionInformation(
 }
 
 /* 7.4.7 */
-static HCI_STATUS bthci_CmdReadDataBlockSize(struct rtw_adapter *padapter)
+static enum hci_status bthci_CmdReadDataBlockSize(struct rtw_adapter *padapter)
 {
-	HCI_STATUS			status = HCI_STATUS_SUCCESS;
+	enum hci_status			status = HCI_STATUS_SUCCESS;
 
 	{
 		/* PVOID buffer = padapter->IrpHCILocalbuf.Ptr; */
@@ -3482,12 +3482,12 @@ static HCI_STATUS bthci_CmdReadDataBlockSize(struct rtw_adapter *padapter)
 }
 
 /*  7.4.5 */
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadBufferSize(
 	struct rtw_adapter *					padapter
 	)
 {
-	HCI_STATUS			status = HCI_STATUS_SUCCESS;
+	enum hci_status			status = HCI_STATUS_SUCCESS;
 
 	{
 		/* PVOID buffer = padapter->IrpHCILocalbuf.Ptr; */
@@ -3528,12 +3528,12 @@ bthci_CmdReadBufferSize(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLocalAMPInfo(
 	struct rtw_adapter *					padapter
 	)
 {
-	HCI_STATUS			status = HCI_STATUS_SUCCESS;
+	enum hci_status			status = HCI_STATUS_SUCCESS;
 
 	{
 /*		PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
@@ -3599,13 +3599,13 @@ bthci_CmdReadLocalAMPInfo(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdCreatePhysicalLink(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status;
+	enum hci_status	status;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -3617,13 +3617,13 @@ bthci_CmdCreatePhysicalLink(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdReadLinkQuality(
 	struct rtw_adapter *					padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS			status = HCI_STATUS_SUCCESS;
+	enum hci_status			status = HCI_STATUS_SUCCESS;
 	PBT30Info			pBTInfo = GET_BT_INFO(padapter);
 	u16				PLH;
 	u8				EntryNum, LinkQuality=0x55;
@@ -3667,19 +3667,19 @@ bthci_CmdReadLinkQuality(
 	return status;
 }
 
-static HCI_STATUS bthci_CmdReadRSSI(struct rtw_adapter *padapter)
+static enum hci_status bthci_CmdReadRSSI(struct rtw_adapter *padapter)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdCreateLogicalLink(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -3691,13 +3691,13 @@ bthci_CmdCreateLogicalLink(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdAcceptLogicalLink(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -3709,13 +3709,13 @@ bthci_CmdAcceptLogicalLink(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdDisconnectLogicalLink(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTinfo->BtMgnt;
@@ -3758,7 +3758,7 @@ bthci_CmdDisconnectLogicalLink(
 
 	/* When we receive Create logical link command, we should send command status event first. */
 	bthci_EventCommandStatus(padapter,
-			OGF_LINK_CONTROL_COMMANDS,
+			LINK_CONTROL_COMMANDS,
 			HCI_DISCONNECT_LOGICAL_LINK,
 			status);
 	/*  */
@@ -3777,11 +3777,11 @@ bthci_CmdDisconnectLogicalLink(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdLogicalLinkCancel(struct rtw_adapter *padapter,
 			   PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTinfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTinfo->BtMgnt;
 	u8	CurrentEntryNum, CurrentLogEntryNum;
@@ -3830,7 +3830,7 @@ bthci_CmdLogicalLinkCancel(struct rtw_adapter *padapter,
 		PPacketIrpEvent = (PPACKET_IRP_HCIEVENT_DATA)(&localBuf[0]);
 
 		len += bthci_CommandCompleteHeader(&localBuf[0],
-			OGF_LINK_CONTROL_COMMANDS,
+			LINK_CONTROL_COMMANDS,
 			HCI_LOGICAL_LINK_CANCEL,
 			status);
 
@@ -3850,11 +3850,11 @@ bthci_CmdLogicalLinkCancel(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdFlowSpecModify(struct rtw_adapter *padapter,
 			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info pBTinfo = GET_BT_INFO(padapter);
 	u8 i, j, find=0;
@@ -3883,7 +3883,7 @@ bthci_CmdFlowSpecModify(struct rtw_adapter *padapter,
 
 	/* When we receive Flow Spec Modify command, we should send command status event first. */
 	bthci_EventCommandStatus(padapter,
-		OGF_LINK_CONTROL_COMMANDS,
+		LINK_CONTROL_COMMANDS,
 		HCI_FLOW_SPEC_MODIFY,
 		HCI_STATUS_SUCCESS);
 
@@ -3895,11 +3895,11 @@ bthci_CmdFlowSpecModify(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdAcceptPhysicalLink(struct rtw_adapter *padapter,
 			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS	status;
+	enum hci_status	status;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -3911,12 +3911,12 @@ bthci_CmdAcceptPhysicalLink(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdDisconnectPhysicalLink(struct rtw_adapter *padapter,
 				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 	u8		PLH, CurrentEntryNum, PhysLinkDisconnectReason;
@@ -3937,10 +3937,10 @@ bthci_CmdDisconnectPhysicalLink(struct rtw_adapter *padapter,
 		/* return status; */
 	}
 
-	pBTInfo->BtAsocEntry[CurrentEntryNum].PhyLinkDisconnectReason=(HCI_STATUS)PhysLinkDisconnectReason;
+	pBTInfo->BtAsocEntry[CurrentEntryNum].PhyLinkDisconnectReason=(enum hci_status)PhysLinkDisconnectReason;
 	/* Send HCI Command status event to AMP. */
 	bthci_EventCommandStatus(padapter,
-	OGF_LINK_CONTROL_COMMANDS,
+	LINK_CONTROL_COMMANDS,
 	HCI_DISCONNECT_PHYSICAL_LINK,
 	status);
 
@@ -3959,11 +3959,11 @@ bthci_CmdDisconnectPhysicalLink(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetACLLinkDataFlowMode(struct rtw_adapter *padapter,
 				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -4005,11 +4005,11 @@ bthci_CmdSetACLLinkDataFlowMode(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetACLLinkStatus(struct rtw_adapter *padapter,
 			  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
@@ -4066,13 +4066,13 @@ bthci_CmdSetACLLinkStatus(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetSCOLinkStatus(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
@@ -4108,13 +4108,13 @@ bthci_CmdSetSCOLinkStatus(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetRSSIValue(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	s8		min_bt_rssi = 0;
@@ -4167,13 +4167,13 @@ bthci_CmdSetRSSIValue(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdSetCurrentBluetoothStatus(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 /*	PMGNT_INFO	pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -4208,13 +4208,13 @@ bthci_CmdSetCurrentBluetoothStatus(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdExtensionVersionNotify(
 	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
@@ -4252,13 +4252,13 @@ bthci_CmdExtensionVersionNotify(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdLinkStatusNotify(
 	struct rtw_adapter *						padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
@@ -4334,13 +4334,13 @@ bthci_CmdLinkStatusNotify(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdBtOperationNotify(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 
@@ -4412,11 +4412,11 @@ bthci_CmdBtOperationNotify(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdEnableWifiScanNotify(struct rtw_adapter *padapter,
 			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
 
@@ -4452,11 +4452,11 @@ bthci_CmdEnableWifiScanNotify(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWIFICurrentChannel(struct rtw_adapter *padapter,
 			    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	u8		chnl = pmlmeext->cur_channel;
 
@@ -4495,11 +4495,11 @@ bthci_CmdWIFICurrentChannel(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWIFICurrentBandwidth(struct rtw_adapter *padapter,
 			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	enum ht_channel_width bw;
 	u8	CurrentBW = 0;
 
@@ -4539,13 +4539,13 @@ bthci_CmdWIFICurrentBandwidth(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdWIFIConnectionStatus(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	struct rtw_adapter *pDefaultAdapter = GetDefaultAdapter(padapter);
 	u8		connectStatus = HCI_WIFI_NOT_CONNECTED;
 
@@ -4588,13 +4588,13 @@ bthci_CmdWIFIConnectionStatus(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdEnableDeviceUnderTestMode(
 	struct rtw_adapter *	padapter,
 	PPACKET_IRP_HCICMD_DATA		pHciCmd
 	)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -4627,11 +4627,11 @@ bthci_CmdEnableDeviceUnderTestMode(
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdAMPTestEnd(struct rtw_adapter *padapter,
 		    PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 	u8		bFilterOutNonAssociatedBSSID = true;
@@ -4671,11 +4671,11 @@ bthci_CmdAMPTestEnd(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdAMPTestCommand(struct rtw_adapter *padapter,
 			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -4771,11 +4771,11 @@ bthci_CmdAMPTestCommand(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdEnableAMPReceiverReports(struct rtw_adapter *padapter,
 				  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_HCI_INFO		pBtHciInfo = &pBTInfo->BtHciInfo;
 
@@ -4838,11 +4838,11 @@ bthci_CmdEnableAMPReceiverReports(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdHostBufferSize(struct rtw_adapter *padapter,
 			PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
 
@@ -4877,19 +4877,19 @@ bthci_CmdHostBufferSize(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_CmdHostNumberOfCompletedPackets(struct rtw_adapter *padapter,
 				      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_UnknownCMD(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_UNKNOW_HCI_CMD;
+	enum hci_status status = HCI_STATUS_UNKNOW_HCI_CMD;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -4902,11 +4902,11 @@ bthci_UnknownCMD(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFInformationalParameters(struct rtw_adapter *padapter,
 				       PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	switch (pHciCmd->OCF)
 	{
@@ -4939,11 +4939,11 @@ bthci_HandleOGFInformationalParameters(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFSetEventMaskCMD(struct rtw_adapter *padapter,
 			       PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	switch (pHciCmd->OCF)
 	{
@@ -5044,11 +5044,11 @@ bthci_HandleOGFSetEventMaskCMD(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFStatusParameters(struct rtw_adapter *padapter,
 				PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	switch (pHciCmd->OCF)
 	{
@@ -5089,11 +5089,11 @@ bthci_HandleOGFStatusParameters(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFLinkControlCMD(struct rtw_adapter *padapter,
 			      PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 
 	switch (pHciCmd->OCF)
 	{
@@ -5139,11 +5139,11 @@ bthci_HandleOGFLinkControlCMD(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFTestingCMD(struct rtw_adapter *padapter,
 			  PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	switch (pHciCmd->OCF)
 	{
 		case HCI_ENABLE_DEVICE_UNDER_TEST_MODE:
@@ -5171,11 +5171,11 @@ bthci_HandleOGFTestingCMD(struct rtw_adapter *padapter,
 	return status;
 }
 
-static HCI_STATUS
+static enum hci_status
 bthci_HandleOGFExtension(struct rtw_adapter *padapter,
 			 PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	HCI_STATUS status = HCI_STATUS_SUCCESS;
+	enum hci_status status = HCI_STATUS_SUCCESS;
 	switch (pHciCmd->OCF)
 	{
 		case HCI_SET_ACL_LINK_DATA_FLOW_MODE:
@@ -5251,7 +5251,7 @@ bthci_FakeCommand(struct rtw_adapter *padapter,	u16 OGF, u16 OCF)
 	pCmd->OGF = OGF;
 	pCmd->OCF = OCF;
 
-	if (OGF == OGF_LINK_CONTROL_COMMANDS && OCF == HCI_LOGICAL_LINK_CANCEL)
+	if (OGF == LINK_CONTROL_COMMANDS && OCF == HCI_LOGICAL_LINK_CANCEL)
 	{
 		pCmd->Length = 2;
 		pCmd->Data[0] = 1;		/* physical link handle */
@@ -5262,7 +5262,7 @@ bthci_FakeCommand(struct rtw_adapter *padapter,	u16 OGF, u16 OCF)
 
 static void
 bthci_StateStarting(struct rtw_adapter *padapter,
-		    HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
+		    enum hci_state_with_cmd StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5318,7 +5318,7 @@ bthci_StateStarting(struct rtw_adapter *padapter,
 
 static void
 bthci_StateConnecting(struct rtw_adapter *padapter,
-		      HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
+		      enum hci_state_with_cmd StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5383,7 +5383,7 @@ bthci_StateConnecting(struct rtw_adapter *padapter,
 
 static void
 bthci_StateConnected(struct rtw_adapter *padapter,
-		     HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
+		     enum hci_state_with_cmd StateCmd, u8 EntryNum)
 {
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -5472,7 +5472,7 @@ bthci_StateConnected(struct rtw_adapter *padapter,
 }
 
 static void
-bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
+bthci_StateAuth(struct rtw_adapter *padapter, enum hci_state_with_cmd StateCmd,
 		u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -5539,7 +5539,7 @@ bthci_StateAuth(struct rtw_adapter *padapter, HCI_STATE_WITH_CMD StateCmd,
 
 static void
 bthci_StateDisconnecting(struct rtw_adapter *padapter,
-			 HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
+			 enum hci_state_with_cmd StateCmd, u8 EntryNum)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -5590,7 +5590,7 @@ bthci_StateDisconnecting(struct rtw_adapter *padapter,
 
 static void
 bthci_StateDisconnected(struct rtw_adapter *padapter,
-			HCI_STATE_WITH_CMD StateCmd, u8 EntryNum)
+			enum hci_state_with_cmd StateCmd, u8 EntryNum)
 {
 /*	PMGNT_INFO pMgntInfo = &padapter->MgntInfo; */
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
@@ -5711,14 +5711,14 @@ bthci_StateDisconnected(struct rtw_adapter *padapter,
 static void
 bthci_UseFakeData(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
-	if (pHciCmd->OGF == OGF_LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_CREATE_LOGICAL_LINK)
+	if (pHciCmd->OGF == LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_CREATE_LOGICAL_LINK)
 	{
 		PHCI_FLOW_SPEC	pTxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[1];
 		PHCI_FLOW_SPEC	pRxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[17];
 		bthci_SelectFlowType(padapter, BT_TX_BE_FS, BT_RX_BE_FS, pTxFlowSpec, pRxFlowSpec);
 		/* bthci_SelectFlowType(padapter, BT_TX_be_FS, BT_RX_GU_FS, pTxFlowSpec, pRxFlowSpec); */
 	}
-	else if (pHciCmd->OGF == OGF_LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_FLOW_SPEC_MODIFY)
+	else if (pHciCmd->OGF == LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_FLOW_SPEC_MODIFY)
 	{
 		PHCI_FLOW_SPEC	pTxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[2];
 		PHCI_FLOW_SPEC	pRxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[18];
@@ -6233,7 +6233,7 @@ u8 BTHCI_HsConnectionEstablished(struct rtw_adapter *padapter)
 
 static u8
 BTHCI_CheckProfileExist(struct rtw_adapter *padapter,
-			BT_TRAFFIC_MODE_PROFILE Profile)
+			enum bt_traffic_mode_profile Profile)
 {
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT	pBtMgnt = &pBTInfo->BtMgnt;
@@ -6382,7 +6382,7 @@ void
 BTHCI_StateMachine(
 	struct rtw_adapter *					padapter,
 	u8					StateToEnter,
-	HCI_STATE_WITH_CMD		StateCmd,
+	enum hci_state_with_cmd		StateCmd,
 	u8					EntryNum
 	)
 {
@@ -6683,13 +6683,13 @@ void BTHCI_DisconnectAll(struct rtw_adapter *padapter)
 	}
 }
 
-HCI_STATUS
+enum hci_status
 BTHCI_HandleHCICMD(
 	struct rtw_adapter *					padapter,
 	PPACKET_IRP_HCICMD_DATA	pHciCmd
 	)
 {
-	HCI_STATUS	status = HCI_STATUS_SUCCESS;
+	enum hci_status	status = HCI_STATUS_SUCCESS;
 	PBT30Info	pBTInfo = GET_BT_INFO(padapter);
 	PBT_DBG		pBtDbg = &pBTInfo->BtDbg;
 
@@ -6721,10 +6721,10 @@ BTHCI_HandleHCICMD(
 
 	switch (pHciCmd->OGF)
 	{
-		case OGF_LINK_CONTROL_COMMANDS:
+		case LINK_CONTROL_COMMANDS:
 			status = bthci_HandleOGFLinkControlCMD(padapter, pHciCmd);
 			break;
-		case OGF_HOLD_MODE_COMMAND:
+		case HOLD_MODE_COMMAND:
 			break;
 		case OGF_SET_EVENT_MASK_COMMAND:
 			status = bthci_HandleOGFSetEventMaskCMD(padapter, pHciCmd);
@@ -7842,7 +7842,7 @@ static void btdm_1AntRecoverHalRAMask(struct rtw_adapter *padapter)
 
 static void
 btdm_1AntBTStateChangeHandler(struct rtw_adapter *padapter,
-			      BT_STATE_1ANT oldState, BT_STATE_1ANT newState)
+			      enum bt_state_1ant oldState, enum bt_state_1ant newState)
 {
 	RTPRINT(FBT, BT_TRACE, ("[BTCoex], BT state change, %s => %s\n", BtStateString[oldState], BtStateString[newState]));
 
@@ -8169,7 +8169,7 @@ static void BTDM_1AntWifiAssociateNotify(struct rtw_adapter *padapter, u8 type)
 
 static void
 BTDM_1AntMediaStatusNotify(struct rtw_adapter *padapter,
-			   RT_MEDIA_STATUS mstatus)
+			   enum rt_media_status mstatus)
 {
 	PBT_COEXIST_8723A pBtCoex;
 
@@ -12203,7 +12203,7 @@ u32 BTDM_BtTxRxCounterL(	struct rtw_adapter *	padapter	)
 	return counters;
 }
 
-void BTDM_SetFwChnlInfo(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
+void BTDM_SetFwChnlInfo(struct rtw_adapter *padapter, enum rt_media_status mstatus)
 {
 /*	PMGNT_INFO	pMgntInfo = &padapter->MgntInfo; */
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -12881,7 +12881,7 @@ BTDM_WifiAssociateNotify8723A(struct rtw_adapter *padapter, u8 action)
 
 static void
 BTDM_MediaStatusNotify8723A(struct rtw_adapter *padapter,
-			    RT_MEDIA_STATUS mstatus)
+			    enum rt_media_status mstatus)
 {
 	PBT30Info		pBTInfo = GET_BT_INFO(padapter);
 	PBT_MGNT		pBtMgnt = &pBTInfo->BtMgnt;
@@ -17255,7 +17255,7 @@ void BTDM_WifiAssociateNotify(struct rtw_adapter *padapter, u8 action)
 	BTDM_WifiAssociateNotify8723A(padapter, action);
 }
 
-void BTDM_MediaStatusNotify(struct rtw_adapter *padapter, RT_MEDIA_STATUS mstatus)
+void BTDM_MediaStatusNotify(struct rtw_adapter *padapter, enum rt_media_status mstatus)
 {
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(padapter);
 

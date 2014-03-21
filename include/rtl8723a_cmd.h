@@ -77,7 +77,7 @@ struct H2C_SS_RFOFF_PARAM{
 
 
 struct joinbssrpt_parm {
-	u8 OpMode;	/*  RT_MEDIA_STATUS */
+	u8 OpMode;	/*  enum rt_media_status */
 };
 
 struct rsvdpage_loc {
