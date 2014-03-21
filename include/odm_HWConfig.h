@@ -65,18 +65,16 @@
 /*  structure and define */
 /*  */
 
-typedef struct _Phy_Rx_AGC_Info
-{
+struct phy_rx_agc_info {
 	#ifdef __LITTLE_ENDIAN
 		u8	gain:7,trsw:1;
 	#else
 		u8	trsw:1,gain:7;
 	#endif
-} PHY_RX_AGC_INFO_T,*pPHY_RX_AGC_INFO_T;
+};
 
-typedef struct _Phy_Status_Rpt_8192cd
-{
-	PHY_RX_AGC_INFO_T path_agc[2];
+struct phy_status_rpt {
+	struct phy_rx_agc_info path_agc[2];
 	u8	ch_corr[2];
 	u8	cck_sig_qual_ofdm_pwdb_all;
 	u8	cck_agc_rpt_ofdm_cfosho_a;
@@ -111,12 +109,11 @@ typedef struct _Phy_Status_Rpt_8192cd
 	u8	sgi_en:1;
 	u8	antsel_rx_keep_2:1;	/* ex_intf_flg:1; */
 #endif
-} PHY_STATUS_RPT_8192CD_T,*PPHY_STATUS_RPT_8192CD_T;
+};
 
 
-typedef struct _Phy_Status_Rpt_8195
-{
-	PHY_RX_AGC_INFO_T path_agc[2];
+struct phy_status_rpt_8195 {
+	struct phy_rx_agc_info path_agc[2];
 	u8	ch_num[2];
 	u8	cck_sig_qual_ofdm_pwdb_all;
 	u8	cck_agc_rpt_ofdm_cfosho_a;
@@ -142,7 +139,7 @@ typedef struct _Phy_Status_Rpt_8195
 	u8	antidx_antb:3;
 	u8	antidx_anta:3;
 #endif
-} PHY_STATUS_RPT_8195_T,*pPHY_STATUS_RPT_8195_T;
+};
 
 
 void odm_Init_RSSIForDM(struct dm_odm_t *pDM_Odm);
