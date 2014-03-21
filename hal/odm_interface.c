@@ -189,14 +189,14 @@ void ODM_FreeMemory(
 void
 ODM_AcquireSpinLock(
 	struct dm_odm_t *pDM_Odm,
-	RT_SPINLOCK_TYPE	type
+	enum rt_spinlock_type	type
 	)
 {
 }
 
 void ODM_ReleaseSpinLock(
 	struct dm_odm_t *pDM_Odm,
-	RT_SPINLOCK_TYPE	type
+	enum rt_spinlock_type	type
 	)
 {
 }

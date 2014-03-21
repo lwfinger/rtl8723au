@@ -19,14 +19,14 @@
 /*  Define Different SW team support */
 /*  */
 
-typedef enum _HAL_STATUS{
+enum hal_status {
 	HAL_STATUS_SUCCESS,
 	HAL_STATUS_FAILURE,
-}HAL_STATUS,*PHAL_STATUS;
+};
 
-typedef enum _RT_SPINLOCK_TYPE{
+enum rt_spinlock_type {
 	RT_TEMP =1,
-}RT_SPINLOCK_TYPE;
+};
 
 
 	#include <basic_types.h>

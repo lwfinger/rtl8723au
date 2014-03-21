@@ -110,9 +110,9 @@ void ODM_FreeMemory(struct dm_odm_t *pDM_Odm, void *pPtr, u32 length);
 s32 ODM_CompareMemory(struct dm_odm_t *pDM_Odm, void *pBuf1, void *pBuf2, u32 length);
 
 /*  ODM MISC-spin lock relative API. */
-void ODM_AcquireSpinLock(struct dm_odm_t *pDM_Odm, RT_SPINLOCK_TYPE type);
+void ODM_AcquireSpinLock(struct dm_odm_t *pDM_Odm, enum rt_spinlock_type type);
 
-void ODM_ReleaseSpinLock(struct dm_odm_t *pDM_Odm, RT_SPINLOCK_TYPE type);
+void ODM_ReleaseSpinLock(struct dm_odm_t *pDM_Odm, enum rt_spinlock_type type);
 
 /*  ODM MISC-workitem relative API. */
 void ODM_InitializeWorkItem(struct dm_odm_t *pDM_Odm, void *pRtWorkItem,

@@ -578,11 +578,11 @@ phy_RF6052_Config_ParaFile(
 		switch(eRFPath)
 		{
 		case RF_PATH_A:
-			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
+			if (HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
 				rtStatus= _FAIL;
 			break;
 		case RF_PATH_B:
-			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
+			if (HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(enum RF_RADIO_PATH)eRFPath, (enum RF_RADIO_PATH)eRFPath))
 				rtStatus= _FAIL;
 			break;
 		case RF_PATH_C:

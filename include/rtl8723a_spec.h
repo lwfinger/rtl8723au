@@ -674,36 +674,35 @@ Default: 00b.
 
 #define	RTL_EEPROM_ID						0x8129
 
-/* should be renamed and moved to another file */
-typedef	enum _BOARD_TYPE_8192CUSB{
-	BOARD_USB_DONGLE			= 0,		/*  USB dongle */
-	BOARD_USB_High_PA		= 1,		/*  USB dongle with high power PA */
-	BOARD_MINICARD			= 2,		/*  Minicard */
-	BOARD_USB_SOLO			= 3,		/*  USB solo-Slim module */
-	BOARD_USB_COMBO			= 4,		/*  USB Combo-Slim module */
-} BOARD_TYPE_8192CUSB, *PBOARD_TYPE_8192CUSB;
-
-#define	SUPPORT_HW_RADIO_DETECT(pHalData)	(pHalData->BoardType == BOARD_MINICARD||\
-													pHalData->BoardType == BOARD_USB_SOLO||\
-													pHalData->BoardType == BOARD_USB_COMBO)
+#define	SUPPORT_HW_RADIO_DETECT(pHalData)		\
+	(pHalData->BoardType == BOARD_MINICARD ||	\
+	pHalData->BoardType == BOARD_USB_SOLO ||	\
+	pHalData->BoardType == BOARD_USB_COMBO)
 
 /*  */
 /*  EEPROM address for Test chip */
 /*  */
-#define EEPROM_TEST_USB_OPT						0x0E
-#define EEPROM_TEST_CHIRP_K						0x0F
-#define EEPROM_TEST_EP_SETTING					0x0E
-#define EEPROM_TEST_USB_PHY						0x10
+#define EEPROM_TEST_USB_OPT		0x0E
+#define EEPROM_TEST_CHIRP_K		0x0F
+#define EEPROM_TEST_EP_SETTING		0x0E
+#define EEPROM_TEST_USB_PHY		0x10
 
 
 /*  */
 /*  EEPROM address for Normal chip */
 /*  */
-#define EEPROM_NORMAL_USB_OPT					0x0E
-#define EEPROM_NORMAL_CHIRP_K						0x0E	/*  Changed */
-#define EEPROM_NORMAL_EP_SETTING					0x0F	/*  Changed */
-#define EEPROM_NORMAL_USB_PHY					0x12	/*  Changed */
+#define EEPROM_NORMAL_USB_OPT		0x0E
+#define EEPROM_NORMAL_CHIRP_K		0x0E	/*  Changed */
+#define EEPROM_NORMAL_EP_SETTING	0x0F	/*  Changed */
+#define EEPROM_NORMAL_USB_PHY		0x12	/*  Changed */
 
+enum {
+	BOARD_USB_DONGLE		= 0,		/*  USB dongle */
+	BOARD_USB_High_PA		= 1,		/*  USB dongle with high power PA */
+	BOARD_MINICARD			= 2,		/*  Minicard */
+	BOARD_USB_SOLO			= 3,		/*  USB solo-Slim module */
+	BOARD_USB_COMBO			= 4,		/*  USB Combo-Slim module */
+};
 
 /*  Test chip and normal chip common define */
 /*  */

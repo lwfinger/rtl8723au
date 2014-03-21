@@ -585,7 +585,7 @@ ODM_MacStatusQuery(
 
 }
 
-HAL_STATUS
+enum hal_status
 ODM_ConfigRFWithHeaderFile(
 	struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	Content,
@@ -609,7 +609,7 @@ ODM_ConfigRFWithHeaderFile(
 }
 
 
-HAL_STATUS
+enum hal_status
 ODM_ConfigBBWithHeaderFile(
 	struct dm_odm_t *pDM_Odm,
 	enum odm_bb_config_type		ConfigType
@@ -635,7 +635,7 @@ ODM_ConfigBBWithHeaderFile(
 	return HAL_STATUS_SUCCESS;
 }
 
-HAL_STATUS
+enum hal_status
 ODM_ConfigMACWithHeaderFile(
 	struct dm_odm_t *pDM_Odm
 	)
