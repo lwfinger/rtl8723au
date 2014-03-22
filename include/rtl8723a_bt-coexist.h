@@ -42,16 +42,18 @@ enum rt_media_status {
 
 #define	BT_TMP_BUF_SIZE		100
 
-void BT_SignalCompensation(struct rtw_adapter * padapter, u8 *rssi_wifi, u8 *rssi_bt);
-void BT_WifiScanNotify(struct rtw_adapter * padapter, u8 scanType);
-void BT_WifiAssociateNotify(struct rtw_adapter * padapter, u8 action);
-void BT_WifiMediaStatusNotify(struct rtw_adapter * padapter, enum rt_media_status mstatus);
+void BT_SignalCompensation(struct rtw_adapter *padapter,
+			   u8 *rssi_wifi, u8 *rssi_bt);
+void BT_WifiScanNotify(struct rtw_adapter *padapter, u8 scanType);
+void BT_WifiAssociateNotify(struct rtw_adapter *padapter, u8 action);
+void BT_WifiMediaStatusNotify(struct rtw_adapter *padapter,
+			      enum rt_media_status mstatus);
 void BT_SpecialPacketNotify(struct rtw_adapter * padapter);
 void BT_HaltProcess(struct rtw_adapter * padapter);
 void BT_LpsLeave(struct rtw_adapter * padapter);
 
 
-#define	BT_HsConnectionEstablished(Adapter)					false
+#define	BT_HsConnectionEstablished(Adapter)		false
 /*  ===== End of sync from SD7 driver COMMON/BT.h ===== */
 #endif /*  __BT_C__ */
 
@@ -65,10 +67,10 @@ void BT_LpsLeave(struct rtw_adapter * padapter);
 /*  */
 /*       802.11 Management frame Status Code field */
 /*  */
-typedef struct _OCTET_STRING{
+struct octet_string {
 	u8		*Octet;
 	u16		Length;
-} OCTET_STRING, *POCTET_STRING;
+};
 
 
 /*  AES_CCMP specific */
@@ -89,22 +91,19 @@ enum {
 											/*  16*8 < 4*60  Resove to 16*16 */
 };
 
-/*  */
 /*  Key Length */
-/*  */
-#define PMK_LEN					32
+#define PMK_LEN				32
 #define PTK_LEN_TKIP			64
-#define GTK_LEN					32
+#define GTK_LEN				32
 #define KEY_NONCE_LEN			32
 
 
 /*  COMMON/Dot11d.h */
-typedef struct _CHNL_TXPOWER_TRIPLE
-{
+struct chnl_txpower_triple {
 	u8 FirstChnl;
 	u8 NumChnls;
 	s8 MaxTxPowerInDbm;
-} CHNL_TXPOWER_TRIPLE, *PCHNL_TXPOWER_TRIPLE;
+};
 
 
 /*  ===== Below this line is sync from SD7 driver COMMON/bt_hci.h ===== */
@@ -680,23 +679,22 @@ enum bt_state_wpa_auth {
 #define MAX_AMP_ASSOC_FRAG_LEN			248
 #define TOTAL_ALLOCIATE_ASSOC_LEN			1000
 
-typedef struct _HCI_FLOW_SPEC
-{
+struct hci_flow_spec {
 	u8				Identifier;
 	u8				ServiceType;
 	u16				MaximumSDUSize;
 	u32				SDUInterArrivalTime;
 	u32				AccessLatency;
 	u32				FlushTimeout;
-} HCI_FLOW_SPEC, *PHCI_FLOW_SPEC;
+};
 
 typedef struct _HCI_LOG_LINK_CMD_DATA
 {
 	u8				BtPhyLinkhandle;
 	u16				BtLogLinkhandle;
 	u8				BtTxFlowSpecID;
-	HCI_FLOW_SPEC		Tx_Flow_Spec;
-	HCI_FLOW_SPEC		Rx_Flow_Spec;
+	struct hci_flow_spec		Tx_Flow_Spec;
+	struct hci_flow_spec		Rx_Flow_Spec;
 	u32				TxPacketCount;
 	u32				BestEffortFlushTimeout;
 
@@ -829,7 +827,7 @@ typedef struct _BT_ASOC_ENTRY
 	HCI_ACL_PACKET_DATA			ACLPacketsData;
 
 	AMP_ASSOC_CMD_DATA		AmpAsocCmdData;
-	OCTET_STRING				BTSsid;
+	struct octet_string				BTSsid;
 	u8						BTSsidBuf[33];
 
 	enum hci_status						PhyLinkDisconnectReason;
@@ -1069,7 +1067,7 @@ typedef struct _BT_SECURITY
 	/*  May need to remove to BTSecInfo ... */
 	/* enum bt_state_wpa_auth BTWPAAuthState; */
 	/* u8				PMK[PMK_LEN]; */
-	OCTET_STRING		RSNIE;
+	struct octet_string		RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
 	u8			bRegNoEncrypt;
 	u8			bUsedHwEncrypt;   /*  It is define by OS version !! */

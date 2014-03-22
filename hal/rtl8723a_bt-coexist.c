@@ -307,7 +307,7 @@ static void bthci_DecideBTChannel(struct rtw_adapter *padapter, u8 EntryNum)
 	PBT30Info pBTInfo;
 	PBT_MGNT pBtMgnt;
 	PBT_HCI_INFO pBtHciInfo;
-	PCHNL_TXPOWER_TRIPLE pTriple_subband = NULL;
+	struct chnl_txpower_triple * pTriple_subband = NULL;
 	PCOMMON_TRIPLE pTriple;
 	u8 i, j, localchnl, firstRemoteLegalChnlInTriplet=0, regulatory_skipLen=0;
 	u8 subbandTripletCnt = 0;
@@ -342,7 +342,7 @@ static void bthci_DecideBTChannel(struct rtw_adapter *padapter, u8 EntryNum)
 			{
 				RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("Find Sub-band triplet \n"));
 				subbandTripletCnt++;
-				pTriple_subband = (PCHNL_TXPOWER_TRIPLE)pTriple;
+				pTriple_subband = (struct chnl_txpower_triple *)pTriple;
 				/*  */
 				/*  if remote first legal channel not found, then find first remote channel */
 				/*  and it's legal for our channel plan. */
@@ -542,7 +542,7 @@ static u8 bthci_DiscardTxPackets(struct rtw_adapter *padapter, u16 LLH)
 static u8
 bthci_CheckLogLinkBehavior(
 	struct rtw_adapter *					padapter,
-	HCI_FLOW_SPEC			TxFlowSpec
+	struct hci_flow_spec			TxFlowSpec
 	)
 {
 	u8	ID = TxFlowSpec.Identifier;
@@ -606,8 +606,8 @@ bthci_SelectFlowType(
 	struct rtw_adapter *					padapter,
 	enum bt_ll_flowspec			TxLLFlowSpec,
 	enum bt_ll_flowspec			RxLLFlowSpec,
-	PHCI_FLOW_SPEC		TxFlowSpec,
-	PHCI_FLOW_SPEC		RxFlowSpec
+	struct hci_flow_spec *		TxFlowSpec,
+	struct hci_flow_spec *		RxFlowSpec
 	)
 {
 	switch (TxLLFlowSpec)
@@ -882,48 +882,46 @@ bthci_AssocPreferredChannelList(
 	PBT30Info				pBTInfo;
 	PAMP_ASSOC_STRUCTURE	pAssoStrc;
 	PAMP_PREF_CHNL_REGULATORY pReg;
-	PCHNL_TXPOWER_TRIPLE pTripleIE, pTriple;
+	struct chnl_txpower_triple *pTripleIE, *pTriple;
 	char	ctrString[3] = {'X', 'X', 'X'};
 	u32	len = 0;
 	u8	i=0, NumTriples=0, preferredChnl;
 
 
 	pBTInfo = GET_BT_INFO(padapter);
-/*	pDot11dInfo = GET_DOT11D_INFO(pMgntInfo); */
 	pAssoStrc = (PAMP_ASSOC_STRUCTURE)pbuf;
 	pReg = (PAMP_PREF_CHNL_REGULATORY)&pAssoStrc->Data[3];
 
 	preferredChnl = bthci_GetLocalChannel(padapter);
 	pAssoStrc->TypeID = AMP_PREFERRED_CHANNEL_LIST;
-	{
-		/*  locale unknown */
-		memcpy(&pAssoStrc->Data[0], &ctrString[0], 3);
-		pReg->reXId = 201;
-		pReg->regulatoryClass = 254;
-		pReg->coverageClass = 0;
-		len += 6;
-		RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("PREFERRED_CHNL_LIST\n"));
-		RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("XXX, 201,254,0\n"));
-		/*  at the following, chnl 1~11 should be contained */
-		pTriple = (PCHNL_TXPOWER_TRIPLE)&pAssoStrc->Data[len];
 
-		/*  (1) if any wifi or bt HS connection exists */
-		if ((pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_CREATOR) ||
-			(check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE|WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE|WIFI_AP_STATE) == true) ||
-			BTHCI_HsConnectionEstablished(padapter))
-		{
-			pTriple->FirstChnl = preferredChnl;
-			pTriple->NumChnls = 1;
-			pTriple->MaxTxPowerInDbm = 20;
-			len += 3;
-			RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("First Channel = %d, Channel Num = %d, MaxDbm = %d\n",
-				pTriple->FirstChnl,
-				pTriple->NumChnls,
-				pTriple->MaxTxPowerInDbm));
+	/*  locale unknown */
+	memcpy(&pAssoStrc->Data[0], &ctrString[0], 3);
+	pReg->reXId = 201;
+	pReg->regulatoryClass = 254;
+	pReg->coverageClass = 0;
+	len += 6;
+	RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("PREFERRED_CHNL_LIST\n"));
+	RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("XXX, 201,254,0\n"));
+	/*  at the following, chnl 1~11 should be contained */
+	pTriple = (struct chnl_txpower_triple *)&pAssoStrc->Data[len];
 
-			/* pTriple = (PCHNL_TXPOWER_TRIPLE)((u8*)pTriple + 3); */
-		}
+	/*  (1) if any wifi or bt HS connection exists */
+	if ((pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_CREATOR) ||
+	    (check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE |
+			   WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE |
+			   WIFI_AP_STATE)) ||
+	    BTHCI_HsConnectionEstablished(padapter)) {
+		pTriple->FirstChnl = preferredChnl;
+		pTriple->NumChnls = 1;
+		pTriple->MaxTxPowerInDbm = 20;
+		len += 3;
+		RTPRINT(FIOCTL, (IOCTL_BT_HCICMD | IOCTL_BT_LOGO), ("First Channel = %d, Channel Num = %d, MaxDbm = %d\n",
+			pTriple->FirstChnl,
+			pTriple->NumChnls,
+			pTriple->MaxTxPowerInDbm));
 	}
+
 	pAssoStrc->Length = (u16)len;
 	RTPRINT_DATA(FIOCTL, IOCTL_BT_HCICMD, ("AssocPreferredChannelList : \n"), pAssoStrc, pAssoStrc->Length+3);
 
@@ -1013,7 +1011,7 @@ bthci_ConstructScanList(
 {
 	struct rtw_adapter *				padapter;
 	PBT_HCI_INFO				pBtHciInfo;
-	PCHNL_TXPOWER_TRIPLE	pTriple_subband;
+	struct chnl_txpower_triple *	pTriple_subband;
 	PCOMMON_TRIPLE			pTriple;
 	u8					chnl, i, j, tripleLetsCnt=0;
 
@@ -1034,7 +1032,7 @@ bthci_ConstructScanList(
 		else							/*  Sub-band triplet */
 		{
 			tripleLetsCnt++;
-			pTriple_subband = (PCHNL_TXPOWER_TRIPLE)pTriple;
+			pTriple_subband = (struct chnl_txpower_triple *)pTriple;
 
 			/*  search the sub-band triplet and find if remote channel is legal to our channel plan. */
 			for (chnl = pTriple_subband->FirstChnl; chnl < (pTriple_subband->FirstChnl+pTriple_subband->NumChnls); chnl++)
@@ -1836,8 +1834,8 @@ bthci_BuildLogicalLink(
 	u8	PhyLinkHandle, EntryNum;
 	static u16 AssignLogHandle = 1;
 
-	HCI_FLOW_SPEC	TxFlowSpec;
-	HCI_FLOW_SPEC	RxFlowSpec;
+	struct hci_flow_spec	TxFlowSpec;
+	struct hci_flow_spec	RxFlowSpec;
 	u32	MaxSDUSize, ArriveTime, Bandwidth;
 
 	PhyLinkHandle = *((u8*)pHciCmd->Data);
@@ -1845,9 +1843,9 @@ bthci_BuildLogicalLink(
 	EntryNum = bthci_GetCurrentEntryNum(padapter, PhyLinkHandle);
 
 	memcpy(&TxFlowSpec,
-		&pHciCmd->Data[1], sizeof(HCI_FLOW_SPEC));
+		&pHciCmd->Data[1], sizeof(struct hci_flow_spec));
 	memcpy(&RxFlowSpec,
-		&pHciCmd->Data[17], sizeof(HCI_FLOW_SPEC));
+		&pHciCmd->Data[17], sizeof(struct hci_flow_spec));
 
 	MaxSDUSize = TxFlowSpec.MaximumSDUSize;
 	ArriveTime = TxFlowSpec.SDUInterArrivalTime;
@@ -1946,9 +1944,9 @@ bthci_BuildLogicalLink(
 						EntryNum, pBTinfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle,
 								  pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].BtLogLinkhandle));
 					memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Tx_Flow_Spec,
-						&TxFlowSpec, sizeof(HCI_FLOW_SPEC));
+						&TxFlowSpec, sizeof(struct hci_flow_spec));
 					memcpy(&pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].Rx_Flow_Spec,
-						&RxFlowSpec, sizeof(HCI_FLOW_SPEC));
+						&RxFlowSpec, sizeof(struct hci_flow_spec));
 
 					pBTinfo->BtAsocEntry[EntryNum].LogLinkCmdData[i].bLLCompleteEventIsSet=false;
 
@@ -3869,9 +3867,9 @@ bthci_CmdFlowSpecModify(struct rtw_adapter *padapter,
 			if (pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].BtLogLinkhandle == logicHandle)
 			{
 				memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Tx_Flow_Spec,
-					&pHciCmd->Data[2], sizeof(HCI_FLOW_SPEC));
+					&pHciCmd->Data[2], sizeof(struct hci_flow_spec));
 				memcpy(&pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Rx_Flow_Spec,
-					&pHciCmd->Data[18], sizeof(HCI_FLOW_SPEC));
+					&pHciCmd->Data[18], sizeof(struct hci_flow_spec));
 
 				bthci_CheckLogLinkBehavior(padapter, pBTinfo->BtAsocEntry[j].LogLinkCmdData[i].Tx_Flow_Spec);
 				find = 1;
@@ -5713,15 +5711,15 @@ bthci_UseFakeData(struct rtw_adapter *padapter, PPACKET_IRP_HCICMD_DATA pHciCmd)
 {
 	if (pHciCmd->OGF == LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_CREATE_LOGICAL_LINK)
 	{
-		PHCI_FLOW_SPEC	pTxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[1];
-		PHCI_FLOW_SPEC	pRxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[17];
+		struct hci_flow_spec *	pTxFlowSpec = (struct hci_flow_spec *)&pHciCmd->Data[1];
+		struct hci_flow_spec *	pRxFlowSpec = (struct hci_flow_spec *)&pHciCmd->Data[17];
 		bthci_SelectFlowType(padapter, BT_TX_BE_FS, BT_RX_BE_FS, pTxFlowSpec, pRxFlowSpec);
 		/* bthci_SelectFlowType(padapter, BT_TX_be_FS, BT_RX_GU_FS, pTxFlowSpec, pRxFlowSpec); */
 	}
 	else if (pHciCmd->OGF == LINK_CONTROL_COMMANDS && pHciCmd->OCF == HCI_FLOW_SPEC_MODIFY)
 	{
-		PHCI_FLOW_SPEC	pTxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[2];
-		PHCI_FLOW_SPEC	pRxFlowSpec = (PHCI_FLOW_SPEC)&pHciCmd->Data[18];
+		struct hci_flow_spec *	pTxFlowSpec = (struct hci_flow_spec *)&pHciCmd->Data[2];
+		struct hci_flow_spec *	pRxFlowSpec = (struct hci_flow_spec *)&pHciCmd->Data[18];
 		/* bthci_SelectFlowType(padapter, BT_TX_BE_FS, BT_RX_BE_FS, pTxFlowSpec, pRxFlowSpec); */
 		bthci_SelectFlowType(padapter, BT_TX_BE_AGG_FS, BT_RX_BE_AGG_FS, pTxFlowSpec, pRxFlowSpec);
 	}
