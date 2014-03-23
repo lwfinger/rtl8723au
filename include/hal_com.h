@@ -186,5 +186,6 @@ void rtl8723a_fifo_cleanup(struct rtw_adapter *padapter);
 void rtl8723a_set_apfm_on_mac(struct rtw_adapter *padapter, u8 val);
 void rtl8723a_bcn_valid(struct rtw_adapter *padapter);
 void rtl8723a_set_tx_pause(struct rtw_adapter *padapter, u8 pause);
+void rtl8723a_set_beacon_interval(struct rtw_adapter *padapter, u16 interval);
 
 #endif /* __HAL_COMMON_H__ */

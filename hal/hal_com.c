@@ -751,3 +751,8 @@ void rtl8723a_set_tx_pause(struct rtw_adapter *padapter, u8 pause)
 {
 	rtw_write8(padapter, REG_TXPAUSE, pause);
 }
+
+void rtl8723a_set_beacon_interval(struct rtw_adapter *padapter, u16 interval)
+{
+	rtw_write16(padapter, REG_BCN_INTERVAL, interval);
+}

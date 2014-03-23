@@ -3436,7 +3436,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_BEACON_INTERVAL:
-		rtw_write16(padapter, REG_BCN_INTERVAL, *((u16 *) val));
+		rtl8723a_set_beacon_interval(padapter, *((u16 *) val));
 		break;
 
 	case HW_VAR_SLOT_TIME:
