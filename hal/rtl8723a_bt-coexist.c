@@ -113,12 +113,12 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 			(GET_HAL_DATA(padapter)->dmpriv.EntryMinUndecoratedSmoothedPWDB)
 #define RT_RF_CHANGE_SOURCE u32
 
-typedef enum _RT_JOIN_ACTION{
+enum {
 	RT_JOIN_INFRA   = 1,
 	RT_JOIN_IBSS  = 2,
 	RT_START_IBSS = 3,
 	RT_NO_ACTION  = 4,
-} RT_JOIN_ACTION;
+};
 
 /*  power saving */
 

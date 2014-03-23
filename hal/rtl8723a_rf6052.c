@@ -43,7 +43,7 @@
 
 /*---------------------------Define Local Constant---------------------------*/
 /*  Define local structure for debug!!!!! */
-typedef struct RF_Shadow_Compare_Map {
+struct rf_shadow_compare_map {
 	/*  Shadow register value */
 	u32		Value;
 	/*  Compare or not flag */
@@ -54,7 +54,7 @@ typedef struct RF_Shadow_Compare_Map {
 	u8		Recorver;
 	/*  */
 	u8		Driver_Write;
-}RF_SHADOW_T;
+};
 /*---------------------------Define Local Constant---------------------------*/
 
 
@@ -63,9 +63,7 @@ typedef struct RF_Shadow_Compare_Map {
 
 
 /*------------------------Define local variable------------------------------*/
-/*  2008/11/20 MH For Debug only, RF */
-/* static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG] = {0}; */
-static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
+static struct rf_shadow_compare_map RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
 /*------------------------Define local variable------------------------------*/
 
 /*-----------------------------------------------------------------------------
@@ -83,30 +81,24 @@ static	RF_SHADOW_T	RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
  * Note:		For RF type 0222D
  *---------------------------------------------------------------------------*/
 void rtl8723a_phy_rf6052set_bw(
-	struct rtw_adapter *				Adapter,
+	struct rtw_adapter *Adapter,
 	enum ht_channel_width Bandwidth)	/* 20M or 40M */
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
-	switch(Bandwidth)
-	{
-		case HT_CHANNEL_WIDTH_20:
-			pHalData->RfRegChnlVal[0] = ((pHalData->RfRegChnlVal[0] & 0xfffff3ff) | 0x0400);
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
-			break;
-
-		case HT_CHANNEL_WIDTH_40:
-			pHalData->RfRegChnlVal[0] = ((pHalData->RfRegChnlVal[0] & 0xfffff3ff));
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
-			break;
-
-		default:
-			/* RT_TRACE(COMP_DBG, DBG_LOUD, ("PHY_SetRF8225Bandwidth(): unknown Bandwidth: %#X\n",Bandwidth )); */
-			break;
+	switch(Bandwidth) {
+	case HT_CHANNEL_WIDTH_20:
+		pHalData->RfRegChnlVal[0] = ((pHalData->RfRegChnlVal[0] & 0xfffff3ff) | 0x0400);
+		PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
+		break;
+	case HT_CHANNEL_WIDTH_40:
+		pHalData->RfRegChnlVal[0] = ((pHalData->RfRegChnlVal[0] & 0xfffff3ff));
+		PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
+		break;
+	default:
+		break;
 	}
-
 }
-
 
 /*-----------------------------------------------------------------------------
  * Function:	PHY_RF6052SetCckTxPower

@@ -408,7 +408,7 @@ struct hal_data_8723a {
 	u16			EfuseUsedBytes;
 	u8			EfuseUsedPercentage;
 #ifdef HAL_EFUSE_MEMORY
-	EFUSE_HAL	EfuseHal;
+	struct efuse_hal	EfuseHal;
 #endif
 
 	/*  Interrupt relatd register information. */

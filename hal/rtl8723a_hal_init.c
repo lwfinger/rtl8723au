@@ -467,7 +467,7 @@ hal_EfuseSwitchToBank(struct rtw_adapter *padapter, u8 bank, u8 bPseudoTest)
 	u32 value32 = 0;
 #ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 #endif
 
 	DBG_8723A("%s: Efuse switch bank to %d\n", __FUNCTION__, bank);
@@ -671,7 +671,7 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 {
 #ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 #endif
 	u8 *efuseTbl = NULL;
 	u16 eFuse_Addr = 0;
@@ -781,7 +781,7 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 {
 #ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 #endif
 	u8 *efuseTbl;
 	u8 bank;
@@ -933,7 +933,7 @@ hal_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter, bool bPseudoTest)
 {
 #ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 #endif
 	u16 efuse_addr = 0;
 	u8 hoffset = 0, hworden = 0;
@@ -1005,7 +1005,7 @@ hal_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter, bool bPseudoTest)
 {
 #ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 #endif
 	u16 btusedbytes;
 	u16 efuse_addr;
@@ -1295,7 +1295,7 @@ hal_EfusePgCheckAvailableAddr(struct rtw_adapter *pAdapter,
 
 static void
 hal_EfuseConstructPGPkt(u8 offset, u8 word_en, u8 *pData,
-			PPGPKT_STRUCT pTargetPkt)
+			struct pg_pkt_struct * pTargetPkt)
 {
 	memset(pTargetPkt->data, 0xFF, PGPKT_DATA_SIZE);
 	pTargetPkt->offset = offset;
@@ -1306,10 +1306,10 @@ hal_EfuseConstructPGPkt(u8 offset, u8 word_en, u8 *pData,
 
 static u8
 hal_EfusePartialWriteCheck(struct rtw_adapter *padapter, u8 efuseType,
-			   u16 *pAddr, PPGPKT_STRUCT pTargetPkt, u8 bPseudoTest)
+			   u16 *pAddr, struct pg_pkt_struct * pTargetPkt, u8 bPseudoTest)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	PEFUSE_HAL pEfuseHal = &pHalData->EfuseHal;
+	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 	u8 bRet = false;
 	u16 startAddr = 0, efuse_max_available_len = 0, efuse_max = 0;
 	u8 efuse_data = 0;
@@ -1375,7 +1375,7 @@ hal_EfusePartialWriteCheck(struct rtw_adapter *padapter, u8 efuseType,
 
 static u8
 hal_EfusePgPacketWrite1ByteHeader(struct rtw_adapter *pAdapter, u8 efuseType,
-				  u16 *pAddr, PPGPKT_STRUCT pTargetPkt,
+				  u16 *pAddr, struct pg_pkt_struct * pTargetPkt,
 				  u8 bPseudoTest)
 {
 	u8 bRet = false;
@@ -1413,7 +1413,7 @@ hal_EfusePgPacketWrite1ByteHeader(struct rtw_adapter *pAdapter, u8 efuseType,
 
 static u8
 hal_EfusePgPacketWrite2ByteHeader(struct rtw_adapter *padapter, u8 efuseType,
-				  u16 *pAddr, PPGPKT_STRUCT pTargetPkt,
+				  u16 *pAddr, struct pg_pkt_struct * pTargetPkt,
 				  u8 bPseudoTest)
 {
 	u16 efuse_addr, efuse_max_available_len = 0;
@@ -1486,7 +1486,7 @@ hal_EfusePgPacketWrite2ByteHeader(struct rtw_adapter *padapter, u8 efuseType,
 
 static u8
 hal_EfusePgPacketWriteHeader(struct rtw_adapter *padapter, u8 efuseType,
-			     u16 *pAddr, PPGPKT_STRUCT pTargetPkt,
+			     u16 *pAddr, struct pg_pkt_struct * pTargetPkt,
 			     u8 bPseudoTest)
 {
 	u8 bRet = false;
@@ -1506,7 +1506,7 @@ hal_EfusePgPacketWriteHeader(struct rtw_adapter *padapter, u8 efuseType,
 
 static u8
 hal_EfusePgPacketWriteData(struct rtw_adapter *pAdapter, u8 efuseType,
-			   u16 *pAddr, PPGPKT_STRUCT pTargetPkt, u8 bPseudoTest)
+			   u16 *pAddr, struct pg_pkt_struct * pTargetPkt, u8 bPseudoTest)
 {
 	u16 efuse_addr;
 	u8 badworden;
@@ -1528,7 +1528,7 @@ static s32
 Hal_EfusePgPacketWrite(struct rtw_adapter *padapter,
 		       u8 offset, u8 word_en, u8 *pData, bool bPseudoTest)
 {
-	PGPKT_STRUCT targetPkt;
+	struct pg_pkt_struct targetPkt;
 	u16 startAddr = 0;
 	u8 efuseType = EFUSE_WIFI;
 
@@ -1556,7 +1556,7 @@ static bool
 Hal_EfusePgPacketWrite_BT(struct rtw_adapter *pAdapter,
 			  u8 offset, u8 word_en, u8 *pData, bool bPseudoTest)
 {
-	PGPKT_STRUCT targetPkt;
+	struct pg_pkt_struct targetPkt;
 	u16 startAddr = 0;
 	u8 efuseType = EFUSE_BT;
 
