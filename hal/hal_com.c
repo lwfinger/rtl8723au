@@ -841,3 +841,10 @@ void rtl8723a_set_initial_gain(struct rtw_adapter *padapter, u32 rx_gain)
 		ODM_Write_DIG(&pHalData->odmpriv, rx_gain);
 	}
 }
+
+void rtl8723a_odm_support_ability_write(struct rtw_adapter *padapter, u32 val)
+{
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
+
+	pHalData->odmpriv.SupportAbility = val;
+}
