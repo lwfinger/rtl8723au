@@ -79,23 +79,6 @@ struct pg_pkt_struct {
 	u8 word_cnts;
 };
 
-/*------------------------------Define structure----------------------------*/
-struct efuse_hal {
-	u8	fakeEfuseBank;
-	u32	fakeEfuseUsedBytes;
-	u8	fakeEfuseContent[EFUSE_MAX_HW_SIZE];
-	u8	fakeEfuseModifiedMap[EFUSE_MAX_MAP_LEN];
-
-	u16	BTEfuseUsedBytes;
-	u8	BTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-	u8	BTEfuseInitMap[EFUSE_BT_MAX_MAP_LEN];
-	u8	BTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN];
-
-	u16	fakeBTEfuseUsedBytes;
-	u8	fakeBTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-	u8	fakeBTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN];
-};
-
 /*------------------------Export global variable----------------------------*/
 extern u8 fakeEfuseBank;
 extern u32 fakeEfuseUsedBytes;

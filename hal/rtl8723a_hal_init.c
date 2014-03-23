@@ -466,7 +466,6 @@ hal_EfuseSwitchToBank(struct rtw_adapter *padapter, u8 bank)
 	u8 bRet = false;
 	u32 value32 = 0;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 
 	DBG_8723A("%s: Efuse switch bank to %d\n", __FUNCTION__, bank);
 	value32 = rtw_read32(padapter, EFUSE_TEST);
@@ -639,7 +638,6 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 		   u16 _offset, u16 _size_byte, u8 *pbuf)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u8 *efuseTbl = NULL;
 	u16 eFuse_Addr = 0;
 	u8 offset, wden;
@@ -732,7 +730,6 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 		 u16 _offset, u16 _size_byte, u8 *pbuf)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u8 *efuseTbl;
 	u8 bank;
 	u16 eFuse_Addr;
@@ -860,7 +857,6 @@ static u16
 hal_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u16 efuse_addr = 0;
 	u8 hoffset = 0, hworden = 0;
 	u8 efuse_data, word_cnts = 0;
@@ -913,7 +909,6 @@ static u16
 hal_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u16 btusedbytes;
 	u16 efuse_addr;
 	u8 bank, startBank;
@@ -1178,7 +1173,6 @@ hal_EfusePartialWriteCheck(struct rtw_adapter *padapter, u8 efuseType,
 			   u16 *pAddr, struct pg_pkt_struct *pTargetPkt)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
 	u8 bRet = false;
 	u16 startAddr = 0, efuse_max_available_len = 0, efuse_max = 0;
 	u8 efuse_data = 0;
@@ -1878,22 +1872,7 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 
 	/*  init Efuse variables */
 	pHalData->EfuseUsedBytes = 0;
-	pHalData->EfuseHal.fakeEfuseBank = 0;
-	pHalData->EfuseHal.fakeEfuseUsedBytes = 0;
-	memset(pHalData->EfuseHal.fakeEfuseContent, 0xFF, EFUSE_MAX_HW_SIZE);
-	memset(pHalData->EfuseHal.fakeEfuseModifiedMap, 0xFF,
-	       EFUSE_MAX_MAP_LEN);
-	pHalData->EfuseHal.BTEfuseUsedBytes = 0;
-	memset(pHalData->EfuseHal.BTEfuseContent, 0xFF,
-	       EFUSE_MAX_BT_BANK * EFUSE_MAX_HW_SIZE);
-	memset(pHalData->EfuseHal.BTEfuseInitMap, 0xFF, EFUSE_BT_MAX_MAP_LEN);
-	memset(pHalData->EfuseHal.BTEfuseModifiedMap, 0xFF,
-	       EFUSE_BT_MAX_MAP_LEN);
-	pHalData->EfuseHal.fakeBTEfuseUsedBytes = 0;
-	memset(pHalData->EfuseHal.fakeBTEfuseContent, 0xFF,
-	       EFUSE_MAX_BT_BANK * EFUSE_MAX_HW_SIZE);
-	memset(pHalData->EfuseHal.fakeBTEfuseModifiedMap, 0xFF,
-	       EFUSE_BT_MAX_MAP_LEN);
+	pHalData->BTEfuseUsedBytes = 0;
 }
 
 u8 GetEEPROMSize8723A(struct rtw_adapter *padapter)
@@ -3389,7 +3368,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		pHalData->EfuseUsedBytes = *((u16 *) val);
 		break;
 	case HW_VAR_EFUSE_BT_BYTES:
-		pHalData->EfuseHal.BTEfuseUsedBytes = *((u16 *) val);
+		pHalData->BTEfuseUsedBytes = *((u16 *) val);
 		break;
 	case HW_VAR_FIFO_CLEARN_UP:
 		rtl8723a_fifo_cleanup(padapter);
@@ -3468,7 +3447,7 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_EFUSE_BT_BYTES:
-		*((u16 *) val) = pHalData->EfuseHal.BTEfuseUsedBytes;
+		*((u16 *) val) = pHalData->BTEfuseUsedBytes;
 		break;
 
 	case HW_VAR_APFM_ON_MAC:

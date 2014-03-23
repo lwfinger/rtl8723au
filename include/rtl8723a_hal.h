@@ -404,7 +404,7 @@ struct hal_data_8723a {
 	/*  */
 	u8			EepromOrEfuse;
 	u16			EfuseUsedBytes;
-	struct efuse_hal	EfuseHal;
+	u16			BTEfuseUsedBytes;
 
 	/*  Interrupt relatd register information. */
 	u32			SysIntrStatus;
