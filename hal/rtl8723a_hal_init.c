@@ -465,18 +465,12 @@ hal_EfuseSwitchToBank(struct rtw_adapter *padapter, u8 bank, u8 bPseudoTest)
 {
 	u8 bRet = false;
 	u32 value32 = 0;
-#ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
-#endif
+	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 
 	DBG_8723A("%s: Efuse switch bank to %d\n", __FUNCTION__, bank);
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeEfuseBank = bank;
-#else
-		fakeEfuseBank = bank;
-#endif
 		bRet = true;
 	} else {
 		value32 = rtw_read32(padapter, EFUSE_TEST);
@@ -649,10 +643,8 @@ static void
 hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 		   u16 _offset, u16 _size_byte, u8 *pbuf, u8 bPseudoTest)
 {
-#ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
-#endif
+	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u8 *efuseTbl = NULL;
 	u16 eFuse_Addr = 0;
 	u8 offset, wden;
@@ -739,11 +731,7 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 				 bPseudoTest);
 	used = eFuse_Addr - 1;
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeEfuseUsedBytes = used;
-#else
-		fakeEfuseUsedBytes = used;
-#endif
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BYTES, (u8 *) & used);
 	}
@@ -755,10 +743,8 @@ static void
 hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 		 u16 _offset, u16 _size_byte, u8 *pbuf, u8 bPseudoTest)
 {
-#ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
-#endif
+	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u8 *efuseTbl;
 	u8 bank;
 	u16 eFuse_Addr;
@@ -873,11 +859,7 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 				 bPseudoTest);
 	used = (EFUSE_BT_REAL_BANK_CONTENT_LEN * (bank - 1)) + eFuse_Addr - 1;
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeBTEfuseUsedBytes = used;
-#else
-		fakeBTEfuseUsedBytes = used;
-#endif
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES,
 				  (u8 *) &used);
@@ -903,20 +885,14 @@ Hal_ReadEFuse(struct rtw_adapter *padapter,
 static u16
 hal_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter, bool bPseudoTest)
 {
-#ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
-#endif
+	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u16 efuse_addr = 0;
 	u8 hoffset = 0, hworden = 0;
 	u8 efuse_data, word_cnts = 0;
 
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		efuse_addr = (u16) pEfuseHal->fakeEfuseUsedBytes;
-#else
-		efuse_addr = (u16) fakeEfuseUsedBytes;
-#endif
 	} else {
 		rtw_hal_get_hwreg(padapter, HW_VAR_EFUSE_BYTES,
 				  (u8 *) &efuse_addr);
@@ -958,11 +934,7 @@ hal_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter, bool bPseudoTest)
 	}
 
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeEfuseUsedBytes = efuse_addr;
-#else
-		fakeEfuseUsedBytes = efuse_addr;
-#endif
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BYTES,
 				  (u8 *) &efuse_addr);
@@ -975,10 +947,8 @@ hal_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter, bool bPseudoTest)
 static u16
 hal_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter, bool bPseudoTest)
 {
-#ifdef HAL_EFUSE_MEMORY
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct efuse_hal * pEfuseHal = &pHalData->EfuseHal;
-#endif
+	struct efuse_hal *pEfuseHal = &pHalData->EfuseHal;
 	u16 btusedbytes;
 	u16 efuse_addr;
 	u8 bank, startBank;
@@ -987,11 +957,7 @@ hal_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter, bool bPseudoTest)
 	u16 retU2 = 0;
 
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		btusedbytes = pEfuseHal->fakeBTEfuseUsedBytes;
-#else
-		btusedbytes = fakeBTEfuseUsedBytes;
-#endif
 	} else {
 		rtw_hal_get_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES,
 				  (u8 *) &btusedbytes);
@@ -1063,11 +1029,7 @@ hal_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter, bool bPseudoTest)
 
 	retU2 = ((bank - 1) * EFUSE_BT_REAL_BANK_CONTENT_LEN) + efuse_addr;
 	if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeBTEfuseUsedBytes = retU2;
-#else
-		fakeBTEfuseUsedBytes = retU2;
-#endif
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES,
 				  (u8 *) & retU2);
@@ -1295,22 +1257,14 @@ hal_EfusePartialWriteCheck(struct rtw_adapter *padapter, u8 efuseType,
 
 	if (efuseType == EFUSE_WIFI) {
 		if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 			startAddr = (u16) pEfuseHal->fakeEfuseUsedBytes;
-#else
-			startAddr = (u16) fakeEfuseUsedBytes;
-#endif
 		} else {
 			rtw_hal_get_hwreg(padapter, HW_VAR_EFUSE_BYTES,
 					  (u8 *) &startAddr);
 		}
 	} else {
 		if (bPseudoTest) {
-#ifdef HAL_EFUSE_MEMORY
 			startAddr = (u16) pEfuseHal->fakeBTEfuseUsedBytes;
-#else
-			startAddr = (u16) fakeBTEfuseUsedBytes;
-#endif
 		} else {
 			rtw_hal_get_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES,
 					  (u8 *) &startAddr);
@@ -2010,7 +1964,6 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 
 	/*  init Efuse variables */
 	pHalData->EfuseUsedBytes = 0;
-#ifdef HAL_EFUSE_MEMORY
 	pHalData->EfuseHal.fakeEfuseBank = 0;
 	pHalData->EfuseHal.fakeEfuseUsedBytes = 0;
 	memset(pHalData->EfuseHal.fakeEfuseContent, 0xFF, EFUSE_MAX_HW_SIZE);
@@ -2030,7 +1983,6 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 	       EFUSE_BT_MAX_MAP_LEN);
 	memset(pHalData->EfuseHal.fakeBTEfuseModifiedMap, 0xFF,
 	       EFUSE_BT_MAX_MAP_LEN);
-#endif
 }
 
 u8 GetEEPROMSize8723A(struct rtw_adapter *padapter)
@@ -3526,11 +3478,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		pHalData->EfuseUsedBytes = *((u16 *) val);
 		break;
 	case HW_VAR_EFUSE_BT_BYTES:
-#ifdef HAL_EFUSE_MEMORY
 		pHalData->EfuseHal.BTEfuseUsedBytes = *((u16 *) val);
-#else
-		BTEfuseUsedBytes = *((u16 *) val);
-#endif
 		break;
 	case HW_VAR_FIFO_CLEARN_UP:
 		rtl8723a_fifo_cleanup(padapter);
@@ -3609,11 +3557,7 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_EFUSE_BT_BYTES:
-#ifdef HAL_EFUSE_MEMORY
 		*((u16 *) val) = pHalData->EfuseHal.BTEfuseUsedBytes;
-#else
-		*((u16 *) val) = BTEfuseUsedBytes;
-#endif
 		break;
 
 	case HW_VAR_APFM_ON_MAC:

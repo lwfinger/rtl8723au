@@ -186,8 +186,6 @@ enum ChannelPlan
 	CHPL_WORLD	= 10,
 };
 
-#define HAL_EFUSE_MEMORY
-
 #define EFUSE_REAL_CONTENT_LEN		512
 #define EFUSE_MAP_LEN				128
 #define EFUSE_MAX_SECTION			16
@@ -406,9 +404,7 @@ struct hal_data_8723a {
 	/*  */
 	u8			EepromOrEfuse;
 	u16			EfuseUsedBytes;
-#ifdef HAL_EFUSE_MEMORY
 	struct efuse_hal	EfuseHal;
-#endif
 
 	/*  Interrupt relatd register information. */
 	u32			SysIntrStatus;
