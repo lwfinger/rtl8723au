@@ -3495,7 +3495,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_AC_PARAM_VO:
-		rtw_write32(padapter, REG_EDCA_VO_PARAM, *((u32 *) val));
+		rtl8723a_set_ac_param_vo(padapter, *val32);
 		break;
 
 	case HW_VAR_AC_PARAM_VI:

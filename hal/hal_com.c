@@ -782,3 +782,8 @@ void rtl8723a_set_resp_sifs(struct rtw_adapter *padapter,
 	/* SIFS_R2T_OFDM(0x0a) */
 	rtw_write8(padapter, REG_T2T_SIFS + 1, t2t2);
 }
+
+void rtl8723a_set_ac_param_vo(struct rtw_adapter *padapter, u32 vo)
+{
+	rtw_write32(padapter, REG_EDCA_VO_PARAM, vo);
+}
