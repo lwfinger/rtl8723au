@@ -3468,7 +3468,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_DM_FUNC_CLR:
-		pHalData->odmpriv.SupportAbility &= *((u32 *) val);
+		rtl8723a_odm_support_ability_clr(padapter, *val32);
 		break;
 
 	case HW_VAR_CAM_EMPTY_ENTRY:

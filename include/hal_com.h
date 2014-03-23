@@ -201,5 +201,6 @@ void rtl8723a_set_initial_gain(struct rtw_adapter *padapter, u32 rx_gain);
 void rtl8723a_odm_support_ability_write(struct rtw_adapter *padapter, u32 val);
 void rtl8723a_odm_support_ability_backup(struct rtw_adapter *padapter, u8 val);
 void rtl8723a_odm_support_ability_set(struct rtw_adapter *padapter, u32 val);
+void rtl8723a_odm_support_ability_clr(struct rtw_adapter *padapter, u32 val);
 
 #endif /* __HAL_COMMON_H__ */
