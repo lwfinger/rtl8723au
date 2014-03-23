@@ -800,3 +800,8 @@ void rtl8723a_set_ac_param_be(struct rtw_adapter *padapter, u32 be)
 	pHalData->AcParam_BE = be;
 	rtw_write32(padapter, REG_EDCA_BE_PARAM, be);
 }
+
+void rtl8723a_set_ac_param_bk(struct rtw_adapter *padapter, u32 bk)
+{
+	rtw_write32(padapter, REG_EDCA_BK_PARAM, bk);
+}
