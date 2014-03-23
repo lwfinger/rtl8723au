@@ -195,5 +195,6 @@ void rtl8723a_set_ac_param_vi(struct rtw_adapter *padapter, u32 vi);
 void rtl8723a_set_ac_param_be(struct rtw_adapter *padapter, u32 be);
 void rtl8723a_set_ac_param_bk(struct rtw_adapter *padapter, u32 bk);
 void rtl8723a_set_rxdma_agg_pg_th(struct rtw_adapter *padapter, u8 val);
+void rtl8723a_set_nav_upper(struct rtw_adapter *padapter, u32 usNavUpper);
 
 #endif /* __HAL_COMMON_H__ */

@@ -3582,24 +3582,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_NAV_UPPER:
-	{
-		u32 usNavUpper = *((u32 *) val);
-
-		if (usNavUpper > HAL_8723A_NAV_UPPER_UNIT * 0xFF) {
-			RT_TRACE(_module_hal_init_c_, _drv_notice_,
-				 ("The setting value (0x%08X us) of NAV_UPPER "
-				  "is larger than (%d * 0xFF)!!!\n",
-				  usNavUpper, HAL_8723A_NAV_UPPER_UNIT));
-			break;
-		}
-
-		/*  The value of ((usNavUpper + HAL_8723A_NAV_UPPER_UNIT - 1) /
-		    HAL_8723A_NAV_UPPER_UNIT) */
-		/*  is getting the upper integer. */
-		usNavUpper = (usNavUpper + HAL_8723A_NAV_UPPER_UNIT - 1) /
-			HAL_8723A_NAV_UPPER_UNIT;
-		rtw_write8(padapter, REG_NAV_UPPER, (u8) usNavUpper);
-	}
+		rtl8723a_set_nav_upper(padapter, *val32);
 		break;
 	case HW_VAR_BCN_VALID:
 		rtl8723a_bcn_valid(padapter);
