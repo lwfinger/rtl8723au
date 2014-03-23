@@ -20,72 +20,16 @@
 #include <rtw_efuse.h>
 
 /*------------------------Define local variable------------------------------*/
-u8	fakeEfuseBank=0;
-u32	fakeEfuseUsedBytes=0;
-u8	fakeEfuseContent[EFUSE_MAX_HW_SIZE]={0};
-u8	fakeEfuseModifiedMap[EFUSE_MAX_MAP_LEN]={0};
-
 u32	BTEfuseUsedBytes=0;
 u8	BTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
 u8	BTEfuseInitMap[EFUSE_BT_MAX_MAP_LEN]={0};
 u8	BTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN]={0};
-
-u32	fakeBTEfuseUsedBytes=0;
-u8	fakeBTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-u8	fakeBTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN]={0};
 /*------------------------Define local variable------------------------------*/
 
 /*  */
 #define REG_EFUSE_CTRL		0x0030
 #define EFUSE_CTRL			REG_EFUSE_CTRL		/*  E-Fuse Control. */
 /*  */
-
-bool
-Efuse_Read1ByteFromFakeContent(
-		struct rtw_adapter *	pAdapter,
-		u16		Offset,
-	u8		*Value	);
-bool
-Efuse_Read1ByteFromFakeContent(
-		struct rtw_adapter *	pAdapter,
-		u16		Offset,
-	u8		*Value	)
-{
-	if(Offset >= EFUSE_MAX_HW_SIZE)
-	{
-		return false;
-	}
-	/* DbgPrint("Read fake content, offset = %d\n", Offset); */
-	if(fakeEfuseBank == 0)
-		*Value = fakeEfuseContent[Offset];
-	else
-		*Value = fakeBTEfuseContent[fakeEfuseBank-1][Offset];
-	return true;
-}
-
-bool
-Efuse_Write1ByteToFakeContent(
-		struct rtw_adapter *	pAdapter,
-		u16		Offset,
-		u8		Value	);
-bool
-Efuse_Write1ByteToFakeContent(
-		struct rtw_adapter *	pAdapter,
-		u16		Offset,
-		u8		Value	)
-{
-	if(Offset >= EFUSE_MAX_HW_SIZE)
-	{
-		return false;
-	}
-	if(fakeEfuseBank == 0)
-		fakeEfuseContent[Offset] = Value;
-	else
-	{
-		fakeBTEfuseContent[fakeEfuseBank-1][Offset] = Value;
-	}
-	return true;
-}
 
 /*-----------------------------------------------------------------------------
  * Function:	Efuse_PowerSwitch
@@ -1089,18 +1033,11 @@ EFUSE_ShadowWrite(
 }	/*  EFUSE_ShadowWrite */
 
 void
-Efuse_InitSomeVar(
-		struct rtw_adapter *	pAdapter
-	);
+Efuse_InitSomeVar(struct rtw_adapter *pAdapter);
 void
-Efuse_InitSomeVar(
-		struct rtw_adapter *	pAdapter
-	)
+Efuse_InitSomeVar(struct rtw_adapter *pAdapter)
 {
 	u8 i;
-
-	memset(&fakeEfuseContent[0], 0xff, EFUSE_MAX_HW_SIZE);
-	memset(&fakeEfuseModifiedMap[0], 0xff, EFUSE_MAX_MAP_LEN);
 
 	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
 	{
@@ -1108,10 +1045,4 @@ Efuse_InitSomeVar(
 	}
 	memset(&BTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
 	memset(&BTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
-
-	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
-	{
-		memset(&fakeBTEfuseContent[i][0], 0xff, EFUSE_MAX_HW_SIZE);
-	}
-	memset(&fakeBTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
 }
