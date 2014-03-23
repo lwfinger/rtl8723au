@@ -514,34 +514,30 @@ static void
 Hal_GetEfuseDefinition(struct rtw_adapter *padapter,
 		       u8 efuseType, u8 type, void *pOut, bool bPseudoTest)
 {
+	u8 *pu1Tmp;
+	u16 *pu2Tmp;
+	u8 *pMax_section;
+
 	switch (type) {
 	case TYPE_EFUSE_MAX_SECTION:
-	{
-		u8 *pMax_section;
 		pMax_section = (u8 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
 			*pMax_section = EFUSE_MAX_SECTION_8723A;
 		else
 			*pMax_section = EFUSE_BT_MAX_SECTION;
-	}
-	break;
+		break;
 
 	case TYPE_EFUSE_REAL_CONTENT_LEN:
-	{
-		u16 *pu2Tmp;
 		pu2Tmp = (u16 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
 			*pu2Tmp = EFUSE_REAL_CONTENT_LEN_8723A;
 		else
 			*pu2Tmp = EFUSE_BT_REAL_CONTENT_LEN;
-	}
-	break;
+		break;
 
 	case TYPE_AVAILABLE_EFUSE_BYTES_BANK:
-	{
-		u16 *pu2Tmp;
 		pu2Tmp = (u16 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
@@ -550,12 +546,9 @@ Hal_GetEfuseDefinition(struct rtw_adapter *padapter,
 		else
 			*pu2Tmp = (EFUSE_BT_REAL_BANK_CONTENT_LEN -
 				   EFUSE_PROTECT_BYTES_BANK);
-	}
-	break;
+		break;
 
 	case TYPE_AVAILABLE_EFUSE_BYTES_TOTAL:
-	{
-		u16 *pu2Tmp;
 		pu2Tmp = (u16 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
@@ -564,52 +557,39 @@ Hal_GetEfuseDefinition(struct rtw_adapter *padapter,
 		else
 			*pu2Tmp = (EFUSE_BT_REAL_CONTENT_LEN -
 				   (EFUSE_PROTECT_BYTES_BANK * 3));
-	}
-	break;
+		break;
 
 	case TYPE_EFUSE_MAP_LEN:
-	{
-		u16 *pu2Tmp;
 		pu2Tmp = (u16 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
 			*pu2Tmp = EFUSE_MAP_LEN_8723A;
 		else
 			*pu2Tmp = EFUSE_BT_MAP_LEN;
-	}
-	break;
+		break;
 
 	case TYPE_EFUSE_PROTECT_BYTES_BANK:
-	{
-		u8 *pu1Tmp;
 		pu1Tmp = (u8 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
 			*pu1Tmp = EFUSE_OOB_PROTECT_BYTES;
 		else
 			*pu1Tmp = EFUSE_PROTECT_BYTES_BANK;
-	}
-	break;
+		break;
 
 	case TYPE_EFUSE_CONTENT_LEN_BANK:
-	{
-		u16 *pu2Tmp;
 		pu2Tmp = (u16 *) pOut;
 
 		if (efuseType == EFUSE_WIFI)
 			*pu2Tmp = EFUSE_REAL_CONTENT_LEN_8723A;
 		else
 			*pu2Tmp = EFUSE_BT_REAL_BANK_CONTENT_LEN;
-	}
-	break;
+		break;
 
 	default:
-	{
-		u8 *pu1Tmp;
 		pu1Tmp = (u8 *) pOut;
 		*pu1Tmp = 0;
-	}
-	break;
+		break;
 	}
 }
 
