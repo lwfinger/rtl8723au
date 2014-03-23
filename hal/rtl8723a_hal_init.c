@@ -3541,18 +3541,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 #endif /* CONFIG_8723AU_P2P */
 
 	case HW_VAR_INITIAL_GAIN:
-	{
-		struct dig_t *pDigTable = &pHalData->odmpriv.DM_DigTable;
-		u32 rx_gain = *(u32 *) val;
-
-		if (rx_gain == 0xff) {	/* restore rx gain */
-			ODM_Write_DIG(&pHalData->odmpriv,
-				      pDigTable->BackupIGValue);
-		} else {
-			pDigTable->BackupIGValue = pDigTable->CurIGValue;
-			ODM_Write_DIG(&pHalData->odmpriv, rx_gain);
-		}
-	}
+		rtl8723a_set_initial_gain(padapter, *val32);
 		break;
 	case HW_VAR_EFUSE_USAGE:
 		pHalData->EfuseUsedPercentage = *val;
