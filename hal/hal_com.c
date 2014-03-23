@@ -805,3 +805,8 @@ void rtl8723a_set_ac_param_bk(struct rtw_adapter *padapter, u32 bk)
 {
 	rtw_write32(padapter, REG_EDCA_BK_PARAM, bk);
 }
+
+void rtl8723a_set_rxdma_agg_pg_th(struct rtw_adapter *padapter, u8 val)
+{
+	rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, val);
+}

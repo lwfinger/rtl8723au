@@ -3523,7 +3523,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_RXDMA_AGG_PG_TH:
-		rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, *val);
+		rtl8723a_set_rxdma_agg_pg_th(padapter, *val);
 		break;
 
 	case HW_VAR_H2C_FW_PWRMODE:
