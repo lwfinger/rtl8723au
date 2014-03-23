@@ -210,13 +210,13 @@ struct hal_ops {
 	void	(*write_rfreg)(struct rtw_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMask, u32 Data);
 
 	void (*EfusePowerSwitch)(struct rtw_adapter *padapter, u8 bWrite, u8 PwrState);
-	void (*ReadEFuse)(struct rtw_adapter *padapter, u8 efuseType, u16 _offset, u16 _size_byte, u8 *pbuf, bool bPseudoTest);
-	void (*EFUSEGetEfuseDefinition)(struct rtw_adapter *padapter, u8 efuseType, u8 type, void *pOut, bool bPseudoTest);
-	u16	(*EfuseGetCurrentSize)(struct rtw_adapter *padapter, u8 efuseType, bool bPseudoTest);
-	int	(*Efuse_PgPacketRead)(struct rtw_adapter *padapter, u8 offset, u8 *data, bool bPseudoTest);
-	int	(*Efuse_PgPacketWrite)(struct rtw_adapter *padapter, u8 offset, u8 word_en, u8 *data, bool bPseudoTest);
-	u8	(*Efuse_WordEnableDataWrite)(struct rtw_adapter *padapter, u16 efuse_addr, u8 word_en, u8 *data, bool bPseudoTest);
-	bool	(*Efuse_PgPacketWrite_BT)(struct rtw_adapter *padapter, u8 offset, u8 word_en, u8 *data, bool bPseudoTest);
+	void (*ReadEFuse)(struct rtw_adapter *padapter, u8 efuseType, u16 _offset, u16 _size_byte, u8 *pbuf);
+	void (*EFUSEGetEfuseDefinition)(struct rtw_adapter *padapter, u8 efuseType, u8 type, void *pOut);
+	u16	(*EfuseGetCurrentSize)(struct rtw_adapter *padapter, u8 efuseType);
+	int	(*Efuse_PgPacketRead)(struct rtw_adapter *padapter, u8 offset, u8 *data);
+	int	(*Efuse_PgPacketWrite)(struct rtw_adapter *padapter, u8 offset, u8 word_en, u8 *data);
+	u8	(*Efuse_WordEnableDataWrite)(struct rtw_adapter *padapter, u16 efuse_addr, u8 word_en, u8 *data);
+	bool	(*Efuse_PgPacketWrite_BT)(struct rtw_adapter *padapter, u8 offset, u8 word_en, u8 *data);
 
 	void (*sreset_init_value)(struct rtw_adapter *padapter);
 	void (*sreset_reset_value)(struct rtw_adapter *padapter);
