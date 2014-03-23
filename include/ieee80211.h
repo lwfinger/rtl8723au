@@ -699,8 +699,6 @@ struct tx_pending_t {
 	struct ieee80211_txb *txb;
 };
 
-
-
 #define MAXTID	16
 
 #define IEEE_A            (1<<0)
@@ -833,9 +831,13 @@ struct rtw_ieee802_11_elems {
 	u8 vendor_ht_cap_len;
 };
 
-typedef enum { ParseOK = 0, ParseUnknown = 1, ParseFailed = -1 } ParseRes;
+enum parse_res {
+	ParseOK = 0,
+	ParseUnknown = 1,
+	ParseFailed = -1
+};
 
-ParseRes rtw_ieee802_11_parse_elems(u8 *start, uint len,
+enum parse_res rtw_ieee802_11_parse_elems(u8 *start, uint len,
 				struct rtw_ieee802_11_elems *elems,
 				int show_errors);
 
