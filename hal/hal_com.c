@@ -848,3 +848,15 @@ void rtl8723a_odm_support_ability_write(struct rtw_adapter *padapter, u32 val)
 
 	pHalData->odmpriv.SupportAbility = val;
 }
+
+void rtl8723a_odm_support_ability_backup(struct rtw_adapter *padapter, u8 val)
+{
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
+
+	if (val)	/*  save dm flag */
+		pHalData->odmpriv.BK_SupportAbility =
+			pHalData->odmpriv.SupportAbility;
+	else		/*  restore dm flag */
+		pHalData->odmpriv.SupportAbility =
+			pHalData->odmpriv.BK_SupportAbility;
+}

@@ -3461,12 +3461,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		rtl8723a_odm_support_ability_write(padapter, *val32);
 		break;
 	case HW_VAR_DM_FUNC_OP:
-		if (*val)	/*  save dm flag */
-			pHalData->odmpriv.BK_SupportAbility =
-				pHalData->odmpriv.SupportAbility;
-		else		/*  restore dm flag */
-			pHalData->odmpriv.SupportAbility =
-				pHalData->odmpriv.BK_SupportAbility;
+		rtl8723a_odm_support_ability_backup(padapter, *val);
 		break;
 	case HW_VAR_DM_FUNC_SET:
 		if (*((u32 *) val) == DYNAMIC_ALL_FUNC_ENABLE) {
