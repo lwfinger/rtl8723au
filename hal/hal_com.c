@@ -694,6 +694,16 @@ void rtl8723a_cam_invalid_all(struct rtw_adapter *padapter)
 	rtw_write32(padapter, RWCAM, BIT(31) | BIT(30));
 }
 
+void rtl8723a_cam_write(struct rtw_adapter *padapter, u32 val1, u32 val2)
+{
+	u32 cmd;
+
+	rtw_write32(padapter, WCAMI, val1);
+
+	cmd = CAM_POLLINIG | CAM_WRITE | val2;
+	rtw_write32(padapter, RWCAM, cmd);
+}
+
 void rtl8723a_fifo_cleanup(struct rtw_adapter *padapter)
 {
 #define RW_RELEASE_EN		BIT(18)
