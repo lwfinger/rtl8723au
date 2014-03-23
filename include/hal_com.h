@@ -191,5 +191,6 @@ void rtl8723a_set_beacon_interval(struct rtw_adapter *padapter, u16 interval);
 void rtl8723a_set_resp_sifs(struct rtw_adapter *padapter,
 			    u8 r2t1, u8 r2t2, u8 t2t1, u8 t2t2);
 void rtl8723a_set_ac_param_vo(struct rtw_adapter *padapter, u32 vo);
+void rtl8723a_set_ac_param_vi(struct rtw_adapter *padapter, u32 vi);
 
 #endif /* __HAL_COMMON_H__ */

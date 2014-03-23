@@ -787,3 +787,8 @@ void rtl8723a_set_ac_param_vo(struct rtw_adapter *padapter, u32 vo)
 {
 	rtw_write32(padapter, REG_EDCA_VO_PARAM, vo);
 }
+
+void rtl8723a_set_ac_param_vi(struct rtw_adapter *padapter, u32 vi)
+{
+	rtw_write32(padapter, REG_EDCA_VI_PARAM, vi);
+}
