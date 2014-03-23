@@ -93,7 +93,6 @@ struct efuse_hal {
 
 	u16	fakeBTEfuseUsedBytes;
 	u8	fakeBTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-	u8	fakeBTEfuseInitMap[EFUSE_BT_MAX_MAP_LEN];
 	u8	fakeBTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN];
 };
 
@@ -110,7 +109,6 @@ extern u8 BTEfuseModifiedMap[];
 
 extern u32 fakeBTEfuseUsedBytes;
 extern u8 fakeBTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-extern u8 fakeBTEfuseInitMap[];
 extern u8 fakeBTEfuseModifiedMap[];
 /*------------------------Export global variable----------------------------*/
 

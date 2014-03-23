@@ -1978,8 +1978,6 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 	pHalData->EfuseHal.fakeBTEfuseUsedBytes = 0;
 	memset(pHalData->EfuseHal.fakeBTEfuseContent, 0xFF,
 	       EFUSE_MAX_BT_BANK * EFUSE_MAX_HW_SIZE);
-	memset(pHalData->EfuseHal.fakeBTEfuseInitMap, 0xFF,
-	       EFUSE_BT_MAX_MAP_LEN);
 	memset(pHalData->EfuseHal.fakeBTEfuseModifiedMap, 0xFF,
 	       EFUSE_BT_MAX_MAP_LEN);
 }
