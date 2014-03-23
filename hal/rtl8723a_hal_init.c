@@ -765,7 +765,6 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 	u8 efuseHeader, efuseExtHdr, efuseData;
 	u8 offset, wden;
 	u16 i, total, used;
-	u8 efuse_usage;
 
 	/*  Do NOT excess total size of EFuse table.
 	    Added by Roger, 2008.11.10. */
@@ -873,7 +872,6 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 				 TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &total,
 				 bPseudoTest);
 	used = (EFUSE_BT_REAL_BANK_CONTENT_LEN * (bank - 1)) + eFuse_Addr - 1;
-	efuse_usage = (u8) ((used * 100) / total);
 	if (bPseudoTest) {
 #ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeBTEfuseUsedBytes = used;
@@ -883,8 +881,6 @@ hal_ReadEFuse_BT(struct rtw_adapter *padapter,
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES,
 				  (u8 *) &used);
-		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_USAGE,
-				  (u8 *) &efuse_usage);
 	}
 
 exit:
@@ -2022,7 +2018,6 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 	memset(pHalData->EfuseHal.fakeEfuseModifiedMap, 0xFF,
 	       EFUSE_MAX_MAP_LEN);
 	pHalData->EfuseHal.BTEfuseUsedBytes = 0;
-	pHalData->EfuseHal.BTEfuseUsedPercentage = 0;
 	memset(pHalData->EfuseHal.BTEfuseContent, 0xFF,
 	       EFUSE_MAX_BT_BANK * EFUSE_MAX_HW_SIZE);
 	memset(pHalData->EfuseHal.BTEfuseInitMap, 0xFF, EFUSE_BT_MAX_MAP_LEN);
@@ -3530,11 +3525,6 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 	case HW_VAR_EFUSE_BYTES:
 		pHalData->EfuseUsedBytes = *((u16 *) val);
 		break;
-	case HW_VAR_EFUSE_BT_USAGE:
-#ifdef HAL_EFUSE_MEMORY
-		pHalData->EfuseHal.BTEfuseUsedPercentage = *val;
-#endif
-		break;
 	case HW_VAR_EFUSE_BT_BYTES:
 #ifdef HAL_EFUSE_MEMORY
 		pHalData->EfuseHal.BTEfuseUsedBytes = *((u16 *) val);
@@ -3616,11 +3606,6 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 	case HW_VAR_EFUSE_BYTES:
 		*((u16 *) val) = pHalData->EfuseUsedBytes;
-		break;
-	case HW_VAR_EFUSE_BT_USAGE:
-#ifdef HAL_EFUSE_MEMORY
-		*val = pHalData->EfuseHal.BTEfuseUsedPercentage;
-#endif
 		break;
 
 	case HW_VAR_EFUSE_BT_BYTES:

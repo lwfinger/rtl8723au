@@ -88,7 +88,6 @@ struct efuse_hal {
 	u8	fakeEfuseModifiedMap[EFUSE_MAX_MAP_LEN];
 
 	u16	BTEfuseUsedBytes;
-	u8	BTEfuseUsedPercentage;
 	u8	BTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
 	u8	BTEfuseInitMap[EFUSE_BT_MAX_MAP_LEN];
 	u8	BTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN];
