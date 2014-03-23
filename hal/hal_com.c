@@ -792,3 +792,11 @@ void rtl8723a_set_ac_param_vi(struct rtw_adapter *padapter, u32 vi)
 {
 	rtw_write32(padapter, REG_EDCA_VI_PARAM, vi);
 }
+
+void rtl8723a_set_ac_param_be(struct rtw_adapter *padapter, u32 be)
+{
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
+
+	pHalData->AcParam_BE = be;
+	rtw_write32(padapter, REG_EDCA_BE_PARAM, be);
+}
