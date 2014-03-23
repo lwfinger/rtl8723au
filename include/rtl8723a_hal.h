@@ -377,9 +377,9 @@ struct hal_data_8723a {
 #ifdef CONFIG_8723AU_BT_COEXIST
 	u8				bBTMode;
 	/*  BT only. */
-	BT30Info		BtInfo;
+	struct bt_30info		BtInfo;
 	/*  For bluetooth co-existance */
-	BT_COEXIST_STR	bt_coexist;
+	struct bt_coexist_str	bt_coexist;
 #endif
 
 	u8	bDumpRxPkt;/* for debug */

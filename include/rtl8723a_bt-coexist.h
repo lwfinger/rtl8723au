@@ -688,8 +688,7 @@ struct hci_flow_spec {
 	u32				FlushTimeout;
 };
 
-typedef struct _HCI_LOG_LINK_CMD_DATA
-{
+struct hci_log_link_cmd_data {
 	u8				BtPhyLinkhandle;
 	u16				BtLogLinkhandle;
 	u8				BtTxFlowSpecID;
@@ -701,10 +700,9 @@ typedef struct _HCI_LOG_LINK_CMD_DATA
 	u8				bLLCompleteEventIsSet;
 
 	u8				bLLCancelCMDIsSetandComplete;
-} HCI_LOG_LINK_CMD_DATA, *PHCI_LOG_LINK_CMD_DATA;
+};
 
-typedef struct _HCI_PHY_LINK_CMD_DATA
-{
+struct hci_phy_link_cmd_data {
 	/* Physical_Link_Handle */
 	u8				BtPhyLinkhandle;
 
@@ -718,115 +716,101 @@ typedef struct _HCI_PHY_LINK_CMD_DATA
 	u8				BtAMPKeyType;
 	/* Dedicated_AMP_Key */
 	u8				BtAMPKey[PMK_LEN];
-} HCI_PHY_LINK_CMD_DATA, *PHCI_PHY_LINK_CMD_DATA;
+};
 
-typedef struct _AMP_ASSOC_STRUCTURE
-{
+struct amp_assoc_structure {
 	/* TYPE ID */
 	u8				TypeID;
 	/* Length */
 	u16				Length;
 	/* Value */
 	u8				Data[1];
-} AMP_ASSOC_STRUCTURE, *PAMP_ASSOC_STRUCTURE;
+};
 
-typedef struct _AMP_PREF_CHNL_REGULATORY
-{
+struct amp_pref_chnl_regulatory {
 	u8				reXId;
 	u8				regulatoryClass;
 	u8				coverageClass;
-} AMP_PREF_CHNL_REGULATORY, *PAMP_PREF_CHNL_REGULATORY;
+};
 
-typedef struct _AMP_ASSOC_CMD_DATA
-{
+struct amp_assoc_cmd_data {
 	/* Physical_Link_Handle */
-	u8					BtPhyLinkhandle;
+	u8				BtPhyLinkhandle;
 	/* Length_So_Far */
-	u16					LenSoFar;
+	u16				LenSoFar;
 
-	u16					MaxRemoteASSOCLen;
+	u16				MaxRemoteASSOCLen;
 	/* AMP_ASSOC_Remaining_Length */
-	u16					AMPAssocRemLen;
+	u16				AMPAssocRemLen;
 	/* AMP_ASSOC_fragment */
 	void				*AMPAssocfragment;
-} AMP_ASSOC_CMD_DATA, *PAMP_ASSOC_CMD_DATA;
+};
 
-typedef struct _HCI_LINK_INFO
-{
-	u16					ConnectHandle;
-	u8					IncomingTrafficMode;
-	u8					OutgoingTrafficMode;
-	u8					BTProfile;
-	u8					BTCoreSpec;
-	s8					BT_RSSI;
-	u8					TrafficProfile;
-	u8					linkRole;
-} HCI_LINK_INFO, *PHCI_LINK_INFO;
+struct hci_link_info {
+	u16				ConnectHandle;
+	u8				IncomingTrafficMode;
+	u8				OutgoingTrafficMode;
+	u8				BTProfile;
+	u8				BTCoreSpec;
+	s8				BT_RSSI;
+	u8				TrafficProfile;
+	u8				linkRole;
+};
 
-typedef struct _HCI_EXT_CONFIG
-{
-	HCI_LINK_INFO				linkInfo[MAX_BT_ASOC_ENTRY_NUM];
-	u8					btOperationCode;
-	u16					CurrentConnectHandle;
-	u8					CurrentIncomingTrafficMode;
-	u8					CurrentOutgoingTrafficMode;
-	s8					MIN_BT_RSSI;
-	u8					NumberOfHandle;
-	u8					NumberOfSCO;
-	u8					CurrentBTStatus;
-	u16					HCIExtensionVer;
+struct hci_ext_config {
+	struct hci_link_info		linkInfo[MAX_BT_ASOC_ENTRY_NUM];
+	u8				btOperationCode;
+	u16				CurrentConnectHandle;
+	u8				CurrentIncomingTrafficMode;
+	u8				CurrentOutgoingTrafficMode;
+	s8				MIN_BT_RSSI;
+	u8				NumberOfHandle;
+	u8				NumberOfSCO;
+	u8				CurrentBTStatus;
+	u16				HCIExtensionVer;
 
 	/* Bt coexist related */
-	u8					btProfileCase;
-	u8					btProfileAction;
-	u8					bManualControl;
-	u8					bBTBusy;
-	u8					bBTA2DPBusy;
-	u8					bEnableWifiScanNotify;
+	u8				btProfileCase;
+	u8				btProfileAction;
+	u8				bManualControl;
+	u8				bBTBusy;
+	u8				bBTA2DPBusy;
+	u8				bEnableWifiScanNotify;
 
-	u8					bHoldForBtOperation;
-	u32					bHoldPeriodCnt;
+	u8				bHoldForBtOperation;
+	u32				bHoldPeriodCnt;
+};
 
-}HCI_EXT_CONFIG, *PHCI_EXT_CONFIG;
+struct hci_acl_packet_data {
+	u16				ACLDataPacketLen;
+	u8				SyncDataPacketLen;
+	u16				TotalNumACLDataPackets;
+	u16				TotalSyncNumDataPackets;
+};
 
-typedef struct _HCI_ACL_PACKET_DATA
-{
-	u16					ACLDataPacketLen;
-	u8					SyncDataPacketLen;
-	u16					TotalNumACLDataPackets;
-	u16					TotalSyncNumDataPackets;
-} HCI_ACL_PACKET_DATA, *PHCI_ACL_PACKET_DATA;
+struct hci_phy_link_bss_info {
+	u16				bdCap;	/*  capability information */
+};
 
-typedef struct _HCI_PHY_LINK_BSS_INFO
-{
-	u16						bdCap;			/*  capability information */
-
-	/*  Qos related. Added by Annie, 2005-11-01. */
-/*	BSS_QOS						BssQos; not implement yet */
-
-} HCI_PHY_LINK_BSS_INFO, *PHCI_PHY_LINK_BSS_INFO;
-
-typedef struct _PACKET_IRP_HCICMD_DATA
-{
+struct packet_irp_hcicmd_data {
     u16		OCF:10;
     u16		OGF:6;
     u8		Length;
     u8		Data[20];
-} PACKET_IRP_HCICMD_DATA, *PPACKET_IRP_HCICMD_DATA;
+};
 
-typedef struct _BT_ASOC_ENTRY
-{
+struct bt_asoc_entry {
 	u8						bUsed;
 	u8						mAssoc;
 	u8						b4waySuccess;
 	u8						Bssid[6];
-	HCI_PHY_LINK_CMD_DATA		PhyLinkCmdData;
+	struct hci_phy_link_cmd_data		PhyLinkCmdData;
 
-	HCI_LOG_LINK_CMD_DATA		LogLinkCmdData[MAX_LOGICAL_LINK_NUM];
+	struct hci_log_link_cmd_data		LogLinkCmdData[MAX_LOGICAL_LINK_NUM];
 
-	HCI_ACL_PACKET_DATA			ACLPacketsData;
+	struct hci_acl_packet_data			ACLPacketsData;
 
-	AMP_ASSOC_CMD_DATA		AmpAsocCmdData;
+	struct amp_assoc_cmd_data		AmpAsocCmdData;
 	struct octet_string				BTSsid;
 	u8						BTSsidBuf[33];
 
@@ -875,10 +859,9 @@ typedef struct _BT_ASOC_ENTRY
 	u8						bPeerQosSta;
 
 	u32						rxSuvpPktCnt;
-}BT_ASOC_ENTRY, *PBT_ASOC_ENTRY;
+};
 
-typedef struct _BT_TRAFFIC_STATISTICS
-{
+struct bt_traffic_statistics {
 	u8				bTxBusyTraffic;
 	u8				bRxBusyTraffic;
 	u8				bIdle;
@@ -886,10 +869,9 @@ typedef struct _BT_TRAFFIC_STATISTICS
 	u32				RxPktCntInPeriod;
 	u64				TxPktLenInPeriod;
 	u64				RxPktLenInPeriod;
-} BT_TRAFFIC_STATISTICS, *PBT_TRAFFIC_STATISTICS;
+};
 
-typedef struct _BT_MGNT
-{
+struct bt_mgnt {
 	u8				bBTConnectInProgress;
 	u8				bLogLinkInProgress;
 	u8				bPhyLinkInProgress;
@@ -907,8 +889,8 @@ typedef struct _BT_MGNT
 	u8				BtOperationOn;
 	u8				BTNeedAMPStatusChg;
 	u8				JoinerNeedSendAuth;
-	HCI_PHY_LINK_BSS_INFO	bssDesc;
-	HCI_EXT_CONFIG		ExtConfig;
+	struct hci_phy_link_bss_info	bssDesc;
+	struct hci_ext_config		ExtConfig;
 	u8				bNeedNotifyAMPNoCap;
 	u8				bCreateSpportQos;
 	u8				bSupportProfile;
@@ -916,10 +898,9 @@ typedef struct _BT_MGNT
 	u8				CheckChnlIsSuit;
 	u8				bBtScan;
 	u8				btLogoTest;
-} BT_MGNT, *PBT_MGNT;
+};
 
-typedef struct _BT_HCI_DBG_INFO
-{
+struct bt_hci_dgb_info {
 	u32				hciCmdCnt;
 	u32				hciCmdCntUnknown;
 	u32				hciCmdCntCreatePhyLink;
@@ -935,10 +916,9 @@ typedef struct _BT_HCI_DBG_INFO
 	u32				hciCmdCntSetScoLinkStatus;
 	u32				hciCmdCntExtensionVersionNotify;
 	u32				hciCmdCntLinkStatusNotify;
-} BT_HCI_DBG_INFO, *PBT_HCI_DBG_INFO;
+};
 
-typedef struct _BT_IRP_DBG_INFO
-{
+struct bt_irp_dgb_info {
 	u32				irpMJCreate;
 	/*  Io Control */
 	u32				irpIoControl;
@@ -949,10 +929,9 @@ typedef struct _BT_IRP_DBG_INFO
 	u32				irpIoCtrlUnknown;
 
 	u32				irpIoCtrlHciTxData1s;
-} BT_IRP_DBG_INFO, *PBT_IRP_DBG_INFO;
+};
 
-typedef struct _BT_PACKET_DBG_INFO
-{
+struct bt_packet_dgb_info {
 	u32				btPktTxProbReq;
 	u32				btPktRxProbReq;
 	u32				btPktRxProbReqFail;
@@ -983,19 +962,17 @@ typedef struct _BT_PACKET_DBG_INFO
 	u32				btPktRxLinkSuperRsp;
 	u32				btPktTxData;
 	u32				btPktRxData;
-} BT_PACKET_DBG_INFO, *PBT_PACKET_DBG_INFO;
+};
 
-typedef struct _BT_DBG
-{
+struct bt_dgb {
 	u8				dbgCtrl;
 	u32				dbgProfile;
-	BT_HCI_DBG_INFO		dbgHciInfo;
-	BT_IRP_DBG_INFO		dbgIrpInfo;
-	BT_PACKET_DBG_INFO	dbgBtPkt;
-} BT_DBG, *PBT_DBG;
+	struct bt_hci_dgb_info		dbgHciInfo;
+	struct bt_irp_dgb_info		dbgIrpInfo;
+	struct bt_packet_dgb_info	dbgBtPkt;
+};
 
-typedef struct _BT_HCI_INFO
-{
+struct bt_hci_info {
 	/* 802.11 Pal version specifier */
 	u8				BTPalVersion;
 	u16				BTPalCompanyID;
@@ -1045,10 +1022,9 @@ typedef struct _BT_HCI_INFO
 	u16				TestNumOfBits;
 	u16				TestNumOfErrBits;
 	/*  */
-} BT_HCI_INFO, *PBT_HCI_INFO;
+};
 
-typedef struct _BT_TRAFFIC
-{
+struct bt_traffic {
 	/*  Add for check replay data */
 	u8					LastRxUniFragNum;
 	u16					LastRxUniSeqNum;
@@ -1056,32 +1032,30 @@ typedef struct _BT_TRAFFIC
 	/* s32					EntryMaxUndecoratedSmoothedPWDB; */
 	/* s32					EntryMinUndecoratedSmoothedPWDB; */
 
-	BT_TRAFFIC_STATISTICS		Bt30TrafficStatistics;
-} BT_TRAFFIC, *PBT_TRAFFIC;
+	struct bt_traffic_statistics		Bt30TrafficStatistics;
+};
 
 #define RT_WORK_ITEM struct work_struct
 
-typedef struct _BT_SECURITY
-{
-	/*  WPA auth state */
-	/*  May need to remove to BTSecInfo ... */
-	/* enum bt_state_wpa_auth BTWPAAuthState; */
-	/* u8				PMK[PMK_LEN]; */
-	struct octet_string		RSNIE;
+struct bt_security {
+	/*  WPA auth state
+	 *  May need to remove to BTSecInfo ... 
+	 * enum bt_state_wpa_auth BTWPAAuthState;
+	 */
+	struct octet_string	RSNIE;
 	u8			RSNIEBuf[MAXRSNIELEN];
 	u8			bRegNoEncrypt;
-	u8			bUsedHwEncrypt;   /*  It is define by OS version !! */
-} BT_SECURITY, *PBT_SECURITY;
+	u8			bUsedHwEncrypt;
+};
 
-typedef struct _BT30Info
-{
+struct bt_30info {
 	struct rtw_adapter	*padapter;
-	BT_ASOC_ENTRY		BtAsocEntry[MAX_BT_ASOC_ENTRY_NUM];
-	BT_MGNT				BtMgnt;
-	BT_DBG				BtDbg;
-	BT_HCI_INFO			BtHciInfo;
-	BT_TRAFFIC			BtTraffic;
-	BT_SECURITY			BtSec;
+	struct bt_asoc_entry		BtAsocEntry[MAX_BT_ASOC_ENTRY_NUM];
+	struct bt_mgnt				BtMgnt;
+	struct bt_dgb				BtDbg;
+	struct bt_hci_info			BtHciInfo;
+	struct bt_traffic			BtTraffic;
+	struct bt_security			BtSec;
 
 #if(BT_THREAD == 0)
 	RT_WORK_ITEM		HCICmdWorkItem;
@@ -1105,30 +1079,27 @@ typedef struct _BT30Info
 	struct timer_list BTPsDisableTimer;
 
 	void *				pBtChnlList;
-}BT30Info, *PBT30Info;
+};
 
-typedef struct _PACKET_IRP_ACL_DATA
-{
+struct packet_irp_acl_data {
     u16		Handle:12;
     u16		PB_Flag:2;
     u16		BC_Flag:2;
     u16		Length;
     u8		Data[1];
-} PACKET_IRP_ACL_DATA, *PPACKET_IRP_ACL_DATA;
+};
 
-typedef struct _PACKET_IRP_HCIEVENT_DATA
-{
+struct packet_irp_hcievent_data {
     u8		EventCode;
     u8		Length;
     u8		Data[1];
-} PACKET_IRP_HCIEVENT_DATA, *PPACKET_IRP_HCIEVENT_DATA;
+};
 
-typedef struct _COMMON_TRIPLE
-{
+struct common_triple {
 	u8 byte_1st;
 	u8 byte_2nd;
 	u8 byte_3rd;
-} COMMON_TRIPLE, *PCOMMON_TRIPLE;
+};
 
 #define COUNTRY_STR_LEN		3	/*  country string len = 3 */
 
@@ -1155,11 +1126,10 @@ enum hci_ext_bp_operation {
 };
 
 /*	Function proto type */
-typedef struct _BTData_ENTRY
-{
+struct btdata_entry {
 	struct list_head	List;
 	void			*pDataBlock;
-} BTData_ENTRY, *PBTData_ENTRY;
+};
 
 #define BTHCI_SM_WITH_INFO(_Adapter, _StateToEnter, _StateCmd, _EntryNum)	\
 {										\
@@ -1177,7 +1147,7 @@ void BTHCI_DisconnectPeer(struct rtw_adapter * padapter, u8 EntryNum);
 void BTHCI_EventNumOfCompletedDataBlocks(struct rtw_adapter * padapter);
 void BTHCI_EventAMPStatusChange(struct rtw_adapter * padapter, u8 AMP_Status);
 void BTHCI_DisconnectAll(struct rtw_adapter * padapter);
-enum hci_status BTHCI_HandleHCICMD(struct rtw_adapter * padapter, PPACKET_IRP_HCICMD_DATA pHciCmd);
+enum hci_status BTHCI_HandleHCICMD(struct rtw_adapter * padapter, struct packet_irp_hcicmd_data *pHciCmd);
 
 /*  ===== End of sync from SD7 driver COMMON/bt_hci.h ===== */
 #endif /*  __BT_HCI_C__ */
@@ -1209,8 +1179,7 @@ enum bt_state_1ant {
 	BT_INFO_STATE_MAX			= 8
 };
 
-typedef struct _BTDM_8723A_1ANT
-{
+struct btdm_8723a_1ant {
 	u8		prePsTdma;
 	u8		curPsTdma;
 	u8		psTdmaDuAdjType;
@@ -1233,7 +1202,7 @@ typedef struct _BTDM_8723A_1ANT
 
 	u8		bWiFiHalt;
 	u8		bRAChanged;
-} BTDM_8723A_1ANT, *PBTDM_8723A_1ANT;
+};
 
 void BTDM_1AntSignalCompensation(struct rtw_adapter * padapter, u8 *rssi_wifi, u8 *rssi_bt);
 void BTDM_1AntForDhcp(struct rtw_adapter * padapter);
@@ -1266,62 +1235,61 @@ enum bt_2ant_coex_algo {
 	BT_2ANT_COEX_ALGO_MAX				= 0xB,
 };
 
-typedef struct _BTDM_8723A_2ANT
-{
-	u8		bPreDecBtPwr;
+struct btdm_8723a_2ant {
+	u8	bPreDecBtPwr;
 	u8	bCurDecBtPwr;
 
-	u8		preWlanActHi;
-	u8		curWlanActHi;
-	u8		preWlanActLo;
-	u8		curWlanActLo;
+	u8	preWlanActHi;
+	u8	curWlanActHi;
+	u8	preWlanActLo;
+	u8	curWlanActLo;
 
-	u8		preFwDacSwingLvl;
-	u8		curFwDacSwingLvl;
+	u8	preFwDacSwingLvl;
+	u8	curFwDacSwingLvl;
 
-	u8		bPreRfRxLpfShrink;
-	u8		bCurRfRxLpfShrink;
+	u8	bPreRfRxLpfShrink;
+	u8	bCurRfRxLpfShrink;
 
-	u8		bPreLowPenaltyRa;
-	u8		bCurLowPenaltyRa;
+	u8	bPreLowPenaltyRa;
+	u8	bCurLowPenaltyRa;
 
-	u8		preBtRetryIndex;
-	u8		curBtRetryIndex;
+	u8	preBtRetryIndex;
+	u8	curBtRetryIndex;
 
-	u8		bPreDacSwingOn;
-	u32		preDacSwingLvl;
-	u8		bCurDacSwingOn;
-	u32		curDacSwingLvl;
+	u8	bPreDacSwingOn;
+	u32	preDacSwingLvl;
+	u8	bCurDacSwingOn;
+	u32	curDacSwingLvl;
 
-	u8		bPreAdcBackOff;
-	u8		bCurAdcBackOff;
+	u8	bPreAdcBackOff;
+	u8	bCurAdcBackOff;
 
-	u8		bPreAgcTableEn;
-	u8		bCurAgcTableEn;
+	u8	bPreAgcTableEn;
+	u8	bCurAgcTableEn;
 
-	u32		preVal0x6c0;
-	u32		curVal0x6c0;
-	u32		preVal0x6c8;
-	u32		curVal0x6c8;
-	u8		preVal0x6cc;
-	u8		curVal0x6cc;
+	u32	preVal0x6c0;
+	u32	curVal0x6c0;
+	u32	preVal0x6c8;
+	u32	curVal0x6c8;
+	u8	preVal0x6cc;
+	u8	curVal0x6cc;
 
-	u8		bCurIgnoreWlanAct;
-	u8		bPreIgnoreWlanAct;
+	u8	bCurIgnoreWlanAct;
+	u8	bPreIgnoreWlanAct;
 
-	u8		prePsTdma;
-	u8		curPsTdma;
-	u8		psTdmaDuAdjType;
-	u8		bPrePsTdmaOn;
-	u8		bCurPsTdmaOn;
+	u8	prePsTdma;
+	u8	curPsTdma;
+	u8	psTdmaDuAdjType;
+	u8	bPrePsTdmaOn;
+	u8	bCurPsTdmaOn;
 
-	u8		preAlgorithm;
-	u8		curAlgorithm;
-	u8		bResetTdmaAdjust;
+	u8	preAlgorithm;
+	u8	curAlgorithm;
+	u8	bResetTdmaAdjust;
 
+	u8	btStatus;
+};
 
-	u8		btStatus;
-} BTDM_8723A_2ANT, *PBTDM_8723A_2ANT;
 void BTDM_2AntBtCoexist8723A(struct rtw_adapter * padapter);
 /*  ===== End of sync from SD7 driver HAL/BTCoexist/HalBtc87232Ant.h ===== */
 #endif /*  __HALBTC87232ANT_C__ */
@@ -1370,8 +1338,7 @@ void BTDM_2AntBtCoexist8723A(struct rtw_adapter * padapter);
 
 
 
-typedef struct _BT_COEXIST_8723A
-{
+struct bt_coexist_8723a {
 	u32					highPriorityTx;
 	u32					highPriorityRx;
 	u32					lowPriorityTx;
@@ -1390,11 +1357,9 @@ typedef struct _BT_COEXIST_8723A
 	u8					bC2hBtInfoReqSent;
 	u8					bForceFwBtInfo;
 	u8					bForceA2dpSink;
-/*	u8					bForceLps; */
-/*	u8					bBtPwrSaveMode; */
-	BTDM_8723A_2ANT			btdm2Ant;
-	BTDM_8723A_1ANT			btdm1Ant;
-} BT_COEXIST_8723A, *PBT_COEXIST_8723A;
+	struct btdm_8723a_2ant			btdm2Ant;
+	struct btdm_8723a_1ant			btdm1Ant;
+};
 
 void BTDM_SetFwChnlInfo(struct rtw_adapter * padapter, enum rt_media_status mstatus);
 u8 BTDM_IsWifiConnectionExist(struct rtw_adapter * padapter);
@@ -1550,92 +1515,84 @@ void BTDM_DiminishWiFi(struct rtw_adapter * Adapter, u8 bDACOn, u8 bInterruptOn,
 #define BT_RSSI_STATE_STAY_MEDIUM			4
 #define BT_RSSI_STATE_STAY_LOW			5
 
-
-
 #define	BT_AGCTABLE_OFF				0
 #define	BT_AGCTABLE_ON				1
 
 #define	BT_BB_BACKOFF_OFF			0
-#define	BT_BB_BACKOFF_ON				1
+#define	BT_BB_BACKOFF_ON			1
 
-#define	BT_FW_NAV_OFF					0
-#define	BT_FW_NAV_ON					1
+#define	BT_FW_NAV_OFF				0
+#define	BT_FW_NAV_ON				1
 
-
-#define	BT_COEX_MECH_NONE				0
-#define	BT_COEX_MECH_SCO				1
-#define	BT_COEX_MECH_HID				2
-#define	BT_COEX_MECH_A2DP				3
-#define	BT_COEX_MECH_PAN				4
+#define	BT_COEX_MECH_NONE			0
+#define	BT_COEX_MECH_SCO			1
+#define	BT_COEX_MECH_HID			2
+#define	BT_COEX_MECH_A2DP			3
+#define	BT_COEX_MECH_PAN			4
 #define	BT_COEX_MECH_HID_A2DP			5
 #define	BT_COEX_MECH_HID_PAN			6
 #define	BT_COEX_MECH_PAN_A2DP			7
 #define	BT_COEX_MECH_HID_SCO_ESCO		8
 #define	BT_COEX_MECH_FTP_A2DP			9
 #define	BT_COEX_MECH_COMMON			10
-#define	BT_COEX_MECH_MAX				11
-/*  */
+#define	BT_COEX_MECH_MAX			11
 /*	BT Dbg Ctrl */
-/*  */
 #define	BT_DBG_PROFILE_NONE			0
 #define	BT_DBG_PROFILE_SCO			1
 #define	BT_DBG_PROFILE_HID			2
 #define	BT_DBG_PROFILE_A2DP			3
 #define	BT_DBG_PROFILE_PAN			4
-#define	BT_DBG_PROFILE_HID_A2DP		5
-#define	BT_DBG_PROFILE_HID_PAN		6
-#define	BT_DBG_PROFILE_PAN_A2DP		7
+#define	BT_DBG_PROFILE_HID_A2DP			5
+#define	BT_DBG_PROFILE_HID_PAN			6
+#define	BT_DBG_PROFILE_PAN_A2DP			7
 #define	BT_DBG_PROFILE_MAX			9
-/*  */
 
-typedef struct _BT_COEXIST_STR
-{
-	u8					BluetoothCoexist;
-	u8					BT_Ant_Num;
-	u8					BT_CoexistType;
-	u8					BT_Ant_isolation;	/* 0:good, 1:bad */
-	u8					bt_radiosharedtype;
-	u32					Ratio_Tx;
-	u32					Ratio_PRI;
-	u8					bInitlized;
-	u32					BtRfRegOrigin1E;
-	u32					BtRfRegOrigin1F;
-	u8					bBTBusyTraffic;
-	u8					bBTTrafficModeSet;
-	u8					bBTNonTrafficModeSet;
-	BT_TRAFFIC_STATISTICS		BT21TrafficStatistics;
-	u64					CurrentState;
-	u64					PreviousState;
-	u8					preRssiState;
-	u8					preRssiState1;
-	u8					preRssiStateBeacon;
-	u8					bFWCoexistAllOff;
-	u8					bSWCoexistAllOff;
-	u8					bHWCoexistAllOff;
-	u8					bBalanceOn;
-	u8					bSingleAntOn;
-	u8					bInterruptOn;
-	u8					bMultiNAVOn;
-	u8					PreWLANActH;
-	u8					PreWLANActL;
-	u8					WLANActH;
-	u8					WLANActL;
-	u8					A2DPState;
-	u8					AntennaState;
-	u32					lastBtEdca;
-	u16					last_aggr_num;
-	u8					bEDCAInitialized;
-	u8					exec_cnt;
-	u8					b8723aAgcTableOn;
-	u8					b92DAgcTableOn;
-	BT_COEXIST_8723A			halCoex8723;
-	u8					btActiveZeroCnt;
-	u8					bCurBtDisabled;
-	u8					bPreBtDisabled;
-	u8					bNeedToRoamForBtDisableEnable;
-	u8					fw3aVal[5];
-}BT_COEXIST_STR, *PBT_COEXIST_STR;
-
+struct bt_coexist_str {
+	u8			BluetoothCoexist;
+	u8			BT_Ant_Num;
+	u8			BT_CoexistType;
+	u8			BT_Ant_isolation;	/* 0:good, 1:bad */
+	u8			bt_radiosharedtype;
+	u32			Ratio_Tx;
+	u32			Ratio_PRI;
+	u8			bInitlized;
+	u32			BtRfRegOrigin1E;
+	u32			BtRfRegOrigin1F;
+	u8			bBTBusyTraffic;
+	u8			bBTTrafficModeSet;
+	u8			bBTNonTrafficModeSet;
+	struct bt_traffic_statistics		BT21TrafficStatistics;
+	u64			CurrentState;
+	u64			PreviousState;
+	u8			preRssiState;
+	u8			preRssiState1;
+	u8			preRssiStateBeacon;
+	u8			bFWCoexistAllOff;
+	u8			bSWCoexistAllOff;
+	u8			bHWCoexistAllOff;
+	u8			bBalanceOn;
+	u8			bSingleAntOn;
+	u8			bInterruptOn;
+	u8			bMultiNAVOn;
+	u8			PreWLANActH;
+	u8			PreWLANActL;
+	u8			WLANActH;
+	u8			WLANActL;
+	u8			A2DPState;
+	u8			AntennaState;
+	u32			lastBtEdca;
+	u16			last_aggr_num;
+	u8			bEDCAInitialized;
+	u8			exec_cnt;
+	u8			b8723aAgcTableOn;
+	u8			b92DAgcTableOn;
+	struct bt_coexist_8723a	halCoex8723;
+	u8			btActiveZeroCnt;
+	u8			bCurBtDisabled;
+	u8			bPreBtDisabled;
+	u8			bNeedToRoamForBtDisableEnable;
+	u8			fw3aVal[5];
+};
 
 void BTDM_CheckAntSelMode(struct rtw_adapter * padapter);
 void BTDM_FwC2hBtRssi(struct rtw_adapter * padapter, u8 *tmpBuf);
