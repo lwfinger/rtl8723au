@@ -20,11 +20,6 @@
 #include <rtw_efuse.h>
 
 /*------------------------Define local variable------------------------------*/
-u32	BTEfuseUsedBytes=0;
-u8	BTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-u8	BTEfuseInitMap[EFUSE_BT_MAX_MAP_LEN]={0};
-u8	BTEfuseModifiedMap[EFUSE_BT_MAX_MAP_LEN]={0};
-/*------------------------Define local variable------------------------------*/
 
 /*  */
 #define REG_EFUSE_CTRL		0x0030
@@ -1037,12 +1032,4 @@ Efuse_InitSomeVar(struct rtw_adapter *pAdapter);
 void
 Efuse_InitSomeVar(struct rtw_adapter *pAdapter)
 {
-	u8 i;
-
-	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
-	{
-		memset(&BTEfuseContent[i][0], EFUSE_MAX_HW_SIZE, 0xff);
-	}
-	memset(&BTEfuseInitMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
-	memset(&BTEfuseModifiedMap[0], 0xff, EFUSE_BT_MAX_MAP_LEN);
 }

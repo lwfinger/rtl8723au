@@ -80,11 +80,6 @@ struct pg_pkt_struct {
 };
 
 /*------------------------Export global variable----------------------------*/
-extern u32 BTEfuseUsedBytes;
-extern u8 BTEfuseContent[EFUSE_MAX_BT_BANK][EFUSE_MAX_HW_SIZE];
-extern u8 BTEfuseInitMap[];
-extern u8 BTEfuseModifiedMap[];
-/*------------------------Export global variable----------------------------*/
 
 u8	efuse_GetCurrentSize(struct rtw_adapter *padapter, u16 *size);
 u16	efuse_GetMaxSize(struct rtw_adapter *padapter);
