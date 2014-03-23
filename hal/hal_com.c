@@ -756,3 +756,19 @@ void rtl8723a_set_beacon_interval(struct rtw_adapter *padapter, u16 interval)
 {
 	rtw_write16(padapter, REG_BCN_INTERVAL, interval);
 }
+
+void rtl8723a_set_resp_sifs(struct rtw_adapter *padapter,
+			    u8 r2t1, u8 r2t2, u8 t2t1, u8 t2t2)
+{
+	/* SIFS_Timer = 0x0a0a0808; */
+	/* RESP_SIFS for CCK */
+	/*  SIFS_T2T_CCK (0x08) */
+	rtw_write8(padapter, REG_R2T_SIFS, r2t1);
+	/* SIFS_R2T_CCK(0x08) */
+	rtw_write8(padapter, REG_R2T_SIFS + 1, r2t2);
+	/* RESP_SIFS for OFDM */
+	/* SIFS_T2T_OFDM (0x0a) */
+	rtw_write8(padapter, REG_T2T_SIFS, t2t1);
+	/* SIFS_R2T_OFDM(0x0a) */
+	rtw_write8(padapter, REG_T2T_SIFS + 1, t2t2);
+}

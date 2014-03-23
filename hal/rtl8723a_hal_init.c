@@ -3444,17 +3444,8 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_RESP_SIFS:
-		/* SIFS_Timer = 0x0a0a0808; */
-		/* RESP_SIFS for CCK */
-		/*  SIFS_T2T_CCK (0x08) */
-		rtw_write8(padapter, REG_R2T_SIFS, val[0]);
-		/* SIFS_R2T_CCK(0x08) */
-		rtw_write8(padapter, REG_R2T_SIFS + 1, val[1]);
-		/* RESP_SIFS for OFDM */
-		/* SIFS_T2T_OFDM (0x0a) */
-		rtw_write8(padapter, REG_T2T_SIFS, val[2]);
-		/* SIFS_R2T_OFDM(0x0a) */
-		rtw_write8(padapter, REG_T2T_SIFS + 1, val[3]);
+		rtl8723a_set_resp_sifs(padapter, val[0], val[1],
+				       val[2], val[3]);
 		break;
 
 	case HW_VAR_ACK_PREAMBLE:
