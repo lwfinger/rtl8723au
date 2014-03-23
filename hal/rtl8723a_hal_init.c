@@ -658,7 +658,6 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 	u8 offset, wden;
 	u8 efuseHeader, efuseExtHdr, efuseData;
 	u16 i, total, used;
-	u8 efuse_usage = 0;
 
 	/*  Do NOT excess total size of EFuse table.
 	    Added by Roger, 2008.11.10. */
@@ -739,7 +738,6 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 				 TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &total,
 				 bPseudoTest);
 	used = eFuse_Addr - 1;
-	efuse_usage = (u8) ((used * 100) / total);
 	if (bPseudoTest) {
 #ifdef HAL_EFUSE_MEMORY
 		pEfuseHal->fakeEfuseUsedBytes = used;
@@ -748,8 +746,6 @@ hal_ReadEFuse_WiFi(struct rtw_adapter *padapter,
 #endif
 	} else {
 		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BYTES, (u8 *) & used);
-		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_USAGE,
-				  (u8 *) & efuse_usage);
 	}
 
 	kfree(efuseTbl);
@@ -2018,7 +2014,6 @@ void rtl8723a_init_default_value(struct rtw_adapter *padapter)
 
 	/*  init Efuse variables */
 	pHalData->EfuseUsedBytes = 0;
-	pHalData->EfuseUsedPercentage = 0;
 #ifdef HAL_EFUSE_MEMORY
 	pHalData->EfuseHal.fakeEfuseBank = 0;
 	pHalData->EfuseHal.fakeEfuseUsedBytes = 0;
@@ -3532,9 +3527,6 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 	case HW_VAR_INITIAL_GAIN:
 		rtl8723a_set_initial_gain(padapter, *val32);
 		break;
-	case HW_VAR_EFUSE_USAGE:
-		pHalData->EfuseUsedPercentage = *val;
-		break;
 	case HW_VAR_EFUSE_BYTES:
 		pHalData->EfuseUsedBytes = *((u16 *) val);
 		break;
@@ -3621,9 +3613,6 @@ void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 				*val = true;
 		}
 	}
-		break;
-	case HW_VAR_EFUSE_USAGE:
-		*val = pHalData->EfuseUsedPercentage;
 		break;
 	case HW_VAR_EFUSE_BYTES:
 		*((u16 *) val) = pHalData->EfuseUsedBytes;

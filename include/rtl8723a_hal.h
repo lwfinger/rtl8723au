@@ -406,7 +406,6 @@ struct hal_data_8723a {
 	/*  */
 	u8			EepromOrEfuse;
 	u16			EfuseUsedBytes;
-	u8			EfuseUsedPercentage;
 #ifdef HAL_EFUSE_MEMORY
 	struct efuse_hal	EfuseHal;
 #endif
