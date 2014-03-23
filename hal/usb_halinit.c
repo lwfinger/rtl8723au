@@ -2076,8 +2076,6 @@ static int _ReadAdapterInfo8723AU(struct rtw_adapter *	Adapter)
 
 	MSG_8723A("====> _ReadAdapterInfo8723AU\n");
 
-	/* Efuse_InitSomeVar(Adapter); */
-
 	hal_EfuseCellSel(Adapter);
 
 	_ReadRFType(Adapter);/* rf_chip -> _InitRFType() */

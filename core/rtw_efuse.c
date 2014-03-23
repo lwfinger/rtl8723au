@@ -1026,10 +1026,3 @@ EFUSE_ShadowWrite(
 {
 	return;
 }	/*  EFUSE_ShadowWrite */
-
-void
-Efuse_InitSomeVar(struct rtw_adapter *pAdapter);
-void
-Efuse_InitSomeVar(struct rtw_adapter *pAdapter)
-{
-}
