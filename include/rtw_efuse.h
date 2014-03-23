@@ -84,7 +84,6 @@ struct efuse_hal {
 	u8	fakeEfuseBank;
 	u32	fakeEfuseUsedBytes;
 	u8	fakeEfuseContent[EFUSE_MAX_HW_SIZE];
-	u8	fakeEfuseInitMap[EFUSE_MAX_MAP_LEN];
 	u8	fakeEfuseModifiedMap[EFUSE_MAX_MAP_LEN];
 
 	u16	BTEfuseUsedBytes;
@@ -102,7 +101,6 @@ struct efuse_hal {
 extern u8 fakeEfuseBank;
 extern u32 fakeEfuseUsedBytes;
 extern u8 fakeEfuseContent[];
-extern u8 fakeEfuseInitMap[];
 extern u8 fakeEfuseModifiedMap[];
 
 extern u32 BTEfuseUsedBytes;

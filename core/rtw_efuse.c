@@ -23,7 +23,6 @@
 u8	fakeEfuseBank=0;
 u32	fakeEfuseUsedBytes=0;
 u8	fakeEfuseContent[EFUSE_MAX_HW_SIZE]={0};
-u8	fakeEfuseInitMap[EFUSE_MAX_MAP_LEN]={0};
 u8	fakeEfuseModifiedMap[EFUSE_MAX_MAP_LEN]={0};
 
 u32	BTEfuseUsedBytes=0;
@@ -1149,7 +1148,6 @@ Efuse_InitSomeVar(
 	u8 i;
 
 	memset(&fakeEfuseContent[0], 0xff, EFUSE_MAX_HW_SIZE);
-	memset(&fakeEfuseInitMap[0], 0xff, EFUSE_MAX_MAP_LEN);
 	memset(&fakeEfuseModifiedMap[0], 0xff, EFUSE_MAX_MAP_LEN);
 
 	for(i=0; i<EFUSE_MAX_BT_BANK; i++)
