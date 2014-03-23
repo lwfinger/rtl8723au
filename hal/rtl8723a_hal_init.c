@@ -3400,7 +3400,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 
 	case HW_VAR_TXPAUSE:
-		rtw_write8(padapter, REG_TXPAUSE, *val);
+		rtl8723a_set_tx_pause(padapter, *val);
 		break;
 
 	case HW_VAR_BCN_FUNC:
