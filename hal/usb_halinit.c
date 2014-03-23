@@ -2015,24 +2015,6 @@ static void _ReadPROMContent(
 
 
 static void
-_InitOtherVariable(
- struct rtw_adapter *		Adapter
-	)
-{
-	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter); */
-
-
-	/* if(Adapter->bInHctTest){ */
-	/*	pMgntInfo->PowerSaveControl.bInactivePs = false; */
-	/*	pMgntInfo->PowerSaveControl.bIPSModeBackup = false; */
-	/*	pMgntInfo->PowerSaveControl.bLeisurePs = false; */
-	/*	pMgntInfo->keepAliveLevel = 0; */
-	/*  */
-
-
-}
-
-static void
 _ReadRFType(
 	struct rtw_adapter *	Adapter
 	)
@@ -2083,8 +2065,6 @@ static int _ReadAdapterInfo8723AU(struct rtw_adapter *	Adapter)
 
 	/*  2010/10/25 MH THe function must be called after borad_type & IC-Version recognize. */
 	_ReadSilmComboMode(Adapter);
-
-	_InitOtherVariable(Adapter);
 
 	/* MSG_8723A("%s()(done), rf_chip=0x%x, rf_type=0x%x\n",  __FUNCTION__, pHalData->rf_chip, pHalData->rf_type); */
 
