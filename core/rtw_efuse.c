@@ -869,70 +869,6 @@ efuse_ShadowRead4Byte(
 }	/*  efuse_ShadowRead4Byte */
 
 /*-----------------------------------------------------------------------------
- * Function:	efuse_ShadowWrite1Byte
- *			efuse_ShadowWrite2Byte
- *			efuse_ShadowWrite4Byte
- *
- * Overview:	Write efuse modify map by one/two/four byte.
- *
- * Input:       NONE
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- * When			Who		Remark
- * 11/12/2008	MHC		Create Version 0.
- *
- *---------------------------------------------------------------------------*/
-#ifdef PLATFORM
-static void
-efuse_ShadowWrite1Byte(
-	struct rtw_adapter *	pAdapter,
-	u16		Offset,
-	u8		Value);
-#endif /* PLATFORM */
-static void
-efuse_ShadowWrite1Byte(
-	struct rtw_adapter *	pAdapter,
-	u16		Offset,
-	u8		Value)
-{
-	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
-
-	pEEPROM->efuse_eeprom_data[Offset] = Value;
-}	/*  efuse_ShadowWrite1Byte */
-
-/* Write Two Bytes */
-static void
-efuse_ShadowWrite2Byte(
-	struct rtw_adapter *	pAdapter,
-	u16		Offset,
-	u16		Value)
-{
-	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
-
-	pEEPROM->efuse_eeprom_data[Offset] = Value&0x00FF;
-	pEEPROM->efuse_eeprom_data[Offset+1] = Value>>8;
-}	/*  efuse_ShadowWrite1Byte */
-
-/* Write Four Bytes */
-static void
-efuse_ShadowWrite4Byte(
-	struct rtw_adapter *	pAdapter,
-	u16		Offset,
-	u32		Value)
-{
-	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
-
-	pEEPROM->efuse_eeprom_data[Offset] = (u8)(Value&0x000000FF);
-	pEEPROM->efuse_eeprom_data[Offset+1] = (u8)((Value>>8)&0x0000FF);
-	pEEPROM->efuse_eeprom_data[Offset+2] = (u8)((Value>>16)&0x00FF);
-	pEEPROM->efuse_eeprom_data[Offset+3] = (u8)((Value>>24)&0xFF);
-}	/*  efuse_ShadowWrite1Byte */
-
-/*-----------------------------------------------------------------------------
  * Function:	EFUSE_ShadowMapUpdate
  *
  * Overview:	Transfer current EFUSE content to shadow init and modify map.
@@ -994,35 +930,3 @@ EFUSE_ShadowRead(
 	else if (Type == 4)
 		efuse_ShadowRead4Byte(pAdapter, Offset, (u32 *)Value);
 }	/*  EFUSE_ShadowRead */
-
-/*-----------------------------------------------------------------------------
- * Function:	EFUSE_ShadowWrite
- *
- * Overview:	Write efuse modify map for later update operation to use!!!!!
- *
- * Input:       NONE
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- * When			Who		Remark
- * 11/12/2008	MHC		Create Version 0.
- *
- *---------------------------------------------------------------------------*/
-void
-EFUSE_ShadowWrite(
-	struct rtw_adapter *	pAdapter,
-	u8		Type,
-	u16		Offset,
-	u32		Value);
-void
-EFUSE_ShadowWrite(
-	struct rtw_adapter *	pAdapter,
-	u8		Type,
-	u16		Offset,
-	u32		Value)
-{
-	return;
-}	/*  EFUSE_ShadowWrite */
