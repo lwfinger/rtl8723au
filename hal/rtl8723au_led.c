@@ -129,13 +129,13 @@ exit:
 void
 rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 {
-	struct led_priv *pledpriv = &(padapter->ledpriv);
+	struct led_priv *pledpriv = &padapter->ledpriv;
 
 	pledpriv->LedControlHandler = LedControl871x;
 	/* 8723as-vau wifi used led2 */
-	InitLed871x(padapter, &(pledpriv->SwLed0), LED_PIN_LED2);
+	InitLed871x(padapter, &pledpriv->SwLed0, LED_PIN_LED2);
 
-/*	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED2); */
+/*	InitLed871x(padapter,&pledpriv->SwLed1, LED_PIN_LED2); */
 }
 
 
@@ -146,7 +146,7 @@ rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 void
 rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter)
 {
-	struct led_priv	*ledpriv = &(padapter->ledpriv);
+	struct led_priv	*ledpriv = &padapter->ledpriv;
 
-	DeInitLed871x( &(ledpriv->SwLed0) );
+	DeInitLed871x(&ledpriv->SwLed0);
 }

@@ -184,7 +184,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 	struct tx_desc	*ptxdesc = (struct tx_desc *)pmem;
 	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 	int	bmcst = is_multicast_ether_addr(pattrib->ra);
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;

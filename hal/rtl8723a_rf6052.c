@@ -194,7 +194,7 @@ rtl823a_phy_rf6052setccktxpower(
 
 	for(idx1=RF_PATH_A; idx1<=RF_PATH_B; idx1++)
 	{
-		ptr = (u8*)(&(TxAGC[idx1]));
+		ptr = (u8*)(&TxAGC[idx1]);
 		for(idx2=0; idx2<4; idx2++)
 		{
 			if(*ptr > RF6052_MAX_TX_PWR)

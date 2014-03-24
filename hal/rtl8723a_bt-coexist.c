@@ -322,7 +322,8 @@ static void bthci_DecideBTChannel(struct rtw_adapter *padapter, u8 EntryNum)
 	localchnl = bthci_GetLocalChannel(padapter);
 
 	{
-		pTriple = (struct common_triple *)&(pBtHciInfo->BTPreChnllist[COUNTRY_STR_LEN]);
+		pTriple = (struct common_triple *)
+			&pBtHciInfo->BTPreChnllist[COUNTRY_STR_LEN];
 
 		/*  contains country string, len is 3 */
 		for (i = 0; i < (pBtHciInfo->BtPreChnlListLen-COUNTRY_STR_LEN); i+=3, pTriple++)
@@ -1022,7 +1023,8 @@ bthci_ConstructScanList(
 	*pScanType = SCAN_ACTIVE;
 	*pDuration = 200;
 
-	pTriple = (struct common_triple *)&(pBtHciInfo->BTPreChnllist[COUNTRY_STR_LEN]);
+	pTriple = (struct common_triple *)
+		&pBtHciInfo->BTPreChnllist[COUNTRY_STR_LEN];
 
 	/*  contains country string, len is 3 */
 	for (i = 0; i < (pBtHciInfo->BtPreChnlListLen-COUNTRY_STR_LEN); i+=3, pTriple++)
@@ -3651,7 +3653,7 @@ bthci_CmdReadLinkQuality(
 		/*  Return parameters starts from here */
 		pRetPar = &PPacketIrpEvent->Data[len];
 		pRetPar[0] = status;			/* status */
-		*((u16*)&(pRetPar[1])) = pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle;	/*  Handle */
+		*((u16*)&pRetPar[1]) = pBTInfo->BtAsocEntry[EntryNum].PhyLinkCmdData.BtPhyLinkhandle;	/*  Handle */
 		pRetPar[3] = 0x55;	/* Link Quailty */
 		len += 4;
 		PPacketIrpEvent->Length = len;
@@ -5768,7 +5770,7 @@ static void bthci_TimerCallbackPsDisable(unsigned long data)
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() ==>\n"));
 
-	schedule_work(&(pBTinfo->BTPsDisableWorkItem));
+	schedule_work(&pBTinfo->BTPsDisableWorkItem);
 
 	RTPRINT(FIOCTL, IOCTL_CALLBACK_FUN, ("bthci_TimerCallbackPsDisable() <==\n"));
 }
@@ -6057,7 +6059,7 @@ BTHCI_NotifyRFState(struct rtw_adapter *padapter, enum rt_rf_power_state StateTo
 static void
 BTHCI_IndicateAMPStatus(struct rtw_adapter *padapter, u8 JoinAction, u8 channel)
 {
-/*	PMGNT_INFO	pMgntInfo = &(padapter->MgntInfo); */
+/*	PMGNT_INFO	pMgntInfo = &padapter->MgntInfo; */
 	struct bt_30info *	pBTInfo = GET_BT_INFO(padapter);
 	struct bt_mgnt *	pBtMgnt = &pBTInfo->BtMgnt;
 	u8		bNeedIndicate = false;
@@ -6180,17 +6182,17 @@ static void BTHCI_InitializeAllWorkItem(struct rtw_adapter *padapter)
 {
 	struct bt_30info *		pBTinfo = GET_BT_INFO(padapter);
 #if (BT_THREAD == 0)
-	INIT_WORK(&(pBTinfo->HCICmdWorkItem),
+	INIT_WORK(&pBTinfo->HCICmdWorkItem,
 		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackHCICmd);
 #endif
 #if (SENDTXMEHTOD == 0)
-	INIT_WORK(&(pBTinfo->HCISendACLDataWorkItem),
+	INIT_WORK(&pBTinfo->HCISendACLDataWorkItem,
 		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackSendACLData);
 #endif
-	INIT_WORK(&(pBTinfo->BTPsDisableWorkItem),
+	INIT_WORK(&pBTinfo->BTPsDisableWorkItem,
 		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackPsDisable);
 
-	INIT_WORK(&(pBTinfo->BTConnectWorkItem),
+	INIT_WORK(&pBTinfo->BTConnectWorkItem,
 		  (RT_WORKITEM_CALL_BACK)bthci_WorkItemCallbackConnect);
 }
 
@@ -6644,7 +6646,7 @@ BTHCI_EventAMPStatusChange(
 void BTHCI_DisconnectAll(struct rtw_adapter *padapter)
 {
 	struct rtw_adapter *		pDefaultAdapter = GetDefaultAdapter(padapter);
-/*	PMGNT_INFO		pMgntInfo = &(pDefaultAdapter->MgntInfo); */
+/*	PMGNT_INFO		pMgntInfo = &pDefaultAdapter->MgntInfo; */
 	struct bt_30info *		pBTInfo = GET_BT_INFO(padapter);
 
 	u8 i;
@@ -7726,8 +7728,8 @@ static void btdm_1AntUpdateHalRAMask(struct rtw_adapter *padapter, u32 mac_id, u
 		case 0:/*  for infra mode */
 			supportRateNum = rtw_get_rateset_len(cur_network->SupportedRates);
 			mask = update_supported_rate(cur_network->SupportedRates, supportRateNum);
-			mask |= (pmlmeinfo->HT_enable) ? update_MSC_rate(&(pmlmeinfo->HT_caps)):0;
-			if (support_short_GI(padapter, &(pmlmeinfo->HT_caps)))
+			mask |= (pmlmeinfo->HT_enable) ? update_MSC_rate(&pmlmeinfo->HT_caps):0;
+			if (support_short_GI(padapter, &pmlmeinfo->HT_caps))
 			{
 				shortGIrate = true;
 			}
@@ -17084,8 +17086,8 @@ u8 BTDM_IsBTBusy(struct rtw_adapter *padapter)
 
 u8 BTDM_IsWifiBusy(struct rtw_adapter *padapter)
 {
-/*	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo); */
-	struct mlme_priv *pmlmepriv = &(GetDefaultAdapter(padapter)->mlmepriv);
+/*	PMGNT_INFO		pMgntInfo = &GetDefaultAdapter(padapter)->MgntInfo; */
+	struct mlme_priv *pmlmepriv = &GetDefaultAdapter(padapter)->mlmepriv;
 	struct bt_30info *		pBTInfo = GET_BT_INFO(padapter);
 	struct bt_traffic *	pBtTraffic = &pBTInfo->BtTraffic;
 
@@ -17110,7 +17112,7 @@ u8 BTDM_IsCoexistStateChanged(struct rtw_adapter *padapter)
 
 u8 BTDM_IsWifiUplink(struct rtw_adapter *padapter)
 {
-/*	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo); */
+/*	PMGNT_INFO		pMgntInfo = &GetDefaultAdapter(padapter)->MgntInfo; */
 	struct mlme_priv *pmlmepriv;
 	struct bt_30info *		pBTInfo;
 	struct bt_traffic *		pBtTraffic;
@@ -17129,7 +17131,7 @@ u8 BTDM_IsWifiUplink(struct rtw_adapter *padapter)
 
 u8 BTDM_IsWifiDownlink(struct rtw_adapter *padapter)
 {
-/*	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo); */
+/*	PMGNT_INFO		pMgntInfo = &GetDefaultAdapter(padapter)->MgntInfo; */
 	struct mlme_priv *pmlmepriv;
 	struct bt_30info *		pBTInfo;
 	struct bt_traffic *		pBtTraffic;
@@ -17148,7 +17150,7 @@ u8 BTDM_IsWifiDownlink(struct rtw_adapter *padapter)
 
 u8 BTDM_IsBTHSMode(struct rtw_adapter *padapter)
 {
-/*	PMGNT_INFO		pMgntInfo = &(GetDefaultAdapter(padapter)->MgntInfo); */
+/*	PMGNT_INFO		pMgntInfo = &GetDefaultAdapter(padapter)->MgntInfo; */
 	struct hal_data_8723a *	pHalData;
 	struct bt_mgnt *		pBtMgnt;
 
@@ -17563,7 +17565,7 @@ void HALBT_SetKey(struct rtw_adapter *padapter, u8 EntryNum)
 
 
 	pBTinfo = GET_BT_INFO(padapter);
-	pBtAssocEntry = &(pBTinfo->BtAsocEntry[EntryNum]);
+	pBtAssocEntry = &pBTinfo->BtAsocEntry[EntryNum];
 
 	pBtAssocEntry->HwCAMIndex = BT_HWCAM_STAR + EntryNum;
 
@@ -17577,7 +17579,7 @@ void HALBT_RemoveKey(struct rtw_adapter *padapter, u8 EntryNum)
 	struct bt_asoc_entry *	pBtAssocEntry;
 
 	pBTinfo = GET_BT_INFO(padapter);
-	pBtAssocEntry = &(pBTinfo->BtAsocEntry[EntryNum]);
+	pBtAssocEntry = &pBTinfo->BtAsocEntry[EntryNum];
 
 	if (pBTinfo->BtAsocEntry[EntryNum].HwCAMIndex != 0) {
 		/*  ToDo : add New HALBT_RemoveKey function !! */

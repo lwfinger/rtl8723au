@@ -352,14 +352,14 @@ InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 	pHalData->IntArray[0] &= pHalData->IntrMask[0];
 
 	/* For HISR extension. Added by tynli. 2009.10.07. */
-	memcpy(&(pHalData->IntArray[1]),
-	       &(buffer[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
+	memcpy(&pHalData->IntArray[1],
+	       &buffer[USB_INTR_CONTENT_HISRE_OFFSET], 4);
 	pHalData->IntArray[1] &= pHalData->IntrMask[1];
 
 	/* We sholud remove this function later because DDK suggest
 	 * not to executing too many operations in MPISR  */
 
-	memcpy(&report.state, &(buffer[USB_INTR_CPWM_OFFSET]), 1);
+	memcpy(&report.state, &buffer[USB_INTR_CPWM_OFFSET], 1);
 
 	return (((pHalData->IntArray[0])&pHalData->IntrMask[0])!=0 ||
 		((pHalData->IntArray[1])&pHalData->IntrMask[1])!=0);

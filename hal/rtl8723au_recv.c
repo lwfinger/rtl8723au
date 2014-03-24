@@ -72,7 +72,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 
 		precvbuf->adapter =padapter;
 
-		/* list_add_tail(&precvbuf->list, &(precvpriv->free_recv_buf_queue.queue)); */
+		/* list_add_tail(&precvbuf->list, &precvpriv->free_recv_buf_queue.queue); */
 		precvbuf++;
 	}
 
@@ -231,7 +231,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	pkt_info.Rate = pattrib->mcs_rate;
 
 	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,
-			   (u8 *)pphy_status,&(pkt_info));
+			   (u8 *)pphy_status, &pkt_info);
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 	    (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true)) {

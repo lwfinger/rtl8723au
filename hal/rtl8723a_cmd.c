@@ -73,7 +73,7 @@ _func_enter_;
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
 
-	mutex_lock(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex));
+	mutex_lock(&adapter_to_dvobj(padapter)->h2c_fwcmd_mutex);
 
 	if (!pCmdBuffer) {
 		goto exit;
@@ -127,7 +127,7 @@ _func_enter_;
 
 exit:
 
-	mutex_unlock(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex));
+	mutex_unlock(&adapter_to_dvobj(padapter)->h2c_fwcmd_mutex);
 
 _func_exit_;
 
@@ -239,9 +239,9 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	struct ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
 	u32					rate_len, pktlen;
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+	struct wlan_bssid_ex	*cur_network = &pmlmeinfo->network;
 	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 
@@ -253,7 +253,7 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	*(fctrl) = 0;
 
 	memcpy(pwlanhdr->addr1, bc_addr, ETH_ALEN);
-	memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
+	memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
 	memcpy(pwlanhdr->addr3, get_my_bssid(cur_network), ETH_ALEN);
 
 	SetSeqNum(pwlanhdr, 0/*pmlmeext->mgnt_seq*/);
@@ -299,7 +299,7 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	pframe = rtw_set_ie(pframe, _SUPPORTEDRATES_IE_, ((rate_len > 8)? 8: rate_len), cur_network->SupportedRates, &pktlen);
 
 	/*  DS parameter set */
-	pframe = rtw_set_ie(pframe, _DSSET_IE_, 1, (unsigned char *)&(cur_network->Configuration.DSConfig), &pktlen);
+	pframe = rtw_set_ie(pframe, _DSSET_IE_, 1, (unsigned char *)&cur_network->Configuration.DSConfig, &pktlen);
 
 	if( (pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE)
 	{
@@ -342,8 +342,8 @@ static void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	struct ieee80211_hdr	*pwlanhdr;
 	u16					*fctrl;
 	u32					pktlen;
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
@@ -359,10 +359,10 @@ static void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	SetDuration(pframe, (pmlmeinfo->aid | 0xc000));
 
 	/*  BSSID. */
-	memcpy(pwlanhdr->addr1, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
+	memcpy(pwlanhdr->addr1, get_my_bssid(&pmlmeinfo->network), ETH_ALEN);
 
 	/*  TA. */
-	memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
+	memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
 
 	*pLength = 16;
 }
@@ -382,8 +382,8 @@ static void ConstructNullFunctionData(
 	u32						pktlen;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct wlan_network		*cur_network = &pmlmepriv->cur_network;
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 
 	/* DBG_8723A("%s:%d\n", __FUNCTION__, bForcePowerSave); */
@@ -401,21 +401,26 @@ static void ConstructNullFunctionData(
 	{
 		case Ndis802_11Infrastructure:
 			SetToDs(fctrl);
-			memcpy(pwlanhdr->addr1, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
-			memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
+			memcpy(pwlanhdr->addr1,
+			       get_my_bssid(&pmlmeinfo->network), ETH_ALEN);
+			memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv),
+			       ETH_ALEN);
 			memcpy(pwlanhdr->addr3, StaAddr, ETH_ALEN);
 			break;
 		case Ndis802_11APMode:
 			SetFrDs(fctrl);
 			memcpy(pwlanhdr->addr1, StaAddr, ETH_ALEN);
-			memcpy(pwlanhdr->addr2, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
-			memcpy(pwlanhdr->addr3, myid(&(padapter->eeprompriv)), ETH_ALEN);
+			memcpy(pwlanhdr->addr2,
+			       get_my_bssid(&pmlmeinfo->network), ETH_ALEN);
+			memcpy(pwlanhdr->addr3, myid(&padapter->eeprompriv),
+			       ETH_ALEN);
 			break;
 		case Ndis802_11IBSS:
 		default:
 			memcpy(pwlanhdr->addr1, StaAddr, ETH_ALEN);
-			memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
-			memcpy(pwlanhdr->addr3, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN);
+			memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
+			memcpy(pwlanhdr->addr3,
+			       get_my_bssid(&pmlmeinfo->network), ETH_ALEN);
 			break;
 	}
 
@@ -446,16 +451,16 @@ static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLe
 	u16					*fctrl;
 	u8					*mac, *bssid;
 	u32					pktlen;
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct wlan_bssid_ex		*cur_network = &(pmlmeinfo->network);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+	struct wlan_bssid_ex	*cur_network = &pmlmeinfo->network;
 
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	mac = myid(&(padapter->eeprompriv));
+	mac = myid(&padapter->eeprompriv);
 	bssid = cur_network->MacAddress;
 
 	fctrl = &pwlanhdr->frame_control;
@@ -647,8 +652,8 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 {
 	struct joinbssrpt_parm	JoinBssRptParm;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 _func_enter_;
 
@@ -847,8 +852,8 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_state)
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
-	struct pwrctrl_priv		*pwrpriv = &padapter->pwrctrlpriv;
-	struct wifidirect_info	*pwdinfo = &( padapter->wdinfo );
+	struct pwrctrl_priv	*pwrpriv = &padapter->pwrctrlpriv;
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 	struct P2P_PS_Offload_t	*p2p_ps_offload = &pHalData->p2p_ps_offload;
 	u8	i;
 

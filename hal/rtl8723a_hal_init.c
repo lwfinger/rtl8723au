@@ -2806,7 +2806,7 @@ static void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe,
 	pHalData = GET_HAL_DATA(padapter);
 	pdmpriv = &pHalData->dmpriv;
 	pmlmeext = &padapter->mlmeextpriv;
-	pmlmeinfo = &(pmlmeext->mlmext_info);
+	pmlmeinfo = &pmlmeext->mlmext_info;
 
 	pattrib = &pxmitframe->attrib;
 	bmcst = is_multicast_ether_addr(pattrib->ra);
