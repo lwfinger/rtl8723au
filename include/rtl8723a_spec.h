@@ -1768,25 +1768,6 @@ Current IOREG MAP
 #define	MAX_MSS_DENSITY_1T		0x0A
 
 /*  */
-/* 8192C GPIO MUX Configuration Register (offset 0x40, 4 byte) */
-/*  */
-#define	GPIOSEL_GPIO			0
-#define	GPIOSEL_ENBT			BIT5
-
-/*  */
-/* 8192C GPIO PIN Control Register (offset 0x44, 4 byte) */
-/*  */
-	/*  GPIO pins input value */
-#define	GPIO_IN				REG_GPIO_PIN_CTRL
-	/*  GPIO pins output value */
-#define	GPIO_OUT			(REG_GPIO_PIN_CTRL+1)
-	/*  GPIO pins output enable when a bit is set to "1";
-	    otherwise, input is configured. */
-#define	GPIO_IO_SEL			(REG_GPIO_PIN_CTRL+2)
-#define	GPIO_MOD			(REG_GPIO_PIN_CTRL+3)
-
-
-/*  */
 /*	8723A Regsiter offset definition */
 /*  */
 #define HAL_8723A_NAV_UPPER_UNIT	128		/*  micro-second */
