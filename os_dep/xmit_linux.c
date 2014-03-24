@@ -76,10 +76,6 @@ _func_exit_;
 	return false;
 }
 
-void rtw_set_tx_chksum_offload(struct sk_buff *pkt, struct pkt_attrib *pattrib)
-{
-}
-
 int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter, struct xmit_buf *pxmitbuf,u32 alloc_sz)
 {
 	int i;
