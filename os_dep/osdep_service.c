@@ -23,24 +23,18 @@
 
 #define RT_TAG	'1178'
 
-
 /*
 * Translate the OS dependent @param error_code to OS independent RTW_STATUS_CODE
 * @return: one of RTW_STATUS_CODE
 */
-inline int RTW_STATUS_CODE(int error_code){
-	if(error_code >=0)
+inline int RTW_STATUS_CODE(int error_code)
+{
+	if (error_code >= 0)
 		return _SUCCESS;
-
-	switch(error_code) {
-		/* case -ETIMEDOUT: */
-		/*	return RTW_STATUS_TIMEDOUT; */
-		default:
-			return _FAIL;
-	}
+	return _FAIL;
 }
 
-inline u8* _rtw_vmalloc(u32 sz)
+inline u8 *_rtw_vmalloc(u32 sz)
 {
 	u8	*pbuf;
 	pbuf = vmalloc(sz);
@@ -48,7 +42,7 @@ inline u8* _rtw_vmalloc(u32 sz)
 	return pbuf;
 }
 
-inline u8* _rtw_zvmalloc(u32 sz)
+inline u8 *_rtw_zvmalloc(u32 sz)
 {
 	u8	*pbuf;
 	pbuf = _rtw_vmalloc(sz);
@@ -92,7 +86,9 @@ inline u32 rtw_ms_to_systime(u32 ms)
 	return ms * HZ / 1000;
 }
 
-/*  the input parameter start use the same unit as returned by rtw_get_current_time */
+/*  the input parameter start use the same unit as returned
+ * by rtw_get_current_time
+ */
 inline s32 rtw_get_passing_time_ms(u32 start)
 {
 	return rtw_systime_to_ms(jiffies-start);
@@ -102,7 +98,6 @@ inline s32 rtw_get_time_interval_ms(u32 start, u32 end)
 {
 	return rtw_systime_to_ms(end-start);
 }
-
 
 #define RTW_SUSPEND_LOCK_NAME "rtw_wifi"
 
@@ -122,86 +117,80 @@ inline void rtw_unlock_suspend(void)
 {
 }
 
-/*
-* Open a file with the specific @param path, @param flag, @param mode
-* @param fpp the pointer of struct file pointer to get struct file pointer while file opening is success
-* @param path the path of the file to open
-* @param flag file operation flags, please refer to linux document
-* @param mode please refer to linux document
-* @return Linux specific error code
-*/
+/* Open a file with the specific @param path, @param flag, @param mode
+ * @param fpp the pointer of struct file pointer to get struct
+ * file pointer while file opening is success
+ * @param path the path of the file to open
+ * @param flag file operation flags, please refer to linux document
+ * @param mode please refer to linux document
+ * @return Linux specific error code
+ */
 static int openFile(struct file **fpp, char *path, int flag, int mode)
 {
 	struct file *fp;
 
-	fp=filp_open(path, flag, mode);
-	if(IS_ERR(fp)) {
-		*fpp=NULL;
+	fp = filp_open(path, flag, mode);
+	if (IS_ERR(fp)) {
+		*fpp = NULL;
 		return PTR_ERR(fp);
-	}
-	else {
-		*fpp=fp;
+	} else {
+		*fpp = fp;
 		return 0;
 	}
 }
 
-/*
-* Close the file with the specific @param fp
-* @param fp the pointer of struct file to close
-* @return always 0
-*/
+/* Close the file with the specific @param fp
+ * @param fp the pointer of struct file to close
+ * @return always 0
+ */
 static int closeFile(struct file *fp)
 {
-	filp_close(fp,NULL);
+	filp_close(fp, NULL);
 	return 0;
 }
 
-static int readFile(struct file *fp,char *buf,int len)
+static int readFile(struct file *fp, char *buf, int len)
 {
-	int rlen=0, sum=0;
+	int rlen = 0, sum = 0;
 
 	if (!fp->f_op || !fp->f_op->read)
 		return -EPERM;
 
-	while(sum<len) {
-		rlen=fp->f_op->read(fp,buf+sum,len-sum, &fp->f_pos);
-		if(rlen>0)
-			sum+=rlen;
-		else if(0 != rlen)
+	while (sum < len) {
+		rlen = fp->f_op->read(fp, buf+sum, len-sum, &fp->f_pos);
+		if (rlen > 0)
+			sum += rlen;
+		else if (0 != rlen)
 			return rlen;
 		else
 			break;
 	}
-
 	return  sum;
-
 }
 
-static int writeFile(struct file *fp,char *buf,int len)
+static int writeFile(struct file *fp, char *buf, int len)
 {
-	int wlen=0, sum=0;
+	int wlen = 0, sum = 0;
 
 	if (!fp->f_op || !fp->f_op->write)
 		return -EPERM;
 
-	while(sum<len) {
-		wlen=fp->f_op->write(fp,buf+sum, len-sum, &fp->f_pos);
+	while (sum < len) {
+		wlen = fp->f_op->write(fp, buf+sum, len-sum, &fp->f_pos);
 		if (wlen > 0)
 			sum += wlen;
-		else if(0 != wlen)
+		else if (0 != wlen)
 			return wlen;
 		else
 			break;
 	}
-
 	return sum;
 }
 
-/*
-* Test if the specifi @param path is a file and readable
-* @param path the path of the file to test
-* @return Linux specific error code
-*/
+/* Test if the specifi @param path is a file and readable
+ * @param path the path of the file to test
+ * @return Linux specific error code
+ */
 static int isFileReadable(char *path)
 {
 	struct file *fp;
@@ -209,85 +198,89 @@ static int isFileReadable(char *path)
 	mm_segment_t oldfs;
 	char buf;
 
-	fp=filp_open(path, O_RDONLY, 0);
-	if(IS_ERR(fp)) {
+	fp = filp_open(path, O_RDONLY, 0);
+	if (IS_ERR(fp)) {
 		ret = PTR_ERR(fp);
-	}
-	else {
-		oldfs = get_fs(); set_fs(get_ds());
+	} else {
+		oldfs = get_fs();
+		set_fs(get_ds());
 
-		if(1!=readFile(fp, &buf, 1))
+		if (1 != readFile(fp, &buf, 1))
 			ret = PTR_ERR(fp);
 
 		set_fs(oldfs);
-		filp_close(fp,NULL);
+		filp_close(fp, NULL);
 	}
 	return ret;
 }
 
-/*
-* Open the file with @param path and retrive the file content into memory starting from @param buf for @param sz at most
-* @param path the path of the file to open and read
-* @param buf the starting address of the buffer to store file content
-* @param sz how many bytes to read at most
-* @return the byte we've read, or Linux specific error code
-*/
-static int retriveFromFile(char *path, u8* buf, u32 sz)
+/* Open the file with @param path and retrive the file content into
+ * memory starting from @param buf for @param sz at most
+ * @param path the path of the file to open and read
+ * @param buf the starting address of the buffer to store file content
+ * @param sz how many bytes to read at most
+ * @return the byte we've read, or Linux specific error code
+ */
+static int retriveFromFile(char *path, u8 *buf, u32 sz)
 {
-	int ret =-1;
+	int ret = -1;
 	mm_segment_t oldfs;
 	struct file *fp;
 
-	if(path && buf) {
-		if( 0 == (ret=openFile(&fp,path, O_RDONLY, 0)) ){
-			DBG_8723A("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
+	if (path && buf) {
+		ret = openFile(&fp, path, O_RDONLY, 0);
+		if (!ret) {
+			DBG_8723A("%s openFile path:%s fp =%p\n",
+				  __func__, path , fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
-			ret=readFile(fp, buf, sz);
+			ret = readFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
 
-			DBG_8723A("%s readFile, ret:%d\n",__FUNCTION__, ret);
-
+			DBG_8723A("%s readFile, ret:%d\n", __func__, ret);
 		} else {
-			DBG_8723A("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
+			DBG_8723A("%s openFile path:%s Fail, ret:%d\n",
+				  __func__, path, ret);
 		}
 	} else {
-		DBG_8723A("%s NULL pointer\n",__FUNCTION__);
+		DBG_8723A("%s NULL pointer\n", __func__);
 		ret =  -EINVAL;
 	}
 	return ret;
 }
 
-/*
-* Open the file with @param path and wirte @param sz byte of data starting from @param buf into the file
-* @param path the path of the file to open and write
-* @param buf the starting address of the data to write into file
-* @param sz how many bytes to write at most
-* @return the byte we've written, or Linux specific error code
-*/
-static int storeToFile(char *path, u8* buf, u32 sz)
+/* Open the file with @param path and wirte @param sz byte of data starting
+ * from @param buf into the file
+ * @param path the path of the file to open and write
+ * @param buf the starting address of the data to write into file
+ * @param sz how many bytes to write at most
+ * @return the byte we've written, or Linux specific error code
+ */
+static int storeToFile(char *path, u8 *buf, u32 sz)
 {
-	int ret =0;
-	mm_segment_t oldfs;
 	struct file *fp;
+	int ret = 0;
+	mm_segment_t oldfs;
 
-	if(path && buf) {
-		if( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
-			DBG_8723A("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
+	if (path && buf) {
+		ret = openFile(&fp, path, O_CREAT|O_WRONLY, 0666);
+		if (!ret) {
+			DBG_8723A("%s openFile path:%s fp =%p\n", __func__,
+				  path , fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
-			ret=writeFile(fp, buf, sz);
+			ret = writeFile(fp, buf, sz);
 			set_fs(oldfs);
 			closeFile(fp);
 
-			DBG_8723A("%s writeFile, ret:%d\n",__FUNCTION__, ret);
-
+			DBG_8723A("%s writeFile, ret:%d\n", __func__, ret);
 		} else {
-			DBG_8723A("%s openFile path:%s Fail, ret:%d\n",__FUNCTION__, path, ret);
+			DBG_8723A("%s openFile path:%s Fail, ret:%d\n",
+				  __func__, path, ret);
 		}
 	} else {
-		DBG_8723A("%s NULL pointer\n",__FUNCTION__);
+		DBG_8723A("%s NULL pointer\n", __func__);
 		ret =  -EINVAL;
 	}
 	return ret;
@@ -300,36 +293,36 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 */
 int rtw_is_file_readable(char *path)
 {
-	if(isFileReadable(path) == 0)
+	if (isFileReadable(path) == 0)
 		return true;
 	else
 		return false;
 }
 
-/*
-* Open the file with @param path and retrive the file content into memory starting from @param buf for @param sz at most
-* @param path the path of the file to open and read
-* @param buf the starting address of the buffer to store file content
-* @param sz how many bytes to read at most
-* @return the byte we've read
-*/
-int rtw_retrive_from_file(char *path, u8* buf, u32 sz)
+/* Open the file with @param path and retrive the file content into memoryi
+ * starting from @param buf for @param sz at most
+ * @param path the path of the file to open and read
+ * @param buf the starting address of the buffer to store file content
+ * @param sz how many bytes to read at most
+ * @return the byte we've read
+ */
+int rtw_retrive_from_file(char *path, u8 *buf, u32 sz)
 {
-	int ret =retriveFromFile(path, buf, sz);
-	return ret>=0?ret:0;
+	int ret = retriveFromFile(path, buf, sz);
+	return ret >= 0 ? ret : 0;
 }
 
-/*
-* Open the file with @param path and wirte @param sz byte of data starting from @param buf into the file
-* @param path the path of the file to open and write
-* @param buf the starting address of the data to write into file
-* @param sz how many bytes to write at most
-* @return the byte we've written
-*/
-int rtw_store_to_file(char *path, u8* buf, u32 sz)
+/* Open the file with @param path and wirte @param sz byte of
+ * data starting from @param buf into the file
+ * @param path the path of the file to open and write
+ * @param buf the starting address of the data to write into file
+ * @param sz how many bytes to write at most
+ * @return the byte we've written
+ */
+int rtw_store_to_file(char *path, u8 *buf, u32 sz)
 {
-	int ret =storeToFile(path, buf, sz);
-	return ret>=0?ret:0;
+	int ret = storeToFile(path, buf, sz);
+	return ret >= 0 ? ret : 0;
 }
 
 u64 rtw_modular64(u64 x, u64 y)
@@ -343,26 +336,24 @@ u64 rtw_division64(u64 x, u64 y)
 	return x;
 }
 
-/**
- * rtw_cbuf_full - test if cbuf is full
+/* rtw_cbuf_full - test if cbuf is full
  * @cbuf: pointer of struct rtw_cbuf
  *
  * Returns: true if cbuf is full
  */
 inline bool rtw_cbuf_full(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read-1)? true : false;
+	return (cbuf->write == cbuf->read-1) ? true : false;
 }
 
-/**
- * rtw_cbuf_empty - test if cbuf is empty
+/* rtw_cbuf_empty - test if cbuf is empty
  * @cbuf: pointer of struct rtw_cbuf
  *
  * Returns: true if cbuf is empty
  */
 inline bool rtw_cbuf_empty(struct rtw_cbuf *cbuf)
 {
-	return (cbuf->write == cbuf->read)? true : false;
+	return (cbuf->write == cbuf->read) ? true : false;
 }
 
 /**
@@ -417,11 +408,11 @@ struct rtw_cbuf *rtw_cbuf_alloc(u32 size)
 {
 	struct rtw_cbuf *cbuf;
 
-	cbuf = (struct rtw_cbuf *)kmalloc(sizeof(*cbuf) + sizeof(void*)*size,
-					  GFP_KERNEL);
+	cbuf = kmalloc(sizeof(*cbuf) + sizeof(void *)*size, GFP_KERNEL);
 
 	if (cbuf) {
-		cbuf->write = cbuf->read = 0;
+		cbuf->write = 0;
+		cbuf->read = 0;
 		cbuf->size = size;
 	}
 

@@ -1193,24 +1193,13 @@ u8 key_2char2num(u8 hch, u8 lch)
 	return (key_char2num(hch) << 4) | key_char2num(lch);
 }
 
-extern char* rtw_initmac;
 void rtw_macaddr_cfg(u8 *mac_addr)
 {
 	u8 mac[ETH_ALEN];
 	if (!mac_addr)
 		return;
 
-	if (rtw_initmac) {	/*	Users specify the mac address */
-		int jj,kk;
-
-		for (jj = 0, kk = 0; jj < ETH_ALEN; jj++, kk += 3) {
-			mac[jj] = key_2char2num(rtw_initmac[kk],
-						rtw_initmac[kk+ 1]);
-		}
-		memcpy(mac_addr, mac, ETH_ALEN);
-	} else {	/*	Use the mac address stored in the Efuse */
-		memcpy(mac, mac_addr, ETH_ALEN);
-	}
+	memcpy(mac, mac_addr, ETH_ALEN);
 
 	if (is_broadcast_ether_addr(mac) || is_zero_ether_addr(mac)) {
 		mac[0] = 0x00;

@@ -475,12 +475,10 @@ exit:
 void rtw_free_all_stainfo(struct rtw_adapter *padapter)
 {
 	struct list_head *plist, *phead, *ptmp;
-	s32	index;
 	struct sta_info *psta;
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info* pbcmc_stainfo = rtw_get_bcmc_stainfo( padapter);
-
-	if (pstapriv->asoc_sta_count == 1)
+	s32	index;	if (pstapriv->asoc_sta_count == 1)
 		return;
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);

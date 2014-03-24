@@ -36,7 +36,6 @@ int rtw_os_recv_resource_alloc(struct rtw_adapter *padapter,
 	return res;
 }
 
-
 /* alloc os related resource in struct recv_buf */
 int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter,
 				  struct recv_buf *precvbuf)
@@ -47,9 +46,8 @@ int rtw_os_recvbuf_resource_alloc(struct rtw_adapter *padapter,
 	struct usb_device *pusbd = pdvobjpriv->pusbdev;
 
 	precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
-	if (precvbuf->purb == NULL) {
+	if (precvbuf->purb == NULL)
 		res = _FAIL;
-	}
 
 	precvbuf->pskb = NULL;
 
@@ -62,8 +60,7 @@ int rtw_os_recvbuf_resource_free(struct rtw_adapter *padapter,
 {
 	int ret = _SUCCESS;
 
-	if (precvbuf->purb)
-		usb_free_urb(precvbuf->purb);
+	usb_free_urb(precvbuf->purb);
 
 	if (precvbuf->pskb)
 		dev_kfree_skb_any(precvbuf->pskb);
@@ -71,7 +68,7 @@ int rtw_os_recvbuf_resource_free(struct rtw_adapter *padapter,
 	return ret;
 }
 
-void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter,u8 bgroup)
+void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter, u8 bgroup)
 {
 	enum nl80211_key_type key_type;
 	union iwreq_data wrqu;
@@ -95,22 +92,20 @@ void rtw_handle_tkip_mic_err(struct rtw_adapter *padapter,u8 bgroup)
 		}
 	}
 
-	if (bgroup) {
+	if (bgroup)
 		key_type |= NL80211_KEYTYPE_GROUP;
-	} else {
+	else
 		key_type |= NL80211_KEYTYPE_PAIRWISE;
-	}
 
 	cfg80211_michael_mic_failure(padapter->pnetdev,
 				     (u8 *)&pmlmepriv->assoc_bssid[0],
 				     key_type, -1, NULL, GFP_ATOMIC);
 
 	memset(&ev, 0x00, sizeof(ev));
-	if (bgroup) {
-	    ev.flags |= IW_MICFAILURE_GROUP;
-	} else {
-	    ev.flags |= IW_MICFAILURE_PAIRWISE;
-	}
+	if (bgroup)
+		ev.flags |= IW_MICFAILURE_GROUP;
+	else
+		ev.flags |= IW_MICFAILURE_PAIRWISE;
 
 	ev.src_addr.sa_family = ARPHRD_ETHER;
 	ether_addr_copy(ev.src_addr.sa_data, &pmlmepriv->assoc_bssid[0]);
@@ -132,40 +127,38 @@ int rtw_recv_indicatepkt(struct rtw_adapter *padapter,
 	struct sk_buff *skb;
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
 
-
-
 	precvpriv = &(padapter->recvpriv);
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 
 	skb = precv_frame->pkt;
 	if (!skb) {
-		RT_TRACE(_module_recv_osdep_c_,_drv_err_,
-			 ("rtw_recv_indicatepkt():skb==NULL!!!!\n"));
+		RT_TRACE(_module_recv_osdep_c_, _drv_err_,
+			 ("rtw_recv_indicatepkt():skb == NULL!!!!\n"));
 		goto _recv_indicatepkt_drop;
 	}
 
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
+	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
 		 ("rtw_recv_indicatepkt():skb != NULL !!!\n"));
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
-		 ("rtw_recv_indicatepkt():precv_frame->hdr.rx_data=%p\n",
+	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
+		 ("rtw_recv_indicatepkt():precv_frame->hdr.rx_data =%p\n",
 		  precv_frame->pkt->data));
 	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
-		 ("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p "
-		  "skb->len=%d\n", skb->head, skb->data,
+		 ("\n skb->head =%p skb->data =%p skb->tail =%p skb->end =%p "
+		  "skb->len =%d\n", skb->head, skb->data,
 		  skb_tail_pointer(skb), skb_end_pointer(skb), skb->len));
 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
-		struct sk_buff *pskb2=NULL;
+		struct sk_buff *pskb2 = NULL;
 		struct sta_info *psta = NULL;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 		struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 		int bmcast = is_multicast_ether_addr(pattrib->dst);
 
-		/* DBG_8723A("bmcast=%d\n", bmcast); */
+		/* DBG_8723A("bmcast =%d\n", bmcast); */
 
 		if (!ether_addr_equal(pattrib->dst,
 				      myid(&padapter->eeprompriv))) {
-			/* DBG_8723A("not ap psta=%p, addr=%pM\n", psta, pattrib->dst); */
+			/* DBG_8723A("not ap psta =%p, addr =%pM\n", psta, pattrib->dst); */
 			if (bmcast) {
 				psta = rtw_get_bcmc_stainfo(padapter);
 				pskb2 = skb_clone(skb, GFP_ATOMIC);
@@ -206,18 +199,13 @@ _recv_indicatepkt_end:
 
 	rtw_free_recvframe(precv_frame, pfree_recv_queue);
 
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,
+	RT_TRACE(_module_recv_osdep_c_, _drv_info_,
 		 ("\n rtw_recv_indicatepkt :after netif_rx!!!!\n"));
-
-
-
-        return _SUCCESS;
+	return _SUCCESS;
 
 _recv_indicatepkt_drop:
 
 	 rtw_free_recvframe(precv_frame, pfree_recv_queue);
-
-
 	 return _FAIL;
 }
 

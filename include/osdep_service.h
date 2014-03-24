@@ -333,8 +333,6 @@ struct rtw_cbuf {
 	void *bufs[0];
 };
 
-extern char *rtw_initmac;
-
 bool rtw_cbuf_full(struct rtw_cbuf *cbuf);
 bool rtw_cbuf_empty(struct rtw_cbuf *cbuf);
 bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf);
