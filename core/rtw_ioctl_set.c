@@ -187,7 +187,7 @@ u8 rtw_set_802_11_bssid(struct rtw_adapter* padapter, u8 *bssid)
 
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-_func_enter_;
+
 
 	DBG_8723A_LEVEL(_drv_always_, "set bssid:%pM\n", bssid);
 
@@ -269,7 +269,7 @@ exit:
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 		("rtw_set_802_11_bssid: status=%d\n", status));
 
-_func_exit_;
+
 
 	return status;
 }
@@ -282,7 +282,7 @@ u8 rtw_set_802_11_ssid(struct rtw_adapter* padapter, struct cfg80211_ssid *ssid)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct wlan_network *pnetwork = &pmlmepriv->cur_network;
 
-_func_enter_;
+
 
 	DBG_8723A_LEVEL(_drv_always_, "set ssid [%s] fw_state=0x%08x\n",
 			ssid->ssid, get_fwstate(pmlmepriv));
@@ -396,7 +396,7 @@ exit:
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 		("-rtw_set_802_11_ssid: status=%d\n", status));
 
-_func_exit_;
+
 
 	return status;
 }
@@ -408,7 +408,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct rtw_adapter* padapter,
 	struct	wlan_network	*cur_network = &pmlmepriv->cur_network;
 	enum ndis_802_11_net_infra* pold_state = &(cur_network->network.InfrastructureMode);
 
-_func_enter_;
+
 
 	RT_TRACE(_module_rtl871x_ioctl_set_c_,_drv_notice_,
 		 ("+rtw_set_802_11_infrastructure_mode: old=%d new=%d fw_state=0x%08x\n",
@@ -482,7 +482,7 @@ _func_enter_;
 		spin_unlock_bh(&pmlmepriv->lock);
 	}
 
-_func_exit_;
+
 
 	return true;
 }

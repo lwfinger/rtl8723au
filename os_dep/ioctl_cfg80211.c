@@ -940,7 +940,7 @@ static int rtw_cfg80211_set_encryption(struct net_device *dev,
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 #endif /* CONFIG_8723AU_P2P */
 
-	_func_enter_;
+
 
 	DBG_8723A("%s\n", __func__);
 
@@ -1148,7 +1148,7 @@ exit:
 
 	DBG_8723A("%s, ret=%d\n", __func__, ret);
 
-	_func_exit_;
+
 
 	return ret;
 }

@@ -179,20 +179,6 @@ do {									\
 	}								\
 } while (0)
 
-#define _func_enter_							\
-	do {								\
-		if (GlobalDebugLevel >= _drv_debug_)			\
-			_dbgdump("%s : %s enters at %d\n",		\
-				 DRIVER_PREFIX, __func__, __LINE__);	\
-	} while (0)
-
-#define _func_exit_							\
-	do {								\
-		if (GlobalDebugLevel >= _drv_debug_)			\
-			_dbgdump("%s : %s exits at %d\n",		\
-				 DRIVER_PREFIX, __func__, __LINE__);	\
-	} while (0)
-
 #define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData,		\
 		      _HexDataLen)					\
 	if (_Level <= GlobalDebugLevel) {				\

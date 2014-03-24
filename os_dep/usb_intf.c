@@ -156,7 +156,7 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
 	struct usb_endpoint_descriptor	*pendp_desc;
 	struct usb_device				*pusbd;
 
-_func_enter_;
+
 
 	if ((pdvobjpriv = (struct dvobj_priv*)kzalloc(sizeof(*pdvobjpriv), GFP_KERNEL)) == NULL) {
 		goto exit;
@@ -250,7 +250,7 @@ free_dvobj:
 		pdvobjpriv = NULL;
 	}
 exit:
-_func_exit_;
+
 	return pdvobjpriv;
 }
 
@@ -258,7 +258,7 @@ static void usb_dvobj_deinit(struct usb_interface *usb_intf)
 {
 	struct dvobj_priv *dvobj = usb_get_intfdata(usb_intf);
 
-_func_enter_;
+
 
 	usb_set_intfdata(usb_intf, NULL);
 	if (dvobj) {
@@ -282,7 +282,7 @@ _func_enter_;
 
 	usb_put_dev(interface_to_usbdev(usb_intf));
 
-_func_exit_;
+
 }
 
 static void decide_chip_type_by_usb_device_id(struct rtw_adapter *padapter, const struct usb_device_id *pdid)
@@ -397,7 +397,7 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
-	_func_enter_;
+
 
 	if((!padapter->bup) || (padapter->bDriverStopped)||(padapter->bSurpriseRemoved))
 	{
@@ -455,7 +455,7 @@ int rtw_hw_suspend(struct rtw_adapter *padapter )
 	} else
 		goto error_exit;
 
-	_func_exit_;
+
 	return 0;
 
 error_exit:
@@ -470,7 +470,7 @@ int rtw_hw_resume(struct rtw_adapter *padapter)
 	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
-	_func_enter_;
+
 
 	if(padapter)/* system resume */
 	{
@@ -506,7 +506,7 @@ int rtw_hw_resume(struct rtw_adapter *padapter)
 		goto error_exit;
 	}
 
-	_func_exit_;
+
 
 	return 0;
 error_exit:
@@ -526,7 +526,7 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	int ret = 0;
 	u32 start_time = rtw_get_current_time();
 
-	_func_enter_;
+
 
 	DBG_8723A("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
@@ -582,7 +582,7 @@ exit:
 	DBG_8723A("<===  %s return %d.............. in %dms\n", __FUNCTION__
 		, ret, rtw_get_passing_time_ms(start_time));
 
-	_func_exit_;
+
 	return ret;
 }
 
@@ -612,7 +612,7 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 #ifdef CONFIG_8723AU_BT_COEXIST
 	u8 pm_cnt;
 #endif	/* ifdef CONFIG_8723AU_BT_COEXIST */
-	_func_enter_;
+
 
 	DBG_8723A("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
@@ -650,7 +650,7 @@ exit:
 	DBG_8723A("<===  %s return %d.............. in %dms\n", __FUNCTION__,
 		  ret, rtw_get_passing_time_ms(start_time));
 
-	_func_exit_;
+
 	return ret;
 }
 

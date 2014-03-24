@@ -134,7 +134,7 @@ static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 	u16 len;
 	u8 data=0;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -145,7 +145,7 @@ static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return data;
 
@@ -160,7 +160,7 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 	u16 len;
 	u16 data=0;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -171,7 +171,7 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return data;
 
@@ -186,7 +186,7 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 	u16 len;
 	u32 data=0;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -197,7 +197,7 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return data;
 
@@ -213,7 +213,7 @@ static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 	u8 data;
 	int ret;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
@@ -226,7 +226,7 @@ static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 
 	 ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return ret;
 
@@ -242,7 +242,7 @@ static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 	u16 data;
 	int ret;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
@@ -255,7 +255,7 @@ static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return ret;
 
@@ -271,7 +271,7 @@ static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 	u32 data;
 	int ret;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
@@ -284,7 +284,7 @@ static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 
 	ret =usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
-	_func_exit_;
+
 
 	return ret;
 
@@ -300,7 +300,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 	u8 buf[VENDOR_CMD_MAX_DATA_LEN]={0};
 	int ret;
 
-	_func_enter_;
+
 
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
@@ -312,7 +312,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
 
-	_func_exit_;
+
 
 	return ret;
 
@@ -474,7 +474,7 @@ static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 	struct recv_priv *precvpriv = &adapter->recvpriv;
 	struct usb_device *pusbd = pdvobj->pusbdev;
 
-_func_enter_;
+
 
 	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
@@ -491,7 +491,7 @@ _func_enter_;
 		ret = _FAIL;
 	}
 
-_func_exit_;
+
 
 	return ret;
 }
@@ -690,7 +690,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
 			  __FUNCTION__, __LINE__,padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved,padapter->bReadPortCancel);
-		goto exit;
+		return;
 	}
 
 	if (purb->status == 0) {
@@ -735,40 +735,36 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 		}
 
 		switch(purb->status) {
-			case -EINVAL:
-			case -EPIPE:
-			case -ENODEV:
-			case -ESHUTDOWN:
-				/* padapter->bSurpriseRemoved=true; */
-				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
-					 ("usb_read_port_complete:bSurprise"
-					  "Removed=true\n"));
-			case -ENOENT:
-				padapter->bDriverStopped=true;
-				RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
-					 ("usb_read_port_complete:"
-					  "bDriverStopped=true\n"));
-				break;
-			case -EPROTO:
-			case -EOVERFLOW:
-				pHalData = GET_HAL_DATA(padapter);
-				pHalData->srestpriv.Wifi_Error_Status =
-					USB_READ_PORT_FAIL;
-				rtw_read_port(padapter, precvpriv->ff_hwaddr,
-					      0, precvbuf);
-				break;
-			case -EINPROGRESS:
-				DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
-				break;
-			default:
-				break;
+		case -EINVAL:
+		case -EPIPE:
+		case -ENODEV:
+		case -ESHUTDOWN:
+			/* padapter->bSurpriseRemoved=true; */
+			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+				 ("usb_read_port_complete:bSurprise"
+				  "Removed=true\n"));
+		case -ENOENT:
+			padapter->bDriverStopped=true;
+			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+				 ("usb_read_port_complete:"
+				  "bDriverStopped=true\n"));
+			break;
+		case -EPROTO:
+		case -EOVERFLOW:
+			pHalData = GET_HAL_DATA(padapter);
+			pHalData->srestpriv.Wifi_Error_Status =
+				USB_READ_PORT_FAIL;
+			rtw_read_port(padapter, precvpriv->ff_hwaddr,
+				      0, precvbuf);
+			break;
+		case -EINPROGRESS:
+			DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
+			break;
+		default:
+			break;
 		}
 
 	}
-
-exit:
-
-_func_exit_;
 }
 
 static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
@@ -786,7 +782,7 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	struct usb_device	*pusbd = pdvobj->pusbdev;
 
 
-_func_enter_;
+
 
 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved ||
 	    adapter->pwrctrlpriv.pnp_bstop_trx) {
@@ -842,7 +838,7 @@ _func_enter_;
 		ret = _FAIL;
 	}
 
-_func_exit_;
+
 	return ret;
 }
 
@@ -874,7 +870,7 @@ void rtl8723au_xmit_tasklet(void *priv)
 
 void rtl8723au_set_intf_ops(struct _io_ops *pops)
 {
-	_func_enter_;
+
 
 	memset((u8 *)pops, 0, sizeof(struct _io_ops));
 
@@ -896,7 +892,7 @@ void rtl8723au_set_intf_ops(struct _io_ops *pops)
 	pops->_write_port_cancel = &usb_write_port_cancel;
 
 	pops->_read_interrupt = &usb_read_interrupt;
-	_func_exit_;
+
 }
 
 void rtl8723au_set_hw_type(struct rtw_adapter *padapter)

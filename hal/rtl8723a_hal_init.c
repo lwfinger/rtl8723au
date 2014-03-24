@@ -451,10 +451,10 @@ void rtl8723a_InitializeFirmwareVars(struct rtw_adapter *padapter)
 
 static void rtl8723a_free_hal_data(struct rtw_adapter *padapter)
 {
-	_func_enter_;
+
 	kfree(padapter->HalData);
 	padapter->HalData = NULL;
-	_func_exit_;
+
 }
 
 /*  */
@@ -3205,7 +3205,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	u32 *val32 = (u32 *)val;
 
-	_func_enter_;
+
 
 	switch (variable) {
 	case HW_VAR_MEDIA_STATUS:
@@ -3389,7 +3389,7 @@ void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)
 		break;
 	}
 
-	_func_exit_;
+
 }
 
 void GetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val)

@@ -230,7 +230,7 @@ void rtw_set_rpwm(struct rtw_adapter *padapter, u8 pslv)
 	u8	rpwm;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 
-_func_enter_;
+
 
 	pslv = PS_STATE(pslv);
 
@@ -279,7 +279,7 @@ _func_enter_;
 	pwrpriv->tog += 0x80;
 	pwrpriv->cpwm = pslv;
 
-_func_exit_;
+
 }
 
 u8 PS_RDY_CHECK(struct rtw_adapter * padapter);
@@ -323,7 +323,7 @@ void rtw_set_ps_mode(struct rtw_adapter *padapter, u8 ps_mode, u8 smart_ps, u8 b
 	struct wifidirect_info	*pwdinfo = &( padapter->wdinfo );
 #endif /* CONFIG_8723AU_P2P */
 
-_func_enter_;
+
 
 	RT_TRACE(_module_rtl871x_pwrctrl_c_, _drv_notice_,
 			 ("%s: PowerMode=%d Smart_PS=%d\n",
@@ -384,7 +384,7 @@ _func_enter_;
 		}
 	}
 
-_func_exit_;
+
 }
 
 /*
@@ -435,7 +435,7 @@ void LPS_Enter(struct rtw_adapter *padapter)
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 	struct rtw_adapter *buddy = padapter->pbuddy_adapter;
 
-_func_enter_;
+
 
 /*	DBG_8723A("+LeisurePSEnter\n"); */
 
@@ -461,7 +461,7 @@ _func_enter_;
 
 /*	DBG_8723A("-LeisurePSEnter\n"); */
 
-_func_exit_;
+
 }
 
 /*  */
@@ -476,7 +476,7 @@ void LPS_Leave(struct rtw_adapter *padapter)
 	u32 start_time;
 	u8 bAwake = false;
 
-_func_enter_;
+
 
 	if (pwrpriv->bLeisurePs) {
 		if(pwrpriv->pwr_mode != PS_MODE_ACTIVE) {
@@ -491,7 +491,7 @@ _func_enter_;
 
 /*	DBG_8723A("-LeisurePSLeave\n"); */
 
-_func_exit_;
+
 }
 
 /*  */
@@ -503,7 +503,7 @@ void LeaveAllPowerSaveMode(struct rtw_adapter *Adapter)
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 	u8	enqueue = 0;
 
-_func_enter_;
+
 
 	/* DBG_8723A("%s.....\n",__FUNCTION__); */
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
@@ -515,7 +515,7 @@ _func_enter_;
 		rtw_lps_ctrl_wk_cmd(Adapter, LPS_CTRL_LEAVE, enqueue);
 	}
 
-_func_exit_;
+
 }
 
 void rtw_init_pwrctrl_priv(struct rtw_adapter *padapter)
@@ -523,7 +523,7 @@ void rtw_init_pwrctrl_priv(struct rtw_adapter *padapter)
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
 	struct timer_list *timer;
 
-_func_enter_;
+
 
 	sema_init(&pwrctrlpriv->lock, 1);
 	pwrctrlpriv->rf_pwrstate = rf_on;
@@ -560,7 +560,7 @@ _func_enter_;
 	setup_timer(&pwrctrlpriv->pwr_state_check_timer,
 		    pwr_state_check_handler, (unsigned long)padapter);
 
-_func_exit_;
+
 }
 
 void rtw_free_pwrctrl_priv(struct rtw_adapter *adapter)

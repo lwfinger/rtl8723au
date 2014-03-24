@@ -97,7 +97,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 	struct wifidirect_info* pwdinfo = &padapter->wdinfo;
 #endif /* CONFIG_8723AU_P2P */
 
-_func_enter_;
+
 
 	param->u.crypt.err = 0;
 	param->u.crypt.alg[IEEE_CRYPT_ALG_NAME_LEN - 1] = '\0';
@@ -290,7 +290,7 @@ exit:
 
 	kfree(pwep);
 
-_func_exit_;
+
 
 	return ret;
 }

@@ -68,7 +68,7 @@ s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdB
 	u16	h2c_cmd_ex = 0;
 	s32 ret = _FAIL;
 
-_func_enter_;
+
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
@@ -129,7 +129,7 @@ exit:
 
 	mutex_unlock(&adapter_to_dvobj(padapter)->h2c_fwcmd_mutex);
 
-_func_exit_;
+
 
 	return ret;
 }
@@ -138,13 +138,13 @@ u8 rtl8723a_set_rssi_cmd(struct rtw_adapter*padapter, u8 *param)
 {
 	u8	res=_SUCCESS;
 
-_func_enter_;
+
 
 	*((u32*) param ) = cpu_to_le32( *((u32*) param ) );
 
 	FillH2CCmd(padapter, RSSI_SETTING_EID, 3, param);
 
-_func_exit_;
+
 
 	return res;
 }
@@ -154,7 +154,7 @@ u8 rtl8723a_set_raid_cmd(struct rtw_adapter*padapter, u32 mask, u8 arg)
 	u8	buf[5];
 	u8	res=_SUCCESS;
 
-_func_enter_;
+
 
 	memset(buf, 0, 5);
 	mask = cpu_to_le32( mask );
@@ -163,7 +163,7 @@ _func_enter_;
 
 	FillH2CCmd(padapter, MACID_CONFIG_EID, 5, buf);
 
-_func_exit_;
+
 
 	return res;
 
@@ -209,7 +209,7 @@ void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 
-_func_enter_;
+
 
 	DBG_8723A("%s: Mode=%d SmartPS=%d UAPSD=%d BcnMode=0x%02x\n", __FUNCTION__,
 			Mode, pwrpriv->smart_ps, padapter->registrypriv.uapsd_enable, pwrpriv->bcn_ant_mode);
@@ -231,7 +231,7 @@ _func_enter_;
 
 	FillH2CCmd(padapter, SET_PWRMODE_EID, sizeof(H2CSetPwrMode), (u8 *)&H2CSetPwrMode);
 
-_func_exit_;
+
 }
 
 static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
@@ -655,7 +655,7 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
-_func_enter_;
+
 
 	DBG_8723A("%s mstatus(%x)\n", __FUNCTION__,mstatus);
 
@@ -721,7 +721,7 @@ _func_enter_;
 
 	FillH2CCmd(padapter, JOINBSS_RPT_EID, sizeof(JoinBssRptParm), (u8 *)&JoinBssRptParm);
 
-_func_exit_;
+
 }
 
 #ifdef CONFIG_8723AU_BT_COEXIST
@@ -857,7 +857,7 @@ void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_sta
 	struct P2P_PS_Offload_t	*p2p_ps_offload = &pHalData->p2p_ps_offload;
 	u8	i;
 
-_func_enter_;
+
 
 	switch(p2p_ps_state)
 	{
@@ -933,7 +933,7 @@ _func_enter_;
 
 	FillH2CCmd(padapter, P2P_PS_OFFLOAD_EID, 1, (u8 *)p2p_ps_offload);
 
-_func_exit_;
+
 
 }
 #endif /* CONFIG_8723AU_P2P */

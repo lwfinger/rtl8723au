@@ -9882,7 +9882,7 @@ u8 set_tx_beacon_cmd(struct rtw_adapter* padapter)
 	u8	res = _SUCCESS;
 	int len_diff = 0;
 
-_func_enter_;
+
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
 	if (!ph2c) {
@@ -9913,7 +9913,7 @@ _func_enter_;
 
 exit:
 
-_func_exit_;
+
 
 	return res;
 }

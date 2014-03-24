@@ -159,7 +159,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	struct rtw_adapter	*padapter = pxmitbuf->padapter;
        struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
-_func_enter_;
+
 
 	switch(pxmitbuf->flags)
 	{
@@ -251,7 +251,7 @@ check_completion:
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 	}
 
-_func_exit_;
+
 
 }
 
@@ -270,7 +270,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	struct usb_device *pusbd = pdvobj->pusbdev;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 
-_func_enter_;
+
 
 	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("+usb_write_port\n"));
 
@@ -362,7 +362,7 @@ _func_enter_;
 exit:
 	if (ret != _SUCCESS)
 		rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
-_func_exit_;
+
 	return ret;
 
 }
