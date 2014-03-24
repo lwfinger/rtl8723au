@@ -21,7 +21,6 @@
 /*  LED object. */
 /*  */
 
-
 /*  */
 /*	Prototype of protected function. */
 /*  */
@@ -40,11 +39,11 @@ SwLedOn(struct rtw_adapter *padapter, struct led_8723a * pLed)
 	u8	LedCfg;
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 
-	if( (padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
+	if ((padapter->bSurpriseRemoved == true) || (padapter->bDriverStopped == true))
 	{
 		return;
 	}
-	switch(pLed->LedPin)
+	switch (pLed->LedPin)
 	{
 		case LED_PIN_GPIO0:
 			break;
@@ -58,7 +57,7 @@ SwLedOn(struct rtw_adapter *padapter, struct led_8723a * pLed)
 			break;
 
 		case LED_PIN_LED2:
-			LedCfg=rtw_read8(padapter, REG_LEDCFG2);
+			LedCfg = rtw_read8(padapter, REG_LEDCFG2);
 			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT5); /*  SW control led1 on. */
 			break;
 
@@ -71,23 +70,20 @@ SwLedOn(struct rtw_adapter *padapter, struct led_8723a * pLed)
 
 }
 
-
-/*  */
 /*	Description: */
 /*		Turn off LED according to LedPin specified. */
-/*  */
 void
 SwLedOff(struct rtw_adapter *padapter, struct led_8723a * pLed)
 {
 	u8	LedCfg;
 	/* struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter); */
 
-	if((padapter->bSurpriseRemoved == true) || ( padapter->bDriverStopped == true))
+	if ((padapter->bSurpriseRemoved == true) || (padapter->bDriverStopped == true))
 	{
 		goto exit;
 	}
 
-	switch(pLed->LedPin)
+	switch (pLed->LedPin)
 	{
 		case LED_PIN_GPIO0:
 			break;
@@ -101,7 +97,7 @@ SwLedOff(struct rtw_adapter *padapter, struct led_8723a * pLed)
 			break;
 
 		case LED_PIN_LED2:
-			LedCfg=rtw_read8(padapter, REG_LEDCFG2);
+			LedCfg = rtw_read8(padapter, REG_LEDCFG2);
 			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0x80)|BIT3|BIT5); /*  SW control led1 on. */
 			break;
 
@@ -111,21 +107,12 @@ SwLedOff(struct rtw_adapter *padapter, struct led_8723a * pLed)
 	}
 exit:
 	pLed->bLedOn = false;
-
 }
 
-/*  */
 /*  Interface to manipulate LED objects. */
-/*  */
 
-/*  */
-/*  Default LED behavior. */
-/*  */
-
-/*  */
 /*	Description: */
 /*		Initialize all LED_871x objects. */
-/*  */
 void
 rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 {
@@ -138,11 +125,8 @@ rtl8723au_InitSwLeds(struct rtw_adapter	*padapter)
 /*	InitLed871x(padapter,&pledpriv->SwLed1, LED_PIN_LED2); */
 }
 
-
-/*  */
 /*	Description: */
 /*		DeInitialize all LED_819xUsb objects. */
-/*  */
 void
 rtl8723au_DeInitSwLeds(struct rtw_adapter *padapter)
 {

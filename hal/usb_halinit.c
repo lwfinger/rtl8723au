@@ -214,11 +214,10 @@ static void _InitTxBufferBoundary(struct rtw_adapter *Adapter)
 
 	u8 txpktbuf_bndy;
 
-	if (!pregistrypriv->wifi_spec) {
+	if (!pregistrypriv->wifi_spec)
 		txpktbuf_bndy = TX_PAGE_BOUNDARY;
-	} else{/* for WMM */
+	else /* for WMM */
 		txpktbuf_bndy = WMM_NORMAL_TX_PAGE_BOUNDARY;
-	}
 
 	rtw_write8(Adapter, REG_TXPKTBUF_BCNQ_BDNY, txpktbuf_bndy);
 	rtw_write8(Adapter, REG_TXPKTBUF_MGQ_BDNY, txpktbuf_bndy);
@@ -230,7 +229,7 @@ static void _InitTxBufferBoundary(struct rtw_adapter *Adapter)
 static void _InitPageBoundary(struct rtw_adapter *Adapter)
 {
 	/*  RX Page Boundary */
-	/* srand(static_cast<unsigned int>(time(NULL)) ); */
+	/* srand(static_cast<unsigned int>(time(NULL))); */
 	u16 rxff_bndy = 0x27FF;/* rand() % 1) ? 0x27FF : 0x23FF; */
 
 	rtw_write16(Adapter, (REG_TRXFF_BNDY + 2), rxff_bndy);
@@ -303,7 +302,7 @@ static void _InitNormalChipTwoOutEpPriority(struct rtw_adapter *Adapter)
 		break;
 	}
 
-	if (!pregistrypriv->wifi_spec ) {
+	if (!pregistrypriv->wifi_spec) {
 		beQ = valueLow;
 		bkQ = valueLow;
 		viQ = valueHi;
@@ -838,7 +837,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 	if (Adapter->pwrctrlpriv.bkeepfwalive) {
 		_ps_open_RF(Adapter);
 
-		if (pHalData->bIQKInitialized ) {
+		if (pHalData->bIQKInitialized) {
 			rtl8723a_phy_iq_calibrate(Adapter, true);
 		} else {
 			rtl8723a_phy_iq_calibrate(Adapter, false);
@@ -1041,7 +1040,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 		/* recovery for 8192cu and 9723Au 20111017 */
 		if (pwrctrlpriv->rf_pwrstate == rf_on)
 		{
-			if (pHalData->bIQKInitialized ) {
+			if (pHalData->bIQKInitialized) {
 				rtl8723a_phy_iq_calibrate(Adapter, true);
 			} else {
 				rtl8723a_phy_iq_calibrate(Adapter, false);
@@ -1176,15 +1175,15 @@ static void phy_SsPwrSwitch92CU(struct rtw_adapter *Adapter,
 			/* DbgPrint("0x0e70 = %x\n",
 			   Adapter->PS_BBRegBackup[PSBBREG_AFE0]); */
 			/* PHY_SetBBReg(Adapter, 0x0e70, bMaskDWord ,
-			   Adapter->PS_BBRegBackup[PSBBREG_AFE0] ); */
+			   Adapter->PS_BBRegBackup[PSBBREG_AFE0]); */
 			/* PHY_SetBBReg(Adapter, 0x0e70, bMaskDWord ,
-			   0x631B25A0 ); */
+			   0x631B25A0); */
 			if (pHalData->rf_type ==  RF_2T2R)
 				PHY_SetBBReg(Adapter, rRx_Wait_CCA, bMaskDWord,
-					     0x63DB25A0 );
+					     0x63DB25A0);
 			else if (pHalData->rf_type ==  RF_1T1R)
 				PHY_SetBBReg(Adapter, rRx_Wait_CCA, bMaskDWord,
-					     0x631B25A0 );
+					     0x631B25A0);
 
 			/*  4. issue 3-wire command that RF set to Rx idle
 			    mode. This is used to re-write the RX idle mode. */
@@ -1554,7 +1553,7 @@ static void CardDisableRTL8723U(struct rtw_adapter *Adapter)
 	rtw_write8(Adapter, REG_MCUFWDL, 0x00);
 
 	/*	==== Reset digital sequence end ====== */
-/*	if ((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW) ) */
+/*	if ((pMgntInfo->RfOffReason & RF_CHANGE_BY_HW)) */
 	{
 		/*  Card disable power action flow */
 		HalPwrSeqCmdParsing(Adapter, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
@@ -1883,7 +1882,7 @@ static void _ReadPSSetting(struct rtw_adapter *Adapter, u8 *PROMContent,
 
 		/*  decide hw if support remote wakeup function */
 		/*  if hw supported, 8051 (SIE) will generate WeakUP
-		    signal( D+/D- toggle) when autoresume */
+		    signal(D+/D- toggle) when autoresume */
 		Adapter->pwrctrlpriv.bSupportRemoteWakeup =
 			(PROMContent[EEPROM_TEST_USB_OPT] & BIT1) ? true :false;
 
@@ -2011,7 +2010,7 @@ static void _ReadPROMContent(struct rtw_adapter *Adapter)
 
 	DBG_8723A("Boot from %s, Autoload %s !\n",
 		  (pEEPROM->EepromOrEfuse ? "EEPROM" : "EFUSE"),
-		  (pEEPROM->bautoload_fail_flag ? "Fail" : "OK") );
+		  (pEEPROM->bautoload_fail_flag ? "Fail" : "OK"));
 
 	readAdapterInfo(Adapter);
 }
@@ -2153,29 +2152,29 @@ static u8 GetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 	case HAL_DEF_CURRENT_ANTENNA:
 		break;
 	case HAL_DEF_DRVINFO_SZ:
-		*(( u32*)pValue) = DRVINFO_SZ;
+		*((u32*)pValue) = DRVINFO_SZ;
 		break;
 	case HAL_DEF_MAX_RECVBUF_SZ:
-		*(( u32*)pValue) = MAX_RECVBUF_SZ;
+		*((u32*)pValue) = MAX_RECVBUF_SZ;
 		break;
 	case HAL_DEF_RX_PACKET_OFFSET:
-		*(( u32*)pValue) = RXDESC_SIZE + DRVINFO_SZ;
+		*((u32*)pValue) = RXDESC_SIZE + DRVINFO_SZ;
 		break;
 	case HAL_DEF_DBG_DUMP_RXPKT:
-		*(( u8*)pValue) = pHalData->bDumpRxPkt;
+		*((u8*)pValue) = pHalData->bDumpRxPkt;
 		break;
 	case HAL_DEF_DBG_DM_FUNC:
-		*(( u32*)pValue) = pHalData->odmpriv.SupportAbility;
+		*((u32*)pValue) = pHalData->odmpriv.SupportAbility;
 		break;
 	case HW_VAR_MAX_RX_AMPDU_FACTOR:
-		*(( u32*)pValue) = IEEE80211_HT_MAX_AMPDU_64K;
+		*((u32*)pValue) = IEEE80211_HT_MAX_AMPDU_64K;
 		break;
 	case HW_DEF_ODM_DBG_FLAG:
 	{
 		u64	DebugComponents = *((u32*)pValue);
 		struct dm_odm_t	*pDM_Odm = &pHalData->odmpriv;
 		printk("pDM_Odm->DebugComponents = 0x%llx \n",
-		       pDM_Odm->DebugComponents );
+		       pDM_Odm->DebugComponents);
 	}
 		break;
 	default:
@@ -2197,11 +2196,11 @@ static u8 SetHalDefVar8192CUsb(struct rtw_adapter *Adapter,
 
 	switch (eVariable) {
 	case HAL_DEF_DBG_DUMP_RXPKT:
-		pHalData->bDumpRxPkt = *(( u8*)pValue);
+		pHalData->bDumpRxPkt = *((u8*)pValue);
 		break;
 	case HAL_DEF_DBG_DM_FUNC:
 	{
-		u8 dm_func = *(( u8*)pValue);
+		u8 dm_func = *((u8*)pValue);
 		struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 		struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 

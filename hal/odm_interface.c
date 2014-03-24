@@ -28,9 +28,8 @@ u8 ODM_Read1Byte(struct dm_odm_t *pDM_Odm,
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	return rtw_read8(Adapter,RegAddr);
+	return rtw_read8(Adapter, RegAddr);
 }
-
 
 u16 ODM_Read2Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
@@ -38,9 +37,8 @@ u16 ODM_Read2Byte(struct dm_odm_t *pDM_Odm,
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	return rtw_read16(Adapter,RegAddr);
+	return rtw_read16(Adapter, RegAddr);
 }
-
 
 u32 ODM_Read4Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
@@ -48,9 +46,8 @@ u32 ODM_Read4Byte(struct dm_odm_t *pDM_Odm,
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	return rtw_read32(Adapter,RegAddr);
+	return rtw_read32(Adapter, RegAddr);
 }
-
 
 void ODM_Write1Byte(
 	struct dm_odm_t *pDM_Odm,
@@ -60,7 +57,7 @@ void ODM_Write1Byte(
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	rtw_write8(Adapter,RegAddr, Data);
+	rtw_write8(Adapter, RegAddr, Data);
 }
 
 void ODM_Write2Byte(
@@ -71,7 +68,7 @@ void ODM_Write2Byte(
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	rtw_write16(Adapter,RegAddr, Data);
+	rtw_write16(Adapter, RegAddr, Data);
 }
 
 void ODM_Write4Byte(
@@ -82,10 +79,9 @@ void ODM_Write4Byte(
 {
 	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
 
-	rtw_write32(Adapter,RegAddr, Data);
+	rtw_write32(Adapter, RegAddr, Data);
 
 }
-
 
 void ODM_SetMACReg(
 	struct dm_odm_t *pDM_Odm,
@@ -98,7 +94,6 @@ void ODM_SetMACReg(
 
 	PHY_SetBBReg(Adapter, RegAddr, BitMask, Data);
 }
-
 
 u32 ODM_GetMACReg(
 	struct dm_odm_t *pDM_Odm,
@@ -134,7 +129,6 @@ u32 ODM_GetBBReg(
 	return PHY_QueryBBReg(Adapter, RegAddr, BitMask);
 }
 
-
 void ODM_SetRFReg(
 	struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	eRFPath,
@@ -147,7 +141,6 @@ void ODM_SetRFReg(
 
 	PHY_SetRFReg(Adapter, eRFPath, RegAddr, BitMask, Data);
 }
-
 
 u32 ODM_GetRFReg(
 	struct dm_odm_t *pDM_Odm,

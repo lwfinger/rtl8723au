@@ -56,7 +56,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 	precvpriv->precv_buf = kzalloc(size, GFP_KERNEL);
 	if (!precvpriv->precv_buf) {
 		res = _FAIL;
-		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
+		RT_TRACE(_module_rtl871x_recv_c_, _drv_err_,
 			 ("alloc recv_buf fail!\n"));
 		goto exit;
 	}
@@ -70,7 +70,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 		if (res == _FAIL)
 			break;
 
-		precvbuf->adapter =padapter;
+		precvbuf->adapter = padapter;
 
 		/* list_add_tail(&precvbuf->list, &precvpriv->free_recv_buf_queue.queue); */
 		precvbuf++;
@@ -179,13 +179,12 @@ void update_recvframe_attrib(struct recv_frame *precvframe,
 	pattrib->rxht = (u8)prxreport->rxht;
 }
 
-
 void update_recvframe_phyinfo(struct recv_frame *precvframe,
 			      struct phy_stat *pphy_status)
 {
 	struct rtw_adapter *padapter = precvframe->adapter;
 	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
-	struct hal_data_8723a *pHalData= GET_HAL_DATA(padapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	struct odm_phy_info *pPHYInfo = (struct odm_phy_info *)(&pattrib->phy_info);
 	struct odm_packet_info pkt_info;
 	u8 *sa, *da;
@@ -226,11 +225,11 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	psta = rtw_get_stainfo(pstapriv, sa);
 	if (psta) {
 		pkt_info.StationID = psta->mac_id;
-		/* printk("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID); */
+		/* printk("%s ==> StationID(%d)\n", __FUNCTION__, pkt_info.StationID); */
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 
-	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,
+	ODM_PhyStatusQuery(&pHalData->odmpriv, pPHYInfo,
 			   (u8 *)pphy_status, &pkt_info);
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&

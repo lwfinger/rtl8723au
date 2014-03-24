@@ -20,32 +20,31 @@ static bool
 CheckCondition(
     const u32  Condition,
     const u32  Hex
-    )
+  )
 {
     u32 _board     = (Hex & 0x000000FF);
     u32 _interface = (Hex & 0x0000FF00) >> 8;
     u32 _platform  = (Hex & 0x00FF0000) >> 16;
     u32 cond = Condition;
 
-    if ( Condition == 0xCDCDCDCD )
+    if (Condition == 0xCDCDCDCD)
         return true;
 
     cond = Condition & 0x000000FF;
-    if ( (_board == cond) && cond != 0x00)
+    if ((_board == cond) && cond != 0x00)
         return false;
 
     cond = Condition & 0x0000FF00;
     cond = cond >> 8;
-    if ( (_interface & cond) == 0 && cond != 0x07)
+    if ((_interface & cond) == 0 && cond != 0x07)
         return false;
 
     cond = Condition & 0x00FF0000;
     cond = cond >> 16;
-    if ( (_platform & cond) == 0 && cond != 0x0F)
+    if ((_platform & cond) == 0 && cond != 0x0F)
         return false;
     return true;
 }
-
 
 /******************************************************************************
 *                           RadioA_1T.TXT
@@ -224,26 +223,25 @@ void ODM_ReadAndConfig_RadioA_1T_8723A(struct dm_odm_t *pDM_Odm)
 	u32     ArrayLen    = sizeof(Array_RadioA_1T_8723A)/sizeof(u32);
 	u32 *    Array       = Array_RadioA_1T_8723A;
 
-
 	hex += board;
 	hex += interfaceValue << 8;
 	hex += platform << 16;
 	hex += 0xFF000000;
 
-	for (i = 0; i < ArrayLen; i += 2 )
+	for (i = 0; i < ArrayLen; i += 2)
 	{
 	    u32 v1 = Array[i];
 	    u32 v2 = Array[i+1];
 
 	    /*  This (offset, data) pair meets the condition. */
-	    if ( v1 < 0xCDCDCDCD )
+	    if (v1 < 0xCDCDCDCD)
 	    {
 		    odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
 		    continue;
 		}
 		else
 		{ /*  This line is the start line of branch. */
-		    if ( !CheckCondition(Array[i], hex) )
+		    if (!CheckCondition(Array[i], hex))
 		    { /*  Discard the following (offset, data) pairs. */
 		        READ_NEXT_PAIR(v1, v2, i);
 		        while (v2 != 0xDEAD &&
@@ -275,6 +273,5 @@ void ODM_ReadAndConfig_RadioA_1T_8723A(struct dm_odm_t *pDM_Odm)
 	}
 
 }
-
 
 #endif /*  end of HWIMG_SUPPORT */

@@ -26,7 +26,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 {
 	struct rtw_adapter		*padapter = pintfhdl->padapter ;
 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct usb_device *udev=pdvobjpriv->pusbdev;
+	struct usb_device *udev = pdvobjpriv->pusbdev;
 
 	unsigned int pipe;
 	int status = 0;
@@ -34,14 +34,14 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 	u8 *pIo_buf;
 	int vendorreq_times = 0;
 
-	if((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)){
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usbctrl_vendorreq:(padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
+	if ((padapter->bSurpriseRemoved) ||(padapter->pwrctrlpriv.pnp_bstop_trx)) {
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("usbctrl_vendorreq:(padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
 		status = -EPERM;
 		goto exit;
 	}
 
-	if(len>MAX_VENDOR_REQ_CMD_SIZE){
-		DBG_8723A( "[%s] Buffer len error ,vendor request failed\n", __FUNCTION__ );
+	if (len>MAX_VENDOR_REQ_CMD_SIZE) {
+		DBG_8723A("[%s] Buffer len error , vendor request failed\n", __FUNCTION__);
 		status = -EINVAL;
 		goto exit;
 	}
@@ -51,8 +51,8 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 	/*  Acquire IO memory for vendorreq */
 	pIo_buf = pdvobjpriv->usb_vendor_req_buf;
 
-	if ( pIo_buf== NULL) {
-		DBG_8723A( "[%s] pIo_buf == NULL \n", __FUNCTION__ );
+	if (pIo_buf == NULL) {
+		DBG_8723A("[%s] pIo_buf == NULL \n", __FUNCTION__);
 		status = -ENOMEM;
 		goto release_mutex;
 	}
@@ -75,20 +75,20 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 
 		status = rtw_usb_control_msg(udev, pipe, request, reqtype, value, index, pIo_buf, len, RTW_USB_CONTROL_MSG_TIMEOUT);
 
-		if ( status == len)   /*  Success this control transfer. */
+		if (status == len)   /*  Success this control transfer. */
 		{
 			rtw_reset_continual_urb_error(pdvobjpriv);
-			if ( requesttype == 0x01 )
+			if (requesttype == 0x01)
 			{   /*  For Control read transfer, we have to copy the read data from pIo_buf to pdata. */
-				memcpy(pdata, pIo_buf,  len );
+				memcpy(pdata, pIo_buf,  len);
 			}
 		}
 		else { /*  error cases */
-			DBG_8723A("reg 0x%x, usb %s %u fail, status:%d value=0x%x, vendorreq_times:%d\n"
-				, value,(requesttype == 0x01)?"read":"write" , len, status, *(u32*)pdata, vendorreq_times);
+			DBG_8723A("reg 0x%x, usb %s %u fail, status:%d value = 0x%x, vendorreq_times:%d\n"
+				, value, (requesttype == 0x01)?"read":"write" , len, status, *(u32*)pdata, vendorreq_times);
 
 			if (status < 0) {
-				if(status == (-ESHUTDOWN)	|| status == -ENODEV	)
+				if (status == (-ESHUTDOWN)	|| status == -ENODEV	)
 				{
 					padapter->bSurpriseRemoved = true;
 				} else {
@@ -98,15 +98,15 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 			}
 			else /*  status != len && status >= 0 */
 			{
-				if(status > 0) {
-					if ( requesttype == 0x01 )
+				if (status > 0) {
+					if (requesttype == 0x01)
 					{   /*  For Control read transfer, we have to copy the read data from pIo_buf to pdata. */
-						memcpy(pdata, pIo_buf,  len );
+						memcpy(pdata, pIo_buf,  len);
 					}
 				}
 			}
 
-			if(rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == true ){
+			if (rtw_inc_and_chk_continual_urb_error(pdvobjpriv) == true) {
 				padapter->bSurpriseRemoved = true;
 				break;
 			}
@@ -114,7 +114,7 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 		}
 
 		/*  firmware download is checksumed, don't retry */
-		if( (value >= FW_8723A_START_ADDRESS && value <= FW_8723A_END_ADDRESS) || status == len )
+		if ((value >= FW_8723A_START_ADDRESS && value <= FW_8723A_END_ADDRESS) || status == len)
 			break;
 	}
 
@@ -132,9 +132,7 @@ static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 	u16 wvalue;
 	u16 index;
 	u16 len;
-	u8 data=0;
-
-
+	u8 data = 0;
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -144,8 +142,6 @@ static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 	len = 1;
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
 
 	return data;
 
@@ -158,9 +154,7 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 	u16 wvalue;
 	u16 index;
 	u16 len;
-	u16 data=0;
-
-
+	u16 data = 0;
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -170,8 +164,6 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 	len = 2;
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
 
 	return data;
 
@@ -184,9 +176,7 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 	u16 wvalue;
 	u16 index;
 	u16 len;
-	u32 data=0;
-
-
+	u32 data = 0;
 
 	request = 0x05;
 	requesttype = 0x01;/* read_in */
@@ -196,8 +186,6 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 	len = 4;
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
 
 	return data;
 
@@ -213,8 +201,6 @@ static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 	u8 data;
 	int ret;
 
-
-
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
 	index = 0;/* n/a */
@@ -225,8 +211,6 @@ static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 	data = val;
 
 	 ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
 
 	return ret;
 
@@ -242,8 +226,6 @@ static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 	u16 data;
 	int ret;
 
-
-
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
 	index = 0;/* n/a */
@@ -254,8 +236,6 @@ static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 	data = val;
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
 
 	return ret;
 
@@ -271,8 +251,6 @@ static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 	u32 data;
 	int ret;
 
-
-
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
 	index = 0;/* n/a */
@@ -281,10 +259,7 @@ static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 	len = 4;
 	data = val;
 
-
-	ret =usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
+	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 
 	return ret;
 
@@ -300,19 +275,15 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 	u8 buf[VENDOR_CMD_MAX_DATA_LEN]={0};
 	int ret;
 
-
-
 	request = 0x05;
 	requesttype = 0x00;/* write_out */
 	index = 0;/* n/a */
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = length;
-	 memcpy(buf, pdata, len );
+	 memcpy(buf, pdata, len);
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
-
-
 
 	return ret;
 
@@ -343,7 +314,7 @@ static bool
 InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 			  u32 ContentLen)
 {
-	struct hal_data_8723a	*pHalData=GET_HAL_DATA(Adapter);
+	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 	u8 *			buffer = (u8 *)pContent;
 	struct reportpwrstate_parm report;
 
@@ -361,11 +332,10 @@ InterruptRecognized8723AU(struct rtw_adapter *Adapter, void *pContent,
 
 	memcpy(&report.state, &buffer[USB_INTR_CPWM_OFFSET], 1);
 
-	return (((pHalData->IntArray[0])&pHalData->IntrMask[0])!=0 ||
-		((pHalData->IntArray[1])&pHalData->IntrMask[1])!=0);
+	return (((pHalData->IntArray[0])&pHalData->IntrMask[0])!= 0 ||
+		((pHalData->IntArray[1])&pHalData->IntrMask[1])!= 0);
 
 }
-
 
 static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 {
@@ -430,7 +400,7 @@ urb_submit:
 		err = usb_submit_urb(purb, GFP_ATOMIC);
 		if (err && (err != -EPERM)) {
 			DBG_8723A("cannot submit interrupt in-token(err = "
-				  "0x%08x),urb_status = %d\n",
+				  "0x%08x), urb_status = %d\n",
 				  err, purb->status);
 		}
 	} else {
@@ -445,12 +415,12 @@ urb_submit:
 		case -ESHUTDOWN:
 			/* padapter->bSurpriseRemoved = true; */
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_read_port_complete:bSurpriseRemoved="
+				 ("usb_read_port_complete:bSurpriseRemoved ="
 				  "true\n"));
 		case -ENOENT:
 			padapter->bDriverStopped = true;
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_read_port_complete:bDriverStopped="
+				 ("usb_read_port_complete:bDriverStopped ="
 				  "true\n"));
 			break;
 		case -EPROTO:
@@ -474,8 +444,6 @@ static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 	struct recv_priv *precvpriv = &adapter->recvpriv;
 	struct usb_device *pusbd = pdvobj->pusbdev;
 
-
-
 	/* translate DMA FIFO addr to pipehandle */
 	pipe = ffaddr2pipehdl(pdvobj, addr);
 
@@ -490,8 +458,6 @@ static u32 usb_read_interrupt(struct intf_hdl *pintfhdl, u32 addr)
 			  precvpriv->int_in_urb->status);
 		ret = _FAIL;
 	}
-
-
 
 	return ret;
 }
@@ -520,7 +486,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 
 	do {
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
-			 ("recvbuf2recvframe: rxdesc=offsset 0:0x%08x, "
+			 ("recvbuf2recvframe: rxdesc = offsset 0:0x%08x, "
 			  "4:0x%08x, 8:0x%08x, C:0x%08x\n", prxstat->rxdw0,
 			  prxstat->rxdw1, prxstat->rxdw2, prxstat->rxdw4));
 
@@ -528,8 +494,8 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 
 		precvframe = rtw_alloc_recvframe(pfree_recv_queue);
 		if (!precvframe) {
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
-				 ("recvbuf2recvframe: precvframe==NULL\n"));
+			RT_TRACE(_module_rtl871x_recv_c_, _drv_err_,
+				 ("recvbuf2recvframe: precvframe == NULL\n"));
 			DBG_8723A("%s()-%d: rtw_alloc_recvframe() failed! RX "
 				  "Drop!\n", __FUNCTION__, __LINE__);
 			goto _exit_recvbuf2recvframe;
@@ -552,8 +518,8 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			pattrib->shift_sz + pattrib->pkt_len;
 
 		if ((pattrib->pkt_len <= 0) || (pkt_offset > transfer_len)) {
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,
-				 ("recvbuf2recvframe: pkt_len<=0\n"));
+			RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
+				 ("recvbuf2recvframe: pkt_len<= 0\n"));
 			DBG_8723A("%s()-%d: RX Warning!\n",
 				  __FUNCTION__, __LINE__);
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
@@ -622,7 +588,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 		}
 
 		if (rtw_recv_entry(precvframe) != _SUCCESS)
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,
+			RT_TRACE(_module_rtl871x_recv_c_, _drv_err_,
 				 ("recvbuf2recvframe: rtw_recv_entry"
 				  "(precvframe) != _SUCCESS\n"));
 
@@ -650,7 +616,7 @@ void rtl8723au_recv_tasklet(void *priv)
 
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {
 		if ((padapter->bDriverStopped == true) ||
-		    (padapter->bSurpriseRemoved== true)) {
+		    (padapter->bSurpriseRemoved == true)) {
 			DBG_8723A("recv_tasklet => bDriverStopped or "
 				  "bSurpriseRemoved \n");
 			dev_kfree_skb_any(pskb);
@@ -670,33 +636,33 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 {
 	uint isevt, *pbuf;
 	struct recv_buf *precvbuf = (struct recv_buf *)purb->context;
-	struct rtw_adapter *padapter =(struct rtw_adapter *)precvbuf->adapter;
+	struct rtw_adapter *padapter = (struct rtw_adapter *)precvbuf->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	struct hal_data_8723a *pHalData;
 
-	RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+	RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 		 ("usb_read_port_complete!!!\n"));
 
 	precvpriv->rx_pending_cnt --;
 
 	if (padapter->bSurpriseRemoved || padapter->bDriverStopped||
 	    padapter->bReadPortCancel) {
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 			 ("usb_read_port_complete:bDriverStopped(%d) OR "
 			  "bSurpriseRemoved(%d)\n", padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved));
 
 		DBG_8723A("%s()-%d: RX Warning! bDriverStopped(%d) OR "
 			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-			  __FUNCTION__, __LINE__,padapter->bDriverStopped,
-			  padapter->bSurpriseRemoved,padapter->bReadPortCancel);
+			  __FUNCTION__, __LINE__, padapter->bDriverStopped,
+			  padapter->bSurpriseRemoved, padapter->bReadPortCancel);
 		return;
 	}
 
 	if (purb->status == 0) {
 		if ((purb->actual_length > MAX_RECVBUF_SZ) ||
 		    (purb->actual_length < RXDESC_SIZE)) {
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 				 ("usb_read_port_complete: (purb->actual_"
 				  "length > MAX_RECVBUF_SZ) || (purb->actual_"
 				  "length < RXDESC_SIZE)\n"));
@@ -720,7 +686,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 				      precvbuf);
 		}
 	} else {
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 			 ("usb_read_port_complete : purb->status(%d) != 0 \n",
 			  purb->status));
 		skb_put(precvbuf->pskb, purb->actual_length);
@@ -734,20 +700,20 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			padapter->bSurpriseRemoved = true;
 		}
 
-		switch(purb->status) {
+		switch (purb->status) {
 		case -EINVAL:
 		case -EPIPE:
 		case -ENODEV:
 		case -ESHUTDOWN:
-			/* padapter->bSurpriseRemoved=true; */
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+			/* padapter->bSurpriseRemoved = true; */
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 				 ("usb_read_port_complete:bSurprise"
-				  "Removed=true\n"));
+				  "Removed = true\n"));
 		case -ENOENT:
-			padapter->bDriverStopped=true;
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
+			padapter->bDriverStopped = true;
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 				 ("usb_read_port_complete:"
-				  "bDriverStopped=true\n"));
+				  "bDriverStopped = true\n"));
 			break;
 		case -EPROTO:
 		case -EOVERFLOW:
@@ -781,21 +747,18 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	struct recv_priv	*precvpriv = &adapter->recvpriv;
 	struct usb_device	*pusbd = pdvobj->pusbdev;
 
-
-
-
 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved ||
 	    adapter->pwrctrlpriv.pnp_bstop_trx) {
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_read_port:( padapter->bDriverStopped ||"
+			 ("usb_read_port:(padapter->bDriverStopped ||"
 			  "padapter->bSurpriseRemoved ||adapter->"
 			  "pwrctrlpriv.pnp_bstop_trx)!!!\n"));
 		return _FAIL;
 	}
 
 	if (!precvbuf) {
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
-			 ("usb_read_port:precvbuf ==NULL\n"));
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
+			 ("usb_read_port:precvbuf == NULL\n"));
 		return _FAIL;
 	}
 
@@ -808,7 +771,7 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	if (!precvbuf->pskb) {
 		precvbuf->pskb = netdev_alloc_skb(adapter->pnetdev, MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
 		if (precvbuf->pskb == NULL) {
-			RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("init_recvbuf(): alloc_skb fail!\n"));
+			RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("init_recvbuf(): alloc_skb fail!\n"));
 			return _FAIL;
 		}
 
@@ -830,14 +793,13 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 
 	err = usb_submit_urb(purb, GFP_ATOMIC);
 	if ((err) && (err != -EPERM)) {
-		RT_TRACE(_module_hci_ops_os_c_,_drv_err_,
-			 ("cannot submit rx in-token(err=0x%.8x), URB_STATUS "
-			  "=0x%.8x", err, purb->status));
-		DBG_8723A("cannot submit rx in-token(err = 0x%08x),urb_status "
-			  "= %d\n",err,purb->status);
+		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
+			 ("cannot submit rx in-token(err = 0x%.8x), URB_STATUS "
+			  "= 0x%.8x", err, purb->status));
+		DBG_8723A("cannot submit rx in-token(err = 0x%08x), urb_status "
+			  "= %d\n", err, purb->status);
 		ret = _FAIL;
 	}
-
 
 	return ret;
 }
@@ -853,7 +815,7 @@ void rtl8723au_xmit_tasklet(void *priv)
 
 	while (1) {
 		if ((padapter->bDriverStopped == true) ||
-		    (padapter->bSurpriseRemoved== true) ||
+		    (padapter->bSurpriseRemoved == true) ||
 		    (padapter->bWritePortCancel == true)) {
 			DBG_8723A("xmit_tasklet => bDriverStopped or "
 				  "bSurpriseRemoved or bWritePortCancel\n");
@@ -870,7 +832,6 @@ void rtl8723au_xmit_tasklet(void *priv)
 
 void rtl8723au_set_intf_ops(struct _io_ops *pops)
 {
-
 
 	memset((u8 *)pops, 0, sizeof(struct _io_ops));
 

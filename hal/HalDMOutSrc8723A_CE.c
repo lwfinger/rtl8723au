@@ -48,37 +48,37 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 	pdmpriv->TXPowerTrackingCallbackCnt++;	/* cosa add for debug */
 	pdmpriv->bTXPowerTrackingInit = true;
 
-	if(pHalData->CurrentChannel == 14 && !pdmpriv->bCCKinCH14)
+	if (pHalData->CurrentChannel == 14 && !pdmpriv->bCCKinCH14)
 		pdmpriv->bCCKinCH14 = true;
-	else if(pHalData->CurrentChannel != 14 && pdmpriv->bCCKinCH14)
+	else if (pHalData->CurrentChannel != 14 && pdmpriv->bCCKinCH14)
 		pdmpriv->bCCKinCH14 = false;
 
 	ThermalValue = (u8)PHY_QueryRFReg(Adapter, RF_PATH_A, RF_T_METER, 0x1f);	/*  0x24: RF Reg[4:0]	 */
 
 	rtl8723a_phy_ap_calibrate(Adapter, (ThermalValue - pHalData->EEPROMThermalMeter));
 
-	if(is2T)
+	if (is2T)
 		rf = 2;
 	else
 		rf = 1;
 
-	if(ThermalValue)
+	if (ThermalValue)
 	{
 		/* Query OFDM path A default setting		 */
 		ele_D = PHY_QueryBBReg(Adapter, rOFDM0_XATxIQImbalance, bMaskDWord)&bMaskOFDM_D;
-		for(i=0; i<OFDM_TABLE_SIZE_92C; i++) {
+		for (i = 0; i<OFDM_TABLE_SIZE_92C; i++) {
 			/* find the index */
-			if(ele_D == (OFDMSwingTable[i]&bMaskOFDM_D)) {
+			if (ele_D == (OFDMSwingTable[i]&bMaskOFDM_D)) {
 				OFDM_index_old[0] = (u8)i;
 				break;
 			}
 		}
 
 		/* Query OFDM path B default setting  */
-		if(is2T) {
+		if (is2T) {
 			ele_D = PHY_QueryBBReg(Adapter, rOFDM0_XBTxIQImbalance, bMaskDWord)&bMaskOFDM_D;
-			for(i=0; i<OFDM_TABLE_SIZE_92C; i++) {	/* find the index  */
-				if(ele_D == (OFDMSwingTable[i]&bMaskOFDM_D)) {
+			for (i = 0; i<OFDM_TABLE_SIZE_92C; i++) {	/* find the index  */
+				if (ele_D == (OFDMSwingTable[i]&bMaskOFDM_D)) {
 					OFDM_index_old[1] = (u8)i;
 					break;
 				}
@@ -87,53 +87,53 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 
 		/* Query CCK default setting From 0xa24 */
 		TempCCk = PHY_QueryBBReg(Adapter, rCCK0_TxFilter2, bMaskDWord)&bMaskCCK;
-		for(i=0 ; i<CCK_TABLE_SIZE ; i++) {
-			if(pdmpriv->bCCKinCH14) {
+		for (i = 0 ; i<CCK_TABLE_SIZE ; i++) {
+			if (pdmpriv->bCCKinCH14) {
 				if (!memcmp(&TempCCk,
 					    &CCKSwingTable_Ch14[i][2], 4)) {
-					CCK_index_old =(u8)i;
+					CCK_index_old = (u8)i;
 					break;
 				}
 			} else {
 				if (!memcmp(&TempCCk,
 					    &CCKSwingTable_Ch1_Ch13[i][2], 4)) {
-					CCK_index_old =(u8)i;
+					CCK_index_old = (u8)i;
 					break;
 				}
 			}
 		}
 
-		if(!pdmpriv->ThermalValue) {
+		if (!pdmpriv->ThermalValue) {
 			pdmpriv->ThermalValue = pHalData->EEPROMThermalMeter;
 			pdmpriv->ThermalValue_LCK = ThermalValue;
 			pdmpriv->ThermalValue_IQK = ThermalValue;
 			pdmpriv->ThermalValue_DPK = pHalData->EEPROMThermalMeter;
 
-			for(i = 0; i < rf; i++)
+			for (i = 0; i < rf; i++)
 				pdmpriv->OFDM_index_HP[i] = pdmpriv->OFDM_index[i] = OFDM_index_old[i];
 			pdmpriv->CCK_index_HP = pdmpriv->CCK_index = CCK_index_old;
 		}
 
-		if(pHalData->BoardType == BOARD_USB_High_PA) {
+		if (pHalData->BoardType == BOARD_USB_High_PA) {
 			pdmpriv->ThermalValue_HP[pdmpriv->ThermalValue_HP_index] = ThermalValue;
 			pdmpriv->ThermalValue_HP_index++;
-			if(pdmpriv->ThermalValue_HP_index == HP_THERMAL_NUM)
+			if (pdmpriv->ThermalValue_HP_index == HP_THERMAL_NUM)
 				pdmpriv->ThermalValue_HP_index = 0;
 
-			for(i = 0; i < HP_THERMAL_NUM; i++) {
-				if(pdmpriv->ThermalValue_HP[i]) {
+			for (i = 0; i < HP_THERMAL_NUM; i++) {
+				if (pdmpriv->ThermalValue_HP[i]) {
 					ThermalValue_HP += pdmpriv->ThermalValue_HP[i];
 					ThermalValue_HP_count++;
 				}
 			}
 
-			if(ThermalValue_HP_count)
+			if (ThermalValue_HP_count)
 				ThermalValue = (u8)(ThermalValue_HP / ThermalValue_HP_count);
 		}
 
 		delta = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
-		if(pHalData->BoardType == BOARD_USB_High_PA) {
-			if(pdmpriv->bDoneTxpower)
+		if (pHalData->BoardType == BOARD_USB_High_PA) {
+			if (pdmpriv->bDoneTxpower)
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 			else
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
@@ -143,28 +143,28 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 		delta_LCK = (ThermalValue > pdmpriv->ThermalValue_LCK)?(ThermalValue - pdmpriv->ThermalValue_LCK):(pdmpriv->ThermalValue_LCK - ThermalValue);
 		delta_IQK = (ThermalValue > pdmpriv->ThermalValue_IQK)?(ThermalValue - pdmpriv->ThermalValue_IQK):(pdmpriv->ThermalValue_IQK - ThermalValue);
 
-		if(delta_LCK > 1) {
+		if (delta_LCK > 1) {
 			pdmpriv->ThermalValue_LCK = ThermalValue;
 			rtl8723a_phy_lc_calibrate(Adapter);
 		}
 
-		if((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl) {
-			if(pHalData->BoardType == BOARD_USB_High_PA) {
+		if ((delta > 0 || delta_HP > 0) && pdmpriv->TxPowerTrackControl) {
+			if (pHalData->BoardType == BOARD_USB_High_PA) {
 				pdmpriv->bDoneTxpower = true;
 				delta_HP = ThermalValue > pHalData->EEPROMThermalMeter?(ThermalValue - pHalData->EEPROMThermalMeter):(pHalData->EEPROMThermalMeter - ThermalValue);
 
-				if(delta_HP > index_mapping_HP_NUM-1)
+				if (delta_HP > index_mapping_HP_NUM-1)
 					index_HP = index_mapping_HP[index_mapping_HP_NUM-1];
 				else
 					index_HP = index_mapping_HP[delta_HP];
 
-				if(ThermalValue > pHalData->EEPROMThermalMeter)	/* set larger Tx power */
+				if (ThermalValue > pHalData->EEPROMThermalMeter)	/* set larger Tx power */
 				{
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] - index_HP;
 					CCK_index = pdmpriv->CCK_index_HP -index_HP;
 				} else {
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index_HP[i] + index_HP;
 					CCK_index = pdmpriv->CCK_index_HP + index_HP;
 				}
@@ -172,80 +172,80 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				delta_HP = (ThermalValue > pdmpriv->ThermalValue)?(ThermalValue - pdmpriv->ThermalValue):(pdmpriv->ThermalValue - ThermalValue);
 
 			} else {
-				if(ThermalValue > pdmpriv->ThermalValue)
+				if (ThermalValue > pdmpriv->ThermalValue)
 				{
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						pdmpriv->OFDM_index[i] -= delta;
 					pdmpriv->CCK_index -= delta;
 				}
 				else
 				{
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						pdmpriv->OFDM_index[i] += delta;
 					pdmpriv->CCK_index += delta;
 				}
 			}
 
-			/*if(is2T)
+			/*if (is2T)
 			{
-				DBG_8723A("temp OFDM_A_index=0x%x, OFDM_B_index=0x%x, CCK_index=0x%x\n",
+				DBG_8723A("temp OFDM_A_index = 0x%x, OFDM_B_index = 0x%x, CCK_index = 0x%x\n",
 					pdmpriv->OFDM_index[0], pdmpriv->OFDM_index[1], pdmpriv->CCK_index);
 			}
 			else
 			{
-				DBG_8723A("temp OFDM_A_index=0x%x, CCK_index=0x%x\n",
+				DBG_8723A("temp OFDM_A_index = 0x%x, CCK_index = 0x%x\n",
 					pdmpriv->OFDM_index[0], pdmpriv->CCK_index);
 			}*/
 
 			/* no adjust */
-			if(pHalData->BoardType != BOARD_USB_High_PA) {
-				if(ThermalValue > pHalData->EEPROMThermalMeter)
+			if (pHalData->BoardType != BOARD_USB_High_PA) {
+				if (ThermalValue > pHalData->EEPROMThermalMeter)
 				{
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index[i]+1;
 					CCK_index = pdmpriv->CCK_index+1;
 				}
 				else
 				{
-					for(i = 0; i < rf; i++)
+					for (i = 0; i < rf; i++)
 						OFDM_index[i] = pdmpriv->OFDM_index[i];
 					CCK_index = pdmpriv->CCK_index;
 				}
 			}
 
-			for(i = 0; i < rf; i++)
+			for (i = 0; i < rf; i++)
 			{
-				if(OFDM_index[i] > (OFDM_TABLE_SIZE_92C-1))
+				if (OFDM_index[i] > (OFDM_TABLE_SIZE_92C-1))
 					OFDM_index[i] = (OFDM_TABLE_SIZE_92C-1);
 				else if (OFDM_index[i] < OFDM_min_index)
 					OFDM_index[i] = OFDM_min_index;
 			}
 
-			if(CCK_index > (CCK_TABLE_SIZE-1))
+			if (CCK_index > (CCK_TABLE_SIZE-1))
 				CCK_index = (CCK_TABLE_SIZE-1);
 			else if (CCK_index < 0)
 				CCK_index = 0;
 
-			/*if(is2T)
+			/*if (is2T)
 			{
-				DBG_8723A("new OFDM_A_index=0x%x, OFDM_B_index=0x%x, CCK_index=0x%x\n",
+				DBG_8723A("new OFDM_A_index = 0x%x, OFDM_B_index = 0x%x, CCK_index = 0x%x\n",
 					OFDM_index[0], OFDM_index[1], CCK_index);
 			}
 			else
 			{
-				DBG_8723A("new OFDM_A_index=0x%x, CCK_index=0x%x\n",
+				DBG_8723A("new OFDM_A_index = 0x%x, CCK_index = 0x%x\n",
 					OFDM_index[0], CCK_index);
 			}*/
 		}
 
-		if(pdmpriv->TxPowerTrackControl && (delta != 0 || delta_HP != 0))
+		if (pdmpriv->TxPowerTrackControl && (delta != 0 || delta_HP != 0))
 		{
 			/* Adujst OFDM Ant_A according to IQK result */
 			ele_D = (OFDMSwingTable[OFDM_index[0]] & 0xFFC00000)>>22;
 			X = pdmpriv->RegE94;
 			Y = pdmpriv->RegE9C;
 
-			if(X != 0)
+			if (X != 0)
 			{
 				if ((X & 0x00000200) != 0)
 					X = X | 0xFFFFFC00;
@@ -278,7 +278,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			}
 
 			/* Adjust CCK according to IQK result */
-			if(!pdmpriv->bCCKinCH14){
+			if (!pdmpriv->bCCKinCH14) {
 				rtw_write8(Adapter, 0xa22, CCKSwingTable_Ch1_Ch13[CCK_index][0]);
 				rtw_write8(Adapter, 0xa23, CCKSwingTable_Ch1_Ch13[CCK_index][1]);
 				rtw_write8(Adapter, 0xa24, CCKSwingTable_Ch1_Ch13[CCK_index][2]);
@@ -299,7 +299,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				rtw_write8(Adapter, 0xa29, CCKSwingTable_Ch14[CCK_index][7]);
 			}
 
-			if(is2T)
+			if (is2T)
 			{
 				ele_D = (OFDMSwingTable[(u8)OFDM_index[1]] & 0xFFC00000)>>22;
 
@@ -307,7 +307,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 				X = pdmpriv->RegEB4;
 				Y = pdmpriv->RegEBC;
 
-				if(X != 0){
+				if (X != 0) {
 					if ((X & 0x00000200) != 0)	/* consider minus */
 						X = X | 0xFFFFFC00;
 					ele_A = ((X * ele_D)>>8)&0x000003FF;
@@ -318,7 +318,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 					ele_C = ((Y * ele_D)>>8)&0x00003FF;
 
 					/* wirte new elements A, C, D to regC88 and regC9C, element B is always 0 */
-					value32=(ele_D<<22)|((ele_C&0x3F)<<16) |ele_A;
+					value32 = (ele_D<<22)|((ele_C&0x3F)<<16) |ele_A;
 					PHY_SetBBReg(Adapter, rOFDM0_XBTxIQImbalance, bMaskDWord, value32);
 
 					value32 = (ele_C&0x000003C0)>>6;
@@ -347,14 +347,14 @@ odm_TXPowerTrackingCallback_ThermalMeter_92C(
 			*/
 		}
 
-		if(delta_IQK > 3)
+		if (delta_IQK > 3)
 		{
 			pdmpriv->ThermalValue_IQK = ThermalValue;
-			rtl8723a_phy_iq_calibrate(Adapter,false);
+			rtl8723a_phy_iq_calibrate(Adapter, false);
 		}
 
 		/* update thermal meter value */
-		if(pdmpriv->TxPowerTrackControl)
+		if (pdmpriv->TxPowerTrackControl)
 			pdmpriv->ThermalValue = ThermalValue;
 
 	}
@@ -388,12 +388,12 @@ odm_CheckTXPowerTracking_ThermalMeter(
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct dm_odm_t		*podmpriv = &pHalData->odmpriv;
 
-	if(!(podmpriv->SupportAbility & ODM_RF_TX_PWR_TRACK))
+	if (!(podmpriv->SupportAbility & ODM_RF_TX_PWR_TRACK))
 	{
 		return;
 	}
 
-	if(!pdmpriv->TM_Trigger)		/* at least delay 1 sec */
+	if (!pdmpriv->TM_Trigger)		/* at least delay 1 sec */
 	{
 		PHY_SetRFReg(Adapter, RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
 
@@ -440,7 +440,7 @@ _PHY_PathA_IQK(
 		IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID)?0x28160202:0x28160502);
 
 	/* path-B IQK setting */
-	if(configPathB)
+	if (configPathB)
 	{
 		PHY_SetBBReg(pAdapter, rTx_IQK_Tone_B, bMaskDWord, 0x10008c22);
 		PHY_SetBBReg(pAdapter, rRx_IQK_Tone_B, bMaskDWord, 0x10008c22);
@@ -461,17 +461,17 @@ _PHY_PathA_IQK(
 	/*  Check failed */
 	regEAC = PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_A_2, bMaskDWord);
 	regE94 = PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_A, bMaskDWord);
-	regE9C= PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_A, bMaskDWord);
-	regEA4= PHY_QueryBBReg(pAdapter, rRx_Power_Before_IQK_A_2, bMaskDWord);
+	regE9C = PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_A, bMaskDWord);
+	regEA4 = PHY_QueryBBReg(pAdapter, rRx_Power_Before_IQK_A_2, bMaskDWord);
 
-        if(!(regEAC & BIT28) &&
+        if (!(regEAC & BIT28) &&
 		(((regE94 & 0x03FF0000)>>16) != 0x142) &&
-		(((regE9C & 0x03FF0000)>>16) != 0x42) )
+		(((regE9C & 0x03FF0000)>>16) != 0x42))
 		result |= 0x01;
 	else							/* if Tx not OK, ignore Rx */
 		return result;
 
-	if(!(regEAC & BIT27) &&		/* if Tx is OK, check whether Rx is OK */
+	if (!(regEAC & BIT27) &&		/* if Tx is OK, check whether Rx is OK */
 		(((regEA4 & 0x03FF0000)>>16) != 0x132) &&
 		(((regEAC & 0x03FF0000)>>16) != 0x36))
 		result |= 0x02;
@@ -500,18 +500,18 @@ _PHY_PathB_IQK(
 	/*  Check failed */
 	regEAC = PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_A_2, bMaskDWord);
 	regEB4 = PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_B, bMaskDWord);
-	regEBC= PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_B, bMaskDWord);
-	regEC4= PHY_QueryBBReg(pAdapter, rRx_Power_Before_IQK_B_2, bMaskDWord);
-	regECC= PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_B_2, bMaskDWord);
+	regEBC = PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_B, bMaskDWord);
+	regEC4 = PHY_QueryBBReg(pAdapter, rRx_Power_Before_IQK_B_2, bMaskDWord);
+	regECC = PHY_QueryBBReg(pAdapter, rRx_Power_After_IQK_B_2, bMaskDWord);
 
-	if(!(regEAC & BIT31) &&
+	if (!(regEAC & BIT31) &&
 		(((regEB4 & 0x03FF0000)>>16) != 0x142) &&
 		(((regEBC & 0x03FF0000)>>16) != 0x42))
 		result |= 0x01;
 	else
 		return result;
 
-	if(!(regEAC & BIT30) &&
+	if (!(regEAC & BIT30) &&
 		(((regEC4 & 0x03FF0000)>>16) != 0x132) &&
 		(((regECC & 0x03FF0000)>>16) != 0x36))
 		result |= 0x02;
@@ -534,11 +534,11 @@ _PHY_PathAFillIQKMatrix(
 	u32	Oldval_0, X, TX0_A, reg;
 	s32	Y, TX0_C;
 
-	DBG_8723A("Path A IQ Calibration %s !\n",(bIQKOK)?"Success":"Failed");
+	DBG_8723A("Path A IQ Calibration %s !\n", (bIQKOK)?"Success":"Failed");
 
-	if(final_candidate == 0xFF)
+	if (final_candidate == 0xFF)
 		return;
-	else if(bIQKOK)
+	else if (bIQKOK)
 	{
 		Oldval_0 = (PHY_QueryBBReg(pAdapter, rOFDM0_XATxIQImbalance, bMaskDWord) >> 22) & 0x3FF;
 
@@ -557,7 +557,7 @@ _PHY_PathAFillIQKMatrix(
 		PHY_SetBBReg(pAdapter, rOFDM0_XATxIQImbalance, 0x003F0000, (TX0_C&0x3F));
 		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(29), ((Y* Oldval_0>>7) & 0x1));
 
-	        if(bTxOnly)
+	        if (bTxOnly)
 		{
 			DBG_8723A("_PHY_PathAFillIQKMatrix only Tx OK\n");
 			return;
@@ -586,11 +586,11 @@ _PHY_PathBFillIQKMatrix(
 	u32	Oldval_1, X, TX1_A, reg;
 	s32	Y, TX1_C;
 
-	DBG_8723A("Path B IQ Calibration %s !\n",(bIQKOK)?"Success":"Failed");
+	DBG_8723A("Path B IQ Calibration %s !\n", (bIQKOK)?"Success":"Failed");
 
-	if(final_candidate == 0xFF)
+	if (final_candidate == 0xFF)
 		return;
-	else if(bIQKOK)
+	else if (bIQKOK)
 	{
 		Oldval_1 = (PHY_QueryBBReg(pAdapter, rOFDM0_XBTxIQImbalance, bMaskDWord) >> 22) & 0x3FF;
 
@@ -609,7 +609,7 @@ _PHY_PathBFillIQKMatrix(
 		PHY_SetBBReg(pAdapter, rOFDM0_XBTxIQImbalance, 0x003F0000, (TX1_C&0x3F));
 		PHY_SetBBReg(pAdapter, rOFDM0_ECCAThreshold, BIT(25), ((Y* Oldval_1>>7) & 0x1));
 
-		if(bTxOnly)
+		if (bTxOnly)
 			return;
 
 		reg = result[final_candidate][6];
@@ -633,7 +633,7 @@ _PHY_SaveADDARegisters(
 {
 	u32	i;
 
-	for( i = 0 ; i < RegisterNum ; i++){
+	for (i = 0 ; i < RegisterNum ; i++) {
 		ADDABackup[i] = PHY_QueryBBReg(pAdapter, ADDAReg[i], bMaskDWord);
 	}
 }
@@ -647,8 +647,8 @@ _PHY_SaveMACRegisters(
 {
 	u32	i;
 
-	for( i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++){
-		MACBackup[i] =rtw_read8(pAdapter, MACReg[i]);
+	for (i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++) {
+		MACBackup[i] = rtw_read8(pAdapter, MACReg[i]);
 	}
 	MACBackup[i] = rtw_read32(pAdapter, MACReg[i]);
 }
@@ -663,7 +663,7 @@ _PHY_ReloadADDARegisters(
 {
 	u32	i;
 
-	for(i = 0 ; i < RegiesterNum ; i++){
+	for (i = 0 ; i < RegiesterNum ; i++) {
 		PHY_SetBBReg(pAdapter, ADDAReg[i], bMaskDWord, ADDABackup[i]);
 	}
 }
@@ -677,7 +677,7 @@ _PHY_ReloadMACRegisters(
 {
 	u32	i;
 
-	for(i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++){
+	for (i = 0 ; i < (IQK_MAC_REG_NUM - 1); i++) {
 		rtw_write8(pAdapter, MACReg[i], (u8)MACBackup[i]);
 	}
 	rtw_write32(pAdapter, MACReg[i], MACBackup[i]);
@@ -695,7 +695,7 @@ _PHY_PathADDAOn(
 	u32	i;
 
 	pathOn = isPathAOn ? 0x04db25a4 : 0x0b1b25a4;
-	if(false == is2T){
+	if (false == is2T) {
 		pathOn = 0x0bdb25a0;
 		PHY_SetBBReg(pAdapter, ADDAReg[0], bMaskDWord, 0x0b1b25a0);
 	}
@@ -703,7 +703,7 @@ _PHY_PathADDAOn(
 		PHY_SetBBReg(pAdapter, ADDAReg[0], bMaskDWord, pathOn);
 	}
 
-	for( i = 1 ; i < IQK_ADDA_REG_NUM ; i++){
+	for (i = 1 ; i < IQK_ADDA_REG_NUM ; i++) {
 		PHY_SetBBReg(pAdapter, ADDAReg[i], bMaskDWord, pathOn);
 	}
 
@@ -720,7 +720,7 @@ _PHY_MACSettingCalibration(
 
 	rtw_write8(pAdapter, MACReg[i], 0x3F);
 
-	for(i = 1 ; i < (IQK_MAC_REG_NUM - 1); i++){
+	for (i = 1 ; i < (IQK_MAC_REG_NUM - 1); i++) {
 		rtw_write8(pAdapter, MACReg[i], (u8)(MACBackup[i]&(~BIT3)));
 	}
 	rtw_write8(pAdapter, MACReg[i], (u8)(MACBackup[i]&(~BIT5)));
@@ -763,23 +763,23 @@ _PHY_SimularityCompare(
 	u32		i, j, diff, SimularityBitMap, bound = 0;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	u8		final_candidate[2] = {0xFF, 0xFF};	/* for path A and path B */
-	bool		bResult = true, is2T = IS_92C_SERIAL( pHalData->VersionID);
+	bool		bResult = true, is2T = IS_92C_SERIAL(pHalData->VersionID);
 
-	if(is2T)
+	if (is2T)
 		bound = 8;
 	else
 		bound = 4;
 
 	SimularityBitMap = 0;
 
-	for( i = 0; i < bound; i++ )
+	for (i = 0; i < bound; i++)
 	{
 		diff = (result[c1][i] > result[c2][i]) ? (result[c1][i] - result[c2][i]) : (result[c2][i] - result[c1][i]);
 		if (diff > MAX_TOLERANCE)
 		{
-			if((i == 2 || i == 6) && !SimularityBitMap)
+			if ((i == 2 || i == 6) && !SimularityBitMap)
 			{
-				if(result[c1][i]+result[c1][i+1] == 0)
+				if (result[c1][i]+result[c1][i+1] == 0)
 					final_candidate[(i/4)] = c2;
 				else if (result[c2][i]+result[c2][i+1] == 0)
 					final_candidate[(i/4)] = c1;
@@ -791,13 +791,13 @@ _PHY_SimularityCompare(
 		}
 	}
 
-	if ( SimularityBitMap == 0)
+	if (SimularityBitMap == 0)
 	{
-		for( i = 0; i < (bound/4); i++ )
+		for (i = 0; i < (bound/4); i++)
 		{
-			if(final_candidate[i] != 0xFF)
+			if (final_candidate[i] != 0xFF)
 			{
-				for( j = i*4; j < (i+1)*4-2; j++)
+				for (j = i*4; j < (i+1)*4-2; j++)
 					result[3][j] = result[final_candidate[i]][j];
 				bResult = false;
 			}
@@ -806,13 +806,13 @@ _PHY_SimularityCompare(
 	}
 	else if (!(SimularityBitMap & 0x0F))			/* path A OK */
 	{
-		for(i = 0; i < 4; i++)
+		for (i = 0; i < 4; i++)
 			result[3][i] = result[c1][i];
 		return false;
 	}
 	else if (!(SimularityBitMap & 0xF0) && is2T)	/* path B OK */
 	{
-		for(i = 4; i < 8; i++)
+		for (i = 4; i < 8; i++)
 			result[3][i] = result[c1][i];
 		return false;
 	}
@@ -861,23 +861,21 @@ _PHY_IQCalibrate(
 
 	u32 bbvalue;
 
-	if(t==0)
+	if (t == 0)
 	{
 		bbvalue = PHY_QueryBBReg(pAdapter, rFPGA0_RFMOD, bMaskDWord);
 
 		/*  Save ADDA parameters, turn Path A ADDA on */
-		_PHY_SaveADDARegisters(pAdapter, ADDA_REG, pdmpriv->ADDA_backup,IQK_ADDA_REG_NUM);
+		_PHY_SaveADDARegisters(pAdapter, ADDA_REG, pdmpriv->ADDA_backup, IQK_ADDA_REG_NUM);
 		_PHY_SaveMACRegisters(pAdapter, IQK_MAC_REG, pdmpriv->IQK_MAC_backup);
 		_PHY_SaveADDARegisters(pAdapter, IQK_BB_REG_92C, pdmpriv->IQK_BB_backup, IQK_BB_REG_NUM);
 	}
 	_PHY_PathADDAOn(pAdapter, ADDA_REG, true, is2T);
 
-	if(t==0)
-	{
+	if (t == 0)
 		pdmpriv->bRfPiEnable = (u8)PHY_QueryBBReg(pAdapter, rFPGA0_XA_HSSIParameter1, BIT(8));
-	}
 
-	if(!pdmpriv->bRfPiEnable){
+	if (!pdmpriv->bRfPiEnable) {
 		/*  Switch BB to PI mode to do IQ Calibration. */
 		_PHY_PIModeSwitch(pAdapter, true);
 	}
@@ -891,7 +889,7 @@ _PHY_IQCalibrate(
 	PHY_SetBBReg(pAdapter, rFPGA0_XA_RFInterfaceOE, BIT10, 0x00);
 	PHY_SetBBReg(pAdapter, rFPGA0_XB_RFInterfaceOE, BIT10, 0x00);
 
-	if(is2T)
+	if (is2T)
 	{
 		PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00010000);
 		PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00010000);
@@ -903,7 +901,7 @@ _PHY_IQCalibrate(
 	/* Page B init */
 	PHY_SetBBReg(pAdapter, rConfig_AntA, bMaskDWord, 0x00080000);
 
-	if(is2T)
+	if (is2T)
 	{
 		PHY_SetBBReg(pAdapter, rConfig_AntB, bMaskDWord, 0x00080000);
 	}
@@ -913,9 +911,9 @@ _PHY_IQCalibrate(
 	PHY_SetBBReg(pAdapter, rTx_IQK, bMaskDWord, 0x01007c00);
 	PHY_SetBBReg(pAdapter, rRx_IQK, bMaskDWord, 0x01004800);
 
-	for(i = 0 ; i < retryCount ; i++){
+	for (i = 0 ; i < retryCount ; i++) {
 		PathAOK = _PHY_PathA_IQK(pAdapter, is2T);
-		if(PathAOK == 0x03){
+		if (PathAOK == 0x03) {
 				DBG_8723A("Path A IQK Success!!\n");
 				result[t][0] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 				result[t][1] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
@@ -932,19 +930,19 @@ _PHY_IQCalibrate(
 		}
 	}
 
-	if(0x00 == PathAOK){
+	if (0x00 == PathAOK) {
 		DBG_8723A("Path A IQK failed!!\n");
 	}
 
-	if(is2T){
+	if (is2T) {
 		_PHY_PathAStandBy(pAdapter);
 
 		/*  Turn Path B ADDA on */
 		_PHY_PathADDAOn(pAdapter, ADDA_REG, false, is2T);
 
-		for(i = 0 ; i < retryCount ; i++){
+		for (i = 0 ; i < retryCount ; i++) {
 			PathBOK = _PHY_PathB_IQK(pAdapter);
-			if(PathBOK == 0x03){
+			if (PathBOK == 0x03) {
 				DBG_8723A("Path B IQK Success!!\n");
 				result[t][4] = (PHY_QueryBBReg(pAdapter, rTx_Power_Before_IQK_B, bMaskDWord)&0x3FF0000)>>16;
 				result[t][5] = (PHY_QueryBBReg(pAdapter, rTx_Power_After_IQK_B, bMaskDWord)&0x3FF0000)>>16;
@@ -960,7 +958,7 @@ _PHY_IQCalibrate(
 			}
 		}
 
-		if(0x00 == PathBOK){
+		if (0x00 == PathBOK) {
 			DBG_8723A("Path B IQK failed!!\n");
 		}
 	}
@@ -968,9 +966,9 @@ _PHY_IQCalibrate(
 	/* Back to BB mode, load original value */
 	PHY_SetBBReg(pAdapter, rFPGA0_IQK, bMaskDWord, 0);
 
-	if(t!=0)
+	if (t!= 0)
 	{
-		if(!pdmpriv->bRfPiEnable){
+		if (!pdmpriv->bRfPiEnable) {
 			/*  Switch back BB to SI mode after finish IQ Calibration. */
 			_PHY_PIModeSwitch(pAdapter, false);
 		}
@@ -986,7 +984,7 @@ _PHY_IQCalibrate(
 
 		/*  Restore RX initial gain */
 		PHY_SetBBReg(pAdapter, rFPGA0_XA_LSSIParameter, bMaskDWord, 0x00032ed3);
-		if(is2T){
+		if (is2T) {
 			PHY_SetBBReg(pAdapter, rFPGA0_XB_LSSIParameter, bMaskDWord, 0x00032ed3);
 		}
 
@@ -1009,19 +1007,19 @@ _PHY_LCCalibrate(
 	/* Check continuous TX and Packet TX */
 	tmpReg = rtw_read8(pAdapter, 0xd03);
 
-	if((tmpReg&0x70) != 0)			/* Deal with contisuous TX case */
+	if ((tmpReg&0x70) != 0)			/* Deal with contisuous TX case */
 		rtw_write8(pAdapter, 0xd03, tmpReg&0x8F);	/* disable all continuous TX */
 	else							/*  Deal with Packet TX case */
 		rtw_write8(pAdapter, REG_TXPAUSE, 0xFF);			/*  block all queues */
 
-	if((tmpReg&0x70) != 0)
+	if ((tmpReg&0x70) != 0)
 	{
 		/* 1. Read original RF mode */
 		/* Path-A */
 		RF_Amode = PHY_QueryRFReg(pAdapter, RF_PATH_A, RF_AC, bMask12Bits);
 
 		/* Path-B */
-		if(is2T)
+		if (is2T)
 			RF_Bmode = PHY_QueryRFReg(pAdapter, RF_PATH_B, RF_AC, bMask12Bits);
 
 		/* 2. Set RF mode = standby mode */
@@ -1029,7 +1027,7 @@ _PHY_LCCalibrate(
 		PHY_SetRFReg(pAdapter, RF_PATH_A, RF_AC, bMask12Bits, (RF_Amode&0x8FFFF)|0x10000);
 
 		/* Path-B */
-		if(is2T)
+		if (is2T)
 			PHY_SetRFReg(pAdapter, RF_PATH_B, RF_AC, bMask12Bits, (RF_Bmode&0x8FFFF)|0x10000);
 	}
 
@@ -1042,14 +1040,14 @@ _PHY_LCCalibrate(
 	msleep(100);
 
 	/* Restore original situation */
-	if((tmpReg&0x70) != 0)	/* Deal with contisuous TX case  */
+	if ((tmpReg&0x70) != 0)	/* Deal with contisuous TX case  */
 	{
 		/* Path-A */
 		rtw_write8(pAdapter, 0xd03, tmpReg);
 		PHY_SetRFReg(pAdapter, RF_PATH_A, RF_AC, bMask12Bits, RF_Amode);
 
 		/* Path-B */
-		if(is2T)
+		if (is2T)
 			PHY_SetRFReg(pAdapter, RF_PATH_B, RF_AC, bMask12Bits, RF_Bmode);
 	}
 	else /*  Deal with Packet TX case */
@@ -1166,7 +1164,7 @@ _PHY_APCalibrate(
 
 	int			BB_offset, delta_V, delta_offset;
 
-	if(!is2T)
+	if (!is2T)
 		pathbound = 1;
 
 	/* 2 FOR NORMAL CHIP SETTINGS */
@@ -1200,17 +1198,17 @@ rtl8723a_phy_iq_calibrate(
 					rOFDM0_RxIQExtAnta};
 
 	/* ignore IQK when continuous Tx */
-	if(bStartContTx || bSingleTone || bCarrierSuppression)
+	if (bStartContTx || bSingleTone || bCarrierSuppression)
 		return;
 
-	if(bReCovery)
+	if (bReCovery)
 	{
 		_PHY_ReloadADDARegisters(pAdapter, IQK_BB_REG_92C, pdmpriv->IQK_BB_backup_recover, 9);
 		return;
 	}
 	DBG_8723A("IQK:Start!!!\n");
 
-	for(i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		result[0][i] = 0;
 		result[1][i] = 0;
@@ -1224,9 +1222,9 @@ rtl8723a_phy_iq_calibrate(
 	is23simular = false;
 	is13simular = false;
 
-	for (i=0; i<3; i++)
+	for (i = 0; i<3; i++)
 	{
-		if(IS_92C_SERIAL( pHalData->VersionID)){
+		if (IS_92C_SERIAL(pHalData->VersionID)) {
 			 _PHY_IQCalibrate(pAdapter, result, i, true);
 		}
 		else{
@@ -1234,34 +1232,34 @@ rtl8723a_phy_iq_calibrate(
 			_PHY_IQCalibrate(pAdapter, result, i, false);
 		}
 
-		if(i == 1)
+		if (i == 1)
 		{
 			is12simular = _PHY_SimularityCompare(pAdapter, result, 0, 1);
-			if(is12simular)
+			if (is12simular)
 			{
 				final_candidate = 0;
 				break;
 			}
 		}
 
-		if(i == 2)
+		if (i == 2)
 		{
 			is13simular = _PHY_SimularityCompare(pAdapter, result, 0, 2);
-			if(is13simular)
+			if (is13simular)
 			{
 				final_candidate = 0;
 				break;
 			}
 
 			is23simular = _PHY_SimularityCompare(pAdapter, result, 1, 2);
-			if(is23simular)
+			if (is23simular)
 				final_candidate = 1;
 			else
 			{
-				for(i = 0; i < 8; i++)
+				for (i = 0; i < 8; i++)
 					RegTmp += result[3][i];
 
-				if(RegTmp != 0)
+				if (RegTmp != 0)
 					final_candidate = 3;
 				else
 					final_candidate = 0xFF;
@@ -1269,7 +1267,7 @@ rtl8723a_phy_iq_calibrate(
 		}
 	}
 
-        for (i=0; i<4; i++)
+        for (i = 0; i<4; i++)
 	{
 		RegE94 = result[i][0];
 		RegE9C = result[i][1];
@@ -1281,7 +1279,7 @@ rtl8723a_phy_iq_calibrate(
 		RegECC = result[i][7];
 	}
 
-	if(final_candidate != 0xff)
+	if (final_candidate != 0xff)
 	{
 		pdmpriv->RegE94 = RegE94 = result[final_candidate][0];
 		pdmpriv->RegE9C = RegE9C = result[final_candidate][1];
@@ -1292,7 +1290,7 @@ rtl8723a_phy_iq_calibrate(
 		RegEC4 = result[final_candidate][6];
 		RegECC = result[final_candidate][7];
 		DBG_8723A("IQK: final_candidate is %x\n", final_candidate);
-		DBG_8723A("IQK: RegE94=%x RegE9C=%x RegEA4=%x RegEAC=%x RegEB4=%x RegEBC=%x RegEC4=%x RegECC=%x\n ", RegE94, RegE9C, RegEA4, RegEAC, RegEB4, RegEBC, RegEC4, RegECC);
+		DBG_8723A("IQK: RegE94 =%x RegE9C =%x RegEA4 =%x RegEAC =%x RegEB4 =%x RegEBC =%x RegEC4 =%x RegECC =%x\n ", RegE94, RegE9C, RegEA4, RegEAC, RegEB4, RegEBC, RegEC4, RegECC);
 		bPathAOK = bPathBOK = true;
 	}
 	else
@@ -1301,11 +1299,11 @@ rtl8723a_phy_iq_calibrate(
 		RegE9C = RegEBC = pdmpriv->RegE9C = pdmpriv->RegEBC = 0x0;		/* Y default value */
 	}
 
-	if((RegE94 != 0)/*&&(RegEA4 != 0)*/)
+	if ((RegE94 != 0)/*&&(RegEA4 != 0)*/)
 		_PHY_PathAFillIQKMatrix(pAdapter, bPathAOK, result, final_candidate, (RegEA4 == 0));
 
-	if(IS_92C_SERIAL( pHalData->VersionID)){
-		if((RegEB4 != 0)/*&&(RegEC4 != 0)*/)
+	if (IS_92C_SERIAL(pHalData->VersionID)) {
+		if ((RegEB4 != 0)/*&&(RegEC4 != 0)*/)
 		_PHY_PathBFillIQKMatrix(pAdapter, bPathBOK, result, final_candidate, (RegEC4 == 0));
 	}
 
@@ -1322,13 +1320,13 @@ rtl8723a_phy_lc_calibrate(
 	bool	bStartContTx = false, bSingleTone = false, bCarrierSuppression = false;
 
 	/* ignore IQK when continuous Tx */
-	if(bStartContTx || bSingleTone || bCarrierSuppression)
+	if (bStartContTx || bSingleTone || bCarrierSuppression)
 		return;
 
-	if(pmlmeext->sitesurvey_res.state == SCAN_PROCESS)
+	if (pmlmeext->sitesurvey_res.state == SCAN_PROCESS)
 		return;
 
-	if(IS_92C_SERIAL( pHalData->VersionID)){
+	if (IS_92C_SERIAL(pHalData->VersionID)) {
 		_PHY_LCCalibrate(pAdapter, true);
 	}
 	else{

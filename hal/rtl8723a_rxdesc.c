@@ -22,8 +22,7 @@ static s32  translate2dbm(u8 signal_strength_idx)
 {
 	s32	signal_power; /*  in dBm. */
 
-
-	/*  Translate to dBm (x=0.5y-95). */
+	/*  Translate to dBm (x = 0.5y-95). */
 	signal_power = (s32)((signal_strength_idx + 1) >> 1);
 	signal_power -= 95;
 
@@ -37,8 +36,7 @@ static void process_rssi(struct rtw_adapter *padapter,
 	struct rx_pkt_attrib *pattrib = &prframe->attrib;
 	struct signal_stat * signal_stat = &padapter->recvpriv.signal_strength_data;
 
-
-	if(signal_stat->update_req) {
+	if (signal_stat->update_req) {
 		signal_stat->total_num = 0;
 		signal_stat->total_val = 0;
 		signal_stat->update_req = 0;
@@ -47,24 +45,22 @@ static void process_rssi(struct rtw_adapter *padapter,
 	signal_stat->total_num++;
 	signal_stat->total_val  += pattrib->phy_info.SignalStrength;
 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
-
 }
 
 static void process_link_qual(struct rtw_adapter *padapter,
 			      struct recv_frame *prframe)
 {
-	u32	last_evm=0, tmpVal;
+	u32	last_evm = 0, tmpVal;
 	struct rx_pkt_attrib *pattrib;
 	struct signal_stat * signal_stat;
 
-	if(prframe == NULL || padapter==NULL){
+	if (prframe == NULL || padapter == NULL)
 		return;
-	}
 
 	pattrib = &prframe->attrib;
 	signal_stat = &padapter->recvpriv.signal_qual_data;
 
-	if(signal_stat->update_req) {
+	if (signal_stat->update_req) {
 		signal_stat->total_num = 0;
 		signal_stat->total_val = 0;
 		signal_stat->update_req = 0;
