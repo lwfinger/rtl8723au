@@ -16,8 +16,6 @@
 #define __BASIC_TYPES_H__
 
 #include <linux/types.h>
-#define NDIS_OID uint
-#define NDIS_STATUS uint
 
 #define FIELD_OFFSET(s, field)	((__kernel_ssize_t)&((s *)(0))->field)
 
