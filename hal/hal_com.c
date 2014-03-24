@@ -879,3 +879,8 @@ void rtl8723a_odm_support_ability_clr(struct rtw_adapter *padapter, u32 val)
 
 	pHalData->odmpriv.SupportAbility &= val;
 }
+
+void rtl8723a_set_rpwm(struct rtw_adapter *padapter, u8 val)
+{
+	rtw_write8(padapter, REG_USB_HRPWM, val);
+}

@@ -2115,7 +2115,7 @@ _func_enter_;
 			break;
 
 		case HW_VAR_SET_RPWM:
-			rtw_write8(Adapter, REG_USB_HRPWM, *val);
+			rtl8723a_set_rpwm(Adapter, *val);
 			break;
 
 		case HW_VAR_TRIGGER_GPIO_0:
