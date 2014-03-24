@@ -1741,7 +1741,7 @@ static void _ReadMACAddress(
 	}
 	else{
 		/* Random assigh MAC address */
-		u8 sMacAddr[MAC_ADDR_LEN] = {0x00, 0xE0, 0x4C, 0x81, 0x92, 0x00};
+		u8 sMacAddr[ETH_ALEN] = {0x00, 0xE0, 0x4C, 0x81, 0x92, 0x00};
 		/* sMacAddr[5] = (u8)GetRandomNumber(1, 254); */
 		memcpy(pEEPROM->mac_addr, sMacAddr, ETH_ALEN);
 	}
