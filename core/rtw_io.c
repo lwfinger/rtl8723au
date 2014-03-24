@@ -108,13 +108,13 @@ int _rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val)
 	return RTW_STATUS_CODE(ret);
 }
 
-int _rtw_writeN(struct rtw_adapter *adapter, u32 addr ,u32 length , u8 *pdata)
+int _rtw_writeN(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdata)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
         struct intf_hdl *pintfhdl = (struct intf_hdl*)(&(pio_priv->intf));
 	int ret;
 
-	ret = pintfhdl->io_ops._writeN(pintfhdl, addr,length,pdata);
+	ret = pintfhdl->io_ops._writeN(pintfhdl, addr, length, pdata);
 
 	return RTW_STATUS_CODE(ret);
 }
@@ -243,7 +243,7 @@ void _rtw_write_port_cancel(struct rtw_adapter *adapter)
 
 	_write_port_cancel = pintfhdl->io_ops._write_port_cancel;
 
-	if(_write_port_cancel)
+	if (_write_port_cancel)
 		_write_port_cancel(pintfhdl);
 }
 

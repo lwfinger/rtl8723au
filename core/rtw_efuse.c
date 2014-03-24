@@ -84,10 +84,10 @@ u8
 Efuse_CalculateWordCnts(u8 word_en)
 {
 	u8 word_cnts = 0;
-	if(!(word_en & BIT(0)))	word_cnts++; /*  0 : write enable */
-	if(!(word_en & BIT(1)))	word_cnts++;
-	if(!(word_en & BIT(2)))	word_cnts++;
-	if(!(word_en & BIT(3)))	word_cnts++;
+	if (!(word_en & BIT(0)))	word_cnts++; /*  0 : write enable */
+	if (!(word_en & BIT(1)))	word_cnts++;
+	if (!(word_en & BIT(2)))	word_cnts++;
+	if (!(word_en & BIT(3)))	word_cnts++;
 	return word_cnts;
 }
 
@@ -108,7 +108,7 @@ ReadEFuseByte(struct rtw_adapter *Adapter, u16 _offset, u8 *pbuf)
 	u32	value32;
 	u8	readbyte;
 	u16	retry;
-	/* u32 start=rtw_get_current_time(); */
+	/* u32 start = rtw_get_current_time(); */
 
 	/* Write Address */
 	rtw_write8(Adapter, EFUSE_CTRL+1, (_offset & 0xff));
@@ -137,7 +137,7 @@ ReadEFuseByte(struct rtw_adapter *Adapter, u16 _offset, u8 *pbuf)
 	value32 = rtw_read32(Adapter, EFUSE_CTRL);
 
 	*pbuf = (u8)(value32 & 0xff);
-	/* DBG_8723A("ReadEFuseByte _offset:%08u, in %d ms\n",_offset ,rtw_get_passing_time_ms(start)); */
+	/* DBG_8723A("ReadEFuseByte _offset:%08u, in %d ms\n", _offset , rtw_get_passing_time_ms(start)); */
 }
 
 /*  */
@@ -199,8 +199,8 @@ EFUSE_Read1Byte(struct rtw_adapter *Adapter, u16 Address)
 	u8	data;
 	u8	Bytetemp = {0x00};
 	u8	temp = {0x00};
-	u32	k=0;
-	u16	contentLen=0;
+	u32	k = 0;
+	u16	contentLen = 0;
 
 	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI,
 				 TYPE_EFUSE_REAL_CONTENT_LEN,
@@ -216,24 +216,24 @@ EFUSE_Read1Byte(struct rtw_adapter *Adapter, u16 Address)
 		temp = ((Address >> 8) & 0x03) | (Bytetemp & 0xFC);
 		rtw_write8(Adapter, EFUSE_CTRL+2, temp);
 
-		/* Write 0x30[31]=0 */
+		/* Write 0x30[31]= 0 */
 		Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 		temp = Bytetemp & 0x7F;
 		rtw_write8(Adapter, EFUSE_CTRL+3, temp);
 
-		/* Wait Write-ready (0x30[31]=1) */
+		/* Wait Write-ready (0x30[31]= 1) */
 		Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 		while(!(Bytetemp & 0x80))
 		{
 			Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 			k++;
-			if(k==1000)
+			if (k == 1000)
 			{
-				k=0;
+				k = 0;
 				break;
 			}
 		}
-		data=rtw_read8(Adapter, EFUSE_CTRL);
+		data = rtw_read8(Adapter, EFUSE_CTRL);
 		return data;
 	}
 	else
@@ -270,15 +270,15 @@ EFUSE_Write1Byte(
 {
 	u8	Bytetemp = {0x00};
 	u8	temp = {0x00};
-	u32	k=0;
-	u16	contentLen=0;
+	u32	k = 0;
+	u16	contentLen = 0;
 
-	/* RT_TRACE(COMP_EFUSE, DBG_LOUD, ("Addr=%x Data =%x\n", Address, Value)); */
+	/* RT_TRACE(COMP_EFUSE, DBG_LOUD, ("Addr =%x Data =%x\n", Address, Value)); */
 	EFUSE_GetEfuseDefinition(Adapter, EFUSE_WIFI,
 				 TYPE_EFUSE_REAL_CONTENT_LEN,
 				 (void *)&contentLen);
 
-	if( Address < contentLen)	/* E-fuse 512Byte */
+	if (Address < contentLen)	/* E-fuse 512Byte */
 	{
 		rtw_write8(Adapter, EFUSE_CTRL, Value);
 
@@ -291,20 +291,20 @@ EFUSE_Write1Byte(
 		temp = ((Address >> 8) & 0x03) | (Bytetemp & 0xFC);
 		rtw_write8(Adapter, EFUSE_CTRL+2, temp);
 
-		/* Write 0x30[31]=1 */
+		/* Write 0x30[31]= 1 */
 		Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 		temp = Bytetemp | 0x80;
 		rtw_write8(Adapter, EFUSE_CTRL+3, temp);
 
-		/* Wait Write-ready (0x30[31]=0) */
+		/* Wait Write-ready (0x30[31]= 0) */
 		Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 		while(Bytetemp & 0x80)
 		{
 			Bytetemp = rtw_read8(Adapter, EFUSE_CTRL+3);
 			k++;
-			if(k==100)
+			if (k == 100)
 			{
-				k=0;
+				k = 0;
 				break;
 			}
 		}
@@ -321,8 +321,8 @@ efuse_OneByteRead(struct rtw_adapter *pAdapter, u16 addr, u8 *data)
 	/*  -----------------e-fuse reg ctrl --------------------------------- */
 	/* address */
 	rtw_write8(pAdapter, EFUSE_CTRL+1, (u8)(addr&0xff));
-	rtw_write8(pAdapter, EFUSE_CTRL+2, ((u8)((addr>>8) &0x03) ) |
-	(rtw_read8(pAdapter, EFUSE_CTRL+2)&0xFC ));
+	rtw_write8(pAdapter, EFUSE_CTRL+2, ((u8)((addr>>8) &0x03)) |
+	(rtw_read8(pAdapter, EFUSE_CTRL+2)&0xFC));
 
 	rtw_write8(pAdapter, EFUSE_CTRL+3,  0x72);/* read cmd */
 
@@ -330,9 +330,9 @@ efuse_OneByteRead(struct rtw_adapter *pAdapter, u16 addr, u8 *data)
 	{
 		tmpidx++;
 	}
-	if(tmpidx<100)
+	if (tmpidx<100)
 	{
-		*data=rtw_read8(pAdapter, EFUSE_CTRL);
+		*data = rtw_read8(pAdapter, EFUSE_CTRL);
 		bResult = true;
 	}
 	else
@@ -350,7 +350,7 @@ efuse_OneByteWrite(struct rtw_adapter *pAdapter, u16 addr, u8 data)
 	u8	tmpidx = 0;
 	u8	bResult;
 
-	/* RT_TRACE(COMP_EFUSE, DBG_LOUD, ("Addr = %x Data=%x\n", addr, data)); */
+	/* RT_TRACE(COMP_EFUSE, DBG_LOUD, ("Addr = %x Data =%x\n", addr, data)); */
 
 	/* return	0; */
 
@@ -358,16 +358,16 @@ efuse_OneByteWrite(struct rtw_adapter *pAdapter, u16 addr, u8 data)
 	/* address */
 	rtw_write8(pAdapter, EFUSE_CTRL+1, (u8)(addr&0xff));
 	rtw_write8(pAdapter, EFUSE_CTRL+2,
-	(rtw_read8(pAdapter, EFUSE_CTRL+2)&0xFC )|(u8)((addr>>8)&0x03) );
+	(rtw_read8(pAdapter, EFUSE_CTRL+2)&0xFC)|(u8)((addr>>8)&0x03));
 	rtw_write8(pAdapter, EFUSE_CTRL, data);/* data */
 
 	rtw_write8(pAdapter, EFUSE_CTRL+3, 0xF2);/* write cmd */
 
-	while((0x80 &  rtw_read8(pAdapter, EFUSE_CTRL+3)) && (tmpidx<100) ){
+	while((0x80 &  rtw_read8(pAdapter, EFUSE_CTRL+3)) && (tmpidx<100)) {
 		tmpidx++;
 	}
 
-	if(tmpidx<100)
+	if (tmpidx<100)
 	{
 		bResult = true;
 	}
@@ -382,7 +382,7 @@ efuse_OneByteWrite(struct rtw_adapter *pAdapter, u16 addr, u8 data)
 int
 Efuse_PgPacketRead(struct rtw_adapter *pAdapter, u8 offset, u8 *data)
 {
-	int	ret=0;
+	int	ret = 0;
 
 	ret =  pAdapter->HalFunc.Efuse_PgPacketRead(pAdapter, offset, data);
 
@@ -545,7 +545,7 @@ u8 efuse_GetCurrentSize(struct rtw_adapter *padapter, u16 *size)
 /*  */
 u8 rtw_efuse_map_read(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *data)
 {
-	u16	mapLen=0;
+	u16	mapLen = 0;
 
 	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI,
 				 TYPE_EFUSE_MAP_LEN, (void *)&mapLen);
@@ -564,7 +564,7 @@ u8 rtw_efuse_map_read(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *data
 
 u8 rtw_BT_efuse_map_read(struct rtw_adapter *padapter, u16 addr, u16 cnts, u8 *data)
 {
-	u16	mapLen=0;
+	u16	mapLen = 0;
 
 	EFUSE_GetEfuseDefinition(padapter, EFUSE_BT,
 				 TYPE_EFUSE_MAP_LEN, (void *)&mapLen);
@@ -602,16 +602,16 @@ Efuse_ReadAllMap(struct rtw_adapter *pAdapter, u8 efuseType, u8 *Efuse);
 void
 Efuse_ReadAllMap(struct rtw_adapter *pAdapter, u8 efuseType, u8 *Efuse)
 {
-	u16	mapLen=0;
+	u16	mapLen = 0;
 
-	Efuse_PowerSwitch(pAdapter,false, true);
+	Efuse_PowerSwitch(pAdapter, false, true);
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN,
 				 (void *)&mapLen);
 
 	efuse_ReadEFuse(pAdapter, efuseType, 0, mapLen, Efuse);
 
-	Efuse_PowerSwitch(pAdapter,false, false);
+	Efuse_PowerSwitch(pAdapter, false, false);
 }
 
 /*-----------------------------------------------------------------------------
@@ -690,7 +690,7 @@ efuse_ShadowRead4Byte(
 void EFUSE_ShadowMapUpdate(struct rtw_adapter *pAdapter, u8 efuseType)
 {
 	struct eeprom_priv *pEEPROM = GET_EEPROM_EFUSE_PRIV(pAdapter);
-	u16	mapLen=0;
+	u16	mapLen = 0;
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType,
 				 TYPE_EFUSE_MAP_LEN, (void *)&mapLen);
