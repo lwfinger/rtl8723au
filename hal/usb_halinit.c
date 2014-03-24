@@ -2136,18 +2136,7 @@ _func_exit_;
  */
 static void GetHwReg8723AU(struct rtw_adapter *Adapter, u8 variable, u8* val)
 {
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
-
-_func_enter_;
-
-	switch (variable)
-	{
-		default:
-			GetHwReg8723A(Adapter, variable, val);
-			break;
-	}
-
-_func_exit_;
+	GetHwReg8723A(Adapter, variable, val);
 }
 
 /*  */
