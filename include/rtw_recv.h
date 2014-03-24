@@ -35,7 +35,7 @@ struct recv_reorder_ctrl {
 	u16 indicate_seq;/* wstart_b, init_value=0xffff */
 	u16 wend_b;
 	u8 wsize_b;
-	_queue pending_recvframe_queue;
+	struct rtw_queue pending_recvframe_queue;
 	struct timer_list reordering_ctrl_timer;
 };
 
@@ -169,9 +169,9 @@ struct recv_stat {
 struct recv_priv {
 	spinlock_t	lock;
 
-	_queue	free_recv_queue;
-	_queue	recv_pending_queue;
-	_queue	uc_swdec_pending_queue;
+	struct rtw_queue	free_recv_queue;
+	struct rtw_queue	recv_pending_queue;
+	struct rtw_queue	uc_swdec_pending_queue;
 
 	void *pallocated_frame_buf;
 
@@ -204,7 +204,7 @@ struct recv_priv {
 	struct sk_buff_head free_recv_skb_queue;
 	struct sk_buff_head rx_skb_queue;
 	u8 *precv_buf;
-	_queue	free_recv_buf_queue;
+	struct rtw_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 
 	/* For display the phy informatiom */
@@ -234,8 +234,8 @@ struct sta_recv_priv {
 	spinlock_t	lock;
 	int	option;
 
-	/* _queue	blk_strms[MAX_RX_NUMBLKS]; */
-	_queue defrag_q;	 /* keeping the fragment frame until defrag */
+	/* struct rtw_queue	blk_strms[MAX_RX_NUMBLKS]; */
+	struct rtw_queue defrag_q;	 /* keeping the fragment frame until defrag */
 
 	struct	stainfo_rxcache rxcache;
 
@@ -283,17 +283,17 @@ struct recv_frame {
 };
 
 /* get a free recv_frame from pfree_recv_queue */
-struct recv_frame *rtw_alloc_recvframe(_queue *pfree_recv_queue);
-int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue);
+struct recv_frame *rtw_alloc_recvframe(struct rtw_queue *pfree_recv_queue);
+int rtw_free_recvframe(struct recv_frame *precvframe, struct rtw_queue *pfree_recv_queue);
 
-int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue);
+int rtw_enqueue_recvframe(struct recv_frame *precvframe, struct rtw_queue *queue);
 
-void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue);
+void rtw_free_recvframe_queue(struct rtw_queue *pframequeue, struct rtw_queue *pfree_recv_queue);
 u32 rtw_free_uc_swdec_pending_queue(struct rtw_adapter *adapter);
 
-int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue);
-int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue);
-struct recv_buf *rtw_dequeue_recvbuf(_queue *queue);
+int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, struct rtw_queue *queue);
+int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, struct rtw_queue *queue);
+struct recv_buf *rtw_dequeue_recvbuf(struct rtw_queue *queue);
 
 void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
 

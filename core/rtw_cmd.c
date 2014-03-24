@@ -278,7 +278,7 @@ ISR/Call-Back functions can't call this sub-function.
 
 */
 
-int	_rtw_enqueue_cmd(_queue *queue, struct cmd_obj *obj)
+int	_rtw_enqueue_cmd(struct rtw_queue *queue, struct cmd_obj *obj)
 {
 	unsigned long irqL;
 
@@ -380,7 +380,7 @@ exit:
 static struct cmd_obj *rtw_dequeue_cmd(struct cmd_priv *pcmdpriv)
 {
 	struct cmd_obj *obj;
-	_queue *queue = &pcmdpriv->cmd_queue;
+	struct rtw_queue *queue = &pcmdpriv->cmd_queue;
 	unsigned long irqL;
 
 	spin_lock_irqsave(&queue->lock, irqL);

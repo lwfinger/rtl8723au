@@ -49,7 +49,7 @@ struct cmd_priv {
 	struct semaphore	cmd_queue_sema;
 	/* struct semaphore	cmd_done_sema; */
 	struct semaphore	terminate_cmdthread_sema;
-	_queue	cmd_queue;
+	struct rtw_queue	cmd_queue;
 	u8	cmd_seq;
 	u8	*cmd_buf;	/* shall be non-paged, and 4 bytes aligned */
 	u8	*cmd_allocated_buf;

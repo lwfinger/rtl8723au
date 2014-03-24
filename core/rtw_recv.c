@@ -124,7 +124,7 @@ _func_enter_;
 _func_exit_;
 }
 
-struct recv_frame *rtw_alloc_recvframe(_queue *pfree_recv_queue)
+struct recv_frame *rtw_alloc_recvframe(struct rtw_queue *pfree_recv_queue)
 {
 	struct recv_frame *pframe;
 	struct list_head *plist, *phead;
@@ -156,7 +156,7 @@ struct recv_frame *rtw_alloc_recvframe(_queue *pfree_recv_queue)
 	return pframe;
 }
 
-int rtw_free_recvframe(struct recv_frame *precvframe, _queue *pfree_recv_queue)
+int rtw_free_recvframe(struct recv_frame *precvframe, struct rtw_queue *pfree_recv_queue)
 {
 	struct rtw_adapter *padapter=precvframe->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
@@ -186,7 +186,7 @@ _func_exit_;
 	return _SUCCESS;
 }
 
-int rtw_enqueue_recvframe(struct recv_frame *precvframe, _queue *queue)
+int rtw_enqueue_recvframe(struct recv_frame *precvframe, struct rtw_queue *queue)
 {
 	struct rtw_adapter *padapter = precvframe->adapter;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
@@ -216,7 +216,7 @@ using spinlock to protect
 
 */
 
-void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue)
+void rtw_free_recvframe_queue(struct rtw_queue *pframequeue,  struct rtw_queue *pfree_recv_queue)
 {
 	struct recv_frame *hdr;
 	struct list_head *plist, *phead, *ptmp;
@@ -251,7 +251,7 @@ u32 rtw_free_uc_swdec_pending_queue(struct rtw_adapter *adapter)
 	return cnt;
 }
 
-int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
+int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, struct rtw_queue *queue)
 {
 	spin_lock_bh(&queue->lock);
 
@@ -263,7 +263,7 @@ int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue)
 	return _SUCCESS;
 }
 
-int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
+int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, struct rtw_queue *queue)
 {
 	unsigned long irqL;
 	spin_lock_irqsave(&queue->lock, irqL);
@@ -275,7 +275,7 @@ int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 	return _SUCCESS;
 }
 
-struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
+struct recv_buf *rtw_dequeue_recvbuf (struct rtw_queue *queue)
 {
 	unsigned long irqL;
 	struct recv_buf *precvbuf;
@@ -1702,16 +1702,16 @@ _func_exit_;
 
 /* perform defrag */
 struct recv_frame *recvframe_defrag(struct rtw_adapter *adapter,
-				    _queue *defrag_q);
+				    struct rtw_queue *defrag_q);
 struct recv_frame *recvframe_defrag(struct rtw_adapter *adapter,
-				    _queue *defrag_q)
+				    struct rtw_queue *defrag_q)
 {
 	struct list_head *plist, *phead, *ptmp;
 	u8	*data,wlanhdr_offset;
 	u8	curfragnum;
 	struct recv_frame *pnfhdr;
 	struct recv_frame *prframe, *pnextrframe;
-	_queue	*pfree_recv_queue;
+	struct rtw_queue	*pfree_recv_queue;
 	struct sk_buff *skb;
 
 _func_enter_;
@@ -1800,7 +1800,7 @@ struct recv_frame* recvframe_chk_defrag(struct rtw_adapter *padapter,
 	struct sta_priv *pstapriv;
 	struct list_head *phead;
 	struct recv_frame *prtnframe = NULL;
-	_queue *pfree_recv_queue, *pdefrag_q;
+	struct rtw_queue *pfree_recv_queue, *pdefrag_q;
 
 _func_enter_;
 
@@ -1918,7 +1918,7 @@ int amsdu_to_msdu(struct rtw_adapter *padapter, struct recv_frame *prframe)
 	struct sk_buff *skb, *sub_skb;
 	struct sk_buff_head skb_list;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-	_queue *pfree_recv_queue = &precvpriv->free_recv_queue;
+	struct rtw_queue *pfree_recv_queue = &precvpriv->free_recv_queue;
 
 	pattrib = &prframe->attrib;
 
@@ -2013,7 +2013,7 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
 			      struct recv_frame *prframe)
 {
 	struct rx_pkt_attrib *pattrib = &prframe->attrib;
-	_queue *ppending_recvframe_queue;
+	struct rtw_queue *ppending_recvframe_queue;
 	struct list_head *phead, *plist, *ptmp;
 	struct recv_frame *hdr;
 	struct rx_pkt_attrib *pnextattrib;
@@ -2073,7 +2073,7 @@ int recv_indicatepkts_in_order(struct rtw_adapter *padapter,
 	/* u8 index = 0; */
 	int bPktInBuf = false;
 	struct recv_priv *precvpriv;
-	_queue *ppending_recvframe_queue;
+	struct rtw_queue *ppending_recvframe_queue;
 
 	precvpriv = &padapter->recvpriv;
 	ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
@@ -2171,7 +2171,7 @@ int recv_indicatepkt_reorder(struct rtw_adapter *padapter,
 	int retval = _SUCCESS;
 	struct rx_pkt_attrib *pattrib;
 	struct recv_reorder_ctrl *preorder_ctrl;
-	_queue *ppending_recvframe_queue;
+	struct rtw_queue *ppending_recvframe_queue;
 
 	pattrib = &prframe->attrib;
 	preorder_ctrl = prframe->preorder_ctrl;
@@ -2294,7 +2294,7 @@ void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext)
 {
 	struct recv_reorder_ctrl *preorder_ctrl;
 	struct rtw_adapter *padapter;
-	_queue *ppending_recvframe_queue;
+	struct rtw_queue *ppending_recvframe_queue;
 
 	preorder_ctrl = (struct recv_reorder_ctrl *)pcontext;
 	padapter = preorder_ctrl->padapter;
@@ -2379,7 +2379,7 @@ static int recv_func_prehandle(struct rtw_adapter *padapter,
 	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = &rframe->attrib;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
+	struct rtw_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
 	/* check the frame crtl field and decache */
 	ret = validate_recv_frame(padapter, rframe);
@@ -2401,7 +2401,7 @@ static int recv_func_posthandle(struct rtw_adapter *padapter,
 	struct recv_frame *orig_prframe = prframe;
 	struct rx_pkt_attrib *pattrib = &prframe->attrib;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
+	struct rtw_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
 	/*  DATA FRAME */
 	rtw_led_control(padapter, LED_CTL_RX);

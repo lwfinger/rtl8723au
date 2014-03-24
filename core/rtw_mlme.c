@@ -194,7 +194,7 @@ _func_exit_;
 
 	Shall be calle under atomic context... to avoid possible racing condition...
 */
-struct wlan_network *_rtw_find_network(_queue *scanned_queue, u8 *addr)
+struct wlan_network *_rtw_find_network(struct rtw_queue *scanned_queue, u8 *addr)
 {
 	struct list_head	*phead, *plist;
 	struct	wlan_network *pnetwork = NULL;
@@ -239,7 +239,7 @@ void _rtw_free_network_queue(struct rtw_adapter *padapter, u8 isfreeall)
 	struct list_head *phead, *plist, *ptmp;
 	struct wlan_network *pnetwork;
 	struct mlme_priv* pmlmepriv = &padapter->mlmepriv;
-	_queue *scanned_queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *scanned_queue = &pmlmepriv->scanned_queue;
 
 _func_enter_;
 
@@ -365,7 +365,7 @@ _func_exit_;
 
 	Shall be calle under atomic context... to avoid possible racing condition...
 */
-struct	wlan_network *rtw_find_network(_queue *scanned_queue, u8 *addr)
+struct	wlan_network *rtw_find_network(struct rtw_queue *scanned_queue, u8 *addr)
 {
 	struct	wlan_network *pnetwork = _rtw_find_network(scanned_queue, addr);
 
@@ -428,7 +428,7 @@ _func_exit_;
 		 (d_cap & WLAN_CAPABILITY_ESS)));
 }
 
-struct wlan_network *rtw_get_oldest_wlan_network(_queue *scanned_queue)
+struct wlan_network *rtw_get_oldest_wlan_network(struct rtw_queue *scanned_queue)
 {
 	struct list_head *plist, *phead;
 
@@ -544,7 +544,7 @@ void rtw_update_scanned_network(struct rtw_adapter *adapter, struct wlan_bssid_e
 	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
 	struct wlan_network *pnetwork = NULL;
 	struct wlan_network *oldest = NULL;
-	_queue *queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	u32 bssid_ex_sz;
 	int found = 0;
 
@@ -878,7 +878,7 @@ void rtw_fwdbg_event_callback(struct rtw_adapter *adapter , u8 *pbuf)
 static void free_scanqueue(struct	mlme_priv *pmlmepriv)
 {
 	struct wlan_network *pnetwork;
-	_queue *scan_queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *scan_queue = &pmlmepriv->scanned_queue;
 	struct list_head *plist, *phead, *ptemp;
 
 _func_enter_;
@@ -1930,7 +1930,7 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv)
 	int ret;
 	struct list_head *phead, *plist, *ptmp;
 	struct rtw_adapter *adapter;
-	_queue *queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct	wlan_network	*pnetwork = NULL;
 	struct	wlan_network	*candidate = NULL;
 	u8 bSupportAntDiv = false;

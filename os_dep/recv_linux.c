@@ -128,7 +128,7 @@ int rtw_recv_indicatepkt(struct rtw_adapter *padapter,
 			 struct recv_frame *precv_frame)
 {
 	struct recv_priv *precvpriv;
-	_queue	*pfree_recv_queue;
+	struct rtw_queue *pfree_recv_queue;
 	struct sk_buff *skb;
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
 

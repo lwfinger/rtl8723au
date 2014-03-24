@@ -358,7 +358,7 @@ struct mlme_priv {
 	struct rtw_adapter *nic_hdl;
 
 	u8	not_indic_disco;
-	_queue	scanned_queue;
+	struct rtw_queue	scanned_queue;
 
 	struct cfg80211_ssid assoc_ssid;
 	u8	assoc_bssid[6];
@@ -574,8 +574,8 @@ void rtw_update_scanned_network(struct rtw_adapter *adapter,
 void rtw_disconnect_hdl_under_linked(struct rtw_adapter *adapter,
 				     struct sta_info *psta, u8 free_assoc);
 void rtw_generate_random_ibss(u8 *pibss);
-struct wlan_network *rtw_find_network(_queue *scanned_queue, u8 *addr);
-struct wlan_network *rtw_get_oldest_wlan_network(_queue *scanned_queue);
+struct wlan_network *rtw_find_network(struct rtw_queue *scanned_queue, u8 *addr);
+struct wlan_network *rtw_get_oldest_wlan_network(struct rtw_queue *scanned_queue);
 
 void rtw_free_assoc_resources(struct rtw_adapter *adapter,
 			      int lock_scanned_queue);
@@ -615,7 +615,7 @@ void _rtw_free_network(struct mlme_priv *pmlmepriv,
 void _rtw_free_network_nolock(struct mlme_priv *pmlmepriv,
 			      struct wlan_network *pnetwork);
 
-struct wlan_network *_rtw_find_network(_queue *scanned_queue, u8 *addr);
+struct wlan_network *_rtw_find_network(struct rtw_queue *scanned_queue, u8 *addr);
 
 void _rtw_free_network_queue(struct rtw_adapter *padapter, u8 isfreeall);
 

@@ -21,6 +21,6 @@
 int _rtw_init_evt_priv(struct evt_priv *pevtpriv);
 void _rtw_free_evt_priv(struct	evt_priv *pevtpriv);
 void _rtw_free_cmd_priv(struct	cmd_priv *pcmdpriv);
-int _rtw_enqueue_cmd(_queue *queue, struct cmd_obj *obj);
+int _rtw_enqueue_cmd(struct rtw_queue *queue, struct cmd_obj *obj);
 
 #endif

@@ -510,7 +510,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 	struct rx_pkt_attrib	*pattrib = NULL;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
-	_queue			*pfree_recv_queue = &precvpriv->free_recv_queue;
+	struct rtw_queue	*pfree_recv_queue = &precvpriv->free_recv_queue;
 
 	transfer_len = (s32)pskb->len;
 	pbuf = pskb->data;

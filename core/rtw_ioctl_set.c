@@ -56,7 +56,7 @@ u8 rtw_do_join(struct rtw_adapter * padapter)
 	struct list_head *plist, *phead;
 	u8* pibss = NULL;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	_queue *queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	u8 ret = _SUCCESS;
 
 	spin_lock_bh(&pmlmepriv->scanned_queue.lock);

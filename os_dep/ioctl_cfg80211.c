@@ -1504,7 +1504,7 @@ void rtw_cfg80211_surveydone_event_callback(struct rtw_adapter *padapter)
 	unsigned long irqL;
 	struct list_head *plist, *phead, *ptmp;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	_queue *queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u32 cnt = 0;
 	u32 wait_for_surveydone;
@@ -2215,7 +2215,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	struct rtw_adapter *padapter = wiphy_to_adapter(wiphy);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
-	_queue *queue = &pmlmepriv->scanned_queue;
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 
 	DBG_8723A("=>" FUNC_NDEV_FMT "\n", FUNC_NDEV_ARG(ndev));
 	DBG_8723A("privacy=%d, key=%p, key_len=%d, key_idx=%d\n",

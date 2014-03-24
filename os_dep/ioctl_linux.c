@@ -952,7 +952,7 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue *queue = &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u16	attr_content = 0;
@@ -1081,7 +1081,7 @@ static int rtw_p2p_get_go_device_address(struct net_device *dev,
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue *queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue	= &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 *p2pie;
@@ -1165,7 +1165,7 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue *queue = &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 dev_type[8] = { 0x00 };
@@ -1235,7 +1235,7 @@ static int rtw_p2p_get_device_name(struct net_device *dev,
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue *queue = &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 dev_name[WPS_MAX_DEVICE_NAME_LEN] = { 0x00 };
@@ -1301,7 +1301,7 @@ static int rtw_p2p_get_invitation_procedure(struct net_device *dev,
 	u8 peerMAC[ETH_ALEN] = { 0x00 };
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue *queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue	= &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8 blnMatch = 0;
 	u8 *p2pie;
@@ -1374,7 +1374,7 @@ static int rtw_p2p_connect(struct net_device *dev,
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead;
-	_queue				*queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	uint					uintPeerChannel = 0;
 
@@ -1463,7 +1463,7 @@ static int rtw_p2p_invite_req(struct net_device *dev,
 	u8						peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue					*queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	uint						uintPeerChannel = 0;
 	u8						attr_content[50] = { 0x00 }, _status = 0;
@@ -1635,7 +1635,7 @@ static int rtw_p2p_set_persistent(struct net_device *dev,
 	u8						peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
 	struct list_head						*plist, *phead;
-	_queue					*queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	uint						uintPeerChannel = 0;
 	u8						attr_content[50] = { 0x00 }, _status = 0;
@@ -1697,7 +1697,7 @@ static int rtw_p2p_set_pc(struct net_device *dev,
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue				*queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	u8					attr_content[50] = { 0x00 }, _status = 0;
 	u8 *p2pie;
@@ -1938,7 +1938,7 @@ static int rtw_p2p_prov_disc(struct net_device *dev,
 	u8					peerMACStr[ ETH_ALEN * 2 ] = { 0x00 };
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct list_head *plist, *phead, *ptmp;
-	_queue				*queue	= &(pmlmepriv->scanned_queue);
+	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
 	struct wlan_network *pnetwork;
 	uint					uintPeerChannel = 0;
 	u8					attr_content[100] = { 0x00 }, _status = 0;

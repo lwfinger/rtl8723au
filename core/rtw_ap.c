@@ -1283,7 +1283,7 @@ int rtw_acl_add_sta(struct rtw_adapter *padapter, u8 *addr)
 	struct rtw_wlan_acl_node *paclnode;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
-	_queue	*pacl_node_q =&pacl_list->acl_node_q;
+	struct rtw_queue *pacl_node_q = &pacl_list->acl_node_q;
 
 	DBG_8723A("%s(acl_num=%d)=" MAC_FMT "\n", __func__, pacl_list->num, MAC_ARG(addr));
 
@@ -1349,7 +1349,7 @@ int rtw_acl_remove_sta(struct rtw_adapter *padapter, u8 *addr)
 	struct rtw_wlan_acl_node *paclnode;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
-	_queue	*pacl_node_q =&pacl_list->acl_node_q;
+	struct rtw_queue *pacl_node_q = &pacl_list->acl_node_q;
 
 	DBG_8723A("%s(acl_num=%d)=" MAC_FMT "\n", __func__, pacl_list->num, MAC_ARG(addr));
 
@@ -2241,7 +2241,7 @@ void stop_ap_mode(struct rtw_adapter *padapter)
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
-	_queue	*pacl_node_q =&pacl_list->acl_node_q;
+	struct rtw_queue *pacl_node_q = &pacl_list->acl_node_q;
 
 	pmlmepriv->update_bcn = false;
 	pmlmeext->bstart_bss = false;

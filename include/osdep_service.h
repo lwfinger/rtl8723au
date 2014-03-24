@@ -63,16 +63,14 @@ struct c2h_evt_hdr;
 
 typedef s32 (*c2h_id_filter)(u8 id);
 
-struct	__queue	{
+struct rtw_queue {
 	struct	list_head	queue;
 	spinlock_t		lock;
 };
 
-typedef struct	__queue	_queue;
-
-static inline struct list_head	*get_list_head(_queue	*queue)
+static inline struct list_head *get_list_head(struct rtw_queue *queue)
 {
-	return (&(queue->queue));
+	return (&queue->queue);
 }
 
 static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
@@ -150,8 +148,8 @@ extern unsigned char RSN_TKIP_CIPHER[4];
 extern unsigned char	MCS_rate_2R[16];
 extern unsigned char	MCS_rate_1R[16];
 
-void	_rtw_init_queue(_queue	*pqueue);
-u32	_rtw_queue_empty(_queue	*pqueue);
+void	_rtw_init_queue(struct rtw_queue *pqueue);
+u32	_rtw_queue_empty(struct rtw_queue *pqueue);
 
 u32	rtw_get_current_time(void);
 u32	rtw_systime_to_ms(u32 systime);

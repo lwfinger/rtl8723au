@@ -108,7 +108,7 @@ union txdesc {
 };
 
 struct	hw_xmit	{
-	_queue *sta_queue;
+	struct rtw_queue *sta_queue;
 	int	accnt;
 };
 
@@ -240,7 +240,7 @@ struct xmit_frame {
 
 struct tx_servq {
 	struct list_head	tx_pending;
-	_queue	sta_pending;
+	struct rtw_queue	sta_pending;
 	int qcnt;
 };
 
@@ -281,21 +281,21 @@ struct	xmit_priv {
 	struct semaphore	xmit_sema;
 	struct semaphore	terminate_xmitthread_sema;
 
-	_queue	be_pending;
-	_queue	bk_pending;
-	_queue	vi_pending;
-	_queue	vo_pending;
-	_queue	bm_pending;
+	struct rtw_queue	be_pending;
+	struct rtw_queue	bk_pending;
+	struct rtw_queue	vi_pending;
+	struct rtw_queue	vo_pending;
+	struct rtw_queue	bm_pending;
 
 	u8 *pallocated_frame_buf;
 	u8 *pxmit_frame_buf;
 	uint free_xmitframe_cnt;
-	_queue	free_xmit_queue;
+	struct rtw_queue	free_xmit_queue;
 
 	u8 *xframe_ext_alloc_addr;
 	u8 *xframe_ext;
 	uint free_xframe_ext_cnt;
-	_queue free_xframe_ext_queue;
+	struct rtw_queue free_xframe_ext_queue;
 
 	uint	frag_len;
 
@@ -329,12 +329,12 @@ struct	xmit_priv {
 	int viq_cnt;
 	int voq_cnt;
 
-	_queue free_xmitbuf_queue;
+	struct rtw_queue free_xmitbuf_queue;
 	struct list_head xmitbuf_list;		/* track buffers for cleanup */
-	_queue pending_xmitbuf_queue;
+	struct rtw_queue pending_xmitbuf_queue;
 	uint free_xmitbuf_cnt;
 
-	_queue free_xmit_extbuf_queue;
+	struct rtw_queue free_xmit_extbuf_queue;
 	struct list_head xmitextbuf_list;	/* track buffers for cleanup */
 	uint free_xmit_extbuf_cnt;
 
@@ -363,7 +363,7 @@ struct xmit_frame *rtw_alloc_xmitframe_ext(struct xmit_priv *pxmitpriv);
 struct xmit_frame *rtw_alloc_xmitframe_once(struct xmit_priv *pxmitpriv);
 s32 rtw_free_xmitframe(struct xmit_priv *pxmitpriv,
 		       struct xmit_frame *pxmitframe);
-void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, _queue *pframequeue);
+void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, struct rtw_queue *pframequeue);
 struct tx_servq *rtw_get_sta_pending(struct rtw_adapter *padapter,
 				     struct sta_info *psta, int up, u8 *ac);
 s32 rtw_xmitframe_enqueue(struct rtw_adapter *padapter,

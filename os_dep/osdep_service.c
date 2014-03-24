@@ -63,13 +63,13 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 	vfree(pbuf);
 }
 
-void	_rtw_init_queue(_queue	*pqueue)
+void _rtw_init_queue(struct rtw_queue *pqueue)
 {
 	INIT_LIST_HEAD(&(pqueue->queue));
 	spin_lock_init(&(pqueue->lock));
 }
 
-u32	  _rtw_queue_empty(_queue *pqueue)
+u32 _rtw_queue_empty(struct rtw_queue *pqueue)
 {
 	if (list_empty(&(pqueue->queue)))
 		return true;
