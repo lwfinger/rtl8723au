@@ -15,8 +15,6 @@
 #ifndef __RTL8723A_SPEC_H__
 #define __RTL8723A_SPEC_H__
 
-#include "basic_types.h"
-
 /*  */
 /*  */
 /*	0x0000h ~ 0x00FFh	System Configuration */

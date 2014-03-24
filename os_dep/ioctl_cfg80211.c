@@ -2384,8 +2384,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len =
 				wep_key_len +
-				FIELD_OFFSET(struct ndis_802_11_wep,
-					     KeyMaterial);
+			        offsetof(struct ndis_802_11_wep, KeyMaterial);
 			pwep = (struct ndis_802_11_wep *)kmalloc(wep_total_len,
 								 GFP_KERNEL);
 			if (pwep == NULL) {

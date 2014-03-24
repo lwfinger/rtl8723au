@@ -29,8 +29,6 @@ enum rt_spinlock_type {
 };
 
 
-	#include <basic_types.h>
-
 	#define	STA_INFO_T			struct sta_info
 	#define	PSTA_INFO_T		struct sta_info *
 

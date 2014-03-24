@@ -985,7 +985,7 @@ u8 rtw_set_802_11_add_key(struct rtw_adapter* padapter,
 	    (encryptionalgo == _WEP40_ || encryptionalgo == _WEP104_)) {
 		u8 ret;
 		u32 keyindex;
-		u32 len = FIELD_OFFSET(struct ndis_802_11_key, KeyMaterial) +
+		u32 len = offsetof(struct ndis_802_11_key, KeyMaterial) +
 			key->KeyLength;
 		struct ndis_802_11_wep *wep = &padapter->securitypriv.ndiswep;
 
