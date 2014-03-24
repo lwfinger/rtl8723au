@@ -19,31 +19,6 @@
 
 #define FIELD_OFFSET(s, field)	((__kernel_ssize_t)&((s *)(0))->field)
 
-/* port from fw by thomas */
-/*  TODO: Below are Sync from SD7-Driver. It is necessary to check correctness*/
-
-/*
- *	Call endian free function when
- *		1. Read/write packet content.
- *		2. Before write integer to IO.
- *		3. After read integer from IO.
-*/
-
-/*  Byte Swapping routine. */
-#define EF1Byte
-#define EF2Byte		le16_to_cpu
-#define EF4Byte	le32_to_cpu
-
-/*  Read LE format data from memory */
-#define ReadEF1Byte(_ptr)		EF1Byte(*((u8 *)(_ptr)))
-#define ReadEF2Byte(_ptr)		EF2Byte(*((u16 *)(_ptr)))
-#define ReadEF4Byte(_ptr)		EF4Byte(*((u32 *)(_ptr)))
-
-/*  Write LE data to memory */
-#define WriteEF1Byte(_ptr, _val)	((*((u8 *)(_ptr))) = EF1Byte(_val))
-#define WriteEF2Byte(_ptr, _val)	((*((u16 *)(_ptr))) = EF2Byte(_val))
-#define WriteEF4Byte(_ptr, _val)	((*((u32 *)(_ptr))) = EF4Byte(_val))
-
 /*	Example: */
 /*		BIT_LEN_MASK_32(0) => 0x00000000 */
 /*		BIT_LEN_MASK_32(1) => 0x00000001 */
