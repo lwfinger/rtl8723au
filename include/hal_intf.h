@@ -137,8 +137,6 @@ enum hal_intf_ps_func {
 	HAL_MAX_ID,
 };
 
-typedef s32 (*c2h_id_filter)(u8 id);
-
 struct hal_ops {
 	u32	(*hal_power_on)(struct rtw_adapter *padapter);
 	u32	(*hal_init)(struct rtw_adapter *padapter);
