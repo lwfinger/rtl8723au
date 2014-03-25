@@ -640,8 +640,8 @@ u32 rtw_tkip_encrypt(struct rtw_adapter *padapter,
 	union pn48 dot11txpn;
 	struct	sta_info		*stainfo;
 	struct	pkt_attrib	 *pattrib = &pxmitframe->attrib;
-	struct	security_priv	*psecuritypriv =&padapter->securitypriv;
-	struct	xmit_priv		*pxmitpriv =&padapter->xmitpriv;
+	struct	security_priv	*psecuritypriv = &padapter->securitypriv;
+	struct	xmit_priv		*pxmitpriv = &padapter->xmitpriv;
 	u32	res = _SUCCESS;
 
 
@@ -678,7 +678,7 @@ u32 rtw_tkip_encrypt(struct rtw_adapter *padapter,
 			if (is_multicast_ether_addr(pattrib->ra))
 				prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey;
 			else
-				prwskey =&stainfo->dot118021x_UncstKey.skey[0];
+				prwskey = &stainfo->dot118021x_UncstKey.skey[0];
 
 			prwskeylen = 16;
 
@@ -750,7 +750,7 @@ u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
 	struct	rx_pkt_attrib *prxattrib = &precvframe->attrib;
 	struct	security_priv *psecuritypriv = &padapter->securitypriv;
 	struct sk_buff * skb = precvframe->pkt;
-/*	struct	recv_priv		*precvpriv =&padapter->recvpriv; */
+/*	struct	recv_priv		*precvpriv = &padapter->recvpriv; */
 	u32		res = _SUCCESS;
 
 
@@ -776,7 +776,7 @@ u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
 				prwskeylen = 16;
 			} else {
 			        RT_TRACE(_module_rtl871x_security_c_, _drv_err_, ("rtw_tkip_decrypt: stainfo!= NULL!!!\n"));
-				prwskey =&stainfo->dot118021x_UncstKey.skey[0];
+				prwskey = &stainfo->dot118021x_UncstKey.skey[0];
 				prwskeylen = 16;
 			}
 
@@ -1799,7 +1799,7 @@ u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe)
 	struct rx_pkt_attrib *prxattrib = &precvframe->attrib;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct sk_buff * skb = precvframe->pkt;
-/*	struct	recv_priv		*precvpriv =&padapter->recvpriv; */
+/*	struct	recv_priv		*precvpriv = &padapter->recvpriv; */
 	u32 res = _SUCCESS;
 
 	pframe = skb->data;

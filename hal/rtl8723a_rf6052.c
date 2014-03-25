@@ -124,7 +124,7 @@ rtl823a_phy_rf6052setccktxpower(
 	struct mlme_priv	*pmlmepriv = &Adapter->mlmepriv;
 	struct dm_priv		*pdmpriv = &pHalData->dmpriv;
 	struct mlme_ext_priv		*pmlmeext = &Adapter->mlmeextpriv;
-	/* PMGNT_INFO		pMgntInfo =&Adapter->MgntInfo; */
+	/* PMGNT_INFO		pMgntInfo = &Adapter->MgntInfo; */
 	u32			TxAGC[2]={0, 0}, tmpval = 0;
 	bool		TurboScanOff = false;
 	u8			idx1, idx2;

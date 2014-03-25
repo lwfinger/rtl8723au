@@ -1573,7 +1573,7 @@ bthci_EventPhysicalLinkComplete(
 	struct bt_30info *		pBTInfo = GET_BT_INFO(padapter);
 	struct bt_mgnt *		pBtMgnt = &pBTInfo->BtMgnt;
 	struct bt_hci_info *		pBtHciInfo = &pBTInfo->BtHciInfo;
-	struct bt_dgb *			pBtDbg =&pBTInfo->BtDbg;
+	struct bt_dgb *			pBtDbg = &pBTInfo->BtDbg;
 	u8			localBuf[4] = "";
 	struct packet_irp_hcievent_data * PPacketIrpEvent;
 	u8			PL_handle;
@@ -11415,7 +11415,7 @@ static void BTDM_2AntSwCoexAllOff8723A(struct rtw_adapter *padapter)
 static void BTDM_2AntIpsNotify8723A(struct rtw_adapter *padapter, u8 type)
 {
 	struct bt_30info *		pBTInfo = GET_BT_INFO(padapter);
-	struct bt_mgnt *		pBtMgnt =&pBTInfo->BtMgnt;
+	struct bt_mgnt *		pBtMgnt = &pBTInfo->BtMgnt;
 
 	if (pBtMgnt->bSupportProfile && (rf_off == type))
 	{

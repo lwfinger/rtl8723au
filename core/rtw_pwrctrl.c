@@ -57,7 +57,7 @@ void ips_enter(struct rtw_adapter * padapter)
 int ips_leave(struct rtw_adapter * padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct security_priv* psecuritypriv =&padapter->securitypriv;
+	struct security_priv* psecuritypriv = &padapter->securitypriv;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	int result = _SUCCESS;
 	int keyid;

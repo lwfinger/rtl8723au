@@ -9148,7 +9148,7 @@ static void survey_timer_hdl(unsigned long data)
 	struct rtw_adapter *padapter = (struct rtw_adapter *)data;
 	struct cmd_obj *ph2c;
 	struct sitesurvey_parm *psurveyPara;
-	struct cmd_priv *pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 #ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;

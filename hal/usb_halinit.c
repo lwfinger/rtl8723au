@@ -1595,7 +1595,7 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	struct recv_buf *precvbuf;
 	uint	status;
 	struct dvobj_priv *pdev = adapter_to_dvobj(Adapter);
-	struct intf_hdl * pintfhdl =&Adapter->iopriv.intf;
+	struct intf_hdl * pintfhdl = &Adapter->iopriv.intf;
 	struct recv_priv *precvpriv = &Adapter->recvpriv;
 	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 			  struct recv_buf *rbuf);

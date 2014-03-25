@@ -2465,7 +2465,7 @@ int rtw_recv_entry(struct recv_frame *rframe)
 	struct rtw_adapter *padapter = rframe->adapter;
 	struct rx_pkt_attrib *prxattrib = &rframe->attrib;
 	struct recv_priv *recvpriv = &padapter->recvpriv;
-	struct security_priv *psecuritypriv =&padapter->securitypriv;
+	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 
 	/* check if need to handle uc_swdec_pending_queue*/

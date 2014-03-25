@@ -528,7 +528,7 @@ u8 rtw_setstandby_cmd(struct rtw_adapter *padapter, uint action)
 {
 	struct cmd_obj*			ph2c;
 	struct usb_suspend_parm*	psetusbsuspend;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 
 	u8 ret = _SUCCESS;
 
@@ -700,7 +700,7 @@ u8 rtw_setbasicrate_cmd(struct rtw_adapter *padapter, u8 *rateset)
 {
 	struct cmd_obj*			ph2c;
 	struct setbasicrate_parm*	pssetbasicratepara;
-	struct cmd_priv*		pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv*		pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -738,7 +738,7 @@ u8 rtw_setphy_cmd(struct rtw_adapter *padapter, u8 modem, u8 ch)
 {
 	struct cmd_obj*			ph2c;
 	struct setphy_parm*		psetphypara;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -772,7 +772,7 @@ u8 rtw_setbbreg_cmd(struct rtw_adapter*padapter, u8 offset, u8 val)
 {
 	struct cmd_obj*			ph2c;
 	struct writeBB_parm*		pwritebbparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -804,7 +804,7 @@ u8 rtw_getbbreg_cmd(struct rtw_adapter  *padapter, u8 offset, u8 *pval)
 {
 	struct cmd_obj*			ph2c;
 	struct readBB_parm*		prdbbparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -839,7 +839,7 @@ u8 rtw_setrfreg_cmd(struct rtw_adapter  *padapter, u8 offset, u32 val)
 {
 	struct cmd_obj*			ph2c;
 	struct writeRF_parm*		pwriterfparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -871,7 +871,7 @@ u8 rtw_getrfreg_cmd(struct rtw_adapter  *padapter, u8 offset, u8 *pval)
 {
 	struct cmd_obj*			ph2c;
 	struct readRF_parm*		prdrfparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -924,7 +924,7 @@ void rtw_getbbrfreg_cmdrsp_callback(struct rtw_adapter*	padapter,  struct cmd_ob
 u8 rtw_createbss_cmd(struct rtw_adapter  *padapter)
 {
 	struct cmd_obj*			pcmd;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
 	struct wlan_bssid_ex		*pdev_network = &padapter->registrypriv.dev_network;
 	u8	res = _SUCCESS;
@@ -967,7 +967,7 @@ exit:
 u8 rtw_createbss_cmd_ex(struct rtw_adapter  *padapter, unsigned char *pbss, unsigned int sz)
 {
 	struct cmd_obj*	pcmd;
-	struct cmd_priv		*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv		*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	pcmd = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -997,10 +997,10 @@ u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork)
 	uint	t_len = 0;
 	struct wlan_bssid_ex		*psecnetwork;
 	struct cmd_obj		*pcmd;
-	struct cmd_priv		*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv		*pcmdpriv = &padapter->cmdpriv;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	struct qos_priv		*pqospriv = &pmlmepriv->qospriv;
-	struct security_priv	*psecuritypriv =&padapter->securitypriv;
+	struct security_priv	*psecuritypriv = &padapter->securitypriv;
 	struct registry_priv	*pregistrypriv = &padapter->registrypriv;
 	struct ht_priv			*phtpriv = &pmlmepriv->htpriv;
 	enum ndis_802_11_net_infra ndis_network_mode = pnetwork->network.InfrastructureMode;
@@ -1067,7 +1067,7 @@ u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork)
 
 	memcpy(psecnetwork, &pnetwork->network, get_wlan_bssid_ex_sz(&pnetwork->network));
 
-	auth =&psecuritypriv->authenticator_ie[0];
+	auth = &psecuritypriv->authenticator_ie[0];
 	psecuritypriv->authenticator_ie[0]= (unsigned char)psecnetwork->IELength;
 
 	if ((psecnetwork->IELength-12) < (256-1)) {
@@ -1224,7 +1224,7 @@ u8 rtw_setstakey_cmd(struct rtw_adapter *padapter, u8 *psta, u8 unicast_key)
 {
 	struct cmd_obj*			ph2c;
 	struct set_stakey_parm	*psetstakey_para;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	struct set_stakey_rsp		*psetstakey_rsp = NULL;
 
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
@@ -1287,7 +1287,7 @@ u8 rtw_clearstakey_cmd(struct rtw_adapter *padapter, u8 *psta, u8 entry, u8 enqu
 {
 	struct cmd_obj*			ph2c;
 	struct set_stakey_parm	*psetstakey_para;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	struct set_stakey_rsp		*psetstakey_rsp = NULL;
 	struct mlme_priv			*pmlmepriv = &padapter->mlmepriv;
 	struct security_priv		*psecuritypriv = &padapter->securitypriv;
@@ -1348,7 +1348,7 @@ u8 rtw_setrttbl_cmd(struct rtw_adapter  *padapter, struct setratable_parm *prate
 {
 	struct cmd_obj*			ph2c;
 	struct setratable_parm *	psetrttblparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -1379,7 +1379,7 @@ u8 rtw_getrttbl_cmd(struct rtw_adapter  *padapter, struct getratable_rsp *pval)
 {
 	struct cmd_obj*			ph2c;
 	struct getratable_parm *	pgetrttblparm;
-	struct cmd_priv				*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv				*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
@@ -1496,7 +1496,7 @@ u8 rtw_dynamic_chk_wk_cmd(struct rtw_adapter*padapter)
 {
 	struct cmd_obj*		ph2c;
 	struct drvextra_cmd_parm  *pdrvextra_cmd_parm;
-	struct cmd_priv	*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);

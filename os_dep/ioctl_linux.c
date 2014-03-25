@@ -2047,7 +2047,7 @@ static u8 set_pairwise_key(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	struct cmd_obj *ph2c;
 	struct set_stakey_parm	*psetstakey_para;
-	struct cmd_priv		*pcmdpriv =&padapter->cmdpriv;
+	struct cmd_priv		*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
 	ph2c = (struct cmd_obj*)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);

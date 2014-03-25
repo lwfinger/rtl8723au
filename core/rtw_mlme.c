@@ -2507,7 +2507,7 @@ void rtw_issue_addbareq_cmd(struct rtw_adapter *padapter, struct xmit_frame *pxm
 	int priority;
 	struct sta_info *psta = NULL;
 	struct ht_priv	*phtpriv;
-	struct pkt_attrib *pattrib =&pxmitframe->attrib;
+	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	s32 bmcst = is_multicast_ether_addr(pattrib->ra);
 
 	if (bmcst || (padapter->mlmepriv.LinkDetectInfo.NumTxOkInPeriod<100))
