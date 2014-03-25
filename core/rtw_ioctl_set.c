@@ -406,7 +406,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct rtw_adapter* padapter,
 {
 	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct	wlan_network	*cur_network = &pmlmepriv->cur_network;
-	enum ndis_802_11_net_infra* pold_state = &(cur_network->network.InfrastructureMode);
+	enum ndis_802_11_net_infra* pold_state = &cur_network->network.InfrastructureMode;
 
 
 
@@ -1111,7 +1111,7 @@ u8 rtw_set_802_11_add_key(struct rtw_adapter* padapter,
 		u8 res;
 
 		pbssid = get_bssid(&padapter->mlmepriv);
-		stainfo = rtw_get_stainfo(&padapter->stapriv , pbssid);
+		stainfo = rtw_get_stainfo(&padapter->stapriv, pbssid);
 
 		if (stainfo) {
 			memcpy(&stainfo->dot118021x_UncstKey,
@@ -1194,7 +1194,7 @@ u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter)
 		if (p && ht_ielen > 0) {
 			pht_capie = (struct ieee80211_ht_cap *)(p + 2);
 
-			memcpy(&mcs_rate , &pht_capie->mcs, 2);
+			memcpy(&mcs_rate, &pht_capie->mcs, 2);
 
 			/* bw_40MHz = (pht_capie->cap_info&
 			   IEEE80211_HT_CAP_SUP_WIDTH_20_40) ? 1:0; */

@@ -75,10 +75,10 @@ int _rtw_init_recv_priv(struct recv_priv *precvpriv,
 	precvframe = precvpriv->pallocated_frame_buf;
 
 	for (i = 0; i < NR_RECVFRAME ; i++) {
-		INIT_LIST_HEAD(&(precvframe->list));
+		INIT_LIST_HEAD(&precvframe->list);
 
-		list_add_tail(&(precvframe->list),
-			      &(precvpriv->free_recv_queue.queue));
+		list_add_tail(&precvframe->list,
+			      &precvpriv->free_recv_queue.queue);
 
 		res = rtw_os_recv_resource_alloc(padapter, precvframe);
 
@@ -170,9 +170,9 @@ int rtw_free_recvframe(struct recv_frame *precvframe, struct rtw_queue *pfree_re
 
 	spin_lock_bh(&pfree_recv_queue->lock);
 
-	list_del_init(&(precvframe->list));
+	list_del_init(&precvframe->list);
 
-	list_add_tail(&(precvframe->list), get_list_head(pfree_recv_queue));
+	list_add_tail(&precvframe->list, get_list_head(pfree_recv_queue));
 
 	if (padapter) {
 		if (pfree_recv_queue == &precvpriv->free_recv_queue)
@@ -194,9 +194,9 @@ int rtw_enqueue_recvframe(struct recv_frame *precvframe, struct rtw_queue *queue
 
 	spin_lock_bh(&queue->lock);
 
-	list_del_init(&(precvframe->list));
+	list_del_init(&precvframe->list);
 
-	list_add_tail(&(precvframe->list), get_list_head(queue));
+	list_add_tail(&precvframe->list, get_list_head(queue));
 
 	if (padapter) {
 		if (queue == &precvpriv->free_recv_queue)
@@ -317,10 +317,10 @@ int recvframe_chkmic(struct rtw_adapter *adapter,
 	struct	security_priv *psecuritypriv = &adapter->securitypriv;
 
 	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
-	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 
-	stainfo = rtw_get_stainfo(&adapter->stapriv ,&prxattrib->ta[0]);
+	stainfo = rtw_get_stainfo(&adapter->stapriv, &prxattrib->ta[0]);
 
 	if (prxattrib->encrypt == _TKIP_) {
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
@@ -1722,7 +1722,7 @@ struct recv_frame *recvframe_defrag(struct rtw_adapter *adapter,
 	phead = get_list_head(defrag_q);
 	plist = phead->next;
 	prframe = container_of(plist, struct recv_frame, list);
-	list_del_init(&(prframe->list));
+	list_del_init(&prframe->list);
 	skb = prframe->pkt;
 
 	if (curfragnum != prframe->attrib.frag_num) {
@@ -2048,9 +2048,9 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
 	/* spin_lock_irqsave(&ppending_recvframe_queue->lock); */
 	/* spin_lock_ex(&ppending_recvframe_queue->lock); */
 
-	list_del_init(&(prframe->list));
+	list_del_init(&prframe->list);
 
-	list_add_tail(&(prframe->list), plist);
+	list_add_tail(&prframe->list, plist);
 
 	/* spin_unlock_ex(&ppending_recvframe_queue->lock); */
 	/* spin_unlock_irqrestore(&ppending_recvframe_queue->lock); */
@@ -2118,7 +2118,7 @@ int recv_indicatepkts_in_order(struct rtw_adapter *padapter,
 				  pattrib->seq_num, pattrib->amsdu));
 
 			plist = plist->next;
-			list_del_init(&(prframe->list));
+			list_del_init(&prframe->list);
 
 			if (SN_EQUAL(preorder_ctrl->indicate_seq,
 				     pattrib->seq_num))	{
@@ -2126,8 +2126,8 @@ int recv_indicatepkts_in_order(struct rtw_adapter *padapter,
 					(preorder_ctrl->indicate_seq + 1)&0xFFF;
 #ifdef DBG_RX_SEQ
 				DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d, "
-					  "NewSeq: %d\n"
-					  , __func__, __LINE__,
+					  "NewSeq: %d\n",
+					  __func__, __LINE__,
 					  preorder_ctrl->indicate_seq,
 					  pattrib->seq_num);
 #endif

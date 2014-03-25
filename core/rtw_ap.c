@@ -274,17 +274,16 @@ void rtw_remove_bcn_ie(struct rtw_adapter *padapter, struct wlan_bssid_ex *pnetw
 static u8 chk_sta_is_alive(struct sta_info *psta)
 {
 	u8 ret = false;
-	#ifdef DBG_EXPIRATION_CHK
-	DBG_8723A("sta:"MAC_FMT", rssi:%d, rx:"STA_PKTS_FMT", expire_to:%u, %s%ssq_len:%u\n"
-		, MAC_ARG(psta->hwaddr)
-		, psta->rssi_stat.UndecoratedSmoothedPWDB
-		, STA_RX_PKTS_DIFF_ARG(psta)
-		, psta->expire_to
-		, psta->state&WIFI_SLEEP_STATE?"PS, ":""
-		, psta->state&WIFI_STA_ALIVE_CHK_STATE?"SAC, ":""
-		, psta->sleepq_len
-	);
-	#endif
+#ifdef DBG_EXPIRATION_CHK
+	DBG_8723A("sta:"MAC_FMT", rssi:%d, rx:"STA_PKTS_FMT", expire_to:%u, %s%ssq_len:%u\n",
+		  MAC_ARG(psta->hwaddr),
+		  psta->rssi_stat.UndecoratedSmoothedPWDB,
+		  STA_RX_PKTS_DIFF_ARG(psta),
+		  psta->expire_to,
+		  psta->state&WIFI_SLEEP_STATE?"PS, ":"",
+		  psta->state&WIFI_STA_ALIVE_CHK_STATE?"SAC, ":"",
+		  psta->sleepq_len);
+#endif
 
 	if ((psta->sta_stats.last_rx_data_pkts + psta->sta_stats.last_rx_ctrl_pkts) != (psta->sta_stats.rx_data_pkts + psta->sta_stats.rx_ctrl_pkts))
 		ret = true;
@@ -311,8 +310,9 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 	/* check auth_queue */
 #ifdef DBG_EXPIRATION_CHK
 	if (!list_empty(phead)) {
-		DBG_8723A(FUNC_NDEV_FMT" auth_list, cnt:%u\n"
-			, FUNC_NDEV_ARG(padapter->pnetdev), pstapriv->auth_list_cnt);
+		DBG_8723A(FUNC_NDEV_FMT" auth_list, cnt:%u\n",
+			  FUNC_NDEV_ARG(padapter->pnetdev),
+			  pstapriv->auth_list_cnt);
 	}
 #endif
 
@@ -351,8 +351,9 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 	/* check asoc_queue */
 	#ifdef DBG_EXPIRATION_CHK
 	if (!list_empty(phead)) {
-		DBG_8723A(FUNC_NDEV_FMT" asoc_list, cnt:%u\n"
-			, FUNC_NDEV_ARG(padapter->pnetdev), pstapriv->asoc_list_cnt);
+		DBG_8723A(FUNC_NDEV_FMT" asoc_list, cnt:%u\n",
+			  FUNC_NDEV_ARG(padapter->pnetdev),
+			  pstapriv->asoc_list_cnt);
 	}
 	#endif
 	list_for_each_safe(plist, ptmp, phead) {
@@ -411,9 +412,11 @@ void	expire_timeout_chk(struct rtw_adapter *padapter)
 			if (psta->sleepq_len > (NR_XMITFRAME/pstapriv->asoc_list_cnt)
 				&& padapter->xmitpriv.free_xmitframe_cnt < ((NR_XMITFRAME/pstapriv->asoc_list_cnt)/2)
 			) {
-				DBG_8723A("%s sta:"MAC_FMT", sleepq_len:%u, free_xmitframe_cnt:%u, asoc_list_cnt:%u, clear sleep_q\n", __func__
-					, MAC_ARG(psta->hwaddr)
-					, psta->sleepq_len, padapter->xmitpriv.free_xmitframe_cnt, pstapriv->asoc_list_cnt);
+				DBG_8723A("%s sta:"MAC_FMT", sleepq_len:%u, free_xmitframe_cnt:%u, asoc_list_cnt:%u, clear sleep_q\n", __func__,
+					  MAC_ARG(psta->hwaddr),
+					  psta->sleepq_len,
+					  padapter->xmitpriv.free_xmitframe_cnt,
+					  pstapriv->asoc_list_cnt);
 				wakeup_sta_to_xmit(padapter, psta);
 			}
 		}
