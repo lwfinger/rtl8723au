@@ -92,7 +92,7 @@ static void sreset_restore_security_station(struct rtw_adapter *padapter)
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	struct sta_priv * pstapriv = &padapter->stapriv;
 	struct sta_info *psta;
-	struct security_priv* psecuritypriv =&(padapter->securitypriv);
+	struct security_priv* psecuritypriv = &padapter->securitypriv;
 	struct mlme_ext_info	*pmlmeinfo = &padapter->mlmeextpriv.mlmext_info;
 	u8 EntryId = 0;
 	u8 val8;
