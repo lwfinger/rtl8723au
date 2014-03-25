@@ -825,7 +825,7 @@ void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter* padapter, u8 p2p_ps_sta
 	{
 		case P2P_PS_DISABLE:
 			DBG_8723A("P2P_PS_DISABLE \n");
-			memset(p2p_ps_offload, 0 , 1);
+			memset(p2p_ps_offload, 0, 1);
 			break;
 		case P2P_PS_ENABLE:
 			DBG_8723A("P2P_PS_ENABLE \n");

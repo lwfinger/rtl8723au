@@ -5315,7 +5315,8 @@ bthci_StateConnecting(struct rtw_adapter *padapter,
 
 			if (pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_JOINER)
 			{
-				RT_TRACE(_module_rtl871x_security_c_, _drv_info_ , ("StateConnecting \n"));
+				RT_TRACE(_module_rtl871x_security_c_,
+					 _drv_info_, ("StateConnecting \n"));
 			}
 			break;
 		}

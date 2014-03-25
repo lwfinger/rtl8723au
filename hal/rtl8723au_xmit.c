@@ -40,7 +40,9 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
 	u8 qsel;
 
 	qsel = pattrib->priority;
-	RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("### do_queue_select priority =%d , qsel = %d\n", pattrib->priority , qsel));
+	RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_,
+		 ("### do_queue_select priority =%d , qsel = %d\n",
+		  pattrib->priority, qsel));
 
 	pattrib->qsel = qsel;
 }

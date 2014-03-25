@@ -139,8 +139,8 @@ static void issue_group_disc_req(struct wifidirect_info *pwdinfo, u8 *da)
 	struct ieee80211_hdr	*pwlanhdr;
 	unsigned short				*fctrl;
 	struct rtw_adapter *padapter = pwdinfo->padapter;
-	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	unsigned char category = WLAN_CATEGORY_VENDOR_SPECIFIC;/* P2P action frame */
 	u32	p2poui = cpu_to_be32(P2POUI);
 	u8	oui_subtype = P2P_GO_DISC_REQUEST;
@@ -162,8 +162,8 @@ static void issue_group_disc_req(struct wifidirect_info *pwdinfo, u8 *da)
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_control);
-	*(fctrl) = 0;
+	fctrl = &pwlanhdr->frame_control;
+	*fctrl = 0;
 
 	memcpy(pwlanhdr->addr1, da, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, pwdinfo->interface_addr, ETH_ALEN);
@@ -177,10 +177,10 @@ static void issue_group_disc_req(struct wifidirect_info *pwdinfo, u8 *da)
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
 	/* Build P2P action frame header */
-	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &(p2poui), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(oui_subtype), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(dialogToken), &(pattrib->pktlen));
+	pframe = rtw_set_fixed_ie(pframe, 1, &category, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &p2poui, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &oui_subtype, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &dialogToken, &pattrib->pktlen);
 
 	/* there is no IE in this P2P action frame */
 
@@ -197,8 +197,8 @@ static void issue_p2p_devdisc_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 s
 	struct ieee80211_hdr	*pwlanhdr;
 	unsigned short				*fctrl;
 	struct rtw_adapter *padapter = pwdinfo->padapter;
-	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
+	struct xmit_priv			*pxmitpriv = &padapter->xmitpriv;
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	unsigned char category = WLAN_CATEGORY_PUBLIC;
 	u8			action = P2P_PUB_ACTION_ACTION;
 	u32			p2poui = cpu_to_be32(P2POUI);
@@ -222,8 +222,8 @@ static void issue_p2p_devdisc_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 s
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_control);
-	*(fctrl) = 0;
+	fctrl = &pwlanhdr->frame_control;
+	*fctrl = 0;
 
 	memcpy(pwlanhdr->addr1, da, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, pwdinfo->device_addr, ETH_ALEN);
@@ -237,11 +237,12 @@ static void issue_p2p_devdisc_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 s
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
 	/* Build P2P public action frame header */
-	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(action), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &(p2poui), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(oui_subtype), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(dialogToken), &(pattrib->pktlen));
+	pframe = rtw_set_fixed_ie(pframe, 1, &category, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &action, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &p2poui,
+				  &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &oui_subtype, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &dialogToken, &pattrib->pktlen);
 
 	/* Build P2P IE */
 	/*	P2P OUI */
@@ -280,9 +281,9 @@ static void issue_p2p_provision_resp(struct wifidirect_info *pwdinfo, u8* raddr,
 	unsigned char					*pframe;
 	struct ieee80211_hdr	*pwlanhdr;
 	unsigned short				*fctrl;
-	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct xmit_priv			*pxmitpriv = &padapter->xmitpriv;
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 	if ((pmgntframe = alloc_mgtxmitframe(pxmitpriv)) == NULL)
 	{
@@ -298,12 +299,12 @@ static void issue_p2p_provision_resp(struct wifidirect_info *pwdinfo, u8* raddr,
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_control);
-	*(fctrl) = 0;
+	fctrl = &pwlanhdr->frame_control;
+	*fctrl = 0;
 
 	memcpy(pwlanhdr->addr1, raddr, ETH_ALEN);
-	memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
-	memcpy(pwlanhdr->addr3, myid(&(padapter->eeprompriv)), ETH_ALEN);
+	memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
+	memcpy(pwlanhdr->addr3, myid(&padapter->eeprompriv), ETH_ALEN);
 
 	SetSeqNum(pwlanhdr, pmlmeext->mgnt_seq);
 	pmlmeext->mgnt_seq++;
@@ -312,11 +313,12 @@ static void issue_p2p_provision_resp(struct wifidirect_info *pwdinfo, u8* raddr,
 	pframe += sizeof(struct ieee80211_hdr_3addr);
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
-	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(action), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &(p2poui), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(oui_subtype), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(dialogToken), &(pattrib->pktlen));
+	pframe = rtw_set_fixed_ie(pframe, 1, &category, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &action, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &p2poui,
+				  &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &oui_subtype, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &dialogToken, &pattrib->pktlen);
 
 	wpsielen = 0;
 	/*	WPS OUI */
@@ -363,8 +365,8 @@ static void issue_p2p_presence_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 
 	struct ieee80211_hdr	*pwlanhdr;
 	unsigned short				*fctrl;
 	struct rtw_adapter *padapter = pwdinfo->padapter;
-	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	unsigned char category = WLAN_CATEGORY_VENDOR_SPECIFIC;/* P2P action frame */
 	u32	p2poui = cpu_to_be32(P2POUI);
 	u8	oui_subtype = P2P_PRESENCE_RESPONSE;
@@ -388,8 +390,8 @@ static void issue_p2p_presence_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 
 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &(pwlanhdr->frame_control);
-	*(fctrl) = 0;
+	fctrl = &pwlanhdr->frame_control;
+	*fctrl = 0;
 
 	memcpy(pwlanhdr->addr1, da, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, pwdinfo->interface_addr, ETH_ALEN);
@@ -403,10 +405,11 @@ static void issue_p2p_presence_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
 	/* Build P2P action frame header */
-	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &(p2poui), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(oui_subtype), &(pattrib->pktlen));
-	pframe = rtw_set_fixed_ie(pframe, 1, &(dialogToken), &(pattrib->pktlen));
+	pframe = rtw_set_fixed_ie(pframe, 1, &category, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 4, (unsigned char *) &p2poui,
+				  &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &oui_subtype, &pattrib->pktlen);
+	pframe = rtw_set_fixed_ie(pframe, 1, &dialogToken, &pattrib->pktlen);
 
 	/* Add P2P IE header */
 	/*	P2P OUI */
@@ -427,7 +430,8 @@ static void issue_p2p_presence_resp(struct wifidirect_info *pwdinfo, u8 *da, u8 
 
 	p2pielen += rtw_set_p2p_attr_content(&p2pie[p2pielen], P2P_ATTR_NOA, 2, noa_attr_content);
 
-	pframe = rtw_set_ie(pframe, _VENDOR_SPECIFIC_IE_, p2pielen, p2pie, &(pattrib->pktlen));
+	pframe = rtw_set_ie(pframe, _VENDOR_SPECIFIC_IE_, p2pielen, p2pie,
+			    &pattrib->pktlen);
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
@@ -2158,7 +2162,7 @@ u32 process_probe_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	ssid_len &= 0xff;	/*	Just last 1 byte is valid for ssid len of the probe request */
 	if (rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE) || rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 	{
-		if ((p2pie = rtw_get_p2p_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + _PROBEREQ_IE_OFFSET_ , len - sizeof(struct ieee80211_hdr_3addr) - _PROBEREQ_IE_OFFSET_ , NULL, &p2pielen)))
+		if ((p2pie = rtw_get_p2p_ie(pframe + sizeof(struct ieee80211_hdr_3addr) + _PROBEREQ_IE_OFFSET_, len - sizeof(struct ieee80211_hdr_3addr) - _PROBEREQ_IE_OFFSET_, NULL, &p2pielen)))
 		{
 			if ((p) && !memcmp((void *)(p+2), (void *)pwdinfo->p2p_wildcard_ssid, 7))
 			{
@@ -2207,7 +2211,7 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 	ies = pframe + sizeof(struct ieee80211_hdr_3addr) + ie_offset;
 	ies_len = len - sizeof(struct ieee80211_hdr_3addr) - ie_offset;
 
-	p2p_ie = rtw_get_p2p_ie(ies , ies_len , NULL, &p2p_ielen);
+	p2p_ie = rtw_get_p2p_ie(ies, ies_len, NULL, &p2p_ielen);
 
 	if (!p2p_ie)
 	{
@@ -2241,7 +2245,7 @@ u32 process_assoc_req_p2p_ie(struct wifidirect_info *pwdinfo, u8 *pframe, uint l
 				u8 num_of_secdev_type;
 				u16 dev_name_len;
 
-				rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_INFO , pattr_content, (uint*)&attr_contentlen);
+				rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_DEVICE_INFO, pattr_content, (uint*)&attr_contentlen);
 
 				memcpy(psta->dev_addr,	pattr_content, ETH_ALEN);/* P2P Device Address */
 
@@ -2584,7 +2588,7 @@ u8 process_p2p_group_negotation_req(struct wifidirect_info *pwdinfo, u8 *pframe,
 		if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_CAPABILITY, (u8*)&cap_attr, (uint*)&attr_contentlen))
 			cap_attr = le16_to_cpu(cap_attr);
 
-		if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GO_INTENT , &attr_content, &attr_contentlen))
+		if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GO_INTENT, &attr_content, &attr_contentlen))
 		{
 			DBG_8723A("[%s] GO Intent = %d, tie = %d\n", __func__, attr_content >> 1, attr_content & 0x01);
 			pwdinfo->peer_intent = attr_content;	/*	include both intent and tie breaker values. */
@@ -2800,7 +2804,7 @@ u8 process_p2p_group_negotation_resp(struct wifidirect_info *pwdinfo, u8 *pframe
 			/*	Try to get the peer's intent and tie breaker value. */
 			attr_content = 0x00;
 			attr_contentlen = 0;
-			if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GO_INTENT , &attr_content, &attr_contentlen))
+			if (rtw_get_p2p_attr_content(p2p_ie, p2p_ielen, P2P_ATTR_GO_INTENT, &attr_content, &attr_contentlen))
 			{
 				DBG_8723A("[%s] GO Intent = %d, tie = %d\n", __func__, attr_content >> 1, attr_content & 0x01);
 				pwdinfo->peer_intent = attr_content;	/*	include both intent and tie breaker values. */
@@ -3503,7 +3507,7 @@ void rtw_init_cfg80211_wifidirect_info(struct rtw_adapter *padapter)
 
 void p2p_protocol_wk_hdl(struct rtw_adapter *padapter, int intCmdType)
 {
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 
 
 
@@ -3546,7 +3550,7 @@ void process_p2p_ps_ie(struct rtw_adapter *padapter, u8 *IEs, u32 IELength)
 	u8	noa_attr[MAX_P2P_IE_LEN] = { 0x00 };/*  NoA length should be n*(13) + 2 */
 	u32	attr_contentlen = 0;
 
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 	u8	find_p2p = false, find_p2p_ps = false;
 	u8	noa_offset, noa_num, noa_index;
 
@@ -3647,7 +3651,7 @@ void process_p2p_ps_ie(struct rtw_adapter *padapter, u8 *IEs, u32 IELength)
 void p2p_ps_wk_hdl(struct rtw_adapter *padapter, u8 p2p_ps_state)
 {
 	struct pwrctrl_priv		*pwrpriv = &padapter->pwrctrlpriv;
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 
 
 
@@ -3669,7 +3673,7 @@ void p2p_ps_wk_hdl(struct rtw_adapter *padapter, u8 p2p_ps_state)
 				if (pwrpriv->smart_ps == 0)
 				{
 					pwrpriv->smart_ps = 2;
-					rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)(&(padapter->pwrctrlpriv.pwr_mode)));
+					rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)&padapter->pwrctrlpriv.pwr_mode);
 				}
 			}
 			break;
@@ -3683,7 +3687,7 @@ void p2p_ps_wk_hdl(struct rtw_adapter *padapter, u8 p2p_ps_state)
 					{
 						pwrpriv->smart_ps = 0;
 						DBG_8723A("%s(): Enter CTW, change SmartPS\n", __func__);
-						rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)(&(padapter->pwrctrlpriv.pwr_mode)));
+						rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)&padapter->pwrctrlpriv.pwr_mode);
 					}
 				}
 				rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_P2P_PS_OFFLOAD, (u8 *)(&p2p_ps_state));
@@ -3708,7 +3712,7 @@ u8 p2p_ps_wk_cmd(struct rtw_adapter*padapter, u8 p2p_ps_state, u8 enqueue)
 {
 	struct cmd_obj	*ph2c;
 	struct drvextra_cmd_parm	*pdrvextra_cmd_parm;
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
@@ -4026,7 +4030,7 @@ void init_wifidirect_info(struct rtw_adapter *padapter, enum P2P_ROLE role)
 int rtw_p2p_enable(struct rtw_adapter *padapter, enum P2P_ROLE role)
 {
 	int ret = _SUCCESS;
-	struct wifidirect_info *pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 
 	if (role == P2P_ROLE_DEVICE || role == P2P_ROLE_CLIENT|| role == P2P_ROLE_GO)

@@ -309,7 +309,7 @@ static void update_attrib_vcs_info(struct rtw_adapter *padapter, struct xmit_fra
 		psta = pattrib->psta;
 	} else {
 		DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
-		psta = rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0]);
+		psta = rtw_get_stainfo(&padapter->stapriv, &pattrib->ra[0]);
 	}
 
         if (psta == NULL) {
@@ -934,7 +934,8 @@ static s32 xmitframe_swencrypt(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-s32 rtw_make_wlanhdr (struct rtw_adapter *padapter , u8 *hdr, struct pkt_attrib *pattrib)
+s32 rtw_make_wlanhdr (struct rtw_adapter *padapter, u8 *hdr,
+		      struct pkt_attrib *pattrib)
 {
 	u16 *qc;
 
@@ -1081,7 +1082,7 @@ s32 rtw_txframes_sta_ac_pending(struct rtw_adapter *padapter,
 		psta = pattrib->psta;
 	} else {
 		DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
-		psta = rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0]);
+		psta = rtw_get_stainfo(&padapter->stapriv, &pattrib->ra[0]);
 	}
 	if (psta == NULL) {
 		DBG_8723A("%s, psta == NUL\n", __func__);
@@ -1444,7 +1445,8 @@ s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 	list_add_tail(&pxmitbuf->list, get_list_head(pfree_queue));
 	pxmitpriv->free_xmit_extbuf_cnt++;
 	#ifdef DBG_XMIT_BUF_EXT
-	DBG_8723A("DBG_XMIT_BUF_EXT FREE no =%d, free_xmit_extbuf_cnt =%d\n", pxmitbuf->no , pxmitpriv->free_xmit_extbuf_cnt);
+	DBG_8723A("DBG_XMIT_BUF_EXT FREE no =%d, free_xmit_extbuf_cnt =%d\n",
+		  pxmitbuf->no, pxmitpriv->free_xmit_extbuf_cnt);
 	#endif
 
 	spin_unlock_irqrestore(&pfree_queue->lock, irqL);
@@ -1522,9 +1524,10 @@ s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 
 		pxmitpriv->free_xmitbuf_cnt++;
 		/* DBG_8723A("FREE, free_xmitbuf_cnt =%d\n", pxmitpriv->free_xmitbuf_cnt); */
-		#ifdef DBG_XMIT_BUF
-		DBG_8723A("DBG_XMIT_BUF FREE no =%d, free_xmitbuf_cnt =%d\n", pxmitbuf->no , pxmitpriv->free_xmitbuf_cnt);
-		#endif
+#ifdef DBG_XMIT_BUF
+		DBG_8723A("DBG_XMIT_BUF FREE no =%d, free_xmitbuf_cnt =%d\n",
+			  pxmitbuf->no, pxmitpriv->free_xmitbuf_cnt);
+#endif
 		spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
 	}
 
@@ -1971,7 +1974,9 @@ static void do_queue_select(struct rtw_adapter	*padapter, struct pkt_attrib *pat
 	u8 qsel;
 
 	qsel = pattrib->priority;
-	RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("### do_queue_select priority =%d , qsel = %d\n", pattrib->priority , qsel));
+	RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_,
+		 ("### do_queue_select priority =%d , qsel = %d\n",
+		  pattrib->priority, qsel));
 
 	pattrib->qsel = qsel;
 }

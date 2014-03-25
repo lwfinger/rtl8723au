@@ -1028,7 +1028,7 @@ static u32 rtl8723au_hal_init(struct rtw_adapter *Adapter)
 	rtw_write32(Adapter, REG_BAR_MODE_CTRL, 0x0201ffff);
 
 	if (pregistrypriv->wifi_spec)
-		rtw_write16(Adapter, REG_FAST_EDCA_CTRL , 0);
+		rtw_write16(Adapter, REG_FAST_EDCA_CTRL, 0);
 
 	/*  Move by Neo for USB SS from above setp */
 	_RfPowerSave(Adapter);

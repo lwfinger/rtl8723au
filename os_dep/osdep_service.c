@@ -59,13 +59,13 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 
 void _rtw_init_queue(struct rtw_queue *pqueue)
 {
-	INIT_LIST_HEAD(&(pqueue->queue));
-	spin_lock_init(&(pqueue->lock));
+	INIT_LIST_HEAD(&pqueue->queue);
+	spin_lock_init(&pqueue->lock);
 }
 
 u32 _rtw_queue_empty(struct rtw_queue *pqueue)
 {
-	if (list_empty(&(pqueue->queue)))
+	if (list_empty(&pqueue->queue))
 		return true;
 	else
 		return false;
@@ -231,7 +231,7 @@ static int retriveFromFile(char *path, u8 *buf, u32 sz)
 		ret = openFile(&fp, path, O_RDONLY, 0);
 		if (!ret) {
 			DBG_8723A("%s openFile path:%s fp =%p\n",
-				  __func__, path , fp);
+				  __func__, path, fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
 			ret = readFile(fp, buf, sz);
@@ -267,7 +267,7 @@ static int storeToFile(char *path, u8 *buf, u32 sz)
 		ret = openFile(&fp, path, O_CREAT|O_WRONLY, 0666);
 		if (!ret) {
 			DBG_8723A("%s openFile path:%s fp =%p\n", __func__,
-				  path , fp);
+				  path, fp);
 
 			oldfs = get_fs(); set_fs(get_ds());
 			ret = writeFile(fp, buf, sz);

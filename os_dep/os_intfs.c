@@ -250,8 +250,8 @@ static int rtw_net_set_mac_address(struct net_device *pnetdev, void *p)
 static struct net_device_stats *rtw_net_get_stats(struct net_device *pnetdev)
 {
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
-	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
-	struct recv_priv *precvpriv = &(padapter->recvpriv);
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	struct recv_priv *precvpriv = &padapter->recvpriv;
 
 	padapter->stats.tx_packets = pxmitpriv->tx_pkts;
 	padapter->stats.rx_packets = precvpriv->rx_pkts;
@@ -825,9 +825,9 @@ int netdev_open(struct net_device *pnetdev)
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	int ret;
 
-	mutex_lock(&(adapter_to_dvobj(padapter)->hw_init_mutex));
+	mutex_lock(&adapter_to_dvobj(padapter)->hw_init_mutex);
 	ret = _netdev_open(pnetdev);
-	mutex_unlock(&(adapter_to_dvobj(padapter)->hw_init_mutex));
+	mutex_unlock(&adapter_to_dvobj(padapter)->hw_init_mutex);
 
 	return ret;
 }
@@ -905,7 +905,7 @@ void rtw_ips_pwr_down(struct rtw_adapter *padapter)
 void rtw_ips_dev_unload(struct rtw_adapter *padapter)
 {
 	struct net_device *pnetdev = (struct net_device *)padapter->pnetdev;
-	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	DBG_8723A("====> %s...\n", __func__);
 

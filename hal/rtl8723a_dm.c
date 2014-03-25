@@ -115,7 +115,7 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 {
 
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
-	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	u8	cut_ver, fab_ver;
 
 	/*  */
@@ -172,7 +172,7 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	struct mlme_priv		*pmlmepriv = &Adapter->mlmepriv;
 	struct pwrctrl_priv *pwrctrlpriv = &Adapter->pwrctrlpriv;
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
-	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int i;
 	pdmpriv->InitODMFlag =	ODM_BB_DIG		|
@@ -189,17 +189,25 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 
 	ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
 
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_TX_UNI,&(Adapter->xmitpriv.tx_bytes));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_RX_UNI,&(Adapter->recvpriv.rx_bytes));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_WM_MODE,&(pmlmeext->cur_wireless_mode));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_CHNL_OFFSET,&(pHalData->nCur40MhzPrimeSC));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_MODE,&(Adapter->securitypriv.dot11PrivacyAlgrthm));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_BW,&(pHalData->CurrentChannelBW));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_CHNL,&(pHalData->CurrentChannel));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_NET_CLOSED,&(Adapter->net_closed));
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_TX_UNI,
+			&Adapter->xmitpriv.tx_bytes);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_RX_UNI,
+			&Adapter->recvpriv.rx_bytes);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_WM_MODE,
+			&pmlmeext->cur_wireless_mode);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_CHNL_OFFSET,
+			&pHalData->nCur40MhzPrimeSC);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_MODE,
+			&Adapter->securitypriv.dot11PrivacyAlgrthm);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_BW,
+			&pHalData->CurrentChannelBW);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_CHNL,
+			&pHalData->CurrentChannel);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_NET_CLOSED, &Adapter->net_closed);
 
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SCAN,&(pmlmepriv->bScanInProcess));
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_POWER_SAVING,&(pwrctrlpriv->bpower_saving));
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SCAN, &pmlmepriv->bScanInProcess);
+	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_POWER_SAVING,
+			&pwrctrlpriv->bpower_saving);
 
 	for (i = 0; i< NUM_STA; i++)
 		ODM_CmnInfoPtrArrayHook(pDM_Odm, ODM_CMNINFO_STA_STATUS, i, NULL);
@@ -209,7 +217,7 @@ void rtl8723a_InitHalDm(struct rtw_adapter *Adapter)
 {
 	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	u8	i;
 
 	pdmpriv->DM_Type = DM_Type_ByDriver;
@@ -276,7 +284,8 @@ _record_initrate:
 		if (rtw_linked_check(Adapter))
 			bLinked = true;
 
-		ODM_CmnInfoUpdate(&pHalData->odmpriv , ODM_CMNINFO_LINK, bLinked);
+		ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_LINK,
+				  bLinked);
 		ODM_DMWatchdog(&pHalData->odmpriv);
 	}
 

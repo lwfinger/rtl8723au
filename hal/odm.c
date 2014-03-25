@@ -1196,7 +1196,7 @@ void odm_DIG(struct dm_odm_t *pDM_Odm)
 void odm_FalseAlarmCounterStatistics(struct dm_odm_t *pDM_Odm)
 {
 	u32 ret_value;
-	struct false_alarm_stats * FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
+	struct false_alarm_stats * FalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT))
 		return;
@@ -1298,7 +1298,7 @@ void odm_CCKPacketDetectionThresh(struct dm_odm_t *pDM_Odm)
 {
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	u8	CurCCK_CCAThres;
-	struct false_alarm_stats *FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
+	struct false_alarm_stats *FalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 
 	if (!(pDM_Odm->SupportAbility & (ODM_BB_CCK_PD|ODM_BB_FA_CNT)))
 		return;
@@ -1393,11 +1393,11 @@ void odm_1R_CCA(struct dm_odm_t *pDM_Odm)
 		if (pDM_PSTable->CurCCAState == CCA_1R)
 		{
 			if (pDM_Odm->RFType == ODM_2T2R)
-				ODM_SetBBReg(pDM_Odm, 0xc04  , bMaskByte0, 0x13);
+				ODM_SetBBReg(pDM_Odm, 0xc04, bMaskByte0, 0x13);
 			else
-				ODM_SetBBReg(pDM_Odm, 0xc04  , bMaskByte0, 0x23);
+				ODM_SetBBReg(pDM_Odm, 0xc04, bMaskByte0, 0x23);
 		} else {
-			ODM_SetBBReg(pDM_Odm, 0xc04  , bMaskByte0, 0x33);
+			ODM_SetBBReg(pDM_Odm, 0xc04, bMaskByte0, 0x33);
 			/* PHY_SetBBReg(pAdapter, 0xe70, bMaskByte3, 0x63); */
 		}
 		pDM_PSTable->PreCCAState = pDM_PSTable->CurCCAState;
@@ -1458,9 +1458,9 @@ void ODM_RF_Saving(struct dm_odm_t *pDM_Odm, u8 bForceInNormal)
 			/*  Suggested by SD3 Yu-Nan. 2011.01.20. */
 			if (pDM_Odm->SupportICType == ODM_RTL8723A)
 			{
-				ODM_SetBBReg(pDM_Odm, 0x874  , BIT5, 0x1); /* Reg874[5]= 1b'1 */
+				ODM_SetBBReg(pDM_Odm, 0x874, BIT5, 0x1); /* Reg874[5]= 1b'1 */
 			}
-			ODM_SetBBReg(pDM_Odm, 0x874  , 0x1C0000, 0x2); /* Reg874[20:18]= 3'b010 */
+			ODM_SetBBReg(pDM_Odm, 0x874, 0x1C0000, 0x2); /* Reg874[20:18]= 3'b010 */
 			ODM_SetBBReg(pDM_Odm, 0xc70, BIT3, 0); /* RegC70[3]= 1'b0 */
 			ODM_SetBBReg(pDM_Odm, 0x85c, 0xFF000000, 0x63); /* Reg85C[31:24]= 0x63 */
 			ODM_SetBBReg(pDM_Odm, 0x874, 0xC000, 0x2); /* Reg874[15:14]= 2'b10 */
@@ -1471,7 +1471,7 @@ void ODM_RF_Saving(struct dm_odm_t *pDM_Odm, u8 bForceInNormal)
 		}
 		else
 		{
-			ODM_SetBBReg(pDM_Odm, 0x874  , 0x1CC000, pDM_PSTable->Reg874);
+			ODM_SetBBReg(pDM_Odm, 0x874, 0x1CC000, pDM_PSTable->Reg874);
 			ODM_SetBBReg(pDM_Odm, 0xc70, BIT3, pDM_PSTable->RegC70);
 			ODM_SetBBReg(pDM_Odm, 0x85c, 0xFF000000, pDM_PSTable->Reg85C);
 			ODM_SetBBReg(pDM_Odm, 0xa74, 0xF000, pDM_PSTable->RegA74);
@@ -1479,7 +1479,7 @@ void ODM_RF_Saving(struct dm_odm_t *pDM_Odm, u8 bForceInNormal)
 
 			if (pDM_Odm->SupportICType == ODM_RTL8723A)
 			{
-				ODM_SetBBReg(pDM_Odm, 0x874  , BIT5, 0x0); /* Reg874[5]= 1b'0 */
+				ODM_SetBBReg(pDM_Odm, 0x874, BIT5, 0x0); /* Reg874[5]= 1b'0 */
 			}
 			/* ODM_RT_TRACE(pDM_Odm,	COMP_BB_POWERSAVING, DBG_LOUD, (" RF_Normal")); */
 		}
@@ -1662,7 +1662,7 @@ void odm_RefreshRateAdaptiveMaskCE(struct dm_odm_t *pDM_Odm)
 	for (i = 0; i<ODM_ASSOCIATE_ENTRY_NUM; i++) {
 		PSTA_INFO_T pstat = pDM_Odm->pODM_StaInfo[i];
 		if (IS_STA_VALID(pstat)) {
-			if (true == ODM_RAStateCheck(pDM_Odm, pstat->rssi_stat.UndecoratedSmoothedPWDB, false , &pstat->rssi_level))
+			if (true == ODM_RAStateCheck(pDM_Odm, pstat->rssi_stat.UndecoratedSmoothedPWDB, false, &pstat->rssi_level))
 			{
 				ODM_RT_TRACE(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("RSSI:%d, RSSI_LEVEL:%d\n", pstat->rssi_stat.UndecoratedSmoothedPWDB, pstat->rssi_level));
 				/* printk("RSSI:%d, RSSI_LEVEL:%d\n", pstat->rssi_stat.UndecoratedSmoothedPWDB, pstat->rssi_level); */
@@ -1847,7 +1847,7 @@ FindMinimumRSSI(
 {
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(pAdapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	struct dm_odm_t *pDM_Odm = &(pHalData->odmpriv);
+	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 
 	/* 1 1.Determine the minimum RSSI */
 
@@ -1912,7 +1912,7 @@ void odm_RSSIMonitorCheckCE(struct dm_odm_t *pDM_Odm)
 
 	FindMinimumRSSI(Adapter);/* get pdmpriv->MinUndecoratedPWDBForDM */
 
-	ODM_CmnInfoUpdate(&pHalData->odmpriv , ODM_CMNINFO_RSSI_MIN, pdmpriv->MinUndecoratedPWDBForDM);
+	ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_RSSI_MIN, pdmpriv->MinUndecoratedPWDBForDM);
 }
 
 void odm_RSSIMonitorCheckAP(struct dm_odm_t *pDM_Odm)
@@ -2092,11 +2092,11 @@ void odm_EdcaTurboCheckCE(struct dm_odm_t *pDM_Odm)
 	u64	cur_rx_bytes = 0;
 	u8	bbtchange = false;
 	struct hal_data_8723a		*pHalData = GET_HAL_DATA(Adapter);
-	struct xmit_priv		*pxmitpriv = &(Adapter->xmitpriv);
-	struct recv_priv		*precvpriv = &(Adapter->recvpriv);
+	struct xmit_priv		*pxmitpriv = &Adapter->xmitpriv;
+	struct recv_priv		*precvpriv = &Adapter->recvpriv;
 	struct registry_priv	*pregpriv = &Adapter->registrypriv;
-	struct mlme_ext_priv	*pmlmeext = &(Adapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 	if ((pregpriv->wifi_spec == 1))/*  (pmlmeinfo->HT_enable == 0)) */
 	{

@@ -84,8 +84,10 @@ static int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u
 			}
 		}
 		else { /*  error cases */
-			DBG_8723A("reg 0x%x, usb %s %u fail, status:%d value = 0x%x, vendorreq_times:%d\n"
-				, value, (requesttype == 0x01)?"read":"write" , len, status, *(u32*)pdata, vendorreq_times);
+			DBG_8723A("reg 0x%x, usb %s %u fail, status:%d value ="
+				  " 0x%x, vendorreq_times:%d\n",
+				  value, (requesttype == 0x01)?"read":"write",
+				  len, status, *(u32*)pdata, vendorreq_times);
 
 			if (status < 0) {
 				if (status == (-ESHUTDOWN)	|| status == -ENODEV	)
