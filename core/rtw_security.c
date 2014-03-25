@@ -661,7 +661,8 @@ u32 rtw_tkip_encrypt(struct rtw_adapter *padapter,
 		else
 		{
 			DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
-			stainfo = rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0]);
+			stainfo = rtw_get_stainfo(&padapter->stapriv,
+						  &pattrib->ra[0]);
 		}
 
 		if (stainfo!= NULL) {
@@ -759,7 +760,8 @@ u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
 	/* 4 start to decrypt recvframe */
 	if (prxattrib->encrypt == _TKIP_) {
 
-		stainfo = rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0]);
+		stainfo = rtw_get_stainfo(&padapter->stapriv,
+					  &prxattrib->ta[0]);
 		if (stainfo!= NULL) {
 
 			if (is_multicast_ether_addr(prxattrib->ra)) {
@@ -1805,7 +1807,8 @@ u32 rtw_aes_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe)
 	if (!prxattrib->encrypt != _AES_)
 		return _FAIL;
 
-	stainfo = rtw_get_stainfo(&padapter->stapriv ,&prxattrib->ta[0]);
+	stainfo = rtw_get_stainfo(&padapter->stapriv,
+				  &prxattrib->ta[0]);
 	if (!stainfo) {
 		RT_TRACE(_module_rtl871x_security_c_, _drv_err_,
 			 ("rtw_aes_encrypt: stainfo == NULL!!!\n"));

@@ -100,7 +100,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct rtw_adapter *padapte
 	pxframe = (struct xmit_frame*) pxmitpriv->pxmit_frame_buf;
 
 	for (i = 0; i < NR_XMITFRAME; i++) {
-		INIT_LIST_HEAD(&(pxframe->list));
+		INIT_LIST_HEAD(&pxframe->list);
 
 		pxframe->padapter = padapter;
 		pxframe->frame_tag = NULL_FRAMETAG;
@@ -110,7 +110,8 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct rtw_adapter *padapte
 		pxframe->buf_addr = NULL;
 		pxframe->pxmitbuf = NULL;
 
-		list_add_tail(&(pxframe->list), &(pxmitpriv->free_xmit_queue.queue));
+		list_add_tail(&pxframe->list,
+			      &pxmitpriv->free_xmit_queue.queue);
 
 		pxframe++;
 	}
@@ -166,7 +167,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct rtw_adapter *padapte
 	pxframe = (struct xmit_frame*)pxmitpriv->xframe_ext;
 
 	for (i = 0; i < num_xmit_extbuf; i++) {
-		INIT_LIST_HEAD(&(pxframe->list));
+		INIT_LIST_HEAD(&pxframe->list);
 
 		pxframe->padapter = padapter;
 		pxframe->frame_tag = NULL_FRAMETAG;
@@ -178,7 +179,8 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct rtw_adapter *padapte
 
 		pxframe->ext_tag = 1;
 
-		list_add_tail(&(pxframe->list), &(pxmitpriv->free_xframe_ext_queue.queue));
+		list_add_tail(&pxframe->list,
+			      &pxmitpriv->free_xframe_ext_queue.queue);
 
 		pxframe++;
 	}
@@ -223,7 +225,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct rtw_adapter *padapte
 
 	pxmitpriv->txirp_cnt = 1;
 
-	sema_init(&(pxmitpriv->tx_retevt), 0);
+	sema_init(&pxmitpriv->tx_retevt, 0);
 
 	/* per AC pending irp */
 	pxmitpriv->beq_cnt = 0;
@@ -300,8 +302,8 @@ static void update_attrib_vcs_info(struct rtw_adapter *padapter, struct xmit_fra
 	u32	sz;
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
 	struct sta_info	*psta = pattrib->psta;
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
         if (pattrib->psta) {
 		psta = pattrib->psta;
@@ -728,7 +730,7 @@ static s32 xmitframe_addmic(struct rtw_adapter *padapter,
 	u8 *pframe, *payload, mic[8];
 	struct mic_data micdata;
 	struct sta_info *stainfo;
-	struct qos_priv *pqospriv = &(padapter->mlmepriv.qospriv);
+	struct qos_priv *pqospriv = &padapter->mlmepriv.qospriv;
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
@@ -854,7 +856,7 @@ static s32 xmitframe_addmic(struct rtw_adapter *padapter,
 						  pattrib->icv_len));
 				}
 			}
-			rtw_secgetmic(&micdata, &(mic[0]));
+			rtw_secgetmic(&micdata, &mic[0]);
 			RT_TRACE(_module_rtl871x_xmit_c_, _drv_err_,
 				 ("xmitframe_addmic: before add mic code!!\n"));
 			RT_TRACE(_module_rtl871x_xmit_c_, _drv_err_,
@@ -870,7 +872,7 @@ static s32 xmitframe_addmic(struct rtw_adapter *padapter,
 			/* add mic code  and add the mic code length
 			   in last_txcmdsz */
 
-			memcpy(payload, &(mic[0]), 8);
+			memcpy(payload, &mic[0], 8);
 			pattrib->last_txcmdsz += 8;
 
 			RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_,
@@ -1093,20 +1095,20 @@ s32 rtw_txframes_sta_ac_pending(struct rtw_adapter *padapter,
 	switch (priority) {
 	case 1:
 	case 2:
-		ptxservq = &(psta->sta_xmitpriv.bk_q);
+		ptxservq = &psta->sta_xmitpriv.bk_q;
 		break;
 	case 4:
 	case 5:
-		ptxservq = &(psta->sta_xmitpriv.vi_q);
+		ptxservq = &psta->sta_xmitpriv.vi_q;
 		break;
 	case 6:
 	case 7:
-		ptxservq = &(psta->sta_xmitpriv.vo_q);
+		ptxservq = &psta->sta_xmitpriv.vo_q;
 		break;
 	case 0:
 	case 3:
 	default:
-		ptxservq = &(psta->sta_xmitpriv.be_q);
+		ptxservq = &psta->sta_xmitpriv.be_q;
 		break;
 	}
 	return ptxservq->qcnt;
@@ -1405,7 +1407,7 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 	if (!list_empty(phead)) {
 		pxmitbuf = list_first_entry(phead, struct xmit_buf, list);
 
-		list_del_init(&(pxmitbuf->list));
+		list_del_init(&pxmitbuf->list);
 
 		pxmitpriv->free_xmit_extbuf_cnt--;
 #ifdef DBG_XMIT_BUF_EXT
@@ -1439,7 +1441,7 @@ s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 
 	list_del_init(&pxmitbuf->list);
 
-	list_add_tail(&(pxmitbuf->list), get_list_head(pfree_queue));
+	list_add_tail(&pxmitbuf->list, get_list_head(pfree_queue));
 	pxmitpriv->free_xmit_extbuf_cnt++;
 	#ifdef DBG_XMIT_BUF_EXT
 	DBG_8723A("DBG_XMIT_BUF_EXT FREE no =%d, free_xmit_extbuf_cnt =%d\n", pxmitbuf->no , pxmitpriv->free_xmit_extbuf_cnt);
@@ -1466,7 +1468,7 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 	if (!list_empty(phead)) {
 		pxmitbuf = list_first_entry(phead, struct xmit_buf, list);
 
-		list_del_init(&(pxmitbuf->list));
+		list_del_init(&pxmitbuf->list);
 
 		pxmitpriv->free_xmitbuf_cnt--;
 #ifdef DBG_XMIT_BUF
@@ -1515,7 +1517,8 @@ s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 
 		list_del_init(&pxmitbuf->list);
 
-		list_add_tail(&(pxmitbuf->list), get_list_head(pfree_xmitbuf_queue));
+		list_add_tail(&pxmitbuf->list,
+			      get_list_head(pfree_xmitbuf_queue));
 
 		pxmitpriv->free_xmitbuf_cnt++;
 		/* DBG_8723A("FREE, free_xmitbuf_cnt =%d\n", pxmitpriv->free_xmitbuf_cnt); */
@@ -1583,7 +1586,7 @@ struct xmit_frame *rtw_alloc_xmitframe(struct xmit_priv *pxmitpriv)/* _queue *pf
 
 		pxframe = container_of(plist, struct xmit_frame, list);
 
-		list_del_init(&(pxframe->list));
+		list_del_init(&pxframe->list);
 		pxmitpriv->free_xmitframe_cnt--;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_alloc_xmitframe():free_xmitframe_cnt =%d\n", pxmitpriv->free_xmitframe_cnt));
 	}
@@ -1611,7 +1614,7 @@ struct xmit_frame *rtw_alloc_xmitframe_ext(struct xmit_priv *pxmitpriv)
 		plist = phead->next;
 		pxframe = container_of(plist, struct xmit_frame, list);
 
-		list_del_init(&(pxframe->list));
+		list_del_init(&pxframe->list);
 		pxmitpriv->free_xframe_ext_cnt--;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_alloc_xmitframe_ext():free_xmitframe_cnt =%d\n", pxmitpriv->free_xframe_ext_cnt));
 	}
@@ -1676,7 +1679,7 @@ void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv,
 	struct list_head *plist, *phead, *ptmp;
 	struct	xmit_frame *pxmitframe;
 
-	spin_lock_bh(&(pframequeue->lock));
+	spin_lock_bh(&pframequeue->lock);
 
 	phead = get_list_head(pframequeue);
 
@@ -1685,7 +1688,7 @@ void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv,
 
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
 	}
-	spin_unlock_bh(&(pframequeue->lock));
+	spin_unlock_bh(&pframequeue->lock);
 
 }
 
@@ -1778,26 +1781,26 @@ struct tx_servq *rtw_get_sta_pending(struct rtw_adapter *padapter, struct sta_in
 	switch (up) {
 	case 1:
 	case 2:
-		ptxservq = &(psta->sta_xmitpriv.bk_q);
+		ptxservq = &psta->sta_xmitpriv.bk_q;
 		*(ac) = 3;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_get_sta_pending : BK\n"));
 		break;
 	case 4:
 	case 5:
-		ptxservq = &(psta->sta_xmitpriv.vi_q);
+		ptxservq = &psta->sta_xmitpriv.vi_q;
 		*(ac) = 1;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_get_sta_pending : VI\n"));
 		break;
 	case 6:
 	case 7:
-		ptxservq = &(psta->sta_xmitpriv.vo_q);
+		ptxservq = &psta->sta_xmitpriv.vo_q;
 		*(ac) = 0;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_get_sta_pending : VO\n"));
 		break;
 	case 0:
 	case 3:
 	default:
-		ptxservq = &(psta->sta_xmitpriv.be_q);
+		ptxservq = &psta->sta_xmitpriv.be_q;
 		*(ac) = 2;
 		RT_TRACE(_module_rtl871x_xmit_c_, _drv_info_, ("rtw_get_sta_pending : BE\n"));
 		break;
@@ -2226,24 +2229,24 @@ void stop_sta_xmit(struct rtw_adapter *padapter, struct sta_info *psta)
 	pstapriv->sta_dz_bitmap |= CHKBIT(psta->aid);
 
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta, &pstaxmitpriv->vo_q.sta_pending);
-	list_del_init(&(pstaxmitpriv->vo_q.tx_pending));
+	list_del_init(&pstaxmitpriv->vo_q.tx_pending);
 
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta, &pstaxmitpriv->vi_q.sta_pending);
-	list_del_init(&(pstaxmitpriv->vi_q.tx_pending));
+	list_del_init(&pstaxmitpriv->vi_q.tx_pending);
 
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta,
 					     &pstaxmitpriv->be_q.sta_pending);
-	list_del_init(&(pstaxmitpriv->be_q.tx_pending));
+	list_del_init(&pstaxmitpriv->be_q.tx_pending);
 
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta,
 					     &pstaxmitpriv->bk_q.sta_pending);
-	list_del_init(&(pstaxmitpriv->bk_q.tx_pending));
+	list_del_init(&pstaxmitpriv->bk_q.tx_pending);
 
 	/* for BC/MC Frames */
 	pstaxmitpriv = &psta_bmc->sta_xmitpriv;
 	dequeue_xmitframes_to_sleeping_queue(padapter, psta_bmc,
 					     &pstaxmitpriv->be_q.sta_pending);
-	list_del_init(&(pstaxmitpriv->be_q.tx_pending));
+	list_del_init(&pstaxmitpriv->be_q.tx_pending);
 
 	spin_unlock_bh(&pxmitpriv->lock);
 }
