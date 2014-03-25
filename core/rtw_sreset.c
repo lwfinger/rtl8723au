@@ -121,7 +121,7 @@ static void sreset_restore_network_station(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 	u8 threshold;
 
 	rtw_setopmode_cmd(padapter, Ndis802_11Infrastructure);
@@ -164,7 +164,7 @@ static void sreset_restore_network_status(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 	if (check_fwstate(mlmepriv, WIFI_STATION_STATE)) {
 		DBG_8723A(FUNC_ADPT_FMT" fwstate:0x%08x - WIFI_STATION_STATE\n", FUNC_ADPT_ARG(padapter), get_fwstate(mlmepriv));
@@ -181,7 +181,7 @@ static void sreset_restore_network_status(struct rtw_adapter *padapter)
 
 static void sreset_stop_adapter(struct rtw_adapter *padapter)
 {
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
 	if (padapter == NULL)
@@ -206,7 +206,7 @@ static void sreset_stop_adapter(struct rtw_adapter *padapter)
 
 static void sreset_start_adapter(struct rtw_adapter *padapter)
 {
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
 	if (padapter == NULL)
@@ -233,7 +233,7 @@ void sreset_reset(struct rtw_adapter *padapter)
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 	u32 start = rtw_get_current_time();
 
