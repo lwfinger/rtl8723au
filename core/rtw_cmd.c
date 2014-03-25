@@ -136,7 +136,7 @@ struct _cmd_callback	rtw_cmd_callback[] = {
 	{GEN_CMD_CODE(_SetPwrMode), NULL},
 	{GEN_CMD_CODE(_JoinbssRpt), NULL},
 	{GEN_CMD_CODE(_SetRaTable), NULL},
-	{GEN_CMD_CODE(_GetRaTable) , NULL},
+	{GEN_CMD_CODE(_GetRaTable), NULL},
 
 	{GEN_CMD_CODE(_GetCCXReport), NULL}, /*40*/
 	{GEN_CMD_CODE(_GetDTMReport),	NULL},
@@ -175,10 +175,10 @@ int rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
 {
 	int res = _SUCCESS;
 
-	sema_init(&(pcmdpriv->cmd_queue_sema), 0);
-	sema_init(&(pcmdpriv->terminate_cmdthread_sema), 0);
+	sema_init(&pcmdpriv->cmd_queue_sema, 0);
+	sema_init(&pcmdpriv->terminate_cmdthread_sema, 0);
 
-	_rtw_init_queue(&(pcmdpriv->cmd_queue));
+	_rtw_init_queue(&pcmdpriv->cmd_queue);
 
 	pcmdpriv->cmd_seq = 1;
 
@@ -368,7 +368,7 @@ static struct cmd_obj *rtw_dequeue_cmd(struct cmd_priv *pcmdpriv)
 	unsigned long irqL;
 
 	spin_lock_irqsave(&queue->lock, irqL);
-	if (list_empty(&(queue->queue)))
+	if (list_empty(&queue->queue))
 		obj = NULL;
 	else {
 		obj = container_of((&queue->queue)->next, struct cmd_obj, list);
@@ -1005,7 +1005,7 @@ u8 rtw_joinbss_cmd(struct rtw_adapter  *padapter, struct wlan_network* pnetwork)
 	struct ht_priv			*phtpriv = &pmlmepriv->htpriv;
 	enum ndis_802_11_net_infra ndis_network_mode = pnetwork->network.InfrastructureMode;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
+	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
 
 	rtw_led_control(padapter, LED_CTL_START_TO_LINK);
 
@@ -1728,7 +1728,7 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 	u16	BusyThreshold = 100;
 	u8	bBusyTraffic = false, bTxBusyTraffic = false, bRxBusyTraffic = false;
 	u8	bHigherBusyTraffic = false, bHigherBusyRxTraffic = false, bHigherBusyTxTraffic = false;
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 
 	/*  */
 	/*  Determine if our traffic is busy now */
@@ -1808,7 +1808,7 @@ void dynamic_chk_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 	struct mlme_priv *pmlmepriv;
 
 	padapter = (struct rtw_adapter *)pbuf;
-	pmlmepriv = &(padapter->mlmepriv);
+	pmlmepriv = &padapter->mlmepriv;
 
 #ifdef CONFIG_8723AU_AP_MODE
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
@@ -1836,7 +1836,7 @@ void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type);
 void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	u8	mstatus;
 
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)
@@ -1999,7 +1999,7 @@ u8 p2p_protocol_wk_cmd(struct rtw_adapter*padapter, int intCmdType)
 {
 	struct cmd_obj	*ph2c;
 	struct drvextra_cmd_parm	*pdrvextra_cmd_parm;
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
@@ -2451,7 +2451,8 @@ createbss_cmd_fail:
 	rtw_free_cmd_obj(pcmd);
 }
 
-void rtw_setstaKey_cmdrsp_callback(struct rtw_adapter*	padapter ,  struct cmd_obj *pcmd)
+void rtw_setstaKey_cmdrsp_callback(struct rtw_adapter *padapter,
+				   struct cmd_obj *pcmd)
 {
 
 	struct sta_priv * pstapriv = &padapter->stapriv;

@@ -57,8 +57,8 @@ void ips_enter(struct rtw_adapter * padapter)
 int ips_leave(struct rtw_adapter * padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct security_priv* psecuritypriv =&(padapter->securitypriv);
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
+	struct security_priv* psecuritypriv =&padapter->securitypriv;
+	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 	int result = _SUCCESS;
 	int keyid;
 
@@ -108,10 +108,10 @@ int rtw_hw_resume(struct rtw_adapter *padapter);
 static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 {
 	struct rtw_adapter *buddy = adapter->pbuddy_adapter;
-	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
+	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 	struct xmit_priv *pxmit_priv = &adapter->xmitpriv;
 #ifdef CONFIG_8723AU_P2P
-	struct wifidirect_info	*pwdinfo = &(adapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &adapter->wdinfo;
 	struct cfg80211_wifidirect_info *pcfg80211_wdinfo = &adapter->cfg80211_wdinfo;
 #endif
 
@@ -131,9 +131,9 @@ static bool rtw_pwr_unassociated_idle(struct rtw_adapter *adapter)
 
 	/* consider buddy, if exist */
 	if (buddy) {
-		struct mlme_priv *b_pmlmepriv = &(buddy->mlmepriv);
+		struct mlme_priv *b_pmlmepriv = &buddy->mlmepriv;
 #ifdef CONFIG_8723AU_P2P
-		struct wifidirect_info *b_pwdinfo = &(buddy->wdinfo);
+		struct wifidirect_info *b_pwdinfo = &buddy->wdinfo;
 		struct cfg80211_wifidirect_info *b_pcfg80211_wdinfo = &buddy->cfg80211_wdinfo;
 #endif
 
@@ -164,10 +164,10 @@ exit:
 void rtw_ps_processor(struct rtw_adapter*padapter)
 {
 #ifdef CONFIG_8723AU_P2P
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 #endif /* CONFIG_8723AU_P2P */
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	enum rt_rf_power_state rfpwrstate;
 
 	pwrpriv->ps_processing = true;
@@ -287,7 +287,7 @@ u8 PS_RDY_CHECK(struct rtw_adapter * padapter)
 {
 	u32 curr_time, delta_time;
 	struct pwrctrl_priv	*pwrpriv = &padapter->pwrctrlpriv;
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 
 	curr_time = rtw_get_current_time();
 	delta_time = curr_time -pwrpriv->DelayLPSLastTimeStamp;
@@ -320,7 +320,7 @@ void rtw_set_ps_mode(struct rtw_adapter *padapter, u8 ps_mode, u8 smart_ps, u8 b
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 #ifdef CONFIG_8723AU_P2P
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
+	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 #endif /* CONFIG_8723AU_P2P */
 
 
@@ -432,7 +432,7 @@ s32 LPS_RF_ON_check(struct rtw_adapter *padapter, u32 delay_ms)
 void LPS_Enter(struct rtw_adapter *padapter)
 {
 	struct pwrctrl_priv	*pwrpriv = &padapter->pwrctrlpriv;
-	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct rtw_adapter *buddy = padapter->pbuddy_adapter;
 
 
@@ -500,7 +500,7 @@ void LPS_Leave(struct rtw_adapter *padapter)
 /*  */
 void LeaveAllPowerSaveMode(struct rtw_adapter *Adapter)
 {
-	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
+	struct mlme_priv *pmlmepriv = &Adapter->mlmepriv;
 	u8	enqueue = 0;
 
 
@@ -663,11 +663,9 @@ int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms, const char 
 		|| !padapter->bup
 		|| !padapter->hw_init_completed
 	) {
-		DBG_8723A("%s: bDriverStopped =%d, bup =%d, hw_init_completed =%u\n"
-			, caller
-			, padapter->bDriverStopped
-			, padapter->bup
-			, padapter->hw_init_completed);
+		DBG_8723A("%s: bDriverStopped =%d, bup =%d, hw_init_completed "
+			  "=%u\n", caller, padapter->bDriverStopped,
+			  padapter->bup, padapter->hw_init_completed);
 		ret = false;
 		goto exit;
 	}

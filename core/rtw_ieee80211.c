@@ -441,12 +441,12 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
 
 	/* DS parameter set */
 	ie = rtw_set_ie(ie, _DSSET_IE_, 1,
-			(u8 *)&(pdev_network->Configuration.DSConfig), &sz);
+			(u8 *)&pdev_network->Configuration.DSConfig, &sz);
 
 	/* IBSS Parameter Set */
 
 	ie = rtw_set_ie(ie, _IBSS_PARA_IE_, 2,
-			(u8 *)&(pdev_network->Configuration.ATIMWindow), &sz);
+			(u8 *)&pdev_network->Configuration.ATIMWindow, &sz);
 
 	if (rateLen > 8) {
 		ie = rtw_set_ie(ie, _EXT_SUPPORTEDRATES_IE_, (rateLen - 8),
@@ -867,7 +867,7 @@ u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16 target_attr_id,
 		*len_attr = 0;
 
 	if ((wps_ie[0] != _VENDOR_SPECIFIC_IE_) ||
-	    memcmp(wps_ie + 2, wps_oui , 4)) {
+	    memcmp(wps_ie + 2, wps_oui, 4)) {
 		return attr_ptr;
 	}
 
