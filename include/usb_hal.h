@@ -15,7 +15,6 @@
 #ifndef __USB_HAL_H__
 #define __USB_HAL_H__
 
-void rtl8723au_set_hal_ops(struct rtw_adapter *padapter);
-#define hal_set_hal_ops	rtl8723au_set_hal_ops
+int rtl8723au_set_hal_ops(struct rtw_adapter *padapter);
 
 #endif /* __USB_HAL_H__ */

@@ -26,7 +26,7 @@ u8 ODM_Read1Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	return rtw_read8(Adapter, RegAddr);
 }
@@ -35,7 +35,7 @@ u16 ODM_Read2Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	return rtw_read16(Adapter, RegAddr);
 }
@@ -44,7 +44,7 @@ u32 ODM_Read4Byte(struct dm_odm_t *pDM_Odm,
 	u32			RegAddr
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	return rtw_read32(Adapter, RegAddr);
 }
@@ -55,7 +55,7 @@ void ODM_Write1Byte(
 	u8			Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	rtw_write8(Adapter, RegAddr, Data);
 }
@@ -66,7 +66,7 @@ void ODM_Write2Byte(
 	u16			Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	rtw_write16(Adapter, RegAddr, Data);
 }
@@ -77,7 +77,7 @@ void ODM_Write4Byte(
 	u32			Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	rtw_write32(Adapter, RegAddr, Data);
 
@@ -90,7 +90,7 @@ void ODM_SetMACReg(
 	u32		Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	PHY_SetBBReg(Adapter, RegAddr, BitMask, Data);
 }
@@ -101,7 +101,7 @@ u32 ODM_GetMACReg(
 	u32		BitMask
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	return PHY_QueryBBReg(Adapter, RegAddr, BitMask);
 }
@@ -113,7 +113,7 @@ void ODM_SetBBReg(
 	u32		Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	PHY_SetBBReg(Adapter, RegAddr, BitMask, Data);
 }
@@ -124,7 +124,7 @@ u32 ODM_GetBBReg(
 	u32		BitMask
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	return PHY_QueryBBReg(Adapter, RegAddr, BitMask);
 }
@@ -137,7 +137,7 @@ void ODM_SetRFReg(
 	u32				Data
 	)
 {
-	struct rtw_adapter *		Adapter = pDM_Odm->Adapter;
+	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
 
 	PHY_SetRFReg(Adapter, eRFPath, RegAddr, BitMask, Data);
 }
@@ -159,7 +159,7 @@ u32 ODM_GetRFReg(
 /*  */
 void ODM_AllocateMemory(
 	struct dm_odm_t *pDM_Odm,
-	void *		*pPtr,
+	void **pPtr,
 	u32		length
 	)
 {
@@ -169,7 +169,7 @@ void ODM_AllocateMemory(
 /*  length could be ignored, used to detect memory leakage. */
 void ODM_FreeMemory(
 	struct dm_odm_t *pDM_Odm,
-	void *		pPtr,
+	void *pPtr,
 	u32		length
 	)
 {
@@ -199,10 +199,10 @@ void ODM_ReleaseSpinLock(
 /*  */
 void ODM_InitializeWorkItem(
 	struct dm_odm_t *pDM_Odm,
-	void *				pRtWorkItem,
+	void *pRtWorkItem,
 	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
-	void *						pContext,
-	const char*					szID
+	void *pContext,
+	const char *szID
 	)
 {
 }
@@ -223,13 +223,13 @@ void ODM_ReleaseTimer(struct dm_odm_t *pDM_Odm, struct timer_list *pTimer)
 /*  ODM FW relative API. */
 /*  */
 u32 ODM_FillH2CCmd(
-	u8 *		pH2CBuffer,
+	u8 *pH2CBuffer,
 	u32		H2CBufferLen,
 	u32		CmdNum,
-	u32 *		pElementID,
-	u32 *		pCmdLen,
-	u8 **		pCmbBuffer,
-	u8 *		CmdStartSeq
+	u32 *pElementID,
+	u32 *pCmdLen,
+	u8 **pCmbBuffer,
+	u8 *CmdStartSeq
 	)
 {
 	return	true;

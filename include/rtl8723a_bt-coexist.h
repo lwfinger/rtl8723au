@@ -107,16 +107,7 @@ struct chnl_txpower_triple {
 
 
 /*  ===== Below this line is sync from SD7 driver COMMON/bt_hci.h ===== */
-#define BT_THREAD		0
-#if(BT_THREAD == 1)
-#define SENDTXMEHTOD	2
-#else
-#define SENDTXMEHTOD	1  /*  0 = workitem, 1 = SendDirectily, 2 = thread */
-#endif
-
-/*  */
 /*  The following is for BT 3.0 + HS HCI COMMAND ERRORS CODES */
-/*  */
 
 #define Max80211PALPDUSize			1492
 #define Max80211AMPASSOCLen			672
@@ -793,10 +784,10 @@ struct hci_phy_link_bss_info {
 };
 
 struct packet_irp_hcicmd_data {
-    u16		OCF:10;
-    u16		OGF:6;
-    u8		Length;
-    u8		Data[20];
+	u16		OCF:10;
+	u16		OGF:6;
+	u8		Length;
+	u8		Data[20];
 };
 
 struct bt_asoc_entry {
@@ -1056,17 +1047,8 @@ struct bt_30info {
 	struct bt_hci_info			BtHciInfo;
 	struct bt_traffic			BtTraffic;
 	struct bt_security			BtSec;
-
-#if(BT_THREAD == 0)
 	RT_WORK_ITEM		HCICmdWorkItem;
 	struct timer_list BTHCICmdTimer;
-#endif
-#if (SENDTXMEHTOD == 0)
-	RT_WORK_ITEM		HCISendACLDataWorkItem;
-	struct timer_list BTHCISendAclDataTimer;
-#elif(SENDTXMEHTOD == 2)
-	void *			BTTxThread;
-#endif
 	RT_WORK_ITEM		BTPsDisableWorkItem;
 	RT_WORK_ITEM		BTConnectWorkItem;
 	struct timer_list BTHCIDiscardAclDataTimer;
@@ -1082,17 +1064,17 @@ struct bt_30info {
 };
 
 struct packet_irp_acl_data {
-    u16		Handle:12;
-    u16		PB_Flag:2;
-    u16		BC_Flag:2;
-    u16		Length;
-    u8		Data[1];
+	u16		Handle:12;
+	u16		PB_Flag:2;
+	u16		BC_Flag:2;
+	u16		Length;
+	u8		Data[1];
 };
 
 struct packet_irp_hcievent_data {
-    u8		EventCode;
-    u8		Length;
-    u8		Data[1];
+	u8		EventCode;
+	u8		Length;
+	u8		Data[20];
 };
 
 struct common_triple {
@@ -1350,7 +1332,7 @@ struct bt_coexist_8723a {
 	u8					c2hBtInfoOriginal;
 	u8					prec2hBtInfo; /*  for 1Ant */
 	u8					bC2hBtInquiryPage;
-	u64					btInqPageStartTime; /*  for 2Ant */
+	unsigned long				btInqPageStartTime; /*  for 2Ant */
 	u8					c2hBtProfile; /*  for 1Ant */
 	u8					btRetryCnt;
 	u8					btInfoExt;

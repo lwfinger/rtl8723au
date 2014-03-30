@@ -147,7 +147,7 @@ enum led_strategy_8723a {
 	LED_ST_NONE = 99,
 };
 
-void LedControl871x(struct rtw_adapter *padapter, enum led_ctl_mode LedAction);
+void LedControl871x23a(struct rtw_adapter *padapter, enum led_ctl_mode LedAction);
 
 struct led_priv{
 	/* add for led controll */
@@ -159,33 +159,23 @@ struct led_priv{
 	/* add for led controll */
 };
 
-#ifdef CONFIG_SW_LED
-#define rtw_led_control(adapter, LedAction) \
-	do { \
-		if((adapter)->ledpriv.LedControlHandler) \
-			(adapter)->ledpriv.LedControlHandler((adapter), (LedAction)); \
-	} while(0)
-#else /* CONFIG_SW_LED */
 #define rtw_led_control(adapter, LedAction)
-#endif /* CONFIG_SW_LED */
 
-void BlinkWorkItemCallback(struct work_struct *work);
+void BlinkWorkItemCallback23a(struct work_struct *work);
 
-void ResetLedStatus(struct led_8723a *pLed);
+void ResetLedStatus23a(struct led_8723a *pLed);
 
 void
-InitLed871x(
+InitLed871x23a(
 	struct rtw_adapter *padapter,
 	struct led_8723a *pLed,
 	enum led_pin_8723a	LedPin
 );
 
 void
-DeInitLed871x(
-	struct led_8723a *pLed
-);
+DeInitLed871x23a(struct led_8723a *pLed);
 
 /* hal... */
-void BlinkHandler(struct led_8723a *pLed);
+void BlinkHandler23a(struct led_8723a *pLed);
 
 #endif /* __RTW_LED_H_ */

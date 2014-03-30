@@ -20,7 +20,7 @@
 #include <mlme_osdep.h>
 #include <rtw_ioctl_set.h>
 
-void rtw_os_indicate_connect(struct rtw_adapter *adapter)
+void rtw_os_indicate_connect23a(struct rtw_adapter *adapter)
 {
 	rtw_cfg80211_indicate_connect(adapter);
 
@@ -30,7 +30,7 @@ void rtw_os_indicate_connect(struct rtw_adapter *adapter)
 		rtw_signal_process(adapter->pid[2], SIGALRM);
 }
 
-void rtw_os_indicate_scan_done(struct rtw_adapter *padapter, bool aborted)
+void rtw_os_indicate_scan_done23a(struct rtw_adapter *padapter, bool aborted)
 {
 	rtw_cfg80211_indicate_scan_done(wdev_to_priv(padapter->rtw_wdev),
 					aborted);
@@ -38,11 +38,11 @@ void rtw_os_indicate_scan_done(struct rtw_adapter *padapter, bool aborted)
 
 static struct rt_pmkid_list backupPMKIDList[NUM_PMKID_CACHE];
 
-void rtw_reset_securitypriv(struct rtw_adapter *adapter)
+void rtw_reset_securitypriv23a(struct rtw_adapter *adapter)
 {
 	u8	backupPMKIDIndex = 0;
 	u8	backupTKIPCountermeasure = 0x00;
-	u32	backupTKIPcountermeasure_time = 0;
+	unsigned long backupTKIPcountermeasure_time = 0;
 
 	if (adapter->securitypriv.dot11AuthAlgrthm ==
 	    dot11AuthAlgrthm_8021X) { /* 802.1x */
@@ -90,29 +90,29 @@ void rtw_reset_securitypriv(struct rtw_adapter *adapter)
 	}
 }
 
-void rtw_os_indicate_disconnect(struct rtw_adapter *adapter)
+void rtw_os_indicate_disconnect23a(struct rtw_adapter *adapter)
 {
 	/* Do it first for tx broadcast pkt after disconnection issue! */
 	netif_carrier_off(adapter->pnetdev);
 
 	rtw_cfg80211_indicate_disconnect(adapter);
 
-	rtw_reset_securitypriv(adapter);
+	rtw_reset_securitypriv23a(adapter);
 }
 
-void rtw_report_sec_ie(struct rtw_adapter *adapter, u8 authmode, u8 *sec_ie)
+void rtw_report_sec_ie23a(struct rtw_adapter *adapter, u8 authmode, u8 *sec_ie)
 {
 	uint	len;
 	u8	*buff, *p, i;
 	union iwreq_data wrqu;
 
 	RT_TRACE(_module_mlme_osdep_c_, _drv_info_,
-		 ("+rtw_report_sec_ie, authmode =%d\n", authmode));
+		 ("+rtw_report_sec_ie23a, authmode =%d\n", authmode));
 
 	buff = NULL;
 	if (authmode == _WPA_IE_ID_) {
 		RT_TRACE(_module_mlme_osdep_c_, _drv_info_,
-			 ("rtw_report_sec_ie, authmode =%d\n", authmode));
+			 ("rtw_report_sec_ie23a, authmode =%d\n", authmode));
 
 		buff = kzalloc(IW_CUSTOM_MAX, GFP_KERNEL);
 		if (!buff)
@@ -141,7 +141,7 @@ void rtw_report_sec_ie(struct rtw_adapter *adapter, u8 authmode, u8 *sec_ie)
 }
 
 #ifdef CONFIG_8723AU_AP_MODE
-void rtw_indicate_sta_assoc_event(struct rtw_adapter *padapter,
+void rtw_indicate_sta_assoc_event23a(struct rtw_adapter *padapter,
 				  struct sta_info *psta)
 {
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -160,10 +160,10 @@ void rtw_indicate_sta_assoc_event(struct rtw_adapter *padapter,
 
 	memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
-	DBG_8723A("+rtw_indicate_sta_assoc_event\n");
+	DBG_8723A("+rtw_indicate_sta_assoc_event23a\n");
 }
 
-void rtw_indicate_sta_disassoc_event(struct rtw_adapter *padapter,
+void rtw_indicate_sta_disassoc_event23a(struct rtw_adapter *padapter,
 				     struct sta_info *psta)
 {
 	struct sta_priv *pstapriv = &padapter->stapriv;
@@ -182,6 +182,6 @@ void rtw_indicate_sta_disassoc_event(struct rtw_adapter *padapter,
 
 	memcpy(wrqu.addr.sa_data, psta->hwaddr, ETH_ALEN);
 
-	DBG_8723A("+rtw_indicate_sta_disassoc_event\n");
+	DBG_8723A("+rtw_indicate_sta_disassoc_event23a\n");
 }
 #endif

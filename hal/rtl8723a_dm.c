@@ -33,17 +33,7 @@
 /*  Global var */
 /*  */
 
-static void
-dm_CheckProtection(
-	struct rtw_adapter *	Adapter
-	)
-{
-}
-
-static void
-dm_CheckStatistics(
-	struct rtw_adapter *	Adapter
-	)
+static void dm_CheckStatistics(struct rtw_adapter *Adapter)
 {
 }
 
@@ -69,21 +59,20 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 	tmp1byte = rtw_read8(padapter, GPIO_IN);
 
 	if (tmp1byte == 0xff)
-		return ;
+		return;
 
 	if (tmp1byte&HAL_8192C_HW_GPIO_WPS_BIT)
-	{
 		bPbcPressed = true;
-	}
 
-	if (true == bPbcPressed)
-	{
+	if (bPbcPressed) {
 		/*  Here we only set bPbcPressed to true */
 		/*  After trigger PBC, the variable will be set to false */
 		DBG_8723A("CheckPbcGPIO - PBC is pressed\n");
 
-		if (padapter->pid[0] == 0)
-		{	/*	0 is the default value and it means the application monitors the HW PBC doesn't privde its pid to driver. */
+		if (padapter->pid[0] == 0) {
+			/* 0 is the default value and it means the application
+			 * monitors the HW PBC doesn't privde its pid to driver.
+			 */
 			return;
 		}
 
@@ -91,30 +80,12 @@ static void dm_CheckPbcGPIO(struct rtw_adapter *padapter)
 	}
 }
 
-/*  */
 /*  Initialize GPIO setting registers */
-/*  */
-static void
-dm_InitGPIOSetting(
-	struct rtw_adapter *	Adapter
-	)
-{
-	struct hal_data_8723a *		pHalData = GET_HAL_DATA(Adapter);
-
-	u8	tmp1byte;
-
-	tmp1byte = rtw_read8(Adapter, REG_GPIO_MUXCFG);
-	tmp1byte &= (GPIOSEL_GPIO | ~GPIOSEL_ENBT);
-
-	rtw_write8(Adapter, REG_GPIO_MUXCFG, tmp1byte);
-}
-/*  */
 /*  functions */
-/*  */
-static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
+static void Init_ODM_ComInfo_8723a(struct rtw_adapter *Adapter)
 {
 
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	u8	cut_ver, fab_ver;
 
@@ -124,54 +95,48 @@ static void Init_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 	memset(pDM_Odm, 0, sizeof(*pDM_Odm));
 
 	pDM_Odm->Adapter = Adapter;
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_PLATFORM, 0x04);
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_INTERFACE, RTW_USB);/* RTL871X_HCI_TYPE */
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_PLATFORM, 0x04);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_INTERFACE, RTW_USB);/* RTL871X_HCI_TYPE */
 
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_IC_TYPE, ODM_RTL8723A);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_IC_TYPE, ODM_RTL8723A);
 
-	if (IS_8723A_A_CUT(pHalData->VersionID))
-	{
+	if (IS_8723A_A_CUT(pHalData->VersionID)) {
 		fab_ver = ODM_UMC;
 		cut_ver = ODM_CUT_A;
-	}
-	else if (IS_8723A_B_CUT(pHalData->VersionID))
-	{
+	} else if (IS_8723A_B_CUT(pHalData->VersionID)) {
 		fab_ver = ODM_UMC;
 		cut_ver = ODM_CUT_B;
-	}
-	else
-	{
+	} else {
 		fab_ver = ODM_TSMC;
 		cut_ver = ODM_CUT_A;
 	}
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_FAB_VER, fab_ver);
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_CUT_VER, cut_ver);
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_MP_TEST_CHIP, IS_NORMAL_CHIP(pHalData->VersionID));
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_FAB_VER, fab_ver);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_CUT_VER, cut_ver);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_MP_TEST_CHIP, IS_NORMAL_CHIP(pHalData->VersionID));
 
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_BOARD_TYPE, pHalData->BoardType);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_BOARD_TYPE, pHalData->BoardType);
 
 	if (pHalData->BoardType == BOARD_USB_High_PA) {
-		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA, true);
-		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA, true);
+		ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_EXT_LNA, true);
+		ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_EXT_PA, true);
 	}
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_PATCH_ID, pHalData->CustomerID);
-	/*	ODM_CMNINFO_BINHCT_TEST only for MP Team */
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_BWIFI_TEST, Adapter->registrypriv.wifi_spec);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_PATCH_ID, pHalData->CustomerID);
+	ODM_CmnInfoInit23a(pDM_Odm, ODM_CMNINFO_BWIFI_TEST, Adapter->registrypriv.wifi_spec);
 
 	if (pHalData->rf_type == RF_1T1R)
-		ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_1T1R);
+		ODM_CmnInfoUpdate23a(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_1T1R);
 	else if (pHalData->rf_type == RF_2T2R)
-		ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_2T2R);
+		ODM_CmnInfoUpdate23a(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_2T2R);
 	else if (pHalData->rf_type == RF_1T2R)
-		ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_1T2R);
+		ODM_CmnInfoUpdate23a(pDM_Odm, ODM_CMNINFO_RF_TYPE, ODM_1T2R);
 }
 
-static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
+static void Update_ODM_ComInfo_8723a(struct rtw_adapter *Adapter)
 {
 	struct mlme_ext_priv	*pmlmeext = &Adapter->mlmeextpriv;
 	struct mlme_priv		*pmlmepriv = &Adapter->mlmepriv;
 	struct pwrctrl_priv *pwrctrlpriv = &Adapter->pwrctrlpriv;
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	int i;
@@ -187,35 +152,35 @@ static void Update_ODM_ComInfo_8723a(struct rtw_adapter *	Adapter)
 				ODM_RF_CALIBRATION;
 	/*  Pointer reference */
 
-	ODM_CmnInfoUpdate(pDM_Odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
+	ODM_CmnInfoUpdate23a(pDM_Odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
 
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_TX_UNI,
-			&Adapter->xmitpriv.tx_bytes);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_RX_UNI,
-			&Adapter->recvpriv.rx_bytes);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_WM_MODE,
-			&pmlmeext->cur_wireless_mode);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_CHNL_OFFSET,
-			&pHalData->nCur40MhzPrimeSC);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_MODE,
-			&Adapter->securitypriv.dot11PrivacyAlgrthm);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_BW,
-			&pHalData->CurrentChannelBW);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_CHNL,
-			&pHalData->CurrentChannel);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_NET_CLOSED, &Adapter->net_closed);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_TX_UNI,
+			   &Adapter->xmitpriv.tx_bytes);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_RX_UNI,
+			   &Adapter->recvpriv.rx_bytes);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_WM_MODE,
+			   &pmlmeext->cur_wireless_mode);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_CHNL_OFFSET,
+			   &pHalData->nCur40MhzPrimeSC);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SEC_MODE,
+			   &Adapter->securitypriv.dot11PrivacyAlgrthm);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_BW,
+			   &pHalData->CurrentChannelBW);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_CHNL,
+			   &pHalData->CurrentChannel);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_NET_CLOSED, &Adapter->net_closed);
 
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SCAN, &pmlmepriv->bScanInProcess);
-	ODM_CmnInfoHook(pDM_Odm, ODM_CMNINFO_POWER_SAVING,
-			&pwrctrlpriv->bpower_saving);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_SCAN, &pmlmepriv->bScanInProcess);
+	ODM23a_CmnInfoHook(pDM_Odm, ODM_CMNINFO_POWER_SAVING,
+			   &pwrctrlpriv->bpower_saving);
 
-	for (i = 0; i< NUM_STA; i++)
-		ODM_CmnInfoPtrArrayHook(pDM_Odm, ODM_CMNINFO_STA_STATUS, i, NULL);
+	for (i = 0; i < NUM_STA; i++)
+		ODM_CmnInfoPtrArrayHook23a(pDM_Odm, ODM_CMNINFO_STA_STATUS, i, NULL);
 }
 
 void rtl8723a_InitHalDm(struct rtw_adapter *Adapter)
 {
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	struct dm_odm_t *pDM_Odm = &pHalData->odmpriv;
 	u8	i;
@@ -229,7 +194,7 @@ void rtl8723a_InitHalDm(struct rtw_adapter *Adapter)
 	pdmpriv->InitDMFlag = pdmpriv->DMFlag;
 
 	Update_ODM_ComInfo_8723a(Adapter);
-	ODM_DMInit(pDM_Odm);
+	ODM23a_DMInit(pDM_Odm);
 	/*  Save REG_INIDATA_RATE_SEL value for TXDESC. */
 	for (i = 0; i < 32; i++)
 		pdmpriv->INIDATA_RATE[i] = rtw_read8(Adapter, REG_INIDATA_RATE_SEL+i) & 0x3f;
@@ -237,13 +202,13 @@ void rtl8723a_InitHalDm(struct rtw_adapter *Adapter)
 
 void
 rtl8723a_HalDmWatchDog(
-	struct rtw_adapter *	Adapter
+	struct rtw_adapter *Adapter
 	)
 {
 	bool		bFwCurrentInPSMode = false;
 	bool		bFwPSAwake = true;
 	u8 hw_init_completed = false;
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 	hw_init_completed = Adapter->hw_init_completed;
@@ -252,7 +217,7 @@ rtl8723a_HalDmWatchDog(
 		goto skip_dm;
 
 	bFwCurrentInPSMode = Adapter->pwrctrlpriv.bFwCurrentInPSMode;
-	rtw_hal_get_hwreg(Adapter, HW_VAR_FWLPS_RF_ON, (u8 *)(&bFwPSAwake));
+	rtw23a_hal_get_hwreg(Adapter, HW_VAR_FWLPS_RF_ON, (u8 *)(&bFwPSAwake));
 
 #ifdef CONFIG_8723AU_P2P
 	/*  Fw is under p2p powersaving mode, driver should stop dynamic mechanism. */
@@ -261,11 +226,9 @@ rtl8723a_HalDmWatchDog(
 		bFwPSAwake = false;
 #endif /* CONFIG_8723AU_P2P */
 
-	if ((hw_init_completed ) && ((!bFwCurrentInPSMode) && bFwPSAwake)) {
+	if ((hw_init_completed) && ((!bFwCurrentInPSMode) && bFwPSAwake)) {
 		/*  Calculate Tx/Rx statistics. */
 		dm_CheckStatistics(Adapter);
-
-_record_initrate:
 
 		/*  Read REG_INIDATA_RATE_SEL value for TXDESC. */
 		if (check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE)) {
@@ -284,9 +247,9 @@ _record_initrate:
 		if (rtw_linked_check(Adapter))
 			bLinked = true;
 
-		ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_LINK,
-				  bLinked);
-		ODM_DMWatchdog(&pHalData->odmpriv);
+		ODM_CmnInfoUpdate23a(&pHalData->odmpriv, ODM_CMNINFO_LINK,
+				     bLinked);
+		ODM_DMWatchdog23a(&pHalData->odmpriv);
 	}
 
 skip_dm:
@@ -298,9 +261,8 @@ skip_dm:
 
 void rtl8723a_init_dm_priv(struct rtw_adapter *Adapter)
 {
-	struct hal_data_8723a *	pHalData = GET_HAL_DATA(Adapter);
+	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	struct dm_odm_t *podmpriv = &pHalData->odmpriv;
 
 	memset(pdmpriv, 0, sizeof(struct dm_priv));
 	Init_ODM_ComInfo_8723a(Adapter);

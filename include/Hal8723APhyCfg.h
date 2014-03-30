@@ -65,8 +65,6 @@ enum RF_RADIO_PATH {
 	RF_PATH_MAX			/* Max RF number 90 support */
 };
 
-#define	RF_PATH_MAX			3
-
 #define CHANNEL_MAX_NUMBER		14	/*  14 is the max channel number */
 #define CHANNEL_GROUP_MAX		3	/*  ch1~3, ch4~9, ch10~14 total three groups */
 
@@ -197,7 +195,7 @@ void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel);
 /*  */
 /*  Switch bandwidth for 8723A */
 /*  */
-void	PHY_SetBWMode8723A(struct rtw_adapter *pAdapter,
+void	PHY_SetBWMode23a8723A(struct rtw_adapter *pAdapter,
 			   enum ht_channel_width ChnlWidth,
 			   unsigned char Offset);
 

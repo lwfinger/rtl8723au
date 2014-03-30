@@ -15,35 +15,30 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723A_SUPPORT == 1)
-static bool
-CheckCondition(
-    const u32  Condition,
-    const u32  Hex
-  )
+static bool CheckCondition(const u32  Condition, const u32  Hex)
 {
-    u32 _board     = (Hex & 0x000000FF);
-    u32 _interface = (Hex & 0x0000FF00) >> 8;
-    u32 _platform  = (Hex & 0x00FF0000) >> 16;
-    u32 cond = Condition;
+	u32 _board     = (Hex & 0x000000FF);
+	u32 _interface = (Hex & 0x0000FF00) >> 8;
+	u32 _platform  = (Hex & 0x00FF0000) >> 16;
+	u32 cond = Condition;
 
-    if (Condition == 0xCDCDCDCD)
-        return true;
+	if (Condition == 0xCDCDCDCD)
+		return true;
 
-    cond = Condition & 0x000000FF;
-    if ((_board == cond) && cond != 0x00)
-        return false;
+	cond = Condition & 0x000000FF;
+	if ((_board == cond) && cond != 0x00)
+		return false;
 
-    cond = Condition & 0x0000FF00;
-    cond = cond >> 8;
-    if ((_interface & cond) == 0 && cond != 0x07)
-        return false;
+	cond = Condition & 0x0000FF00;
+	cond = cond >> 8;
+	if ((_interface & cond) == 0 && cond != 0x07)
+		return false;
 
-    cond = Condition & 0x00FF0000;
-    cond = cond >> 16;
-    if ((_platform & cond) == 0 && cond != 0x0F)
-        return false;
-    return true;
+	cond = Condition & 0x00FF0000;
+	cond = cond >> 16;
+	if ((_platform & cond) == 0 && cond != 0x0F)
+		return false;
+	return true;
 }
 
 /******************************************************************************
@@ -211,67 +206,54 @@ static u32 Array_RadioA_1T_8723A[] = {
 
 void ODM_ReadAndConfig_RadioA_1T_8723A(struct dm_odm_t *pDM_Odm)
 {
-	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
+	#define READ_NEXT_PAIR(v1, v2, i)			\
+		 do {						\
+			 i += 2; v1 = Array[i]; v2 = Array[i+1];\
+		 } while (0)
 
 	u32     hex         = 0;
 	u32     i           = 0;
-	u16     count       = 0;
-	u32 *    ptr_array   = NULL;
 	u8     platform    = 0x04;
 	u8     interfaceValue   = pDM_Odm->SupportInterface;
 	u8     board       = pDM_Odm->BoardType;
 	u32     ArrayLen    = sizeof(Array_RadioA_1T_8723A)/sizeof(u32);
-	u32 *    Array       = Array_RadioA_1T_8723A;
+	u32 *Array = Array_RadioA_1T_8723A;
 
 	hex += board;
 	hex += interfaceValue << 8;
 	hex += platform << 16;
 	hex += 0xFF000000;
 
-	for (i = 0; i < ArrayLen; i += 2)
-	{
-	    u32 v1 = Array[i];
-	    u32 v2 = Array[i+1];
+	for (i = 0; i < ArrayLen; i += 2) {
+		u32 v1 = Array[i];
+		u32 v2 = Array[i+1];
 
-	    /*  This (offset, data) pair meets the condition. */
-	    if (v1 < 0xCDCDCDCD)
-	    {
-		    odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
-		    continue;
-		}
-		else
-		{ /*  This line is the start line of branch. */
-		    if (!CheckCondition(Array[i], hex))
-		    { /*  Discard the following (offset, data) pairs. */
-		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
-		               v2 != 0xCDCD && i < ArrayLen -2)
-		        {
-		            READ_NEXT_PAIR(v1, v2, i);
-		        }
-		        i -= 2; /*  prevent from for-loop += 2 */
-		    }
-		    else /*  Configure matched pairs and skip to end of if-else. */
-		    {
-		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
-		               v2 != 0xCDCD && i < ArrayLen -2)
-		        {
-				odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
+		/*  This (offset, data) pair meets the condition. */
+		if (v1 < 0xCDCDCDCD) {
+			odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
+			continue;
+		} else {
+			if (!CheckCondition(Array[i], hex)) {
+				/*  Discard the following (offset, data) pairs. */
 				READ_NEXT_PAIR(v1, v2, i);
-		        }
+				while (v2 != 0xDEAD &&
+				       v2 != 0xCDEF &&
+				       v2 != 0xCDCD && i < ArrayLen - 2)
+					READ_NEXT_PAIR(v1, v2, i);
+				i -= 2; /*  prevent from for-loop += 2 */
+			} else {
+				/*  Configure matched pairs and skip to end of if-else. */
+				READ_NEXT_PAIR(v1, v2, i);
+				while (v2 != 0xDEAD &&
+				       v2 != 0xCDEF &&
+				       v2 != 0xCDCD && i < ArrayLen - 2) {
+					odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
+					READ_NEXT_PAIR(v1, v2, i);
+				}
 
-		        while (v2 != 0xDEAD && i < ArrayLen -2)
-		        {
-		            READ_NEXT_PAIR(v1, v2, i);
-		        }
-
-		    }
+				while (v2 != 0xDEAD && i < ArrayLen - 2)
+					READ_NEXT_PAIR(v1, v2, i);
+			}
 		}
 	}
-
 }
-
-#endif /*  end of HWIMG_SUPPORT */

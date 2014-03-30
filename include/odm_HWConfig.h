@@ -74,21 +74,21 @@ struct phy_rx_agc_info {
 };
 
 struct phy_status_rpt {
-	struct phy_rx_agc_info path_agc[2];
-	u8	ch_corr[2];
+	struct phy_rx_agc_info path_agc[RF_PATH_MAX];
+	u8	ch_corr[RF_PATH_MAX];
 	u8	cck_sig_qual_ofdm_pwdb_all;
 	u8	cck_agc_rpt_ofdm_cfosho_a;
 	u8	cck_rpt_b_ofdm_cfosho_b;
 	u8	rsvd_1;/* ch_corr_msb; */
 	u8	noise_power_db_msb;
-	u8	path_cfotail[2];
-	u8	pcts_mask[2];
-	s8	stream_rxevm[2];
-	u8	path_rxsnr[2];
+	u8	path_cfotail[RF_PATH_MAX];
+	u8	pcts_mask[RF_PATH_MAX];
+	s8	stream_rxevm[RF_PATH_MAX];
+	u8	path_rxsnr[RF_PATH_MAX];
 	u8	noise_power_db_lsb;
 	u8	rsvd_2[3];
-	u8	stream_csi[2];
-	u8	stream_target_csi[2];
+	u8	stream_csi[RF_PATH_MAX];
+	u8	stream_target_csi[RF_PATH_MAX];
 	s8	sig_evm;
 	u8	rsvd_3;
 
@@ -142,17 +142,17 @@ struct phy_status_rpt_8195 {
 };
 
 
-void odm_Init_RSSIForDM(struct dm_odm_t *pDM_Odm);
+void odm_Init_RSSIForDM23a(struct dm_odm_t *pDM_Odm);
 
 void
-ODM_PhyStatusQuery(
+ODM_PhyStatusQuery23a(
 	struct dm_odm_t *pDM_Odm,
 	struct odm_phy_info *pPhyInfo,
 	u8 *						pPhyStatus,
 	struct odm_packet_info *pPktinfo
 	);
 
-void ODM_MacStatusQuery(struct dm_odm_t *pDM_Odm,
+void ODM_MacStatusQuery23a(struct dm_odm_t *pDM_Odm,
 	u8 *pMacStatus,
 	u8 MacID,
 	bool bPacketMatchBSSID,
@@ -160,15 +160,15 @@ void ODM_MacStatusQuery(struct dm_odm_t *pDM_Odm,
 	bool bPacketBeacon
 );
 
-enum hal_status ODM_ConfigRFWithHeaderFile(struct dm_odm_t *pDM_Odm,
+enum hal_status ODM_ConfigRFWithHeaderFile23a(struct dm_odm_t *pDM_Odm,
 	enum RF_RADIO_PATH	Content,
 	enum RF_RADIO_PATH	eRFPath
 );
 
-enum hal_status ODM_ConfigBBWithHeaderFile(struct dm_odm_t *pDM_Odm,
+enum hal_status ODM_ConfigBBWithHeaderFile23a(struct dm_odm_t *pDM_Odm,
 	enum odm_bb_config_type		ConfigType
 );
 
-enum hal_status ODM_ConfigMACWithHeaderFile(struct dm_odm_t *pDM_Odm);
+enum hal_status ODM_ConfigMACWithHeaderFile23a(struct dm_odm_t *pDM_Odm);
 
 #endif

@@ -155,6 +155,6 @@ void rtl8723a_add_rateatid(struct rtw_adapter * padapter, u32 bitmap, u8 arg, u8
 void rtl8723a_set_p2p_ps_offload_cmd(struct rtw_adapter * padapter, u8 p2p_ps_state);
 #endif /* CONFIG_8723AU_P2P */
 
-void CheckFwRsvdPageContent(struct rtw_adapter *padapter);
+void CheckFwRsvdPageContent23a(struct rtw_adapter *padapter);
 
 #endif

@@ -19,36 +19,26 @@
 #include <osdep_service.h>
 #include <drv_types.h>
 
-int rtw_hw_suspend(struct rtw_adapter *padapter);
-int rtw_hw_resume(struct rtw_adapter *padapter);
+int rtw_hw_suspend23a(struct rtw_adapter *padapter);
+int rtw_hw_resume23a(struct rtw_adapter *padapter);
 
-u8 rtw_init_drv_sw(struct rtw_adapter *padapter);
-u8 rtw_free_drv_sw(struct rtw_adapter *padapter);
-u8 rtw_reset_drv_sw(struct rtw_adapter *padapter);
+u8 rtw_init_drv_sw23a(struct rtw_adapter *padapter);
+u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter);
+u8 rtw_reset_drv_sw23a(struct rtw_adapter *padapter);
 
-u32 rtw_start_drv_threads(struct rtw_adapter *padapter);
-void rtw_stop_drv_threads (struct rtw_adapter *padapter);
-void rtw_cancel_all_timer(struct rtw_adapter *padapter);
+u32 rtw_start_drv_threads23a(struct rtw_adapter *padapter);
+void rtw_stop_drv_threads23a (struct rtw_adapter *padapter);
+void rtw_cancel_all_timer23a(struct rtw_adapter *padapter);
 
-int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+int rtw_init_netdev23a_name23a(struct net_device *pnetdev, const char *ifname);
+struct net_device *rtw_init_netdev23a(struct rtw_adapter *padapter);
 
-int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);
-struct net_device *rtw_init_netdev(struct rtw_adapter *padapter);
+u16 rtw_recv_select_queue23a(struct sk_buff *skb);
 
-u16 rtw_recv_select_queue(struct sk_buff *skb);
+void rtw_ips_dev_unload23a(struct rtw_adapter *padapter);
 
-#ifdef CONFIG_PROC_DEBUG
-void rtw_proc_init_one(struct net_device *dev);
-void rtw_proc_remove_one(struct net_device *dev);
-#else /* CONFIG_PROC_DEBUG */
-static void rtw_proc_init_one(struct net_device *dev){}
-static void rtw_proc_remove_one(struct net_device *dev){}
-#endif /* CONFIG_PROC_DEBUG */
-
-void rtw_ips_dev_unload(struct rtw_adapter *padapter);
-
-int rtw_ips_pwr_up(struct rtw_adapter *padapter);
-void rtw_ips_pwr_down(struct rtw_adapter *padapter);
+int rtw_ips_pwr_up23a(struct rtw_adapter *padapter);
+void rtw_ips_pwr_down23a(struct rtw_adapter *padapter);
 
 int rtw_drv_register_netdev(struct rtw_adapter *padapter);
 void rtw_ndev_destructor(struct net_device *ndev);

@@ -670,18 +670,9 @@ Default: 00b.
 #define	IMR_WLANOFF			BIT0
 
 
-/*  */
-/*  8192C EFUSE */
-/*  */
-#define	HWSET_MAX_SIZE			128
-
-/*  */
 /*        8192C EEPROM/EFUSE share register definition. */
-/*  */
 
-/*  */
 /*  Default Value for EEPROM or EFUSE!!! */
-/*  */
 #define EEPROM_Default_TSSI			0x0
 #define EEPROM_Default_TxPowerDiff		0x0
 #define EEPROM_Default_CrystalCap		0x5
@@ -2087,18 +2078,11 @@ Current IOREG MAP
 #define WLAN_RX0FF_DEVICE_ID		7	/*  0b[16], 111b[15:13] */
 #define WLAN_IOREG_DEVICE_ID		8	/*  1b[16] */
 
-/*  */
 /*  8723 EFUSE */
-/*  */
-#ifdef HWSET_MAX_SIZE
-#undef HWSET_MAX_SIZE
-#endif
 #define HWSET_MAX_SIZE			256
 
 
-/*  */
 /* USB interrupt */
-/*  */
 #define	UHIMR_TIMEOUT2			BIT31
 #define	UHIMR_TIMEOUT1			BIT30
 #define	UHIMR_PSTIMEOUT			BIT29

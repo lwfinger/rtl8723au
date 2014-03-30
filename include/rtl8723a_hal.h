@@ -534,7 +534,7 @@ void rtl8723a_DeinitAntenna_Selection(struct rtw_adapter *padapter);
 void rtl8723a_CheckAntenna_Selection(struct rtw_adapter *padapter);
 void rtl8723a_init_default_value(struct rtw_adapter *padapter);
 
-s32 InitLLTTable(struct rtw_adapter *padapter, u32 boundary);
+s32 InitLLTTable23a(struct rtw_adapter *padapter, u32 boundary);
 
 s32 CardDisableHWSM(struct rtw_adapter *padapter, u8 resetMCU);
 s32 CardDisableWithoutHWSM(struct rtw_adapter *padapter);
@@ -553,7 +553,7 @@ void Hal_EfuseParseRateIndicationOption(struct rtw_adapter *padapter, u8 *hwinfo
 void Hal_EfuseParseXtal_8723A(struct rtw_adapter *pAdapter, u8 *hwinfo, u8 AutoLoadFail);
 void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, u8 AutoLoadFail);
 
-void Hal_InitChannelPlan(struct rtw_adapter *padapter);
+void Hal_InitChannelPlan23a(struct rtw_adapter *padapter);
 
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
 void SetHwReg8723A(struct rtw_adapter *padapter, u8 variable, u8 *val);
@@ -563,7 +563,7 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 #endif
 
 /*  register */
-void SetBcnCtrlReg(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);
+void SetBcnCtrlReg23a(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);
 void rtl8723a_InitBeaconParameters(struct rtw_adapter *padapter);
 
 void rtl8723a_clone_haldata(struct rtw_adapter *dst_adapter, struct rtw_adapter *src_adapter);

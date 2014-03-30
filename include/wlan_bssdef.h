@@ -165,7 +165,7 @@ struct wlan_bcn_info {
 
 struct wlan_bssid_ex {
 	u32  Length;
-	unsigned char MacAddress[ETH_ALEN];
+	u8 MacAddress[ETH_ALEN];
 	u16 reserved;
 	struct cfg80211_ssid Ssid;
 	u32  Privacy;

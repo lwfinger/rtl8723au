@@ -156,10 +156,10 @@ struct security_priv {
 	u8 supplicant_ie[256];  /* store sta security information element */
 
 	/* for tkip countermeasure */
-	u32 last_mic_err_time;
+	unsigned long last_mic_err_time;
 	u8	btkip_countermeasure;
 	u8	btkip_wait_report;
-	u32 btkip_countermeasure_time;
+	unsigned long btkip_countermeasure_time;
 
 	/*  For WPA2 Pre-Authentication. */
 	struct rt_pmkid_list PMKIDList[NUM_PMKID_CACHE];
@@ -332,26 +332,26 @@ static const unsigned long K[64] = {
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #endif
 
-void rtw_secmicsetkey(struct mic_data *pmicdata, u8 *key);
-void rtw_secmicappendbyte(struct mic_data *pmicdata, u8 b);
-void rtw_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nbBytes);
-void rtw_secgetmic(struct mic_data *pmicdata, u8 *dst);
+void rtw_secmicsetkey23a(struct mic_data *pmicdata, u8 *key);
+void rtw_secmicappend23abyte23a(struct mic_data *pmicdata, u8 b);
+void rtw_secmicappend23a(struct mic_data *pmicdata, u8 *src, u32 nbBytes);
+void rtw_secgetmic23a(struct mic_data *pmicdata, u8 *dst);
 
-void rtw_seccalctkipmic(u8 *key, u8 *header, u8 *data, u32 data_len,
+void rtw_seccalctkipmic23a(u8 *key, u8 *header, u8 *data, u32 data_len,
 			u8 *Miccode, u8 priorityi);
 
-u32 rtw_aes_encrypt(struct rtw_adapter *padapter,
+u32 rtw_aes_encrypt23a(struct rtw_adapter *padapter,
 		    struct xmit_frame *pxmitframe);
-u32 rtw_tkip_encrypt(struct rtw_adapter *padapter,
+u32 rtw_tkip_encrypt23a(struct rtw_adapter *padapter,
 		     struct xmit_frame *pxmitframe);
-void rtw_wep_encrypt(struct rtw_adapter *padapter,
+void rtw_wep_encrypt23a(struct rtw_adapter *padapter,
 		     struct xmit_frame *pxmitframe);
-u32 rtw_aes_decrypt(struct rtw_adapter *padapter,
+u32 rtw_aes_decrypt23a(struct rtw_adapter *padapter,
 		    struct recv_frame *precvframe);
-u32 rtw_tkip_decrypt(struct rtw_adapter *padapter,
+u32 rtw_tkip_decrypt23a(struct rtw_adapter *padapter,
 		     struct recv_frame *precvframe);
-void rtw_wep_decrypt(struct rtw_adapter *padapter, struct recv_frame *precvframe);
+void rtw_wep_decrypt23a(struct rtw_adapter *padapter, struct recv_frame *precvframe);
 
-void rtw_use_tkipkey_handler(void *FunctionContext);
+void rtw_use_tkipkey_handler23a(void *FunctionContext);
 
 #endif	/* __RTL871X_SECURITY_H_ */

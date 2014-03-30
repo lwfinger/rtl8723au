@@ -62,19 +62,13 @@
 #define	Smooth_TH_3	4
 #define   Smooth_Step_Size 5
 #define	Adaptive_SIR	1
-#if(RTL8723_FPGA_VERIFICATION == 1)
-#define	PSD_RESCAN		1
-#else
 #define	PSD_RESCAN		4
-#endif
 #define	PSD_SCAN_INTERVAL	700 /* ms */
 
-
-
 /* 8723A High Power IGI Setting */
-#define		DM_DIG_HIGH_PWR_IGI_LOWER_BOUND	0x22
-#define			DM_DIG_Gmode_HIGH_PWR_IGI_LOWER_BOUND 0x28
-#define		DM_DIG_HIGH_PWR_THRESHOLD	0x3a
+#define DM_DIG_HIGH_PWR_IGI_LOWER_BOUND	0x22
+#define DM_DIG_Gmode_HIGH_PWR_IGI_LOWER_BOUND 0x28
+#define DM_DIG_HIGH_PWR_THRESHOLD	0x3a
 
 /*  LPS define */
 #define DM_DIG_FA_TH0_LPS				4 /*  4 in lps */
@@ -271,35 +265,30 @@ struct odm_rate_adapt {
 #define		DM_Type_ByFW			0
 #define		DM_Type_ByDriver		1
 
-/*  */
 /*  Declare for common info */
-/*  */
-/*  Declare for common info */
-/*  */
-#define MAX_PATH_NUM_92CS		2
 
 struct odm_phy_info {
 	u8		RxPWDBAll;
 	u8		SignalQuality;	 /*  in 0-100 index. */
-	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
-	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/*  in 0~100 index */
+	u8		RxMIMOSignalQuality[RF_PATH_MAX]; /* EVM */
+	u8		RxMIMOSignalStrength[RF_PATH_MAX];/*  in 0~100 index */
 	s8		RxPower; /*  in dBm Translate from PWdB */
 	s8		RecvSignalPower;/*  Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures. */
 	u8		BTRxRSSIPercentage;
 	u8		SignalStrength; /*  in 0-100 index. */
-	u8		RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
-	u8		RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
+	u8		RxPwr[RF_PATH_MAX];/* per-path's pwdb */
+	u8		RxSNR[RF_PATH_MAX];/* per-path's SNR */
 };
 
 
 struct odm_phy_dbg_info {
 	/* ODM Write,debug info */
-	s8		RxSNRdB[MAX_PATH_NUM_92CS];
+	s8		RxSNRdB[RF_PATH_MAX];
 	u64		NumQryPhyStatus;
 	u64		NumQryPhyStatusCCK;
 	u64		NumQryPhyStatusOFDM;
 	/* Others */
-	s32		RxEVM[MAX_PATH_NUM_92CS];
+	s32		RxEVM[RF_PATH_MAX];
 
 };
 
@@ -334,7 +323,7 @@ enum {
 };
 
 /*  */
-/*  2011/20/20 MH For MP driver RT_WLAN_STA =  STA_INFO_T */
+/*  2011/20/20 MH For MP driver RT_WLAN_STA =  struct sta_info */
 /*  Please declare below ODM relative info in your STA info structure. */
 /*  */
 struct odm_sta_info {
@@ -887,12 +876,8 @@ struct dm_odm_t {
 	/* 2 Define STA info. */
 	/*  _ODM_STA_INFO */
 	/*  2012/01/12 MH For MP, we need to reduce one array pointer for default port.?? */
-	PSTA_INFO_T		pODM_StaInfo[ODM_ASSOCIATE_ENTRY_NUM];
+	struct sta_info *		pODM_StaInfo[ODM_ASSOCIATE_ENTRY_NUM];
 
-#if (RATE_ADAPTIVE_SUPPORT == 1)
-	u16			CurrminRptTime;
-	struct odm_ra_info   RAInfo[ODM_ASSOCIATE_ENTRY_NUM]; /* Use MacID as array index. STA MacID=0, VWiFi Client MacID={1, ODM_ASSOCIATE_ENTRY_NUM-1} */
-#endif
 	/*  */
 	/*  2012/02/14 MH Add to share 88E ra with other SW team. */
 	/*  We need to colelct all support abilit to a proper area. */
@@ -1139,9 +1124,9 @@ enum dm_swas {
 #define	OFDM_TABLE_SIZE_92D	43
 #define	CCK_TABLE_SIZE		33
 
-extern	u32 OFDMSwingTable[OFDM_TABLE_SIZE_92D];
-extern	u8 CCKSwingTable_Ch1_Ch13[CCK_TABLE_SIZE][8];
-extern	u8 CCKSwingTable_Ch14 [CCK_TABLE_SIZE][8];
+extern	u32 OFDMSwingTable23A[OFDM_TABLE_SIZE_92D];
+extern	u8 CCKSwingTable_Ch1_Ch1323A[CCK_TABLE_SIZE][8];
+extern	u8 CCKSwingTable_Ch1423A [CCK_TABLE_SIZE][8];
 
 
 
@@ -1157,22 +1142,22 @@ extern	u8 CCKSwingTable_Ch14 [CCK_TABLE_SIZE][8];
 #define SWAW_STEP_PEAK		0
 #define SWAW_STEP_DETERMINE	1
 
-void ODM_Write_DIG(struct dm_odm_t *pDM_Odm,	u8	CurrentIGI);
-void ODM_Write_CCK_CCA_Thres(struct dm_odm_t *pDM_Odm, u8	CurCCK_CCAThres);
+void ODM_Write_DIG23a(struct dm_odm_t *pDM_Odm,	u8	CurrentIGI);
+void ODM_Write_CCK_CCA_Thres23a(struct dm_odm_t *pDM_Odm, u8	CurCCK_CCAThres);
 
 void ODM_SetAntenna(struct dm_odm_t *pDM_Odm, u8 Antenna);
 
 
-#define dm_RF_Saving	ODM_RF_Saving
-void ODM_RF_Saving(struct dm_odm_t *pDM_Odm, u8 bForceInNormal);
+#define dm_RF_Saving	ODM_RF_Saving23a
+void ODM_RF_Saving23a(struct dm_odm_t *pDM_Odm, u8 bForceInNormal);
 
 #define SwAntDivRestAfterLink	ODM_SwAntDivRestAfterLink
 void ODM_SwAntDivRestAfterLink(struct dm_odm_t *pDM_Odm);
 
-#define dm_CheckTXPowerTracking		ODM_TXPowerTrackingCheck
-void ODM_TXPowerTrackingCheck(struct dm_odm_t *pDM_Odm);
+#define dm_CheckTXPowerTracking		ODM_TXPowerTrackingCheck23a
+void ODM_TXPowerTrackingCheck23a(struct dm_odm_t *pDM_Odm);
 
-bool ODM_RAStateCheck(struct dm_odm_t *pDM_Odm, s32 RSSI, bool bForceUpdate,
+bool ODM_RAStateCheck23a(struct dm_odm_t *pDM_Odm, s32 RSSI, bool bForceUpdate,
 		      u8 *pRATRState);
 
 
@@ -1180,26 +1165,26 @@ bool ODM_RAStateCheck(struct dm_odm_t *pDM_Odm, s32 RSSI, bool bForceUpdate,
 void ODM_SwAntDivChkPerPktRssi(struct dm_odm_t *pDM_Odm, u8 StationID,
 			       struct odm_phy_info *pPhyInfo);
 
-u32 ConvertTo_dB(u32 Value);
+u32 ConvertTo_dB23a(u32 Value);
 
 u32 GetPSDData(struct dm_odm_t *pDM_Odm, unsigned int point, u8 initial_gain_psd);
 
-void odm_DIGbyRSSI_LPS(struct dm_odm_t *pDM_Odm);
+void odm_DIG23abyRSSI_LPS(struct dm_odm_t *pDM_Odm);
 
-u32 ODM_Get_Rate_Bitmap(struct dm_odm_t *pDM_Odm, u32 macid, u32 ra_mask, u8 rssi_level);
+u32 ODM_Get_Rate_Bitmap23a(struct dm_odm_t *pDM_Odm, u32 macid, u32 ra_mask, u8 rssi_level);
 
 
-void ODM_DMInit(struct dm_odm_t *pDM_Odm);
+void ODM23a_DMInit(struct dm_odm_t *pDM_Odm);
 
-void ODM_DMWatchdog(struct dm_odm_t *pDM_Odm); /*  For common use in the future */
+void ODM_DMWatchdog23a(struct dm_odm_t *pDM_Odm); /*  For common use in the future */
 
-void ODM_CmnInfoInit(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u32 Value);
+void ODM_CmnInfoInit23a(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u32 Value);
 
-void ODM_CmnInfoHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, void *pValue);
+void ODM23a_CmnInfoHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, void *pValue);
 
-void ODM_CmnInfoPtrArrayHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u16 Index, void *pValue);
+void ODM_CmnInfoPtrArrayHook23a(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u16 Index, void *pValue);
 
-void ODM_CmnInfoUpdate(struct dm_odm_t *pDM_Odm, u32 CmnInfo, u64 Value);
+void ODM_CmnInfoUpdate23a(struct dm_odm_t *pDM_Odm, u32 CmnInfo, u64 Value);
 
 void ODM_InitAllTimers(struct dm_odm_t *pDM_Odm);
 

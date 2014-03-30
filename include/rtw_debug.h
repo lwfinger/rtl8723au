@@ -141,51 +141,45 @@
 	#define	_MODULE_DEFINE_	_module_efuse_
 #endif
 
-#ifdef pr_info
-#define _dbgdump	pr_info
-#else
-#define _dbgdump	printk
-#endif
-
 #define DRIVER_PREFIX	"RTL8723AU: "
 #define DEBUG_LEVEL	(_drv_err_)
 #define DBG_8723A_LEVEL(_level, fmt, arg...)				\
 	do {								\
-		if (_level <= GlobalDebugLevel)				\
-			_dbgdump(DRIVER_PREFIX"ERROR " fmt, ##arg);\
+		if (_level <= GlobalDebugLevel23A)				\
+			pr_info(DRIVER_PREFIX"ERROR " fmt, ##arg);\
 	} while (0)
 
 #define DBG_8723A(...)							\
 	do {								\
-		if (_drv_err_ <= GlobalDebugLevel)			\
-			_dbgdump(DRIVER_PREFIX __VA_ARGS__);		\
+		if (_drv_err_ <= GlobalDebugLevel23A)			\
+			pr_info(DRIVER_PREFIX __VA_ARGS__);		\
 	} while (0)
 
 #define MSG_8723A(...)							\
 	do {								\
-		if (_drv_err_ <= GlobalDebugLevel)			\
-			_dbgdump(DRIVER_PREFIX __VA_ARGS__);		\
+		if (_drv_err_ <= GlobalDebugLevel23A)			\
+			pr_info(DRIVER_PREFIX __VA_ARGS__);		\
 	} while (0)
 
-extern u32 GlobalDebugLevel;
+extern u32 GlobalDebugLevel23A;
 
 
 #define RT_TRACE(_Comp, _Level, Fmt)					\
 do {									\
-	if (_Level <= GlobalDebugLevel) {				\
-		_dbgdump("%s [0x%08x,%d]", DRIVER_PREFIX,		\
+	if (_Level <= GlobalDebugLevel23A) {				\
+		pr_info("%s [0x%08x,%d]", DRIVER_PREFIX,		\
 			 (unsigned int)_Comp, _Level);			\
-		_dbgdump Fmt;						\
+		pr_info Fmt;						\
 	}								\
 } while (0)
 
 #define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData,		\
 		      _HexDataLen)					\
-	if (_Level <= GlobalDebugLevel) {				\
+	if (_Level <= GlobalDebugLevel23A) {				\
 		int __i;						\
 		u8	*ptr = (u8 *)_HexData;				\
-		_dbgdump("%s", DRIVER_PREFIX);				\
-		_dbgdump(_TitleString);					\
+		pr_info("%s", DRIVER_PREFIX);				\
+		pr_info(_TitleString);					\
 		for (__i = 0; __i < (int)_HexDataLen; __i++) {		\
 			printk("%02X%s", ptr[__i],			\
 			       (((__i + 1) % 4) == 0) ? "  " : " ");	\

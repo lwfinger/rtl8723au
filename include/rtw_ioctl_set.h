@@ -23,27 +23,17 @@ struct bssid_info {
 	u8  PMKID[16];
 };
 
-u8 rtw_set_802_11_add_key(struct rtw_adapter *padapter,
-			  struct ndis_802_11_key *key);
-u8 rtw_set_802_11_authentication_mode(struct rtw_adapter *pdapter,
+u8 rtw_set_802_11_authentication_mode23a(struct rtw_adapter *pdapter,
 				      enum ndis_802_11_auth_mode authmode);
-u8 rtw_set_802_11_bssid(struct rtw_adapter *padapter, u8 *bssid);
-u8 rtw_set_802_11_add_wep(struct rtw_adapter * padapter,
+u8 rtw_set_802_11_add_wep23a(struct rtw_adapter * padapter,
 			  struct ndis_802_11_wep *wep);
-u8 rtw_set_802_11_disassociate(struct rtw_adapter *padapter);
-u8 rtw_set_802_11_bssid_list_scan(struct rtw_adapter *padapter,
+u8 rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
 				  struct cfg80211_ssid *pssid, int ssid_max_num);
-u8 rtw_set_802_11_infrastructure_mode(struct rtw_adapter *padapter,
+u8 rtw_set_802_11_infrastructure_mode23a(struct rtw_adapter *padapter,
 				      enum ndis_802_11_net_infra networktype);
-u8 rtw_set_802_11_remove_wep(struct rtw_adapter * padapter, u32 keyindex);
-u8 rtw_set_802_11_ssid(struct rtw_adapter * padapter, struct cfg80211_ssid * ssid);
+u8 rtw_set_802_11_ssid23a(struct rtw_adapter * padapter, struct cfg80211_ssid * ssid);
 
-u8 rtw_validate_ssid(struct cfg80211_ssid *ssid);
-
-u16 rtw_get_cur_max_rate(struct rtw_adapter *adapter);
-void rtw_indicate_wx_assoc_event(struct rtw_adapter *padapter);
-void rtw_indicate_wx_disassoc_event(struct rtw_adapter *padapter);
-void indicate_wx_scan_complete_event(struct rtw_adapter *padapter);
+u16 rtw_get_cur_max_rate23a(struct rtw_adapter *adapter);
 s32 FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
 
 #endif

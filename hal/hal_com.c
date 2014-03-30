@@ -17,12 +17,11 @@
 
 #include <hal_intf.h>
 #include <hal_com.h>
-
 #include <rtl8723a_hal.h>
 
 #define _HAL_INIT_C_
 
-void dump_chip_info(struct hal_version ChipVersion)
+void dump_chip_info23a(struct hal_version ChipVersion)
 {
 	int cnt = 0;
 	u8 buf[128];
@@ -68,7 +67,7 @@ void dump_chip_info(struct hal_version ChipVersion)
 /* hw_channel_plan:  channel plan from HW (efuse/eeprom) */
 /* sw_channel_plan:  channel plan from SW (registry/module param) */
 /* def_channel_plan: channel plan used when the former two is invalid */
-u8 hal_com_get_channel_plan(struct rtw_adapter *padapter, u8 hw_channel_plan,
+u8 hal_com_get_channel_plan23a(struct rtw_adapter *padapter, u8 hw_channel_plan,
 			    u8 sw_channel_plan, u8 def_channel_plan,
 			    bool AutoLoadFail)
 {
@@ -94,7 +93,7 @@ u8 hal_com_get_channel_plan(struct rtw_adapter *padapter, u8 hw_channel_plan,
 	return chnlPlan;
 }
 
-u8 MRateToHwRate(u8 rate)
+u8 MRateToHwRate23a(u8 rate)
 {
 	u8 ret = DESC_RATE1M;
 
@@ -150,11 +149,10 @@ u8 MRateToHwRate(u8 rate)
 	default:
 		break;
 	}
-
 	return ret;
 }
 
-void HalSetBrateCfg(struct rtw_adapter *padapter, u8 *mBratesOS)
+void HalSetBrateCfg23a(struct rtw_adapter *padapter, u8 *mBratesOS)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	u8 i, is_brate, brate;
@@ -322,12 +320,10 @@ static void _ThreeOutPipeMapping(struct rtw_adapter *pAdapter, bool bWIFICfg)
 	}
 }
 
-bool Hal_MappingOutPipe(struct rtw_adapter *pAdapter, u8 NumOutPipe)
+bool Hal_MappingOutPipe23a(struct rtw_adapter *pAdapter, u8 NumOutPipe)
 {
 	struct registry_priv *pregistrypriv = &pAdapter->registrypriv;
-
 	bool bWIFICfg = (pregistrypriv->wifi_spec) ? true : false;
-
 	bool result = true;
 
 	switch (NumOutPipe) {
@@ -348,9 +344,9 @@ bool Hal_MappingOutPipe(struct rtw_adapter *pAdapter, u8 NumOutPipe)
 	return result;
 }
 
-void hal_init_macaddr(struct rtw_adapter *adapter)
+void hal_init_macaddr23a(struct rtw_adapter *adapter)
 {
-	rtw_hal_set_hwreg(adapter, HW_VAR_MAC_ADDR,
+	rtw_hal_set_hwreg23a(adapter, HW_VAR_MAC_ADDR,
 			  adapter->eeprompriv.mac_addr);
 }
 
@@ -360,12 +356,12 @@ void hal_init_macaddr(struct rtw_adapter *adapter)
 * BITS	 [127:120]	[119:16]      [15:8]		  [7:4]		   [3:0]
 */
 
-void c2h_evt_clear(struct rtw_adapter *adapter)
+void c2h_evt_clear23a(struct rtw_adapter *adapter)
 {
 	rtw_write8(adapter, REG_C2HEVT_CLEAR, C2H_EVT_HOST_CLOSE);
 }
 
-s32 c2h_evt_read(struct rtw_adapter *adapter, u8 * buf)
+s32 c2h_evt_read23a(struct rtw_adapter *adapter, u8 *buf)
 {
 	s32 ret = _FAIL;
 	struct c2h_evt_hdr *c2h_evt;
@@ -377,11 +373,10 @@ s32 c2h_evt_read(struct rtw_adapter *adapter, u8 * buf)
 
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 
-	if (trigger == C2H_EVT_HOST_CLOSE) {
+	if (trigger == C2H_EVT_HOST_CLOSE)
 		goto exit;	/* Not ready */
-	} else if (trigger != C2H_EVT_FW_CLOSE) {
+	else if (trigger != C2H_EVT_FW_CLOSE)
 		goto clear_evt;	/* Not a valid value */
-	}
 
 	c2h_evt = (struct c2h_evt_hdr *)buf;
 
@@ -390,7 +385,7 @@ s32 c2h_evt_read(struct rtw_adapter *adapter, u8 * buf)
 	*buf = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL);
 	*(buf + 1) = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL + 1);
 
-	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "c2h_evt_read(): ",
+	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "c2h_evt_read23a(): ",
 		      &c2h_evt, sizeof(c2h_evt));
 
 	if (0) {
@@ -406,7 +401,7 @@ s32 c2h_evt_read(struct rtw_adapter *adapter, u8 * buf)
 						sizeof(*c2h_evt) + i);
 
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_,
-		      "c2h_evt_read(): Command Content:\n", c2h_evt->payload,
+		      "c2h_evt_read23a(): Command Content:\n", c2h_evt->payload,
 		      c2h_evt->plen);
 
 	ret = _SUCCESS;
@@ -417,7 +412,7 @@ clear_evt:
 	 * If this field isn't clear, the FW won't update the
 	 * next command message.
 	 */
-	c2h_evt_clear(adapter);
+	c2h_evt_clear23a(adapter);
 exit:
 	return ret;
 }
@@ -541,9 +536,9 @@ void rtl8723a_set_media_status1(struct rtw_adapter *padapter, u8 status)
 void rtl8723a_set_bcn_func(struct rtw_adapter *padapter, u8 val)
 {
 	if (val)
-		SetBcnCtrlReg(padapter, EN_BCN_FUNCTION | EN_TXBCN_RPT, 0);
+		SetBcnCtrlReg23a(padapter, EN_BCN_FUNCTION | EN_TXBCN_RPT, 0);
 	else
-		SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION | EN_TXBCN_RPT);
+		SetBcnCtrlReg23a(padapter, 0, EN_BCN_FUNCTION | EN_TXBCN_RPT);
 }
 
 void rtl8723a_check_bssid(struct rtw_adapter *padapter, u8 val)
@@ -571,7 +566,7 @@ void rtl8723a_mlme_sitesurvey(struct rtw_adapter *padapter, u8 flag)
 		rtw_write16(padapter, REG_RXFLTMAP2, 0);
 
 		/*  disable update TSF */
-		SetBcnCtrlReg(padapter, DIS_TSF_UDT, 0);
+		SetBcnCtrlReg23a(padapter, DIS_TSF_UDT, 0);
 	} else {	/* sitesurvey done */
 
 		struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -580,14 +575,14 @@ void rtl8723a_mlme_sitesurvey(struct rtw_adapter *padapter, u8 flag)
 
 		pmlmeinfo = &pmlmeext->mlmext_info;
 
-		if ((is_client_associated_to_ap(padapter) == true) ||
-		    ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)||
+		if ((is_client_associated_to_ap23a(padapter) == true) ||
+		    ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE) ||
 		    ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE)) {
 			/*  enable to rx data frame */
 			rtw_write16(padapter, REG_RXFLTMAP2, 0xFFFF);
 
 			/*  enable update TSF */
-			SetBcnCtrlReg(padapter, 0, DIS_TSF_UDT);
+			SetBcnCtrlReg23a(padapter, 0, DIS_TSF_UDT);
 		}
 
 		v32 = rtw_read32(padapter, REG_RCR);
@@ -681,11 +676,11 @@ void rtl8723a_cam_empty_entry(struct rtw_adapter *padapter, u8 ucIndex)
 		/* delay_ms(40); */
 		rtw_write32(padapter, WCAMI, ulContent);
 		/* RT_TRACE(COMP_SEC, DBG_LOUD,
-		   ("CAM_empty_entry(): WRITE A4: %lx \n", ulContent));*/
+		   ("CAM_empty_entry23a(): WRITE A4: %lx \n", ulContent));*/
 		/* delay_ms(40); */
 		rtw_write32(padapter, RWCAM, ulCommand);
 		/* RT_TRACE(COMP_SEC, DBG_LOUD,
-		   ("CAM_empty_entry(): WRITE A0: %lx \n", ulCommand));*/
+		   ("CAM_empty_entry23a(): WRITE A0: %lx \n", ulCommand));*/
 	}
 }
 
@@ -835,10 +830,10 @@ void rtl8723a_set_initial_gain(struct rtw_adapter *padapter, u32 rx_gain)
 	struct dig_t *pDigTable = &pHalData->odmpriv.DM_DigTable;
 
 	if (rx_gain == 0xff)	/* restore rx gain */
-		ODM_Write_DIG(&pHalData->odmpriv, pDigTable->BackupIGValue);
+		ODM_Write_DIG23a(&pHalData->odmpriv, pDigTable->BackupIGValue);
 	else {
 		pDigTable->BackupIGValue = pDigTable->CurIGValue;
-		ODM_Write_DIG(&pHalData->odmpriv, rx_gain);
+		ODM_Write_DIG23a(&pHalData->odmpriv, rx_gain);
 	}
 }
 

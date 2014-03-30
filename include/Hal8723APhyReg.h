@@ -995,7 +995,6 @@
 /* for PutRFRegsetting & GetRFRegSetting BitMask */
 #define		bRFRegOffsetMask	0xfffff
 
-#define bEnable				0x1	/*  Useless */
 #define bDisable			0x0
 
 #define LeftAntenna			0x0	/*  Useless */

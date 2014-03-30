@@ -50,7 +50,7 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
 
 	/* init recv_buf */
-	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
+	_rtw_init_queue23a(&precvpriv->free_recv_buf_queue);
 
 	size = NR_RECVBUFF * sizeof(struct recv_buf);
 	precvpriv->precv_buf = kzalloc(size, GFP_KERNEL);
@@ -61,18 +61,17 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 		goto exit;
 	}
 
-	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
+	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
 	for (i = 0; i < NR_RECVBUFF; i++) {
 		INIT_LIST_HEAD(&precvbuf->list);
 
-		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
+		res = rtw_os_recvbuf_resource_alloc23a(padapter, precvbuf);
 		if (res == _FAIL)
 			break;
 
 		precvbuf->adapter = padapter;
 
-		/* list_add_tail(&precvbuf->list, &precvpriv->free_recv_buf_queue.queue); */
 		precvbuf++;
 	}
 
@@ -102,7 +101,7 @@ exit:
 	return res;
 }
 
-void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
+void rtl8723au_free_recv_priv(struct rtw_adapter *padapter)
 {
 	int	i;
 	struct recv_buf	*precvbuf;
@@ -111,19 +110,17 @@ void rtl8723au_free_recv_priv (struct rtw_adapter *padapter)
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
 	for (i = 0; i < NR_RECVBUFF; i++) {
-		rtw_os_recvbuf_resource_free(padapter, precvbuf);
+		rtw_os_recvbuf_resource_free23a(padapter, precvbuf);
 		precvbuf++;
 	}
 
 	kfree(precvpriv->precv_buf);
 
-	if (precvpriv->int_in_urb)
-		usb_free_urb(precvpriv->int_in_urb);
+	usb_free_urb(precvpriv->int_in_urb);
 	kfree(precvpriv->int_in_buf);
 
-	if (skb_queue_len(&precvpriv->rx_skb_queue)) {
+	if (skb_queue_len(&precvpriv->rx_skb_queue))
 		DBG_8723A(KERN_WARNING "rx_skb_queue not empty\n");
-	}
 
 	skb_queue_purge(&precvpriv->rx_skb_queue);
 
@@ -187,7 +184,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 	struct odm_phy_info *pPHYInfo = (struct odm_phy_info *)(&pattrib->phy_info);
 	struct odm_packet_info pkt_info;
-	u8 *sa, *da;
+	u8 *sa = NULL, *da;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
 	struct sk_buff *skb = precvframe->pkt;
@@ -222,14 +219,14 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	}
 
 	pstapriv = &padapter->stapriv;
-	psta = rtw_get_stainfo(pstapriv, sa);
+	psta = rtw_get_stainfo23a(pstapriv, sa);
 	if (psta) {
 		pkt_info.StationID = psta->mac_id;
 		/* printk("%s ==> StationID(%d)\n", __FUNCTION__, pkt_info.StationID); */
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
 
-	ODM_PhyStatusQuery(&pHalData->odmpriv, pPHYInfo,
+	ODM_PhyStatusQuery23a(&pHalData->odmpriv, pPHYInfo,
 			   (u8 *)pphy_status, &pkt_info);
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
@@ -237,7 +234,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 		if (psta) {
 			precvframe->psta = psta;
 			rtl8723a_process_phy_info(padapter, precvframe);
-                }
+		}
 	} else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon) {
 		if (check_fwstate(&padapter->mlmepriv,
 				  WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) ==

@@ -24,13 +24,13 @@
 #include <xmit_osdep.h>
 #include <osdep_intf.h>
 
-uint rtw_remainder_len(struct pkt_file *pfile)
+uint rtw_remainder_len23a(struct pkt_file *pfile)
 {
 	return pfile->buf_len - ((unsigned long)(pfile->cur_addr) -
 	       (unsigned long)(pfile->buf_start));
 }
 
-void _rtw_open_pktfile(struct sk_buff *pktptr, struct pkt_file *pfile)
+void _rtw_open_pktfile23a(struct sk_buff *pktptr, struct pkt_file *pfile)
 {
 	pfile->pkt = pktptr;
 	pfile->buf_start = pktptr->data;
@@ -41,11 +41,11 @@ void _rtw_open_pktfile(struct sk_buff *pktptr, struct pkt_file *pfile)
 	pfile->cur_buffer = pfile->buf_start;
 }
 
-uint _rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
+uint _rtw_pktfile_read23a(struct pkt_file *pfile, u8 *rmem, uint rlen)
 {
 	uint	len = 0;
 
-	len =  rtw_remainder_len(pfile);
+	len =  rtw_remainder_len23a(pfile);
 	len = (rlen > len) ? len : rlen;
 
 	if (rmem)
@@ -58,18 +58,16 @@ uint _rtw_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
 	return len;
 }
 
-int rtw_endofpktfile(struct pkt_file *pfile)
+int rtw_endofpktfile23a(struct pkt_file *pfile)
 {
 	if (pfile->pkt_len == 0)
 		return true;
 	return false;
 }
 
-int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter,
+int rtw_os_xmit_resource_alloc23a(struct rtw_adapter *padapter,
 			       struct xmit_buf *pxmitbuf, u32 alloc_sz)
 {
-	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct usb_device *pusbd = pdvobjpriv->pusbdev;
 	int i;
 
 	pxmitbuf->pallocated_buf = kzalloc(alloc_sz, GFP_KERNEL);
@@ -88,11 +86,9 @@ int rtw_os_xmit_resource_alloc(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-void rtw_os_xmit_resource_free(struct rtw_adapter *padapter,
+void rtw_os_xmit_resource_free23a(struct rtw_adapter *padapter,
 			       struct xmit_buf *pxmitbuf)
 {
-	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct usb_device *pusbd = pdvobjpriv->pusbdev;
 	int i;
 
 	for (i = 0; i < 8; i++)
@@ -102,7 +98,7 @@ void rtw_os_xmit_resource_free(struct rtw_adapter *padapter,
 
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)
 
-void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
+void rtw_os_pkt_complete23a(struct rtw_adapter *padapter, struct sk_buff *pkt)
 {
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	u16	queue;
@@ -119,18 +115,17 @@ void rtw_os_pkt_complete(struct rtw_adapter *padapter, struct sk_buff *pkt)
 	dev_kfree_skb_any(pkt);
 }
 
-void rtw_os_xmit_complete(struct rtw_adapter *padapter,
+void rtw_os_xmit_complete23a(struct rtw_adapter *padapter,
 			  struct xmit_frame *pxframe)
 {
 	if (pxframe->pkt)
-		rtw_os_pkt_complete(padapter, pxframe->pkt);
+		rtw_os_pkt_complete23a(padapter, pxframe->pkt);
 
 	pxframe->pkt = NULL;
 }
 
-void rtw_os_xmit_schedule(struct rtw_adapter *padapter)
+void rtw_os_xmit_schedule23a(struct rtw_adapter *padapter)
 {
-	struct rtw_adapter *pri_adapter = padapter;
 	struct xmit_priv *pxmitpriv;
 
 	if (!padapter)
@@ -139,7 +134,7 @@ void rtw_os_xmit_schedule(struct rtw_adapter *padapter)
 
 	spin_lock_bh(&pxmitpriv->lock);
 
-	if (rtw_txframes_pending(padapter))
+	if (rtw_txframes_pending23a(padapter))
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 	spin_unlock_bh(&pxmitpriv->lock);
 }
@@ -163,30 +158,29 @@ static void rtw_check_xmit_resource(struct rtw_adapter *padapter,
 	}
 }
 
-int rtw_xmit_entry(struct sk_buff *skb, struct net_device *pnetdev)
+int rtw_xmit23a_entry23a(struct sk_buff *skb, struct net_device *pnetdev)
 {
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	int res = 0;
-	u16 queue;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("+xmit_enry\n"));
 
-	if (!rtw_if_up(padapter)) {
+	if (!rtw_if_up23a(padapter)) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_,
-			 ("rtw_xmit_entry: rtw_if_up fail\n"));
+			 ("rtw_xmit23a_entry23a: rtw_if_up23a fail\n"));
 		goto drop_packet;
 	}
 
 	rtw_check_xmit_resource(padapter, skb);
 
-	res = rtw_xmit(padapter, skb);
+	res = rtw_xmit23a(padapter, skb);
 	if (res < 0)
 		goto drop_packet;
 
 	pxmitpriv->tx_pkts++;
 	RT_TRACE(_module_xmit_osdep_c_, _drv_info_,
-		 ("rtw_xmit_entry: tx_pkts=%d\n",
+		 ("rtw_xmit23a_entry23a: tx_pkts=%d\n",
 		 (u32)pxmitpriv->tx_pkts));
 	goto exit;
 
@@ -194,7 +188,7 @@ drop_packet:
 	pxmitpriv->tx_drop++;
 	dev_kfree_skb_any(skb);
 	RT_TRACE(_module_xmit_osdep_c_, _drv_notice_,
-		 ("rtw_xmit_entry: drop, tx_drop=%d\n",
+		 ("rtw_xmit23a_entry23a: drop, tx_drop=%d\n",
 		 (u32)pxmitpriv->tx_drop));
 exit:
 	return 0;

@@ -18,23 +18,11 @@
 #include <drv_types.h>
 #include <rtl8723a_hal.h>
 
-static s32  translate2dbm(u8 signal_strength_idx)
-{
-	s32	signal_power; /*  in dBm. */
-
-	/*  Translate to dBm (x = 0.5y-95). */
-	signal_power = (s32)((signal_strength_idx + 1) >> 1);
-	signal_power -= 95;
-
-	return signal_power;
-}
-
 static void process_rssi(struct rtw_adapter *padapter,
 			 struct recv_frame *prframe)
 {
-	u32	last_rssi, tmp_val;
 	struct rx_pkt_attrib *pattrib = &prframe->attrib;
-	struct signal_stat * signal_stat = &padapter->recvpriv.signal_strength_data;
+	struct signal_stat *signal_stat = &padapter->recvpriv.signal_strength_data;
 
 	if (signal_stat->update_req) {
 		signal_stat->total_num = 0;
@@ -50,9 +38,8 @@ static void process_rssi(struct rtw_adapter *padapter,
 static void process_link_qual(struct rtw_adapter *padapter,
 			      struct recv_frame *prframe)
 {
-	u32	last_evm = 0, tmpVal;
 	struct rx_pkt_attrib *pattrib;
-	struct signal_stat * signal_stat;
+	struct signal_stat *signal_stat;
 
 	if (prframe == NULL || padapter == NULL)
 		return;
@@ -75,19 +62,8 @@ static void process_link_qual(struct rtw_adapter *padapter,
 void rtl8723a_process_phy_info(struct rtw_adapter *padapter, void *prframe)
 {
 	struct recv_frame *precvframe = prframe;
-	/*  */
 	/*  Check RSSI */
-	/*  */
 	process_rssi(padapter, precvframe);
-	/*  */
-	/*  Check PWDB. */
-	/*  */
-	/* process_PWDB(padapter, precvframe); */
-
-	/* UpdateRxSignalStatistics8192C(Adapter, pRfd); */
-	/*  */
 	/*  Check EVM */
-	/*  */
 	process_link_qual(padapter,  precvframe);
-
 }

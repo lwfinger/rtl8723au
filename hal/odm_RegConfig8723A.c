@@ -15,8 +15,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723A_SUPPORT == 1)
-
 void
 odm_ConfigRFReg_8723A(
 	struct dm_odm_t *pDM_Odm,
@@ -26,41 +24,26 @@ odm_ConfigRFReg_8723A(
 	u32				    RegAddr
 	)
 {
-	if (Addr == 0xfe)
-	{
+	if (Addr == 0xfe) {
 		msleep(50);
-	}
-	else if (Addr == 0xfd)
-	{
+	} else if (Addr == 0xfd) {
 		mdelay(5);
-	}
-	else if (Addr == 0xfc)
-	{
+	} else if (Addr == 0xfc) {
 		mdelay(1);
-	}
-	else if (Addr == 0xfb)
-	{
+	} else if (Addr == 0xfb) {
 		udelay(50);
-	}
-	else if (Addr == 0xfa)
-	{
+	} else if (Addr == 0xfa) {
 		udelay(5);
-	}
-	else if (Addr == 0xf9)
-	{
+	} else if (Addr == 0xf9) {
 		udelay(1);
-	}
-	else
-	{
+	} else {
 		ODM_SetRFReg(pDM_Odm, RF_PATH, RegAddr, bRFRegOffsetMask, Data);
 		/*  Add 1us delay between BB/RF register setting. */
 		udelay(1);
 	}
 }
 
-void
-odm_ConfigRF_RadioA_8723A(
-	struct dm_odm_t *pDM_Odm,
+void odm_ConfigRF_RadioA_8723A(struct dm_odm_t *pDM_Odm,
 	u32					Addr,
 	u32					Data
 	)
@@ -71,13 +54,11 @@ odm_ConfigRF_RadioA_8723A(
 	odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, RF_PATH_A,
 			      Addr|maskforPhySet);
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
-		     ("===> ODM_ConfigRFWithHeaderFile: [RadioA] %08X %08X\n",
+		     ("===> ODM_ConfigRFWithHeaderFile23a: [RadioA] %08X %08X\n",
 		     Addr, Data));
 }
 
-void
-odm_ConfigRF_RadioB_8723A(
-	struct dm_odm_t *pDM_Odm,
+void odm_ConfigRF_RadioB_8723A(struct dm_odm_t *pDM_Odm,
 	u32					Addr,
 	u32					Data
 	)
@@ -88,19 +69,19 @@ odm_ConfigRF_RadioB_8723A(
 	odm_ConfigRFReg_8723A(pDM_Odm, Addr, Data, RF_PATH_B,
 			      Addr|maskforPhySet);
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
-		     ("===> ODM_ConfigRFWithHeaderFile: [RadioB] %08X %08X\n",
+		     ("===> ODM_ConfigRFWithHeaderFile23a: [RadioB] %08X %08X\n",
 		     Addr, Data));
 }
 
-void
-odm_ConfigMAC_8723A(
-	struct dm_odm_t *pDM_Odm,
+void odm_ConfigMAC_8723A(struct dm_odm_t *pDM_Odm,
 	u32		Addr,
 	u8		Data
 	)
 {
 	ODM_Write1Byte(pDM_Odm, Addr, Data);
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigMACWithHeaderFile: [MAC_REG] %08X %08X\n", Addr, Data));
+	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
+		     ("===> ODM_ConfigMACWithHeaderFile23a: [MAC_REG] %08X %08X\n",
+		     Addr, Data));
 }
 
 void
@@ -115,7 +96,9 @@ odm_ConfigBB_AGC_8723A(
 	/*  Add 1us delay between BB/RF register setting. */
 	udelay(1);
 
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [AGC_TAB] %08X %08X\n", Addr, Data));
+	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
+		     ("===> ODM_ConfigBBWithHeaderFile23a: [AGC_TAB] %08X %08X\n",
+		     Addr, Data));
 }
 
 void
@@ -141,7 +124,9 @@ odm_ConfigBB_PHY_REG_PG_8723A(
     /*  TODO: ODM_StorePwrIndexDiffRateOffset(...) */
 	/*  storePwrIndexDiffRateOffset(Adapter, Addr, Bitmask, Data); */
 
-    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [PHY_REG] %08X %08X %08X\n", Addr, Bitmask, Data));
+	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
+		     ("===> ODM_ConfigBBWithHeaderFile23a: [PHY_REG] %08X %08X %08X\n",
+		     Addr, Bitmask, Data));
 }
 
 void
@@ -171,6 +156,7 @@ odm_ConfigBB_PHY_8723A(
 	/*  Add 1us delay between BB/RF register setting. */
 	udelay(1);
 
-    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ConfigBBWithHeaderFile: [PHY_REG] %08X %08X\n", Addr, Data));
+	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
+		     ("===> ODM_ConfigBBWithHeaderFile23a: [PHY_REG] %08X %08X\n",
+		     Addr, Data));
 }
-#endif

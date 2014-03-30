@@ -17,6 +17,7 @@
 
 #include <osdep_service.h>
 #include <drv_types.h>
+#include <Hal8723APhyCfg.h>
 
 #define NR_RECVFRAME		256
 
@@ -75,13 +76,11 @@ struct signal_stat {
 	u32	total_val;		/* sum of valid elements */
 };
 
-#define MAX_PATH_NUM_92CS		2
-
 struct phy_info {
 	u8		RxPWDBAll;
 	u8		SignalQuality;	 /*  in 0-100 index. */
-	u8		RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
-	u8		RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/* 0~100 */
+	u8		RxMIMOSignalQuality[RF_PATH_MAX]; /* EVM */
+	u8		RxMIMOSignalStrength[RF_PATH_MAX];/* 0~100 */
 	s8		RxPower; /*  in dBm Translate from PWdB */
 	/* Real power in dBm for this packet, no beautification and aggregation.
 	 * Keep this raw info to be used for the other procedures.
@@ -89,8 +88,8 @@ struct phy_info {
 	s8		RecvSignalPower;
 	u8		BTRxRSSIPercentage;
 	u8		SignalStrength; /*  in 0-100 index. */
-	u8		RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
-	u8		RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
+	u8		RxPwr[RF_PATH_MAX];/* per-path's pwdb */
+	u8		RxSNR[RF_PATH_MAX];/* per-path's SNR */
 };
 
 
@@ -161,7 +160,7 @@ struct recv_stat {
 	unsigned int rxdw5;
 };
 
-/* accesser of recv_priv: rtw_recv_entry(dispatch / passive level);	\
+/* accesser of recv_priv: rtw_recv_entry23a(dispatch / passive level);	\
  * recv_thread(passive) ; returnpkt(dispatch) ; halt(passive) ;
  *
  * using enter_critical section to protect
@@ -283,19 +282,19 @@ struct recv_frame {
 };
 
 /* get a free recv_frame from pfree_recv_queue */
-struct recv_frame *rtw_alloc_recvframe(struct rtw_queue *pfree_recv_queue);
-int rtw_free_recvframe(struct recv_frame *precvframe, struct rtw_queue *pfree_recv_queue);
+struct recv_frame *rtw_alloc_recvframe23a(struct rtw_queue *pfree_recv_queue);
+int rtw_free_recvframe23a(struct recv_frame *precvframe, struct rtw_queue *pfree_recv_queue);
 
-int rtw_enqueue_recvframe(struct recv_frame *precvframe, struct rtw_queue *queue);
+int rtw_enqueue_recvframe23a(struct recv_frame *precvframe, struct rtw_queue *queue);
 
-void rtw_free_recvframe_queue(struct rtw_queue *pframequeue, struct rtw_queue *pfree_recv_queue);
-u32 rtw_free_uc_swdec_pending_queue(struct rtw_adapter *adapter);
+void rtw_free_recvframe23a_queue(struct rtw_queue *pframequeue, struct rtw_queue *pfree_recv_queue);
+u32 rtw_free_uc_swdec_pending_queue23a(struct rtw_adapter *adapter);
 
-int rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, struct rtw_queue *queue);
-int rtw_enqueue_recvbuf(struct recv_buf *precvbuf, struct rtw_queue *queue);
-struct recv_buf *rtw_dequeue_recvbuf(struct rtw_queue *queue);
+int rtw_enqueue_recvbuf23a_to_head(struct recv_buf *precvbuf, struct rtw_queue *queue);
+int rtw_enqueue_recvbuf23a(struct recv_buf *precvbuf, struct rtw_queue *queue);
+struct recv_buf *rtw_dequeue_recvbuf23a(struct rtw_queue *queue);
 
-void rtw_reordering_ctrl_timeout_handler(unsigned long pcontext);
+void rtw_reordering_ctrl_timeout_handler23a(unsigned long pcontext);
 
 static inline s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
 {
@@ -311,9 +310,9 @@ static inline s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
 
 struct sta_info;
 
-void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv);
+void _rtw_init_sta_recv_priv23a(struct sta_recv_priv *psta_recvpriv);
 
-void mgt_dispatcher(struct rtw_adapter *padapter,
+void mgt_dispatcher23a(struct rtw_adapter *padapter,
 		    struct recv_frame *precv_frame);
 
 #endif

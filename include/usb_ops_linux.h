@@ -26,22 +26,21 @@
 
 #define _usbctrl_vendorreq_async_callback(urb, regs)		\
 	_usbctrl_vendorreq_async_callback(urb)
-#define usb_bulkout_zero_complete(purb, regs)	usb_bulkout_zero_complete(purb)
-#define usb_write_mem_complete(purb, regs)	usb_write_mem_complete(purb)
-#define usb_write_port_complete(purb, regs)	usb_write_port_complete(purb)
+#define usb_write_mem23a_complete(purb, regs)	usb_write_mem23a_complete(purb)
+#define usb_write_port23a_complete(purb, regs)	usb_write_port23a_complete(purb)
 #define usb_read_port_complete(purb, regs)	usb_read_port_complete(purb)
 #define usb_read_interrupt_complete(purb, regs)			\
 	usb_read_interrupt_complete(purb)
 
-unsigned int ffaddr2pipehdl(struct dvobj_priv *pdvobj, u32 addr);
+unsigned int ffaddr2pipehdl23a(struct dvobj_priv *pdvobj, u32 addr);
 
-void usb_read_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem);
-void usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem);
+void usb_read_mem23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem);
+void usb_write_mem23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem);
 
-void usb_read_port_cancel(struct intf_hdl *pintfhdl);
+void usb_read_port_cancel23a(struct intf_hdl *pintfhdl);
 
-u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
+u32 usb_write_port23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 		   struct xmit_buf *wmem);
-void usb_write_port_cancel(struct intf_hdl *pintfhdl);
+void usb_write_port23a_cancel(struct intf_hdl *pintfhdl);
 
 #endif

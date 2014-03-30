@@ -15,9 +15,7 @@
 #ifndef __ODM_TYPES_H__
 #define __ODM_TYPES_H__
 
-/*  */
 /*  Define Different SW team support */
-/*  */
 
 enum hal_status {
 	HAL_STATUS_SUCCESS,
@@ -28,18 +26,11 @@ enum rt_spinlock_type {
 	RT_TEMP =1,
 };
 
-
-	#define	STA_INFO_T			struct sta_info
-	#define	PSTA_INFO_T		struct sta_info *
-
-	#define SET_TX_DESC_ANTSEL_A_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 24, 1, __Value)
-	#define SET_TX_DESC_ANTSEL_B_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 25, 1, __Value)
-	#define SET_TX_DESC_ANTSEL_C_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 29, 1, __Value)
-
-	/* define useless flag to avoid compile warning */
-	#define	USE_WORKITEM			0
-	#define		FOR_BRAZIL_PRETEST	0
-	#define	BT_30_SUPPORT			0
-	#define   FPGA_TWO_MAC_VERIFICATION	0
+#define SET_TX_DESC_ANTSEL_A_88E(__pTxDesc, __Value)		\
+	SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 24, 1, __Value)
+#define SET_TX_DESC_ANTSEL_B_88E(__pTxDesc, __Value)		\
+	SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 25, 1, __Value)
+#define SET_TX_DESC_ANTSEL_C_88E(__pTxDesc, __Value)		\
+	SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 29, 1, __Value)
 
 #endif /*  __ODM_TYPES_H__ */

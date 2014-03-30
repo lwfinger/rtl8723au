@@ -19,20 +19,20 @@
 #include <drv_types.h>
 
 #define MAX_XMITBUF_SZ		2048
-#define NR_XMITBUFF		(4)
+#define NR_XMITBUFF		4
 
 #define XMITBUF_ALIGN_SZ	512
 
 /*  xmit extension buff defination */
-#define MAX_XMIT_EXTBUF_SZ	(1536)
-#define NR_XMIT_EXTBUFF		(32)
+#define MAX_XMIT_EXTBUF_SZ	1536
+#define NR_XMIT_EXTBUFF		32
 
-#define MAX_NUMBLKS		(1)
+#define MAX_NUMBLKS		1
 
-#define XMIT_VO_QUEUE		(0)
-#define XMIT_VI_QUEUE		(1)
-#define XMIT_BE_QUEUE		(2)
-#define XMIT_BK_QUEUE		(3)
+#define XMIT_VO_QUEUE		0
+#define XMIT_VI_QUEUE		1
+#define XMIT_BE_QUEUE		2
+#define XMIT_BK_QUEUE		3
 
 #define VO_QUEUE_INX		0
 #define VI_QUEUE_INX		1
@@ -87,7 +87,7 @@ do {									\
 
 #define TXDESC_SIZE 32
 
-#define PACKET_OFFSET_SZ (8)
+#define PACKET_OFFSET_SZ 8
 #define TXDESC_OFFSET (TXDESC_SIZE + PACKET_OFFSET_SZ)
 
 struct tx_desc {
@@ -158,7 +158,7 @@ struct pkt_attrib {
 
 #define WLANHDR_OFFSET		64
 
-#define NULL_FRAMETAG		(0x0)
+#define NULL_FRAMETAG		0x0
 #define DATA_FRAMETAG		0x01
 #define L2_FRAMETAG		0x02
 #define MGNT_FRAMETAG		0x03
@@ -172,7 +172,6 @@ struct pkt_attrib {
 #define TXAGG_FRAMETAG		0x08
 
 struct  submit_ctx {
-	u32 submit_time; /* */
 	u32 timeout_ms; /* <0: not synchronous, 0: wait forever,
 			 * >0: up to ms waiting
 			 */
@@ -195,10 +194,10 @@ enum {
 	RTW_SCTX_DONE_DEV_REMOVE,
 };
 
-void rtw_sctx_init(struct submit_ctx *sctx, int timeout_ms);
-int rtw_sctx_wait(struct submit_ctx *sctx);
-void rtw_sctx_done_err(struct submit_ctx **sctx, int status);
-void rtw_sctx_done(struct submit_ctx **sctx);
+void rtw_sctx_init23a(struct submit_ctx *sctx, int timeout_ms);
+int rtw_sctx_wait23a(struct submit_ctx *sctx);
+void rtw23a_sctx_done_err(struct submit_ctx **sctx, int status);
+void rtw_sctx_done23a(struct submit_ctx **sctx);
 
 struct xmit_buf {
 	struct list_head list, list2;
@@ -345,62 +344,62 @@ struct	xmit_priv {
 	spinlock_t lock_sctx;
 };
 
-struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv);
-s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv,
+struct xmit_buf *rtw_alloc_xmitbuf23a_ext(struct xmit_priv *pxmitpriv);
+s32 rtw_free_xmitbuf_ext23a(struct xmit_priv *pxmitpriv,
 			 struct xmit_buf *pxmitbuf);
 
-struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv);
-s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
+struct xmit_buf *rtw_alloc_xmitbuf23a(struct xmit_priv *pxmitpriv);
+s32 rtw_free_xmitbuf23a(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
 
-void rtw_count_tx_stats(struct rtw_adapter *padapter,
+void rtw_count_tx_stats23a(struct rtw_adapter *padapter,
 			struct xmit_frame *pxmitframe, int sz);
-void rtw_update_protection(struct rtw_adapter *padapter, u8 *ie, uint ie_len);
-s32 rtw_make_wlanhdr(struct rtw_adapter *padapter, u8 *hdr,
+void rtw_update_protection23a(struct rtw_adapter *padapter, u8 *ie, uint ie_len);
+s32 rtw_make_wlanhdr23a(struct rtw_adapter *padapter, u8 *hdr,
 		     struct pkt_attrib *pattrib);
-s32 rtw_put_snap(u8 *data, u16 h_proto);
-struct xmit_frame *rtw_alloc_xmitframe(struct xmit_priv *pxmitpriv);
-struct xmit_frame *rtw_alloc_xmitframe_ext(struct xmit_priv *pxmitpriv);
-struct xmit_frame *rtw_alloc_xmitframe_once(struct xmit_priv *pxmitpriv);
-s32 rtw_free_xmitframe(struct xmit_priv *pxmitpriv,
+s32 rtw_put_snap23a(u8 *data, u16 h_proto);
+struct xmit_frame *rtw_alloc_xmitframe23a(struct xmit_priv *pxmitpriv);
+struct xmit_frame *rtw_alloc_xmitframe23a_ext(struct xmit_priv *pxmitpriv);
+struct xmit_frame *rtw_alloc_xmitframe23a_once(struct xmit_priv *pxmitpriv);
+s32 rtw_free_xmitframe23a(struct xmit_priv *pxmitpriv,
 		       struct xmit_frame *pxmitframe);
-void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, struct rtw_queue *pframequeue);
-struct tx_servq *rtw_get_sta_pending(struct rtw_adapter *padapter,
+void rtw_free_xmitframe_queue23a(struct xmit_priv *pxmitpriv, struct rtw_queue *pframequeue);
+struct tx_servq *rtw_get_sta_pending23a(struct rtw_adapter *padapter,
 				     struct sta_info *psta, int up, u8 *ac);
-s32 rtw_xmitframe_enqueue(struct rtw_adapter *padapter,
-			  struct xmit_frame *pxmitframe);
-struct xmit_frame *rtw_dequeue_xframe(struct xmit_priv *pxmitpriv,
+s32 rtw_xmitframe_enqueue23a(struct rtw_adapter *padapter,
+			     struct xmit_frame *pxmitframe);
+struct xmit_frame *rtw_dequeue_xframe23a(struct xmit_priv *pxmitpriv,
 				      struct hw_xmit *phwxmit_i, int entry);
-s32 rtw_xmit_classifier(struct rtw_adapter *padapter,
+s32 rtw_xmit23a_classifier(struct rtw_adapter *padapter,
 			struct xmit_frame *pxmitframe);
-u32 rtw_calculate_wlan_pkt_size_by_attribue(struct pkt_attrib *pattrib);
-#define rtw_wlan_pkt_size(f) rtw_calculate_wlan_pkt_size_by_attribue(&f->attrib)
-s32 rtw_xmitframe_coalesce(struct rtw_adapter *padapter, struct sk_buff *pkt,
-			   struct xmit_frame *pxmitframe);
+u32 rtw_calculate_wlan_pkt_size_by_attribue23a(struct pkt_attrib *pattrib);
+#define rtw_wlan_pkt_size(f) rtw_calculate_wlan_pkt_size_by_attribue23a(&f->attrib)
+s32 rtw_xmitframe_coalesce23a(struct rtw_adapter *padapter, struct sk_buff *pkt,
+			      struct xmit_frame *pxmitframe);
 s32 _rtw_init_hw_txqueue(struct hw_txqueue *phw_txqueue, u8 ac_tag);
-void _rtw_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv);
+void _rtw_init_sta_xmit_priv23a(struct sta_xmit_priv *psta_xmitpriv);
 
-s32 rtw_txframes_pending(struct rtw_adapter *padapter);
-s32 rtw_txframes_sta_ac_pending(struct rtw_adapter *padapter,
+s32 rtw_txframes_pending23a(struct rtw_adapter *padapter);
+s32 rtw_txframes_sta_ac_pending23a(struct rtw_adapter *padapter,
 				struct pkt_attrib *pattrib);
-void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
-s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv,
+void rtw_init_hwxmits23a(struct hw_xmit *phwxmit, int entry);
+s32 _rtw_init_xmit_priv23a(struct xmit_priv *pxmitpriv,
 			struct rtw_adapter *padapter);
-void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
-void rtw_alloc_hwxmits(struct rtw_adapter *padapter);
-void rtw_free_hwxmits(struct rtw_adapter *padapter);
-int rtw_xmit(struct rtw_adapter *padapter, struct sk_buff *pkt);
+void _rtw_free_xmit_priv23a(struct xmit_priv *pxmitpriv);
+void rtw_alloc_hwxmits23a(struct rtw_adapter *padapter);
+void rtw_free_hwxmits23a(struct rtw_adapter *padapter);
+int rtw_xmit23a(struct rtw_adapter *padapter, struct sk_buff *pkt);
 #if defined(CONFIG_8723AU_AP_MODE)
-int xmitframe_enqueue_for_sleeping_sta(struct rtw_adapter *padapter,
+int xmitframe_enqueue_for_sleeping_sta23a(struct rtw_adapter *padapter,
 				       struct xmit_frame *pxmitframe);
-void stop_sta_xmit(struct rtw_adapter *padapter, struct sta_info *psta);
-void wakeup_sta_to_xmit(struct rtw_adapter *padapter, struct sta_info *psta);
-void xmit_delivery_enabled_frames(struct rtw_adapter *padapter,
+void stop_sta_xmit23a(struct rtw_adapter *padapter, struct sta_info *psta);
+void wakeup_sta_to_xmit23a(struct rtw_adapter *padapter, struct sta_info *psta);
+void xmit_delivery_enabled_frames23a(struct rtw_adapter *padapter,
 				  struct sta_info *psta);
 #endif
-u8	qos_acm(u8 acm_mask, u8 priority);
-u32	rtw_get_ff_hwaddr(struct xmit_frame	*pxmitframe);
-int rtw_ack_tx_wait(struct xmit_priv *pxmitpriv, u32 timeout_ms);
-void rtw_ack_tx_done(struct xmit_priv *pxmitpriv, int status);
+u8	qos_acm23a(u8 acm_mask, u8 priority);
+u32	rtw_get_ff_hwaddr23a(struct xmit_frame	*pxmitframe);
+int rtw_ack_tx_wait23a(struct xmit_priv *pxmitpriv, u32 timeout_ms);
+void rtw_ack_tx_done23a(struct xmit_priv *pxmitpriv, int status);
 
 /* include after declaring struct xmit_buf, in order to avoid warning */
 #include <xmit_osdep.h>

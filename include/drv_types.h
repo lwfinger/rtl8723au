@@ -22,7 +22,6 @@
 #ifndef __DRV_TYPES_H__
 #define __DRV_TYPES_H__
 
-#include <autoconf.h>
 #include <osdep_service.h>
 #include <wlan_bssdef.h>
 
@@ -215,7 +214,7 @@ struct dvobj_priv {
 
 };
 
-static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
+static inline struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
 	return &dvobj->pusbintf->dev;
@@ -259,13 +258,9 @@ struct rtw_adapter {
 	struct	hostapd_priv	*phostapdpriv;
 #endif
 
-#ifdef CONFIG_8723AU_P2P
 	struct cfg80211_wifidirect_info	cfg80211_wdinfo;
-#endif /* CONFIG_8723AU_P2P */
 	u32	setband;
-#ifdef CONFIG_8723AU_P2P
 	struct wifidirect_info	wdinfo;
-#endif /* CONFIG_8723AU_P2P */
 
 #ifdef CONFIG_8723AU_P2P
 	struct wifi_display_info wfd_info;
@@ -355,7 +350,7 @@ struct rtw_adapter {
 
 #define adapter_to_dvobj(adapter) (adapter->dvobj)
 
-int rtw_handle_dualmac(struct rtw_adapter *adapter, bool init);
+int rtw_handle_dualmac23a(struct rtw_adapter *adapter, bool init);
 
 static inline u8 *myid(struct eeprom_priv *peepriv)
 {

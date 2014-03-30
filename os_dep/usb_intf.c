@@ -42,16 +42,12 @@ static void rtw_disconnect(struct usb_interface *pusb_intf);
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x0724,	\
 	 0xff, 0xff, 0xff)}, /* 8723AU 1*1 */
 
-static struct usb_device_id rtw_usb_id_tbl[] = {
-	RTL8723A_USB_IDS
-	{}	/* Terminating entry */
-};
-MODULE_DEVICE_TABLE(usb, rtw_usb_id_tbl);
-
 static struct usb_device_id rtl8723a_usb_id_tbl[] = {
 	RTL8723A_USB_IDS
 	{}	/* Terminating entry */
 };
+
+MODULE_DEVICE_TABLE(usb, rtl8723a_usb_id_tbl);
 
 static struct usb_driver rtl8723a_usb_drv = {
 	.name = (char *)"rtl8723au",
@@ -146,7 +142,6 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
 	struct usb_endpoint_descriptor *pendp_desc;
 	struct usb_device		 *pusbd;
 	int	i;
-	u8	val8;
 	int	status = _FAIL;
 
 	pdvobjpriv = kzalloc(sizeof(*pdvobjpriv), GFP_KERNEL);
@@ -293,7 +288,7 @@ static void decide_chip_type_by_usb_device_id(struct rtw_adapter *padapter,
 static void usb_intf_start(struct rtw_adapter *padapter)
 {
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+usb_intf_start\n"));
-	rtw_hal_inirp_init(padapter);
+	rtw_hal_inirp_init23a(padapter);
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("-usb_intf_start\n"));
 }
 
@@ -311,7 +306,7 @@ static void usb_intf_stop(struct rtw_adapter *padapter)
 	}
 
 	/* cancel in irp */
-	rtw_hal_inirp_deinit(padapter);
+	rtw_hal_inirp_deinit23a(padapter);
 
 	/* cancel out irp */
 	rtw_write_port_cancel(padapter);
@@ -322,9 +317,6 @@ static void usb_intf_stop(struct rtw_adapter *padapter)
 
 static void rtw_dev_unload(struct rtw_adapter *padapter)
 {
-	struct net_device *pnetdev = (struct net_device *)padapter->pnetdev;
-	u8 val8;
-
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_dev_unload\n"));
 
 	if (padapter->bup) {
@@ -332,7 +324,7 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 
 		padapter->bDriverStopped = true;
 		if (padapter->xmitpriv.ack_tx)
-			rtw_ack_tx_done(&padapter->xmitpriv,
+			rtw_ack_tx_done23a(&padapter->xmitpriv,
 					RTW_SCTX_DONE_DRV_STOP);
 
 		/* s3. */
@@ -341,11 +333,11 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 
 		/* s4. */
 		if (!padapter->pwrctrlpriv.bInternalAutoSuspend)
-			rtw_stop_drv_threads(padapter);
+			rtw_stop_drv_threads23a(padapter);
 
 		/* s5. */
 		if (!padapter->bSurpriseRemoved) {
-			rtw_hal_deinit(padapter);
+			rtw_hal_deinit23a(padapter);
 			padapter->bSurpriseRemoved = true;
 		}
 		padapter->bup = false;
@@ -357,10 +349,9 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("-rtw_dev_unload\n"));
 }
 
-int rtw_hw_suspend(struct rtw_adapter *padapter)
+int rtw_hw_suspend23a(struct rtw_adapter *padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
 	if ((!padapter->bup) || (padapter->bDriverStopped) ||
@@ -372,9 +363,9 @@ int rtw_hw_suspend(struct rtw_adapter *padapter)
 	}
 
 	if (padapter) { /* system suspend */
-		LeaveAllPowerSaveMode(padapter);
+		LeaveAllPowerSaveMode23a(padapter);
 
-		DBG_8723A("==> rtw_hw_suspend\n");
+		DBG_8723A("==> rtw_hw_suspend23a\n");
 		down(&pwrpriv->lock);
 		pwrpriv->bips_processing = true;
 		/* padapter->net_closed = true; */
@@ -385,10 +376,10 @@ int rtw_hw_suspend(struct rtw_adapter *padapter)
 		}
 
 		/* s2. */
-		rtw_disassoc_cmd(padapter, 500, false);
+		rtw_disassoc_cmd23a(padapter, 500, false);
 
 		/* s2-2.  indicate disconnect to os */
-		/* rtw_indicate_disconnect(padapter); */
+		/* rtw_indicate_disconnect23a(padapter); */
 		{
 			struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
@@ -397,19 +388,19 @@ int rtw_hw_suspend(struct rtw_adapter *padapter)
 
 				rtw_led_control(padapter, LED_CTL_NO_LINK);
 
-				rtw_os_indicate_disconnect(padapter);
+				rtw_os_indicate_disconnect23a(padapter);
 
 				/* donnot enqueue cmd */
-				rtw_lps_ctrl_wk_cmd(padapter,
+				rtw_lps_ctrl_wk_cmd23a(padapter,
 						    LPS_CTRL_DISCONNECT, 0);
 			}
 		}
 		/* s2-3. */
-		rtw_free_assoc_resources(padapter, 1);
+		rtw_free_assoc_resources23a(padapter, 1);
 
 		/* s2-4. */
-		rtw_free_network_queue(padapter, true);
-		rtw_ips_dev_unload(padapter);
+		rtw_free_network_queue23a(padapter, true);
+		rtw_ips_dev_unload23a(padapter);
 		pwrpriv->rf_pwrstate = rf_off;
 		pwrpriv->bips_processing = false;
 		up(&pwrpriv->lock);
@@ -422,19 +413,18 @@ error_exit:
 	return -1;
 }
 
-int rtw_hw_resume(struct rtw_adapter *padapter)
+int rtw_hw_resume23a(struct rtw_adapter *padapter)
 {
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
 	if (padapter) { /* system resume */
-		DBG_8723A("==> rtw_hw_resume\n");
+		DBG_8723A("==> rtw_hw_resume23a\n");
 		down(&pwrpriv->lock);
 		pwrpriv->bips_processing = true;
-		rtw_reset_drv_sw(padapter);
+		rtw_reset_drv_sw23a(padapter);
 
-		if (pm_netdev_open(pnetdev, false)) {
+		if (pm_netdev_open23a(pnetdev, false)) {
 			up(&pwrpriv->lock);
 			goto error_exit;
 		}
@@ -470,9 +460,8 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	struct net_device *pnetdev = padapter->pnetdev;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
-	struct usb_device *usb_dev = interface_to_usbdev(pusb_intf);
 	int ret = 0;
-	u32 start_time = rtw_get_current_time();
+	unsigned long start_time = jiffies;
 
 	DBG_8723A("==> %s (%s:%d)\n", __func__, current->comm, current->pid);
 
@@ -484,8 +473,8 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 		goto exit;
 	}
 	pwrpriv->bInSuspend = true;
-	rtw_cancel_all_timer(padapter);
-	LeaveAllPowerSaveMode(padapter);
+	rtw_cancel_all_timer23a(padapter);
+	LeaveAllPowerSaveMode23a(padapter);
 
 	down(&pwrpriv->lock);
 	/* padapter->net_closed = true; */
@@ -496,7 +485,7 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	}
 
 	/* s2. */
-	rtw_disassoc_cmd(padapter, 0, false);
+	rtw_disassoc_cmd23a(padapter, 0, false);
 
 	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) &&
 	    check_fwstate(pmlmepriv, _FW_LINKED)) {
@@ -510,24 +499,24 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 		rtw_set_roaming(padapter, 1);
 	}
 	/* s2-2.  indicate disconnect to os */
-	rtw_indicate_disconnect(padapter);
+	rtw_indicate_disconnect23a(padapter);
 	/* s2-3. */
-	rtw_free_assoc_resources(padapter, 1);
+	rtw_free_assoc_resources23a(padapter, 1);
 	/* s2-4. */
-	rtw_free_network_queue(padapter, true);
+	rtw_free_network_queue23a(padapter, true);
 
 	rtw_dev_unload(padapter);
 	up(&pwrpriv->lock);
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
-		rtw_indicate_scan_done(padapter, 1);
+		rtw_indicate_scan_done23a(padapter, 1);
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
-		rtw_indicate_disconnect(padapter);
+		rtw_indicate_disconnect23a(padapter);
 
 exit:
-	DBG_8723A("<===  %s return %d.............. in %dms\n", __func__
-		, ret, rtw_get_passing_time_ms(start_time));
+	DBG_8723A("<===  %s return %d.............. in %dms\n", __func__,
+		  ret, jiffies_to_msecs(jiffies - start_time));
 
 	return ret;
 }
@@ -536,43 +525,37 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 {
 	struct dvobj_priv *dvobj = usb_get_intfdata(pusb_intf);
 	struct rtw_adapter *padapter = dvobj->if1;
-	struct net_device *pnetdev = padapter->pnetdev;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	int ret = 0;
 
 	if (pwrpriv->bInternalAutoSuspend)
-		ret = rtw_resume_process(padapter);
+		ret = rtw_resume_process23a(padapter);
 	else
-		ret = rtw_resume_process(padapter);
+		ret = rtw_resume_process23a(padapter);
 
 	return ret;
 }
 
-int rtw_resume_process(struct rtw_adapter *padapter)
+int rtw_resume_process23a(struct rtw_adapter *padapter)
 {
 	struct net_device *pnetdev;
-	struct pwrctrl_priv *pwrpriv;
+	struct pwrctrl_priv *pwrpriv = NULL;
 	int ret = -1;
-	u32 start_time = rtw_get_current_time();
-#ifdef CONFIG_8723AU_BT_COEXIST
-	u8 pm_cnt;
-#endif	/* ifdef CONFIG_8723AU_BT_COEXIST */
+	unsigned long start_time = jiffies;
 
 	DBG_8723A("==> %s (%s:%d)\n", __func__, current->comm, current->pid);
 
-	if (padapter) {
-		pnetdev = padapter->pnetdev;
-		pwrpriv = &padapter->pwrctrlpriv;
-	} else {
+	if (!padapter)
 		goto exit;
-	}
+	pnetdev = padapter->pnetdev;
+	pwrpriv = &padapter->pwrctrlpriv;
 
 	down(&pwrpriv->lock);
-	rtw_reset_drv_sw(padapter);
+	rtw_reset_drv_sw23a(padapter);
 	pwrpriv->bkeepfwalive = false;
 
 	DBG_8723A("bkeepfwalive(%x)\n", pwrpriv->bkeepfwalive);
-	if (pm_netdev_open(pnetdev, true) != 0)
+	if (pm_netdev_open23a(pnetdev, true) != 0)
 		goto exit;
 
 	netif_device_attach(pnetdev);
@@ -585,14 +568,14 @@ int rtw_resume_process(struct rtw_adapter *padapter)
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
 	}
 
-	rtw_roaming(padapter, NULL);
+	rtw23a_roaming(padapter, NULL);
 
 	ret = 0;
 exit:
 	if (pwrpriv)
 		pwrpriv->bInSuspend = false;
 	DBG_8723A("<===  %s return %d.............. in %dms\n", __func__,
-		  ret, rtw_get_passing_time_ms(start_time));
+		  ret, jiffies_to_msecs(jiffies - start_time));
 
 	return ret;
 }
@@ -612,7 +595,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	struct net_device *pnetdev = NULL;
 	int status = _FAIL;
 
-	pnetdev = rtw_init_netdev(padapter);
+	pnetdev = rtw_init_netdev23a(padapter);
 	if (!pnetdev)
 		goto handle_dualmac;
 	padapter = netdev_priv(pnetdev);
@@ -623,12 +606,10 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
 	padapter->iface_id = IFACE_ID0;
 
-#ifndef RTW_DVOBJ_CHIP_HW_TYPE
 	/* step 1-1., decide the chip_type via vid/pid */
 	decide_chip_type_by_usb_device_id(padapter, pdid);
-#endif
 
-	if (rtw_handle_dualmac(padapter, 1) != _SUCCESS)
+	if (rtw_handle_dualmac23a(padapter, 1) != _SUCCESS)
 		goto free_adapter;
 
 	SET_NETDEV_DEV(pnetdev, dvobj_to_dev(dvobj));
@@ -637,25 +618,26 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 		goto handle_dualmac;
 
 	/* step 2. hook HalFunc, allocate HalData */
-	hal_set_hal_ops(padapter);
+	if (rtl8723au_set_hal_ops(padapter))
+		return NULL;
 
 	padapter->intf_start = &usb_intf_start;
 	padapter->intf_stop = &usb_intf_stop;
 
 	/* step init_io_priv */
-	rtw_init_io_priv(padapter, usb_set_intf_ops);
+	rtw_init_io_priv23a(padapter, usb_set_intf_ops);
 
 	/* step read_chip_version */
-	rtw_hal_read_chip_version(padapter);
+	rtw_hal_read_chip_version23a(padapter);
 
 	/* step usb endpoint mapping */
-	rtw_hal_chip_configure(padapter);
+	rtw_hal_chip_configure23a(padapter);
 
 	/* step read efuse/eeprom data and get mac_addr */
-	rtw_hal_read_chip_info(padapter);
+	rtw_hal_read_chip_info23a(padapter);
 
 	/* step 5. */
-	if (rtw_init_drv_sw(padapter) == _FAIL) {
+	if (rtw_init_drv_sw23a(padapter) == _FAIL) {
 		RT_TRACE(_module_hci_intfs_c_, _drv_err_,
 			 ("Initialize driver software resource Failed!\n"));
 		goto free_hal_data;
@@ -681,9 +663,11 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 #endif
 
 	/*  set mac addr */
-	rtw_macaddr_cfg(padapter->eeprompriv.mac_addr);
-	rtw_init_wifidirect_addrs(padapter, padapter->eeprompriv.mac_addr,
+	rtw_macaddr_cfg23a(padapter->eeprompriv.mac_addr);
+#ifdef CONFIG_8723AU_P2P
+	rtw_init_wifidirect_addrs23a(padapter, padapter->eeprompriv.mac_addr,
 				  padapter->eeprompriv.mac_addr);
+#endif
 
 	DBG_8723A("bDriverStopped:%d, bSurpriseRemoved:%d, bup:%d, hw_init_completed:%d\n",
 		  padapter->bDriverStopped, padapter->bSurpriseRemoved,
@@ -694,21 +678,19 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 free_hal_data:
 	if (status != _SUCCESS)
 		kfree(padapter->HalData);
-free_wdev:
 	if (status != _SUCCESS) {
 		rtw_wdev_unregister(padapter->rtw_wdev);
 		rtw_wdev_free(padapter->rtw_wdev);
 	}
 handle_dualmac:
 	if (status != _SUCCESS)
-		rtw_handle_dualmac(padapter, 0);
+		rtw_handle_dualmac23a(padapter, 0);
 free_adapter:
 	if (status != _SUCCESS) {
 		if (pnetdev)
 			free_netdev(pnetdev);
 		padapter = NULL;
 	}
-exit:
 	return padapter;
 }
 
@@ -718,25 +700,23 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 	struct mlme_priv *pmlmepriv = &if1->mlmepriv;
 
 	if (check_fwstate(pmlmepriv, _FW_LINKED))
-		rtw_disassoc_cmd(if1, 0, false);
+		rtw_disassoc_cmd23a(if1, 0, false);
 
 #ifdef CONFIG_8723AU_AP_MODE
-	free_mlme_ap_info(if1);
+	free_mlme_ap_info23a(if1);
 #endif
 
-	if (pnetdev) {
+	if (pnetdev)
 		unregister_netdev(pnetdev); /* will call netdev_close() */
-		rtw_proc_remove_one(pnetdev);
-	}
 
-	rtw_cancel_all_timer(if1);
+	rtw_cancel_all_timer23a(if1);
 
 	rtw_dev_unload(if1);
 
 	DBG_8723A("+r871xu_dev_remove, hw_init_completed =%d\n",
 		  if1->hw_init_completed);
 
-	rtw_handle_dualmac(if1, 0);
+	rtw_handle_dualmac23a(if1, 0);
 
 	if (if1->rtw_wdev) {
 		rtw_wdev_unregister(if1->rtw_wdev);
@@ -750,118 +730,18 @@ static void rtw_usb_if1_deinit(struct rtw_adapter *if1)
 	}
 #endif
 
-	rtw_free_drv_sw(if1);
+	rtw_free_drv_sw23a(if1);
 
 	if (pnetdev)
 		free_netdev(pnetdev);
 }
 
-static void dump_usb_interface(struct usb_interface *usb_intf)
-{
-	struct usb_device *udev = interface_to_usbdev(usb_intf);
-	struct usb_device_descriptor *dev_desc = &udev->descriptor;
-	struct usb_host_config	 *act_conf = udev->actconfig;
-	struct usb_config_descriptor *act_conf_desc = &act_conf->desc;
-	struct usb_host_interface *host_iface;
-	struct usb_interface_descriptor *iface_desc;
-	struct usb_host_endpoint *host_endp;
-	struct usb_endpoint_descriptor *endp_desc;
-	int	i;
-	u8	val8;
-
-	DBG_8723A("usb_interface:%p, usb_device:%p(num:%d, path:%s), usb_device_descriptor:%p\n",
-		  usb_intf, udev, udev->devnum, udev->devpath, dev_desc);
-	DBG_8723A("bLength:%u\n", dev_desc->bLength);
-	DBG_8723A("bDescriptorType:0x%02x\n", dev_desc->bDescriptorType);
-	DBG_8723A("bcdUSB:0x%04x\n", le16_to_cpu(dev_desc->bcdUSB));
-	DBG_8723A("bDeviceClass:0x%02x\n", dev_desc->bDeviceClass);
-	DBG_8723A("bDeviceSubClass:0x%02x\n", dev_desc->bDeviceSubClass);
-	DBG_8723A("bDeviceProtocol:0x%02x\n", dev_desc->bDeviceProtocol);
-	DBG_8723A("bMaxPacketSize0:%u\n", dev_desc->bMaxPacketSize0);
-	DBG_8723A("idVendor:0x%04x\n", le16_to_cpu(dev_desc->idVendor));
-	DBG_8723A("idProduct:0x%04x\n", le16_to_cpu(dev_desc->idProduct));
-	DBG_8723A("bcdDevice:0x%04x\n", le16_to_cpu(dev_desc->bcdDevice));
-	DBG_8723A("iManufacturer:0x02%x\n", dev_desc->iManufacturer);
-	DBG_8723A("iProduct:0x%02x\n", dev_desc->iProduct);
-	DBG_8723A("iSerialNumber:0x%02x\n", dev_desc->iSerialNumber);
-	DBG_8723A("bNumConfigurations:%u\n", dev_desc->bNumConfigurations);
-
-	DBG_8723A("\nact_conf_desc:%p\n", act_conf_desc);
-	DBG_8723A("bLength:%u\n", act_conf_desc->bLength);
-	DBG_8723A("bDescriptorType:0x%02x\n", act_conf_desc->bDescriptorType);
-	DBG_8723A("wTotalLength:%u\n",
-		  le16_to_cpu(act_conf_desc->wTotalLength));
-	DBG_8723A("bNumInterfaces:%u\n", act_conf_desc->bNumInterfaces);
-	DBG_8723A("bConfigurationValue:0x%02x\n",
-		  act_conf_desc->bConfigurationValue);
-	DBG_8723A("iConfiguration:0x%02x\n", act_conf_desc->iConfiguration);
-	DBG_8723A("bmAttributes:0x%02x\n", act_conf_desc->bmAttributes);
-	DBG_8723A("bMaxPower =%u\n", act_conf_desc->bMaxPower);
-
-	DBG_8723A("****** num of altsetting = (%d) ******/\n",
-		  usb_intf->num_altsetting);
-	/* Get he host side alternate setting (the current alternate setting)
-	 * for this interface
-	 */
-	host_iface = usb_intf->cur_altsetting;
-	iface_desc = &host_iface->desc;
-
-	DBG_8723A("\nusb_interface_descriptor:%p:\n", iface_desc);
-	DBG_8723A("bLength:%u\n", iface_desc->bLength);
-	DBG_8723A("bDescriptorType:0x%02x\n", iface_desc->bDescriptorType);
-	DBG_8723A("bInterfaceNumber:0x%02x\n", iface_desc->bInterfaceNumber);
-	DBG_8723A("bAlternateSetting =%x\n", iface_desc->bAlternateSetting);
-	DBG_8723A("bNumEndpoints =%x\n", iface_desc->bNumEndpoints);
-	DBG_8723A("bInterfaceClass =%x\n", iface_desc->bInterfaceClass);
-	DBG_8723A("bInterfaceSubClass =%x\n", iface_desc->bInterfaceSubClass);
-	DBG_8723A("bInterfaceProtocol =%x\n", iface_desc->bInterfaceProtocol);
-	DBG_8723A("iInterface =%x\n", iface_desc->iInterface);
-
-	for (i = 0; i < iface_desc->bNumEndpoints; i++) {
-		host_endp = host_iface->endpoint + i;
-		if (host_endp) {
-			endp_desc = &host_endp->desc;
-
-			DBG_8723A("\nusb_endpoint_descriptor(%d):\n", i);
-			DBG_8723A("bLength =%x\n", endp_desc->bLength);
-			DBG_8723A("bDescriptorType =%x\n",
-				  endp_desc->bDescriptorType);
-			DBG_8723A("bEndpointAddress =%x\n",
-				  endp_desc->bEndpointAddress);
-			DBG_8723A("bmAttributes =%x\n",
-				  endp_desc->bmAttributes);
-			DBG_8723A("wMaxPacketSize =%x\n",
-				  endp_desc->wMaxPacketSize);
-			DBG_8723A("wMaxPacketSize =%x\n",
-				  le16_to_cpu(endp_desc->wMaxPacketSize));
-			DBG_8723A("bInterval =%x\n", endp_desc->bInterval);
-
-			if (RT_usb_endpoint_is_bulk_in(endp_desc))
-				DBG_8723A("RT_usb_endpoint_is_bulk_in = %x\n",
-					  RT_usb_endpoint_num(endp_desc));
-			else if (RT_usb_endpoint_is_int_in(endp_desc))
-				DBG_8723A("RT_usb_endpoint_is_int_in = %x, Interval = %x\n",
-					  RT_usb_endpoint_num(endp_desc),
-					  endp_desc->bInterval);
-			else if (RT_usb_endpoint_is_bulk_out(endp_desc))
-				DBG_8723A("RT_usb_endpoint_is_bulk_out = %x\n",
-					  RT_usb_endpoint_num(endp_desc));
-		}
-	}
-
-	if (udev->speed == USB_SPEED_HIGH)
-		DBG_8723A("USB_SPEED_HIGH\n");
-	else
-		DBG_8723A("NON USB_SPEED_HIGH\n");
-}
-
 static int rtw_drv_init(struct usb_interface *pusb_intf,
 			const struct usb_device_id *pdid)
 {
-	struct rtw_adapter *if1 = NULL, *if2 = NULL;
+	struct rtw_adapter *if1 = NULL;
 	struct dvobj_priv *dvobj;
-	int i;
-	int status;
+	int status = _FAIL;
 
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_init\n"));
 
@@ -872,10 +752,6 @@ static int rtw_drv_init(struct usb_interface *pusb_intf,
 			 ("initialize device object priv Failed!\n"));
 		goto exit;
 	}
-
-	#ifdef RTW_DVOBJ_CHIP_HW_TYPE
-	decide_chip_type_by_usb_device_id(dvobj, pdid);
-	#endif
 
 	if1 = rtw_usb_if1_init(dvobj, pusb_intf, pdid);
 	if (!if1) {
@@ -922,10 +798,10 @@ static void rtw_disconnect(struct usb_interface *pusb_intf)
 
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+dev_remove()\n"));
 
-	rtw_pm_set_ips(padapter, IPS_NONE);
-	rtw_pm_set_lps(padapter, PS_MODE_ACTIVE);
+	rtw_pm_set_ips23a(padapter, IPS_NONE);
+	rtw_pm_set_lps23a(padapter, PS_MODE_ACTIVE);
 
-	LeaveAllPowerSaveMode(padapter);
+	LeaveAllPowerSaveMode23a(padapter);
 
 	rtw_usb_if1_deinit(padapter);
 
@@ -937,16 +813,9 @@ static void rtw_disconnect(struct usb_interface *pusb_intf)
 	return;
 }
 
-extern int console_suspend_enabled;
-
 static int __init rtw_drv_entry(void)
 {
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_entry\n"));
-
-	DBG_8723A(DRV_NAME " driver version =%s\n", DRIVERVERSION);
-	DBG_8723A("build time: %s %s\n", __DATE__, __TIME__);
-	rtw_suspend_lock_init();
-
 	return usb_register(usb_drv);
 }
 
@@ -954,8 +823,6 @@ static void __exit rtw_drv_halt(void)
 {
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_halt\n"));
 	DBG_8723A("+rtw_drv_halt\n");
-
-	rtw_suspend_lock_uninit();
 
 	usb_deregister(usb_drv);
 

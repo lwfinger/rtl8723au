@@ -18,7 +18,7 @@
 #include <usb_ops_linux.h>
 #include <rtw_sreset.h>
 
-unsigned int ffaddr2pipehdl(struct dvobj_priv *pdvobj, u32 addr)
+unsigned int ffaddr2pipehdl23a(struct dvobj_priv *pdvobj, u32 addr)
 {
 	struct usb_device *pusbd = pdvobj->pusbdev;
 	unsigned int pipe = 0, ep_num = 0;
@@ -41,71 +41,15 @@ struct zero_bulkout_context {
 	void *padapter;
 };
 
-static void usb_bulkout_zero_complete(struct urb *purb, struct pt_regs *regs)
-{
-	struct zero_bulkout_context *pcontext = (struct zero_bulkout_context *)purb->context;
-
-	if (pcontext) {
-		kfree(pcontext->pbuf);
-
-		if (pcontext->purb && (pcontext->purb == purb))
-			usb_free_urb(pcontext->purb);
-		kfree(pcontext);
-	}
-}
-
-static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
-{
-	struct zero_bulkout_context *context;
-	struct urb *purb = NULL;
-	struct rtw_adapter *padapter = (struct rtw_adapter *)pintfhdl->padapter;
-	struct dvobj_priv *pdvobj = adapter_to_dvobj(padapter);
-	struct usb_device *pusbd = pdvobj->pusbdev;
-	int pipe, status, len;
-	u32 ret;
-	unsigned char *pbuf;
-
-	if ((padapter->bDriverStopped) || (padapter->bSurpriseRemoved) ||
-	    (padapter->pwrctrlpriv.pnp_bstop_trx))
-		return _FAIL;
-
-	context = kzalloc(sizeof(*context), GFP_KERNEL);
-	if (!context)
-		return _FAIL;
-
-	pbuf = kzalloc(sizeof(int), GFP_KERNEL);
-	if (!pbuf) {
-		kfree(context);
-		return _FAIL;
-	}
-	purb = usb_alloc_urb(0, GFP_ATOMIC);
-
-	len = 0;
-	context->pbuf = pbuf;
-	context->purb = purb;
-	context->pirp = NULL;
-	context->padapter = padapter;
-
-	usb_fill_bulk_urb(purb, pusbd, pipe, pbuf, len,
-			  usb_bulkout_zero_complete, context);
-	status = usb_submit_urb(purb, GFP_ATOMIC);
-
-	if (!status)
-		ret = _SUCCESS;
-	else
-		ret = _FAIL;
-	return _SUCCESS;
-}
-
-void usb_read_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
+void usb_read_mem23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 {
 }
 
-void usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
+void usb_write_mem23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 {
 }
 
-void usb_read_port_cancel(struct intf_hdl *pintfhdl)
+void usb_read_port_cancel23a(struct intf_hdl *pintfhdl)
 {
 	struct recv_buf *precvbuf;
 	struct rtw_adapter *padapter = pintfhdl->padapter;
@@ -125,14 +69,13 @@ void usb_read_port_cancel(struct intf_hdl *pintfhdl)
 	usb_kill_urb(padapter->recvpriv.int_in_urb);
 }
 
-static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
+static void usb_write_port23a_complete(struct urb *purb, struct pt_regs *regs)
 {
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)purb->context;
 	struct rtw_adapter *padapter = pxmitbuf->padapter;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct hal_data_8723a *phaldata;
 	unsigned long irqL;
-	int i;
 
 	switch (pxmitbuf->flags) {
 	case VO_QUEUE_INX:
@@ -149,7 +92,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 		break;
 	case HIGH_QUEUE_INX:
 #ifdef CONFIG_8723AU_AP_MODE
-		rtw_chk_hi_queue_cmd(padapter);
+		rtw_chk_hi_queue_cmd23a(padapter);
 #endif
 		break;
 	default:
@@ -159,7 +102,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	if (padapter->bSurpriseRemoved || padapter->bDriverStopped ||
 	    padapter->bWritePortCancel) {
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_write_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)",
+			 ("usb_write_port23a_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)",
 			 padapter->bDriverStopped, padapter->bSurpriseRemoved));
 		DBG_8723A("%s(): TX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bWritePortCancel(%d) pxmitbuf->ext_tag(%x)\n",
 			  __func__, padapter->bDriverStopped,
@@ -171,16 +114,16 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 
 	if (purb->status) {
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_write_port_complete : purb->status(%d) != 0\n",
+			 ("usb_write_port23a_complete : purb->status(%d) != 0\n",
 			 purb->status));
 		DBG_8723A("###=> urb_write_port_complete status(%d)\n",
 			  purb->status);
 		if ((purb->status == -EPIPE) || (purb->status == -EPROTO)) {
-			sreset_set_wifi_error_status(padapter,
+			sreset_set_wifi_error_status23a(padapter,
 						     USB_WRITE_PORT_FAIL);
 		} else if (purb->status == -EINPROGRESS) {
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_write_port_complete: EINPROGESS\n"));
+				 ("usb_write_port23a_complete: EINPROGESS\n"));
 			goto check_completion;
 		} else if (purb->status == -ENOENT) {
 			DBG_8723A("%s: -ENOENT\n", __func__);
@@ -190,35 +133,35 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 			goto check_completion;
 		} else if (purb->status == -ESHUTDOWN) {
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_write_port_complete: ESHUTDOWN\n"));
+				 ("usb_write_port23a_complete: ESHUTDOWN\n"));
 			padapter->bDriverStopped = true;
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_write_port_complete:bDriverStopped = true\n"));
+				 ("usb_write_port23a_complete:bDriverStopped = true\n"));
 			goto check_completion;
 		} else {
 			padapter->bSurpriseRemoved = true;
 			DBG_8723A("bSurpriseRemoved = true\n");
 			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_write_port_complete:bSurpriseRemoved = true\n"));
+				 ("usb_write_port23a_complete:bSurpriseRemoved = true\n"));
 			goto check_completion;
 		}
 	}
 	phaldata = GET_HAL_DATA(padapter);
-	phaldata->srestpriv.last_tx_complete_time = rtw_get_current_time();
+	phaldata->srestpriv.last_tx_complete_time = jiffies;
 
 check_completion:
 	spin_lock_irqsave(&pxmitpriv->lock_sctx, irqL);
-	rtw_sctx_done_err(&pxmitbuf->sctx,
+	rtw23a_sctx_done_err(&pxmitbuf->sctx,
 			  purb->status ? RTW_SCTX_DONE_WRITE_PORT_ERR :
 			  RTW_SCTX_DONE_SUCCESS);
 	spin_unlock_irqrestore(&pxmitpriv->lock_sctx, irqL);
 
-	rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
+	rtw_free_xmitbuf23a(pxmitpriv, pxmitbuf);
 
 	tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 }
 
-u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
+u32 usb_write_port23a(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 		   struct xmit_buf *pxmitbuf)
 {
 	struct urb *purb = NULL;
@@ -227,19 +170,18 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct xmit_frame *pxmitframe = (struct xmit_frame *)pxmitbuf->priv_data;
 	struct usb_device *pusbd = pdvobj->pusbdev;
-	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	unsigned long irqL;
 	unsigned int pipe;
 	int status;
-	u32 ret = _FAIL, bwritezero = false;
+	u32 ret = _FAIL;
 
-	RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("+usb_write_port\n"));
+	RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("+usb_write_port23a\n"));
 
 	if ((padapter->bDriverStopped) || (padapter->bSurpriseRemoved) ||
 	    (padapter->pwrctrlpriv.pnp_bstop_trx)) {
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_write_port:( padapter->bDriverStopped ||padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
-		rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_TX_DENY);
+			 ("usb_write_port23a:( padapter->bDriverStopped ||padapter->bSurpriseRemoved ||adapter->pwrctrlpriv.pnp_bstop_trx)!!!\n"));
+		rtw23a_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_TX_DENY);
 		goto exit;
 	}
 
@@ -275,23 +217,23 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 	purb	= pxmitbuf->pxmit_urb[0];
 
 	/* translate DMA FIFO addr to pipehandle */
-	pipe = ffaddr2pipehdl(pdvobj, addr);
+	pipe = ffaddr2pipehdl23a(pdvobj, addr);
 
 	usb_fill_bulk_urb(purb, pusbd, pipe,
 			  pxmitframe->buf_addr, /*  pxmitbuf->pbuf */
-			  cnt, usb_write_port_complete,
+			  cnt, usb_write_port23a_complete,
 			  pxmitbuf);/* context is pxmitbuf */
 
 	status = usb_submit_urb(purb, GFP_ATOMIC);
 	if (!status) {
 		struct hal_data_8723a *phaldata = GET_HAL_DATA(padapter);
-		phaldata->srestpriv.last_tx_time = rtw_get_current_time();
+		phaldata->srestpriv.last_tx_time = jiffies;
 	} else {
-		rtw_sctx_done_err(&pxmitbuf->sctx,
+		rtw23a_sctx_done_err(&pxmitbuf->sctx,
 				  RTW_SCTX_DONE_WRITE_PORT_ERR);
-		DBG_8723A("usb_write_port, status =%d\n", status);
+		DBG_8723A("usb_write_port23a, status =%d\n", status);
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_write_port(): usb_submit_urb, status =%x\n",
+			 ("usb_write_port23a(): usb_submit_urb, status =%x\n",
 			 status));
 
 		switch (status) {
@@ -304,21 +246,21 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
 		goto exit;
 	}
 	ret = _SUCCESS;
-	RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("-usb_write_port\n"));
+	RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("-usb_write_port23a\n"));
 
 exit:
 	if (ret != _SUCCESS)
-		rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
+		rtw_free_xmitbuf23a(pxmitpriv, pxmitbuf);
 
 	return ret;
 }
 
-void usb_write_port_cancel(struct intf_hdl *pintfhdl)
+void usb_write_port23a_cancel(struct intf_hdl *pintfhdl)
 {
 	struct rtw_adapter *padapter = pintfhdl->padapter;
 	struct xmit_buf *pxmitbuf;
 	struct list_head *plist;
-	int i, j;
+	int j;
 
 	DBG_8723A("%s\n", __func__);
 

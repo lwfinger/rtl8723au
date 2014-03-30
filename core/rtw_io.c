@@ -41,7 +41,7 @@ jackson@realtek.com.tw
 
 #include <usb_ops.h>
 
-u8 _rtw_read8(struct rtw_adapter *adapter, u32 addr)
+u8 _rtw_read823a(struct rtw_adapter *adapter, u32 addr)
 {
 	u8 r_val;
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -52,7 +52,7 @@ u8 _rtw_read8(struct rtw_adapter *adapter, u32 addr)
 	return r_val;
 }
 
-u16 _rtw_read16(struct rtw_adapter *adapter, u32 addr)
+u16 _rtw_read1623a(struct rtw_adapter *adapter, u32 addr)
 {
 	u16 r_val;
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -63,7 +63,7 @@ u16 _rtw_read16(struct rtw_adapter *adapter, u32 addr)
 	return le16_to_cpu(r_val);
 }
 
-u32 _rtw_read32(struct rtw_adapter *adapter, u32 addr)
+u32 _rtw_read3223a(struct rtw_adapter *adapter, u32 addr)
 {
 	u32 r_val;
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -74,7 +74,7 @@ u32 _rtw_read32(struct rtw_adapter *adapter, u32 addr)
 	return le32_to_cpu(r_val);
 }
 
-int _rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val)
+int _rtw_write823a(struct rtw_adapter *adapter, u32 addr, u8 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl		*pintfhdl = &pio_priv->intf;
@@ -82,10 +82,10 @@ int _rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val)
 
 	ret = pintfhdl->io_ops._write8(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
 
-int _rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val)
+int _rtw_write1623a(struct rtw_adapter *adapter, u32 addr, u16 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl		*pintfhdl = &pio_priv->intf;
@@ -94,9 +94,9 @@ int _rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val)
 	val = cpu_to_le16(val);
 	ret = pintfhdl->io_ops._write16(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
-int _rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val)
+int _rtw_write3223a(struct rtw_adapter *adapter, u32 addr, u32 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -105,10 +105,10 @@ int _rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val)
 	val = cpu_to_le32(val);
 	ret = pintfhdl->io_ops._write32(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
 
-int _rtw_writeN(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdata)
+int _rtw_writeN23a(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdata)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
         struct intf_hdl *pintfhdl = (struct intf_hdl*)&pio_priv->intf;
@@ -116,9 +116,9 @@ int _rtw_writeN(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdata)
 
 	ret = pintfhdl->io_ops._writeN(pintfhdl, addr, length, pdata);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
-int _rtw_write8_async(struct rtw_adapter *adapter, u32 addr, u8 val)
+int _rtw_write823a_async23a(struct rtw_adapter *adapter, u32 addr, u8 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -126,9 +126,9 @@ int _rtw_write8_async(struct rtw_adapter *adapter, u32 addr, u8 val)
 
 	ret = pintfhdl->io_ops._write8_async(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
-int _rtw_write16_async(struct rtw_adapter *adapter, u32 addr, u16 val)
+int _rtw_write1623a_async(struct rtw_adapter *adapter, u32 addr, u16 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -137,9 +137,9 @@ int _rtw_write16_async(struct rtw_adapter *adapter, u32 addr, u16 val)
 	val = cpu_to_le16(val);
 	ret = pintfhdl->io_ops._write16_async(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
-int _rtw_write32_async(struct rtw_adapter *adapter, u32 addr, u32 val)
+int _rtw_write3223a_async23a(struct rtw_adapter *adapter, u32 addr, u32 val)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -148,10 +148,10 @@ int _rtw_write32_async(struct rtw_adapter *adapter, u32 addr, u32 val)
 	val = cpu_to_le32(val);
 	ret = pintfhdl->io_ops._write32_async(pintfhdl, addr, val);
 
-	return RTW_STATUS_CODE(ret);
+	return RTW_STATUS_CODE23a(ret);
 }
 
-void _rtw_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
+void _rtw_read_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -168,7 +168,7 @@ void _rtw_read_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 	pintfhdl->io_ops._read_mem(pintfhdl, addr, cnt, pmem);
 }
 
-void _rtw_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
+void _rtw_write_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
 	struct intf_hdl *pintfhdl = &pio_priv->intf;
@@ -176,7 +176,7 @@ void _rtw_write_mem(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 	pintfhdl->io_ops._write_mem(pintfhdl, addr, cnt, pmem);
 }
 
-void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
+void _rtw_read_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt,
 		    struct recv_buf *rbuf)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -194,7 +194,7 @@ void _rtw_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
 	pintfhdl->io_ops._read_port(pintfhdl, addr, cnt, rbuf);
 }
 
-void _rtw_read_port_cancel(struct rtw_adapter *adapter)
+void _rtw_read_port23a_cancel(struct rtw_adapter *adapter)
 {
 	void (*_read_port_cancel)(struct intf_hdl *pintfhdl);
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -206,7 +206,7 @@ void _rtw_read_port_cancel(struct rtw_adapter *adapter)
 		_read_port_cancel(pintfhdl);
 }
 
-u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
+u32 _rtw_write_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt,
 		    struct xmit_buf *xbuf)
 {
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -218,24 +218,24 @@ u32 _rtw_write_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
 	return ret;
 }
 
-u32 _rtw_write_port_and_wait(struct rtw_adapter *adapter, u32 addr, u32 cnt,
+u32 _rtw_write_port23a_and_wait23a(struct rtw_adapter *adapter, u32 addr, u32 cnt,
 			     struct xmit_buf *pxmitbuf, int timeout_ms)
 {
 	int ret = _SUCCESS;
 	struct submit_ctx sctx;
 
-	rtw_sctx_init(&sctx, timeout_ms);
+	rtw_sctx_init23a(&sctx, timeout_ms);
 	pxmitbuf->sctx = &sctx;
 
-	ret = _rtw_write_port(adapter, addr, cnt, pxmitbuf);
+	ret = _rtw_write_port23a(adapter, addr, cnt, pxmitbuf);
 
 	if (ret == _SUCCESS)
-		ret = rtw_sctx_wait(&sctx);
+		ret = rtw_sctx_wait23a(&sctx);
 
 	return ret;
 }
 
-void _rtw_write_port_cancel(struct rtw_adapter *adapter)
+void _rtw_write_port23a_cancel(struct rtw_adapter *adapter)
 {
 	void (*_write_port_cancel)(struct intf_hdl *pintfhdl);
 	struct io_priv *pio_priv = &adapter->iopriv;
@@ -247,7 +247,7 @@ void _rtw_write_port_cancel(struct rtw_adapter *adapter)
 		_write_port_cancel(pintfhdl);
 }
 
-int rtw_init_io_priv(struct rtw_adapter *padapter,
+int rtw_init_io_priv23a(struct rtw_adapter *padapter,
 		     void (*set_intf_ops)(struct _io_ops *pops))
 {
 	struct io_priv	*piopriv = &padapter->iopriv;
@@ -264,115 +264,3 @@ int rtw_init_io_priv(struct rtw_adapter *padapter,
 
 	return _SUCCESS;
 }
-
-#ifdef DBG_IO
-
-u16 read_sniff_ranges[][2] = {
-	/* 0x550, 0x551}, */
-};
-
-u16 write_sniff_ranges[][2] = {
-	/* 0x550, 0x551}, */
-	/* 0x4c, 0x4c}, */
-};
-
-int read_sniff_num = sizeof(read_sniff_ranges)/sizeof(u16)/2;
-int write_sniff_num = sizeof(write_sniff_ranges)/sizeof(u16)/2;
-
-bool match_read_sniff_ranges(u16 addr, u16 len)
-{
-	int i;
-	for (i = 0; i < read_sniff_num; i++) {
-		if (addr + len > read_sniff_ranges[i][0] &&
-		    addr <= read_sniff_ranges[i][1])
-			return true;
-	}
-
-	return false;
-}
-
-bool match_write_sniff_ranges(u16 addr, u16 len)
-{
-	int i;
-	for (i = 0; i < write_sniff_num; i++) {
-		if (addr + len > write_sniff_ranges[i][0] &&
-		    addr <= write_sniff_ranges[i][1])
-			return true;
-	}
-
-	return false;
-}
-
-u8 dbg_rtw_read8(struct rtw_adapter *adapter, u32 addr,
-		 const char *caller, const int line)
-{
-	u8 val = _rtw_read8(adapter, addr);
-
-	if (match_read_sniff_ranges(addr, 1))
-		DBG_8723A("DBG_IO %s:%d rtw_read8(0x%04x) return 0x%02x\n",
-			  caller, line, addr, val);
-
-	return val;
-}
-
-u16 dbg_rtw_read16(struct rtw_adapter *adapter, u32 addr,
-		   const char *caller, const int line)
-{
-	u16 val = _rtw_read16(adapter, addr);
-
-	if (match_read_sniff_ranges(addr, 2))
-		DBG_8723A("DBG_IO %s:%d rtw_read16(0x%04x) return 0x%04x\n",
-			  caller, line, addr, val);
-
-	return val;
-}
-
-u32 dbg_rtw_read32(struct rtw_adapter *adapter, u32 addr,
-		   const char *caller, const int line)
-{
-	u32 val = _rtw_read32(adapter, addr);
-
-	if (match_read_sniff_ranges(addr, 4))
-		DBG_8723A("DBG_IO %s:%d rtw_read32(0x%04x) return 0x%08x\n",
-			  caller, line, addr, val);
-
-	return val;
-}
-
-int dbg_rtw_write8(struct rtw_adapter *adapter, u32 addr, u8 val,
-		   const char *caller, const int line)
-{
-	if (match_write_sniff_ranges(addr, 1))
-		DBG_8723A("DBG_IO %s:%d rtw_write8(0x%04x, 0x%02x)\n",
-			  caller, line, addr, val);
-
-	return _rtw_write8(adapter, addr, val);
-}
-int dbg_rtw_write16(struct rtw_adapter *adapter, u32 addr, u16 val,
-		    const char *caller, const int line)
-{
-	if (match_write_sniff_ranges(addr, 2))
-		DBG_8723A("DBG_IO %s:%d rtw_write16(0x%04x, 0x%04x)\n",
-			  caller, line, addr, val);
-
-	return _rtw_write16(adapter, addr, val);
-}
-int dbg_rtw_write32(struct rtw_adapter *adapter, u32 addr, u32 val,
-		    const char *caller, const int line)
-{
-	if (match_write_sniff_ranges(addr, 4))
-		DBG_8723A("DBG_IO %s:%d rtw_write32(0x%04x, 0x%08x)\n",
-			  caller, line, addr, val);
-
-	return _rtw_write32(adapter, addr, val);
-}
-int dbg_rtw_writeN(struct rtw_adapter *adapter, u32 addr, u32 length, u8 *data,
-		   const char *caller, const int line)
-{
-	if (match_write_sniff_ranges(addr, length))
-		DBG_8723A("DBG_IO %s:%d rtw_writeN(0x%04x, %u)\n",
-			  caller, line, addr, length);
-
-	return _rtw_writeN(adapter, addr, length, data);
-}
-#endif

@@ -34,10 +34,6 @@
  * Auto Config Section
  */
 
-#ifdef CONFIG_LED
-	#define CONFIG_SW_LED
-#endif /*  CONFIG_LED */
-
 /*
  * HAL  Related Config
  */

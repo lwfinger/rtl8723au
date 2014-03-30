@@ -15,10 +15,6 @@
 #ifndef _WIFI_H_
 #define _WIFI_H_
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0))
-#define IEEE80211_CHAN_NO_IR	IEEE80211_CHAN_PASSIVE_SCAN
-#endif
-
 #define P80211CAPTURE_VERSION	0x80211001
 
 /*  This value is tested by WiFi 11n Test Plan 5.2.3.

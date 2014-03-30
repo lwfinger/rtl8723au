@@ -27,10 +27,10 @@ void _rtw_init_stainfo(struct sta_info *psta)
 	spin_lock_init(&psta->lock);
 	INIT_LIST_HEAD(&psta->list);
 	INIT_LIST_HEAD(&psta->hash_list);
-	_rtw_init_queue(&psta->sleep_q);
+	_rtw_init_queue23a(&psta->sleep_q);
 	psta->sleepq_len = 0;
-	_rtw_init_sta_xmit_priv(&psta->sta_xmitpriv);
-	_rtw_init_sta_recv_priv(&psta->sta_recvpriv);
+	_rtw_init_sta_xmit_priv23a(&psta->sta_xmitpriv);
+	_rtw_init_sta_recv_priv23a(&psta->sta_recvpriv);
 #ifdef CONFIG_8723AU_AP_MODE
 	INIT_LIST_HEAD(&psta->asoc_list);
 	INIT_LIST_HEAD(&psta->auth_list);
@@ -48,7 +48,7 @@ void _rtw_init_stainfo(struct sta_info *psta)
 #endif	/*  CONFIG_8723AU_AP_MODE */
 }
 
-u32 _rtw_init_sta_priv(struct sta_priv *pstapriv)
+u32 _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
 {
 	struct sta_info *psta;
 	s32 i;
@@ -60,11 +60,11 @@ u32 _rtw_init_sta_priv(struct sta_priv *pstapriv)
 
 	pstapriv->pstainfo_buf = pstapriv->pallocated_stainfo_buf + 4 -
 		((unsigned long)(pstapriv->pallocated_stainfo_buf) & 3);
-	_rtw_init_queue(&pstapriv->free_sta_queue);
+	_rtw_init_queue23a(&pstapriv->free_sta_queue);
 	spin_lock_init(&pstapriv->sta_hash_lock);
 	pstapriv->asoc_sta_count = 0;
-	_rtw_init_queue(&pstapriv->sleep_q);
-	_rtw_init_queue(&pstapriv->wakeup_q);
+	_rtw_init_queue23a(&pstapriv->sleep_q);
+	_rtw_init_queue23a(&pstapriv->wakeup_q);
 	psta = (struct sta_info *)(pstapriv->pstainfo_buf);
 
 	for (i = 0; i < NUM_STA; i++) {
@@ -92,7 +92,7 @@ u32 _rtw_init_sta_priv(struct sta_priv *pstapriv)
 	return _SUCCESS;
 }
 
-inline int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta)
+inline int rtw_stainfo_offset23a(struct sta_priv *stapriv, struct sta_info *sta)
 {
 	int offset = (((u8 *)sta) - stapriv->pstainfo_buf)/sizeof(struct sta_info);
 
@@ -101,7 +101,7 @@ inline int rtw_stainfo_offset(struct sta_priv *stapriv, struct sta_info *sta)
 	return offset;
 }
 
-inline struct sta_info *rtw_get_stainfo_by_offset(struct sta_priv *stapriv, int offset)
+inline struct sta_info *rtw_get_stainfo23a_by_offset23a(struct sta_priv *stapriv, int offset)
 {
 	if (!stainfo_offset_valid(offset))
 		DBG_8723A("%s invalid offset(%d), out of range!!!", __func__, offset);
@@ -126,13 +126,10 @@ void rtw_mfree_all_stainfo(struct sta_priv *pstapriv)
 
 void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv)
 {
-#ifdef CONFIG_8723AU_AP_MODE
-	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
-#endif
 	rtw_mfree_all_stainfo(pstapriv); /* be done before free sta_hash_lock */
 }
 
-u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
+u32	_rtw_free_sta_priv23a(struct	sta_priv *pstapriv)
 {
 	struct list_head *phead, *plist, *ptmp;
 	struct sta_info *psta;
@@ -166,7 +163,7 @@ u32	_rtw_free_sta_priv(struct	sta_priv *pstapriv)
 	return _SUCCESS;
 }
 
-struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
+struct	sta_info *rtw_alloc_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr)
 {
 	struct list_head	*phash_list;
 	struct sta_info	*psta;
@@ -181,7 +178,7 @@ struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);
 
-	if (_rtw_queue_empty(pfree_sta_queue)) {
+	if (_rtw_queue_empty23a(pfree_sta_queue)) {
 		spin_unlock_bh(&pstapriv->sta_hash_lock);
 		return NULL;
 	}
@@ -200,10 +197,10 @@ struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	index = wifi_mac_hash(hwaddr);
 
 	RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_info_,
-		 ("rtw_alloc_stainfo: index  = %x", index));
+		 ("rtw_alloc_stainfo23a: index  = %x", index));
 	if (index >= NUM_STA) {
 		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_err_,
-			 ("ERROR => rtw_alloc_stainfo: index >= NUM_STA"));
+			 ("ERROR => rtw_alloc_stainfo23a: index >= NUM_STA"));
 		psta = NULL;
 		goto exit;
 	}
@@ -224,7 +221,7 @@ struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 		 ("alloc number_%d stainfo  with hwaddr = %pM\n",
 		 pstapriv->asoc_sta_count, hwaddr));
 
-	init_addba_retry_timer(psta);
+	init_addba_retry_timer23a(psta);
 
 	/* for A-MPDU Rx reordering buffer control */
 	for (i = 0; i < 16; i++) {
@@ -235,17 +232,13 @@ struct	sta_info *rtw_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 		preorder_ctrl->enable = false;
 
 		preorder_ctrl->indicate_seq = 0xffff;
-		#ifdef DBG_RX_SEQ
-		DBG_8723A("DBG_RX_SEQ %s:%d IndicateSeq: %d\n", __func__, __LINE__,
-			preorder_ctrl->indicate_seq);
-		#endif
 		preorder_ctrl->wend_b = 0xffff;
 		/* preorder_ctrl->wsize_b = (NR_RECVBUFF-2); */
 		preorder_ctrl->wsize_b = 64;/* 64; */
 
-		_rtw_init_queue(&preorder_ctrl->pending_recvframe_queue);
+		_rtw_init_queue23a(&preorder_ctrl->pending_recvframe_queue);
 
-		rtw_init_recv_timer(preorder_ctrl);
+		rtw_init_recv_timer23a(preorder_ctrl);
 	}
 	/* init for DM */
 	psta->rssi_stat.UndecoratedSmoothedPWDB = (-1);
@@ -259,7 +252,7 @@ exit:
 }
 
 /*  using pstapriv->sta_hash_lock to protect */
-u32	rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta)
+u32	rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	struct rtw_queue *pfree_sta_queue;
 	struct recv_reorder_ctrl *preorder_ctrl;
@@ -282,32 +275,32 @@ u32	rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta)
 
 	spin_lock_bh(&pxmitpriv->lock);
 
-	rtw_free_xmitframe_queue(pxmitpriv, &psta->sleep_q);
+	rtw_free_xmitframe_queue23a(pxmitpriv, &psta->sleep_q);
 	psta->sleepq_len = 0;
 
 	/* vo */
-	rtw_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->vo_q.sta_pending);
+	rtw_free_xmitframe_queue23a(pxmitpriv, &pstaxmitpriv->vo_q.sta_pending);
 	list_del_init(&pstaxmitpriv->vo_q.tx_pending);
 	phwxmit = pxmitpriv->hwxmits;
 	phwxmit->accnt -= pstaxmitpriv->vo_q.qcnt;
 	pstaxmitpriv->vo_q.qcnt = 0;
 
 	/* vi */
-	rtw_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->vi_q.sta_pending);
+	rtw_free_xmitframe_queue23a(pxmitpriv, &pstaxmitpriv->vi_q.sta_pending);
 	list_del_init(&pstaxmitpriv->vi_q.tx_pending);
 	phwxmit = pxmitpriv->hwxmits+1;
 	phwxmit->accnt -= pstaxmitpriv->vi_q.qcnt;
 	pstaxmitpriv->vi_q.qcnt = 0;
 
 	/* be */
-	rtw_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->be_q.sta_pending);
+	rtw_free_xmitframe_queue23a(pxmitpriv, &pstaxmitpriv->be_q.sta_pending);
 	list_del_init(&pstaxmitpriv->be_q.tx_pending);
 	phwxmit = pxmitpriv->hwxmits+2;
 	phwxmit->accnt -= pstaxmitpriv->be_q.qcnt;
 	pstaxmitpriv->be_q.qcnt = 0;
 
 	/* bk */
-	rtw_free_xmitframe_queue(pxmitpriv, &pstaxmitpriv->bk_q.sta_pending);
+	rtw_free_xmitframe_queue23a(pxmitpriv, &pstaxmitpriv->bk_q.sta_pending);
 	list_del_init(&pstaxmitpriv->bk_q.tx_pending);
 	phwxmit = pxmitpriv->hwxmits+3;
 	phwxmit->accnt -= pstaxmitpriv->bk_q.qcnt;
@@ -320,8 +313,8 @@ u32	rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta)
 	pstapriv->asoc_sta_count --;
 
 	/*  re-init sta_info; 20061114  will be init in alloc_stainfo */
-	/* _rtw_init_sta_xmit_priv(&psta->sta_xmitpriv); */
-	/* _rtw_init_sta_recv_priv(&psta->sta_recvpriv); */
+	/* _rtw_init_sta_xmit_priv23a(&psta->sta_xmitpriv); */
+	/* _rtw_init_sta_recv_priv23a(&psta->sta_recvpriv); */
 
 	del_timer_sync(&psta->addba_retry_timer);
 
@@ -346,12 +339,12 @@ u32	rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta)
 			prframe = container_of(plist, struct recv_frame, list);
 			plist = plist->next;
 			list_del_init(&prframe->list);
-			rtw_free_recvframe(prframe, pfree_recv_queue);
+			rtw_free_recvframe23a(prframe, pfree_recv_queue);
 		}
 		spin_unlock_bh(&ppending_recvframe_queue->lock);
 	}
 	if (!(psta->state & WIFI_AP_STATE))
-		rtw_hal_set_odm_var(padapter, HAL_ODM_STA_INFO, psta, false);
+		rtw_hal_set_odm_var23a(padapter, HAL_ODM_STA_INFO, psta, false);
 #ifdef CONFIG_8723AU_AP_MODE
 	spin_lock_bh(&pstapriv->auth_list_lock);
 	if (!list_empty(&psta->auth_list)) {
@@ -376,7 +369,7 @@ u32	rtw_free_stainfo(struct rtw_adapter *padapter, struct sta_info *psta)
 	pstapriv->sta_dz_bitmap &= ~CHKBIT(psta->aid);
 	pstapriv->tim_bitmap &= ~CHKBIT(psta->aid);
 
-	if ((psta->aid >0)&&(pstapriv->sta_aid[psta->aid - 1] == psta)) {
+	if ((psta->aid >0) && (pstapriv->sta_aid[psta->aid - 1] == psta)) {
 		pstapriv->sta_aid[psta->aid - 1] = NULL;
 		psta->aid = 0;
 	}
@@ -387,12 +380,12 @@ exit:
 }
 
 /*  free all stainfo which in sta_hash[all] */
-void rtw_free_all_stainfo(struct rtw_adapter *padapter)
+void rtw_free_all_stainfo23a(struct rtw_adapter *padapter)
 {
 	struct list_head *plist, *phead, *ptmp;
 	struct sta_info *psta;
 	struct	sta_priv *pstapriv = &padapter->stapriv;
-	struct sta_info* pbcmc_stainfo = rtw_get_bcmc_stainfo(padapter);
+	struct sta_info* pbcmc_stainfo = rtw_get_bcmc_stainfo23a(padapter);
 	s32	index;	if (pstapriv->asoc_sta_count == 1)
 		return;
 
@@ -405,14 +398,14 @@ void rtw_free_all_stainfo(struct rtw_adapter *padapter)
 			psta = container_of(plist, struct sta_info, hash_list);
 
 			if (pbcmc_stainfo!= psta)
-				rtw_free_stainfo(padapter, psta);
+				rtw_free_stainfo23a(padapter, psta);
 		}
 	}
 	spin_unlock_bh(&pstapriv->sta_hash_lock);
 }
 
 /* any station allocated can be searched by hash list */
-struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
+struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr)
 {
 	struct list_head *plist, *phead;
 	struct sta_info *psta = NULL;
@@ -447,7 +440,7 @@ struct sta_info *rtw_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	return psta;
 }
 
-u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter)
+u32 rtw_init_bcmc_stainfo23a(struct rtw_adapter* padapter)
 {
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info		*psta;
@@ -455,11 +448,11 @@ u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter)
 	u32 res = _SUCCESS;
 	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-	psta = rtw_alloc_stainfo(pstapriv, bcast_addr);
+	psta = rtw_alloc_stainfo23a(pstapriv, bcast_addr);
 	if (psta == NULL) {
 		res = _FAIL;
 		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_err_,
-			 ("rtw_alloc_stainfo fail"));
+			 ("rtw_alloc_stainfo23a fail"));
 		return res;
 	}
 	/*  default broadcast & multicast use macid 1 */
@@ -469,17 +462,17 @@ u32 rtw_init_bcmc_stainfo(struct rtw_adapter* padapter)
 	return _SUCCESS;
 }
 
-struct sta_info *rtw_get_bcmc_stainfo(struct rtw_adapter *padapter)
+struct sta_info *rtw_get_bcmc_stainfo23a(struct rtw_adapter *padapter)
 {
 	struct sta_info		*psta;
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-	 psta = rtw_get_stainfo(pstapriv, bc_addr);
+	 psta = rtw_get_stainfo23a(pstapriv, bc_addr);
 	return psta;
 }
 
-u8 rtw_access_ctrl(struct rtw_adapter *padapter, u8 *mac_addr)
+u8 rtw_access_ctrl23a(struct rtw_adapter *padapter, u8 *mac_addr)
 {
 	u8 res = true;
 #ifdef CONFIG_8723AU_AP_MODE

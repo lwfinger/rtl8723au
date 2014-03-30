@@ -42,7 +42,7 @@ Major Change History:
 /*  */
 /*	2011.07.07, added by Roger. */
 /*  */
-u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
+u8 HalPwrSeqCmdParsing23a(struct rtw_adapter *padapter, u8 CutVersion,
 		       u8 FabVersion, u8 InterfaceType,
 		       struct wlan_pwr_cfg PwrSeqCmd[])
 {
@@ -58,7 +58,7 @@ u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
 		PwrCfgCmd = PwrSeqCmd[AryIdx];
 
 		RT_TRACE(_module_hal_init_c_, _drv_info_,
-			 ("HalPwrSeqCmdParsing: offset(%#x) cut_msk(%#x) "
+			 ("HalPwrSeqCmdParsing23a: offset(%#x) cut_msk(%#x) "
 			  "fab_msk(%#x) interface_msk(%#x) base(%#x) cmd(%#x) "
 			  "msk(%#x) value(%#x)\n",
 			  GET_PWR_CFG_OFFSET(PwrCfgCmd),
@@ -78,13 +78,13 @@ u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
 			switch (GET_PWR_CFG_CMD(PwrCfgCmd)) {
 			case PWR_CMD_READ:
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "PWR_CMD_READ\n"));
 				break;
 
 			case PWR_CMD_WRITE:
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "PWR_CMD_WRITE\n"));
 				offset = GET_PWR_CFG_OFFSET(PwrCfgCmd);
 
@@ -101,7 +101,7 @@ u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
 
 			case PWR_CMD_POLLING:
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "PWR_CMD_POLLING\n"));
 
 				bPollingBit = false;
@@ -129,7 +129,7 @@ u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
 
 			case PWR_CMD_DELAY:
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "PWR_CMD_DELAY\n"));
 				if (GET_PWR_CFG_VALUE(PwrCfgCmd) ==
 				    PWRSEQ_DELAY_US)
@@ -143,14 +143,14 @@ u8 HalPwrSeqCmdParsing(struct rtw_adapter *padapter, u8 CutVersion,
 				/*  When this command is parsed, end
 				    the process */
 				RT_TRACE(_module_hal_init_c_, _drv_info_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "PWR_CMD_END\n"));
 				return true;
 				break;
 
 			default:
 				RT_TRACE(_module_hal_init_c_, _drv_err_,
-					 ("HalPwrSeqCmdParsing: "
+					 ("HalPwrSeqCmdParsing23a: "
 					  "Unknown CMD!!\n"));
 				break;
 			}

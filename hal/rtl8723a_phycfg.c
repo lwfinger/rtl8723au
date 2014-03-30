@@ -86,17 +86,10 @@ u32
 PHY_QueryBBReg(struct rtw_adapter *Adapter, u32 RegAddr, u32 BitMask)
 {
 	u32	ReturnValue = 0, OriginalValue, BitShift;
-	u16	BBWaitCounter = 0;
-
-	/* RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_QueryBBReg(): RegAddr(%#lx), BitMask(%#lx)\n", RegAddr, BitMask)); */
 
 	OriginalValue = rtw_read32(Adapter, RegAddr);
 	BitShift = phy_CalculateBitShift(BitMask);
 	ReturnValue = (OriginalValue & BitMask) >> BitShift;
-
-	/* RTPRINT(FPHY, PHY_BBR, ("BBR MASK = 0x%lx Addr[0x%lx]= 0x%lx\n", BitMask, RegAddr, OriginalValue)); */
-	/* RT_TRACE(COMP_RF, DBG_TRACE, ("<---PHY_QueryBBReg(): RegAddr(%#lx), BitMask(%#lx), OriginalValue(%#lx)\n", RegAddr, BitMask, OriginalValue)); */
-
 	return ReturnValue;
 }
 
@@ -125,7 +118,6 @@ PHY_QueryBBReg(struct rtw_adapter *Adapter, u32 RegAddr, u32 BitMask)
 void
 PHY_SetBBReg(struct rtw_adapter *Adapter, u32 RegAddr, u32 BitMask, u32	Data)
 {
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	u32 OriginalValue, BitShift;
 
 	/* RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_SetBBReg(): RegAddr(%#lx), BitMask(%#lx), Data(%#lx)\n", RegAddr, BitMask, Data)); */
@@ -145,35 +137,6 @@ PHY_SetBBReg(struct rtw_adapter *Adapter, u32 RegAddr, u32 BitMask, u32	Data)
 /*  */
 /*  2. RF register R/W API */
 /*  */
-
-/*-----------------------------------------------------------------------------
- * Function:	phy_FwRFSerialRead()
- *
- * Overview:	We support firmware to execute RF-R/W.
- *
- * Input:		NONE
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who		Remark
- *	01/21/2008	MHC		Create Version 0.
- *
- *---------------------------------------------------------------------------*/
-static	u32
-phy_FwRFSerialRead(struct rtw_adapter * Adapter, enum RF_RADIO_PATH eRFPath,
-		   u32 Offset)
-{
-	return 0;
-}	/* phy_FwRFSerialRead */
-
-static void
-phy_FwRFSerialWrite(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
-		    u32 Offset, u32 Data)
-{
-}
 
 /**
 * Function:	phy_RFSerialRead
@@ -426,41 +389,13 @@ PHY_SetRFReg(struct rtw_adapter *Adapter, enum RF_RADIO_PATH eRFPath,
 	if (BitMask != bRFRegOffsetMask) {
 		Original_Value = phy_RFSerialRead(Adapter, eRFPath, RegAddr);
 		BitShift =  phy_CalculateBitShift(BitMask);
-		Data = ((Original_Value & (~BitMask)) | (Data<< BitShift));
+		Data = ((Original_Value & (~BitMask)) | (Data << BitShift));
 	}
 
 	phy_RFSerialWrite(Adapter, eRFPath, RegAddr, Data);
 }
 
-/*  */
 /*  3. Initial MAC/BB/RF config by reading MAC/BB/RF txt. */
-/*  */
-
-/*-----------------------------------------------------------------------------
- * Function:    phy_ConfigMACWithParaFile()
- *
- * Overview:    This function read BB parameters from general file format,
- *		and do register Read/Write
- *
- * Input:	struct rtw_adapter *Adapter
- *		s8 *pFileName
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *
- * Note:	The format of MACPHY_REG.txt is different from PHY and RF.
- *			[Register][Mask][Value]
- *---------------------------------------------------------------------------*/
-static	int
-phy_ConfigMACWithParaFile(struct rtw_adapter *Adapter, u8 *pFileName)
-{
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-
-	int rtStatus = _SUCCESS;
-
-	return rtStatus;
-}
 
 /*-----------------------------------------------------------------------------
  * Function:    PHY_MACConfig8723A
@@ -492,7 +427,7 @@ s32 PHY_MACConfig8723A(struct rtw_adapter *Adapter)
 	/*  Config MAC */
 	/*  */
 	if (HAL_STATUS_FAILURE ==
-	    ODM_ConfigMACWithHeaderFile(&pHalData->odmpriv))
+	    ODM_ConfigMACWithHeaderFile23a(&pHalData->odmpriv))
 		rtStatus = _FAIL;
 
 	/*  2010.07.13 AMPDU aggregation number 9 */
@@ -647,35 +582,7 @@ phy_InitBBRFRegisterDefinition(struct rtw_adapter *Adapter)
 
 }
 
-/*-----------------------------------------------------------------------------
- * Function:    phy_ConfigBBWithParaFile()
- *
- * Overview:    This function read BB parameters from general file format,
- *		and do register Read/Write
- *
- * Input:	struct rtw_adapter *Adapter
- *		s8 *pFileName
- *
- * Output:      NONE
- *
- * Return:      RT_STATUS_SUCCESS: configuration file exist
- *2008/11/06	MH	For 92S we do not support silent reset now. Disable
- *			parameter file compare!!!!!!??
- *
- *---------------------------------------------------------------------------*/
-static	int
-phy_ConfigBBWithParaFile(struct rtw_adapter *Adapter, u8 *pFileName)
-{
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-
-	int rtStatus = _SUCCESS;
-
-	return rtStatus;
-}
-
-/*  */
 /*  The following is for High Power PA */
-/*  */
 static void
 storePwrIndexDiffRateOffset(struct rtw_adapter *Adapter, u32 RegAddr,
 			    u32 BitMask, u32 Data)
@@ -814,34 +721,6 @@ storePwrIndexDiffRateOffset(struct rtw_adapter *Adapter, u32 RegAddr,
 }
 
 /*-----------------------------------------------------------------------------
- * Function:	phy_ConfigBBWithPgParaFile
- *
- * Overview:
- *
- * Input:       NONE
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- * When		Who	Remark
- * 11/06/2008	MHC	Create Version 0.
- * 2009/07/29	tynli	(porting from 92SE branch)2009/03/11 Add
- *			copy parameter file to buffer for silent reset
- *---------------------------------------------------------------------------*/
-static	int
-phy_ConfigBBWithPgParaFile(struct rtw_adapter *Adapter, u8 *pFileName)
-{
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-
-	int rtStatus = _SUCCESS;
-
-	return rtStatus;
-
-}	/* phy_ConfigBBWithPgParaFile */
-
-/*-----------------------------------------------------------------------------
  * Function:	phy_ConfigBBWithPgHeaderFile
  *
  * Overview:	Config PHY_REG_PG array
@@ -863,10 +742,9 @@ phy_ConfigBBWithPgHeaderFile(struct rtw_adapter *Adapter, u8 ConfigType)
 	int i;
 	u32 *Rtl819XPHY_REGArray_Table_PG;
 	u16 PHY_REGArrayPGLen;
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 
 	PHY_REGArrayPGLen = Rtl8723_PHY_REG_Array_PGLength;
-	Rtl819XPHY_REGArray_Table_PG = (u32*)Rtl8723_PHY_REG_Array_PG;
+	Rtl819XPHY_REGArray_Table_PG = (u32 *)Rtl8723_PHY_REG_Array_PG;
 
 	if (ConfigType == BaseBand_Config_PHY_REG) {
 		for (i = 0; i < PHY_REGArrayPGLen; i = i + 3) {
@@ -874,18 +752,14 @@ phy_ConfigBBWithPgHeaderFile(struct rtw_adapter *Adapter, u8 ConfigType)
 				Rtl819XPHY_REGArray_Table_PG[i],
 				Rtl819XPHY_REGArray_Table_PG[i+1],
 				Rtl819XPHY_REGArray_Table_PG[i+2]);
-			/* RT_TRACE(COMP_SEND, DBG_TRACE, ("The Rtl819XPHY_REGArray_Table_PG[0] is %lx Rtl819XPHY_REGArray_Table_PG[1] is %lx \n", Rtl819XPHY_REGArray_Table_PG[i], Rtl819XPHY_REGArray_Table_PG[i+1])); */
 		}
-	} else {
-
-		/* RT_TRACE(COMP_SEND, DBG_LOUD, ("phy_ConfigBBWithPgHeaderFile(): ConfigType != BaseBand_Config_PHY_REG\n")); */
 	}
 
 	return _SUCCESS;
 }	/* phy_ConfigBBWithPgHeaderFile */
 
 static void
-phy_BB8192C_Config_1T(struct rtw_adapter * Adapter)
+phy_BB8192C_Config_1T(struct rtw_adapter *Adapter)
 {
 	/* for path - B */
 	PHY_SetBBReg(Adapter, rFPGA0_TxInfo, 0x3, 0x2);
@@ -903,16 +777,6 @@ phy_BB8192C_Config_1T(struct rtw_adapter * Adapter)
 	PHY_SetBBReg(Adapter, 0xe7c, 0x0c000000, 0x2);
 	PHY_SetBBReg(Adapter, 0xe80, 0x0c000000, 0x2);
 	PHY_SetBBReg(Adapter, 0xe88, 0x0c000000, 0x2);
-}
-
-/*  Joseph test: new initialize order!! */
-/*  Test only!! This part need to be re-organized. */
-/*  Now it is just for 8256. */
-static int
-phy_BB8190_Config_HardCode(struct rtw_adapter *	Adapter)
-{
-	/* RT_ASSERT(false, ("This function is not implement yet!! \n")); */
-	return _SUCCESS;
 }
 
 static int
@@ -941,7 +805,7 @@ phy_BB8723a_Config_ParaFile(struct rtw_adapter *Adapter)
 	/*  1. Read PHY_REG.TXT BB INIT!! */
 	/*  We will seperate as 88C / 92C according to chip version */
 	/*  */
-	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,
+	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
 							     CONFIG_BB_PHY_REG))
 		rtStatus = _FAIL;
 	if (rtStatus != _SUCCESS)
@@ -972,7 +836,7 @@ phy_BB8723a_Config_ParaFile(struct rtw_adapter *Adapter)
 	/*  */
 	/*  3. BB AGC table Initialization */
 	/*  */
-	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,
+	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
 							     CONFIG_BB_AGC_TAB))
 		rtStatus = _FAIL;
 
@@ -986,9 +850,8 @@ PHY_BBConfig8723A(struct rtw_adapter *Adapter)
 {
 	int rtStatus = _SUCCESS;
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
-	u32 RegVal;
 	u8 TmpU1B = 0;
-	u8 value8, CrystalCap;
+	u8 CrystalCap;
 
 	phy_InitBBRFRegisterDefinition(Adapter);
 
@@ -1036,9 +899,8 @@ PHY_BBConfig8723A(struct rtw_adapter *Adapter)
 }
 
 int
-PHY_RFConfig8723A(struct rtw_adapter *	Adapter)
+PHY_RFConfig8723A(struct rtw_adapter *Adapter)
 {
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	int rtStatus = _SUCCESS;
 
 	/*  */
@@ -1048,60 +910,11 @@ PHY_RFConfig8723A(struct rtw_adapter *	Adapter)
 	return rtStatus;
 }
 
-/*  */
-/*	Description: */
-/*		Map dBm into Tx power index according to */
-/*		current HW model, for example, RF and PA, and */
-/*		current wireless mode. */
-/*	By Bruce, 2008-01-29. */
-/*  */
-static u8
-phy_DbmToTxPwrIdx(struct rtw_adapter *Adapter, enum WIRELESS_MODE WirelessMode,
-		  int PowerInDbm)
-{
-	u8 TxPwrIdx = 0;
-	int Offset = 0;
-
-	/*  */
-	/*  Tested by MP, we found that CCK Index 0 equals to 8dbm,
-	    OFDM legacy equals to */
-	/*  3dbm, and OFDM HT equals to 0dbm repectively. */
-	/*  Note: */
-	/*	The mapping may be different by different NICs.
-		Do not use this formula for what needs accurate result. */
-	/*  By Bruce, 2008-01-29. */
-	/*  */
-	switch (WirelessMode) {
-	case WIRELESS_MODE_B:
-		Offset = -7;
-		break;
-
-	case WIRELESS_MODE_G:
-	case WIRELESS_MODE_N_24G:
-		Offset = -8;
-		break;
-	default:
-		Offset = -8;
-		break;
-	}
-
-	if ((PowerInDbm - Offset) > 0)
-		TxPwrIdx = (u8)((PowerInDbm - Offset) * 2);
-	else
-		TxPwrIdx = 0;
-
-	/*  Tx Power Index is too large. */
-	if (TxPwrIdx > MAX_TXPWR_IDX_NMODE_92S)
-		TxPwrIdx = MAX_TXPWR_IDX_NMODE_92S;
-
-	return TxPwrIdx;
-}
-
 static void getTxPowerIndex(struct rtw_adapter *Adapter,
 			    u8 channel,	u8 *cckPowerLevel,  u8 *ofdmPowerLevel)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	u8 index = (channel -1);
+	u8 index = (channel - 1);
 	/*  1. CCK */
 	cckPowerLevel[RF_PATH_A] = pHalData->TxPwrLevelCck[RF_PATH_A][index];
 	cckPowerLevel[RF_PATH_B] = pHalData->TxPwrLevelCck[RF_PATH_B][index];
@@ -1160,9 +973,9 @@ void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel)
 }
 
 /*-----------------------------------------------------------------------------
- * Function:    PHY_SetBWModeCallback8192C()
+ * Function:    PHY_SetBWMode23aCallback8192C()
  *
- * Overview:    Timer callback function for SetSetBWMode
+ * Overview:    Timer callback function for SetSetBWMode23a
  *
  * Input:		PRT_TIMER		pTimer
  *
@@ -1176,7 +989,7 @@ void PHY_SetTxPowerLevel8723A(struct rtw_adapter *Adapter, u8 channel)
  *	    "switch channel bandwidth" run concurrently?
  *---------------------------------------------------------------------------*/
 static void
-_PHY_SetBWMode92C(struct rtw_adapter *Adapter)
+_PHY_SetBWMode23a92C(struct rtw_adapter *Adapter)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	u8 regBwOpMode;
@@ -1248,7 +1061,7 @@ _PHY_SetBWMode92C(struct rtw_adapter *Adapter)
 
 	default:
 		/*RT_TRACE(COMP_DBG, DBG_LOUD,
-		  ("PHY_SetBWModeCallback8192C(): unknown Bandwidth: %#X\n" \
+		  ("PHY_SetBWMode23aCallback8192C(): unknown Bandwidth: %#X\n" \
 		  , pHalData->CurrentChannelBW));*/
 			break;
 	}
@@ -1259,8 +1072,8 @@ _PHY_SetBWMode92C(struct rtw_adapter *Adapter)
 	/* NowL = PlatformEFIORead4Byte(Adapter, TSFR); */
 	/* NowH = PlatformEFIORead4Byte(Adapter, TSFR+4); */
 	/* EndTime = ((u64)NowH << 32) + NowL; */
-	/* RT_TRACE(COMP_SCAN, DBG_LOUD, ("SetBWModeCallback8190Pci: time
-	   of SetBWMode = %I64d us!\n", (EndTime - BeginTime))); */
+	/* RT_TRACE(COMP_SCAN, DBG_LOUD, ("SetBWMode23aCallback8190Pci: time
+	   of SetBWMode23a = %I64d us!\n", (EndTime - BeginTime))); */
 
 	/* 3<3>Set RF related register */
 	switch (pHalData->rf_chip) {
@@ -1294,14 +1107,14 @@ _PHY_SetBWMode92C(struct rtw_adapter *Adapter)
 		break;
 	}
 
-	/* pHalData->SetBWModeInProgress = false; */
+	/* pHalData->SetBWMode23aInProgress = false; */
 
 	/* RT_TRACE(COMP_SCAN, DBG_LOUD,
-	   ("<== PHY_SetBWModeCallback8192C() \n")); */
+	   ("<== PHY_SetBWMode23aCallback8192C() \n")); */
 }
 
  /*-----------------------------------------------------------------------------
- * Function:   SetBWMode8190Pci()
+ * Function:   SetBWMode23a8190Pci()
  *
  * Overview:  This function is export to "HalCommon" moudule
  *
@@ -1315,7 +1128,7 @@ _PHY_SetBWMode92C(struct rtw_adapter *Adapter)
  * Note:		We do not take j mode into consideration now
  *---------------------------------------------------------------------------*/
 void
-PHY_SetBWMode8723A(struct rtw_adapter *Adapter,
+PHY_SetBWMode23a8723A(struct rtw_adapter *Adapter,
 		   enum ht_channel_width Bandwidth, unsigned char Offset)
 {
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
@@ -1326,12 +1139,12 @@ PHY_SetBWMode8723A(struct rtw_adapter *Adapter,
 	pHalData->nCur40MhzPrimeSC = Offset;
 
 	if ((!Adapter->bDriverStopped) && (!Adapter->bSurpriseRemoved))
-		_PHY_SetBWMode92C(Adapter);
+		_PHY_SetBWMode23a92C(Adapter);
 	else
 		pHalData->CurrentChannelBW = tmpBW;
 }
 
-static void _PHY_SwChnl8723A(struct rtw_adapter * Adapter, u8 channel)
+static void _PHY_SwChnl8723A(struct rtw_adapter *Adapter, u8 channel)
 {
 	u8 eRFPath;
 	u32 param1, param2;
@@ -1347,7 +1160,7 @@ static void _PHY_SwChnl8723A(struct rtw_adapter * Adapter, u8 channel)
 	   param1 = RF_CHNLBW, param2 = channel */
 	param1 = RF_CHNLBW;
 	param2 = channel;
-	for (eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++) {
+	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++) {
 		pHalData->RfRegChnlVal[eRFPath] =
 			(pHalData->RfRegChnlVal[eRFPath] & 0xfffffc00) | param2;
 		PHY_SetRFReg(Adapter, (enum RF_RADIO_PATH)eRFPath, param1,
@@ -1365,10 +1178,8 @@ void PHY_SwChnl8723A(struct rtw_adapter *Adapter, u8 channel)
 
 	if (pHalData->rf_chip == RF_PSEUDO_11N) {
 		/* return immediately if it is peudo-phy */
-		return;	
+		return;
 	}
-
-	/*  */
 
 	if (channel == 0)
 		channel = 1;

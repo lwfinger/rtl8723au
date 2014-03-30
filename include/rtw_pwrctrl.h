@@ -174,20 +174,20 @@ struct pwrctrl_priv {
 	u32	cur_ps_level;
 	u32	reg_rfps_level;
 
-	uint	ips_enter_cnts;
-	uint	ips_leave_cnts;
+	uint	ips_enter23a_cnts;
+	uint	ips_leave23a_cnts;
 
 	u8	ips_mode;
 	u8	ips_mode_req; /*  used to accept the mode setting request */
 	uint bips_processing;
-	u32 ips_deny_time; /* will deny IPS when system time is smaller */
-	u8 ps_processing; /* used to mark whether in rtw_ps_processor */
+	unsigned long ips_deny_time; /* deny IPS when system time is smaller */
+	u8 ps_processing; /* used to mark whether in rtw_ps_processor23a */
 
 	u8	bLeisurePs;
 	u8	LpsIdleCount;
 	u8	power_mgnt;
 	u8	bFwCurrentInPSMode;
-	u32	DelayLPSLastTimeStamp;
+	unsigned long	DelayLPSLastTimeStamp;
 	u8	btcoex_rfon;
 	s32		pnp_current_pwr_state;
 	u8		pnp_bstop_trx;
@@ -232,34 +232,34 @@ struct pwrctrl_priv {
 	(_rtw_set_pwr_state_check_timer((pwrctrlpriv),	\
 			 (pwrctrlpriv)->pwr_state_check_interval))
 
-void rtw_init_pwrctrl_priv(struct rtw_adapter *adapter);
+void rtw_init_pwrctrl_priv23a(struct rtw_adapter *adapter);
 void rtw_free_pwrctrl_priv(struct rtw_adapter *adapter);
 
-void rtw_set_ps_mode(struct rtw_adapter *padapter, u8 ps_mode,
+void rtw_set_ps_mode23a(struct rtw_adapter *padapter, u8 ps_mode,
 		     u8 smart_ps, u8 bcn_ant_mode);
-void rtw_set_rpwm(struct rtw_adapter *padapter, u8 val8);
-void LeaveAllPowerSaveMode(struct rtw_adapter *adapter);
-void ips_enter(struct rtw_adapter *padapter);
-int ips_leave(struct rtw_adapter *padapter);
+void rtw_set_rpwm23a(struct rtw_adapter *padapter, u8 val8);
+void LeaveAllPowerSaveMode23a(struct rtw_adapter *adapter);
+void ips_enter23a(struct rtw_adapter *padapter);
+int ips_leave23a(struct rtw_adapter *padapter);
 
-void rtw_ps_processor(struct rtw_adapter *padapter);
+void rtw_ps_processor23a(struct rtw_adapter *padapter);
 
-enum rt_rf_power_state RfOnOffDetect(struct rtw_adapter *adapter);
+enum rt_rf_power_state RfOnOffDetect23a(struct rtw_adapter *adapter);
 
-s32 LPS_RF_ON_check(struct rtw_adapter *padapter, u32 delay_ms);
-void LPS_Enter(struct rtw_adapter *padapter);
-void LPS_Leave(struct rtw_adapter *padapter);
+s32 LPS_RF_ON_check23a(struct rtw_adapter *padapter, u32 delay_ms);
+void LPS_Enter23a(struct rtw_adapter *padapter);
+void LPS_Leave23a(struct rtw_adapter *padapter);
 
-u8 rtw_interface_ps_func(struct rtw_adapter *padapter,
+u8 rtw_interface_ps_func23a(struct rtw_adapter *padapter,
 			 enum hal_intf_ps_func efunc_id, u8 *val);
-void rtw_set_ips_deny(struct rtw_adapter *padapter, u32 ms);
-int _rtw_pwr_wakeup(struct rtw_adapter *padapter, u32 ips_deffer_ms,
+void rtw_set_ips_deny23a(struct rtw_adapter *padapter, u32 ms);
+int _rtw_pwr_wakeup23a(struct rtw_adapter *padapter, u32 ips_deffer_ms,
 		    const char *caller);
-#define rtw_pwr_wakeup(adapter) _rtw_pwr_wakeup(adapter,		\
+#define rtw_pwr_wakeup(adapter) _rtw_pwr_wakeup23a(adapter,		\
 	 RTW_PWR_STATE_CHK_INTERVAL, __func__)
 #define rtw_pwr_wakeup_ex(adapter, ips_deffer_ms)			\
-	 _rtw_pwr_wakeup(adapter, ips_deffer_ms, __func__)
-int rtw_pm_set_ips(struct rtw_adapter *padapter, u8 mode);
-int rtw_pm_set_lps(struct rtw_adapter *padapter, u8 mode);
+	 _rtw_pwr_wakeup23a(adapter, ips_deffer_ms, __func__)
+int rtw_pm_set_ips23a(struct rtw_adapter *padapter, u8 mode);
+int rtw_pm_set_lps23a(struct rtw_adapter *padapter, u8 mode);
 
 #endif  /* __RTL871X_PWRCTRL_H_ */
