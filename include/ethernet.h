@@ -19,4 +19,15 @@
 
 #define LLC_HEADER_SIZE			6	/*  LLC Header Length */
 
+#ifndef ether_addr_copy
+static inline void ether_addr_copy(u8 *dst, const u8 *src)
+{
+        u16 *a = (u16 *)dst;
+        const u16 *b = (const u16 *)src;
+
+        a[0] = b[0];
+        a[1] = b[1];
+        a[2] = b[2];
+#endif
+}
 #endif /*  #ifndef __INC_ETHERNET_H */
