@@ -28,6 +28,28 @@
 #include <rtl8723a_hal.h>
 #endif
 
+static int OnAssocReq23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAssocRsp23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnProbeReq23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnProbeRsp23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int DoReserved23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnBeacon23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAtim23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnDisassoc23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAuth23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAuth23aClient23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnDeAuth23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+
+static int on_action_spct23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_qos(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_dls(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_back23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int on_action_public23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_ht(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_wmm(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+static int OnAction23a_p2p(struct rtw_adapter *padapter, struct recv_frame *precv_frame);
+
 static struct mlme_handler mlme_sta_tbl[]={
 	{"OnAssocReq23a",		&OnAssocReq23a},
 	{"OnAssocRsp23a",		&OnAssocRsp23a},
@@ -638,8 +660,8 @@ Following are the callback functions for each subtype of the management frames
 
 *****************************************************************************/
 
-unsigned int OnProbeReq23a(struct rtw_adapter *padapter,
-			   struct recv_frame *precv_frame)
+static int
+OnProbeReq23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	const u8 *ie;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -687,8 +709,8 @@ out:
 	return _SUCCESS;
 }
 
-unsigned int OnProbeRsp23a(struct rtw_adapter *padapter,
-			   struct recv_frame *precv_frame)
+static int
+OnProbeRsp23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
@@ -700,8 +722,8 @@ unsigned int OnProbeRsp23a(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-unsigned int OnBeacon23a(struct rtw_adapter *padapter,
-			 struct recv_frame *precv_frame)
+static int
+OnBeacon23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	int cam_idx;
 	struct sta_info	*psta;
@@ -829,8 +851,8 @@ _END_ONBEACON_:
 	return _SUCCESS;
 }
 
-unsigned int OnAuth23a(struct rtw_adapter *padapter,
-		       struct recv_frame *precv_frame)
+static int
+OnAuth23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	unsigned int auth_mode, seq;
@@ -1021,8 +1043,8 @@ auth_fail:
 	return _FAIL;
 }
 
-unsigned int OnAuth23aClient23a(struct rtw_adapter *padapter,
-				struct recv_frame *precv_frame)
+static int
+OnAuth23aClient23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned int seq, status, algthm, offset;
 	unsigned int go2asoc = 0;
@@ -1114,7 +1136,8 @@ authclnt_fail:
 	return _FAIL;
 }
 
-unsigned int OnAssocReq23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+static int
+OnAssocReq23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	u16 capab_info, listen_interval;
@@ -1583,8 +1606,8 @@ OnAssocReq23aFail:
 	return _FAIL;
 }
 
-unsigned int OnAssocRsp23a(struct rtw_adapter *padapter,
-			   struct recv_frame *precv_frame)
+static int
+OnAssocRsp23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	struct ndis_802_11_var_ies *pIE;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -1686,8 +1709,8 @@ report_assoc_result:
 	return _SUCCESS;
 }
 
-unsigned int OnDeAuth23a(struct rtw_adapter *padapter,
-			 struct recv_frame *precv_frame)
+static int
+OnDeAuth23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned short reason;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -1742,8 +1765,8 @@ unsigned int OnDeAuth23a(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-unsigned int OnDisassoc23a(struct rtw_adapter *padapter,
-			   struct recv_frame *precv_frame)
+static int
+OnDisassoc23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	unsigned short	reason;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -1797,29 +1820,33 @@ unsigned int OnDisassoc23a(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-unsigned int OnAtim23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+static int
+OnAtim23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	DBG_8723A("%s\n", __func__);
 	return _SUCCESS;
 }
 
-unsigned int on_action_spct23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+static int
+on_action_spct23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _FAIL;
 }
 
-unsigned int OnAction23a_qos(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+static int
+OnAction23a_qos(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction23a_dls(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+static int
+OnAction23a_dls(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction23a_back23a(struct rtw_adapter *padapter,
-				 struct recv_frame *precv_frame)
+static int OnAction23a_back23a(struct rtw_adapter *padapter,
+			       struct recv_frame *precv_frame)
 {
 	u8 *addr;
 	struct sta_info *psta = NULL;
@@ -2015,8 +2042,8 @@ exit:
 	return ret;
 }
 
-unsigned int on_action_public23a(struct rtw_adapter *padapter,
-				 struct recv_frame *precv_frame)
+static int on_action_public23a(struct rtw_adapter *padapter,
+			       struct recv_frame *precv_frame)
 {
 	unsigned int ret = _FAIL;
 	struct sk_buff *skb = precv_frame->pkt;
@@ -2047,26 +2074,26 @@ exit:
 	return ret;
 }
 
-unsigned int OnAction23a_ht(struct rtw_adapter *padapter,
-			    struct recv_frame *precv_frame)
+static int
+OnAction23a_ht(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction23a_wmm(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame)
+static int
+OnAction23a_wmm(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction23a_p2p(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame)
+static int
+OnAction23a_p2p(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
 
-unsigned int OnAction23a(struct rtw_adapter *padapter,
-			 struct recv_frame *precv_frame)
+static int
+OnAction23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	int i;
 	unsigned char	category;
@@ -2091,8 +2118,7 @@ unsigned int OnAction23a(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-unsigned int DoReserved23a(struct rtw_adapter *padapter,
-			struct recv_frame *precv_frame)
+int DoReserved23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 {
 	return _SUCCESS;
 }
