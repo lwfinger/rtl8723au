@@ -833,22 +833,23 @@ unsigned int OnAuth23a(struct rtw_adapter *padapter,
 		       struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
-	unsigned int	auth_mode, seq, ie_len;
-	unsigned char	*sa, *p;
-	u16	algorithm;
-	int	status;
+	unsigned int auth_mode, seq;
+	unsigned char *sa;
+	const u8 *p;
+	u16 algorithm;
+	int status;
 	static struct sta_info stat;
-	struct	sta_info	*pstat = NULL;
-	struct	sta_priv *pstapriv = &padapter->stapriv;
+	struct sta_info *pstat = NULL;
+	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
 	uint len = skb->len;
 
-	if ((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
+	if ((pmlmeinfo->state & 0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
 
 	DBG_8723A("+OnAuth23a\n");
@@ -856,10 +857,12 @@ unsigned int OnAuth23a(struct rtw_adapter *padapter,
 	sa = hdr->addr2;
 
 	auth_mode = psecuritypriv->dot11AuthAlgrthm;
-	seq = cpu_to_le16(*(u16*)((unsigned long)pframe +
-				  sizeof(struct ieee80211_hdr_3addr) + 2));
-	algorithm = cpu_to_le16(*(u16*)((unsigned long)pframe +
-					sizeof(struct ieee80211_hdr_3addr)));
+
+	pframe += sizeof(struct ieee80211_hdr_3addr);
+	len -= sizeof(struct ieee80211_hdr_3addr);
+
+	seq = cpu_to_le16(*(u16 *)(pframe  + 2));
+	algorithm = cpu_to_le16(*(u16 *)pframe);
 
 	DBG_8723A("auth alg =%x, seq =%X\n", algorithm, seq);
 
@@ -910,8 +913,7 @@ unsigned int OnAuth23a(struct rtw_adapter *padapter,
 		if (!list_empty(&pstat->asoc_list)) {
 			list_del_init(&pstat->asoc_list);
 			pstapriv->asoc_list_cnt--;
-			if (pstat->expire_to > 0)
-			{
+			if (pstat->expire_to > 0) {
 				/* TODO: STA re_auth within expire_to */
 			}
 		}
@@ -963,23 +965,18 @@ unsigned int OnAuth23a(struct rtw_adapter *padapter,
 			/* checking for challenging txt... */
 			DBG_8723A("checking for challenging txt...\n");
 
-			p = rtw_get_ie23a(pframe +
-					  sizeof(struct ieee80211_hdr_3addr) +
-					  4 + _AUTH_IE_OFFSET_,
-					  WLAN_EID_CHALLENGE,
-					  (int *)&ie_len, len -
-					  sizeof(struct ieee80211_hdr_3addr) -
-					  _AUTH_IE_OFFSET_ - 4);
-
-			if ((p == NULL) || (ie_len<= 0)) {
+			p = cfg80211_find_ie(WLAN_EID_CHALLENGE,
+					     pframe + 4 + _AUTH_IE_OFFSET_,
+					     len - _AUTH_IE_OFFSET_ - 4);
+			if (!p || p[1] <= 0) {
 				DBG_8723A("auth rejected because challenge "
 					  "failure!(1)\n");
 				status = WLAN_STATUS_CHALLENGE_FAIL;
 				goto auth_fail;
 			}
 
-			if (!memcmp((void *)(p + 2), pstat->chg_txt, 128)) {
-				pstat->state &= (~WIFI_FW_AUTH_STATE);
+			if (!memcmp(p + 2, pstat->chg_txt, 128)) {
+				pstat->state &= ~WIFI_FW_AUTH_STATE;
 				pstat->state |= WIFI_FW_AUTH_SUCCESS;
 				/*  challenging txt is correct... */
 				pstat->expire_to =  pstapriv->assoc_to;
@@ -1001,7 +998,7 @@ unsigned int OnAuth23a(struct rtw_adapter *padapter,
 	/*  Now, we are going to issue_auth23a... */
 	pstat->auth_seq = seq + 1;
 
-	issue_auth23a(padapter, pstat, (unsigned short)WLAN_STATUS_SUCCESS);
+	issue_auth23a(padapter, pstat, WLAN_STATUS_SUCCESS);
 
 	if (pstat->state & WIFI_FW_AUTH_SUCCESS)
 		pstat->auth_seq = 0;
