@@ -1222,8 +1222,8 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 
 					/* upate BCN for TIM IE */
 					/* update_BCNTIM(padapter); */
-					update_beacon23a(padapter, _TIM_IE_,
-						      NULL, false);
+					update_beacon23a(padapter, WLAN_EID_TIM,
+							 NULL, false);
 				}
 
 				/* spin_unlock_bh(&psta->sleep_q.lock); */
@@ -1254,8 +1254,8 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 
 					/* upate BCN for TIM IE */
 					/* update_BCNTIM(padapter); */
-					update_beacon23a(padapter, _TIM_IE_,
-						      NULL, false);
+					update_beacon23a(padapter, WLAN_EID_TIM,
+							 NULL, false);
 				}
 			}
 		}
