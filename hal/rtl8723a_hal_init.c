@@ -2277,7 +2277,7 @@ static void Hal_EEValueCheck(u8 EEType, void *pInValue, void *pOutValue)
 		u8 *pIn, *pOut;
 		pIn = (u8 *) pInValue;
 		pOut = (u8 *) pOutValue;
-		if (*pIn >= 0 && *pIn <= 63) {
+		if (*pIn <= 63) {
 			*pOut = *pIn;
 		} else {
 			RT_TRACE(_module_hci_hal_init_c_, _drv_err_,
@@ -3031,8 +3031,8 @@ void hw_var_set_correct_tsf(struct rtw_adapter *padapter)
 	/* tsf = pmlmeext->TSFValue - ((u32)pmlmeext->TSFValue %
 	   (pmlmeinfo->bcn_interval*1024)) - 1024; us */
 	tsf = pmlmeext->TSFValue -
-		rtw_modular6423a(pmlmeext->TSFValue,
-			      (pmlmeinfo->bcn_interval * 1024)) - 1024;	/* us */
+		do_div(pmlmeext->TSFValue,
+		       (pmlmeinfo->bcn_interval * 1024)) - 1024;	/* us */
 
 	if (((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE) ||
 	    ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE)) {

@@ -146,16 +146,6 @@ extern unsigned char	MCS_rate_1R23A[16];
 void	_rtw_init_queue23a(struct rtw_queue *pqueue);
 u32	_rtw_queue_empty23a(struct rtw_queue *pqueue);
 
-static inline u32 bitshift(u32 bitmask)
-{
-	u32 i;
-
-	for (i = 0; i <= 31; i++)
-		if (((bitmask>>i) &  0x1) == 1) break;
-
-	return i;
-}
-
 void rtw_suspend_lock_init(void);
 void rtw_suspend_lock_uninit(void);
 void rtw_lock_suspend(void);
@@ -170,10 +160,6 @@ void rtw_unlock_suspend(void);
 #define FUNC_NDEV_ARG(ndev) __func__, ndev->name
 #define FUNC_ADPT_FMT "%s(%s)"
 #define FUNC_ADPT_ARG(adapter) __func__, adapter->pnetdev->name
-
-u64 rtw_modular6423a(u64 x, u64 y);
-u64 rtw_division6423a(u64 x, u64 y);
-
 
 /* Macros for handling unaligned memory accesses */
 
