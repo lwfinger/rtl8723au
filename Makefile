@@ -44,7 +44,6 @@ ifneq ($(KERNELRELEASE),)
 		core/rtw_led.o		\
 		core/rtw_mlme.o		\
 		core/rtw_mlme_ext.o	\
-		core/rtw_p2p.o		\
 		core/rtw_pwrctrl.o	\
 		core/rtw_recv.o		\
 		core/rtw_security.o	\
