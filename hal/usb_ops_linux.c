@@ -348,9 +348,9 @@ static void usb_read_interrupt_complete(struct urb *purb, struct pt_regs *regs)
 		c2h_evt = (struct c2h_evt_hdr *)purb->transfer_buffer;
 
 		if (purb->actual_length > USB_INTR_CONTENT_LENGTH) {
-			DBG_8723A("usb_read_interrupt_complete: purb->actual_"
-				  "length > USB_INTR_CONTENT_LENGTH\n");
-			goto urb_submit;
+			pr_err("purb->actual_length (%d) > USB_INTR_CONTENT_LENGTH (56)\n",
+			       purb->actual_length);
+			return;
 		}
 
 		InterruptRecognized8723AU(padapter, purb->transfer_buffer,
