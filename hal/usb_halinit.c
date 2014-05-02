@@ -1227,14 +1227,14 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	u8 i;
 	struct recv_buf *precvbuf;
 	uint	status;
-	struct intf_hdl *pintfhdl = &Adapter->iopriv.intf;
+	struct _io_ops *io_ops = &Adapter->io_ops;
 	struct recv_priv *precvpriv = &Adapter->recvpriv;
-	u32 (*_read_port)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
+	u32 (*_read_port)(struct rtw_adapter *padapter, u32 addr, u32 cnt,
 			  struct recv_buf *rbuf);
-	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
+	u32 (*_read_interrupt)(struct rtw_adapter *padapter, u32 addr);
 	struct hal_data_8723a	*pHalData = GET_HAL_DATA(Adapter);
 
-	_read_port = pintfhdl->io_ops._read_port;
+	_read_port = io_ops->_read_port;
 
 	status = _SUCCESS;
 
@@ -1245,7 +1245,7 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 	/* issue Rx irp to receive data */
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 	for (i = 0; i < NR_RECVBUFF; i++) {
-		if (_read_port(pintfhdl, precvpriv->ff_hwaddr, 0, precvbuf) ==
+		if (_read_port(Adapter, precvpriv->ff_hwaddr, 0, precvbuf) ==
 		    false) {
 			RT_TRACE(_module_hci_hal_init_c_, _drv_err_,
 				 ("usb_rx_init: usb_read_port error\n"));
@@ -1255,8 +1255,8 @@ static unsigned int rtl8723au_inirp_init(struct rtw_adapter *Adapter)
 		precvbuf++;
 		precvpriv->free_recv_buf_queue_cnt--;
 	}
-	_read_interrupt = pintfhdl->io_ops._read_interrupt;
-	if (_read_interrupt(pintfhdl, RECV_INT_IN_ADDR) == false) {
+	_read_interrupt = io_ops->_read_interrupt;
+	if (_read_interrupt(Adapter, RECV_INT_IN_ADDR) == false) {
 		RT_TRACE(_module_hci_hal_init_c_, _drv_err_,
 			 ("usb_rx_init: usb_read_interrupt error\n"));
 		status = _FAIL;
@@ -1739,12 +1739,6 @@ static void rtl8723au_init_default_value(struct rtw_adapter *padapter)
 	rtl8723a_init_default_value(padapter);
 }
 
-static u8 rtl8192cu_ps_func(struct rtw_adapter *Adapter,
-			    enum hal_intf_ps_func efunc_id, u8 *val)
-{
-	return true;
-}
-
 int rtl8723au_set_hal_ops(struct rtw_adapter *padapter)
 {
 	struct hal_ops	*pHalFunc = &padapter->HalFunc;
@@ -1779,7 +1773,6 @@ int rtl8723au_set_hal_ops(struct rtw_adapter *padapter)
 	pHalFunc->hal_xmit = &rtl8723au_hal_xmit;
 	pHalFunc->mgnt_xmit = &rtl8723au_mgnt_xmit;
 	pHalFunc->hal_xmitframe_enqueue = &rtl8723au_hal_xmitframe_enqueue;
-	pHalFunc->interface_ps_func = &rtl8192cu_ps_func;
 	rtl8723a_set_hal_ops(pHalFunc);
 	return 0;
 }

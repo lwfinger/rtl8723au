@@ -447,15 +447,9 @@ int rtw_generate_ie23a(struct registry_priv *pregistrypriv);
 
 int rtw_get_bit_value_from_ieee_value23a(u8 val);
 
-uint rtw_is_cckrates_included23a(u8 *rate);
-
-uint rtw_is_cckratesonly_included23a(u8 *rate);
-
 int rtw_check_network_type23a(unsigned char *rate, int ratelen, int channel);
 
 void rtw_get_bcn_info23a(struct wlan_network *pnetwork);
-
-void rtw_macaddr_cfg23a(u8 *mac_addr);
 
 u16 rtw_mcs_rate23a(u8 rf_type, u8 bw_40MHz, u8 short_GI_20, u8 short_GI_40, unsigned char * MCS_rate);
 

@@ -82,45 +82,40 @@ enum WIFI_REG_DOMAIN {
 
 
 #define SetToDs(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_TODS))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_TODS))
 
 #define SetFrDs(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_FROMDS))
-
-#define get_tofr_ds(pframe)	((ieee80211_has_tods(pframe) << 1) | \
-				 ieee80211_has_fromds(pframe))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_FROMDS))
 
 #define SetMFrag(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREFRAGS))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREFRAGS))
 
 #define ClearMFrag(pbuf)	\
-	(*(unsigned short *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)))
+	(*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)))
 
 #define SetRetry(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_RETRY))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_RETRY))
 
 #define SetPwrMgt(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PM))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PM))
 
 #define SetMData(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREDATA))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREDATA))
 
 #define SetPrivacy(pbuf)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PROTECTED))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PROTECTED))
 
 #define SetFrameType(pbuf, type)	\
 	do {	\
-		*(unsigned short *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | BIT(2))); \
-		*(unsigned short *)(pbuf) |= __constant_cpu_to_le16(type); \
+		*(__le16 *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | BIT(2))); \
+		*(__le16 *)(pbuf) |= __constant_cpu_to_le16(type); \
 	} while (0)
 
 #define SetFrameSubType(pbuf, type) \
 	do {    \
-		*(unsigned short *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
-		*(unsigned short *)(pbuf) |= cpu_to_le16(type); \
+		*(__le16 *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
+		*(__le16 *)(pbuf) |= cpu_to_le16(type); \
 	} while (0)
-
-#define GetTupleCache(pbuf)	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 22)))
 
 #define SetFragNum(pbuf, num) \
 	do {    \
@@ -131,80 +126,26 @@ enum WIFI_REG_DOMAIN {
 
 #define SetSeqNum(pbuf, num) \
 	do {    \
-		*(unsigned short *)((unsigned long)(pbuf) + 22) = \
-			((*(unsigned short *)((unsigned long)(pbuf) + 22)) & le16_to_cpu((unsigned short)0x000f)) | \
-			le16_to_cpu((unsigned short)(0xfff0 & (num << 4))); \
+		*(__le16 *)((size_t)(pbuf) + 22) = \
+			((*(__le16 *)((size_t)(pbuf) + 22)) & cpu_to_le16((unsigned short)0x000f)) | \
+			cpu_to_le16((unsigned short)(0xfff0 & (num << 4))); \
 	} while (0)
 
 #define SetDuration(pbuf, dur) \
-	(*(unsigned short *)((unsigned long)(pbuf) + 2) =		\
+	(*(__le16 *)((unsigned long)(pbuf) + 2) =		\
 	 cpu_to_le16(0xffff & (dur)))
 
 #define SetPriority(pbuf, tid)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(tid & 0xf))
+	(*(__le16 *)(pbuf) |= cpu_to_le16(tid & 0xf))
 
 #define SetEOSP(pbuf, eosp)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16((eosp & 1) << 4))
+	(*(__le16 *)(pbuf) |= cpu_to_le16((eosp & 1) << 4))
 
 #define SetAckpolicy(pbuf, ack)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16((ack & 3) << 5))
+	(*(__le16 *)(pbuf) |= cpu_to_le16((ack & 3) << 5))
 
 #define SetAMsdu(pbuf, amsdu)	\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16((amsdu & 1) << 7))
-
-#define GetAid(pbuf)							\
-	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) + 2)) &	\
-	 0x3fff)
-
-#define GetTid(pbuf)							\
-	(cpu_to_le16(*(unsigned short *)((unsigned long)(pbuf) +	\
-	 (((ieee80211_has_tods(pbuf)<<1) |				\
-	 ieee80211_has_fromds(pbuf)) == 3 ? 30 : 24))) & 0x000f)
-
-static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
-{
-	unsigned char	*sa;
-	unsigned int	to_fr_ds;
-	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) pframe;
-
-	to_fr_ds = (ieee80211_has_tods(hdr->frame_control) << 1) |
-		    ieee80211_has_fromds(hdr->frame_control);
-
-	switch (to_fr_ds) {
-	case 0x00:	/*  ToDs=0, FromDs=0 */
-		sa = hdr->addr3;
-		break;
-	case 0x01:	/*  ToDs=0, FromDs=1 */
-		sa = hdr->addr2;
-		break;
-	case 0x02:	/*  ToDs=1, FromDs=0 */
-		sa = hdr->addr1;
-		break;
-	case 0x03:	/*  ToDs=1, FromDs=1 */
-		sa = hdr->addr1;
-		break;
-	default:
-		sa = NULL; /*  */
-		break;
-	}
-	return sa;
-}
-
-/*-----------------------------------------------------------------------------
-			Below is for the security related definition
-------------------------------------------------------------------------------*/
-#define _RESERVED_FRAME_TYPE_		0
-#define _SKB_FRAME_TYPE_		2
-#define _PRE_ALLOCMEM_			1
-#define _PRE_ALLOCHDR_			3
-#define _PRE_ALLOCLLCHDR_		4
-#define _PRE_ALLOCICVHDR_		5
-#define _PRE_ALLOCMICHDR_		6
-
-#define _SIFSTIME_					\
-	((priv->pmib->dot11BssType.net_work_type & WIRELESS_11A) ? 16 : 10)
-#define _ACKCTSLNG_			14	/* 14 bytes long, including crclng */
-#define _CRCLNG_			4
+	(*(__le16 *)(pbuf) |= cpu_to_le16((amsdu & 1) << 7))
 
 #define _ASOCREQ_IE_OFFSET_		4	/*  excluding wlan_hdr */
 #define	_ASOCRSP_IE_OFFSET_		6
@@ -235,13 +176,6 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 #define _STATUS_CODE_		2
 #define _TIMESTAMP_		8
 
-#define AUTH_ODD_TO		0
-#define AUTH_EVEN_TO		1
-
-#define WLAN_ETHCONV_ENCAP	1
-#define WLAN_ETHCONV_RFC1042	2
-#define WLAN_ETHCONV_8021h	3
-
 #define cap_ESS		BIT(0)
 #define cap_IBSS	BIT(1)
 #define cap_CFPollable	BIT(2)
@@ -255,22 +189,6 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 #define cap_ShortSlot	BIT(10)
 
 /*-----------------------------------------------------------------------------
-				Below is the definition for 802.11i / 802.1x
-------------------------------------------------------------------------------*/
-#define _IEEE8021X_MGT_			1	/*  WPA */
-#define _IEEE8021X_PSK_			2	/*  WPA with pre-shared key */
-
-/*
-#define _NO_PRIVACY_			0
-#define _WEP_40_PRIVACY_		1
-#define _TKIP_PRIVACY_			2
-#define _WRAP_PRIVACY_			3
-#define _CCMP_PRIVACY_			4
-#define _WEP_104_PRIVACY_		5
-#define _WEP_WPA_MIXED_PRIVACY_ 6	WEP + WPA
-*/
-
-/*-----------------------------------------------------------------------------
 				Below is the definition for WMM
 ------------------------------------------------------------------------------*/
 #define _WMM_IE_Length_				7  /*  for WMM STA */
@@ -280,13 +198,6 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 /*-----------------------------------------------------------------------------
 				Below is the definition for 802.11n
 ------------------------------------------------------------------------------*/
-
-#define SetOrderBit(pbuf)						\
-	(*(unsigned short *)(pbuf) |= cpu_to_le16(_ORDER_))
-
-#define GetOrderBit(pbuf)		\
-	(((*(unsigned short *)(pbuf)) & le16_to_cpu(_ORDER_)) != 0)
-
 
 /* struct rtw_ieee80211_ht_cap - HT additional information
  *

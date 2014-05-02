@@ -417,17 +417,12 @@ s32 PHY_MACConfig8723A(struct rtw_adapter *Adapter)
 {
 	int rtStatus = _SUCCESS;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	s8 *pszMACRegFile;
-	s8 sz8723MACRegFile[] = RTL8723_PHY_MACREG;
 	bool is92C = IS_92C_SERIAL(pHalData->VersionID);
-
-	pszMACRegFile = sz8723MACRegFile;
 
 	/*  */
 	/*  Config MAC */
 	/*  */
-	if (HAL_STATUS_FAILURE ==
-	    ODM_ConfigMACWithHeaderFile23a(&pHalData->odmpriv))
+	if (ODM_ConfigMACWithHeaderFile23a(&pHalData->odmpriv) == _FAIL)
 		rtStatus = _FAIL;
 
 	/*  2010.07.13 AMPDU aggregation number 9 */
@@ -751,27 +746,12 @@ phy_BB8723a_Config_ParaFile(struct rtw_adapter *Adapter)
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	int rtStatus = _SUCCESS;
 
-	u8 sz8723BBRegFile[] = RTL8723_PHY_REG;
-	u8 sz8723AGCTableFile[] = RTL8723_AGC_TAB;
-	u8 sz8723BBRegPgFile[] = RTL8723_PHY_REG_PG;
-	u8 sz8723BBRegMpFile[] = RTL8723_PHY_REG_MP;
-
-	u8 *pszBBRegFile = NULL, *pszAGCTableFile = NULL;
-	u8 *pszBBRegPgFile = NULL, *pszBBRegMpFile = NULL;
-
-	/* RT_TRACE(COMP_INIT, DBG_TRACE, ("==>phy_BB8192S_Config_ParaFile\n")); */
-
-	pszBBRegFile = sz8723BBRegFile ;
-	pszAGCTableFile = sz8723AGCTableFile;
-	pszBBRegPgFile = sz8723BBRegPgFile;
-	pszBBRegMpFile = sz8723BBRegMpFile;
-
 	/*  */
 	/*  1. Read PHY_REG.TXT BB INIT!! */
 	/*  We will seperate as 88C / 92C according to chip version */
 	/*  */
-	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
-							     CONFIG_BB_PHY_REG))
+	if (ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
+					  CONFIG_BB_PHY_REG) == _FAIL)
 		rtStatus = _FAIL;
 	if (rtStatus != _SUCCESS)
 		goto phy_BB8190_Config_ParaFile_Fail;
@@ -801,8 +781,8 @@ phy_BB8723a_Config_ParaFile(struct rtw_adapter *Adapter)
 	/*  */
 	/*  3. BB AGC table Initialization */
 	/*  */
-	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
-							     CONFIG_BB_AGC_TAB))
+	if (ODM_ConfigBBWithHeaderFile23a(&pHalData->odmpriv,
+					  CONFIG_BB_AGC_TAB) == _FAIL)
 		rtStatus = _FAIL;
 
 phy_BB8190_Config_ParaFile_Fail:

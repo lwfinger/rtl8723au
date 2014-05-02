@@ -1111,17 +1111,14 @@ exit:
 	return ret;
 }
 
-int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame);
-int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame)
+static int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
+				    struct recv_frame *precv_frame)
 {
 #ifdef CONFIG_8723AU_AP_MODE
 	struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
-	u8 *pframe = skb->data;
 
 	if (!ieee80211_is_ctl(hdr->frame_control))
 		return _FAIL;
@@ -1132,14 +1129,15 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 
 	/* only handle ps-poll */
 	if (ieee80211_is_pspoll(hdr->frame_control)) {
+		struct ieee80211_pspoll *psp = (struct ieee80211_pspoll *)hdr;
 		u16 aid;
 		u8 wmmps_ac = 0;
 		struct sta_info *psta = NULL;
 
-		aid = GetAid(pframe);
+		aid = le16_to_cpu(psp->aid) & 0x3fff;
 		psta = rtw_get_stainfo23a(pstapriv, hdr->addr2);
 
-		if ((!psta) || (psta->aid != aid))
+		if (!psta || psta->aid != aid)
 			return _FAIL;
 
 		/* for rx pkt statistics */
@@ -1259,10 +1257,8 @@ int validate_recv_ctrl_frame(struct rtw_adapter *padapter,
 
 struct recv_frame* recvframe_chk_defrag23a(struct rtw_adapter *padapter,
 					struct recv_frame *precv_frame);
-int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame);
-int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
-			     struct recv_frame *precv_frame)
+static int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
+				    struct recv_frame *precv_frame)
 {
 	struct sta_info *psta;
 	struct sk_buff *skb;
@@ -1308,15 +1304,12 @@ int validate_recv_mgnt_frame(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-int validate_recv_data_frame(struct rtw_adapter *adapter,
-			     struct recv_frame *precv_frame);
-int validate_recv_data_frame(struct rtw_adapter *adapter,
-			     struct recv_frame *precv_frame)
+static int validate_recv_data_frame(struct rtw_adapter *adapter,
+				    struct recv_frame *precv_frame)
 {
 	u8 bretry;
-	u8 *psa, *pda, *pbssid;
+	u8 *psa, *pda;
 	struct sta_info *psta = NULL;
-	u8 *ptr = precv_frame->pkt->data;
 	struct rx_pkt_attrib *pattrib = & precv_frame->attrib;
 	struct security_priv *psecuritypriv = &adapter->securitypriv;
 	int ret = _SUCCESS;
@@ -1328,47 +1321,43 @@ int validate_recv_data_frame(struct rtw_adapter *adapter,
 	bretry = ieee80211_has_retry(hdr->frame_control);
 	pda = ieee80211_get_DA(hdr);
 	psa = ieee80211_get_SA(hdr);
-	pbssid = get_hdr_bssid(ptr);
-
-	if (pbssid == NULL) {
-		ret = _FAIL;
-		goto exit;
-	}
 
 	ether_addr_copy(pattrib->dst, pda);
 	ether_addr_copy(pattrib->src, psa);
 
-	ether_addr_copy(pattrib->bssid, pbssid);
-
-	switch (pattrib->to_fr_ds)
-	{
-	case 0:
+	switch (hdr->frame_control &
+		cpu_to_le16(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS)) {
+	case cpu_to_le16(0):
+		ether_addr_copy(pattrib->bssid, hdr->addr3);
 		ether_addr_copy(pattrib->ra, pda);
 		ether_addr_copy(pattrib->ta, psa);
 		ret = sta2sta_data_frame(adapter, precv_frame, &psta);
 		break;
 
-	case 1:
+	case cpu_to_le16(IEEE80211_FCTL_FROMDS):
+		ether_addr_copy(pattrib->bssid, hdr->addr2);
 		ether_addr_copy(pattrib->ra, pda);
-		ether_addr_copy(pattrib->ta, pbssid);
+		ether_addr_copy(pattrib->ta, hdr->addr2);
 		ret = ap2sta_data_frame(adapter, precv_frame, &psta);
 		break;
 
-	case 2:
-		ether_addr_copy(pattrib->ra, pbssid);
+	case cpu_to_le16(IEEE80211_FCTL_TODS):
+		ether_addr_copy(pattrib->bssid, hdr->addr1);
+		ether_addr_copy(pattrib->ra, hdr->addr1);
 		ether_addr_copy(pattrib->ta, psa);
 		ret = sta2ap_data_frame(adapter, precv_frame, &psta);
 		break;
 
-	case 3:
+	case cpu_to_le16(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS):
+		/*
+		 * There is no BSSID in this case, but the driver has been
+		 * using addr1 so far, so keep it for now.
+		 */
+		ether_addr_copy(pattrib->bssid, hdr->addr1);
 		ether_addr_copy(pattrib->ra, hdr->addr1);
 		ether_addr_copy(pattrib->ta, hdr->addr2);
 		ret = _FAIL;
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_err_, (" case 3\n"));
-		break;
-
-	default:
-		ret = _FAIL;
 		break;
 	}
 
@@ -1529,8 +1518,6 @@ static int validate_recv_frame(struct rtw_adapter *adapter,
 		retval = _FAIL;
 		goto exit;
 	}
-
-	pattrib->to_fr_ds = get_tofr_ds(hdr->frame_control);
 
 	seq_ctrl = le16_to_cpu(hdr->seq_ctrl);
 	pattrib->frag_num = seq_ctrl & IEEE80211_SCTL_FRAG;
@@ -1934,8 +1921,8 @@ int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num)
 	return true;
 }
 
-int enqueue_reorder_recvframe23a(struct recv_reorder_ctrl *preorder_ctrl,
-			      struct recv_frame *prframe)
+static int enqueue_reorder_recvframe23a(struct recv_reorder_ctrl *preorder_ctrl,
+				        struct recv_frame *prframe)
 {
 	struct rx_pkt_attrib *pattrib = &prframe->attrib;
 	struct rtw_queue *ppending_recvframe_queue;

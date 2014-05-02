@@ -1738,11 +1738,7 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 		&rtl8723a_SetBeaconRelatedRegisters;
 
 	pHalFunc->Add_RateATid = &rtl8723a_add_rateatid;
-	pHalFunc->run_thread = &rtl8723a_start_thread;
-	pHalFunc->cancel_thread = &rtl8723a_stop_thread;
 
-	pHalFunc->read_bbreg = &PHY_QueryBBReg;
-	pHalFunc->write_bbreg = &PHY_SetBBReg;
 	pHalFunc->read_rfreg = &PHY_QueryRFReg;
 	pHalFunc->write_rfreg = &PHY_SetRFReg;
 
@@ -2044,7 +2040,6 @@ static void _ResetDigitalProcedure1_92C(struct rtw_adapter *padapter,
 		    are trying to enter IPS/HW&SW radio off. For
 		    S3/S4/S5/Disable, we can stop 8051 because */
 		/*  we will init FW when power on again. */
-		/* if (!pDevice->RegUsbSS) */
 		/*  If we want to SS mode, we can not reset 8051. */
 		if (rtw_read8(padapter, REG_MCUFWDL) & BIT1) {
 			/* IF fw in RAM code, do reset */
@@ -2277,7 +2272,7 @@ static void Hal_EEValueCheck(u8 EEType, void *pInValue, void *pOutValue)
 		u8 *pIn, *pOut;
 		pIn = (u8 *) pInValue;
 		pOut = (u8 *) pOutValue;
-		if (*pIn <= 63) {
+		if (*pIn >= 0 && *pIn <= 63) {
 			*pOut = *pIn;
 		} else {
 			RT_TRACE(_module_hci_hal_init_c_, _drv_err_,
@@ -3186,12 +3181,4 @@ void rtl8723a_clone_haldata(struct rtw_adapter *dst_adapter,
 {
 	memcpy(dst_adapter->HalData, src_adapter->HalData,
 	       dst_adapter->hal_data_sz);
-}
-
-void rtl8723a_start_thread(struct rtw_adapter *padapter)
-{
-}
-
-void rtl8723a_stop_thread(struct rtw_adapter *padapter)
-{
 }

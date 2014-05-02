@@ -25,8 +25,6 @@
 #include <ieee80211.h> /*  <ieee80211/ieee80211.h> */
 
 
-#define FREE_CMDOBJ_SZ	128
-
 #define MAX_CMDSZ	1024
 #define MAX_RSPSZ	512
 #define MAX_EVTSZ	1024
@@ -34,6 +32,7 @@
 #define CMDBUFF_ALIGN_SZ 512
 
 struct cmd_obj {
+	struct work_struct work;
 	struct rtw_adapter *padapter;
 	u16	cmdcode;
 	u8	res;
@@ -41,43 +40,25 @@ struct cmd_obj {
 	u32	cmdsz;
 	u8	*rsp;
 	u32	rspsz;
-	/* struct semaphore		cmd_sem; */
-	struct list_head	list;
 };
 
 struct cmd_priv {
-	struct semaphore	cmd_queue_sema;
-	/* struct semaphore	cmd_done_sema; */
-	struct semaphore	terminate_cmdthread_sema;
-	struct rtw_queue	cmd_queue;
-	u8	cmd_seq;
-	u8	*cmd_buf;	/* shall be non-paged, and 4 bytes aligned */
-	u8	*cmd_allocated_buf;
-	u8	*rsp_buf;	/* shall be non-paged, and 4 bytes aligned */
-	u8	*rsp_allocated_buf;
+	struct workqueue_struct *wq;
 	u32	cmd_issued_cnt;
 	u32	cmd_done_cnt;
 	u32	rsp_cnt;
-	u8 cmdthd_running;
 	struct rtw_adapter *padapter;
 };
 
 #define C2H_QUEUE_MAX_LEN 10
 
 struct	evt_priv {
-	struct work_struct c2h_wk;
-	bool c2h_wk_alive;
-	struct rtw_cbuf *c2h_queue;
-
-	atomic_t event_seq;
-	u8	*evt_buf;	/* shall be non-paged, and 4 bytes aligned */
-	u8	*evt_allocated_buf;
-	u32	evt_done_cnt;
+	struct workqueue_struct *wq;
+	struct work_struct irq_wk;
 };
 
 #define init_h2fwcmd_w_parm_no_rsp(pcmd, pparm, code) \
 do {\
-	INIT_LIST_HEAD(&pcmd->list);\
 	pcmd->cmdcode = code;\
 	pcmd->parmbuf = (u8 *)(pparm);\
 	pcmd->cmdsz = sizeof (*pparm);\
@@ -92,15 +73,30 @@ struct c2h_evt_hdr {
 	u8 payload[0];
 };
 
+/*
+ * Do not reorder - this allows for struct evt_work to be passed on to
+ * rtw_c2h_wk_cmd23a() as a 'struct c2h_evt_hdr *' without making an
+ * additional copy.
+ */
+struct evt_work {
+	union {
+		struct c2h_evt_hdr c2h_evt;
+		u8 buf[16];
+	} u;
+	struct work_struct work;
+	struct rtw_adapter *adapter;
+};
+
 #define c2h_evt_exist(c2h_evt) ((c2h_evt)->id || (c2h_evt)->plen)
 
-u32 rtw_enqueue_cmd23a(struct cmd_priv *pcmdpriv, struct cmd_obj *obj);
+void rtw_evt_work(struct work_struct *work);
+
+int rtw_enqueue_cmd23a(struct cmd_priv *pcmdpriv, struct cmd_obj *obj);
 void rtw_free_cmd_obj23a(struct cmd_obj *pcmd);
 
 int rtw_cmd_thread23a(void *context);
 
 int rtw_init_cmd_priv23a(struct cmd_priv *pcmdpriv);
-void rtw_free_cmd_priv23a (struct cmd_priv *pcmdpriv);
 
 u32 rtw_init_evt_priv23a (struct evt_priv *pevtpriv);
 void rtw_free_evt_priv23a (struct evt_priv *pevtpriv);
@@ -728,7 +724,7 @@ u8 rtw_tdls_cmd(struct rtw_adapter*padapter, u8 *addr, u8 option);
 
 u8 rtw_c2h_wk_cmd23a(struct rtw_adapter *padapter, u8 *c2h_evt);
 
-u8 rtw_drvextra_cmd_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
+u8 rtw_drvextra_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
 
 void rtw_survey_cmd_callback23a(struct rtw_adapter  *padapter, struct cmd_obj *pcmd);
 void rtw_disassoc_cmd23a_callback(struct rtw_adapter  *padapter, struct cmd_obj *pcmd);

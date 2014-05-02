@@ -311,14 +311,14 @@ static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb,
 u16 rtw_recv_select_queue23a(struct sk_buff *skb)
 {
 	struct iphdr *piphdr;
+	struct ethhdr *eth = (struct ethhdr *)skb->data;
 	unsigned int dscp;
-	u16 eth_type;
+	u16 eth_type = get_unaligned_be16(&eth->h_proto);
 	u32 priority;
 	u8 *pdata = skb->data;
 
-	memcpy(&eth_type, pdata + (ETH_ALEN << 1), 2);
 	switch (eth_type) {
-	case htons(ETH_P_IP):
+	case ETH_P_IP:
 		piphdr = (struct iphdr *)(pdata + ETH_HLEN);
 		dscp = piphdr->tos & 0xfc;
 		priority = dscp >> 5;
@@ -377,35 +377,6 @@ struct net_device *rtw_init_netdev23a(struct rtw_adapter *old_padapter)
 	return pnetdev;
 }
 
-u32 rtw_start_drv_threads23a(struct rtw_adapter *padapter)
-{
-	u32 _status = _SUCCESS;
-
-	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("+rtw_start_drv_threads23a\n"));
-	padapter->cmdThread = kthread_run(rtw_cmd_thread23a, padapter,
-					  "RTW_CMD_THREAD");
-	if (IS_ERR(padapter->cmdThread)) {
-		_status = _FAIL;
-	} else {
-		/* wait for cmd_thread to run */
-		down(&padapter->cmdpriv.terminate_cmdthread_sema);
-	}
-	rtw_hal_start_thread23a(padapter);
-	return _status;
-}
-
-void rtw_stop_drv_threads23a(struct rtw_adapter *padapter)
-{
-	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("+rtw_stop_drv_threads23a\n"));
-
-	/* Below is to termindate rtw_cmd_thread23a & event_thread... */
-	up(&padapter->cmdpriv.cmd_queue_sema);
-	if (padapter->cmdThread)
-		down(&padapter->cmdpriv.terminate_cmdthread_sema);
-	rtw_hal_stop_thread23a(padapter);
-}
-
 static u8 rtw_init_default_value(struct rtw_adapter *padapter)
 {
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
@@ -453,7 +424,6 @@ static u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	/* misc. */
 	padapter->bReadPortCancel = false;
 	padapter->bWritePortCancel = false;
-	padapter->bRxRSSIDisplay = 0;
 	padapter->bNotifyChannelChange = 0;
 	return ret;
 }
@@ -468,7 +438,6 @@ u8 rtw_reset_drv_sw23a(struct rtw_adapter *padapter)
 	rtw_hal_def_value_init23a(padapter);
 	padapter->bReadPortCancel = false;
 	padapter->bWritePortCancel = false;
-	padapter->bRxRSSIDisplay = 0;
 	pmlmepriv->scan_interval = SCAN_INTERVAL;/*  30*2 sec = 60sec */
 
 	padapter->xmitpriv.tx_pkts = 0;
@@ -601,8 +570,6 @@ u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter)
 
 	free_mlme_ext_priv23a(&padapter->mlmeextpriv);
 
-	rtw_free_cmd_priv23a(&padapter->cmdpriv);
-
 	rtw_free_evt_priv23a(&padapter->evtpriv);
 
 	rtw_free_mlme_priv23a(&padapter->mlmepriv);
@@ -618,12 +585,6 @@ u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter)
 	rtw_hal_free_data23a(padapter);
 
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("<== rtw_free_drv_sw23a\n"));
-
-	/* free the old_pnetdev */
-	if (padapter->rereg_nd_name_priv.old_pnetdev) {
-		free_netdev(padapter->rereg_nd_name_priv.old_pnetdev);
-		padapter->rereg_nd_name_priv.old_pnetdev = NULL;
-	}
 
 	/*  clear pbuddy_adapter to avoid access wrong pointer. */
 	if (padapter->pbuddy_adapter != NULL)
@@ -722,12 +683,6 @@ int netdev_open23a(struct net_device *pnetdev)
 
 		DBG_8723A("MAC Address = "MAC_FMT"\n",
 			  MAC_ARG(pnetdev->dev_addr));
-
-		status = rtw_start_drv_threads23a(padapter);
-		if (status == _FAIL) {
-			DBG_8723A("Initialize driver software resource Failed!\n");
-			goto netdev_open23a_error;
-		}
 
 		if (init_hw_mlme_ext23a(padapter) == _FAIL) {
 			DBG_8723A("can't init mlme_ext_priv\n");
@@ -904,7 +859,7 @@ static int netdev_close(struct net_device *pnetdev)
 		/* s2-3. */
 		rtw_free_assoc_resources23a(padapter, 1);
 		/* s2-4. */
-		rtw_free_network_queue23a(padapter, true);
+		rtw_free_network_queue23a(padapter);
 		/*  Close LED */
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 	}

@@ -605,8 +605,9 @@ int issue_deauth23a_ex23a(struct rtw_adapter *padapter, u8 *da, unsigned short r
 		    int try_cnt, int wait_ms);
 void issue_action_spct_ch_switch23a(struct rtw_adapter *padapter, u8 *ra,
 				 u8 new_ch, u8 ch_offset);
-void issue_action_BA23a(struct rtw_adapter *padapter, unsigned char *raddr,
-		     unsigned char action, unsigned short status);
+void issue_action_BA23a(struct rtw_adapter *padapter,
+			const unsigned char *raddr,
+			unsigned char action, unsigned short status);
 unsigned int send_delba23a(struct rtw_adapter *padapter, u8 initiator, u8 *addr);
 unsigned int send_beacon23a(struct rtw_adapter *padapter);
 
@@ -639,7 +640,7 @@ void correct_TSF23a(struct rtw_adapter *padapter, struct mlme_ext_priv *pmlmeext
 
 struct cmd_hdl {
 	uint	parmsize;
-	u8 (*h2cfuns)(struct rtw_adapter *padapter, u8 *pbuf);
+	u8 (*h2cfuns)(struct rtw_adapter *padapter, const u8 *pbuf);
 };
 
 
@@ -651,27 +652,27 @@ u8 read_rfreg_hdl(struct rtw_adapter *padapter, u8 *pbuf);
 u8 write_rfreg_hdl(struct rtw_adapter *padapter, u8 *pbuf);
 
 
-u8 NULL_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 join_cmd_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 disconnect_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 createbss_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 setopmode_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 sitesurvey_cmd_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 setauth_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 setkey_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 set_stakey_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 set_assocsta_hdl(struct rtw_adapter *padapter, u8 *pbuf);
-u8 del_assocsta_hdl(struct rtw_adapter *padapter, u8 *pbuf);
-u8 add_ba_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
+u8 NULL_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 disconnect_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 createbss_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 setopmode_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 sitesurvey_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 setauth_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 setkey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 set_assocsta_hdl(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 del_assocsta_hdl(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 add_ba_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
 
-u8 mlme_evt_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 h2c_msg_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 tx_beacon_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 set_ch_hdl23a(struct rtw_adapter *padapter, u8 *pbuf);
-u8 set_chplan_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 led_blink_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
-u8 set_csa_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);	/* Kurt: Handling DFS channel switch announcement ie. */
-u8 tdls_hdl23a(struct rtw_adapter *padapter, unsigned char *pbuf);
+u8 mlme_evt_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 h2c_msg_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 tx_beacon_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 set_ch_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 set_chplan_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 led_blink_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
+u8 set_csa_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);	/* Kurt: Handling DFS channel switch announcement ie. */
+u8 tdls_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf);
 
 #define GEN_DRV_CMD_HANDLER(size, cmd)	{size, &cmd ## _hdl23a},
 #define GEN_MLME_EXT_HANDLER(size, cmd)	{size, cmd},
@@ -698,8 +699,8 @@ struct C2HEvent_Header {
 	unsigned int rsvd;
 };
 
-void rtw_dummy_event_callback23a(struct rtw_adapter *adapter , u8 *pbuf);
-void rtw23a_fwdbg_event_callback(struct rtw_adapter *adapter , u8 *pbuf);
+void rtw_dummy_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
+void rtw23a_fwdbg_event_callback(struct rtw_adapter *adapter, const u8 *pbuf);
 
 enum rtw_c2h_event {
 	GEN_EVT_CODE(_Read_MACREG) = 0, /*0*/

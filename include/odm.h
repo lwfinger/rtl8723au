@@ -86,15 +86,6 @@
 /*  structure and define */
 /*  */
 
-/*  */
-/*  2011/09/20 MH Add for AP/ADSLpseudo DM structuer requirement. */
-/*  We need to remove to other position??? */
-/*  */
-struct rtl8723a_priv {
-	u8		temp;
-};
-
-
 struct  dig_t {
 	u8		Dig_Enable_Flag;
 	u8		Dig_Ext_Port_Stage;
@@ -187,7 +178,6 @@ struct rx_hp {
 	bool		First_time_enter;
 	bool		RXHP_enable;
 	u8		TP_Mode;
-	struct timer_list PSDTimer;
 };
 
 #define ASSOCIATE_ENTRY_NUM					32 /*  Max size of AsocEntry[]. */
@@ -234,14 +224,12 @@ struct sw_ant_sw {
 	u64		RXByteCnt_A;
 	u64		RXByteCnt_B;
 	u8		TrafficLoad;
-	struct timer_list SwAntennaSwitchTimer;
 };
 
 struct edca_turbo {
 	bool bCurrentTurboEDCA;
 	bool bIsCurRDLState;
 	u32	prv_traffic_idx; /*  edca turbo */
-
 };
 
 struct odm_rate_adapt {
@@ -762,16 +750,10 @@ enum ant_dif_type {
 
 /*  2011/09/22 MH Copy from SD4 defined structure. We use to support PHY DM integration. */
 struct dm_odm_t {
-	/* struct timer_list FastAntTrainingTimer; */
 	/*  */
 	/*	Add for different team use temporarily */
 	/*  */
 	struct rtw_adapter	*Adapter;		/*  For CE/NIC team */
-	struct rtl8723a_priv	*priv;			/*  For AP/ADSL team */
-	/*  WHen you use Adapter or priv pointer, you must make sure the pointer is ready. */
-	bool			odm_ready;
-
-	struct rtl8723a_priv fake_priv;
 
 	u64			DebugComponents;
 	u32			DebugLevel;
@@ -928,7 +910,6 @@ struct dm_odm_t {
 
 	/* PSD */
 	bool			bUserAssignLevel;
-	struct timer_list	PSDTimer;
 	u8			RSSI_BT;			/* come from BT */
 	bool			bPSDinProcess;
 	bool			bDMInitialGainEnable;
@@ -955,14 +936,6 @@ struct dm_odm_t {
 	/*  */
 	/*  ODM system resource. */
 	/*  */
-
-	/*  ODM relative time. */
-	struct timer_list PathDivSwitchTimer;
-	/* 2011.09.27 add for Path Diversity */
-	struct timer_list CCKPathDiversityTimer;
-	struct timer_list FastAntTrainingTimer;
-
-	/*  ODM relative workitem. */
 };	/*  DM_Dynamic_Mechanism_Structure */
 
 enum odm_rf_content {
@@ -1185,12 +1158,6 @@ void ODM23a_CmnInfoHook(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, void
 void ODM_CmnInfoPtrArrayHook23a(struct dm_odm_t *pDM_Odm, enum odm_cmninfo	CmnInfo, u16 Index, void *pValue);
 
 void ODM_CmnInfoUpdate23a(struct dm_odm_t *pDM_Odm, u32 CmnInfo, u64 Value);
-
-void ODM_InitAllTimers(struct dm_odm_t *pDM_Odm);
-
-void ODM_CancelAllTimers(struct dm_odm_t *pDM_Odm);
-
-void ODM_ReleaseAllTimers(struct dm_odm_t *pDM_Odm);
 
 void ODM_ResetIQKResult(struct dm_odm_t *pDM_Odm);
 

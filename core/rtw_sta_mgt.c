@@ -21,7 +21,7 @@
 #include <mlme_osdep.h>
 #include <sta_info.h>
 
-void _rtw_init_stainfo(struct sta_info *psta)
+static void _rtw_init_stainfo(struct sta_info *psta)
 {
 	memset((u8 *)psta, 0, sizeof (struct sta_info));
 	spin_lock_init(&psta->lock);
@@ -50,29 +50,15 @@ void _rtw_init_stainfo(struct sta_info *psta)
 
 u32 _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
 {
-	struct sta_info *psta;
-	s32 i;
+	int i;
 
-	pstapriv->pallocated_stainfo_buf = rtw_zvmalloc(sizeof(struct sta_info) * NUM_STA+ 4);
-
-	if (!pstapriv->pallocated_stainfo_buf)
-		return _FAIL;
-
-	pstapriv->pstainfo_buf = pstapriv->pallocated_stainfo_buf + 4 -
-		((unsigned long)(pstapriv->pallocated_stainfo_buf) & 3);
-	_rtw_init_queue23a(&pstapriv->free_sta_queue);
 	spin_lock_init(&pstapriv->sta_hash_lock);
 	pstapriv->asoc_sta_count = 0;
 	_rtw_init_queue23a(&pstapriv->sleep_q);
 	_rtw_init_queue23a(&pstapriv->wakeup_q);
-	psta = (struct sta_info *)(pstapriv->pstainfo_buf);
-
-	for (i = 0; i < NUM_STA; i++) {
-		_rtw_init_stainfo(psta);
+	for (i = 0; i < NUM_STA; i++)
 		INIT_LIST_HEAD(&pstapriv->sta_hash[i]);
-		list_add_tail(&psta->list, get_list_head(&pstapriv->free_sta_queue));
-		psta++;
-	}
+
 #ifdef CONFIG_8723AU_AP_MODE
 	pstapriv->sta_dz_bitmap = 0;
 	pstapriv->tim_bitmap = 0;
@@ -90,43 +76,6 @@ u32 _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
 	pstapriv->max_num_sta = NUM_STA;
 #endif
 	return _SUCCESS;
-}
-
-inline int rtw_stainfo_offset23a(struct sta_priv *stapriv, struct sta_info *sta)
-{
-	int offset = (((u8 *)sta) - stapriv->pstainfo_buf)/sizeof(struct sta_info);
-
-	if (!stainfo_offset_valid(offset))
-		DBG_8723A("%s invalid offset(%d), out of range!!!", __func__, offset);
-	return offset;
-}
-
-inline struct sta_info *rtw_get_stainfo23a_by_offset23a(struct sta_priv *stapriv, int offset)
-{
-	if (!stainfo_offset_valid(offset))
-		DBG_8723A("%s invalid offset(%d), out of range!!!", __func__, offset);
-	return (struct sta_info *)(stapriv->pstainfo_buf + offset * sizeof(struct sta_info));
-}
-
-/*  this function is used to free the memory of lock || sema for all stainfos */
-void rtw_mfree_all_stainfo(struct sta_priv *pstapriv)
-{
-	struct list_head *plist, *phead;
-	struct sta_info *psta;
-
-	spin_lock_bh(&pstapriv->sta_hash_lock);
-
-	phead = get_list_head(&pstapriv->free_sta_queue);
-
-	/* we really achieve a lot in this loop .... */
-	list_for_each(plist, phead)
-		psta = container_of(plist, struct sta_info, list);
-	spin_unlock_bh(&pstapriv->sta_hash_lock);
-}
-
-void rtw_mfree_sta_priv_lock(struct	sta_priv *pstapriv)
-{
-	rtw_mfree_all_stainfo(pstapriv); /* be done before free sta_hash_lock */
 }
 
 u32	_rtw_free_sta_priv23a(struct	sta_priv *pstapriv)
@@ -154,39 +103,25 @@ u32	_rtw_free_sta_priv23a(struct	sta_priv *pstapriv)
 		}
 		spin_unlock_bh(&pstapriv->sta_hash_lock);
 		/*===============================*/
-
-		rtw_mfree_sta_priv_lock(pstapriv);
-
-		if (pstapriv->pallocated_stainfo_buf)
-			rtw_vmfree(pstapriv->pallocated_stainfo_buf, sizeof(struct sta_info)*NUM_STA+4);
 	}
 	return _SUCCESS;
 }
 
-struct	sta_info *rtw_alloc_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr)
+struct sta_info *
+rtw_alloc_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr, int gfp)
 {
 	struct list_head	*phash_list;
 	struct sta_info	*psta;
-	struct rtw_queue *pfree_sta_queue;
 	struct recv_reorder_ctrl *preorder_ctrl;
-	uint tmp_aid;
 	s32	index;
 	int i = 0;
 	u16  wRxSeqInitialValue = 0xffff;
 
-	pfree_sta_queue = &pstapriv->free_sta_queue;
+	psta = (struct sta_info *)kmalloc(sizeof(struct sta_info), gfp);
+	if (!psta)
+		return NULL;
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);
-
-	if (_rtw_queue_empty23a(pfree_sta_queue)) {
-		spin_unlock_bh(&pstapriv->sta_hash_lock);
-		return NULL;
-	}
-	psta = container_of((&pfree_sta_queue->queue)->next, struct sta_info, list);
-
-	list_del_init(&psta->list);
-
-	tmp_aid = psta->aid;
 
 	_rtw_init_stainfo(psta);
 
@@ -252,9 +187,8 @@ exit:
 }
 
 /*  using pstapriv->sta_hash_lock to protect */
-u32	rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
+u32 rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 {
-	struct rtw_queue *pfree_sta_queue;
 	struct recv_reorder_ctrl *preorder_ctrl;
 	struct	sta_xmit_priv	*pstaxmitpriv;
 	struct	xmit_priv	*pxmitpriv = &padapter->xmitpriv;
@@ -268,8 +202,6 @@ u32	rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 	spin_lock_bh(&psta->lock);
 	psta->state &= ~_FW_LINKED;
 	spin_unlock_bh(&psta->lock);
-
-	pfree_sta_queue = &pstapriv->free_sta_queue;
 
 	pstaxmitpriv = &psta->sta_xmitpriv;
 
@@ -374,7 +306,8 @@ u32	rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 		psta->aid = 0;
 	}
 #endif	/*  CONFIG_8723AU_AP_MODE */
-	list_add_tail(&psta->list, get_list_head(pfree_sta_queue));
+
+	kfree(psta);
 exit:
 	return _SUCCESS;
 }
@@ -384,9 +317,11 @@ void rtw_free_all_stainfo23a(struct rtw_adapter *padapter)
 {
 	struct list_head *plist, *phead, *ptmp;
 	struct sta_info *psta;
-	struct	sta_priv *pstapriv = &padapter->stapriv;
+	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info* pbcmc_stainfo = rtw_get_bcmc_stainfo23a(padapter);
-	s32	index;	if (pstapriv->asoc_sta_count == 1)
+	s32 index;
+
+	if (pstapriv->asoc_sta_count == 1)
 		return;
 
 	spin_lock_bh(&pstapriv->sta_hash_lock);
@@ -405,12 +340,12 @@ void rtw_free_all_stainfo23a(struct rtw_adapter *padapter)
 }
 
 /* any station allocated can be searched by hash list */
-struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr)
+struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, const u8 *hwaddr)
 {
 	struct list_head *plist, *phead;
 	struct sta_info *psta = NULL;
 	u32	index;
-	u8 *addr;
+	const u8 *addr;
 	u8 bc_addr[ETH_ALEN] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 	if (hwaddr == NULL)
@@ -448,7 +383,7 @@ u32 rtw_init_bcmc_stainfo23a(struct rtw_adapter* padapter)
 	u32 res = _SUCCESS;
 	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-	psta = rtw_alloc_stainfo23a(pstapriv, bcast_addr);
+	psta = rtw_alloc_stainfo23a(pstapriv, bcast_addr, GFP_KERNEL);
 	if (psta == NULL) {
 		res = _FAIL;
 		RT_TRACE(_module_rtl871x_sta_mgt_c_, _drv_err_,

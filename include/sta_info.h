@@ -310,13 +310,9 @@ struct sta_info {
 
 #define STA_PKTS_FMT "(m:%llu, c:%llu, d:%llu)"
 
-struct	sta_priv {
-	u8 *pallocated_stainfo_buf;
-	u8 *pstainfo_buf;
-	struct rtw_queue	free_sta_queue;
-
+struct sta_priv {
 	spinlock_t sta_hash_lock;
-	struct list_head   sta_hash[NUM_STA];
+	struct list_head sta_hash[NUM_STA];
 	int asoc_sta_count;
 	struct rtw_queue sleep_q;
 	struct rtw_queue wakeup_q;
@@ -349,7 +345,7 @@ struct	sta_priv {
 	struct wlan_acl_pool acl_list;
 };
 
-static inline u32 wifi_mac_hash(u8 *mac)
+static inline u32 wifi_mac_hash(const u8 *mac)
 {
 	u32 x;
 
@@ -369,15 +365,10 @@ static inline u32 wifi_mac_hash(u8 *mac)
 u32	_rtw_init_sta_priv23a(struct sta_priv *pstapriv);
 u32	_rtw_free_sta_priv23a(struct sta_priv *pstapriv);
 
-#define stainfo_offset_valid(offset) (offset < NUM_STA && offset >= 0)
-int rtw_stainfo_offset23a(struct sta_priv *stapriv, struct sta_info *sta);
-struct sta_info *rtw_get_stainfo23a_by_offset23a(struct sta_priv *stapriv,
-					   int offset);
-
-struct sta_info *rtw_alloc_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr);
+struct sta_info *rtw_alloc_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr, int gfp);
 u32 rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta);
 void rtw_free_all_stainfo23a(struct rtw_adapter *padapter);
-struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, u8 *hwaddr);
+struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, const u8 *hwaddr);
 u32 rtw_init_bcmc_stainfo23a(struct rtw_adapter *padapter);
 struct sta_info *rtw_get_bcmc_stainfo23a(struct rtw_adapter *padapter);
 u8 rtw_access_ctrl23a(struct rtw_adapter *padapter, u8 *mac_addr);

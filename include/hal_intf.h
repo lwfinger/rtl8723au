@@ -60,11 +60,6 @@ enum hal_odm_variable {
 	HAL_ODM_WIFI_DISPLAY_STATE,
 };
 
-enum hal_intf_ps_func {
-	HAL_USB_SELECT_SUSPEND,
-	HAL_MAX_ID,
-};
-
 struct hal_ops {
 	u32 (*hal_power_on)(struct rtw_adapter *padapter);
 	u32 (*hal_init)(struct rtw_adapter *padapter);
@@ -123,11 +118,6 @@ struct hal_ops {
 
 	void (*Add_RateATid)(struct rtw_adapter *padapter, u32 bitmap,
 			     u8 arg, u8 rssi_level);
-	void (*run_thread)(struct rtw_adapter *padapter);
-	void (*cancel_thread)(struct rtw_adapter *padapter);
-
-	u8 (*interface_ps_func)(struct rtw_adapter *padapter,
-				enum hal_intf_ps_func efunc_id, u8 *val);
 
 	s32 (*hal_xmit)(struct rtw_adapter *padapter,
 			struct xmit_frame *pxmitframe);
@@ -136,10 +126,6 @@ struct hal_ops {
 	s32 (*hal_xmitframe_enqueue)(struct rtw_adapter *padapter,
 				     struct xmit_frame *pxmitframe);
 
-	u32 (*read_bbreg)(struct rtw_adapter *padapter, u32 RegAddr,
-			  u32 BitMask);
-	void (*write_bbreg)(struct rtw_adapter *padapter, u32 RegAddr,
-			    u32 BitMask, u32 Data);
 	u32 (*read_rfreg)(struct rtw_adapter *padapter, u32 eRFPath,
 			  u32 RegAddr, u32 BitMask);
 	void (*write_rfreg)(struct rtw_adapter *padapter, u32 eRFPath,
@@ -255,9 +241,6 @@ void rtw_hal_disable_interrupt23a(struct rtw_adapter *padapter);
 u32 rtw_hal_inirp_init23a(struct rtw_adapter *padapter);
 u32 rtw_hal_inirp_deinit23a(struct rtw_adapter *padapter);
 
-u8 rtw_hal_intf_ps_func23a(struct rtw_adapter *padapter,
-			   enum hal_intf_ps_func efunc_id, u8 *val);
-
 s32 rtw_hal_xmit23aframe_enqueue(struct rtw_adapter *padapter,
 				 struct xmit_frame *pxmitframe);
 s32 rtw_hal_xmit23a(struct rtw_adapter *padapter,
@@ -274,13 +257,9 @@ void	rtw_hal_free_recv_priv23a(struct rtw_adapter *padapter);
 void rtw_hal_update_ra_mask23a(struct sta_info *psta, u8 rssi_level);
 void	rtw_hal_add_ra_tid23a(struct rtw_adapter *padapter, u32 bitmap, u8 arg, u8 rssi_level);
 void	rtw_hal_clone_data(struct rtw_adapter *dst_padapter, struct rtw_adapter *src_padapter);
-void	rtw_hal_start_thread23a(struct rtw_adapter *padapter);
-void	rtw_hal_stop_thread23a(struct rtw_adapter *padapter);
 
 void rtw_hal_bcn_related_reg_setting23a(struct rtw_adapter *padapter);
 
-u32	rtw_hal_read_bbreg23a(struct rtw_adapter *padapter, u32 RegAddr, u32 BitMask);
-void	rtw_hal_write_bbreg23a(struct rtw_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data);
 u32	rtw_hal_read_rfreg23a(struct rtw_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMask);
 void	rtw_hal_write_rfreg23a(struct rtw_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMask, u32 Data);
 

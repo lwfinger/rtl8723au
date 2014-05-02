@@ -178,13 +178,6 @@ u32	rtw_hal_inirp_deinit23a(struct rtw_adapter *padapter)
 
 }
 
-u8	rtw_hal_intf_ps_func23a(struct rtw_adapter *padapter, enum hal_intf_ps_func efunc_id, u8 *val)
-{
-	if (padapter->HalFunc.interface_ps_func)
-		return padapter->HalFunc.interface_ps_func(padapter, efunc_id, val);
-	return _FAIL;
-}
-
 s32	rtw_hal_xmit23aframe_enqueue(struct rtw_adapter *padapter, struct xmit_frame *pxmitframe)
 {
 	if (padapter->HalFunc.hal_xmitframe_enqueue)
@@ -260,32 +253,6 @@ void	rtw_hal_add_ra_tid23a(struct rtw_adapter *padapter, u32 bitmap, u8 arg, u8 
 {
 	if (padapter->HalFunc.Add_RateATid)
 		padapter->HalFunc.Add_RateATid(padapter, bitmap, arg, rssi_level);
-}
-
-/*	Start specifical interface thread		*/
-void	rtw_hal_start_thread23a(struct rtw_adapter *padapter)
-{
-	if (padapter->HalFunc.run_thread)
-		padapter->HalFunc.run_thread(padapter);
-}
-/*	Start specifical interface thread		*/
-void	rtw_hal_stop_thread23a(struct rtw_adapter *padapter)
-{
-	if (padapter->HalFunc.cancel_thread)
-		padapter->HalFunc.cancel_thread(padapter);
-}
-
-u32	rtw_hal_read_bbreg23a(struct rtw_adapter *padapter, u32 RegAddr, u32 BitMask)
-{
-	u32 data = 0;
-	if (padapter->HalFunc.read_bbreg)
-		 data = padapter->HalFunc.read_bbreg(padapter, RegAddr, BitMask);
-	return data;
-}
-void	rtw_hal_write_bbreg23a(struct rtw_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data)
-{
-	if (padapter->HalFunc.write_bbreg)
-		padapter->HalFunc.write_bbreg(padapter, RegAddr, BitMask, Data);
 }
 
 u32	rtw_hal_read_rfreg23a(struct rtw_adapter *padapter, u32 eRFPath, u32 RegAddr, u32 BitMask)
