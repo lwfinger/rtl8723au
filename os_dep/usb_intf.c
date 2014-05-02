@@ -1462,8 +1462,6 @@ static int __init rtw_drv_entry(void)
 {
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+rtw_drv_entry\n"));
 
-	DBG_8723A(DRV_NAME " driver version=%s\n", DRIVERVERSION);
-	DBG_8723A("build time: %s %s\n", __DATE__, __TIME__);
 	rtw_suspend_lock_init();
 
 	return usb_register(usb_drv);
