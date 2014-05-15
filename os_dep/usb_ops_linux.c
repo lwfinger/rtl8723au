@@ -168,7 +168,7 @@ unsigned int ffaddr2pipehdl(struct dvobj_priv *pdvobj, u32 addr)
 		pipe=usb_rcvbulkpipe(pusbd, pdvobj->RtInPipe[0]);
 
 	} else if (addr == RECV_INT_IN_ADDR) {
-		pipe=usb_rcvbulkpipe(pusbd, pdvobj->RtInPipe[1]);
+		pipe=usb_rcvintpipe(pusbd, pdvobj->RtInPipe[1]);
 
 	} else if (addr < HW_QUEUE_ENTRY) {
 		ep_num = pdvobj->Queue2Pipe[addr];
