@@ -171,9 +171,7 @@ struct recv_priv {
 	struct rtw_queue	recv_pending_queue;
 	struct rtw_queue	uc_swdec_pending_queue;
 
-	void *pallocated_frame_buf;
-
-	uint free_recvframe_cnt;
+	int free_recvframe_cnt;
 
 	struct rtw_adapter	*adapter;
 
@@ -189,8 +187,6 @@ struct recv_priv {
 	uint  rx_middlepacket_crcerr;
 
 	/* u8 *pallocated_urb_buf; */
-	struct semaphore allrxreturnevt;
-	uint	ff_hwaddr;
 	u8	rx_pending_cnt;
 
 	struct urb *int_in_urb;
@@ -202,8 +198,6 @@ struct recv_priv {
 	struct sk_buff_head free_recv_skb_queue;
 	struct sk_buff_head rx_skb_queue;
 	u8 *precv_buf;
-	struct rtw_queue	free_recv_buf_queue;
-	u32	free_recv_buf_queue_cnt;
 
 	/* For display the phy informatiom */
 	u8 is_signal_dbg;	/*  for debug */
@@ -282,11 +276,10 @@ struct recv_frame {
 
 /* get a free recv_frame from pfree_recv_queue */
 struct recv_frame *rtw_alloc_recvframe23a(struct rtw_queue *pfree_recv_queue);
-int rtw_free_recvframe23a(struct recv_frame *precvframe, struct rtw_queue *pfree_recv_queue);
+int rtw_free_recvframe23a(struct recv_frame *precvframe);
 
 int rtw_enqueue_recvframe23a(struct recv_frame *precvframe, struct rtw_queue *queue);
 
-void rtw_free_recvframe23a_queue(struct rtw_queue *pframequeue, struct rtw_queue *pfree_recv_queue);
 u32 rtw_free_uc_swdec_pending_queue23a(struct rtw_adapter *adapter);
 
 int rtw_enqueue_recvbuf23a_to_head(struct recv_buf *precvbuf, struct rtw_queue *queue);

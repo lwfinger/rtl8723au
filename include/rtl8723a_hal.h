@@ -413,11 +413,6 @@ struct hal_data_8723a {
 
 	bool				bMACFuncEnable;
 
-	/*  */
-	/*  For USB Interface HAL related */
-	/*  */
-	u32	UsbBulkOutSize;
-
 	/*  Interrupt related register information. */
 	u32	IntArray[2];
 	u32	IntrMask[2];
@@ -527,11 +522,10 @@ void Hal_EfuseParseCustomerID(struct rtw_adapter *padapter, u8 *hwinfo, bool Aut
 void Hal_EfuseParseAntennaDiversity(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 void Hal_EfuseParseRateIndicationOption(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 void Hal_EfuseParseXtal_8723A(struct rtw_adapter *pAdapter, u8 *hwinfo, u8 AutoLoadFail);
-void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, u8 AutoLoadFail);
+void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 
 void Hal_InitChannelPlan23a(struct rtw_adapter *padapter);
 
-void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
 #ifdef CONFIG_8723AU_BT_COEXIST
 void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 #endif
@@ -540,10 +534,25 @@ void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
 void SetBcnCtrlReg23a(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);
 void rtl8723a_InitBeaconParameters(struct rtw_adapter *padapter);
 
-void rtl8723a_clone_haldata(struct rtw_adapter *dst_adapter, struct rtw_adapter *src_adapter);
 void rtl8723a_start_thread(struct rtw_adapter *padapter);
 void rtl8723a_stop_thread(struct rtw_adapter *padapter);
 
-s32 c2h_id_filter_ccx_8723a(u8 id);
+bool c2h_id_filter_ccx_8723a(u8 id);
+int c2h_handler_8723a(struct rtw_adapter *padapter, struct c2h_evt_hdr *c2h_evt);
+
+void rtl8723a_read_adapter_info(struct rtw_adapter *Adapter);
+void rtl8723a_read_chip_version(struct rtw_adapter *padapter);
+void rtl8723a_notch_filter(struct rtw_adapter *adapter, bool enable);
+void rtl8723a_SetBeaconRelatedRegisters(struct rtw_adapter *padapter);
+void rtl8723a_SetHalODMVar(struct rtw_adapter *Adapter,
+			   enum hal_odm_variable eVariable,
+			   void *pValue1, bool bSet);
+void
+rtl8723a_readefuse(struct rtw_adapter *padapter,
+		   u8 efuseType, u16 _offset, u16 _size_byte, u8 *pbuf);
+u16 rtl8723a_EfuseGetCurrentSize_WiFi(struct rtw_adapter *padapter);
+u16 rtl8723a_EfuseGetCurrentSize_BT(struct rtw_adapter *padapter);
+void rtl8723a_update_ramask(struct rtw_adapter *padapter,
+			    u32 mac_id, u8 rssi_level);
 
 #endif

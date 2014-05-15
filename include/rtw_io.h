@@ -107,18 +107,8 @@ struct _io_ops
 	int (*_write8)(struct rtw_adapter *adapter, u32 addr, u8 val);
 	int (*_write16)(struct rtw_adapter *adapter, u32 addr, u16 val);
 	int (*_write32)(struct rtw_adapter *adapter, u32 addr, u32 val);
-	int (*_writeN)(struct rtw_adapter *adapter, u32 addr, u32 length, u8 *pdata);
-
-	void (*_read_mem)(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-	void (*_write_mem)(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-
-	u32 (*_read_interrupt)(struct rtw_adapter *adapter, u32 addr);
-
-	u32 (*_read_port)(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct recv_buf *rbuf);
-	u32 (*_write_port)(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct xmit_buf *pmem);
-
-	void (*_read_port_cancel)(struct rtw_adapter *adapter);
-	void (*_write_port_cancel)(struct rtw_adapter *adapter);
+	int (*_writeN)(struct rtw_adapter *adapter, u32 addr, u32 length,
+		       u8 *pdata);
 };
 
 struct io_req {
@@ -253,8 +243,6 @@ void _rtw_attrib_write(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 u8 _rtw_read823a(struct rtw_adapter *adapter, u32 addr);
 u16 _rtw_read1623a(struct rtw_adapter *adapter, u32 addr);
 u32 _rtw_read3223a(struct rtw_adapter *adapter, u32 addr);
-void _rtw_read_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-void _rtw_read_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct recv_buf *rbuf);
 void _rtw_read_port23a_cancel(struct rtw_adapter *adapter);
 
 int _rtw_write823a(struct rtw_adapter *adapter, u32 addr, u8 val);
@@ -262,8 +250,6 @@ int _rtw_write1623a(struct rtw_adapter *adapter, u32 addr, u16 val);
 int _rtw_write3223a(struct rtw_adapter *adapter, u32 addr, u32 val);
 int _rtw_writeN23a(struct rtw_adapter *adapter, u32 addr, u32 length, u8 *pdata);
 
-void _rtw_write_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
-u32 _rtw_write_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, struct xmit_buf *pmem);
 void _rtw_write_port23a_cancel(struct rtw_adapter *adapter);
 
 #ifdef DBG_IO
@@ -282,34 +268,20 @@ int dbg_rtw_writeN23a(struct rtw_adapter *adapter, u32 addr ,u32 length , u8 *da
 #define rtw_read8(adapter, addr) dbg_rtw_read823a((adapter), (addr), __FUNCTION__, __LINE__)
 #define rtw_read16(adapter, addr) dbg_rtw_read1623a((adapter), (addr), __FUNCTION__, __LINE__)
 #define rtw_read32(adapter, addr) dbg_rtw_read3223a((adapter), (addr), __FUNCTION__, __LINE__)
-#define rtw_read_mem(adapter, addr, cnt, mem) _rtw_read_mem23a((adapter), (addr), (cnt), (mem))
-#define rtw_read_port(adapter, addr, cnt, mem) _rtw_read_port23a((adapter), (addr), (cnt), (mem))
-#define rtw_read_port_cancel(adapter) _rtw_read_port23a_cancel((adapter))
 
 #define  rtw_write8(adapter, addr, val) dbg_rtw_write823a((adapter), (addr), (val), __FUNCTION__, __LINE__)
 #define  rtw_write16(adapter, addr, val) dbg_rtw_write1623a((adapter), (addr), (val), __FUNCTION__, __LINE__)
 #define  rtw_write32(adapter, addr, val) dbg_rtw_write3223a((adapter), (addr), (val), __FUNCTION__, __LINE__)
 #define  rtw_writeN(adapter, addr, length, data) dbg_rtw_writeN23a((adapter), (addr), (length), (data), __FUNCTION__, __LINE__)
-
-#define rtw_write_mem(adapter, addr, cnt, mem) _rtw_write_mem23a((adapter), addr, cnt, mem)
-#define rtw_write_port(adapter, addr, cnt, mem) _rtw_write_port23a(adapter, addr, cnt, mem)
-#define rtw_write_port_cancel(adapter) _rtw_write_port23a_cancel(adapter)
 #else /* DBG_IO */
 #define rtw_read8(adapter, addr) _rtw_read823a((adapter), (addr))
 #define rtw_read16(adapter, addr) _rtw_read1623a((adapter), (addr))
 #define rtw_read32(adapter, addr) _rtw_read3223a((adapter), (addr))
-#define rtw_read_mem(adapter, addr, cnt, mem) _rtw_read_mem23a((adapter), (addr), (cnt), (mem))
-#define rtw_read_port(adapter, addr, cnt, mem) _rtw_read_port23a((adapter), (addr), (cnt), (mem))
-#define rtw_read_port_cancel(adapter) _rtw_read_port23a_cancel((adapter))
 
 #define  rtw_write8(adapter, addr, val) _rtw_write823a((adapter), (addr), (val))
 #define  rtw_write16(adapter, addr, val) _rtw_write1623a((adapter), (addr), (val))
 #define  rtw_write32(adapter, addr, val) _rtw_write3223a((adapter), (addr), (val))
 #define  rtw_writeN(adapter, addr, length, data) _rtw_writeN23a((adapter), (addr), (length), (data))
-
-#define rtw_write_mem(adapter, addr, cnt, mem) _rtw_write_mem23a((adapter), (addr), (cnt), (mem))
-#define rtw_write_port(adapter, addr, cnt, mem) _rtw_write_port23a((adapter), (addr), (cnt), (mem))
-#define rtw_write_port_cancel(adapter) _rtw_write_port23a_cancel((adapter))
 #endif /* DBG_IO */
 
 #define PlatformEFIOWrite1Byte(_a,_b,_c)		\

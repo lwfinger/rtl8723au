@@ -22,9 +22,9 @@
 int rtw_hw_suspend23a(struct rtw_adapter *padapter);
 int rtw_hw_resume23a(struct rtw_adapter *padapter);
 
-u8 rtw_init_drv_sw23a(struct rtw_adapter *padapter);
-u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter);
-u8 rtw_reset_drv_sw23a(struct rtw_adapter *padapter);
+int rtw_init_drv_sw23a(struct rtw_adapter *padapter);
+int rtw_free_drv_sw23a(struct rtw_adapter *padapter);
+int rtw_reset_drv_sw23a(struct rtw_adapter *padapter);
 
 void rtw_cancel_all_timer23a(struct rtw_adapter *padapter);
 
@@ -40,5 +40,9 @@ void rtw_ips_pwr_down23a(struct rtw_adapter *padapter);
 
 int rtw_drv_register_netdev(struct rtw_adapter *padapter);
 void rtw_ndev_destructor(struct net_device *ndev);
+
+int rtl8723au_inirp_init(struct rtw_adapter *Adapter);
+int rtl8723au_inirp_deinit(struct rtw_adapter *Adapter);
+void rtl8723a_usb_intf_stop(struct rtw_adapter *padapter);
 
 #endif	/* _OSDEP_INTF_H_ */

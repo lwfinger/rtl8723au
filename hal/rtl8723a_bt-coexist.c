@@ -4662,8 +4662,8 @@ bthci_StateConnected(struct rtw_adapter *padapter,
 
 		/*  for rate adaptive */
 
-		if (padapter->HalFunc.UpdateRAMaskHandler)
-			padapter->HalFunc.UpdateRAMaskHandler(padapter, MAX_FW_SUPPORT_MACID_NUM-1-EntryNum, 0);
+		rtl8723a_update_ramask(padapter,
+				       MAX_FW_SUPPORT_MACID_NUM-1-EntryNum, 0);
 
 		HalSetBrateCfg23a(padapter, padapter->mlmepriv.cur_network.network.SupportedRates);
 		BTDM_SetFwChnlInfo(padapter, RT_MEDIA_CONNECT);
@@ -9530,7 +9530,8 @@ static void BTDM_Display8723ABtCoexInfo(struct rtw_adapter *padapter)
 
 					btInfoExt = pHalData->bt_coexist.halCoex8723.btInfoExt;
 					rsprintf(btCoexDbgBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s", "A2DP rate", \
-						(btInfoExt&BIT0) ? "Basic rate" : "EDR rate");
+						 (btInfoExt & BIT(0)) ?
+						 "Basic rate" : "EDR rate");
 					DCMD_Printf(btCoexDbgBuf);
 				} else {
 					rsprintf(btCoexDbgBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s/ %s", "Bt link type/spec", \

@@ -27,8 +27,6 @@ Compiler Flag Option:
 1. For USB:
    a. USE_ASYNC_IRP: Both sync/async operations are provided.
 
-Only sync read/rtw_write_mem operations are provided.
-
 jackson@realtek.com.tw
 
 */
@@ -72,7 +70,10 @@ int _rtw_write823a(struct rtw_adapter *adapter, u32 addr, u8 val)
 
 	ret = io_ops->_write8(adapter, addr, val);
 
-	return RTW_STATUS_CODE23a(ret);
+	if (ret < 0)
+		return _FAIL;
+	else
+		return _SUCCESS;
 }
 
 int _rtw_write1623a(struct rtw_adapter *adapter, u32 addr, u16 val)
@@ -82,7 +83,10 @@ int _rtw_write1623a(struct rtw_adapter *adapter, u32 addr, u16 val)
 
 	ret = io_ops->_write16(adapter, addr, val);
 
-	return RTW_STATUS_CODE23a(ret);
+	if (ret < 0)
+		return _FAIL;
+	else
+		return _SUCCESS;
 }
 
 int _rtw_write3223a(struct rtw_adapter *adapter, u32 addr, u32 val)
@@ -92,7 +96,10 @@ int _rtw_write3223a(struct rtw_adapter *adapter, u32 addr, u32 val)
 
 	ret = io_ops->_write32(adapter, addr, val);
 
-	return RTW_STATUS_CODE23a(ret);
+	if (ret < 0)
+		return _FAIL;
+	else
+		return _SUCCESS;
 }
 
 int _rtw_writeN23a(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdata)
@@ -102,77 +109,8 @@ int _rtw_writeN23a(struct rtw_adapter *adapter, u32 addr , u32 length , u8 *pdat
 
 	ret = io_ops->_writeN(adapter, addr, length, pdata);
 
-	return RTW_STATUS_CODE23a(ret);
-}
-void _rtw_read_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
-{
-	struct _io_ops *io_ops = &adapter->io_ops;
-
-	if ((adapter->bDriverStopped == true) ||
-	    (adapter->bSurpriseRemoved == true)) {
-	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_,
-		      ("rtw_read_mem:bDriverStopped(%d) OR "
-		       "bSurpriseRemoved(%d)", adapter->bDriverStopped,
-		       adapter->bSurpriseRemoved));
-	     return;
-	}
-
-	io_ops->_read_mem(adapter, addr, cnt, pmem);
-}
-
-void _rtw_write_mem23a(struct rtw_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
-{
-	struct _io_ops *io_ops = &adapter->io_ops;
-
-	io_ops->_write_mem(adapter, addr, cnt, pmem);
-}
-
-void _rtw_read_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt,
-		       struct recv_buf *rbuf)
-{
-	struct _io_ops *io_ops = &adapter->io_ops;
-
-	if ((adapter->bDriverStopped == true) ||
-	    (adapter->bSurpriseRemoved == true)) {
-	     RT_TRACE(_module_rtl871x_io_c_, _drv_info_,
-		      ("rtw_read_port:bDriverStopped(%d) OR "
-		       "bSurpriseRemoved(%d)", adapter->bDriverStopped,
-		       adapter->bSurpriseRemoved));
-	     return;
-	}
-
-	io_ops->_read_port(adapter, addr, cnt, rbuf);
-}
-
-void _rtw_read_port23a_cancel(struct rtw_adapter *adapter)
-{
-	void (*_read_port_cancel)(struct rtw_adapter *adapter);
-	struct _io_ops *io_ops = &adapter->io_ops;
-
-	_read_port_cancel = io_ops->_read_port_cancel;
-
-	if (_read_port_cancel)
-		_read_port_cancel(adapter);
-}
-
-u32 _rtw_write_port23a(struct rtw_adapter *adapter, u32 addr, u32 cnt,
-		    struct xmit_buf *xbuf)
-{
-	struct _io_ops *io_ops = &adapter->io_ops;
-	u32 ret = _SUCCESS;
-
-	ret = io_ops->_write_port(adapter, addr, cnt, xbuf);
-
-	return ret;
-}
-
-void _rtw_write_port23a_cancel(struct rtw_adapter *adapter)
-{
-	void (*_write_port_cancel)(struct rtw_adapter *adapter);
-	struct _io_ops *io_ops = &adapter->io_ops;
-
-	_write_port_cancel = io_ops->_write_port_cancel;
-
-	if (_write_port_cancel)
-		_write_port_cancel(adapter);
+	if (ret < 0)
+		return _FAIL;
+	else
+		return _SUCCESS;
 }

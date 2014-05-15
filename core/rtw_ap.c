@@ -18,6 +18,8 @@
 #include <drv_types.h>
 #include <linux/ieee80211.h>
 #include <wifi.h>
+#include <rtl8723a_cmd.h>
+#include <rtl8723a_hal.h>
 
 #ifdef CONFIG_8723AU_AP_MODE
 
@@ -380,9 +382,9 @@ void add_RATid23a(struct rtw_adapter *padapter, struct sta_info *psta, u8 rssi_l
 		else
 			limit = 8;/*   1R */
 
-		for (i = 0; i<limit; i++) {
-			if (psta_ht->ht_cap.mcs.rx_mask[i/8] & BIT(i%8))
-				tx_ra_bitmap |= CHKBIT(i+12);
+		for (i = 0; i < limit; i++) {
+			if (psta_ht->ht_cap.mcs.rx_mask[i / 8] & BIT(i % 8))
+				tx_ra_bitmap |= BIT(i + 12);
 		}
 
 		/* max short GI rate */
@@ -430,7 +432,7 @@ void add_RATid23a(struct rtw_adapter *padapter, struct sta_info *psta, u8 rssi_l
 		/* bitmap[28:31]= Rate Adaptive id */
 		/* arg[0:4] = macid */
 		/* arg[5] = Short GI */
-		rtw_hal_add_ra_tid23a(padapter, tx_ra_bitmap, arg, rssi_level);
+		rtl8723a_add_rateatid(padapter, tx_ra_bitmap, arg, rssi_level);
 
 		if (shortGIrate == true)
 			init_rate |= BIT(6);
@@ -496,7 +498,7 @@ static void update_bmc_sta(struct rtw_adapter *padapter)
 		init_rate = get_highest_rate_idx23a(tx_ra_bitmap&0x0fffffff)&0x3f;
 
 		/* ap mode */
-		rtw_hal_set_odm_var23a(padapter, HAL_ODM_STA_INFO, psta, true);
+		rtl8723a_SetHalODMVar(padapter, HAL_ODM_STA_INFO, psta, true);
 
 		{
 			u8 arg = 0;
@@ -513,8 +515,7 @@ static void update_bmc_sta(struct rtw_adapter *padapter)
 			/* bitmap[28:31]= Rate Adaptive id */
 			/* arg[0:4] = macid */
 			/* arg[5] = Short GI */
-			rtw_hal_add_ra_tid23a(padapter, tx_ra_bitmap, arg, 0);
-
+			rtl8723a_add_rateatid(padapter, tx_ra_bitmap, arg, 0);
 		}
 
 		/* set ra_id, init_rate */
@@ -552,7 +553,7 @@ void update_sta_info23a_apmode23a(struct rtw_adapter *padapter, struct sta_info 
 	DBG_8723A("%s\n", __func__);
 
 	/* ap mode */
-	rtw_hal_set_odm_var23a(padapter, HAL_ODM_STA_INFO, psta, true);
+	rtl8723a_SetHalODMVar(padapter, HAL_ODM_STA_INFO, psta, true);
 
 	if (psecuritypriv->dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)
 		psta->ieee8021x_blocked = true;
@@ -1778,8 +1779,8 @@ int rtw_ap_inform_ch_switch23a (struct rtw_adapter *padapter, u8 new_ch, u8 ch_o
 	if ((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
 		return ret;
 
-	DBG_8723A(FUNC_NDEV_FMT" with ch:%u, offset:%u\n",
-		FUNC_NDEV_ARG(padapter->pnetdev), new_ch, ch_offset);
+	DBG_8723A("%s(%s): with ch:%u, offset:%u\n", __func__,
+		  padapter->pnetdev->name, new_ch, ch_offset);
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 	phead = &pstapriv->asoc_list;
@@ -1810,7 +1811,7 @@ int rtw_sta_flush23a(struct rtw_adapter *padapter)
 	struct sta_info *chk_alive_list[NUM_STA];
 	int i;
 
-	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(padapter->pnetdev));
+	DBG_8723A("%s(%s)\n", __func__, padapter->pnetdev->name);
 
 	if ((pmlmeinfo->state&0x03) != WIFI_FW_AP_STATE)
 		return ret;

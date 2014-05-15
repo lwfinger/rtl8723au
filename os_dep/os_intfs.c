@@ -21,7 +21,8 @@
 #include <hal_intf.h>
 #include <rtw_version.h>
 
-#include <usb_osintf.h>
+#include <rtl8723a_hal.h>
+
 #include <linux/version.h>
 
 MODULE_LICENSE("GPL");
@@ -171,10 +172,10 @@ MODULE_PARM_DESC(debug, "Set debug level (1-9) (default 1)");
 
 static int netdev_close(struct net_device *pnetdev);
 
-static uint loadparam(struct rtw_adapter *padapter,  struct net_device *pnetdev)
+static int loadparam(struct rtw_adapter *padapter,  struct net_device *pnetdev)
 {
 	struct registry_priv  *registry_par = &padapter->registrypriv;
-	uint status = _SUCCESS;
+	int status = _SUCCESS;
 
 	GlobalDebugLevel23A = rtw_debug;
 	registry_par->chip_version = (u8)rtw_chip_version;
@@ -273,9 +274,9 @@ static struct net_device_stats *rtw_net_get_stats(struct net_device *pnetdev)
 static const u16 rtw_1d_to_queue[8] = { 2, 3, 3, 2, 1, 1, 0, 0 };
 
 /* Given a data frame determine the 802.1p/1d tag to use. */
-static unsigned int rtw_classify8021d(struct sk_buff *skb)
+static u32 rtw_classify8021d(struct sk_buff *skb)
 {
-	unsigned int dscp;
+	u32 dscp;
 
 	/* skb->priority values from 256->263 are magic values to
 	 * directly indicate a specific 802.1d priority.  This is used
@@ -377,13 +378,13 @@ struct net_device *rtw_init_netdev23a(struct rtw_adapter *old_padapter)
 	return pnetdev;
 }
 
-static u8 rtw_init_default_value(struct rtw_adapter *padapter)
+static int rtw_init_default_value(struct rtw_adapter *padapter)
 {
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
-	u8 ret = _SUCCESS;
+	int ret = _SUCCESS;
 
 	/* xmit_priv */
 	pxmitpriv->vcs_setting = pregistrypriv->vrtl_carrier_sense;
@@ -419,7 +420,7 @@ static u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	rtw_update_registrypriv_dev_network23a(padapter);
 
 	/* hal_priv */
-	rtw_hal_def_value_init23a(padapter);
+	rtl8723a_init_default_value(padapter);
 
 	/* misc. */
 	padapter->bReadPortCancel = false;
@@ -428,14 +429,13 @@ static u8 rtw_init_default_value(struct rtw_adapter *padapter)
 	return ret;
 }
 
-u8 rtw_reset_drv_sw23a(struct rtw_adapter *padapter)
+int rtw_reset_drv_sw23a(struct rtw_adapter *padapter)
 {
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
-	u8 ret8 = _SUCCESS;
 
 	/* hal_priv */
-	rtw_hal_def_value_init23a(padapter);
+	rtl8723a_init_default_value(padapter);
 	padapter->bReadPortCancel = false;
 	padapter->bWritePortCancel = false;
 	pmlmepriv->scan_interval = SCAN_INTERVAL;/*  30*2 sec = 60sec */
@@ -447,23 +447,23 @@ u8 rtw_reset_drv_sw23a(struct rtw_adapter *padapter)
 
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING);
 
-	rtw_hal_sreset_reset23a_value23a(padapter);
+	rtw_sreset_reset_value(padapter);
 	pwrctrlpriv->pwr_state_check_cnts = 0;
 
 	/* mlmeextpriv */
 	padapter->mlmeextpriv.sitesurvey_res.state = SCAN_DISABLE;
 
 	rtw_set_signal_stat_timer(&padapter->recvpriv);
-	return ret8;
+	return _SUCCESS;
 }
 
-u8 rtw_init_drv_sw23a(struct rtw_adapter *padapter)
+int rtw_init_drv_sw23a(struct rtw_adapter *padapter)
 {
-	u8 ret8 = _SUCCESS;
+	int ret8 = _SUCCESS;
 
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("+rtw_init_drv_sw23a\n"));
 
-	if ((rtw_init_cmd_priv23a(&padapter->cmdpriv)) == _FAIL) {
+	if (rtw_init_cmd_priv23a(&padapter->cmdpriv) == _FAIL) {
 		RT_TRACE(_module_os_intfs_c_, _drv_err_,
 			 ("\n Can't init cmd_priv\n"));
 		ret8 = _FAIL;
@@ -520,10 +520,9 @@ u8 rtw_init_drv_sw23a(struct rtw_adapter *padapter)
 
 	ret8 = rtw_init_default_value(padapter);
 
-	rtw_hal_dm_init23a(padapter);
-	rtw_hal_sw_led_init23a(padapter);
+	rtl8723a_init_dm_priv(padapter);
 
-	rtw_hal_sreset_init23a(padapter);
+	rtw_sreset_init(padapter);
 
 exit:
 
@@ -533,38 +532,37 @@ exit:
 
 void rtw_cancel_all_timer23a(struct rtw_adapter *padapter)
 {
-	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("+rtw_cancel_all_timer23a\n"));
+	RT_TRACE(_module_os_intfs_c_, _drv_info_,
+		 ("+rtw_cancel_all_timer23a\n"));
 
 	del_timer_sync(&padapter->mlmepriv.assoc_timer);
 	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("rtw_cancel_all_timer23a:cancel association timer complete!\n"));
+		 ("%s:cancel association timer complete!\n", __func__));
 
 	del_timer_sync(&padapter->mlmepriv.scan_to_timer);
 	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("rtw_cancel_all_timer23a:cancel scan_to_timer!\n"));
+		 ("%s:cancel scan_to_timer!\n", __func__));
 
 	del_timer_sync(&padapter->mlmepriv.dynamic_chk_timer);
 	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("rtw_cancel_all_timer23a:cancel dynamic_chk_timer!\n"));
+		 ("%s:cancel dynamic_chk_timer!\n", __func__));
 
-	/*  cancel sw led timer */
-	rtw_hal_sw_led_deinit23a(padapter);
 	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("rtw_cancel_all_timer23a:cancel DeInitSwLeds!\n"));
+		 ("%s:cancel DeInitSwLeds!\n", __func__));
 
 	del_timer_sync(&padapter->pwrctrlpriv.pwr_state_check_timer);
 
 	del_timer_sync(&padapter->mlmepriv.set_scan_deny_timer);
 	rtw_clear_scan_deny(padapter);
 	RT_TRACE(_module_os_intfs_c_, _drv_info_,
-		 ("rtw_cancel_all_timer23a:cancel set_scan_deny_timer!\n"));
+		 ("%s:cancel set_scan_deny_timer!\n", __func__));
 
 	del_timer_sync(&padapter->recvpriv.signal_stat_timer);
 	/* cancel dm timer */
-	rtw_hal_dm_deinit23a(padapter);
+	rtl8723a_deinit_dm_priv(padapter);
 }
 
-u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter)
+int rtw_free_drv_sw23a(struct rtw_adapter *padapter)
 {
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("==>rtw_free_drv_sw23a"));
 
@@ -576,13 +574,15 @@ u8 rtw_free_drv_sw23a(struct rtw_adapter *padapter)
 
 	_rtw_free_xmit_priv23a(&padapter->xmitpriv);
 
-	_rtw_free_sta_priv23a(&padapter->stapriv);/* will free bcmc_stainfo here */
+	/* will free bcmc_stainfo here */
+	_rtw_free_sta_priv23a(&padapter->stapriv);
 
 	_rtw_free_recv_priv23a(&padapter->recvpriv);
 
 	rtw_free_pwrctrl_priv(padapter);
 
-	rtw_hal_free_data23a(padapter);
+	kfree(padapter->HalData);
+	padapter->HalData = NULL;
 
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("<== rtw_free_drv_sw23a\n"));
 
@@ -605,7 +605,7 @@ static int _rtw_drv_register_netdev(struct rtw_adapter *padapter, char *name)
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev)) {
-		DBG_8723A(FUNC_NDEV_FMT "Failed!\n", FUNC_NDEV_ARG(pnetdev));
+		DBG_8723A("%s(%s): Failed!\n", __func__, pnetdev->name);
 		ret = _FAIL;
 		goto error_register_netdev;
 	}
@@ -628,26 +628,30 @@ int rtw_drv_register_netdev(struct rtw_adapter *if1)
 	struct dvobj_priv *dvobj = if1->dvobj;
 	int i, status = _SUCCESS;
 
-	if (dvobj->iface_nums < IFACE_ID_MAX) {
-		for (i = 0; i < dvobj->iface_nums; i++) {
-			struct rtw_adapter *padapter = dvobj->padapters[i];
+	if (dvobj->iface_nums >= IFACE_ID_MAX) {
+		status = _FAIL; /* -EINVAL */
+		goto exit;
+	}
 
-			if (padapter) {
-				char *name;
+	for (i = 0; i < dvobj->iface_nums; i++) {
+		struct rtw_adapter *padapter = dvobj->padapters[i];
 
-				if (padapter->iface_id == IFACE_ID0)
-					name = if1->registrypriv.ifname;
-				else if (padapter->iface_id == IFACE_ID1)
-					name = if1->registrypriv.if2name;
-				else
-					name = "wlan%d";
-				status = _rtw_drv_register_netdev(padapter,
-								  name);
-				if (status != _SUCCESS)
-					break;
-			}
+		if (padapter) {
+			char *name;
+
+			if (padapter->iface_id == IFACE_ID0)
+				name = if1->registrypriv.ifname;
+			else if (padapter->iface_id == IFACE_ID1)
+				name = if1->registrypriv.if2name;
+			else
+				name = "wlan%d";
+			status = _rtw_drv_register_netdev(padapter, name);
+			if (status != _SUCCESS)
+				break;
 		}
 	}
+
+exit:
 	return status;
 }
 
@@ -656,7 +660,7 @@ int netdev_open23a(struct net_device *pnetdev)
 	struct rtw_adapter *padapter = netdev_priv(pnetdev);
 	struct pwrctrl_priv *pwrctrlpriv;
 	int ret = 0;
-	uint status;
+	int status;
 
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("+871x_drv - dev_open\n"));
 	DBG_8723A("+871x_drv - drv_open, bup =%d\n", padapter->bup);
@@ -689,8 +693,7 @@ int netdev_open23a(struct net_device *pnetdev)
 			goto netdev_open23a_error;
 		}
 
-		if (padapter->intf_start)
-			padapter->intf_start(padapter);
+		rtl8723au_inirp_init(padapter);
 
 		rtw_cfg80211_init_wiphy(padapter);
 
@@ -734,7 +737,7 @@ netdev_open23a_error:
 	goto exit;
 }
 
-static int  ips_netdrv_open(struct rtw_adapter *padapter)
+static int ips_netdrv_open(struct rtw_adapter *padapter)
 {
 	int status = _SUCCESS;
 
@@ -752,8 +755,7 @@ static int  ips_netdrv_open(struct rtw_adapter *padapter)
 		goto netdev_open23a_error;
 	}
 
-	if (padapter->intf_start)
-		padapter->intf_start(padapter);
+	rtl8723au_inirp_init(padapter);
 
 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
 	mod_timer(&padapter->mlmepriv.dynamic_chk_timer,
@@ -807,8 +809,7 @@ void rtw_ips_dev_unload23a(struct rtw_adapter *padapter)
 {
 	rtl8723a_fifo_cleanup(padapter);
 
-	if (padapter->intf_stop)
-		padapter->intf_stop(padapter);
+	rtl8723a_usb_intf_stop(padapter);
 
 	/* s5. */
 	if (!padapter->bSurpriseRemoved)
@@ -841,8 +842,8 @@ static int netdev_close(struct net_device *pnetdev)
 	padapter->net_closed = true;
 
 	if (padapter->pwrctrlpriv.rf_pwrstate == rf_on) {
-		DBG_8723A("(2)871x_drv - drv_close, bup =%d, hw_init_completed =%d\n",
-			  padapter->bup,
+		DBG_8723A("(2)871x_drv - drv_close, bup =%d, "
+			  "hw_init_completed =%d\n", padapter->bup,
 			  padapter->hw_init_completed);
 
 		/* s1. */
@@ -876,7 +877,13 @@ static int netdev_close(struct net_device *pnetdev)
 
 void rtw_ndev_destructor(struct net_device *ndev)
 {
-	DBG_8723A(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
+	DBG_8723A("%s(%s)\n", __func__, ndev->name);
 	kfree(ndev->ieee80211_ptr);
 	free_netdev(ndev);
+}
+
+void _rtw_init_queue23a(struct rtw_queue *pqueue)
+{
+	INIT_LIST_HEAD(&pqueue->queue);
+	spin_lock_init(&pqueue->lock);
 }

@@ -32,7 +32,8 @@ static unsigned char REALTEK_OUI[] = {0x00, 0xe0, 0x4c};
 static unsigned char AIRGOCAP_OUI[] = {0x00, 0x0a, 0xf5};
 static unsigned char EPIGRAM_OUI[] = {0x00, 0x90, 0x4c};
 
-unsigned char REALTEK_96B_IE23A[] = {0x00, 0xe0, 0x4c, 0x02, 0x01, 0x20};
+static unsigned char WPA_TKIP_CIPHER[4] = {0x00, 0x50, 0xf2, 0x02};
+static unsigned char RSN_TKIP_CIPHER[4] = {0x00, 0x0f, 0xac, 0x02};
 
 #define R2T_PHY_DELAY		0
 
@@ -334,7 +335,7 @@ void SelectChannel23a(struct rtw_adapter *padapter, unsigned char channel)
 	/* saved channel info */
 	rtw_set_oper_ch23a(padapter, channel);
 
-	rtw_hal_set_chan23a(padapter, channel);
+	PHY_SwChnl8723A(padapter, channel);
 
 	mutex_unlock(&adapter_to_dvobj(padapter)->setch_mutex);
 }
@@ -347,8 +348,8 @@ void SetBWMode23a(struct rtw_adapter *padapter, unsigned short bwmode, unsigned 
 	rtw_set_oper_bw23a(padapter, bwmode);
 	rtw_set_oper_ch23aoffset23a(padapter, channel_offset);
 
-	rtw_hal_set_bwmode23a(padapter, (enum ht_channel_width)bwmode,
-			   channel_offset);
+	PHY_SetBWMode23a8723A(padapter, (enum ht_channel_width)bwmode,
+			      channel_offset);
 
 	mutex_unlock(&adapter_to_dvobj(padapter)->setbw_mutex);
 }
@@ -385,7 +386,7 @@ void set_channel_bwmode23a(struct rtw_adapter *padapter, unsigned char channel,
 	rtw_set_oper_bw23a(padapter, bwmode);
 	rtw_set_oper_ch23aoffset23a(padapter, channel_offset);
 
-	rtw_hal_set_chan23a(padapter, center_ch); /*  set center channel */
+	PHY_SwChnl8723A(padapter, center_ch); /*  set center channel */
 
 	mutex_unlock(&adapter_to_dvobj(padapter)->setch_mutex);
 
@@ -414,13 +415,13 @@ u16 get_beacon_interval23a(struct wlan_bssid_ex *bss)
 	return le16_to_cpu(val);
 }
 
-int is_client_associated_to_ap23a(struct rtw_adapter *padapter)
+bool is_client_associated_to_ap23a(struct rtw_adapter *padapter)
 {
 	struct mlme_ext_priv *pmlmeext;
 	struct mlme_ext_info *pmlmeinfo;
 
 	if (!padapter)
-		return _FAIL;
+		return false;
 
 	pmlmeext = &padapter->mlmeextpriv;
 	pmlmeinfo = &pmlmeext->mlmext_info;
@@ -429,10 +430,10 @@ int is_client_associated_to_ap23a(struct rtw_adapter *padapter)
 	    (pmlmeinfo->state & 0x03) == WIFI_FW_STATION_STATE)
 		return true;
 	else
-		return _FAIL;
+		return false;
 }
 
-int is_client_associated_to_ibss23a(struct rtw_adapter *padapter)
+bool is_client_associated_to_ibss23a(struct rtw_adapter *padapter)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -441,10 +442,10 @@ int is_client_associated_to_ibss23a(struct rtw_adapter *padapter)
 	    (pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)
 		return true;
 	else
-		return _FAIL;
+		return false;
 }
 
-int is_IBSS_empty23a(struct rtw_adapter *padapter)
+bool is_IBSS_empty23a(struct rtw_adapter *padapter)
 {
 	unsigned int i;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -452,7 +453,7 @@ int is_IBSS_empty23a(struct rtw_adapter *padapter)
 
 	for (i = IBSS_START_MAC_ID; i < NUM_STA; i++) {
 		if (pmlmeinfo->FW_sta_info[i].status == 1)
-			return _FAIL;
+			return false;
 	}
 
 	return true;
@@ -1165,7 +1166,7 @@ void update_beacon23a_info(struct rtw_adapter *padapter, u8 *pframe, uint pkt_le
 	}
 }
 
-unsigned int is_ap_in_tkip23a(struct rtw_adapter *padapter)
+bool is_ap_in_tkip23a(struct rtw_adapter *padapter)
 {
 	u32 i;
 	struct ndis_802_11_var_ies *pIE;
@@ -1183,12 +1184,11 @@ unsigned int is_ap_in_tkip23a(struct rtw_adapter *padapter)
 			case WLAN_EID_VENDOR_SPECIFIC:
 				if (!memcmp(pIE->data, RTW_WPA_OUI23A_TYPE, 4)&&
 				    !memcmp((pIE->data + 12),
-					    WPA_TKIP_CIPHER23A, 4))
+					    WPA_TKIP_CIPHER, 4))
 					return true;
 				break;
 			case WLAN_EID_RSN:
-				if (!memcmp(pIE->data + 8, RSN_TKIP_CIPHER23A,
-					    4))
+				if (!memcmp(pIE->data + 8, RSN_TKIP_CIPHER, 4))
 					return true;
 				break;
 			default:
@@ -1201,7 +1201,7 @@ unsigned int is_ap_in_tkip23a(struct rtw_adapter *padapter)
 		return false;
 }
 
-unsigned int should_forbid_n_rate23a(struct rtw_adapter * padapter)
+bool should_forbid_n_rate23a(struct rtw_adapter * padapter)
 {
 	u32 i;
 	struct ndis_802_11_var_ies *pIE;
@@ -1241,7 +1241,7 @@ unsigned int should_forbid_n_rate23a(struct rtw_adapter * padapter)
 	}
 }
 
-unsigned int is_ap_in_wep23a(struct rtw_adapter *padapter)
+bool is_ap_in_wep23a(struct rtw_adapter *padapter)
 {
 	u32 i;
 	struct ndis_802_11_var_ies *pIE;
@@ -1681,11 +1681,6 @@ void process_addba_req23a(struct rtw_adapter *padapter,
 		preorder_ctrl->enable = (pmlmeinfo->bAcceptAddbaReq == true) ?
 			true : false;
 	}
-}
-
-void beacon_timing_control23a(struct rtw_adapter *padapter)
-{
-	rtw_hal_bcn_related_reg_setting23a(padapter);
 }
 
 static struct rtw_adapter *pbuddy_padapter;

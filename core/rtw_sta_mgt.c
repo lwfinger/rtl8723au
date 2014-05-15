@@ -20,6 +20,7 @@
 #include <xmit_osdep.h>
 #include <mlme_osdep.h>
 #include <sta_info.h>
+#include <rtl8723a_hal.h>
 
 static void _rtw_init_stainfo(struct sta_info *psta)
 {
@@ -48,14 +49,12 @@ static void _rtw_init_stainfo(struct sta_info *psta)
 #endif	/*  CONFIG_8723AU_AP_MODE */
 }
 
-u32 _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
+int _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
 {
 	int i;
 
 	spin_lock_init(&pstapriv->sta_hash_lock);
 	pstapriv->asoc_sta_count = 0;
-	_rtw_init_queue23a(&pstapriv->sleep_q);
-	_rtw_init_queue23a(&pstapriv->wakeup_q);
 	for (i = 0; i < NUM_STA; i++)
 		INIT_LIST_HEAD(&pstapriv->sta_hash[i]);
 
@@ -78,12 +77,12 @@ u32 _rtw_init_sta_priv23a(struct sta_priv *pstapriv)
 	return _SUCCESS;
 }
 
-u32	_rtw_free_sta_priv23a(struct	sta_priv *pstapriv)
+int _rtw_free_sta_priv23a(struct sta_priv *pstapriv)
 {
 	struct list_head *phead, *plist, *ptmp;
 	struct sta_info *psta;
 	struct recv_reorder_ctrl *preorder_ctrl;
-	int	index;
+	int index;
 
 	if (pstapriv) {
 		/*	delete all reordering_ctrl_timer		*/
@@ -187,7 +186,7 @@ exit:
 }
 
 /*  using pstapriv->sta_hash_lock to protect */
-u32 rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
+int rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 	struct recv_reorder_ctrl *preorder_ctrl;
 	struct	sta_xmit_priv	*pstaxmitpriv;
@@ -255,7 +254,6 @@ u32 rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 		struct list_head	*phead, *plist;
 		struct recv_frame *prframe;
 		struct rtw_queue *ppending_recvframe_queue;
-		struct rtw_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
 		preorder_ctrl = &psta->recvreorder_ctrl[i];
 
@@ -271,12 +269,12 @@ u32 rtw_free_stainfo23a(struct rtw_adapter *padapter, struct sta_info *psta)
 			prframe = container_of(plist, struct recv_frame, list);
 			plist = plist->next;
 			list_del_init(&prframe->list);
-			rtw_free_recvframe23a(prframe, pfree_recv_queue);
+			rtw_free_recvframe23a(prframe);
 		}
 		spin_unlock_bh(&ppending_recvframe_queue->lock);
 	}
 	if (!(psta->state & WIFI_AP_STATE))
-		rtw_hal_set_odm_var23a(padapter, HAL_ODM_STA_INFO, psta, false);
+		rtl8723a_SetHalODMVar(padapter, HAL_ODM_STA_INFO, psta, false);
 #ifdef CONFIG_8723AU_AP_MODE
 	spin_lock_bh(&pstapriv->auth_list_lock);
 	if (!list_empty(&psta->auth_list)) {
@@ -375,12 +373,12 @@ struct sta_info *rtw_get_stainfo23a(struct sta_priv *pstapriv, const u8 *hwaddr)
 	return psta;
 }
 
-u32 rtw_init_bcmc_stainfo23a(struct rtw_adapter* padapter)
+int rtw_init_bcmc_stainfo23a(struct rtw_adapter* padapter)
 {
 	struct	sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info		*psta;
 	struct tx_servq	*ptxservq;
-	u32 res = _SUCCESS;
+	int res = _SUCCESS;
 	unsigned char bcast_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 	psta = rtw_alloc_stainfo23a(pstapriv, bcast_addr, GFP_KERNEL);
@@ -407,13 +405,13 @@ struct sta_info *rtw_get_bcmc_stainfo23a(struct rtw_adapter *padapter)
 	return psta;
 }
 
-u8 rtw_access_ctrl23a(struct rtw_adapter *padapter, u8 *mac_addr)
+bool rtw_access_ctrl23a(struct rtw_adapter *padapter, u8 *mac_addr)
 {
-	u8 res = true;
+	bool res = true;
 #ifdef CONFIG_8723AU_AP_MODE
 	struct list_head *plist, *phead;
 	struct rtw_wlan_acl_node *paclnode;
-	u8 match = false;
+	bool match = false;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 	struct rtw_queue *pacl_node_q = &pacl_list->acl_node_q;

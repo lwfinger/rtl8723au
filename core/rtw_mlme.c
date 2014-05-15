@@ -25,8 +25,7 @@
 #include <wifi.h>
 #include <wlan_bssdef.h>
 #include <rtw_ioctl_set.h>
-
-extern u8 rtw_do_join23a(struct rtw_adapter * padapter);
+#include <rtw_sreset.h>
 
 static void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 {
@@ -810,7 +809,7 @@ rtw_surveydone_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf)
 	rtw_os_xmit_schedule23a(adapter);
 
 	if (pmlmeext->sitesurvey_res.bss_cnt == 0)
-		rtw_hal_sreset_reset23a(adapter);
+		rtw_sreset_reset(adapter);
 
 	rtw_cfg80211_surveydone_event_callback(adapter);
 }
@@ -987,15 +986,15 @@ void rtw_scan_abort23a(struct rtw_adapter *adapter)
 		if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
 			break;
 
-		DBG_8723A(FUNC_NDEV_FMT "fw_state = _FW_UNDER_SURVEY!\n",
-			  FUNC_NDEV_ARG(adapter->pnetdev));
+		DBG_8723A("%s(%s): fw_state = _FW_UNDER_SURVEY!\n",
+			  __func__, adapter->pnetdev->name);
 		msleep(20);
 	}
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
 		if (!adapter->bDriverStopped && !adapter->bSurpriseRemoved)
-			DBG_8723A(FUNC_NDEV_FMT "waiting for scan_abort time "
-				  "out!\n", FUNC_NDEV_ARG(adapter->pnetdev));
+			DBG_8723A("%s(%s): waiting for scan_abort time out!\n",
+				  __func__, adapter->pnetdev->name);
 		rtw_cfg80211_indicate_scan_done(wdev_to_priv(adapter->rtw_wdev),
 						true);
 	}
@@ -1021,10 +1020,10 @@ rtw_joinbss_update_stainfo(struct rtw_adapter *padapter,
 		DBG_8723A("%s\n", __func__);
 
 		psta->aid  = pnetwork->join_res;
-			psta->mac_id = 0;
+		psta->mac_id = 0;
 
 		/* sta mode */
-		rtw_hal_set_odm_var23a(padapter, HAL_ODM_STA_INFO, psta, true);
+		rtl8723a_SetHalODMVar(padapter, HAL_ODM_STA_INFO, psta, true);
 
 		/* security related */
 		if (padapter->securitypriv.dot11AuthAlgrthm ==
@@ -1395,7 +1394,7 @@ void rtw_stassoc_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf)
 	/* psta->aid = (uint)pstassoc->cam_id; */
 	DBG_8723A("%s\n",__func__);
 	/* for ad-hoc mode */
-	rtw_hal_set_odm_var23a(adapter, HAL_ODM_STA_INFO, psta, true);
+	rtl8723a_SetHalODMVar(adapter, HAL_ODM_STA_INFO, psta, true);
 
 	if (adapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)
 		psta->dot118021XPrivacy =
@@ -1600,7 +1599,7 @@ void rtw_scan_timeout_handler23a(unsigned long data)
 	struct rtw_adapter *adapter = (struct rtw_adapter *)data;
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
-	DBG_8723A(FUNC_ADPT_FMT" fw_state =%x\n", FUNC_ADPT_ARG(adapter),
+	DBG_8723A("%s(%s): fw_state =%x\n", __func__, adapter->pnetdev->name,
 		  get_fwstate(pmlmepriv));
 
 	spin_lock_bh(&pmlmepriv->lock);
@@ -1869,6 +1868,11 @@ int rtw_set_key23a(struct rtw_adapter *adapter,
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 	int res = _SUCCESS;
 
+	if (keyid >= 4) {
+		res = _FAIL;
+		goto exit;
+	}
+
 	pcmd = (struct cmd_obj *)kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
 	if (!pcmd) {
 		res = _FAIL;  /* try again */
@@ -1895,10 +1899,10 @@ int rtw_set_key23a(struct rtw_adapter *adapter,
 			  "psecuritypriv->dot11PrivacyAlgrthm =%d\n",
 			  psetkeyparm->algorithm));
 	}
-	psetkeyparm->keyid = (u8)keyid;/* 0~3 */
+	psetkeyparm->keyid = keyid;/* 0~3 */
 	psetkeyparm->set_tx = set_tx;
 	if (is_wep_enc(psetkeyparm->algorithm))
-		pmlmepriv->key_mask |= CHKBIT(psetkeyparm->keyid);
+		pmlmepriv->key_mask |= BIT(psetkeyparm->keyid);
 
 	DBG_8723A("==> rtw_set_key23a algorithm(%x), keyid(%x), key_mask(%x)\n",
 		  psetkeyparm->algorithm, psetkeyparm->keyid,
@@ -2266,13 +2270,13 @@ unsigned int rtw_restructure_ht_ie23a(struct rtw_adapter *padapter, u8 *in_ie,
 			IEEE80211_HT_CAP_SGI_20 | IEEE80211_HT_CAP_SGI_40 |
 			IEEE80211_HT_CAP_TX_STBC | IEEE80211_HT_CAP_DSSSCCK40;
 
-		rtw_hal_get_def_var23a(padapter, HAL_DEF_RX_PACKET_OFFSET,
-				    &rx_packet_offset);
-		rtw_hal_get_def_var23a(padapter, HAL_DEF_MAX_RECVBUF_SZ,
-				    &max_recvbuf_sz);
+		GetHalDefVar8192CUsb(padapter, HAL_DEF_RX_PACKET_OFFSET,
+				     &rx_packet_offset);
+		GetHalDefVar8192CUsb(padapter, HAL_DEF_MAX_RECVBUF_SZ,
+				     &max_recvbuf_sz);
 
-		rtw_hal_get_def_var23a(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR,
-				    &max_rx_ampdu_factor);
+		GetHalDefVar8192CUsb(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR,
+				     &max_rx_ampdu_factor);
 		ht_capie.ampdu_params_info = max_rx_ampdu_factor & 0x03;
 
 		if (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)
@@ -2446,8 +2450,7 @@ void rtw_issue_addbareq_cmd23a(struct rtw_adapter *padapter,
 		if (issued == 0) {
 			DBG_8723A("rtw_issue_addbareq_cmd23a, p =%d\n",
 				  priority);
-			psta->htpriv.candidate_tid_bitmap |=
-				CHKBIT((u8)priority);
+			psta->htpriv.candidate_tid_bitmap |= BIT(priority);
 			rtw_addbareq_cmd23a(padapter, (u8) priority,
 					    pattrib->ra);
 		}

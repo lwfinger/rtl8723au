@@ -178,8 +178,6 @@ struct dvobj_priv {
 	u8	RtNumOutPipes;
 	int	ep_num[5]; /* endpoint number */
 
-	struct semaphore usb_suspend_sema;
-
 	struct mutex  usb_vendor_req_mutex;
 
 	u8 *usb_alloc_vendor_req_buf;
@@ -239,8 +237,6 @@ struct rtw_adapter {
 	u32	setband;
 
 	void *HalData;
-	u32 hal_data_sz;
-	struct hal_ops	HalFunc;
 
 	s32	bDriverStopped;
 	s32	bSurpriseRemoved;
@@ -255,9 +251,6 @@ struct rtw_adapter {
 	u8	init_adpt_in_progress;
 	u8	bHaltInProgress;
 
-	void (*intf_start)(struct rtw_adapter *adapter);
-	void (*intf_stop)(struct rtw_adapter *adapter);
-
 	struct net_device *pnetdev;
 
 	/*  used by rtw_rereg_nd_name related function */
@@ -268,7 +261,6 @@ struct rtw_adapter {
 	int net_closed;
 
 	u8 bFWReady;
-	u8 bBTFWReady;
 	u8 bReadPortCancel;
 	u8 bWritePortCancel;
 	/* The driver will show the desired chan nor when this flag is 1. */

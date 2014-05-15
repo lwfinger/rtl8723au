@@ -95,9 +95,7 @@ unsigned char	WFD_OUI23A[] = {0x50, 0x6F, 0x9A, 0x0A};
 unsigned char	WMM_INFO_OUI23A[] = {0x00, 0x50, 0xf2, 0x02, 0x00, 0x01};
 unsigned char	WMM_PARA_OUI23A[] = {0x00, 0x50, 0xf2, 0x02, 0x01, 0x01};
 
-unsigned char WPA_TKIP_CIPHER23A[4] = {0x00, 0x50, 0xf2, 0x02};
-unsigned char RSN_TKIP_CIPHER23A[4] = {0x00, 0x0f, 0xac, 0x02};
-
+static unsigned char REALTEK_96B_IE[] = {0x00, 0xe0, 0x4c, 0x02, 0x01, 0x20};
 
 /********************************************************
 MCS rate definitions
@@ -1235,8 +1233,8 @@ static int rtw_validate_frame_ies(const u8 *start, uint len)
 		case WLAN_EID_ERP_INFO:
 		case WLAN_EID_EXT_SUPP_RATES:
 		case WLAN_EID_VENDOR_SPECIFIC:
-		if (rtw_validate_vendor_specific_ies(pos, elen))
-			unknown++;
+			if (rtw_validate_vendor_specific_ies(pos, elen))
+				unknown++;
 			break;
 		case WLAN_EID_RSN:
 		case WLAN_EID_PWR_CAPABILITY:
@@ -2036,11 +2034,10 @@ static int OnAction23a_back23a(struct rtw_adapter *padapter,
 			tid = (capab & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
 			if (status == 0) {	/* successful */
 				DBG_8723A("agg_enable for TID =%d\n", tid);
-				psta->htpriv.agg_enable_bitmap |= 1 << tid;
-				psta->htpriv.candidate_tid_bitmap &=
-					~CHKBIT(tid);
+				psta->htpriv.agg_enable_bitmap |= BIT(tid);
+				psta->htpriv.candidate_tid_bitmap &= ~BIT(tid);
 			} else
-				psta->htpriv.agg_enable_bitmap &= ~CHKBIT(tid);
+				psta->htpriv.agg_enable_bitmap &= ~BIT(tid);
 			break;
 
 		case WLAN_ACTION_DELBA: /* DELBA */
@@ -2053,14 +2050,11 @@ static int OnAction23a_back23a(struct rtw_adapter *padapter,
 				preorder_ctrl->enable = false;
 				preorder_ctrl->indicate_seq = 0xffff;
 			} else {
-				psta->htpriv.agg_enable_bitmap &= ~(1 << tid);
-				psta->htpriv.candidate_tid_bitmap &=
-					~(1 << tid);
+				psta->htpriv.agg_enable_bitmap &= ~BIT(tid);
+				psta->htpriv.candidate_tid_bitmap &= ~BIT(tid);
 			}
 			reason_code = get_unaligned_le16(
 				&mgmt->u.action.u.delba.reason_code);
-			DBG_8723A("%s(): DELBA: %x(%x)\n", __func__,
-				  pmlmeinfo->agg_enable_bitmap, reason_code);
 			/* todo: how to notify the host while receiving
 			   DELETE BA */
 			break;
@@ -2071,7 +2065,7 @@ static int OnAction23a_back23a(struct rtw_adapter *padapter,
 	return _SUCCESS;
 }
 
-static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
+static int rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
 {
 	struct rtw_adapter *adapter = recv_frame->adapter;
 	struct mlme_ext_priv *mlmeext = &adapter->mlmeextpriv;
@@ -2086,17 +2080,17 @@ static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
 		if (token >= 0) {
 			if ((seq_ctrl == mlmeext->action_public_rxseq) &&
 			    (token == mlmeext->action_public_dialog_token)) {
-				DBG_8723A(FUNC_ADPT_FMT" seq_ctrl = 0x%x, "
-					  "rxseq = 0x%x, token:%d\n",
-					  FUNC_ADPT_ARG(adapter), seq_ctrl,
+				DBG_8723A("%s(%s): seq_ctrl = 0x%x, "
+					  "rxseq = 0x%x, token:%d\n", __func__,
+					  adapter->pnetdev->name, seq_ctrl,
 					  mlmeext->action_public_rxseq, token);
 				return _FAIL;
 			}
 		} else {
 			if (seq_ctrl == mlmeext->action_public_rxseq) {
-				DBG_8723A(FUNC_ADPT_FMT" seq_ctrl = 0x%x, "
-					  "rxseq = 0x%x\n",
-					  FUNC_ADPT_ARG(adapter), seq_ctrl,
+				DBG_8723A("%s(%s): seq_ctrl = 0x%x, "
+					  "rxseq = 0x%x\n", __func__,
+					  adapter->pnetdev->name, seq_ctrl,
 					  mlmeext->action_public_rxseq);
 				return _FAIL;
 			}
@@ -2111,7 +2105,7 @@ static s32 rtw_action_public_decache(struct recv_frame *recv_frame, s32 token)
 	return _SUCCESS;
 }
 
-static unsigned int on_action_public23a_p2p(struct recv_frame *precv_frame)
+static int on_action_public23a_p2p(struct recv_frame *precv_frame)
 {
 	struct sk_buff *skb = precv_frame->pkt;
 	u8 *pframe = skb->data;
@@ -2129,7 +2123,7 @@ static unsigned int on_action_public23a_p2p(struct recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-static unsigned int on_action_public23a_vendor(struct recv_frame *precv_frame)
+static int on_action_public23a_vendor(struct recv_frame *precv_frame)
 {
 	unsigned int ret = _FAIL;
 	struct sk_buff *skb = precv_frame->pkt;
@@ -2174,7 +2168,7 @@ exit:
 static int on_action_public23a(struct rtw_adapter *padapter,
 			       struct recv_frame *precv_frame)
 {
-	unsigned int ret = _FAIL;
+	int ret = _FAIL;
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
 	u8 *pframe = skb->data;
@@ -2257,15 +2251,15 @@ struct xmit_frame *alloc_mgtxmitframe23a(struct xmit_priv *pxmitpriv)
 	pmgntframe = rtw_alloc_xmitframe23a_ext(pxmitpriv);
 
 	if (!pmgntframe) {
-		DBG_8723A(FUNC_ADPT_FMT" alloc xmitframe fail\n",
-			  FUNC_ADPT_ARG(pxmitpriv->adapter));
+		DBG_8723A("%s(%s): alloc xmitframe fail\n", __func__,
+			  pxmitpriv->adapter->pnetdev->name);
 		goto exit;
 	}
 
 	pxmitbuf = rtw_alloc_xmitbuf23a_ext(pxmitpriv);
 	if (!pxmitbuf) {
-		DBG_8723A(FUNC_ADPT_FMT" alloc xmitbuf fail\n",
-			  FUNC_ADPT_ARG(pxmitpriv->adapter));
+		DBG_8723A("%s(%s): alloc xmitbuf fail\n", __func__,
+			  pxmitpriv->adapter->pnetdev->name);
 		rtw_free_xmitframe23a(pxmitpriv, pmgntframe);
 		pmgntframe = NULL;
 		goto exit;
@@ -2335,13 +2329,13 @@ void dump_mgntframe23a(struct rtw_adapter *padapter,
 	    padapter->bDriverStopped == true)
 		return;
 
-	rtw_hal_mgnt_xmit23a(padapter, pmgntframe);
+	rtl8723au_mgnt_xmit(padapter, pmgntframe);
 }
 
-s32 dump_mgntframe23a_and_wait(struct rtw_adapter *padapter,
+int dump_mgntframe23a_and_wait(struct rtw_adapter *padapter,
 			       struct xmit_frame *pmgntframe, int timeout_ms)
 {
-	s32 ret = _FAIL;
+	int ret = _FAIL;
 	unsigned long irqL;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct xmit_buf *pxmitbuf = pmgntframe->pxmitbuf;
@@ -2354,7 +2348,7 @@ s32 dump_mgntframe23a_and_wait(struct rtw_adapter *padapter,
 	rtw_sctx_init23a(&sctx, timeout_ms);
 	pxmitbuf->sctx = &sctx;
 
-	ret = rtw_hal_mgnt_xmit23a(padapter, pmgntframe);
+	ret = rtl8723au_mgnt_xmit(padapter, pmgntframe);
 
 	if (ret == _SUCCESS)
 		ret = rtw_sctx_wait23a(&sctx);
@@ -2366,24 +2360,23 @@ s32 dump_mgntframe23a_and_wait(struct rtw_adapter *padapter,
 	return ret;
 }
 
-s32 dump_mgntframe23a_and_wait_ack23a(struct rtw_adapter *padapter,
+int dump_mgntframe23a_and_wait_ack23a(struct rtw_adapter *padapter,
 				      struct xmit_frame *pmgntframe)
 {
-	s32 ret = _FAIL;
+	int ret = _FAIL;
 	u32 timeout_ms = 500;/*   500ms */
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	if (padapter->bSurpriseRemoved == true ||
 	    padapter->bDriverStopped == true)
-		return -1;
+		return _FAIL;
 
 	mutex_lock(&pxmitpriv->ack_tx_mutex);
 	pxmitpriv->ack_tx = true;
 
 	pmgntframe->ack_report = 1;
-	if (rtw_hal_mgnt_xmit23a(padapter, pmgntframe) == _SUCCESS) {
+	if (rtl8723au_mgnt_xmit(padapter, pmgntframe) == _SUCCESS)
 		ret = rtw_ack_tx_wait23a(pxmitpriv, timeout_ms);
-	}
 
 	pxmitpriv->ack_tx = false;
 	mutex_unlock(&pxmitpriv->ack_tx_mutex);
@@ -2719,9 +2712,9 @@ void issue_probersp23a(struct rtw_adapter *padapter, unsigned char *da,
 			remainder_ie = ssid_ie + 2;
 			remainder_ielen = pframe - remainder_ie;
 
-			DBG_8723A_LEVEL(_drv_warning_, FUNC_ADPT_FMT
-					" remainder_ielen > MAX_IE_SZ\n",
-					FUNC_ADPT_ARG(padapter));
+			DBG_8723A_LEVEL(_drv_warning_, "%s(%s): "
+					"remainder_ielen > MAX_IE_SZ\n",
+					__func__, padapter->pnetdev->name);
 			if (remainder_ielen > MAX_IE_SZ)
 				remainder_ielen = MAX_IE_SZ;
 
@@ -2947,14 +2940,15 @@ int issue_probereq23a_ex23a(struct rtw_adapter *padapter,
 
 	if (try_cnt && wait_ms) {
 		if (da)
-			DBG_8723A(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d "
-				  "in %u ms\n",	FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s): to "MAC_FMT", ch:%u%s, %d/%d "
+				  "in %u ms\n",	__func__,
+				  padapter->pnetdev->name,
 				  MAC_ARG(da), rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
 		else
-			DBG_8723A(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
-				  FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s):, ch:%u%s, %d/%d in %u ms\n",
+				  __func__, padapter->pnetdev->name,
 				  rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
@@ -3260,7 +3254,7 @@ void issue_asocrsp23a(struct rtw_adapter *padapter, unsigned short status,
 
 	if (pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_REALTEK) {
 		pframe = rtw_set_ie23a(pframe, WLAN_EID_VENDOR_SPECIFIC, 6,
-				       REALTEK_96B_IE23A, &pattrib->pktlen);
+				       REALTEK_96B_IE, &pattrib->pktlen);
 	}
 
 	/* add WPS IE ie for wps 2.0 */
@@ -3524,7 +3518,7 @@ void issue_assocreq23a(struct rtw_adapter *padapter)
 
 	if (pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_REALTEK)
 		pframe = rtw_set_ie23a(pframe, WLAN_EID_VENDOR_SPECIFIC, 6,
-				       REALTEK_96B_IE23A, &pattrib->pktlen);
+				       REALTEK_96B_IE, &pattrib->pktlen);
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 	dump_mgntframe23a(padapter, pmgntframe);
@@ -3653,14 +3647,15 @@ int issue_nulldata23a(struct rtw_adapter *padapter, unsigned char *da,
 
 	if (try_cnt && wait_ms) {
 		if (da)
-			DBG_8723A(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d "
-				  "in %u ms\n", FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s): to "MAC_FMT", ch:%u%s, %d/%d "
+				  "in %u ms\n", __func__,
+				  padapter->pnetdev->name,
 				  MAC_ARG(da), rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
 		else
-			DBG_8723A(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
-				  FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s):, ch:%u%s, %d/%d in %u ms\n",
+				  __func__, padapter->pnetdev->name,
 				  rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
@@ -3782,14 +3777,15 @@ int issue_qos_nulldata23a(struct rtw_adapter *padapter, unsigned char *da,
 
 	if (try_cnt && wait_ms) {
 		if (da)
-			DBG_8723A(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d "
-				  "in %u ms\n", FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s): to "MAC_FMT", ch:%u%s, %d/%d "
+				  "in %u ms\n", __func__,
+				  padapter->pnetdev->name,
 				  MAC_ARG(da), rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
 		else
-			DBG_8723A(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
-				  FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s):, ch:%u%s, %d/%d in %u ms\n",
+				  __func__, padapter->pnetdev->name,
 				  rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
@@ -3893,14 +3889,15 @@ int issue_deauth23a_ex23a(struct rtw_adapter *padapter, u8 *da,
 
 	if (try_cnt && wait_ms) {
 		if (da)
-			DBG_8723A(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d "
-				  "in %u ms\n", FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s): to "MAC_FMT", ch:%u%s, %d/%d "
+				  "in %u ms\n", __func__,
+				  padapter->pnetdev->name,
 				  MAC_ARG(da), rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
 		else
-			DBG_8723A(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
-				  FUNC_ADPT_ARG(padapter),
+			DBG_8723A("%s(%s):, ch:%u%s, %d/%d in %u ms\n",
+				  __func__, padapter->pnetdev->name,
 				  rtw_get_oper_ch23a(padapter),
 				  ret == _SUCCESS?", acked":"", i, try_cnt,
 				  jiffies_to_msecs(jiffies - start));
@@ -3921,9 +3918,8 @@ void issue_action_spct_ch_switch23a(struct rtw_adapter *padapter,
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	u8 category, action;
 
-	DBG_8723A(FUNC_NDEV_FMT" ra ="MAC_FMT", ch:%u, offset:%u\n",
-		FUNC_NDEV_ARG(padapter->pnetdev), MAC_ARG(ra),
-		  new_ch, ch_offset);
+	DBG_8723A("%s(%s): ra ="MAC_FMT", ch:%u, offset:%u\n", __func__,
+		  padapter->pnetdev->name, MAC_ARG(ra), new_ch, ch_offset);
 
 	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
 		return;
@@ -4095,8 +4091,8 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 		pframe = rtw_set_fixed_ie23a(pframe, 2,
 					     (unsigned char *)&status,
 					     &pattrib->pktlen);
-		rtw_hal_get_def_var23a(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR,
-				       &max_rx_ampdu_factor);
+		GetHalDefVar8192CUsb(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR,
+				     &max_rx_ampdu_factor);
 		if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_64K)
 			BA_para_set = ((le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f) | 0x1000); /* 64 buffer size */
 		else if (max_rx_ampdu_factor == IEEE80211_HT_MAX_AMPDU_32K)
@@ -4287,7 +4283,7 @@ out:
 	dump_mgntframe23a(padapter, pmgntframe);
 }
 
-unsigned int send_delba23a(struct rtw_adapter *padapter, u8 initiator, u8 *addr)
+int send_delba23a(struct rtw_adapter *padapter, u8 initiator, u8 *addr)
 {
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct sta_info *psta = NULL;
@@ -4327,7 +4323,7 @@ unsigned int send_delba23a(struct rtw_adapter *padapter, u8 initiator, u8 *addr)
 	return _SUCCESS;
 }
 
-unsigned int send_beacon23a(struct rtw_adapter *padapter)
+int send_beacon23a(struct rtw_adapter *padapter)
 {
 	bool	bxmitok;
 	int	issue = 0;
@@ -4473,9 +4469,9 @@ void site_survey23a(struct rtw_adapter *padapter)
 }
 
 /* collect bss info from Beacon and Probe request/response frames. */
-u8 collect_bss_info23a(struct rtw_adapter *padapter,
-		       struct recv_frame *precv_frame,
-		       struct wlan_bssid_ex *bssid)
+int collect_bss_info23a(struct rtw_adapter *padapter,
+			struct recv_frame *precv_frame,
+			struct wlan_bssid_ex *bssid)
 {
 	int i;
 	const u8 *p;
@@ -4682,7 +4678,7 @@ void start_create_ibss23a(struct rtw_adapter* padapter)
 		/* SelectChannel23a(padapter, pmlmeext->cur_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE); */
 		set_channel_bwmode23a(padapter, pmlmeext->cur_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HT_CHANNEL_WIDTH_20);
 
-		beacon_timing_control23a(padapter);
+		rtl8723a_SetBeaconRelatedRegisters(padapter);
 
 		/* set msr to WIFI_FW_ADHOC_STATE */
 		pmlmeinfo->state = WIFI_FW_ADHOC_STATE;
@@ -4760,7 +4756,7 @@ void start_clnt_join23a(struct rtw_adapter* padapter)
 		/* switch channel */
 		set_channel_bwmode23a(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
 
-		beacon_timing_control23a(padapter);
+		rtl8723a_SetBeaconRelatedRegisters(padapter);
 
 		pmlmeinfo->state = WIFI_FW_ADHOC_STATE;
 
@@ -4817,7 +4813,8 @@ void start_clnt_assoc23a(struct rtw_adapter* padapter)
 	set_link_timer(pmlmeext, REASSOC_TO);
 }
 
-unsigned int receive_disconnect23a(struct rtw_adapter *padapter, unsigned char *MacAddr, unsigned short reason)
+int receive_disconnect23a(struct rtw_adapter *padapter,
+			  unsigned char *MacAddr, unsigned short reason)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -5563,10 +5560,9 @@ void linked_status_chk23a(struct rtw_adapter *padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 
-	rtw_hal_sreset_linked_status_check23a(padapter);
+	rtl8723a_sreset_linked_status_check(padapter);
 
-	if (is_client_associated_to_ap23a(padapter))
-	{
+	if (is_client_associated_to_ap23a(padapter)) {
 		/* linked infrastructure client mode */
 
 		int tx_chk = _SUCCESS, rx_chk = _SUCCESS;
@@ -5623,8 +5619,10 @@ void linked_status_chk23a(struct rtw_adapter *padapter)
 			if (rx_chk == _FAIL) {
 				pmlmeext->retry++;
 				if (pmlmeext->retry > rx_chk_limit) {
-					DBG_8723A_LEVEL(_drv_always_, FUNC_ADPT_FMT" disconnect or roaming\n",
-						FUNC_ADPT_ARG(padapter));
+					DBG_8723A_LEVEL(_drv_always_,
+							"%s(%s): disconnect or "
+							"roaming\n", __func__,
+							padapter->pnetdev->name);
 					receive_disconnect23a(padapter, pmlmeinfo->network.MacAddress,
 						WLAN_REASON_EXPIRATION_CHK);
 					return;
@@ -5817,12 +5815,12 @@ void init_mlme_ext_timer23a(struct rtw_adapter *padapter)
 		    (unsigned long)padapter);
 }
 
-u8 NULL_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int NULL_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	return H2C_SUCCESS;
 }
 
-u8 setopmode_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int setopmode_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	u8	type;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -5847,7 +5845,7 @@ u8 setopmode_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 createbss_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int createbss_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -5877,8 +5875,6 @@ u8 createbss_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 		pmlmeinfo->HT_enable = 0;
 		pmlmeinfo->HT_caps_enable = 0;
 		pmlmeinfo->HT_info_enable = 0;
-		pmlmeinfo->agg_enable_bitmap = 0;
-		pmlmeinfo->candidate_tid_bitmap = 0;
 
 		/* disable dynamic functions, such as high power, DIG */
 		rtl8723a_odm_support_ability_backup(padapter);
@@ -5903,7 +5899,7 @@ u8 createbss_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	struct ndis_802_11_var_ies *	pIE;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
@@ -5946,8 +5942,6 @@ u8 join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	pmlmeinfo->HT_enable = 0;
 	pmlmeinfo->HT_caps_enable = 0;
 	pmlmeinfo->HT_info_enable = 0;
-	pmlmeinfo->agg_enable_bitmap = 0;
-	pmlmeinfo->candidate_tid_bitmap = 0;
 	pmlmeinfo->bwmode_updated = false;
 	/* pmlmeinfo->assoc_AP_vendor = HT_IOT_PEER_MAX; */
 
@@ -6026,7 +6020,7 @@ u8 join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 disconnect_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int disconnect_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	const struct disconnect_parm *param = (struct disconnect_parm *)pbuf;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -6088,8 +6082,6 @@ rtw_scan_ch_decision(struct rtw_adapter *padapter,
 	/* acquire channels from in */
 	j = 0;
 	for (i = 0;i<in_num;i++) {
-		if (0)
-		DBG_8723A(FUNC_ADPT_FMT" "CHAN_FMT"\n", FUNC_ADPT_ARG(padapter), CHAN_ARG(&in[i]));
 		if (in[i].hw_value && !(in[i].flags & IEEE80211_CHAN_DISABLED)
 			&& (set_idx = rtw_ch_set_search_ch23a(pmlmeext->channel_set, in[i].hw_value)) >= 0
 		)
@@ -6139,7 +6131,7 @@ rtw_scan_ch_decision(struct rtw_adapter *padapter,
 	return j;
 }
 
-u8 sitesurvey_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int sitesurvey_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	const struct sitesurvey_parm *pparm = (struct sitesurvey_parm *)pbuf;
@@ -6221,7 +6213,7 @@ u8 sitesurvey_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 setauth_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int setauth_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	const struct setauth_parm *pparm = (struct setauth_parm *)pbuf;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -6235,7 +6227,7 @@ u8 setauth_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return	H2C_SUCCESS;
 }
 
-u8 setkey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int setkey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	unsigned short				ctrl;
 	const struct setkey_parm *pparm = (struct setkey_parm *)pbuf;
@@ -6260,7 +6252,7 @@ u8 setkey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	u16 ctrl = 0;
 	u8 cam_id;/* cam_entry */
@@ -6347,7 +6339,7 @@ u8 set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 add_ba_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int add_ba_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	const struct addBaReq_parm *pparm = (struct addBaReq_parm *)pbuf;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -6366,12 +6358,12 @@ u8 add_ba_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 		mod_timer(&psta->addba_retry_timer,
 			  jiffies + msecs_to_jiffies(ADDBA_TO));
 	} else {
-		psta->htpriv.candidate_tid_bitmap &= ~CHKBIT(pparm->tid);
+		psta->htpriv.candidate_tid_bitmap &= ~BIT(pparm->tid);
 	}
 	return	H2C_SUCCESS;
 }
 
-u8 set_tx_beacon_cmd23a(struct rtw_adapter* padapter)
+int set_tx_beacon_cmd23a(struct rtw_adapter* padapter)
 {
 	struct cmd_obj	*ph2c;
 	struct Tx_Beacon_param	*ptxBeacon_parm;
@@ -6417,7 +6409,7 @@ exit:
 	return res;
 }
 
-u8 mlme_evt_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int mlme_evt_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	u8 evt_code, evt_seq;
 	u16 evt_sz;
@@ -6451,7 +6443,7 @@ _abort_event_:
 	return H2C_SUCCESS;
 }
 
-u8 h2c_msg_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int h2c_msg_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	if (!pbuf)
 		return H2C_PARAMETERS_ERROR;
@@ -6459,7 +6451,7 @@ u8 h2c_msg_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 tx_beacon_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int tx_beacon_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	if (send_beacon23a(padapter) == _FAIL)
 	{
@@ -6505,7 +6497,8 @@ u8 tx_beacon_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 
 				pxmitframe->attrib.qsel = 0x11;/* HIQ */
 
-				rtw_hal_xmit23aframe_enqueue(padapter, pxmitframe);
+				rtl8723au_hal_xmitframe_enqueue(padapter,
+								pxmitframe);
 			}
 
 			/* spin_unlock_bh(&psta_bmc->sleep_q.lock); */
@@ -6518,7 +6511,7 @@ u8 tx_beacon_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return H2C_SUCCESS;
 }
 
-u8 set_ch_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int set_ch_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	const struct set_ch_parm *set_ch_parm;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -6528,9 +6521,9 @@ u8 set_ch_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 
 	set_ch_parm = (struct set_ch_parm *)pbuf;
 
-	DBG_8723A(FUNC_NDEV_FMT" ch:%u, bw:%u, ch_offset:%u\n",
-		FUNC_NDEV_ARG(padapter->pnetdev),
-		set_ch_parm->ch, set_ch_parm->bw, set_ch_parm->ch_offset);
+	DBG_8723A("%s(%s): ch:%u, bw:%u, ch_offset:%u\n", __func__,
+		  padapter->pnetdev->name, set_ch_parm->ch,
+		  set_ch_parm->bw, set_ch_parm->ch_offset);
 
 	pmlmeext->cur_channel = set_ch_parm->ch;
 	pmlmeext->cur_ch_offset = set_ch_parm->ch_offset;
@@ -6541,7 +6534,7 @@ u8 set_ch_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return	H2C_SUCCESS;
 }
 
-u8 set_chplan_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int set_chplan_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	const struct SetChannelPlan_param *setChannelPlan_param;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -6557,7 +6550,7 @@ u8 set_chplan_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return	H2C_SUCCESS;
 }
 
-u8 led_blink_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int led_blink_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	struct LedBlink_param *ledBlink_param;
 
@@ -6569,7 +6562,7 @@ u8 led_blink_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	return	H2C_SUCCESS;
 }
 
-u8 set_csa_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int set_csa_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	return	H2C_REJECTED;
 }
@@ -6587,7 +6580,7 @@ u8 set_csa_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 /*  TDLS_CKALV_PH1	: check alive timer phase1 */
 /*  TDLS_CKALV_PH2	: check alive timer phase2 */
 /*  TDLS_FREE_STA	: free tdls sta */
-u8 tdls_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
+int tdls_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 {
 	return H2C_REJECTED;
 }

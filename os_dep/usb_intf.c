@@ -21,10 +21,8 @@
 #include <hal_intf.h>
 #include <rtw_version.h>
 #include <osdep_intf.h>
-#include <usb_vendor_req.h>
 #include <usb_ops.h>
-#include <usb_osintf.h>
-#include <usb_hal.h>
+#include <rtl8723a_hal.h>
 
 static int rtw_suspend(struct usb_interface *intf, pm_message_t message);
 static int rtw_resume(struct usb_interface *intf);
@@ -101,9 +99,9 @@ static inline int RT_usb_endpoint_num(const struct usb_endpoint_descriptor *epd)
 	return epd->bEndpointAddress & USB_ENDPOINT_NUMBER_MASK;
 }
 
-static u8 rtw_init_intf_priv(struct dvobj_priv *dvobj)
+static int rtw_init_intf_priv(struct dvobj_priv *dvobj)
 {
-	u8 rst = _SUCCESS;
+	int rst = _SUCCESS;
 
 	mutex_init(&dvobj->usb_vendor_req_mutex);
 	dvobj->usb_alloc_vendor_req_buf = kzalloc(MAX_USB_IO_CTL_SIZE,
@@ -119,9 +117,9 @@ exit:
 	return rst;
 }
 
-static u8 rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
+static int rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 {
-	u8 rst = _SUCCESS;
+	int rst = _SUCCESS;
 
 	kfree(dvobj->usb_alloc_vendor_req_buf);
 
@@ -229,7 +227,6 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
 		goto free_dvobj;
 	}
 	/* 3 misc */
-	sema_init(&(pdvobjpriv->usb_suspend_sema), 0);
 	rtw_reset_continual_urb_error(pdvobjpriv);
 	usb_get_dev(pusbd);
 	status = _SUCCESS;
@@ -278,21 +275,7 @@ static void usb_dvobj_deinit(struct usb_interface *usb_intf)
 	usb_put_dev(interface_to_usbdev(usb_intf));
 }
 
-static void decide_chip_type_by_usb_device_id(struct rtw_adapter *padapter,
-					      const struct usb_device_id *pdid)
-{
-	padapter->chip_type = NULL_CHIP_TYPE;
-	hal_set_hw_type(padapter);
-}
-
-static void usb_intf_start(struct rtw_adapter *padapter)
-{
-	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+usb_intf_start\n"));
-	rtw_hal_inirp_init23a(padapter);
-	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("-usb_intf_start\n"));
-}
-
-static void usb_intf_stop(struct rtw_adapter *padapter)
+void rtl8723a_usb_intf_stop(struct rtw_adapter *padapter)
 {
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+usb_intf_stop\n"));
 
@@ -306,10 +289,10 @@ static void usb_intf_stop(struct rtw_adapter *padapter)
 	}
 
 	/* cancel in irp */
-	rtw_hal_inirp_deinit23a(padapter);
+	rtl8723au_inirp_deinit(padapter);
 
 	/* cancel out irp */
-	rtw_write_port_cancel(padapter);
+	rtl8723a_usb_write_port_cancel(padapter);
 
 	/* todo:cancel other irps */
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("-usb_intf_stop\n"));
@@ -328,8 +311,7 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 					RTW_SCTX_DONE_DRV_STOP);
 
 		/* s3. */
-		if (padapter->intf_stop)
-			padapter->intf_stop(padapter);
+		rtl8723a_usb_intf_stop(padapter);
 
 		/* s4. */
 		if (!padapter->pwrctrlpriv.bInternalAutoSuspend)
@@ -604,8 +586,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
 	padapter->iface_id = IFACE_ID0;
 
-	/* step 1-1., decide the chip_type via vid/pid */
-	decide_chip_type_by_usb_device_id(padapter, pdid);
+	rtl8723au_set_hw_type(padapter);
 
 	if (rtw_handle_dualmac23a(padapter, 1) != _SUCCESS)
 		goto free_adapter;
@@ -615,23 +596,21 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	if (rtw_wdev_alloc(padapter, dvobj_to_dev(dvobj)))
 		goto handle_dualmac;
 
-	/* step 2. hook HalFunc, allocate HalData */
-	if (rtl8723au_set_hal_ops(padapter))
-		return NULL;
-
-	padapter->intf_start = &usb_intf_start;
-	padapter->intf_stop = &usb_intf_stop;
+	/* step 2. allocate HalData */
+	padapter->HalData = kzalloc(sizeof(struct hal_data_8723a), GFP_KERNEL);
+	if (!padapter->HalData)
+		goto free_wdev;
 
 	rtl8723au_set_intf_ops(padapter);
 
 	/* step read_chip_version */
-	rtw_hal_read_chip_version23a(padapter);
+	rtl8723a_read_chip_version(padapter);
 
 	/* step usb endpoint mapping */
-	rtw_hal_chip_configure23a(padapter);
+	rtl8723au_chip_configure(padapter);
 
 	/* step read efuse/eeprom data and get mac_addr */
-	rtw_hal_read_chip_info23a(padapter);
+	rtl8723a_read_adapter_info(padapter);
 
 	/* step 5. */
 	if (rtw_init_drv_sw23a(padapter) == _FAIL) {
@@ -673,6 +652,7 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 free_hal_data:
 	if (status != _SUCCESS)
 		kfree(padapter->HalData);
+free_wdev:
 	if (status != _SUCCESS) {
 		rtw_wdev_unregister(padapter->rtw_wdev);
 		rtw_wdev_free(padapter->rtw_wdev);

@@ -23,11 +23,6 @@
 #include <wifi.h>
 #include <rtl8723a_hal.h>
 
-void rtl8723au_init_recvbuf(struct rtw_adapter *padapter,
-			    struct recv_buf *precvbuf)
-{
-}
-
 int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
@@ -47,9 +42,6 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 	precvpriv->int_in_buf = kzalloc(USB_INTR_CONTENT_LENGTH, GFP_KERNEL);
 	if (!precvpriv->int_in_buf)
 		DBG_8723A("alloc_mem for interrupt in endpoint fail !!!!\n");
-
-	/* init recv_buf */
-	_rtw_init_queue23a(&precvpriv->free_recv_buf_queue);
 
 	size = NR_RECVBUFF * sizeof(struct recv_buf);
 	precvpriv->precv_buf = kzalloc(size, GFP_KERNEL);
@@ -73,8 +65,6 @@ int rtl8723au_init_recv_priv(struct rtw_adapter *padapter)
 
 		precvbuf++;
 	}
-
-	precvpriv->free_recv_buf_queue_cnt = NR_RECVBUFF;
 
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
 	skb_queue_head_init(&precvpriv->free_recv_skb_queue);
@@ -194,7 +184,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	struct rtw_adapter *padapter = precvframe->adapter;
 	struct rx_pkt_attrib *pattrib = &precvframe->attrib;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
-	struct odm_phy_info *pPHYInfo = (struct odm_phy_info *)(&pattrib->phy_info);
+	struct phy_info *pPHYInfo = &pattrib->phy_info;
 	struct odm_packet_info pkt_info;
 	u8 *sa = NULL, *da;
 	struct sta_priv *pstapriv;
@@ -257,7 +247,7 @@ void update_recvframe_phyinfo(struct recv_frame *precvframe,
 	pkt_info.Rate = pattrib->mcs_rate;
 
 	ODM_PhyStatusQuery23a(&pHalData->odmpriv, pPHYInfo,
-			   (u8 *)pphy_status, &pkt_info);
+			      (u8 *)pphy_status, &pkt_info);
 	precvframe->psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 	    (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == true)) {

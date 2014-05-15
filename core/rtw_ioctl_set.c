@@ -19,17 +19,16 @@
 #include <rtw_ioctl_set.h>
 #include <hal_intf.h>
 
-#include <usb_osintf.h>
 #include <usb_ops.h>
 #include <linux/ieee80211.h>
 
-u8 rtw_do_join23a(struct rtw_adapter *padapter)
+int rtw_do_join23a(struct rtw_adapter *padapter)
 {
 	struct list_head *plist, *phead;
 	u8* pibss = NULL;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct rtw_queue *queue = &pmlmepriv->scanned_queue;
-	u8 ret = _SUCCESS;
+	int ret = _SUCCESS;
 
 	spin_lock_bh(&pmlmepriv->scanned_queue.lock);
 	phead = get_list_head(queue);
@@ -45,7 +44,7 @@ u8 rtw_do_join23a(struct rtw_adapter *padapter)
 
 	pmlmepriv->to_join = true;
 
-	if (_rtw_queue_empty23a(queue) == true) {
+	if (list_empty(&queue->queue)) {
 		spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
@@ -152,9 +151,10 @@ exit:
 	return ret;
 }
 
-u8 rtw_set_802_11_ssid23a(struct rtw_adapter* padapter, struct cfg80211_ssid *ssid)
+int rtw_set_802_11_ssid23a(struct rtw_adapter* padapter,
+			   struct cfg80211_ssid *ssid)
 {
-	u8 status = _SUCCESS;
+	int status = _SUCCESS;
 	u32 cur_time = 0;
 
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -279,7 +279,7 @@ exit:
 	return status;
 }
 
-u8 rtw_set_802_11_infrastructure_mode23a(struct rtw_adapter* padapter,
+int rtw_set_802_11_infrastructure_mode23a(struct rtw_adapter* padapter,
 					 enum ndis_802_11_net_infra networktype)
 {
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -362,25 +362,26 @@ u8 rtw_set_802_11_infrastructure_mode23a(struct rtw_adapter* padapter,
 		spin_unlock_bh(&pmlmepriv->lock);
 	}
 
-	return true;
+	return _SUCCESS;
 }
 
-u8 rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
-				  struct cfg80211_ssid *pssid, int ssid_max_num)
+int rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
+				      struct cfg80211_ssid *pssid,
+				      int ssid_max_num)
 {
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	u8 res = true;
+	int res = _SUCCESS;
 
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 		 ("+rtw_set_802_11_bssid23a_list_scan(), fw_state =%x\n",
 		  get_fwstate(pmlmepriv)));
 
 	if (!padapter) {
-		res = false;
+		res = _FAIL;
 		goto exit;
 	}
 	if (padapter->hw_init_completed == false) {
-		res = false;
+		res = _FAIL;
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 			 ("\n === rtw_set_802_11_bssid23a_list_scan:"
 			  "hw_init_completed == false ===\n"));
@@ -393,7 +394,6 @@ u8 rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 			 ("rtw_set_802_11_bssid23a_list_scan fail since fw_state "
 			  "= %x\n", get_fwstate(pmlmepriv)));
-		res = true;
 
 		if (check_fwstate(pmlmepriv,
 				  (_FW_UNDER_SURVEY|_FW_UNDER_LINKING))) {
@@ -406,8 +406,8 @@ u8 rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
 		}
 	} else {
 		if (rtw_is_scan_deny(padapter)) {
-			DBG_8723A(FUNC_ADPT_FMT": scan deny\n",
-				  FUNC_ADPT_ARG(padapter));
+			DBG_8723A("%s(%s): scan deny\n",
+				  __func__, padapter->pnetdev->name);
 			return _SUCCESS;
 		}
 
@@ -422,12 +422,11 @@ exit:
 	return res;
 }
 
-u8 rtw_set_802_11_authentication_mode23a(struct rtw_adapter* padapter,
-				      enum ndis_802_11_auth_mode authmode)
+int rtw_set_802_11_authentication_mode23a(struct rtw_adapter* padapter,
+					  enum ndis_802_11_auth_mode authmode)
 {
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	int res;
-	u8 ret;
 
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
 		 ("set_802_11_auth.mode(): mode =%x\n", authmode));
@@ -444,22 +443,16 @@ u8 rtw_set_802_11_authentication_mode23a(struct rtw_adapter* padapter,
 
 	res = rtw_set_auth23a(padapter, psecuritypriv);
 
-	if (res == _SUCCESS)
-		ret = true;
-	else
-		ret = false;
-
-	return ret;
+	return res;
 }
 
-u8 rtw_set_802_11_add_wep23a(struct rtw_adapter* padapter,
+int rtw_set_802_11_add_wep23a(struct rtw_adapter* padapter,
 			  struct ndis_802_11_wep *wep)
 {
 	u8 bdefaultkey;
 	u8 btransmitkey;
 	int keyid, res;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
-	u8 ret = _SUCCESS;
 
 	bdefaultkey = (wep->KeyIndex & 0x40000000) > 0 ? false : true;
 	btransmitkey = (wep->KeyIndex & 0x80000000) > 0 ? true  : false;
@@ -468,7 +461,7 @@ u8 rtw_set_802_11_add_wep23a(struct rtw_adapter* padapter,
 	if (keyid >= 4) {
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 			 ("MgntActrtw_set_802_11_add_wep23a:keyid>4 =>fail\n"));
-		ret = false;
+		res = _FAIL;
 		goto exit;
 	}
 
@@ -523,11 +516,9 @@ u8 rtw_set_802_11_add_wep23a(struct rtw_adapter* padapter,
 
 	res = rtw_set_key23a(padapter, psecuritypriv, keyid, 1);
 
-	if (res == _FAIL)
-		ret = false;
 exit:
 
-	return ret;
+	return res;
 }
 
 /*
