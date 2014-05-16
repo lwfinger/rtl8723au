@@ -14,6 +14,7 @@
  ******************************************************************************/
 
 #include "odm_precomp.h"
+#include "usb_ops_linux.h"
 
 static const u16 dB_Invert_Table[8][12] = {
 	{1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4},
@@ -199,17 +200,6 @@ void odm_RefreshRateAdaptiveMask23aAPADSL23a(struct dm_odm_t *pDM_Odm);
 
 void odm_DynamicTxPower23aInit(struct dm_odm_t *pDM_Odm);
 
-void odm_DynamicTxPower23aRestorePowerIndex(struct dm_odm_t *pDM_Odm);
-
-void odm_DynamicTxPower23aSavePowerIndex(struct dm_odm_t *pDM_Odm);
-
-void odm_DynamicTxPower23aWritePowerIndex(struct dm_odm_t *pDM_Odm,
-	u8 Value);
-
-void odm_DynamicTxPower23a_92C(struct dm_odm_t *pDM_Odm);
-
-void odm_DynamicTxPower23a_92D(struct dm_odm_t *pDM_Odm);
-
 void odm_RSSIMonitorInit(struct dm_odm_t *pDM_Odm);
 
 void odm_RSSIMonitorCheck23aMP(struct dm_odm_t *pDM_Odm);
@@ -231,8 +221,6 @@ void odm_SwAntDivChkAntSwitchNIC(struct dm_odm_t *pDM_Odm,
 	);
 
 void odm_SwAntDivChkAntSwitchCallback23a(unsigned long data);
-
-void odm_GlobalAdapterCheck(void);
 
 void odm_RefreshRateAdaptiveMask23a(struct dm_odm_t *pDM_Odm);
 
@@ -306,7 +294,6 @@ void ODM23a_DMInit(struct dm_odm_t *pDM_Odm)
 void ODM_DMWatchdog23a(struct dm_odm_t *pDM_Odm)
 {
 	/* 2012.05.03 Luke: For all IC series */
-	odm_GlobalAdapterCheck();
 	odm_CmnInfoHook_Debug23a(pDM_Odm);
 	odm_CmnInfoUpdate_Debug23a(pDM_Odm);
 	odm_CommonInfoSelfUpdate23a(pDM_Odm);
@@ -343,7 +330,6 @@ void ODM_DMWatchdog23a(struct dm_odm_t *pDM_Odm)
 	if (pDM_Odm->SupportICType & ODM_IC_11N_SERIES) {
 		ODM_TXPowerTrackingCheck23a(pDM_Odm);
 	      odm_EdcaTurboCheck23a(pDM_Odm);
-		odm_DynamicTxPower23a(pDM_Odm);
 	}
 
 	odm_dtc(pDM_Odm);
@@ -1429,58 +1415,11 @@ void odm_DynamicTxPower23aInit(struct dm_odm_t *pDM_Odm)
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv *pdmpriv = &pHalData->dmpriv;
 
-	pdmpriv->bDynamicTxPowerEnable = false;
-
-	pdmpriv->LastDTPLvl = TxHighPwrLevel_Normal;
+	/*
+	 * This is never changed, so we should be able to clean up the
+	 * code checking for different values in rtl8723a_rf6052.c
+	 */
 	pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-}
-
-void odm_DynamicTxPower23aSavePowerIndex(struct dm_odm_t *pDM_Odm)
-{
-	u8 index;
-	u32 Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
-
-	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	struct dm_priv *pdmpriv = &pHalData->dmpriv;
-	for (index = 0; index < 6; index++)
-		pdmpriv->PowerIndex_backup[index] = rtw_read8(Adapter, Power_Index_REG[index]);
-}
-
-void odm_DynamicTxPower23aRestorePowerIndex(struct dm_odm_t *pDM_Odm)
-{
-	u8 index;
-	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-
-	struct hal_data_8723a *pHalData = GET_HAL_DATA(Adapter);
-	u32 Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
-	struct dm_priv *pdmpriv = &pHalData->dmpriv;
-	for (index = 0; index < 6; index++)
-		rtw_write8(Adapter, Power_Index_REG[index], pdmpriv->PowerIndex_backup[index]);
-}
-
-void odm_DynamicTxPower23aWritePowerIndex(struct dm_odm_t *pDM_Odm,
-	u8 Value)
-{
-
-	u8 index;
-	u32 Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
-
-	for (index = 0; index < 6; index++)
-		ODM_Write1Byte(pDM_Odm, Power_Index_REG[index], Value);
-
-}
-
-void odm_DynamicTxPower23a(struct dm_odm_t *pDM_Odm)
-{
-}
-
-void odm_DynamicTxPower23a_92C(struct dm_odm_t *pDM_Odm)
-{
-}
-
-void odm_DynamicTxPower23a_92D(struct dm_odm_t *pDM_Odm)
-{
 }
 
 /* 3 ============================================================ */
@@ -1764,7 +1703,8 @@ void odm_EdcaTurboCheck23aCE23a(struct dm_odm_t *pDM_Odm)
 				edca_param = EDCAParam[pmlmeinfo->assoc_AP_vendor][trafficIndex];
 			else
 				edca_param = EDCAParam[HT_IOT_PEER_UNKNOWN][trafficIndex];
-			rtw_write32(Adapter, REG_EDCA_BE_PARAM, edca_param);
+			rtl8723au_write32(Adapter, REG_EDCA_BE_PARAM,
+					  edca_param);
 
 			pDM_Odm->DM_EDCA_Table.prv_traffic_idx = trafficIndex;
 		}
@@ -1774,7 +1714,8 @@ void odm_EdcaTurboCheck23aCE23a(struct dm_odm_t *pDM_Odm)
 		/*  Turn Off EDCA turbo here. */
 		/*  Restore original EDCA according to the declaration of AP. */
 		if (pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA) {
-			rtw_write32(Adapter, REG_EDCA_BE_PARAM, pHalData->AcParam_BE);
+			rtl8723au_write32(Adapter, REG_EDCA_BE_PARAM,
+					  pHalData->AcParam_BE);
 			pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = false;
 		}
 	}
@@ -1833,16 +1774,6 @@ ConvertTo_dB23a(
 
 	return dB;
 }
-
-/*  */
-/*  2011/09/22 MH Add for 92D global spin lock utilization. */
-/*  */
-void
-odm_GlobalAdapterCheck(
-		void
-	)
-{
-}	/*  odm_GlobalAdapterCheck */
 
 /*  */
 /*  Description: */

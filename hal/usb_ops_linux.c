@@ -132,7 +132,7 @@ exit:
 	return status;
 }
 
-static u8 usb_read8(struct rtw_adapter *padapter, u32 addr)
+u8 rtl8723au_read8(struct rtw_adapter *padapter, u32 addr)
 {
 	u8 request;
 	u8 requesttype;
@@ -154,7 +154,7 @@ static u8 usb_read8(struct rtw_adapter *padapter, u32 addr)
 	return data;
 }
 
-static u16 usb_read16(struct rtw_adapter *padapter, u32 addr)
+u16 rtl8723au_read16(struct rtw_adapter *padapter, u32 addr)
 {
 	u8 request;
 	u8 requesttype;
@@ -176,7 +176,7 @@ static u16 usb_read16(struct rtw_adapter *padapter, u32 addr)
 	return le16_to_cpu(data);
 }
 
-static u32 usb_read32(struct rtw_adapter *padapter, u32 addr)
+u32 rtl8723au_read32(struct rtw_adapter *padapter, u32 addr)
 {
 	u8 request;
 	u8 requesttype;
@@ -198,7 +198,7 @@ static u32 usb_read32(struct rtw_adapter *padapter, u32 addr)
 	return le32_to_cpu(data);
 }
 
-static int usb_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
+int rtl8723au_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -223,7 +223,7 @@ static int usb_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
 	return ret;
 }
 
-static int usb_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
+int rtl8723au_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -247,7 +247,7 @@ static int usb_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
 	return ret;
 }
 
-static int usb_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
+int rtl8723au_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -271,8 +271,8 @@ static int usb_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
 	return ret;
 }
 
-static int usb_writeN(struct rtw_adapter *padapter,
-		      u32 addr, u32 length, u8 *pdata)
+int rtl8723au_writeN(struct rtw_adapter *padapter,
+		     u32 addr, u32 length, u8 *pdata)
 {
 	u8 request;
 	u8 requesttype;
@@ -447,7 +447,7 @@ urb_submit:
 	}
 }
 
-int rtl8723a_usb_read_interrupt(struct rtw_adapter *adapter, u32 addr)
+int rtl8723au_read_interrupt(struct rtw_adapter *adapter, u32 addr)
 {
 	int err;
 	unsigned int pipe;
@@ -676,8 +676,8 @@ static void usb_read_port_complete(struct urb *purb)
 				 ("usb_read_port_complete: (purb->actual_"
 				  "length > MAX_RECVBUF_SZ) || (purb->actual_"
 				  "length < RXDESC_SIZE)\n"));
-			rtl8723a_usb_read_port(padapter, RECV_BULK_IN_ADDR, 0,
-					       precvbuf);
+			rtl8723au_read_port(padapter, RECV_BULK_IN_ADDR, 0,
+					    precvbuf);
 			DBG_8723A("%s()-%d: RX Warning!\n",
 				  __FUNCTION__, __LINE__);
 		} else {
@@ -692,8 +692,8 @@ static void usb_read_port_complete(struct urb *purb)
 				tasklet_schedule(&precvpriv->recv_tasklet);
 
 			precvbuf->pskb = NULL;
-			rtl8723a_usb_read_port(padapter, RECV_BULK_IN_ADDR, 0,
-					       precvbuf);
+			rtl8723au_read_port(padapter, RECV_BULK_IN_ADDR, 0,
+					    precvbuf);
 		}
 	} else {
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
@@ -730,8 +730,8 @@ static void usb_read_port_complete(struct urb *purb)
 			pHalData = GET_HAL_DATA(padapter);
 			pHalData->srestpriv.Wifi_Error_Status =
 				USB_READ_PORT_FAIL;
-			rtl8723a_usb_read_port(padapter, RECV_BULK_IN_ADDR, 0,
-					       precvbuf);
+			rtl8723au_read_port(padapter, RECV_BULK_IN_ADDR, 0,
+					    precvbuf);
 			break;
 		case -EINPROGRESS:
 			DBG_8723A("ERROR: URB IS IN PROGRESS!/n");
@@ -742,8 +742,8 @@ static void usb_read_port_complete(struct urb *purb)
 	}
 }
 
-int rtl8723a_usb_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
-			   struct recv_buf *precvbuf)
+int rtl8723au_read_port(struct rtw_adapter *adapter, u32 addr, u32 cnt,
+			struct recv_buf *precvbuf)
 {
 	int err;
 	unsigned int pipe;
@@ -831,22 +831,6 @@ void rtl8723au_xmit_tasklet(void *priv)
 		if (!ret)
 			break;
 	}
-}
-
-void rtl8723au_set_intf_ops(struct rtw_adapter *padapter)
-{
-	struct _io_ops *pops = &padapter->io_ops;
-
-	memset((u8 *)pops, 0, sizeof(struct _io_ops));
-
-	pops->_read8 = &usb_read8;
-	pops->_read16 = &usb_read16;
-	pops->_read32 = &usb_read32;
-
-	pops->_write8 = &usb_write8;
-	pops->_write16 = &usb_write16;
-	pops->_write32 = &usb_write32;
-	pops->_writeN = &usb_writeN;
 }
 
 void rtl8723au_set_hw_type(struct rtw_adapter *padapter)

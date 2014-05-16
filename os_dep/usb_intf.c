@@ -292,7 +292,7 @@ void rtl8723a_usb_intf_stop(struct rtw_adapter *padapter)
 	rtl8723au_inirp_deinit(padapter);
 
 	/* cancel out irp */
-	rtl8723a_usb_write_port_cancel(padapter);
+	rtl8723au_write_port_cancel(padapter);
 
 	/* todo:cancel other irps */
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("-usb_intf_stop\n"));
@@ -600,8 +600,6 @@ static struct rtw_adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	padapter->HalData = kzalloc(sizeof(struct hal_data_8723a), GFP_KERNEL);
 	if (!padapter->HalData)
 		goto free_wdev;
-
-	rtl8723au_set_intf_ops(padapter);
 
 	/* step read_chip_version */
 	rtl8723a_read_chip_version(padapter);
