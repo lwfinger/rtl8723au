@@ -339,7 +339,7 @@ static void init_mlme_ext_priv23a_value(struct rtw_adapter* padapter)
 	pmlmeinfo->key_index = 0;
 	pmlmeinfo->iv = 0;
 
-	pmlmeinfo->enc_algo = _NO_PRIVACY_;
+	pmlmeinfo->enc_algo = 0;
 	pmlmeinfo->authModeToggle = 0;
 
 	memset(pmlmeinfo->chg_txt, 0, 128);
@@ -886,8 +886,8 @@ OnAuth23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 	DBG_8723A("auth alg =%x, seq =%X\n", algorithm, seq);
 
 	if (auth_mode == 2 &&
-	    psecuritypriv->dot11PrivacyAlgrthm != _WEP40_ &&
-	    psecuritypriv->dot11PrivacyAlgrthm != _WEP104_)
+	    psecuritypriv->dot11PrivacyAlgrthm != WLAN_CIPHER_SUITE_WEP40 &&
+	    psecuritypriv->dot11PrivacyAlgrthm != WLAN_CIPHER_SUITE_WEP104)
 		auth_mode = 0;
 
 	/*  rx a shared-key auth but shared not enabled, or */
@@ -2308,7 +2308,7 @@ void update_mgntframe_attrib23a(struct rtw_adapter *padapter,
 	else
 		pattrib->raid = 5;/* a/g mode */
 
-	pattrib->encrypt = _NO_PRIVACY_;
+	pattrib->encrypt = 0;
 	pattrib->bswenc = false;
 
 	pattrib->qos_en = false;
@@ -3101,7 +3101,7 @@ void issue_auth23a(struct rtw_adapter *padapter, struct sta_info *psta,
 
 			pattrib->hdrlen = sizeof(struct ieee80211_hdr_3addr);
 
-			pattrib->encrypt = _WEP40_;
+			pattrib->encrypt = WLAN_CIPHER_SUITE_WEP40;
 
 			pattrib->icv_len = 4;
 
@@ -6285,7 +6285,7 @@ int set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
-		if (pparm->algorithm == _NO_PRIVACY_)	/*  clear cam entry */
+		if (pparm->algorithm == 0)	/*  clear cam entry */
 		{
 			clear_cam_entry23a(padapter, pparm->id);
 			return H2C_SUCCESS_RSP;
@@ -6326,8 +6326,7 @@ int set_stakey_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 
 	/* below for sta mode */
 
-	if (pparm->algorithm == _NO_PRIVACY_)	/*  clear cam entry */
-	{
+	if (pparm->algorithm == 0) {	/*  clear cam entry */
 		clear_cam_entry23a(padapter, pparm->id);
 		return H2C_SUCCESS;
 	}
