@@ -289,7 +289,7 @@ static int rtw_cfg80211_inform_bss(struct rtw_adapter *padapter,
 	notify_timestamp = jiffies_to_msecs(jiffies) * 1000;	/* uSec */
 
 	notify_interval =
-	    le16_to_cpu(*(__le16 *)
+	    le16_to_cpu(*(u16 *)
 			rtw_get_beacon_interval23a_from_ie(pnetwork->network.IEs));
 	notify_capability =
 		get_unaligned_le16(
@@ -2333,7 +2333,7 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter,
 	u8 *pmgmt_frame;
 	uint frame_len;
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl, le_tmp;
+	__le16 *fctrl;
 	u8 mgmt_buf[128] = { 0 };
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -2369,10 +2369,10 @@ void rtw_cfg80211_indicate_sta_disassoc(struct rtw_adapter *padapter,
 	pmgmt_frame += sizeof(struct ieee80211_hdr_3addr);
 	frame_len = sizeof(struct ieee80211_hdr_3addr);
 
-	le_tmp = cpu_to_le16(reason);
+	reason = cpu_to_le16(reason);
 	pmgmt_frame = rtw_set_fixed_ie23a(pmgmt_frame,
 				       WLAN_REASON_PREV_AUTH_NOT_VALID,
-				       (unsigned char *)&le_tmp, &frame_len);
+				       (unsigned char *)&reason, &frame_len);
 
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, mgmt_buf, frame_len,
 			     GFP_ATOMIC);
@@ -3398,13 +3398,13 @@ static void rtw_cfg80211_init_ht_capab(struct ieee80211_sta_ht_cap *ht_cap,
 		ht_cap->mcs.rx_mask[1] = 0x00;
 		ht_cap->mcs.rx_mask[4] = 0x01;
 
-		ht_cap->mcs.rx_highest = cpu_to_le16(MAX_BIT_RATE_40MHZ_MCS7);
+		ht_cap->mcs.rx_highest = MAX_BIT_RATE_40MHZ_MCS7;
 	} else if ((rf_type == RF_1T2R) || (rf_type == RF_2T2R)) {
 		ht_cap->mcs.rx_mask[0] = 0xFF;
 		ht_cap->mcs.rx_mask[1] = 0xFF;
 		ht_cap->mcs.rx_mask[4] = 0x01;
 
-		ht_cap->mcs.rx_highest = cpu_to_le16(MAX_BIT_RATE_40MHZ_MCS15);
+		ht_cap->mcs.rx_highest = MAX_BIT_RATE_40MHZ_MCS15;
 	} else {
 		DBG_8723A("%s, error rf_type =%d\n", __func__, rf_type);
 	}

@@ -2972,8 +2972,6 @@ void issue_auth23a(struct rtw_adapter *padapter, struct sta_info *psta,
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
-	__le16 le_tmp;
-	__le32 le_tmp32;
 
 	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
 		return;
@@ -3011,28 +3009,26 @@ void issue_auth23a(struct rtw_adapter *padapter, struct sta_info *psta,
 			val16 = 0;
 
 		if (val16) {
-			le_tmp = cpu_to_le16(val16);
+			val16 = cpu_to_le16(val16);
 			use_shared_key = 1;
-		} else {
-			le_tmp = 0;
 		}
 
 		pframe = rtw_set_fixed_ie23a(pframe, _AUTH_ALGM_NUM_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  setting auth seq number */
 		val16 = (u16)psta->auth_seq;
-		le_tmp = cpu_to_le16(val16);
+		val16 = cpu_to_le16(val16);
 		pframe = rtw_set_fixed_ie23a(pframe, _AUTH_SEQ_NUM_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  setting status code... */
 		val16 = status;
-		le_tmp = cpu_to_le16(val16);
+		val16 = cpu_to_le16(val16);
 		pframe = rtw_set_fixed_ie23a(pframe, _STATUS_CODE_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  added challenging text... */
@@ -3052,10 +3048,8 @@ void issue_auth23a(struct rtw_adapter *padapter, struct sta_info *psta,
 		/*  0:OPEN System, 1:Shared key */
 		val16 = (pmlmeinfo->auth_algo == dot11AuthAlgrthm_Shared)? 1: 0;
 		if (val16) {
-			le_tmp = cpu_to_le16(val16);
+			val16 = cpu_to_le16(val16);
 			use_shared_key = 1;
-		} else {
-			le_tmp = 0;
 		}
 		/* DBG_8723A("%s auth_algo = %s auth_seq =%d\n", __func__,
 		   (pmlmeinfo->auth_algo == 0)?"OPEN":"SHARED",
@@ -3069,30 +3063,30 @@ void issue_auth23a(struct rtw_adapter *padapter, struct sta_info *psta,
 			   pmlmeinfo->iv, pmlmeinfo->key_index); */
 			val32 = ((pmlmeinfo->iv++) |
 				 (pmlmeinfo->key_index << 30));
-			le_tmp32 = cpu_to_le32(val32);
+			val32 = cpu_to_le32(val32);
 			pframe = rtw_set_fixed_ie23a(pframe, 4,
-						     (unsigned char *)&le_tmp32,
+						     (unsigned char *)&val32,
 						     &pattrib->pktlen);
 
 			pattrib->iv_len = 4;
 		}
 
 		pframe = rtw_set_fixed_ie23a(pframe, _AUTH_ALGM_NUM_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  setting auth seq number */
 		val16 = pmlmeinfo->auth_seq;
-		le_tmp = cpu_to_le16(val16);
+		val16 = cpu_to_le16(val16);
 		pframe = rtw_set_fixed_ie23a(pframe, _AUTH_SEQ_NUM_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  setting status code... */
 		val16 = status;
-		le_tmp = cpu_to_le16(val16);
+		val16 = cpu_to_le16(val16);
 		pframe = rtw_set_fixed_ie23a(pframe, _STATUS_CODE_,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&val16,
 					     &pattrib->pktlen);
 
 		/*  then checking to see if sending challenging text... */
@@ -3140,7 +3134,6 @@ void issue_asocrsp23a(struct rtw_adapter *padapter, unsigned short status,
 	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	const u8 *p;
 	u8 *ie = pnetwork->IEs;
-	__le16 le_tmp;
 
 	DBG_8723A("%s\n", __func__);
 
@@ -3180,13 +3173,13 @@ void issue_asocrsp23a(struct rtw_adapter *padapter, unsigned short status,
 	pframe = rtw_set_fixed_ie23a(pframe, _CAPABILITY_,
 				     (unsigned char *)&val, &pattrib->pktlen);
 
-	le_tmp = cpu_to_le16(status);
+	status = cpu_to_le16(status);
 	pframe = rtw_set_fixed_ie23a(pframe, _STATUS_CODE_,
-				     (unsigned char *)&le_tmp,
+				     (unsigned char *)&status,
 				     &pattrib->pktlen);
 
-	le_tmp = cpu_to_le16(pstat->aid | BIT(14) | BIT(15));
-	pframe = rtw_set_fixed_ie23a(pframe, _ASOC_ID_, (unsigned char *)&le_tmp,
+	val = cpu_to_le16(pstat->aid | BIT(14) | BIT(15));
+	pframe = rtw_set_fixed_ie23a(pframe, _ASOC_ID_, (unsigned char *)&val,
 				     &pattrib->pktlen);
 
 	if (pstat->bssratelen <= 8) {
@@ -3801,7 +3794,7 @@ static int _issue_deauth23a(struct rtw_adapter *padapter, unsigned char *da,
 	struct pkt_attrib *pattrib;
 	unsigned char *pframe;
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl, le_tmp;
+	__le16 *fctrl;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -3836,9 +3829,9 @@ static int _issue_deauth23a(struct rtw_adapter *padapter, unsigned char *da,
 	pframe += sizeof(struct ieee80211_hdr_3addr);
 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 
-	le_tmp = cpu_to_le16(reason);
+	reason = cpu_to_le16(reason);
 	pframe = rtw_set_fixed_ie23a(pframe, WLAN_REASON_PREV_AUTH_NOT_VALID,
-				     (unsigned char *)&le_tmp,
+				     (unsigned char *)&reason,
 				     &pattrib->pktlen);
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
@@ -3979,7 +3972,7 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 	struct pkt_attrib *pattrib;
 	u8 *pframe;
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl, le_tmp;
+	__le16 *fctrl;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -4023,6 +4016,8 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 	pframe = rtw_set_fixed_ie23a(pframe, 1, &category, &pattrib->pktlen);
 	pframe = rtw_set_fixed_ie23a(pframe, 1, &action, &pattrib->pktlen);
 
+	status = cpu_to_le16(status);
+
 	if (category != 3)
 		goto out;
 
@@ -4056,15 +4051,15 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 			/* immediate ack & 64 buffer size */
 			BA_para_set = (0x1002 | ((status & 0xf) << 2));
 		}
-		le_tmp = cpu_to_le16(BA_para_set);
+		BA_para_set = cpu_to_le16(BA_para_set);
 		pframe = rtw_set_fixed_ie23a(pframe, 2,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&BA_para_set,
 					     &pattrib->pktlen);
 
 		BA_timeout_value = 5000;/*  5ms */
-		le_tmp = cpu_to_le16(BA_timeout_value);
+		BA_timeout_value = cpu_to_le16(BA_timeout_value);
 		pframe = rtw_set_fixed_ie23a(pframe, 2, (unsigned char *)
-					     &le_tmp,
+					     &BA_timeout_value,
 					     &pattrib->pktlen);
 
 		/* if ((psta = rtw_get_stainfo23a(pstapriv,
@@ -4078,12 +4073,10 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 			psta->BA_starting_seqctrl[status & 0x07] = start_seq;
 
 			BA_starting_seqctrl = start_seq << 4;
-		} else {
-			BA_starting_seqctrl = 0;
 		}
 
-		le_tmp = cpu_to_le16(BA_starting_seqctrl);
-		pframe = rtw_set_fixed_ie23a(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
+		BA_starting_seqctrl = cpu_to_le16(BA_starting_seqctrl);
+		pframe = rtw_set_fixed_ie23a(pframe, 2, (unsigned char *)&BA_starting_seqctrl, &pattrib->pktlen);
 		break;
 
 	case 1: /* ADDBA rsp */
@@ -4116,27 +4109,29 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 #endif
 
 		if (pregpriv->ampdu_amsdu == 0)/* disabled */
-			BA_para_set = BA_para_set & ~BIT(0);
+			BA_para_set = cpu_to_le16(BA_para_set & ~BIT(0));
 		else if (pregpriv->ampdu_amsdu == 1)/* enabled */
-			BA_para_set = BA_para_set | BIT(0);
+			BA_para_set = cpu_to_le16(BA_para_set | BIT(0));
+		else /* auto */
+			BA_para_set = cpu_to_le16(BA_para_set);
 
-		le_tmp = cpu_to_le16(BA_para_set);
 		pframe = rtw_set_fixed_ie23a(pframe, 2,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&BA_para_set,
 					     &pattrib->pktlen);
 		pframe = rtw_set_fixed_ie23a(pframe, 2, (unsigned char *)&pmlmeinfo->ADDBA_req.BA_timeout_value, &pattrib->pktlen);
 		break;
 	case 2:/* DELBA */
-		le_tmp = cpu_to_le16((status & 0x1F) << 3);
+		BA_para_set = (status & 0x1F) << 3;
+		BA_para_set = cpu_to_le16(BA_para_set);
 		pframe = rtw_set_fixed_ie23a(pframe, 2,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&BA_para_set,
 					     &pattrib->pktlen);
 
 		reason_code = 37;/* Requested from peer STA as it does not
 				    want to use the mechanism */
-		le_tmp = cpu_to_le16(reason_code);
+		reason_code = cpu_to_le16(reason_code);
 		pframe = rtw_set_fixed_ie23a(pframe, 2,
-					     (unsigned char *)&le_tmp,
+					     (unsigned char *)&reason_code,
 					     &pattrib->pktlen);
 		break;
 	default:
@@ -4482,7 +4477,7 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
-	__le16 capab_info;
+	u16 capab_info;
 
 	length = skb->len - sizeof(struct ieee80211_hdr_3addr);
 
@@ -4615,7 +4610,7 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 	bssid->Configuration.BeaconPeriod =
 		le32_to_cpu(bssid->Configuration.BeaconPeriod);
 
-	if (le16_to_cpu(capab_info) & BIT(0)) {
+	if (capab_info & BIT(0)) {
 		bssid->InfrastructureMode = Ndis802_11Infrastructure;
 		ether_addr_copy(bssid->MacAddress, mgmt->sa);
 	} else {
@@ -4623,7 +4618,7 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 		ether_addr_copy(bssid->MacAddress, mgmt->bssid);
 	}
 
-	if (le16_to_cpu(capab_info) & BIT(4))
+	if (capab_info & BIT(4))
 		bssid->Privacy = 1;
 	else
 		bssid->Privacy = 0;

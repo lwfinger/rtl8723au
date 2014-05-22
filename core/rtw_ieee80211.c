@@ -395,20 +395,20 @@ int rtw_generate_ie23a(struct registry_priv *pregistrypriv)
 
 	/* beacon interval : 2bytes */
 	/* BCN_INTERVAL; */
-	*(__le16*)ie = cpu_to_le16((u16)pdev_network->Configuration.BeaconPeriod);
+	*(u16*)ie = cpu_to_le16((u16)pdev_network->Configuration.BeaconPeriod);
 	sz += 2;
 	ie += 2;
 
 	/* capability info */
-	*(__le16*)ie = 0;
+	*(u16*)ie = 0;
 
-	*(__le16*)ie |= cpu_to_le16(cap_IBSS);
+	*(u16*)ie |= cpu_to_le16(cap_IBSS);
 
 	if (pregistrypriv->preamble == PREAMBLE_SHORT)
-		*(__le16*)ie |= cpu_to_le16(cap_ShortPremble);
+		*(u16*)ie |= cpu_to_le16(cap_ShortPremble);
 
 	if (pdev_network->Privacy)
-		*(__le16*)ie |= cpu_to_le16(cap_Privacy);
+		*(u16*)ie |= cpu_to_le16(cap_Privacy);
 
 	sz += 2;
 	ie += 2;
@@ -1003,7 +1003,7 @@ void rtw_get_bcn_info23a(struct wlan_network *pnetwork)
 			  pnetwork->network.IELength - _FIXED_IE_LENGTH_);
 	if (p && len > 0) {
 		pht_cap = (struct ieee80211_ht_cap *)(p + 2);
-		pnetwork->BcnInfo.ht_cap_info = le16_to_cpu(pht_cap->cap_info);
+		pnetwork->BcnInfo.ht_cap_info = pht_cap->cap_info;
 	} else {
 		pnetwork->BcnInfo.ht_cap_info = 0;
 	}
