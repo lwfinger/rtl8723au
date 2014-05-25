@@ -21,8 +21,6 @@
 #include <rtl8723a_cmd.h>
 #include <rtl8723a_hal.h>
 
-#ifdef CONFIG_8723AU_AP_MODE
-
 extern unsigned char WMM_OUI23A[];
 extern unsigned char WPS_OUI23A[];
 extern unsigned char P2P_OUI23A[];
@@ -391,7 +389,7 @@ void add_RATid23a(struct rtw_adapter *padapter, struct sta_info *psta, u8 rssi_l
 		shortGIrate = psta_ht->sgi;
 	}
 
-	if (pcur_network->Configuration.DSConfig > 14) {
+	if (pcur_network->DSConfig > 14) {
 		/*  5G band */
 		if (tx_ra_bitmap & 0xffff000)
 			sta_band |= WIRELESS_11_5N | WIRELESS_11A;
@@ -484,7 +482,7 @@ static void update_bmc_sta(struct rtw_adapter *padapter)
 				tx_ra_bitmap |= rtw_get_bit_value_from_ieee_value23a(psta->bssrateset[i]&0x7f);
 		}
 
-		if (pcur_network->Configuration.DSConfig > 14) {
+		if (pcur_network->DSConfig > 14) {
 			/* force to A mode. 5G doesn't support CCK rates */
 			network_type = WIRELESS_11A;
 			tx_ra_bitmap = 0x150; /*  6, 12, 24 Mbps */
@@ -652,9 +650,10 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *pnetwork_mlmeext = &pmlmeinfo->network;
 	struct HT_info_element *pht_info = NULL;
+	int bcn_fixed_size;
 
-	bcn_interval = (u16)pnetwork->Configuration.BeaconPeriod;
-	cur_channel = pnetwork->Configuration.DSConfig;
+	bcn_interval = (u16)pnetwork->BeaconPeriod;
+	cur_channel = pnetwork->DSConfig;
 	cur_bwmode = HT_CHANNEL_WIDTH_20;;
 	cur_ch_offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
 
@@ -679,7 +678,10 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 	if (pmlmepriv->cur_network.join_res != true) {
 		/* setting only at  first time */
 		/* WEP Key will be set before this function, do not clear CAM. */
-		if ((psecuritypriv->dot11PrivacyAlgrthm != _WEP40_) && (psecuritypriv->dot11PrivacyAlgrthm != _WEP104_))
+		if (psecuritypriv->dot11PrivacyAlgrthm !=
+		    WLAN_CIPHER_SUITE_WEP40 &&
+		    psecuritypriv->dot11PrivacyAlgrthm !=
+		    WLAN_CIPHER_SUITE_WEP104)
 			flush_all_cam_entry23a(padapter);	/* clear CAM */
 	}
 
@@ -720,11 +722,12 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 						 DYNAMIC_ALL_FUNC_ENABLE);
 	}
 	/* set channel, bwmode */
+	bcn_fixed_size = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
+		offsetof(struct ieee80211_mgmt, u.beacon);
+
 	p = cfg80211_find_ie(WLAN_EID_HT_OPERATION,
-			     pnetwork->IEs +
-			     sizeof(struct ndis_802_11_fixed_ies),
-			     pnetwork->IELength -
-			     sizeof(struct ndis_802_11_fixed_ies));
+			     pnetwork->IEs + bcn_fixed_size,
+			     pnetwork->IELength - bcn_fixed_size);
 	if (p && p[1]) {
 		pht_info = (struct HT_info_element *)(p + 2);
 
@@ -824,7 +827,8 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 
 	memcpy(ie, pbuf, pbss_network->IELength);
 
-	if (pbss_network->InfrastructureMode!= Ndis802_11APMode)
+	if (pbss_network->ifmode != NL80211_IFTYPE_AP &&
+	    pbss_network->ifmode != NL80211_IFTYPE_P2P_GO)
 		return _FAIL;
 
 	pbss_network->Rssi = 0;
@@ -834,7 +838,7 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 	/* beacon interval */
 	/* ie + 8;  8: TimeStamp, 2: Beacon Interval 2:Capability */
 	pbeacon = rtw_get_beacon_interval23a_from_ie(ie);
-	pbss_network->Configuration.BeaconPeriod = get_unaligned_le16(pbeacon);
+	pbss_network->BeaconPeriod = get_unaligned_le16(pbeacon);
 
 	/* capability */
 	cap = get_unaligned_le16(ie);
@@ -850,13 +854,12 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 
 	/* chnnel */
 	channel = 0;
-	pbss_network->Configuration.Length = 0;
 	p = rtw_get_ie23a(ie + _BEACON_IE_OFFSET_, WLAN_EID_DS_PARAMS, &ie_len,
 			  (pbss_network->IELength - _BEACON_IE_OFFSET_));
 	if (p && ie_len > 0)
 		channel = *(p + 2);
 
-	pbss_network->Configuration.DSConfig = channel;
+	pbss_network->DSConfig = channel;
 
 	memset(supportRate, 0, NDIS_802_11_LENGTH_RATES_EX);
 	/*  get supported rates */
@@ -884,7 +887,7 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 	p = rtw_get_ie23a(ie + _BEACON_IE_OFFSET_, WLAN_EID_ERP_INFO, &ie_len,
 			  (pbss_network->IELength - _BEACON_IE_OFFSET_));
 	if (p && ie_len > 0)
-		ERP_IE_handler23a(padapter, (struct ndis_802_11_var_ies *)p);
+		ERP_IE_handler23a(padapter, p);
 
 	/* update privacy/security */
 	if (cap & BIT(4))
@@ -896,8 +899,8 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 
 	/* wpa2 */
 	group_cipher = 0; pairwise_cipher = 0;
-	psecuritypriv->wpa2_group_cipher = _NO_PRIVACY_;
-	psecuritypriv->wpa2_pairwise_cipher = _NO_PRIVACY_;
+	psecuritypriv->wpa2_group_cipher = 0;
+	psecuritypriv->wpa2_pairwise_cipher = 0;
 	p = rtw_get_ie23a(ie + _BEACON_IE_OFFSET_, WLAN_EID_RSN, &ie_len,
 			  (pbss_network->IELength - _BEACON_IE_OFFSET_));
 	if (p && ie_len > 0) {
@@ -917,8 +920,8 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 	ie_len = 0;
 	group_cipher = 0;
 	pairwise_cipher = 0;
-	psecuritypriv->wpa_group_cipher = _NO_PRIVACY_;
-	psecuritypriv->wpa_pairwise_cipher = _NO_PRIVACY_;
+	psecuritypriv->wpa_group_cipher = 0;
+	psecuritypriv->wpa_pairwise_cipher = 0;
 	for (p = ie + _BEACON_IE_OFFSET_; ;p += (ie_len + 2)) {
 		p = rtw_get_ie23a(p, WLAN_EID_VENDOR_SPECIFIC, &ie_len,
 				  (pbss_network->IELength - _BEACON_IE_OFFSET_ -
@@ -1007,24 +1010,6 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 	if (p && ie_len > 0)
 		pHT_info_ie = p;
 
-	switch (network_type) {
-	case WIRELESS_11B:
-		pbss_network->NetworkTypeInUse = Ndis802_11DS;
-		break;
-	case WIRELESS_11G:
-	case WIRELESS_11BG:
-            case WIRELESS_11G_24N:
-	case WIRELESS_11BG_24N:
-		pbss_network->NetworkTypeInUse = Ndis802_11OFDM24;
-		break;
-	case WIRELESS_11A:
-		pbss_network->NetworkTypeInUse = Ndis802_11OFDM5;
-		break;
-	default :
-		pbss_network->NetworkTypeInUse = Ndis802_11OFDM24;
-		break;
-	}
-
 	pmlmepriv->cur_network.network_type = network_type;
 
 	pmlmepriv->htpriv.ht_option = false;
@@ -1037,9 +1022,9 @@ int rtw_check_beacon_data23a(struct rtw_adapter *padapter, u8 *pbuf,
 		if (pregistrypriv->ampdu_enable == 1)
 			pmlmepriv->htpriv.ampdu_enable = true;
 
-		HT_caps_handler23a(padapter, (struct ndis_802_11_var_ies *)pHT_caps_ie);
+		HT_caps_handler23a(padapter, pHT_caps_ie);
 
-		HT_info_handler23a(padapter, (struct ndis_802_11_var_ies *)pHT_info_ie);
+		HT_info_handler23a(padapter, pHT_info_ie);
 	}
 
 	pbss_network->Length = get_wlan_bssid_ex_sz(pbss_network);
@@ -1195,23 +1180,20 @@ static void update_bcn_erpinfo_ie(struct rtw_adapter *padapter)
 
 	/* parsing ERP_IE */
 	p = rtw_get_ie23a(ie + _BEACON_IE_OFFSET_, WLAN_EID_ERP_INFO, &len, (pnetwork->IELength - _BEACON_IE_OFFSET_));
-	if (p && len>0)
-	{
-		struct ndis_802_11_var_ies * pIE = (struct ndis_802_11_var_ies *)p;
-
+	if (p && len > 0) {
 		if (pmlmepriv->num_sta_non_erp == 1)
-			pIE->data[0] |= WLAN_ERP_NON_ERP_PRESENT |
+			p[2] |= WLAN_ERP_NON_ERP_PRESENT |
 				WLAN_ERP_USE_PROTECTION;
 		else
-			pIE->data[0] &= ~(WLAN_ERP_NON_ERP_PRESENT |
-					  WLAN_ERP_USE_PROTECTION);
+			p[2] &= ~(WLAN_ERP_NON_ERP_PRESENT |
+				  WLAN_ERP_USE_PROTECTION);
 
 		if (pmlmepriv->num_sta_no_short_preamble > 0)
-			pIE->data[0] |= WLAN_ERP_BARKER_PREAMBLE;
+			p[2] |= WLAN_ERP_BARKER_PREAMBLE;
 		else
-			pIE->data[0] &= ~(WLAN_ERP_BARKER_PREAMBLE);
+			p[2] &= ~(WLAN_ERP_BARKER_PREAMBLE);
 
-		ERP_IE_handler23a(padapter, pIE);
+		ERP_IE_handler23a(padapter, p);
 	}
 }
 
@@ -1403,28 +1385,28 @@ static int rtw_ht_operation_update(struct rtw_adapter *padapter)
 	DBG_8723A("%s current operation mode = 0x%X\n",
 		   __func__, pmlmepriv->ht_op_mode);
 
-	if (!(pmlmepriv->ht_op_mode & HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT)
+	if (!(pmlmepriv->ht_op_mode & IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT)
 	    && pmlmepriv->num_sta_ht_no_gf) {
 		pmlmepriv->ht_op_mode |=
-			HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT;
+			IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT;
 		op_mode_changes++;
 	} else if ((pmlmepriv->ht_op_mode &
-		    HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT) &&
+		    IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT) &&
 		   pmlmepriv->num_sta_ht_no_gf == 0) {
 		pmlmepriv->ht_op_mode &=
-			~HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT;
+			~IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT;
 		op_mode_changes++;
 	}
 
-	if (!(pmlmepriv->ht_op_mode & HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT) &&
+	if (!(pmlmepriv->ht_op_mode & IEEE80211_HT_OP_MODE_NON_HT_STA_PRSNT) &&
 	    (pmlmepriv->num_sta_no_ht || pmlmepriv->olbc_ht)) {
-		pmlmepriv->ht_op_mode |= HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT;
+		pmlmepriv->ht_op_mode |= IEEE80211_HT_OP_MODE_NON_HT_STA_PRSNT;
 		op_mode_changes++;
 	} else if ((pmlmepriv->ht_op_mode &
-		    HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT) &&
+		    IEEE80211_HT_OP_MODE_NON_HT_STA_PRSNT) &&
 		   (pmlmepriv->num_sta_no_ht == 0 && !pmlmepriv->olbc_ht)) {
 		pmlmepriv->ht_op_mode &=
-			~HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT;
+			~IEEE80211_HT_OP_MODE_NON_HT_STA_PRSNT;
 		op_mode_changes++;
 	}
 
@@ -1432,22 +1414,21 @@ static int rtw_ht_operation_update(struct rtw_adapter *padapter)
 	 * station is associated. Probably it's a theoretical case, since
 	 * it looks like all known HT STAs support greenfield.
 	 */
-	new_op_mode = 0;
 	if (pmlmepriv->num_sta_no_ht ||
-	    (pmlmepriv->ht_op_mode & HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT))
-		new_op_mode = OP_MODE_MIXED;
+	    (pmlmepriv->ht_op_mode & IEEE80211_HT_OP_MODE_NON_GF_STA_PRSNT))
+		new_op_mode = IEEE80211_HT_OP_MODE_PROTECTION_NONHT_MIXED;
 	else if ((le16_to_cpu(phtpriv_ap->ht_cap.cap_info) &
 		  IEEE80211_HT_CAP_SUP_WIDTH_20_40) &&
 		 pmlmepriv->num_sta_ht_20mhz)
-		new_op_mode = OP_MODE_20MHZ_HT_STA_ASSOCED;
+		new_op_mode = IEEE80211_HT_OP_MODE_PROTECTION_20MHZ;
 	else if (pmlmepriv->olbc_ht)
-		new_op_mode = OP_MODE_MAY_BE_LEGACY_STAS;
+		new_op_mode = IEEE80211_HT_OP_MODE_PROTECTION_NONMEMBER;
 	else
-		new_op_mode = OP_MODE_PURE;
+		new_op_mode = IEEE80211_HT_OP_MODE_PROTECTION_NONE;
 
-	cur_op_mode = pmlmepriv->ht_op_mode & HT_INFO_OPERATION_MODE_OP_MODE_MASK;
+	cur_op_mode = pmlmepriv->ht_op_mode & IEEE80211_HT_OP_MODE_PROTECTION;
 	if (cur_op_mode != new_op_mode) {
-		pmlmepriv->ht_op_mode &= ~HT_INFO_OPERATION_MODE_OP_MODE_MASK;
+		pmlmepriv->ht_op_mode &= ~IEEE80211_HT_OP_MODE_PROTECTION;
 		pmlmepriv->ht_op_mode |= new_op_mode;
 		op_mode_changes++;
 	}
@@ -1898,22 +1879,26 @@ void rtw_ap_restore_network(struct rtw_adapter *padapter)
 	struct sta_info *chk_alive_list[NUM_STA];
 	int i;
 
-	rtw_setopmode_cmd23a(padapter, Ndis802_11APMode);
+	rtw_setopmode_cmd23a(padapter, NL80211_IFTYPE_AP);
 
 	set_channel_bwmode23a(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
 
 	start_bss_network(padapter, (u8*)&mlmepriv->cur_network.network);
 
-	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
-		(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_))
-	{
+	if (padapter->securitypriv.dot11PrivacyAlgrthm ==
+	    WLAN_CIPHER_SUITE_TKIP ||
+	    padapter->securitypriv.dot11PrivacyAlgrthm ==
+	    WLAN_CIPHER_SUITE_CCMP) {
 		/* restore group key, WEP keys is restored in ips_leave23a() */
-		rtw_set_key23a(padapter, psecuritypriv, psecuritypriv->dot118021XGrpKeyid, 0);
+		rtw_set_key23a(padapter, psecuritypriv,
+			       psecuritypriv->dot118021XGrpKeyid, 0);
 	}
 
 	/* per sta pairwise key and settings */
-	if ((padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_) &&
-		(padapter->securitypriv.dot11PrivacyAlgrthm != _AES_)) {
+	if (padapter->securitypriv.dot11PrivacyAlgrthm !=
+	    WLAN_CIPHER_SUITE_TKIP &&
+	    padapter->securitypriv.dot11PrivacyAlgrthm !=
+	    WLAN_CIPHER_SUITE_CCMP) {
 		return;
 	}
 
@@ -2041,5 +2026,3 @@ void stop_ap_mode23a(struct rtw_adapter *padapter)
 
 	rtw23a_free_mlme_priv_ie_data(pmlmepriv);
 }
-
-#endif /* CONFIG_8723AU_AP_MODE */

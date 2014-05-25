@@ -419,15 +419,14 @@ rtl8723a_set_ampdu_min_space(struct rtw_adapter *padapter, u8 MinSpacingToSet)
 
 	if (MinSpacingToSet <= 7) {
 		switch (padapter->securitypriv.dot11PrivacyAlgrthm) {
-		case _NO_PRIVACY_:
-		case _AES_:
+		case 0:
+		case WLAN_CIPHER_SUITE_CCMP:
 			SecMinSpace = 0;
 			break;
 
-		case _WEP40_:
-		case _WEP104_:
-		case _TKIP_:
-		case _TKIP_WTMIC_:
+		case WLAN_CIPHER_SUITE_WEP40:
+		case WLAN_CIPHER_SUITE_WEP104:
+		case WLAN_CIPHER_SUITE_TKIP:
 			SecMinSpace = 6;
 			break;
 		default:
@@ -456,15 +455,12 @@ void rtl8723a_set_ampdu_factor(struct rtw_adapter *padapter, u8 FactorToSet)
 	u8 index = 0;
 
 	pRegToSet = RegToSet_Normal;	/*  0xb972a841; */
-#ifdef CONFIG_8723AU_BT_COEXIST
-	if ((BT_IsBtDisabled(padapter) == false) &&
-	    (BT_1Ant(padapter) == true)) {
+
+	if (rtl8723a_BT_enabled(padapter) &&
+	    rtl8723a_BT_using_antenna_1(padapter))
 		MaxAggNum = 0x8;
-	} else
-#endif /*  CONFIG_8723AU_BT_COEXIST */
-	{
+	else
 		MaxAggNum = 0xF;
-	}
 
 	if (FactorToSet <= 3) {
 		FactorToSet = (1 << (FactorToSet + 2));
@@ -585,9 +581,7 @@ void rtl8723a_mlme_sitesurvey(struct rtw_adapter *padapter, u8 flag)
 		rtl8723au_write32(padapter, REG_RCR, v32);
 	}
 
-#ifdef CONFIG_8723AU_BT_COEXIST
-	BT_WifiScanNotify(padapter, flag ? true : false);
-#endif
+	rtl8723a_BT_wifiscan_notify(padapter, flag ? true : false);
 }
 
 void rtl8723a_on_rcr_am(struct rtw_adapter *padapter)

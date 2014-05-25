@@ -20,6 +20,7 @@
 #include "Hal8723APhyReg.h"
 #include "Hal8723APhyCfg.h"
 #include "rtl8723a_rf.h"
+#include "rtl8723a_bt_intf.h"
 #ifdef CONFIG_8723AU_BT_COEXIST
 #include "rtl8723a_bt-coexist.h"
 #endif
@@ -29,8 +30,10 @@
 #include "rtl8723a_cmd.h"
 #include "rtl8723a_sreset.h"
 #include "rtw_efuse.h"
+#include "rtw_eeprom.h"
 
 #include "odm_precomp.h"
+#include "odm.h"
 
 
 /* 2TODO: We should define 8192S firmware related macro settings here!! */
@@ -525,10 +528,6 @@ void Hal_EfuseParseXtal_8723A(struct rtw_adapter *pAdapter, u8 *hwinfo, u8 AutoL
 void Hal_EfuseParseThermalMeter_8723A(struct rtw_adapter *padapter, u8 *hwinfo, bool AutoLoadFail);
 
 void Hal_InitChannelPlan23a(struct rtw_adapter *padapter);
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter);
-#endif
 
 /*  register */
 void SetBcnCtrlReg23a(struct rtw_adapter *padapter, u8 SetBits, u8 ClearBits);

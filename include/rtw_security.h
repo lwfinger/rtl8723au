@@ -17,18 +17,11 @@
 
 #include <osdep_service.h>
 #include <drv_types.h>
+#include <net/lib80211.h>
 
 
-#define _NO_PRIVACY_		0x0
-#define _WEP40_			0x1
-#define _TKIP_			0x2
-#define _TKIP_WTMIC_		0x3
-#define _AES_			0x4
-#define _WEP104_		0x5
-#define _WEP_WPA_MIXED_	0x07  /*  WEP + WPA */
-#define _SMS4_			0x06
-
-#define is_wep_enc(alg) (((alg) == _WEP40_) || ((alg) == _WEP104_))
+#define is_wep_enc(alg) (alg == WLAN_CIPHER_SUITE_WEP40 || \
+			 alg == WLAN_CIPHER_SUITE_WEP104)
 
 #define _WPA2_IE_ID_	0x30
 
@@ -92,6 +85,10 @@ union Keytype {
 	u32    lkey[4];
 };
 
+struct rtw_wep_key {
+	u8 key[WLAN_KEY_LEN_WEP104 + 1]; /* 14 */
+	u16 keylen;
+};
 
 struct rt_pmkid_list {
 	u8	bUsed;
@@ -112,8 +109,7 @@ struct security_priv {
 	u32	  dot11PrivacyKeyIndex;	/*  this is only valid for legendary
 					 * wep, 0~3 for key id. (tx key index)
 					 */
-	union Keytype dot11DefKey[4];	/*  this is only valid for def. key */
-	u32	dot11DefKeylen[4];
+	struct rtw_wep_key wep_key[NUM_WEP_KEYS];
 
 	u32 dot118021XGrpPrivacy;	/* specify the privacy algthm.
 					 * used for Grp key
@@ -139,15 +135,13 @@ struct security_priv {
 
 	u8 wps_ie[MAX_WPS_IE_LEN];/* added in assoc req */
 	int wps_ie_len;
-	u8	binstallGrpkey;
-	u8	busetkipkey;
-	u8	bcheck_grpkey;
-	u8	bgrpkey_handshake;
-	s32	hw_decrypted;
+	unsigned int binstallGrpkey:1;
+	unsigned int busetkipkey:1;
+	unsigned int bcheck_grpkey:1;
+	unsigned int hw_decrypted:1;
 	u32 ndisauthtype;	/*  enum ndis_802_11_auth_mode */
 	u32 ndisencryptstatus;	/*  NDIS_802_11_ENCRYPTION_STATUS */
 	struct wlan_bssid_ex sec_bss;  /* for joinbss (h2c buffer) usage */
-	struct ndis_802_11_wep ndiswep;
 	u8 assoc_info[600];
 	u8 szofcapability[256]; /* for wpa2 usage */
 	u8 oidassociation[512]; /* for wpa/wpa2 usage */
@@ -178,13 +172,13 @@ do {\
 	case dot11AuthAlgrthm_Open:\
 	case dot11AuthAlgrthm_Shared:\
 	case dot11AuthAlgrthm_Auto:\
-		encry_algo = (u8)psecuritypriv->dot11PrivacyAlgrthm;\
+		encry_algo = psecuritypriv->dot11PrivacyAlgrthm;\
 		break;\
 	case dot11AuthAlgrthm_8021X:\
 		if (bmcst)\
-			encry_algo = (u8)psecuritypriv->dot118021XGrpPrivacy;\
+			encry_algo = psecuritypriv->dot118021XGrpPrivacy;\
 		else\
-			encry_algo = (u8)psta->dot118021XPrivacy;\
+			encry_algo = psta->dot118021XPrivacy;\
 		break;\
 	}	\
 } while (0)

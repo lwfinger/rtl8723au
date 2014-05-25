@@ -170,16 +170,17 @@ void rtw_wep_encrypt23a(struct rtw_adapter *padapter,
 	pframe = pxmitframe->buf_addr + hw_hdr_offset;
 
 	/* start to encrypt each fragment */
-	if ((pattrib->encrypt != _WEP40_) && (pattrib->encrypt != _WEP104_))
+	if (pattrib->encrypt != WLAN_CIPHER_SUITE_WEP40 &&
+	    pattrib->encrypt != WLAN_CIPHER_SUITE_WEP104)
 		return;
 
 	index = psecuritypriv->dot11PrivacyKeyIndex;
-	keylength = psecuritypriv->dot11DefKeylen[index];
+	keylength = psecuritypriv->wep_key[index].keylen;
 
 	for (curfragnum = 0; curfragnum < pattrib->nr_frags ; curfragnum++) {
 		iv = pframe + pattrib->hdrlen;
 		memcpy(&wepkey[0], iv, 3);
-		memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[index].skey[0],
+		memcpy(&wepkey[3], &psecuritypriv->wep_key[index].key,
 		       keylength);
 		payload = pframe + pattrib->iv_len + pattrib->hdrlen;
 
@@ -225,17 +226,17 @@ void rtw_wep_decrypt23a(struct rtw_adapter *padapter,
 	pframe = skb->data;
 
 	/* start to decrypt recvframe */
-	if ((prxattrib->encrypt != _WEP40_) && (prxattrib->encrypt != _WEP104_))
+	if (prxattrib->encrypt != WLAN_CIPHER_SUITE_WEP40 &&
+	    prxattrib->encrypt != WLAN_CIPHER_SUITE_WEP104)
 		return;
 
 	iv = pframe + prxattrib->hdrlen;
 	/* keyindex = (iv[3]&0x3); */
 	keyindex = prxattrib->key_index;
-	keylength = psecuritypriv->dot11DefKeylen[keyindex];
+	keylength = psecuritypriv->wep_key[keyindex].keylen;
 	memcpy(&wepkey[0], iv, 3);
 	/* memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[psecuritypriv->dot11PrivacyKeyIndex].skey[0], keylength); */
-	memcpy(&wepkey[3], &psecuritypriv->dot11DefKey[keyindex].skey[0],
-		   keylength);
+	memcpy(&wepkey[3], &psecuritypriv->wep_key[keyindex].key, keylength);
 	length = skb->len - prxattrib->hdrlen - prxattrib->iv_len;
 
 	payload = pframe + prxattrib->iv_len + prxattrib->hdrlen;
@@ -248,7 +249,7 @@ void rtw_wep_decrypt23a(struct rtw_adapter *padapter,
 	*((u32 *)crc) = le32_to_cpu(getcrc32(payload, length - 4));
 
 	if (crc[3] != payload[length - 1] || crc[2] != payload[length - 2] ||
-		crc[1] != payload[length - 3] || crc[0] != payload[length - 4]) {
+	    crc[1] != payload[length - 3] || crc[0] != payload[length - 4]) {
 		RT_TRACE(_module_rtl871x_security_c_, _drv_err_,
 			 ("rtw_wep_decrypt23a:icv error crc[3](%x)!= payload"
 			  "[length-1](%x) || crc[2](%x)!= payload[length-2](%x)"
@@ -637,14 +638,10 @@ int rtw_tkip_encrypt23a(struct rtw_adapter *padapter,
 
 	pframe = pxmitframe->buf_addr + hw_hdr_offset;
 	/* 4 start to encrypt each fragment */
-	if (pattrib->encrypt == _TKIP_) {
-
+	if (pattrib->encrypt == WLAN_CIPHER_SUITE_TKIP) {
 		if (pattrib->psta)
-		{
 			stainfo = pattrib->psta;
-		}
-		else
-		{
+		else {
 			DBG_8723A("%s, call rtw_get_stainfo()\n", __func__);
 			stainfo = rtw_get_stainfo23a(&padapter->stapriv,
 						     &pattrib->ra[0]);
@@ -737,14 +734,14 @@ int rtw_tkip_decrypt23a(struct rtw_adapter *padapter,
 	pframe = skb->data;
 
 	/* 4 start to decrypt recvframe */
-	if (prxattrib->encrypt == _TKIP_) {
+	if (prxattrib->encrypt == WLAN_CIPHER_SUITE_TKIP) {
 
 		stainfo = rtw_get_stainfo23a(&padapter->stapriv,
 					     &prxattrib->ta[0]);
 		if (stainfo!= NULL) {
 
 			if (is_multicast_ether_addr(prxattrib->ra)) {
-				if (psecuritypriv->binstallGrpkey == false) {
+				if (psecuritypriv->binstallGrpkey == 0) {
 					res = _FAIL;
 					DBG_8723A("%s:rx bc/mc packets, but didn't install group key!!!!!!!!!!\n", __func__);
 					goto exit;
@@ -1323,7 +1320,7 @@ int rtw_aes_encrypt23a(struct rtw_adapter *padapter,
 	pframe = pxmitframe->buf_addr + hw_hdr_offset;
 
 	/* 4 start to encrypt each fragment */
-	if (pattrib->encrypt != _AES_)
+	if (pattrib->encrypt != WLAN_CIPHER_SUITE_CCMP)
 		return _FAIL;
 
 	if (pattrib->psta) {
@@ -1598,7 +1595,7 @@ int rtw_aes_decrypt23a(struct rtw_adapter *padapter,
 
 	pframe = skb->data;
 	/* 4 start to encrypt each fragment */
-	if (prxattrib->encrypt != _AES_)
+	if (prxattrib->encrypt != WLAN_CIPHER_SUITE_CCMP)
 		return _FAIL;
 
 	stainfo = rtw_get_stainfo23a(&padapter->stapriv, &prxattrib->ta[0]);
@@ -1645,7 +1642,7 @@ void rtw_use_tkipkey_handler23a(void *FunctionContext)
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
 
 	RT_TRACE(_module_rtl871x_security_c_, _drv_err_, ("^^^rtw_use_tkipkey_handler23a ^^^\n"));
-	padapter->securitypriv.busetkipkey = true;
+	padapter->securitypriv.busetkipkey = 1;
 	RT_TRACE(_module_rtl871x_security_c_, _drv_err_,
 		 ("^^^rtw_use_tkipkey_handler23a padapter->securitypriv.busetkipkey =%d^^^\n",
 		 padapter->securitypriv.busetkipkey));

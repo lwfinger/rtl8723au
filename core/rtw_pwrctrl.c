@@ -18,10 +18,9 @@
 #include <drv_types.h>
 #include <osdep_intf.h>
 #include <rtl8723a_cmd.h>
+#include <rtw_sreset.h>
 
-#ifdef CONFIG_8723AU_BT_COEXIST
-#include <rtl8723a_hal.h>
-#endif
+#include <rtl8723a_bt_intf.h>
 #include <usb_ops_linux.h>
 
 void ips_enter23a(struct rtw_adapter * padapter)
@@ -37,9 +36,8 @@ void ips_enter23a(struct rtw_adapter * padapter)
 
 	pwrpriv->ips_enter23a_cnts++;
 	DBG_8723A("==>ips_enter23a cnts:%d\n", pwrpriv->ips_enter23a_cnts);
-#ifdef CONFIG_8723AU_BT_COEXIST
-	BTDM_TurnOffBtCoexistBeforeEnterIPS(padapter);
-#endif
+	rtl8723a_BT_disable_coexist(padapter);
+
 	if (pwrpriv->change_rfpwrstate == rf_off) {
 		pwrpriv->bpower_saving = true;
 		DBG_8723A_LEVEL(_drv_always_, "nolinked power save enter\n");
@@ -78,8 +76,10 @@ int ips_leave23a(struct rtw_adapter * padapter)
 
 		DBG_8723A_LEVEL(_drv_always_, "nolinked power save leave\n");
 
-		if (psecuritypriv->dot11PrivacyAlgrthm == _WEP40_ ||
-		    psecuritypriv->dot11PrivacyAlgrthm == _WEP104_) {
+		if (psecuritypriv->dot11PrivacyAlgrthm ==
+		    WLAN_CIPHER_SUITE_WEP40 ||
+		    psecuritypriv->dot11PrivacyAlgrthm ==
+		    WLAN_CIPHER_SUITE_WEP104) {
 			DBG_8723A("==>%s, channel(%d), processing(%x)\n",
 				  __func__, padapter->mlmeextpriv.cur_channel,
 				  pwrpriv->bips_processing);
@@ -285,7 +285,7 @@ void rtw_set_rpwm23a(struct rtw_adapter *padapter, u8 pslv)
 	pwrpriv->cpwm = pslv;
 }
 
-static u8 PS_RDY_CHECK(struct rtw_adapter * padapter)
+static bool PS_RDY_CHECK(struct rtw_adapter * padapter)
 {
 	unsigned long delta_time;
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
@@ -296,16 +296,16 @@ static u8 PS_RDY_CHECK(struct rtw_adapter * padapter)
 	if (delta_time < LPS_DELAY_TIME)
 		return false;
 
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == false ||
-	    check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true ||
-	    check_fwstate(pmlmepriv, WIFI_AP_STATE) == true ||
-	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true ||
-	    check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true)
+	if (!check_fwstate(pmlmepriv, _FW_LINKED) ||
+	    check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) ||
+	    check_fwstate(pmlmepriv, WIFI_AP_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_STATE))
 		return false;
 	if (pwrpriv->bInSuspend)
 		return false;
 	if (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X &&
-	    padapter->securitypriv.binstallGrpkey == false) {
+	    !padapter->securitypriv.binstallGrpkey) {
 		DBG_8723A("Group handshake still in progress !!!\n");
 		return false;
 	}
@@ -347,11 +347,8 @@ void rtw_set_ps_mode23a(struct rtw_adapter *padapter, u8 ps_mode,
 		rtl8723a_set_FwPwrMode_cmd(padapter, ps_mode);
 		pwrpriv->bFwCurrentInPSMode = false;
 	} else {
-		if (PS_RDY_CHECK(padapter)
-#ifdef CONFIG_8723AU_BT_COEXIST
-			|| (BT_1Ant(padapter) == true)
-#endif
-			) {
+		if (PS_RDY_CHECK(padapter) ||
+		    rtl8723a_BT_using_antenna_1(padapter)) {
 			DBG_8723A("%s: Enter 802.11 power save\n", __func__);
 
 			pwrpriv->bFwCurrentInPSMode = true;
@@ -459,7 +456,7 @@ void LeaveAllPowerSaveMode23a(struct rtw_adapter *Adapter)
 	u8 enqueue = 0;
 
 	/* DBG_8723A("%s.....\n", __func__); */
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
+	if (check_fwstate(pmlmepriv, _FW_LINKED))
 		rtw_lps_ctrl_wk_cmd23a(Adapter, LPS_CTRL_LEAVE, enqueue);
 }
 
@@ -478,7 +475,6 @@ void rtw_init_pwrctrl_priv23a(struct rtw_adapter *padapter)
 
 	pwrctrlpriv->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
 	pwrctrlpriv->pwr_state_check_cnts = 0;
-	pwrctrlpriv->bInternalAutoSuspend = false;
 	pwrctrlpriv->bInSuspend = false;
 	pwrctrlpriv->bkeepfwalive = false;
 
@@ -559,7 +555,7 @@ int _rtw_pwr_wakeup23a(struct rtw_adapter *padapter, u32 ips_deffer_ms, const ch
 			DBG_8723A("%s wait sreset_inprogress done\n", __func__);
 	}
 
-	if (pwrpriv->bInternalAutoSuspend == false && pwrpriv->bInSuspend) {
+	if (pwrpriv->bInSuspend) {
 		DBG_8723A("%s wait bInSuspend...\n", __func__);
 		while (pwrpriv->bInSuspend &&
 		       (jiffies_to_msecs(jiffies - start) <= 3000)) {
@@ -572,21 +568,13 @@ int _rtw_pwr_wakeup23a(struct rtw_adapter *padapter, u32 ips_deffer_ms, const ch
 	}
 
 	/* System suspend is not allowed to wakeup */
-	if (pwrpriv->bInternalAutoSuspend == false &&
-	    pwrpriv->bInSuspend == true) {
-		ret = _FAIL;
-		goto exit;
-	}
-
-	/* block??? */
-	if (pwrpriv->bInternalAutoSuspend == true &&
-	    padapter->net_closed == true) {
+	if (pwrpriv->bInSuspend) {
 		ret = _FAIL;
 		goto exit;
 	}
 
 	/* I think this should be check in IPS, LPS, autosuspend functions... */
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
+	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
 		ret = _SUCCESS;
 		goto exit;
 	}
@@ -606,7 +594,7 @@ int _rtw_pwr_wakeup23a(struct rtw_adapter *padapter, u32 ips_deffer_ms, const ch
 		DBG_8723A("%s: bDriverStopped =%d, bup =%d, hw_init_completed "
 			  "=%u\n", caller, padapter->bDriverStopped,
 			  padapter->bup, padapter->hw_init_completed);
-		ret = false;
+		ret = _FAIL;
 		goto exit;
 	}
 

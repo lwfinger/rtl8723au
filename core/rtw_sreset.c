@@ -105,8 +105,10 @@ static void sreset_restore_security_station(struct rtw_adapter *padapter)
 
 	rtl8723a_set_sec_cfg(padapter, val8);
 
-	if ((padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_) ||
-	    (padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)) {
+	if (padapter->securitypriv.dot11PrivacyAlgrthm ==
+	    WLAN_CIPHER_SUITE_TKIP ||
+	    padapter->securitypriv.dot11PrivacyAlgrthm ==
+	    WLAN_CIPHER_SUITE_CCMP) {
 		psta = rtw_get_stainfo23a(pstapriv, get_bssid(mlmepriv));
 		if (psta == NULL) {
 			/* DEBUG_ERR(("Set wpa_set_encryption: Obtain Sta_info fail\n")); */
@@ -126,7 +128,7 @@ static void sreset_restore_network_station(struct rtw_adapter *padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	u8 threshold;
 
-	rtw_setopmode_cmd23a(padapter, Ndis802_11Infrastructure);
+	rtw_setopmode_cmd23a(padapter, NL80211_IFTYPE_STATION);
 
 	/*  TH = 1 => means that invalidate usb rx aggregation */
 	/*  TH = 0 => means that validate usb rx aggregation, use init value. */

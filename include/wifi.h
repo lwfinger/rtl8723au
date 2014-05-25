@@ -23,130 +23,6 @@
  */
 #define	WiFiNavUpperUs		30000	/*  30 ms */
 
-enum WIFI_FRAME_TYPE {
-	WIFI_MGT_TYPE  =	(0),
-	WIFI_CTRL_TYPE =	(BIT(2)),
-	WIFI_DATA_TYPE =	(BIT(3)),
-	WIFI_QOS_DATA_TYPE	= (BIT(7)|BIT(3)),	/*  QoS Data */
-};
-
-enum WIFI_FRAME_SUBTYPE {
-	/*  below is for mgt frame */
-	WIFI_ASSOCREQ = (0 | WIFI_MGT_TYPE),
-	WIFI_ASSOCRSP = (BIT(4) | WIFI_MGT_TYPE),
-	WIFI_REASSOCREQ = (BIT(5) | WIFI_MGT_TYPE),
-	WIFI_REASSOCRSP = (BIT(5) | BIT(4) | WIFI_MGT_TYPE),
-	WIFI_PROBEREQ = (BIT(6) | WIFI_MGT_TYPE),
-	WIFI_PROBERSP = (BIT(6) | BIT(4) | WIFI_MGT_TYPE),
-	WIFI_BEACON = (BIT(7) | WIFI_MGT_TYPE),
-	WIFI_ATIM = (BIT(7) | BIT(4) | WIFI_MGT_TYPE),
-	WIFI_DISASSOC = (BIT(7) | BIT(5) | WIFI_MGT_TYPE),
-	WIFI_AUTH = (BIT(7) | BIT(5) | BIT(4) | WIFI_MGT_TYPE),
-	WIFI_DEAUTH = (BIT(7) | BIT(6) | WIFI_MGT_TYPE),
-	WIFI_ACTION = (BIT(7) | BIT(6) | BIT(4) | WIFI_MGT_TYPE),
-
-	/*  below is for control frame */
-	WIFI_PSPOLL = (BIT(7) | BIT(5) | WIFI_CTRL_TYPE),
-	WIFI_RTS = (BIT(7) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
-	WIFI_CTS = (BIT(7) | BIT(6) | WIFI_CTRL_TYPE),
-	WIFI_ACK = (BIT(7) | BIT(6) | BIT(4) | WIFI_CTRL_TYPE),
-	WIFI_CFEND = (BIT(7) | BIT(6) | BIT(5) | WIFI_CTRL_TYPE),
-	WIFI_CFEND_CFACK = (BIT(7) | BIT(6) | BIT(5) | BIT(4) | WIFI_CTRL_TYPE),
-
-	/*  below is for data frame */
-	WIFI_DATA = (0 | WIFI_DATA_TYPE),
-	WIFI_DATA_CFACK = (BIT(4) | WIFI_DATA_TYPE),
-	WIFI_DATA_CFPOLL = (BIT(5) | WIFI_DATA_TYPE),
-	WIFI_DATA_CFACKPOLL = (BIT(5) | BIT(4) | WIFI_DATA_TYPE),
-	WIFI_DATA_NULL = (BIT(6) | WIFI_DATA_TYPE),
-	WIFI_CF_ACK = (BIT(6) | BIT(4) | WIFI_DATA_TYPE),
-	WIFI_CF_POLL = (BIT(6) | BIT(5) | WIFI_DATA_TYPE),
-	WIFI_CF_ACKPOLL = (BIT(6) | BIT(5) | BIT(4) | WIFI_DATA_TYPE),
-	WIFI_QOS_DATA_NULL = (BIT(6) | WIFI_QOS_DATA_TYPE),
-};
-
-
-enum WIFI_REG_DOMAIN {
-	DOMAIN_FCC		= 1,
-	DOMAIN_IC		= 2,
-	DOMAIN_ETSI		= 3,
-	DOMAIN_SPAIN		= 4,
-	DOMAIN_FRANCE		= 5,
-	DOMAIN_MKK		= 6,
-	DOMAIN_ISRAEL		= 7,
-	DOMAIN_MKK1		= 8,
-	DOMAIN_MKK2		= 9,
-	DOMAIN_MKK3		= 10,
-	DOMAIN_MAX
-};
-
-
-#define SetToDs(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_TODS))
-
-#define SetFrDs(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_FROMDS))
-
-#define SetMFrag(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREFRAGS))
-
-#define ClearMFrag(pbuf)	\
-	(*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)))
-
-#define SetRetry(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_RETRY))
-
-#define SetPwrMgt(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PM))
-
-#define SetMData(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREDATA))
-
-#define SetPrivacy(pbuf)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PROTECTED))
-
-#define SetFrameType(pbuf, type)	\
-	do {	\
-		*(__le16 *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | BIT(2))); \
-		*(__le16 *)(pbuf) |= __constant_cpu_to_le16(type); \
-	} while (0)
-
-#define SetFrameSubType(pbuf, type) \
-	do {    \
-		*(__le16 *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
-		*(__le16 *)(pbuf) |= cpu_to_le16(type); \
-	} while (0)
-
-#define SetFragNum(pbuf, num) \
-	do {    \
-		*(unsigned short *)((unsigned long)(pbuf) + 22) = \
-			((*(unsigned short *)((unsigned long)(pbuf) + 22)) & le16_to_cpu(~(0x000f))) | \
-			cpu_to_le16(0x0f & (num));     \
-	} while (0)
-
-#define SetSeqNum(pbuf, num) \
-	do {    \
-		*(__le16 *)((size_t)(pbuf) + 22) = \
-			((*(__le16 *)((size_t)(pbuf) + 22)) & cpu_to_le16((unsigned short)0x000f)) | \
-			cpu_to_le16((unsigned short)(0xfff0 & (num << 4))); \
-	} while (0)
-
-#define SetDuration(pbuf, dur) \
-	(*(__le16 *)((unsigned long)(pbuf) + 2) =		\
-	 cpu_to_le16(0xffff & (dur)))
-
-#define SetPriority(pbuf, tid)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16(tid & 0xf))
-
-#define SetEOSP(pbuf, eosp)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16((eosp & 1) << 4))
-
-#define SetAckpolicy(pbuf, ack)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16((ack & 3) << 5))
-
-#define SetAMsdu(pbuf, amsdu)	\
-	(*(__le16 *)(pbuf) |= cpu_to_le16((amsdu & 1) << 7))
-
 #define _ASOCREQ_IE_OFFSET_		4	/*  excluding wlan_hdr */
 #define	_ASOCRSP_IE_OFFSET_		6
 #define _REASOCREQ_IE_OFFSET_		10
@@ -175,18 +51,6 @@ enum WIFI_REG_DOMAIN {
 #define _ASOC_ID_		2
 #define _STATUS_CODE_		2
 #define _TIMESTAMP_		8
-
-#define cap_ESS		BIT(0)
-#define cap_IBSS	BIT(1)
-#define cap_CFPollable	BIT(2)
-#define cap_CFRequest	BIT(3)
-#define cap_Privacy	BIT(4)
-#define cap_ShortPremble BIT(5)
-#define cap_PBCC	BIT(6)
-#define cap_ChAgility	BIT(7)
-#define cap_SpecMgmt	BIT(8)
-#define cap_QoS		BIT(9)
-#define cap_ShortSlot	BIT(10)
 
 /*-----------------------------------------------------------------------------
 				Below is the definition for WMM
@@ -252,38 +116,7 @@ struct ADDBA_request {
 }  __packed;
 
 
-#define OP_MODE_PURE                    0
-#define OP_MODE_MAY_BE_LEGACY_STAS      1
-#define OP_MODE_20MHZ_HT_STA_ASSOCED    2
-#define OP_MODE_MIXED                   3
-
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_OFF_MASK	((u8) BIT(0) | BIT(1))
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_ABOVE		((u8) BIT(0))
-#define HT_INFO_HT_PARAM_SECONDARY_CHNL_BELOW		((u8) BIT(0) | BIT(1))
-#define HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH		((u8) BIT(2))
-#define HT_INFO_HT_PARAM_RIFS_MODE			((u8) BIT(3))
-#define HT_INFO_HT_PARAM_CTRL_ACCESS_ONLY		((u8) BIT(4))
-#define HT_INFO_HT_PARAM_SRV_INTERVAL_GRANULARITY	((u8) BIT(5))
-
-#define HT_INFO_OPERATION_MODE_OP_MODE_MASK	\
-		((u16) (0x0001 | 0x0002))
-#define HT_INFO_OPERATION_MODE_OP_MODE_OFFSET		0
-#define HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT	((u8) BIT(2))
-#define HT_INFO_OPERATION_MODE_TRANSMIT_BURST_LIMIT	((u8) BIT(3))
-#define HT_INFO_OPERATION_MODE_NON_HT_STA_PRESENT	((u8) BIT(4))
-
-#define HT_INFO_STBC_PARAM_DUAL_BEACON		((u16) BIT(6))
-#define HT_INFO_STBC_PARAM_DUAL_STBC_PROTECT	((u16) BIT(7))
-#define HT_INFO_STBC_PARAM_SECONDARY_BCN	((u16) BIT(8))
-#define HT_INFO_STBC_PARAM_LSIG_TXOP_PROTECT_ALLOWED	((u16) BIT(9))
-#define HT_INFO_STBC_PARAM_PCO_ACTIVE		((u16) BIT(10))
-#define HT_INFO_STBC_PARAM_PCO_PHASE		((u16) BIT(11))
-
-
-
 /*	===============WPS Section=============== */
-/*	For WPSv1.0 */
-#define WPSOUI					0x0050f204
 /*	WPS attribute ID */
 #define WPS_ATTR_VER1				0x104A
 #define WPS_ATTR_SIMPLE_CONF_STATE		0x1044
@@ -304,85 +137,6 @@ struct ADDBA_request {
 #define WPS_ATTR_CONFIG_ERROR			0x1009
 #define WPS_ATTR_VENDOR_EXT			0x1049
 #define WPS_ATTR_SELECTED_REGISTRAR		0x1041
-
-/*	Value of WPS attribute "WPS_ATTR_DEVICE_NAME */
-#define WPS_MAX_DEVICE_NAME_LEN			32
-
-/*	Value of WPS Request Type Attribute */
-#define WPS_REQ_TYPE_ENROLLEE_INFO_ONLY		0x00
-#define WPS_REQ_TYPE_ENROLLEE_OPEN_8021X	0x01
-#define WPS_REQ_TYPE_REGISTRAR			0x02
-#define WPS_REQ_TYPE_WLAN_MANAGER_REGISTRAR	0x03
-
-/*	Value of WPS Response Type Attribute */
-#define WPS_RESPONSE_TYPE_INFO_ONLY		0x00
-#define WPS_RESPONSE_TYPE_8021X			0x01
-#define WPS_RESPONSE_TYPE_REGISTRAR		0x02
-#define WPS_RESPONSE_TYPE_AP			0x03
-
-/*	Value of WPS WiFi Simple Configuration State Attribute */
-#define WPS_WSC_STATE_NOT_CONFIG		0x01
-#define WPS_WSC_STATE_CONFIG			0x02
-
-/*	Value of WPS Version Attribute */
-#define WPS_VERSION_1				0x10
-
-/*	Value of WPS Configuration Method Attribute */
-#define WPS_CONFIG_METHOD_FLASH			0x0001
-#define WPS_CONFIG_METHOD_ETHERNET		0x0002
-#define WPS_CONFIG_METHOD_LABEL			0x0004
-#define WPS_CONFIG_METHOD_DISPLAY		0x0008
-#define WPS_CONFIG_METHOD_E_NFC			0x0010
-#define WPS_CONFIG_METHOD_I_NFC			0x0020
-#define WPS_CONFIG_METHOD_NFC			0x0040
-#define WPS_CONFIG_METHOD_PBC			0x0080
-#define WPS_CONFIG_METHOD_KEYPAD		0x0100
-#define WPS_CONFIG_METHOD_VPBC			0x0280
-#define WPS_CONFIG_METHOD_PPBC			0x0480
-#define WPS_CONFIG_METHOD_VDISPLAY		0x2008
-#define WPS_CONFIG_METHOD_PDISPLAY		0x4008
-
-/*	Value of Category ID of WPS Primary Device Type Attribute */
-#define WPS_PDT_CID_DISPLAYS			0x0007
-#define WPS_PDT_CID_MULIT_MEDIA			0x0008
-#define WPS_PDT_CID_RTK_WIDI			WPS_PDT_CID_MULIT_MEDIA
-
-/*	Value of Sub Category ID of WPS Primary Device Type Attribute */
-#define WPS_PDT_SCID_MEDIA_SERVER		0x0005
-#define WPS_PDT_SCID_RTK_DMP			WPS_PDT_SCID_MEDIA_SERVER
-
-/*	Value of Device Password ID */
-#define WPS_DPID_PIN				0x0000
-#define WPS_DPID_USER_SPEC			0x0001
-#define WPS_DPID_MACHINE_SPEC			0x0002
-#define WPS_DPID_REKEY				0x0003
-#define WPS_DPID_PBC				0x0004
-#define WPS_DPID_REGISTRAR_SPEC			0x0005
-
-/*	Value of WPS RF Bands Attribute */
-#define WPS_RF_BANDS_2_4_GHZ			0x01
-#define WPS_RF_BANDS_5_GHZ			0x02
-
-/*	Value of WPS Association State Attribute */
-#define WPS_ASSOC_STATE_NOT_ASSOCIATED		0x00
-#define WPS_ASSOC_STATE_CONNECTION_SUCCESS	0x01
-#define WPS_ASSOC_STATE_CONFIGURATION_FAILURE	0x02
-#define WPS_ASSOC_STATE_ASSOCIATION_FAILURE	0x03
-#define WPS_ASSOC_STATE_IP_FAILURE		0x04
-
-/*	P2P Public Action Frame ( Management Frame ) */
-#define	P2P_PUB_ACTION_ACTION			0x09
-
-/*	P2P Public Action Frame Type */
-#define	P2P_GO_NEGO_REQ				0
-#define	P2P_GO_NEGO_RESP			1
-#define	P2P_GO_NEGO_CONF			2
-#define	P2P_INVIT_REQ				3
-#define	P2P_INVIT_RESP				4
-#define	P2P_DEVDISC_REQ				5
-#define	P2P_DEVDISC_RESP			6
-#define	P2P_PROVISION_DISC_REQ			7
-#define	P2P_PROVISION_DISC_RESP			8
 
 /*	WPS Configuration Method */
 #define	WPS_CM_NONE					0x0000

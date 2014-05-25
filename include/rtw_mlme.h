@@ -83,13 +83,6 @@ enum {
 	GHZ_24,
 };
 
-enum SCAN_RESULT_TYPE {
-	SCAN_RESULT_P2P_ONLY = 0,	/*	Will return all the P2P devices. */
-	SCAN_RESULT_ALL = 1,		/*	Will return all the scanned device, include AP. */
-	SCAN_RESULT_WFD_TYPE = 2	/*	Will just return the correct WFD device. */
-					/*	If this device is Miracast sink device, it will just return all the Miracast source devices. */
-};
-
 /*
 
 there are several "locks" in mlme_priv,
@@ -104,16 +97,6 @@ To avoid possible dead lock, any thread trying to modifiying mlme_priv
 SHALL not lock up more than one locks at a time!
 */
 
-#define traffic_threshold	10
-#define	traffic_scan_period	500
-
-struct sitesurvey_ctrl {
-	u64	last_tx_pkts;
-	uint	last_rx_pkts;
-	int	traffic_busy;
-	struct timer_list	sitesurvey_ctrl_timer;
-};
-
 struct rt_link_detect {
 	u32	NumTxOkInPeriod;
 	u32	NumRxOkInPeriod;
@@ -124,86 +107,6 @@ struct rt_link_detect {
 	bool	bHigherBusyTraffic; /*  For interrupt migration purpose. */
 	bool	bHigherBusyRxTraffic; /*  We may disable Tx interrupt according as Rx traffic. */
 	bool	bHigherBusyTxTraffic; /*  We may disable Tx interrupt according as Tx traffic. */
-};
-
-struct profile_info {
-	u8	ssidlen;
-	u8	ssid[IEEE80211_MAX_SSID_LEN];
-	u8	peermac[ETH_ALEN];
-};
-
-struct tx_invite_req_info {
-	u8	token;
-	u8	benable;
-	u8	go_ssid[IEEE80211_MAX_SSID_LEN];
-	u8	ssidlen;
-	u8	go_bssid[ETH_ALEN];
-	u8	peer_macaddr[ETH_ALEN];
-	u8	operating_ch;	/* This information will be set by using the p2p_set op_ch = x */
-	u8	peer_ch;	/* The listen channel for peer P2P device */
-
-};
-
-struct tx_invite_resp_info {
-	u8	token;	/*	Used to record the dialog token of p2p invitation request frame. */
-};
-
-struct tx_provdisc_req_info {
-	u16	wps_config_method_request;	/* Used when sending the provisioning request frame */
-	u16	peer_channel_num[2];		/* The channel number which the receiver stands. */
-	struct	cfg80211_ssid ssid;
-	u8	peerDevAddr[ETH_ALEN];	/* Peer device address */
-	u8	peerIFAddr[ETH_ALEN];		/* Peer interface address */
-	u8	benable;			/* This provision discovery request frame is trigger to send or not */
-};
-
-struct rx_provdisc_req_info {	/* When peer device issue prov_disc_req first, we should store the following informations */
-	u8	peerDevAddr[ETH_ALEN];		/*	Peer device address */
-	u8	strconfig_method_desc_of_prov_disc_req[4];	/*	description for the config method located in the provisioning discovery request frame. */
-																	/*	The UI must know this information to know which config method the remote p2p device is requiring. */
-};
-
-struct tx_nego_req_info {
-	u16	peer_channel_num[2];	/* The channel number which the receiver stands. */
-	u8	peerDevAddr[ETH_ALEN];/* Peer device address */
-	u8	benable;		/* This negoitation request frame is trigger to send or not */
-};
-
-struct group_id_info {
-	u8 go_device_addr[ETH_ALEN]; /*The GO's device address of P2P group */
-	u8 ssid[IEEE80211_MAX_SSID_LEN]; /* The SSID of this P2P group */
-};
-
-struct scan_limit_info {
-	u8	scan_op_ch_only;	/* When this flag is set, the driver should just scan the operation channel */
-	u8	operation_ch[2];	/* Store the operation channel of invitation request frame */
-};
-
-struct tdls_ss_record {	/* signal strength record */
-	u8	macaddr[ETH_ALEN];
-	u8	RxPWDBAll;
-	u8	is_tdls_sta;	/*  true: direct link sta, false: else */
-};
-
-struct tdls_info {
-	u8	ap_prohibited;
-	uint	setup_state;
-	u8	sta_cnt;
-	/* 1:tdls sta == (NUM_STA-1), reach max direct link no; 0: else; */
-	u8	sta_maximum;
-	struct tdls_ss_record	ss_record;
-	u8	macid_index;	/* macid entry that is ready to write */
-	/* cam entry that is trying to clear, using it in direct link teardown*/
-	u8	clear_cam;
-	u8	ch_sensing;
-	u8	cur_channel;
-	u8	candidate_ch;
-	u8	collect_pkt_num[MAX_CHANNEL_NUM];
-	spinlock_t	cmd_lock;
-	spinlock_t	hdl_lock;
-	u8	watchdog_count;
-	u8	dev_discovered;		/* WFD_TDLS: for sigma test */
-	u8	enable;
 };
 
 struct mlme_priv {
@@ -322,25 +225,12 @@ struct mlme_priv {
 	u32 wfd_go_probe_resp_ie_len; /* for GO */
 };
 
-#ifdef CONFIG_8723AU_AP_MODE
-
-struct hostapd_priv {
-	struct rtw_adapter *padapter;
-};
-
-int hostapd_mode_init(struct rtw_adapter *padapter);
-void hostapd_mode_unload(struct rtw_adapter *padapter);
-#endif
-
 void rtw_joinbss_event_prehandle23a(struct rtw_adapter *adapter, u8 *pbuf);
 void rtw_survey_event_cb23a(struct rtw_adapter *adapter, const u8 *pbuf);
 void rtw_surveydone_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
 void rtw23a_joinbss_event_cb(struct rtw_adapter *adapter, const u8 *pbuf);
 void rtw_stassoc_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
 void rtw_stadel_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
-void rtw_atimdone_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
-void rtw_cpwm_event_callback23a(struct rtw_adapter *adapter, const u8 *pbuf);
-
 
 int event_thread(void *context);
 void rtw23a_join_to_handler(unsigned long);
@@ -362,7 +252,7 @@ static inline u8 *get_bssid(struct mlme_priv *pmlmepriv)
 	return pmlmepriv->cur_network.network.MacAddress;
 }
 
-static inline int check_fwstate(struct mlme_priv *pmlmepriv, int state)
+static inline bool check_fwstate(struct mlme_priv *pmlmepriv, int state)
 {
 	if (pmlmepriv->fw_state & state)
 		return true;

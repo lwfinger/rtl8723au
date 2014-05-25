@@ -296,9 +296,9 @@ int recvframe_chkmic(struct rtw_adapter *adapter,
 
 	stainfo = rtw_get_stainfo23a(&adapter->stapriv, &prxattrib->ta[0]);
 
-	if (prxattrib->encrypt == _TKIP_) {
+	if (prxattrib->encrypt == WLAN_CIPHER_SUITE_TKIP) {
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
-			 ("\n recvframe_chkmic:prxattrib->encrypt == _TKIP_\n"));
+			 ("\n recvframe_chkmic:prxattrib->encrypt == WLAN_CIPHER_SUITE_TKIP\n"));
 		RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
 			 ("\n recvframe_chkmic:da = 0x%02x:0x%02x:0x%02x:0x%02x:"
 			  "0x%02x:0x%02x\n", prxattrib->ra[0],
@@ -313,7 +313,7 @@ int recvframe_chkmic(struct rtw_adapter *adapter,
 				RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
 					 ("\n recvframe_chkmic: bcmc key\n"));
 
-				if (psecuritypriv->binstallGrpkey == false) {
+				if (!psecuritypriv->binstallGrpkey) {
 					res = _FAIL;
 					RT_TRACE(_module_rtl871x_recv_c_,
 						 _drv_err_,
@@ -442,9 +442,9 @@ int recvframe_chkmic(struct rtw_adapter *adapter,
 				res = _FAIL;
 			} else {
 				/* mic checked ok */
-				if ((psecuritypriv->bcheck_grpkey == false) &&
-				    (is_multicast_ether_addr(prxattrib->ra))) {
-					psecuritypriv->bcheck_grpkey = true;
+				if (!psecuritypriv->bcheck_grpkey &&
+				    is_multicast_ether_addr(prxattrib->ra)) {
+					psecuritypriv->bcheck_grpkey = 1;
 					RT_TRACE(_module_rtl871x_recv_c_,
 						 _drv_err_,
 						 ("psecuritypriv->bcheck_grp"
@@ -491,13 +491,13 @@ struct recv_frame *decryptor(struct rtw_adapter *padapter,
 				  prxattrib->key_index);
 
 			switch (prxattrib->encrypt) {
-			case _WEP40_:
-			case _WEP104_:
+			case WLAN_CIPHER_SUITE_WEP40:
+			case WLAN_CIPHER_SUITE_WEP104:
 				prxattrib->key_index =
 					psecuritypriv->dot11PrivacyKeyIndex;
 				break;
-			case _TKIP_:
-			case _AES_:
+			case WLAN_CIPHER_SUITE_TKIP:
+			case WLAN_CIPHER_SUITE_CCMP:
 			default:
 				prxattrib->key_index =
 					psecuritypriv->dot118021XGrpKeyid;
@@ -507,16 +507,16 @@ struct recv_frame *decryptor(struct rtw_adapter *padapter,
 	}
 
 	if ((prxattrib->encrypt > 0) && ((prxattrib->bdecrypted == 0))) {
-		psecuritypriv->hw_decrypted = false;
+		psecuritypriv->hw_decrypted = 0;
 		switch (prxattrib->encrypt) {
-		case _WEP40_:
-		case _WEP104_:
+		case WLAN_CIPHER_SUITE_WEP40:
+		case WLAN_CIPHER_SUITE_WEP104:
 			rtw_wep_decrypt23a(padapter, precv_frame);
 			break;
-		case _TKIP_:
+		case WLAN_CIPHER_SUITE_TKIP:
 			res = rtw_tkip_decrypt23a(padapter, precv_frame);
 			break;
-		case _AES_:
+		case WLAN_CIPHER_SUITE_CCMP:
 			res = rtw_aes_decrypt23a(padapter, precv_frame);
 			break;
 		default:
@@ -524,8 +524,8 @@ struct recv_frame *decryptor(struct rtw_adapter *padapter,
 		}
 	} else if (prxattrib->bdecrypted == 1 && prxattrib->encrypt > 0 &&
 		   (psecuritypriv->busetkipkey == 1 ||
-		    prxattrib->encrypt != _TKIP_)) {
-			psecuritypriv->hw_decrypted = true;
+		    prxattrib->encrypt != WLAN_CIPHER_SUITE_TKIP)) {
+			psecuritypriv->hw_decrypted = 1;
 	}
 
 	if (res == _FAIL) {
@@ -800,8 +800,8 @@ static int sta2sta_data_frame(struct rtw_adapter *adapter,
 
 
 
-	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) ||
-		(check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
+	if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
 
 		/*  filter packets that SA is myself or multicast or broadcast */
 		if (ether_addr_equal(myhwaddr, pattrib->src)) {
@@ -824,7 +824,7 @@ static int sta2sta_data_frame(struct rtw_adapter *adapter,
 		}
 
 		sta_addr = pattrib->src;
-	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true) {
+	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
 		/*  For Station mode, sa and bssid should always be BSSID,
 		    and DA is my mac-address */
 		if (!ether_addr_equal(pattrib->bssid, pattrib->src)) {
@@ -837,7 +837,7 @@ static int sta2sta_data_frame(struct rtw_adapter *adapter,
 
 		sta_addr = pattrib->bssid;
 
-	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
+	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		if (bmcast) {
 			/*  For AP mode, if DA == MCAST, then BSSID should be also MCAST */
 			if (!is_multicast_ether_addr(pattrib->bssid)) {
@@ -854,7 +854,7 @@ static int sta2sta_data_frame(struct rtw_adapter *adapter,
 
 			sta_addr = pattrib->src;
 		}
-	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
 		ether_addr_copy(pattrib->dst, hdr->addr1);
 		ether_addr_copy(pattrib->src, hdr->addr2);
 		ether_addr_copy(pattrib->bssid, hdr->addr3);
@@ -901,9 +901,9 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 
 
 
-	if ((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true) &&
-	    (check_fwstate(pmlmepriv, _FW_LINKED) == true ||
-	     check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true)) {
+	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) &&
+	    (check_fwstate(pmlmepriv, _FW_LINKED) ||
+	     check_fwstate(pmlmepriv, _FW_UNDER_LINKING))) {
 
 		/* filter packets that SA is myself or multicast or broadcast */
 		if (ether_addr_equal(myhwaddr, pattrib->src)) {
@@ -966,8 +966,8 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 			goto exit;
 		}
 
-	} else if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) &&
-		   (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
+	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) &&
+		   check_fwstate(pmlmepriv, _FW_LINKED)) {
 		ether_addr_copy(pattrib->dst, hdr->addr1);
 		ether_addr_copy(pattrib->src, hdr->addr2);
 		ether_addr_copy(pattrib->bssid, hdr->addr3);
@@ -985,7 +985,7 @@ int ap2sta_data_frame(struct rtw_adapter *adapter,
 			ret = _FAIL;
 			goto exit;
 		}
-	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
+	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		/* Special case */
 		ret = RTW_RX_HANDLED;
 		goto exit;
@@ -1029,7 +1029,7 @@ int sta2ap_data_frame(struct rtw_adapter *adapter,
 
 
 
-	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		/* For AP mode, RA = BSSID, TX = STA(SRC_ADDR), A3 = DST_ADDR */
 		if (!ether_addr_equal(pattrib->bssid, mybssid)) {
 			ret = _FAIL;
@@ -1408,22 +1408,18 @@ static int validate_recv_data_frame(struct rtw_adapter *adapter,
 
 		switch (pattrib->encrypt)
 		{
-		case _WEP40_:
-		case _WEP104_:
-			pattrib->iv_len = 4;
-			pattrib->icv_len = 4;
+		case WLAN_CIPHER_SUITE_WEP40:
+		case WLAN_CIPHER_SUITE_WEP104:
+			pattrib->iv_len = IEEE80211_WEP_IV_LEN;
+			pattrib->icv_len = IEEE80211_WEP_ICV_LEN;
 			break;
-		case _TKIP_:
-			pattrib->iv_len = 8;
-			pattrib->icv_len = 4;
+		case WLAN_CIPHER_SUITE_TKIP:
+			pattrib->iv_len = IEEE80211_TKIP_IV_LEN;
+			pattrib->icv_len = IEEE80211_TKIP_ICV_LEN;
 			break;
-		case _AES_:
-			pattrib->iv_len = 8;
-			pattrib->icv_len = 8;
-			break;
-		case _SMS4_:
-			pattrib->iv_len = 18;
-			pattrib->icv_len = 16;
+		case WLAN_CIPHER_SUITE_CCMP:
+			pattrib->iv_len = IEEE80211_CCMP_HDR_LEN;
+			pattrib->icv_len = IEEE80211_CCMP_MIC_LEN;
 			break;
 		default:
 			pattrib->iv_len = 0;
@@ -1593,7 +1589,7 @@ static int wlanhdr_to_ethhdr (struct recv_frame *precvframe)
 		  pattrib->hdrlen,  pattrib->iv_len));
 
 	pattrib->eth_type = eth_type;
-	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)) {
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
 		ptr += hdrlen;
 		*ptr = 0x87;
 		*(ptr + 1) = 0x12;
@@ -2383,8 +2379,7 @@ void rtw_signal_stat_timer_hdl23a(unsigned long data)
 		}
 
 		/* update value of signal_strength, rssi, signal_qual */
-		if (check_fwstate(&adapter->mlmepriv, _FW_UNDER_SURVEY) ==
-		    false) {
+		if (!check_fwstate(&adapter->mlmepriv, _FW_UNDER_SURVEY)) {
 			tmp_s = (avg_signal_strength + (_alpha - 1) *
 				 recvpriv->signal_strength);
 			if (tmp_s %_alpha)

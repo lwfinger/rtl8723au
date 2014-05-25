@@ -330,20 +330,10 @@ join_res:
 > 0: TID
 */
 
-#define DEFAULT_MAX_SCAN_AGE (15 * HZ)
-#define DEFAULT_FTS 2346
 #define MAC_FMT "%02x:%02x:%02x:%02x:%02x:%02x"
 #define MAC_ARG(x) ((u8*)(x))[0],((u8*)(x))[1],((u8*)(x))[2],((u8*)(x))[3],((u8*)(x))[4],((u8*)(x))[5]
 
-#define CFG_IEEE80211_RESERVE_FCS (1<<0)
-#define CFG_IEEE80211_COMPUTE_FCS (1<<1)
-
 #define MAXTID	16
-
-#define IEEE_A            (1<<0)
-#define IEEE_B            (1<<1)
-#define IEEE_G            (1<<2)
-#define IEEE_MODE_MASK    (IEEE_A|IEEE_B|IEEE_G)
 
 enum _PUBLIC_ACTION{
 	ACT_PUBLIC_BSSCOEXIST = 0, /*  20/40 BSS Coexistence */
@@ -425,11 +415,9 @@ enum secondary_ch_offset {
 	SCA = 1, /* secondary channel above */
 	SCB = 3,  /* secondary channel below */
 };
-u8 secondary_ch_offset_to_hal_ch_offset23a(u8 ch_offset);
 u8 hal_ch_offset_to_secondary_ch_offset23a(u8 ch_offset);
 u8 *rtw_set_ie23a_ch_switch(u8 *buf, u32 *buf_len, u8 ch_switch_mode, u8 new_ch, u8 ch_switch_cnt);
 u8 *rtw_set_ie23a_secondary_ch_offset(u8 *buf, u32 *buf_len, u8 secondary_ch_offset);
-u8 *rtw_set_ie23a_mesh_ch_switch_parm(u8 *buf, u32 *buf_len, u8 ttl, u8 flags, u16 reason, u16 precedence);
 
 u8 *rtw_get_ie23a(u8*pbuf, int index, int *len, int limit);
 u8 *rtw_get_ie23a_ex(u8 *in_ie, uint in_len, u8 eid, u8 *oui, u8 oui_len, u8 *ie, uint *ielen);
@@ -462,7 +450,6 @@ void rtw_get_bcn_info23a(struct wlan_network *pnetwork);
 
 u16 rtw_mcs_rate23a(u8 rf_type, u8 bw_40MHz, u8 short_GI_20, u8 short_GI_40, unsigned char * MCS_rate);
 
-int rtw_action_frame_parse23a(const u8 *frame, u32 frame_len, u8* category, u8 *action);
 const char *action_public_str23a(u8 action);
 
 #endif /* IEEE80211_H */

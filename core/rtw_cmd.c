@@ -19,10 +19,7 @@
 #include <recv_osdep.h>
 #include <mlme_osdep.h>
 #include <rtl8723a_cmd.h>
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-#include <rtl8723a_hal.h>
-#endif /*  CONFIG_8723AU_BT_COEXIST */
+#include <rtw_sreset.h>
 
 static struct cmd_hdl wlancmds[] = {
 	GEN_DRV_CMD_HANDLER(0, NULL) /*0*/
@@ -348,7 +345,7 @@ int rtw_sitesurvey_cmd23a(struct rtw_adapter *padapter,
 	struct cmd_priv *pcmdpriv = &padapter->cmdpriv;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
+	if (check_fwstate(pmlmepriv, _FW_LINKED))
 		rtw_lps_ctrl_wk_cmd23a(padapter, LPS_CTRL_SCAN, 1);
 
 	ph2c = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
@@ -476,11 +473,11 @@ int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
 	struct ht_priv *phtpriv = &pmlmepriv->htpriv;
-	enum ndis_802_11_net_infra ndis_network_mode;
+	enum nl80211_iftype ifmode;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
-	ndis_network_mode = pnetwork->network.InfrastructureMode;
+	ifmode = pnetwork->network.ifmode;
 
 	rtw_led_control(padapter, LED_CTL_START_TO_LINK);
 
@@ -504,16 +501,15 @@ int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 
 	/* for hidden ap to set fw_state here */
 	if (!check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE)) {
-		switch (ndis_network_mode) {
-		case Ndis802_11IBSS:
+		switch (ifmode) {
+		case NL80211_IFTYPE_ADHOC:
 			set_fwstate(pmlmepriv, WIFI_ADHOC_STATE);
 			break;
-		case Ndis802_11Infrastructure:
+		case NL80211_IFTYPE_P2P_CLIENT:
+		case NL80211_IFTYPE_STATION:
 			set_fwstate(pmlmepriv, WIFI_STATION_STATE);
 			break;
-		case Ndis802_11APMode:
-		case Ndis802_11AutoUnknown:
-		case Ndis802_11InfrastructureMax:
+		default:
 			break;
 		}
 	}
@@ -587,13 +583,14 @@ int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 
 	phtpriv->ht_option = false;
 	if (pregistrypriv->ht_enable) {
+		u32 algo = padapter->securitypriv.dot11PrivacyAlgrthm;
 		/*	Added by Albert 2010/06/23 */
 		/*	For the WEP mode, we will use the bg mode to do
 			the connection to avoid some IOT issue. */
 		/*	Especially for Realtek 8192u SoftAP. */
-		if ((padapter->securitypriv.dot11PrivacyAlgrthm != _WEP40_) &&
-		    (padapter->securitypriv.dot11PrivacyAlgrthm != _WEP104_) &&
-		    (padapter->securitypriv.dot11PrivacyAlgrthm != _TKIP_)) {
+		if (algo != WLAN_CIPHER_SUITE_WEP40 &&
+		    algo != WLAN_CIPHER_SUITE_WEP104 &&
+		    algo != WLAN_CIPHER_SUITE_TKIP) {
 			/* rtw_restructure_ht_ie23a */
 			rtw_restructure_ht_ie23a(padapter,
 						 &pnetwork->network.IEs[0],
@@ -672,7 +669,7 @@ exit:
 }
 
 int rtw_setopmode_cmd23a(struct rtw_adapter *padapter,
-			 enum ndis_802_11_net_infra networktype)
+			 enum nl80211_iftype ifmode)
 {
 	struct	cmd_obj *ph2c;
 	struct	setopmode_parm *psetop;
@@ -693,7 +690,7 @@ int rtw_setopmode_cmd23a(struct rtw_adapter *padapter,
 	}
 
 	init_h2fwcmd_w_parm_no_rsp(ph2c, psetop, _SetOpMode_CMD_);
-	psetop->mode = (u8)networktype;
+	psetop->mode = ifmode;
 
 	res = rtw_enqueue_cmd23a(pcmdpriv, ph2c);
 exit:
@@ -755,7 +752,7 @@ int rtw_setstakey_cmd23a(struct rtw_adapter *padapter, u8 *psta, u8 unicast_key)
         }
 
 	/* jeff: set this becasue at least sw key is ready */
-	padapter->securitypriv.busetkipkey = true;
+	padapter->securitypriv.busetkipkey = 1;
 
 	res = rtw_enqueue_cmd23a(pcmdpriv, ph2c);
 
@@ -807,7 +804,7 @@ int rtw_clearstakey_cmd23a(struct rtw_adapter *padapter, u8 *psta, u8 entry,
 
 		ether_addr_copy(psetstakey_para->addr, sta->hwaddr);
 
-		psetstakey_para->algorithm = _NO_PRIVACY_;
+		psetstakey_para->algorithm = 0;
 
 		psetstakey_para->id = entry;
 
@@ -949,25 +946,19 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 	u8 bHigherBusyTraffic = false, bHigherBusyRxTraffic = false;
 	u8 bHigherBusyTxTraffic = false;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-#ifndef CONFIG_8723AU_BT_COEXIST
 	int BusyThreshold = 100;
-#endif
 	/*  */
 	/*  Determine if our traffic is busy now */
 	/*  */
 	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-#ifdef CONFIG_8723AU_BT_COEXIST
-		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > 50 ||
-		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > 50)
-#else /*  !CONFIG_8723AU_BT_COEXIST */
+		if (rtl8723a_BT_coexist(padapter))
+			BusyThreshold = 50;
+		else if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
+			BusyThreshold = 75;
 		/*  if we raise bBusyTraffic in last watchdog, using
 		    lower threshold. */
-		if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
-			BusyThreshold = 75;
 		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > BusyThreshold ||
-		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold)
-#endif /*  !CONFIG_8723AU_BT_COEXIST */
-		{
+		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold) {
 			bBusyTraffic = true;
 
 			if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod >
@@ -989,23 +980,21 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 				bHigherBusyTxTraffic = true;
 		}
 
-#ifdef CONFIG_8723AU_BT_COEXIST
-		if (BT_1Ant(padapter) == false)
-#endif
-		{
+		if (!rtl8723a_BT_coexist(padapter) ||
+		    !rtl8723a_BT_using_antenna_1(padapter)) {
 		/*  check traffic for  powersaving. */
-		if (((pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod +
-		      pmlmepriv->LinkDetectInfo.NumTxOkInPeriod) > 8) ||
-		    (pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod > 2))
-			bEnterPS = false;
-		else
-			bEnterPS = true;
+			if (((pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod +
+			      pmlmepriv->LinkDetectInfo.NumTxOkInPeriod) > 8) ||
+			    pmlmepriv->LinkDetectInfo.NumRxUnicastOkInPeriod >2)
+				bEnterPS = false;
+			else
+				bEnterPS = true;
 
-		/*  LeisurePS only work in infra mode. */
-		if (bEnterPS)
-			LPS_Enter23a(padapter);
-		else
-			LPS_Leave23a(padapter);
+			/*  LeisurePS only work in infra mode. */
+			if (bEnterPS)
+				LPS_Enter23a(padapter);
+			else
+				LPS_Leave23a(padapter);
 		}
 	} else
 		LPS_Leave23a(padapter);
@@ -1029,7 +1018,7 @@ static void dynamic_chk_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 	pmlmepriv = &padapter->mlmepriv;
 
 #ifdef CONFIG_8723AU_AP_MODE
-	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE))
 		expire_timeout_chk23a(padapter);
 #endif
 
@@ -1040,12 +1029,10 @@ static void dynamic_chk_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
 
 	rtl8723a_HalDmWatchDog(padapter);
 
-#ifdef CONFIG_8723AU_BT_COEXIST
 	/*  */
 	/*  BT-Coexist */
 	/*  */
-	BT_CoexistMechanism(padapter);
-#endif
+	rtl8723a_BT_do_coexist(padapter);
 }
 
 static void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
@@ -1054,18 +1041,15 @@ static void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	u8 mstatus;
 
-	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) ||
-	    (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true))
+	if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_STATE))
 		return;
 
 	switch (lps_ctrl_type)
 	{
 		case LPS_CTRL_SCAN:
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiScanNotify(padapter, true);
-			if (BT_1Ant(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_wifiscan_notify(padapter, true);
+			if (!rtl8723a_BT_using_antenna_1(padapter)) {
 				if (check_fwstate(pmlmepriv, _FW_LINKED))
 					LPS_Leave23a(padapter);
 			}
@@ -1078,39 +1062,25 @@ static void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
 			/*  Reset LPS Setting */
 			padapter->pwrctrlpriv.LpsIdleCount = 0;
 			rtl8723a_set_FwJoinBssReport_cmd(padapter, 1);
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiMediaStatusNotify(padapter, mstatus);
-#endif
+			rtl8723a_BT_mediastatus_notify(padapter, mstatus);
 			break;
 		case LPS_CTRL_DISCONNECT:
 			mstatus = 0;/* disconnect */
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiMediaStatusNotify(padapter, mstatus);
-			if (BT_1Ant(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_mediastatus_notify(padapter, mstatus);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			rtl8723a_set_FwJoinBssReport_cmd(padapter, 0);
 			break;
 		case LPS_CTRL_SPECIAL_PACKET:
 			pwrpriv->DelayLPSLastTimeStamp = jiffies;
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_SpecialPacketNotify(padapter);
-			if (BT_1Ant(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_specialpacket_notify(padapter);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			break;
 		case LPS_CTRL_LEAVE:
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_LpsLeave(padapter);
-			if (BT_1Ant(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_lps_leave(padapter);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			break;
 
 		default:
@@ -1596,8 +1566,8 @@ void rtw_setassocsta_cmdrsp_callback23a(struct rtw_adapter *padapter,
 
 	spin_lock_bh(&pmlmepriv->lock);
 
-	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) &&
-	    (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true))
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) &&
+	    check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
 	set_fwstate(pmlmepriv, _FW_LINKED);

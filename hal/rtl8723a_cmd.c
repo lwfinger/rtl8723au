@@ -204,27 +204,26 @@ void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
 {
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl;
 	u32 rate_len, pktlen;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *cur_network = &pmlmeinfo->network;
 	u8 bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+	int bcn_fixed_size;
 
 	/* DBG_8723A("%s\n", __FUNCTION__); */
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &pwlanhdr->frame_control;
-	*(fctrl) = 0;
+	pwlanhdr->frame_control =
+		cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON);
 
 	memcpy(pwlanhdr->addr1, bc_addr, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
 	memcpy(pwlanhdr->addr3, get_my_bssid23a(cur_network), ETH_ALEN);
 
-	SetSeqNum(pwlanhdr, 0/*pmlmeext->mgnt_seq*/);
-	/* pmlmeext->mgnt_seq++; */
-	SetFrameSubType(pframe, WIFI_BEACON);
+	/* A Beacon frame shouldn't have fragment bits set */
+	pwlanhdr->seq_ctrl = 0;
 
 	pframe += sizeof(struct ieee80211_hdr_3addr);
 	pktlen = sizeof (struct ieee80211_hdr_3addr);
@@ -246,9 +245,13 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	pktlen += 2;
 
 	if ((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE) {
+		bcn_fixed_size =
+			offsetof(struct ieee80211_mgmt, u.beacon.variable) -
+			offsetof(struct ieee80211_mgmt, u.beacon);
+
 		/* DBG_8723A("ie len =%d\n", cur_network->IELength); */
-		pktlen += cur_network->IELength - sizeof(struct ndis_802_11_fixed_ies);
-		memcpy(pframe, cur_network->IEs+sizeof(struct ndis_802_11_fixed_ies), pktlen);
+		pktlen += cur_network->IELength - bcn_fixed_size;
+		memcpy(pframe, cur_network->IEs + bcn_fixed_size, pktlen);
 
 		goto _ConstructBeacon;
 	}
@@ -267,15 +270,15 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 
 	/*  DS parameter set */
 	pframe = rtw_set_ie23a(pframe, WLAN_EID_DS_PARAMS, 1, (unsigned char *)
-			       &cur_network->Configuration.DSConfig, &pktlen);
+			       &cur_network->DSConfig, &pktlen);
 
 	if ((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE) {
 		u32 ATIMWindow;
 		/*  IBSS Parameter Set... */
-		/* ATIMWindow = cur->Configuration.ATIMWindow; */
+		/* ATIMWindow = cur->ATIMWindow; */
 		ATIMWindow = 0;
 		pframe = rtw_set_ie23a(pframe, WLAN_EID_IBSS_PARAMS, 2,
-				       (unsigned char *)(&ATIMWindow), &pktlen);
+				       (unsigned char *)&ATIMWindow, &pktlen);
 	}
 
 	/* todo: ERP IE */
@@ -302,23 +305,22 @@ _ConstructBeacon:
 
 }
 
-static void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength)
+static void ConstructPSPoll(struct rtw_adapter *padapter,
+			    u8 *pframe, u32 *pLength)
 {
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
 	/*  Frame control. */
-	fctrl = &pwlanhdr->frame_control;
-	*(fctrl) = 0;
-	SetPwrMgt(fctrl);
-	SetFrameSubType(pframe, WIFI_PSPOLL);
+	pwlanhdr->frame_control =
+		cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_PSPOLL);
+	pwlanhdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
 
 	/*  AID. */
-	SetDuration(pframe, (pmlmeinfo->aid | 0xc000));
+	pwlanhdr->duration_id = cpu_to_le16(pmlmeinfo->aid | 0xc000);
 
 	/*  BSSID. */
 	memcpy(pwlanhdr->addr1, get_my_bssid23a(&pmlmeinfo->network), ETH_ALEN);
@@ -329,49 +331,46 @@ static void ConstructPSPoll(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	*pLength = 16;
 }
 
-static void ConstructNullFunctionData(
-	struct rtw_adapter *padapter,
-	u8 *pframe,
-	u32 *pLength,
-	u8 *StaAddr,
-	u8 bQoS,
-	u8 AC,
-	u8 bEosp,
-	u8 bForcePowerSave)
+static void
+ConstructNullFunctionData(struct rtw_adapter *padapter, u8 *pframe,
+			  u32 *pLength, u8 *StaAddr, u8 bQoS, u8 AC,
+			  u8 bEosp, u8 bForcePowerSave)
 {
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl;
 	u32 pktlen;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct wlan_network		*cur_network = &pmlmepriv->cur_network;
+	struct wlan_network *cur_network = &pmlmepriv->cur_network;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
-	fctrl = &pwlanhdr->frame_control;
-	*(fctrl) = 0;
-	if (bForcePowerSave)
-		SetPwrMgt(fctrl);
+	pwlanhdr->frame_control = 0;
+	pwlanhdr->seq_ctrl = 0;
 
-	switch (cur_network->network.InfrastructureMode) {
-	case Ndis802_11Infrastructure:
-		SetToDs(fctrl);
+	if (bForcePowerSave)
+		pwlanhdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_PM);
+
+	switch (cur_network->network.ifmode) {
+	case NL80211_IFTYPE_P2P_CLIENT:
+	case NL80211_IFTYPE_STATION:
+		pwlanhdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_TODS);
 		memcpy(pwlanhdr->addr1,
 		       get_my_bssid23a(&pmlmeinfo->network), ETH_ALEN);
 		memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv),
 		       ETH_ALEN);
 		memcpy(pwlanhdr->addr3, StaAddr, ETH_ALEN);
 		break;
-	case Ndis802_11APMode:
-		SetFrDs(fctrl);
+	case NL80211_IFTYPE_P2P_GO:
+	case NL80211_IFTYPE_AP:
+		pwlanhdr->frame_control |= cpu_to_le16(IEEE80211_FCTL_FROMDS);
 		memcpy(pwlanhdr->addr1, StaAddr, ETH_ALEN);
 		memcpy(pwlanhdr->addr2,
 		       get_my_bssid23a(&pmlmeinfo->network), ETH_ALEN);
 		memcpy(pwlanhdr->addr3, myid(&padapter->eeprompriv),
 		       ETH_ALEN);
 		break;
-	case Ndis802_11IBSS:
+	case NL80211_IFTYPE_ADHOC:
 	default:
 		memcpy(pwlanhdr->addr1, StaAddr, ETH_ALEN);
 		memcpy(pwlanhdr->addr2, myid(&padapter->eeprompriv), ETH_ALEN);
@@ -380,20 +379,23 @@ static void ConstructNullFunctionData(
 		break;
 	}
 
-	SetSeqNum(pwlanhdr, 0);
-
 	if (bQoS == true) {
-		struct ieee80211_qos_hdr *pwlanqoshdr;
+		struct ieee80211_qos_hdr *qoshdr;
+		qoshdr = (struct ieee80211_qos_hdr *)pframe;
 
-		SetFrameSubType(pframe, WIFI_QOS_DATA_NULL);
+		qoshdr->frame_control |=
+			cpu_to_le16(IEEE80211_FTYPE_DATA |
+				    IEEE80211_STYPE_QOS_NULLFUNC);
 
-		pwlanqoshdr = (struct ieee80211_qos_hdr *)pframe;
-		SetPriority(&pwlanqoshdr->qos_ctrl, AC);
-		SetEOSP(&pwlanqoshdr->qos_ctrl, bEosp);
+		qoshdr->qos_ctrl = cpu_to_le16(AC & IEEE80211_QOS_CTL_TID_MASK);
+		if (bEosp)
+			qoshdr->qos_ctrl |= cpu_to_le16(IEEE80211_QOS_CTL_EOSP);
 
 		pktlen = sizeof(struct ieee80211_qos_hdr);
 	} else {
-		SetFrameSubType(pframe, WIFI_DATA_NULL);
+		pwlanhdr->frame_control |=
+			cpu_to_le16(IEEE80211_FTYPE_DATA |
+				    IEEE80211_STYPE_NULLFUNC);
 
 		pktlen = sizeof(struct ieee80211_hdr_3addr);
 	}
@@ -401,10 +403,10 @@ static void ConstructNullFunctionData(
 	*pLength = pktlen;
 }
 
-static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLength, u8 *StaAddr, bool bHideSSID)
+static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe,
+			      u32 *pLength, u8 *StaAddr, bool bHideSSID)
 {
 	struct ieee80211_hdr *pwlanhdr;
-	__le16 *fctrl;
 	u8 *mac, *bssid;
 	u32 pktlen;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -418,14 +420,14 @@ static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe, u32 *pLe
 	mac = myid(&padapter->eeprompriv);
 	bssid = cur_network->MacAddress;
 
-	fctrl = &pwlanhdr->frame_control;
-	*(fctrl) = 0;
+	pwlanhdr->frame_control =
+		cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_RESP);
+
+	pwlanhdr->seq_ctrl = 0;
+
 	memcpy(pwlanhdr->addr1, StaAddr, ETH_ALEN);
 	memcpy(pwlanhdr->addr2, mac, ETH_ALEN);
 	memcpy(pwlanhdr->addr3, bssid, ETH_ALEN);
-
-	SetSeqNum(pwlanhdr, 0);
-	SetFrameSubType(fctrl, WIFI_PROBERSP);
 
 	pktlen = sizeof(struct ieee80211_hdr_3addr);
 	pframe += pktlen;
@@ -514,13 +516,13 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 
 	/* 3 (3) null data */
 	RsvdPageLoc.LocNullData = PageNum;
-	ConstructNullFunctionData(
-		padapter,
-		&ReservedPagePacket[BufIndex],
-		&NullDataLength,
-		get_my_bssid23a(&pmlmeinfo->network),
-		false, 0, 0, false);
-	rtl8723a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], NullDataLength, false, false);
+	ConstructNullFunctionData(padapter, &ReservedPagePacket[BufIndex],
+				  &NullDataLength,
+				  get_my_bssid23a(&pmlmeinfo->network),
+				  false, 0, 0, false);
+	rtl8723a_fill_fake_txdesc(padapter,
+				  &ReservedPagePacket[BufIndex-TxDescLen],
+				  NullDataLength, false, false);
 
 	PageNeed = (u8)PageNum_128(TxDescLen + NullDataLength);
 	PageNum += PageNeed;

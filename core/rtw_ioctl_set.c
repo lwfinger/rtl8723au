@@ -82,7 +82,7 @@ int rtw_do_join23a(struct rtw_adapter *padapter)
 			mod_timer(&pmlmepriv->assoc_timer,
 				  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
 		} else {
-			if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) {
+			if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)) {
 				struct wlan_bssid_ex *pdev_network;
 				/*  submit createbss_cmd to change to a
 				    ADHOC_MASTER */
@@ -175,22 +175,19 @@ int rtw_set_802_11_ssid23a(struct rtw_adapter* padapter,
 	spin_lock_bh(&pmlmepriv->lock);
 
 	DBG_8723A("Set SSID under fw_state = 0x%08x\n", get_fwstate(pmlmepriv));
-	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true) {
+	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
 		goto handle_tkip_countermeasure;
-	} else if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == true) {
+	else if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING))
 		goto release_mlme_lock;
-	}
 
-	if (check_fwstate(pmlmepriv, _FW_LINKED|WIFI_ADHOC_MASTER_STATE) == true)
-	{
+	if (check_fwstate(pmlmepriv, _FW_LINKED|WIFI_ADHOC_MASTER_STATE)) {
 		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
 			 ("set_ssid: _FW_LINKED||WIFI_ADHOC_MASTER_STATE\n"));
 
 		if ((pmlmepriv->assoc_ssid.ssid_len == ssid->ssid_len) &&
 		    !memcmp(&pmlmepriv->assoc_ssid.ssid, ssid->ssid,
 			    ssid->ssid_len)) {
-			if ((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == false))
-			{
+			if (!check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
 				RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
 					 ("Set SSID is the same ssid, fw_state = 0x%08x\n",
 					  get_fwstate(pmlmepriv)));
@@ -200,12 +197,12 @@ int rtw_set_802_11_ssid23a(struct rtw_adapter* padapter,
 					/* if in WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE, create bss or rejoin again */
 					rtw_disassoc_cmd23a(padapter, 0, true);
 
-					if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
+					if (check_fwstate(pmlmepriv, _FW_LINKED))
 						rtw_indicate_disconnect23a(padapter);
 
 					rtw_free_assoc_resources23a(padapter, 1);
 
-					if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) {
+					if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
 						_clr_fwstate_(pmlmepriv, WIFI_ADHOC_MASTER_STATE);
 						set_fwstate(pmlmepriv, WIFI_ADHOC_STATE);
 					}
@@ -228,12 +225,12 @@ int rtw_set_802_11_ssid23a(struct rtw_adapter* padapter,
 
 			rtw_disassoc_cmd23a(padapter, 0, true);
 
-			if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
+			if (check_fwstate(pmlmepriv, _FW_LINKED))
 				rtw_indicate_disconnect23a(padapter);
 
 			rtw_free_assoc_resources23a(padapter, 1);
 
-			if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true) {
+			if (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
 				_clr_fwstate_(pmlmepriv, WIFI_ADHOC_MASTER_STATE);
 				set_fwstate(pmlmepriv, WIFI_ADHOC_STATE);
 			}
@@ -260,12 +257,10 @@ handle_tkip_countermeasure:
 	memcpy(&pmlmepriv->assoc_ssid, ssid, sizeof(struct cfg80211_ssid));
 	pmlmepriv->assoc_by_bssid = false;
 
-	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == true) {
+	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
 		pmlmepriv->to_join = true;
-	}
-	else {
+	else
 		status = rtw_do_join23a(padapter);
-	}
 
 release_mlme_lock:
 	spin_unlock_bh(&pmlmepriv->lock);
@@ -277,92 +272,6 @@ exit:
 
 
 	return status;
-}
-
-int rtw_set_802_11_infrastructure_mode23a(struct rtw_adapter* padapter,
-					 enum ndis_802_11_net_infra networktype)
-{
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct wlan_network *cur_network = &pmlmepriv->cur_network;
-	enum ndis_802_11_net_infra* pold_state;
-
-	pold_state = &cur_network->network.InfrastructureMode;
-
-	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_notice_,
-		 ("+rtw_set_802_11_infrastructure_mode23a: old =%d new =%d "
-		  "fw_state = 0x%08x\n",
-		  *pold_state, networktype, get_fwstate(pmlmepriv)));
-
-	if (*pold_state != networktype)	{
-		spin_lock_bh(&pmlmepriv->lock);
-
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-			 (" change mode!"));
-
-		if (*pold_state == Ndis802_11APMode) {
-			/* change to other mode from Ndis802_11APMode */
-			cur_network->join_res = -1;
-
-#ifdef CONFIG_8723AU_AP_MODE
-			stop_ap_mode23a(padapter);
-#endif
-		}
-
-		if (check_fwstate(pmlmepriv, _FW_LINKED) ||
-		    *pold_state == Ndis802_11IBSS)
-			rtw_disassoc_cmd23a(padapter, 0, true);
-
-		if (check_fwstate(pmlmepriv, _FW_LINKED) ||
-		    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE))
-			rtw_free_assoc_resources23a(padapter, 1);
-
-		if (*pold_state == Ndis802_11Infrastructure ||
-		    *pold_state == Ndis802_11IBSS) {
-			if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-				/* will clr Linked_state; before this function,
-				   we must have chked whether issue
-				   dis-assoc_cmd or not */
-				rtw_indicate_disconnect23a(padapter);
-			}
-	       }
-
-		*pold_state = networktype;
-
-		_clr_fwstate_(pmlmepriv, ~WIFI_NULL_STATE);
-
-		switch (networktype)
-		{
-		case Ndis802_11IBSS:
-			set_fwstate(pmlmepriv, WIFI_ADHOC_STATE);
-			break;
-
-		case Ndis802_11Infrastructure:
-			set_fwstate(pmlmepriv, WIFI_STATION_STATE);
-			break;
-
-		case Ndis802_11APMode:
-			set_fwstate(pmlmepriv, WIFI_AP_STATE);
-#ifdef CONFIG_8723AU_AP_MODE
-			start_ap_mode23a(padapter);
-			/* rtw_indicate_connect23a(padapter); */
-#endif
-			break;
-
-		case Ndis802_11AutoUnknown:
-		case Ndis802_11InfrastructureMax:
-			break;
-		}
-
-		/* SecClearAllKeys(adapter); */
-
-		/* RT_TRACE(COMP_OID_SET, DBG_LOUD,
-		   ("set_infrastructure: fw_state:%x after changing mode\n", */
-		/* get_fwstate(pmlmepriv))); */
-
-		spin_unlock_bh(&pmlmepriv->lock);
-	}
-
-	return _SUCCESS;
 }
 
 int rtw_set_802_11_bssid23a_list_scan(struct rtw_adapter *padapter,
@@ -446,81 +355,6 @@ int rtw_set_802_11_authentication_mode23a(struct rtw_adapter* padapter,
 	return res;
 }
 
-int rtw_set_802_11_add_wep23a(struct rtw_adapter* padapter,
-			  struct ndis_802_11_wep *wep)
-{
-	u8 bdefaultkey;
-	u8 btransmitkey;
-	int keyid, res;
-	struct security_priv *psecuritypriv = &padapter->securitypriv;
-
-	bdefaultkey = (wep->KeyIndex & 0x40000000) > 0 ? false : true;
-	btransmitkey = (wep->KeyIndex & 0x80000000) > 0 ? true  : false;
-	keyid = wep->KeyIndex & 0x3fffffff;
-
-	if (keyid >= 4) {
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
-			 ("MgntActrtw_set_802_11_add_wep23a:keyid>4 =>fail\n"));
-		res = _FAIL;
-		goto exit;
-	}
-
-	switch (wep->KeyLength)
-	{
-	case 5:
-		psecuritypriv->dot11PrivacyAlgrthm = _WEP40_;
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-			 ("MgntActrtw_set_802_11_add_wep23a:wep->KeyLength = 5\n"));
-		break;
-	case 13:
-		psecuritypriv->dot11PrivacyAlgrthm = _WEP104_;
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-			 ("MgntActrtw_set_802_11_add_wep23a:wep->KeyLength = 13\n"));
-		break;
-	default:
-		psecuritypriv->dot11PrivacyAlgrthm = _NO_PRIVACY_;
-		RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-			 ("MgntActrtw_set_802_11_add_wep23a:wep->KeyLength!= 5 "
-			  "or 13\n"));
-			break;
-	}
-
-	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-		 ("rtw_set_802_11_add_wep23a:befor memcpy, wep->KeyLength = 0x%x "
-		  "wep->KeyIndex = 0x%x  keyid =%x\n",
-		  wep->KeyLength, wep->KeyIndex, keyid));
-
-	memcpy(&psecuritypriv->dot11DefKey[keyid].skey[0],
-	       &wep->KeyMaterial, wep->KeyLength);
-
-	psecuritypriv->dot11DefKeylen[keyid] = wep->KeyLength;
-
-	psecuritypriv->dot11PrivacyKeyIndex = keyid;
-
-	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_info_,
-		 ("rtw_set_802_11_add_wep23a:security key material : %x %x %x %x "
-		  "%x %x %x %x %x %x %x %x %x\n",
-		  psecuritypriv->dot11DefKey[keyid].skey[0],
-		  psecuritypriv->dot11DefKey[keyid].skey[1],
-		  psecuritypriv->dot11DefKey[keyid].skey[2],
-		  psecuritypriv->dot11DefKey[keyid].skey[3],
-		  psecuritypriv->dot11DefKey[keyid].skey[4],
-		  psecuritypriv->dot11DefKey[keyid].skey[5],
-		  psecuritypriv->dot11DefKey[keyid].skey[6],
-		  psecuritypriv->dot11DefKey[keyid].skey[7],
-		  psecuritypriv->dot11DefKey[keyid].skey[8],
-		  psecuritypriv->dot11DefKey[keyid].skey[9],
-		  psecuritypriv->dot11DefKey[keyid].skey[10],
-		  psecuritypriv->dot11DefKey[keyid].skey[11],
-		  psecuritypriv->dot11DefKey[keyid].skey[12]));
-
-	res = rtw_set_key23a(padapter, psecuritypriv, keyid, 1);
-
-exit:
-
-	return res;
-}
-
 /*
 * rtw_get_cur_max_rate23a -
 * @adapter: pointer to _adapter structure
@@ -560,7 +394,7 @@ u16 rtw_get_cur_max_rate23a(struct rtw_adapter *adapter)
 			/* cur_bwmod is updated by beacon, pmlmeinfo is
 			   updated by association response */
 			bw_40MHz = (pmlmeext->cur_bwmode &&
-				    (HT_INFO_HT_PARAM_REC_TRANS_CHNL_WIDTH &
+				    (IEEE80211_HT_PARAM_CHAN_WIDTH_ANY &
 				     pmlmeinfo->HT_info.infos[0])) ? 1:0;
 
 			/* short_GI = (pht_capie->cap_info & (IEEE80211_HT_CAP

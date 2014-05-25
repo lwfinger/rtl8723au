@@ -309,15 +309,15 @@ int rtl8723a_FirmwareDownload(struct rtw_adapter *padapter)
 			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for "
 				  "RTL8723A B CUT\n");
 		} else {
-#ifdef CONFIG_8723AU_BT_COEXIST
-			fw_name = "rtlwifi/rtl8723aufw_B.bin";
-			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT for "
-				  "RTL8723A B CUT\n");
-#else
-			fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
-			DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithoutBT for "
-				  "RTL8723A B CUT\n");
-#endif
+			if (rtl8723a_BT_coexist(padapter)) {
+				fw_name = "rtlwifi/rtl8723aufw_B.bin";
+				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithBT "
+					  "for RTL8723A B CUT\n");
+			} else {
+				fw_name = "rtlwifi/rtl8723aufw_B_NoBT.bin";
+				DBG_8723A(" Rtl8723_FwUMCBCutImageArrayWithout "
+					  "BT for RTL8723A B CUT\n");
+			}
 		}
 	} else {
 		/*  <Roger_TODO> We should download proper RAM Code here
@@ -339,12 +339,11 @@ int rtl8723a_FirmwareDownload(struct rtw_adapter *padapter)
 		rtStatus = _FAIL;
 		goto Exit;
 	}
-	firmware_buf = kzalloc(fw->size, GFP_KERNEL);
+	firmware_buf = kmemdup(fw->data, fw->size, GFP_KERNEL);
 	if (!firmware_buf) {
 		rtStatus = _FAIL;
 		goto Exit;
 	}
-	memcpy(firmware_buf, fw->data, fw->size);
 	buf = firmware_buf;
 	fw_size = fw->size;
 	release_firmware(fw);
@@ -1203,12 +1202,11 @@ int c2h_handler_8723a(struct rtw_adapter *padapter, struct c2h_evt_hdr *c2h_evt)
 			  c2h_evt->payload[3], c2h_evt->payload[4]));
 		break;
 
-#ifdef CONFIG_8723AU_BT_COEXIST
 	case C2H_BT_INFO:
 		DBG_8723A("%s ,  Got  C2H_BT_INFO \n", __func__);
-		BT_FwC2hBtInfo(padapter, c2h_evt->payload, c2h_evt->plen);
+		rtl8723a_fw_c2h_BT_info(padapter,
+					c2h_evt->payload, c2h_evt->plen);
 		break;
-#endif
 
 	default:
 		ret = _FAIL;
@@ -1720,9 +1718,9 @@ static void Hal_EEValueCheck(u8 EEType, void *pInValue, void *pOutValue)
 		u8 *pIn, *pOut;
 		pIn = (u8 *) pInValue;
 		pOut = (u8 *) pOutValue;
-		if (*pIn >= 0 && *pIn <= 63) {
+		if (*pIn <= 63)
 			*pOut = *pIn;
-		} else {
+		else {
 			RT_TRACE(_module_hci_hal_init_c_, _drv_err_,
 				 ("EETYPE_TX_PWR, value =%d is invalid, set "
 				  "to default = 0x%x\n",
@@ -1944,9 +1942,8 @@ Hal_EfuseParseBTCoexistInfo_8723A(struct rtw_adapter *padapter,
 		pHalData->EEPROMBluetoothAntIsolation = 0;
 		pHalData->EEPROMBluetoothRadioShared = BT_Radio_Shared;
 	}
-#ifdef CONFIG_8723AU_BT_COEXIST
-	BT_InitHalVars(padapter);
-#endif
+
+	rtl8723a_BT_init_hal_vars(padapter);
 }
 
 void
@@ -2081,18 +2078,17 @@ static void fill_txdesc_sectype(struct pkt_attrib *pattrib,
 	if ((pattrib->encrypt > 0) && !pattrib->bswenc) {
 		switch (pattrib->encrypt) {
 			/*  SEC_TYPE */
-		case _WEP40_:
-		case _WEP104_:
-		case _TKIP_:
-		case _TKIP_WTMIC_:
+		case WLAN_CIPHER_SUITE_WEP40:
+		case WLAN_CIPHER_SUITE_WEP104:
+		case WLAN_CIPHER_SUITE_TKIP:
 			ptxdesc->sectype = 1;
 			break;
 
-		case _AES_:
+		case WLAN_CIPHER_SUITE_CCMP:
 			ptxdesc->sectype = 3;
 			break;
 
-		case _NO_PRIVACY_:
+		case 0:
 		default:
 			break;
 		}
@@ -2397,10 +2393,8 @@ void hw_var_set_opmode(struct rtw_adapter *padapter, u8 mode)
 		val8 = DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB;
 		SetBcnCtrlReg23a(padapter, val8, ~val8);
 	} else if (mode == _HW_STATE_AP_) {
-#ifdef CONFIG_8723AU_BT_COEXIST
 		/*  add NULL Data and BT NULL Data Packets to FW RSVD Page */
 		rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(padapter);
-#endif
 
 		ResumeTxBeacon(padapter);
 
@@ -2560,69 +2554,18 @@ void hw_var_set_mlme_join(struct rtw_adapter *padapter, u8 type)
 			  RetryLimit << RETRY_LIMIT_SHORT_SHIFT | RetryLimit <<
 			  RETRY_LIMIT_LONG_SHIFT);
 
-#ifdef CONFIG_8723AU_BT_COEXIST
 	switch (type) {
 	case 0:
 		/*  prepare to join */
-		BT_WifiAssociateNotify(padapter, true);
+		rtl8723a_BT_wifiassociate_notify(padapter, true);
 		break;
 	case 1:
 		/*  joinbss_event callback when join res < 0 */
-		BT_WifiAssociateNotify(padapter, false);
+		rtl8723a_BT_wifiassociate_notify(padapter, false);
 		break;
 	case 2:
 		/*  sta add event callback */
 /*		BT_WifiMediaStatusNotify(padapter, RT_MEDIA_CONNECT); */
 		break;
 	}
-#endif
 }
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-
-void rtl8723a_SingleDualAntennaDetection(struct rtw_adapter *padapter)
-{
-	struct hal_data_8723a *pHalData;
-	struct dm_odm_t *pDM_Odm;
-	struct sw_ant_sw *pDM_SWAT_Table;
-	u8 i;
-
-	pHalData = GET_HAL_DATA(padapter);
-	pDM_Odm = &pHalData->odmpriv;
-	pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-
-	/*  */
-	/*  <Roger_Notes> RTL8723A Single and Dual antenna dynamic detection
-	    mechanism when RF power state is on. */
-	/*  We should take power tracking, IQK, LCK, RCK RF read/write
-	    operation into consideration. */
-	/*  2011.12.15. */
-	/*  */
-	if (!pHalData->bAntennaDetected) {
-		u8 btAntNum = BT_GetPGAntNum(padapter);
-
-		/*  Set default antenna B status */
-		if (btAntNum == Ant_x2)
-			pDM_SWAT_Table->ANTB_ON = true;
-		else if (btAntNum == Ant_x1)
-			pDM_SWAT_Table->ANTB_ON = false;
-		else
-			pDM_SWAT_Table->ANTB_ON = true;
-
-		if (pHalData->CustomerID != RT_CID_TOSHIBA) {
-			for (i = 0; i < MAX_ANTENNA_DETECTION_CNT; i++) {
-				if (ODM_SingleDualAntennaDetection
-				    (&pHalData->odmpriv, ANTTESTALL) == true)
-					break;
-			}
-
-			/*  Set default antenna number for BT coexistence */
-			if (btAntNum == Ant_x2)
-				BT_SetBtCoexCurrAntNum(padapter,
-						       pDM_SWAT_Table->
-						       ANTB_ON ? 2 : 1);
-		}
-		pHalData->bAntennaDetected = true;
-	}
-}
-#endif /*  CONFIG_8723AU_BT_COEXIST */

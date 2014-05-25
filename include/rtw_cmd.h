@@ -170,8 +170,7 @@ struct disconnect_parm {
 };
 
 struct	setopmode_parm {
-	u8	mode;
-	u8	rsvd[3];
+	enum nl80211_iftype mode;
 };
 
 /*
@@ -220,7 +219,7 @@ when 802.1x ==> keyid > 2 ==> unicast key
 
 */
 struct setkey_parm {
-	u8	algorithm;	/*  encryption algorithm, could be none, wep40, TKIP, CCMP, wep104 */
+	u32	algorithm;	/*  encryption algorithm, could be none, wep40, TKIP, CCMP, wep104 */
 	u8	keyid;
 	u8	grpkey;		/*  1: this is the grpkey for 802.1x. 0: this is the unicast key for 802.1x */
 	u8	set_tx;		/*  1: main tx key for wep. 0: other key. */
@@ -238,8 +237,8 @@ when shared key ==> algorithm/keyid
 */
 struct set_stakey_parm {
 	u8	addr[ETH_ALEN];
-	u8	algorithm;
 	u8	id;/*  currently for erasing cam entry if algorithm == _NO_PRIVACY_ */
+	u32	algorithm;
 	u8	key[16];
 };
 
@@ -689,7 +688,7 @@ int rtw_setstakey_cmd23a(struct rtw_adapter  *padapter, u8 *psta, u8 unicast_key
 int rtw_clearstakey_cmd23a(struct rtw_adapter *padapter, u8 *psta, u8 entry, u8 enqueue);
 int rtw_joinbss_cmd23a(struct rtw_adapter  *padapter, struct wlan_network* pnetwork);
 int rtw_disassoc_cmd23a(struct rtw_adapter *padapter, u32 deauth_timeout_ms, bool enqueue);
-int rtw_setopmode_cmd23a(struct rtw_adapter  *padapter, enum ndis_802_11_net_infra networktype);
+int rtw_setopmode_cmd23a(struct rtw_adapter *padapter, enum nl80211_iftype ifmode);
 int rtw_setdatarate_cmd(struct rtw_adapter  *padapter, u8 *rateset);
 int rtw_setbasicrate_cmd(struct rtw_adapter  *padapter, u8 *rateset);
 int rtw_setbbreg_cmd(struct rtw_adapter * padapter, u8 offset, u8 val);
@@ -720,7 +719,6 @@ int rtw_set_ch_cmd23a(struct rtw_adapter*padapter, u8 ch, u8 bw, u8 ch_offset, u
 int rtw_set_chplan_cmd(struct rtw_adapter*padapter, u8 chplan, u8 enqueue);
 int rtw_led_blink_cmd(struct rtw_adapter*padapter, struct led_8723a *pLed);
 int rtw_set_csa_cmd(struct rtw_adapter*padapter, u8 new_ch_no);
-int rtw_tdls_cmd(struct rtw_adapter*padapter, u8 *addr, u8 option);
 
 int rtw_c2h_wk_cmd23a(struct rtw_adapter *padapter, u8 *c2h_evt);
 
@@ -817,11 +815,6 @@ enum rtw_h2c_cmd {
 
 	MAX_H2CCMD
 };
-
-#define _GetBBReg_CMD_		_Read_BBREG_CMD_
-#define _SetBBReg_CMD_		_Write_BBREG_CMD_
-#define _GetRFReg_CMD_		_Read_RFREG_CMD_
-#define _SetRFReg_CMD_		_Write_RFREG_CMD_
 
 extern struct _cmd_callback	rtw_cmd_callback[];
 
