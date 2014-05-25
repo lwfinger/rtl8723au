@@ -2470,7 +2470,8 @@ void issue_beacon23a(struct rtw_adapter *padapter, int timeout_ms)
 
 	/* DBG_8723A("%s\n", __func__); */
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL) {
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe) {
 		DBG_8723A("%s, alloc mgnt frame fail\n", __func__);
 		return;
 	}
@@ -2846,7 +2847,8 @@ static int _issue_probereq(struct rtw_adapter *padapter,
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_notice_,
 		 ("+%s\n", __func__));
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		goto exit;
 
 	/* update attribute */
@@ -2994,7 +2996,8 @@ static void issue_auth(struct rtw_adapter *padapter, struct sta_info *psta,
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		return;
 
 	/* update attribute */
@@ -3572,7 +3575,8 @@ static int _issue_nulldata23a(struct rtw_adapter *padapter, unsigned char *da,
 	pmlmeext = &padapter->mlmeextpriv;
 	pmlmeinfo = &pmlmeext->mlmext_info;
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		goto exit;
 
 	/* update attribute */
@@ -3688,7 +3692,8 @@ static int _issue_qos_nulldata23a(struct rtw_adapter *padapter,
 
 	DBG_8723A("%s\n", __func__);
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		goto exit;
 
 	/* update attribute */
@@ -3813,7 +3818,8 @@ static int _issue_deauth(struct rtw_adapter *padapter, unsigned char *da,
 
 	/* DBG_8723A("%s to "MAC_FMT"\n", __func__, MAC_ARG(da)); */
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		goto exit;
 
 	/* update attribute */
@@ -3924,7 +3930,8 @@ void issue_action_spct_ch_switch23a(struct rtw_adapter *padapter,
 	DBG_8723A("%s(%s): ra ="MAC_FMT", ch:%u, offset:%u\n", __func__,
 		  padapter->pnetdev->name, MAC_ARG(ra), new_ch, ch_offset);
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		return;
 
 	/* update attribute */
@@ -3993,7 +4000,8 @@ void issue_action_BA23a(struct rtw_adapter *padapter,
 	DBG_8723A("%s, category =%d, action =%d, status =%d\n",
 		  __func__, category, action, status);
 
-	if ((pmgntframe = alloc_mgtxmitframe23a(pxmitpriv)) == NULL)
+	pmgntframe = alloc_mgtxmitframe23a(pxmitpriv);
+	if (!pmgntframe)
 		return;
 
 	/* update attribute */
