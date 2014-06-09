@@ -32,7 +32,6 @@
 #define _AUTH_IE_OFFSET_		6
 #define _DEAUTH_IE_OFFSET_		0
 #define _BEACON_IE_OFFSET_		12
-#define _PUBLIC_ACTION_IE_OFFSET_	8
 
 #define _FIXED_IE_LENGTH_		_BEACON_IE_OFFSET_
 
@@ -53,48 +52,8 @@
 #define _TIMESTAMP_		8
 
 /*-----------------------------------------------------------------------------
-				Below is the definition for WMM
-------------------------------------------------------------------------------*/
-#define _WMM_IE_Length_				7  /*  for WMM STA */
-#define _WMM_Para_Element_Length_		24
-
-
-/*-----------------------------------------------------------------------------
 				Below is the definition for 802.11n
 ------------------------------------------------------------------------------*/
-
-/* struct rtw_ieee80211_ht_cap - HT additional information
- *
- * This structure refers to "HT information element" as
- * described in 802.11n draft section 7.3.2.53
- */
-struct ieee80211_ht_addt_info {
-	unsigned char	control_chan;
-	unsigned char	ht_param;
-	unsigned short	operation_mode;
-	unsigned short	stbc_param;
-	unsigned char	basic_set[16];
-} __packed;
-
-struct HT_caps_element {
-	union {
-		struct {
-			unsigned short	HT_caps_info;
-			unsigned char	AMPDU_para;
-			unsigned char	MCS_rate[16];
-			unsigned short	HT_ext_caps;
-			unsigned int	Beamforming_caps;
-			unsigned char	ASEL_caps;
-		} HT_cap_element;
-		unsigned char HT_cap[26];
-	} u;
-} __packed;
-
-struct HT_info_element {
-	unsigned char	primary_channel;
-	unsigned char	infos[5];
-	unsigned char	MCS_rate[16];
-}  __packed;
 
 struct AC_param {
 	unsigned char		ACI_AIFSN;

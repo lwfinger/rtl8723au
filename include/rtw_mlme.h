@@ -240,6 +240,9 @@ int rtw_init_mlme_priv23a(struct rtw_adapter *adapter);
 
 void rtw_free_mlme_priv23a(struct mlme_priv *pmlmepriv);
 
+int rtw_do_join_adhoc(struct rtw_adapter *adapter);
+int rtw_do_join_network(struct rtw_adapter *adapter,
+			struct wlan_network *candidate);
 int rtw_select_and_join_from_scanned_queue23a(struct mlme_priv *pmlmepriv);
 int rtw_set_key23a(struct rtw_adapter *adapter,
 		struct security_priv *psecuritypriv, int keyid, u8 set_tx);
@@ -308,8 +311,6 @@ static inline void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 }
 
 u16 rtw_get_capability23a(struct wlan_bssid_ex *bss);
-void rtw_update_scanned_network23a(struct rtw_adapter *adapter,
-				struct wlan_bssid_ex *target);
 void rtw_disconnect_hdl23a_under_linked(struct rtw_adapter *adapter,
 				     struct sta_info *psta, u8 free_assoc);
 void rtw_generate_random_ibss23a(u8 *pibss);
@@ -329,8 +330,6 @@ int rtw_restruct_wmm_ie23a(struct rtw_adapter *adapter, u8 *in_ie, u8 *out_ie,
 void rtw_init_registrypriv_dev_network23a(struct rtw_adapter *adapter);
 
 void rtw_update_registrypriv_dev_network23a(struct rtw_adapter *adapter);
-
-void rtw_get_encrypt_decrypt_from_registrypriv23a(struct rtw_adapter *adapter);
 
 void rtw_scan_timeout_handler23a(unsigned long data);
 
@@ -356,15 +355,15 @@ __le16 *rtw_get_beacon_interval23a_from_ie(u8 *ie);
 
 void rtw_joinbss_reset23a(struct rtw_adapter *padapter);
 
-unsigned int rtw_restructure_ht_ie23a(struct rtw_adapter *padapter, u8 *in_ie,
-				   u8 *out_ie, uint in_len, uint *pout_len);
+bool rtw_restructure_ht_ie23a(struct rtw_adapter *padapter, u8 *in_ie,
+			      u8 *out_ie, uint in_len, uint *pout_len);
 void rtw_update_ht_cap23a(struct rtw_adapter *padapter,
 		       u8 *pie, uint ie_len);
 void rtw_issue_addbareq_cmd23a(struct rtw_adapter *padapter,
 			    struct xmit_frame *pxmitframe);
 
-int rtw_is_same_ibss23a(struct rtw_adapter *adapter,
-		     struct wlan_network *pnetwork);
+bool rtw_is_same_ibss23a(struct rtw_adapter *adapter,
+			 struct wlan_network *pnetwork);
 int is_same_network23a(struct wlan_bssid_ex *src, struct wlan_bssid_ex *dst);
 
 void rtw23a_roaming(struct rtw_adapter *adapter,

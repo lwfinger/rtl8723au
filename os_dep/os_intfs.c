@@ -23,15 +23,15 @@
 
 #include <rtl8723a_hal.h>
 
-#include <linux/version.h>
-
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
 MODULE_AUTHOR("Realtek Semiconductor Corp.");
 MODULE_AUTHOR("Larry Finger <Larry.Finger@lwfinger.net>");
 MODULE_AUTHOR("Jes Sorensen <Jes.Sorensen@redhat.com>");
 MODULE_VERSION(DRIVERVERSION);
-MODULE_FIRMWARE("rtlwifi/rtl8821aefw.bin");
+MODULE_FIRMWARE("rtlwifi/rtl8723aufw_A.bin");
+MODULE_FIRMWARE("rtlwifi/rtl8723aufw_B.bin");
+MODULE_FIRMWARE("rtlwifi/rtl8723aufw_B_NoBT.bin");
 
 /* module param defaults */
 static int rtw_chip_version = 0x00;
@@ -584,11 +584,6 @@ int rtw_free_drv_sw23a(struct rtw_adapter *padapter)
 	kfree(padapter->HalData);
 	padapter->HalData = NULL;
 
-	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("<== rtw_free_drv_sw23a\n"));
-
-	/*  clear pbuddy_adapter to avoid access wrong pointer. */
-	if (padapter->pbuddy_adapter != NULL)
-		padapter->pbuddy_adapter->pbuddy_adapter = NULL;
 	RT_TRACE(_module_os_intfs_c_, _drv_info_, ("-rtw_free_drv_sw23a\n"));
 	return _SUCCESS;
 }

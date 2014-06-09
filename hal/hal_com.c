@@ -588,7 +588,7 @@ void rtl8723a_on_rcr_am(struct rtw_adapter *padapter)
 {
 	rtl8723au_write32(padapter, REG_RCR,
 		    rtl8723au_read32(padapter, REG_RCR) | RCR_AM);
-	DBG_8723A("%s, %d, RCR = %x \n", __FUNCTION__, __LINE__,
+	DBG_8723A("%s, %d, RCR = %x \n", __func__, __LINE__,
 		  rtl8723au_read32(padapter, REG_RCR));
 }
 
@@ -596,7 +596,7 @@ void rtl8723a_off_rcr_am(struct rtw_adapter *padapter)
 {
 	rtl8723au_write32(padapter, REG_RCR,
 		    rtl8723au_read32(padapter, REG_RCR) & (~RCR_AM));
-	DBG_8723A("%s, %d, RCR = %x \n", __FUNCTION__, __LINE__,
+	DBG_8723A("%s, %d, RCR = %x \n", __func__, __LINE__,
 		  rtl8723au_read32(padapter, REG_RCR));
 }
 

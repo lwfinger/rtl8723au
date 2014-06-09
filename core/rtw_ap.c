@@ -623,15 +623,18 @@ static void update_hw_ht_param(struct rtw_adapter *padapter)
 		AMPDU_para [1:0]:Max AMPDU Len => 0:8k , 1:16k, 2:32k, 3:64k
 		AMPDU_para [4:2]:Min MPDU Start Spacing
 	*/
-	max_AMPDU_len = pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x03;
+	max_AMPDU_len = pmlmeinfo->ht_cap.ampdu_params_info &
+		IEEE80211_HT_AMPDU_PARM_FACTOR;
 
-	min_MPDU_spacing = (pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c) >> 2;
+	min_MPDU_spacing = (pmlmeinfo->ht_cap.ampdu_params_info &
+			    IEEE80211_HT_AMPDU_PARM_DENSITY) >> 2;
 
 	rtl8723a_set_ampdu_min_space(padapter, min_MPDU_spacing);
 	rtl8723a_set_ampdu_factor(padapter, max_AMPDU_len);
 
 	/*  Config SM Power Save setting */
-	pmlmeinfo->SM_PS = (pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info & 0x0C) >> 2;
+	pmlmeinfo->SM_PS = (le16_to_cpu(pmlmeinfo->ht_cap.cap_info) &
+			    IEEE80211_HT_CAP_SM_PS) >> 2;
 	if (pmlmeinfo->SM_PS == WLAN_HT_CAP_SM_PS_STATIC)
 		DBG_8723A("%s(): WLAN_HT_CAP_SM_PS_STATIC\n", __func__);
 }
@@ -649,7 +652,7 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *pnetwork_mlmeext = &pmlmeinfo->network;
-	struct HT_info_element *pht_info = NULL;
+	struct ieee80211_ht_operation *pht_info = NULL;
 	int bcn_fixed_size;
 
 	bcn_interval = (u16)pnetwork->BeaconPeriod;
@@ -660,7 +663,11 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 	/* check if there is wps ie, */
 	/* if there is wpsie in beacon, the hostapd will update beacon twice when stating hostapd, */
 	/* and at first time the security ie (RSN/WPA IE) will not include in beacon. */
-	if (NULL == rtw_get_wps_ie23a(pnetwork->IEs+_FIXED_IE_LENGTH_, pnetwork->IELength-_FIXED_IE_LENGTH_, NULL, NULL))
+	if (NULL == cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
+					    WLAN_OUI_TYPE_MICROSOFT_WPS,
+					    pnetwork->IEs + _FIXED_IE_LENGTH_,
+					    pnetwork->IELength -
+					    _FIXED_IE_LENGTH_))
 		pmlmeext->bstart_bss = true;
 
 	/* todo: update wmm, ht cap */
@@ -729,18 +736,20 @@ static void start_bss_network(struct rtw_adapter *padapter, u8 *pbuf)
 			     pnetwork->IEs + bcn_fixed_size,
 			     pnetwork->IELength - bcn_fixed_size);
 	if (p && p[1]) {
-		pht_info = (struct HT_info_element *)(p + 2);
+		pht_info = (struct ieee80211_ht_operation *)(p + 2);
 
-		if (pregpriv->cbw40_enable && pht_info->infos[0] & BIT(2)) {
+		if (pregpriv->cbw40_enable && pht_info->ht_param &
+		    IEEE80211_HT_PARAM_CHAN_WIDTH_ANY) {
 			/* switch to the 40M Hz mode */
 			cur_bwmode = HT_CHANNEL_WIDTH_40;
-			switch (pht_info->infos[0] & 0x3) {
-			case 1:
+			switch (pht_info->ht_param &
+				IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
+			case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 				/* pmlmeext->cur_ch_offset =
 				   HAL_PRIME_CHNL_OFFSET_LOWER; */
 				cur_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
 				break;
-			case 3:
+			case IEEE80211_HT_PARAM_CHA_SEC_BELOW:
 				cur_ch_offset = HAL_PRIME_CHNL_OFFSET_UPPER;
 				break;
 			default:
@@ -1224,7 +1233,8 @@ static void update_bcn_wmm_ie(struct rtw_adapter *padapter)
 
 static void update_bcn_wps_ie(struct rtw_adapter *padapter)
 {
-	u8 *pwps_ie = NULL, *pwps_ie_src, *premainder_ie, *pbackup_remainder_ie = NULL;
+	const u8 *pwps_ie, *premainder_ie;
+	u8 *pwps_ie_src, *pbackup_remainder_ie = NULL;
 	uint wps_ielen = 0, wps_offset, remainder_ielen;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -1239,11 +1249,15 @@ static void update_bcn_wps_ie(struct rtw_adapter *padapter)
 	if (pwps_ie_src == NULL)
 		return;
 
-	pwps_ie = rtw_get_wps_ie23a(ie+_FIXED_IE_LENGTH_, ielen-_FIXED_IE_LENGTH_, NULL, &wps_ielen);
+	pwps_ie = cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
+					  WLAN_OUI_TYPE_MICROSOFT_WPS,
+					  ie + _FIXED_IE_LENGTH_,
+					  ielen - _FIXED_IE_LENGTH_);
 
-	if (pwps_ie == NULL || wps_ielen == 0)
+	if (pwps_ie == NULL || pwps_ie[1] == 0)
 		return;
 
+	wps_ielen = pwps_ie[1];
 	wps_offset = (uint)(pwps_ie-ie);
 
 	premainder_ie = pwps_ie + wps_ielen;
@@ -1260,11 +1274,12 @@ static void update_bcn_wps_ie(struct rtw_adapter *padapter)
 	wps_ielen = (uint)pwps_ie_src[1];/* to get ie data len */
 	if ((wps_offset+wps_ielen+2+remainder_ielen)<= MAX_IE_SZ)
 	{
-		memcpy(pwps_ie, pwps_ie_src, wps_ielen+2);
+		memcpy(ie + wps_offset, pwps_ie_src, wps_ielen + 2);
 		pwps_ie += (wps_ielen+2);
 
 		if (pbackup_remainder_ie)
-			memcpy(pwps_ie, pbackup_remainder_ie, remainder_ielen);
+			memcpy(ie + wps_offset + wps_ielen + 2,
+			       pbackup_remainder_ie, remainder_ielen);
 
 		/* update IELength */
 		pnetwork->IELength = wps_offset + (wps_ielen+2) + remainder_ielen;
@@ -1376,7 +1391,7 @@ static int rtw_ht_operation_update(struct rtw_adapter *padapter)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct ht_priv *phtpriv_ap = &pmlmepriv->htpriv;
 
-	if (pmlmepriv->htpriv.ht_option == true)
+	if (pmlmepriv->htpriv.ht_option)
 		return 0;
 
 	/* if (!iface->conf->ieee80211n || iface->conf->ht_op_mode_fixed) */
@@ -1612,7 +1627,7 @@ void bss_cap_update_on_sta_join23a(struct rtw_adapter *padapter, struct sta_info
 			psta->no_ht_set = 1;
 			pmlmepriv->num_sta_no_ht++;
 		}
-		if (pmlmepriv->htpriv.ht_option == true) {
+		if (pmlmepriv->htpriv.ht_option) {
 			DBG_8723A("%s STA " MAC_FMT
 				   " - no HT, num of non-HT stations %d\n",
 				   __func__, MAC_ARG(psta->hwaddr),
@@ -1850,7 +1865,7 @@ void sta_info_update23a(struct rtw_adapter *padapter, struct sta_info *psta)
 		psta->htpriv.ht_option = false;
 	}
 
-	if (pmlmepriv->htpriv.ht_option == false)
+	if (!pmlmepriv->htpriv.ht_option)
 		psta->htpriv.ht_option = false;
 
 	update_sta_info23a_apmode23a(padapter, psta);
