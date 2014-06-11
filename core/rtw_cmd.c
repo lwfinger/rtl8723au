@@ -19,10 +19,7 @@
 #include <recv_osdep.h>
 #include <mlme_osdep.h>
 #include <rtl8723a_cmd.h>
-
-#ifdef CONFIG_8723AU_BT_COEXIST
-#include <rtl8723a_hal.h>
-#endif /*  CONFIG_8723AU_BT_COEXIST */
+#include <rtw_sreset.h>
 
 static struct cmd_hdl wlancmds[] = {
 	GEN_DRV_CMD_HANDLER(0, NULL) /*0*/
@@ -949,25 +946,19 @@ static void traffic_status_watchdog(struct rtw_adapter *padapter)
 	u8 bHigherBusyTraffic = false, bHigherBusyRxTraffic = false;
 	u8 bHigherBusyTxTraffic = false;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-#ifndef CONFIG_8723AU_BT_COEXIST
 	int BusyThreshold = 100;
-#endif
 	/*  */
 	/*  Determine if our traffic is busy now */
 	/*  */
 	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-#ifdef CONFIG_8723AU_BT_COEXIST
-		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > 50 ||
-		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > 50)
-#else /*  !CONFIG_8723AU_BT_COEXIST */
+		if (rtl8723a_BT_coexist(padapter))
+			BusyThreshold = 50;
+		else if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
+			BusyThreshold = 75;
 		/*  if we raise bBusyTraffic in last watchdog, using
 		    lower threshold. */
-		if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
-			BusyThreshold = 75;
 		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > BusyThreshold ||
-		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold)
-#endif /*  !CONFIG_8723AU_BT_COEXIST */
-		{
+		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold) {
 			bBusyTraffic = true;
 
 			if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod >
@@ -1057,11 +1048,8 @@ static void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
 	switch (lps_ctrl_type)
 	{
 		case LPS_CTRL_SCAN:
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiScanNotify(padapter, true);
-			if (rtl8723a_BT_using_antenna_1(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_wifiscan_notify(padapter, true);
+			if (!rtl8723a_BT_using_antenna_1(padapter)) {
 				if (check_fwstate(pmlmepriv, _FW_LINKED))
 					LPS_Leave23a(padapter);
 			}
@@ -1074,39 +1062,25 @@ static void lps_ctrl_wk_hdl(struct rtw_adapter *padapter, u8 lps_ctrl_type)
 			/*  Reset LPS Setting */
 			padapter->pwrctrlpriv.LpsIdleCount = 0;
 			rtl8723a_set_FwJoinBssReport_cmd(padapter, 1);
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiMediaStatusNotify(padapter, mstatus);
-#endif
+			rtl8723a_BT_mediastatus_notify(padapter, mstatus);
 			break;
 		case LPS_CTRL_DISCONNECT:
 			mstatus = 0;/* disconnect */
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_WifiMediaStatusNotify(padapter, mstatus);
-			if (rtl8723a_BT_using_antenna_1(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_mediastatus_notify(padapter, mstatus);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			rtl8723a_set_FwJoinBssReport_cmd(padapter, 0);
 			break;
 		case LPS_CTRL_SPECIAL_PACKET:
 			pwrpriv->DelayLPSLastTimeStamp = jiffies;
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_SpecialPacketNotify(padapter);
-			if (rtl8723a_BT_using_antenna_1(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_specialpacket_notify(padapter);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			break;
 		case LPS_CTRL_LEAVE:
-#ifdef CONFIG_8723AU_BT_COEXIST
-			BT_LpsLeave(padapter);
-			if (rtl8723a_BT_using_antenna_1(padapter) == false)
-#endif
-			{
+			rtl8723a_BT_lps_leave(padapter);
+			if (!rtl8723a_BT_using_antenna_1(padapter))
 				LPS_Leave23a(padapter);
-			}
 			break;
 
 		default:

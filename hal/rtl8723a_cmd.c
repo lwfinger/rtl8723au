@@ -95,11 +95,11 @@ int FillH2CCmd(struct rtw_adapter *padapter, u8 ElementID, u32 CmdLen,
 		if (h2c_cmd & BIT(7)) {
 			msgbox_ex_addr = REG_HMEBOX_EXT_0 + (h2c_box_num * EX_MESSAGE_BOX_SIZE);
 			h2c_cmd_ex = le16_to_cpu(h2c_cmd_ex);
-			rtw_write16(padapter, msgbox_ex_addr, h2c_cmd_ex);
+			rtl8723au_write16(padapter, msgbox_ex_addr, h2c_cmd_ex);
 		}
 		msgbox_addr = REG_HMEBOX_0 + (h2c_box_num * MESSAGE_BOX_SIZE);
 		h2c_cmd = le32_to_cpu(h2c_cmd);
-		rtw_write32(padapter, msgbox_addr, h2c_cmd);
+		rtl8723au_write32(padapter, msgbox_addr, h2c_cmd);
 
 		bcmd_down = true;
 
@@ -168,7 +168,8 @@ void rtl8723a_add_rateatid(struct rtw_adapter *pAdapter, u32 bitmap, u8 arg, u8 
 		if (shortGIrate == true)
 			init_rate |= BIT(6);
 
-		rtw_write8(pAdapter, (REG_INIDATA_RATE_SEL+macid), (u8)init_rate);
+		rtl8723au_write8(pAdapter, REG_INIDATA_RATE_SEL + macid,
+				 init_rate);
 	}
 }
 
@@ -178,7 +179,7 @@ void rtl8723a_set_FwPwrMode_cmd(struct rtw_adapter *padapter, u8 Mode)
 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
 	struct hal_data_8723a *pHalData = GET_HAL_DATA(padapter);
 
-	DBG_8723A("%s: Mode =%d SmartPS =%d UAPSD =%d BcnMode = 0x%02x\n", __FUNCTION__,
+	DBG_8723A("%s: Mode =%d SmartPS =%d UAPSD =%d BcnMode = 0x%02x\n", __func__,
 			Mode, pwrpriv->smart_ps, padapter->registrypriv.uapsd_enable, pwrpriv->bcn_ant_mode);
 
 	/*  Forece leave RF low power mode for 1T1R to
@@ -210,7 +211,7 @@ static void ConstructBeacon(struct rtw_adapter *padapter, u8 *pframe, u32 *pLeng
 	u8 bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	int bcn_fixed_size;
 
-	/* DBG_8723A("%s\n", __FUNCTION__); */
+	/* DBG_8723A("%s\n", __func__); */
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
@@ -300,7 +301,7 @@ _ConstructBeacon:
 
 	*pLength = pktlen;
 
-	/* DBG_8723A("%s bcn_sz =%d\n", __FUNCTION__, pktlen); */
+	/* DBG_8723A("%s bcn_sz =%d\n", __func__, pktlen); */
 
 }
 
@@ -412,7 +413,7 @@ static void ConstructProbeRsp(struct rtw_adapter *padapter, u8 *pframe,
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *cur_network = &pmlmeinfo->network;
 
-	/* DBG_8723A("%s\n", __FUNCTION__); */
+	/* DBG_8723A("%s\n", __func__); */
 
 	pwlanhdr = (struct ieee80211_hdr *)pframe;
 
@@ -472,11 +473,11 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 	u32 TotalPacketLen;
 	struct rsvdpage_loc	RsvdPageLoc;
 
-	DBG_8723A("%s\n", __FUNCTION__);
+	DBG_8723A("%s\n", __func__);
 
 	ReservedPagePacket = kzalloc(1000, GFP_KERNEL);
 	if (ReservedPagePacket == NULL) {
-		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
+		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __func__);
 		return;
 	}
 
@@ -583,7 +584,7 @@ static void SetFwRsvdPagePkt(struct rtw_adapter *padapter, bool bDLFinished)
 
 	rtl8723au_mgnt_xmit(padapter, pmgntframe);
 
-	DBG_8723A("%s: Set RSVD page location to Fw\n", __FUNCTION__);
+	DBG_8723A("%s: Set RSVD page location to Fw\n", __func__);
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8 *)&RsvdPageLoc);
 
 exit:
@@ -597,7 +598,7 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
-	DBG_8723A("%s mstatus(%x)\n", __FUNCTION__, mstatus);
+	DBG_8723A("%s mstatus(%x)\n", __func__, mstatus);
 
 	if (mstatus == 1) {
 		bool bRecover = false;
@@ -605,17 +606,18 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 
 		/*  We should set AID, correct TSF, HW seq enable before set JoinBssReport to Fw in 88/92C. */
 		/*  Suggested by filen. Added by tynli. */
-		rtw_write16(padapter, REG_BCN_PSR_RPT, (0xC000|pmlmeinfo->aid));
+		rtl8723au_write16(padapter, REG_BCN_PSR_RPT,
+				  0xC000|pmlmeinfo->aid);
 		/*  Do not set TSF again here or vWiFi beacon DMA INT will not work. */
 		/* correct_TSF23a(padapter, pmlmeext); */
 		/*  Hw sequende enable by dedault. 2010.06.23. by tynli. */
-		/* rtw_write16(padapter, REG_NQOS_SEQ, ((pmlmeext->mgnt_seq+100)&0xFFF)); */
-		/* rtw_write8(padapter, REG_HWSEQ_CTRL, 0xFF); */
+		/* rtl8723au_write16(padapter, REG_NQOS_SEQ, ((pmlmeext->mgnt_seq+100)&0xFFF)); */
+		/* rtl8723au_write8(padapter, REG_HWSEQ_CTRL, 0xFF); */
 
 		/*  set REG_CR bit 8 */
 		v8 = rtl8723au_read8(padapter, REG_CR+1);
 		v8 |= BIT(0); /*  ENSWBCN */
-		rtw_write8(padapter,  REG_CR+1, v8);
+		rtl8723au_write8(padapter,  REG_CR+1, v8);
 
 		/*  Disable Hw protection for a time which revserd for Hw sending beacon. */
 		/*  Fix download reserved page packet fail that access collision with the protection time. */
@@ -630,7 +632,8 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 
 		/*  To tell Hw the packet is not a real beacon frame. */
 		/* U1bTmp = rtl8723au_read8(padapter, REG_FWHW_TXQ_CTRL+2); */
-		rtw_write8(padapter, REG_FWHW_TXQ_CTRL+2, pHalData->RegFwHwTxQCtrl & ~BIT(6));
+		rtl8723au_write8(padapter, REG_FWHW_TXQ_CTRL + 2,
+				 pHalData->RegFwHwTxQCtrl & ~BIT(6));
 		pHalData->RegFwHwTxQCtrl &= ~BIT(6);
 		SetFwRsvdPagePkt(padapter, 0);
 
@@ -643,14 +646,15 @@ void rtl8723a_set_FwJoinBssReport_cmd(struct rtw_adapter *padapter, u8 mstatus)
 		/*  the beacon cannot be sent by HW. */
 		/*  2010.06.23. Added by tynli. */
 		if (bRecover) {
-			rtw_write8(padapter, REG_FWHW_TXQ_CTRL+2, pHalData->RegFwHwTxQCtrl | BIT(6));
+			rtl8723au_write8(padapter, REG_FWHW_TXQ_CTRL + 2,
+					 pHalData->RegFwHwTxQCtrl | BIT(6));
 			pHalData->RegFwHwTxQCtrl |= BIT(6);
 		}
 
 		/*  Clear CR[8] or beacon packet will not be send to TxBuf anymore. */
 		v8 = rtl8723au_read8(padapter, REG_CR+1);
 		v8 &= ~BIT(0); /*  ~ENSWBCN */
-		rtw_write8(padapter, REG_CR+1, v8);
+		rtl8723au_write8(padapter, REG_CR+1, v8);
 	}
 
 	JoinBssRptParm.OpMode = mstatus;
@@ -676,11 +680,11 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 	u32 TotalPacketLen;
 	struct rsvdpage_loc	RsvdPageLoc;
 
-	DBG_8723A("+%s\n", __FUNCTION__);
+	DBG_8723A("+%s\n", __func__);
 
 	ReservedPagePacket = kzalloc(1024, GFP_KERNEL);
 	if (ReservedPagePacket == NULL) {
-		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
+		DBG_8723A("%s: alloc ReservedPagePacket fail!\n", __func__);
 		return;
 	}
 
@@ -742,7 +746,7 @@ static void SetFwRsvdPagePkt_BTCoex(struct rtw_adapter *padapter)
 
 	rtl8723au_mgnt_xmit(padapter, pmgntframe);
 
-	DBG_8723A("%s: Set RSVD page location to Fw\n", __FUNCTION__);
+	DBG_8723A("%s: Set RSVD page location to Fw\n", __func__);
 	FillH2CCmd(padapter, RSVD_PAGE_EID, sizeof(RsvdPageLoc), (u8 *)&RsvdPageLoc);
 
 exit:
@@ -754,7 +758,7 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 	struct hal_data_8723a *pHalData;
 	u8 bRecover = false;
 
-	DBG_8723A("+%s\n", __FUNCTION__);
+	DBG_8723A("+%s\n", __func__);
 
 	pHalData = GET_HAL_DATA(padapter);
 
@@ -764,7 +768,8 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 
 	/*  To tell Hw the packet is not a real beacon frame. */
 	pHalData->RegFwHwTxQCtrl &= ~BIT(6);
-	rtw_write8(padapter, REG_FWHW_TXQ_CTRL+2, pHalData->RegFwHwTxQCtrl);
+	rtl8723au_write8(padapter, REG_FWHW_TXQ_CTRL + 2,
+			 pHalData->RegFwHwTxQCtrl);
 	SetFwRsvdPagePkt_BTCoex(padapter);
 
 	/*  To make sure that if there exists an adapter which would like to send beacon. */
@@ -774,7 +779,8 @@ void rtl8723a_set_BTCoex_AP_mode_FwRsvdPkt_cmd(struct rtw_adapter *padapter)
 	/*  2010.06.23. Added by tynli. */
 	if (bRecover) {
 		pHalData->RegFwHwTxQCtrl |= BIT(6);
-		rtw_write8(padapter, REG_FWHW_TXQ_CTRL+2, pHalData->RegFwHwTxQCtrl);
+		rtl8723au_write8(padapter, REG_FWHW_TXQ_CTRL + 2,
+				 pHalData->RegFwHwTxQCtrl);
 	}
 }
 #endif

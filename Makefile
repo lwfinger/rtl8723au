@@ -39,6 +39,7 @@ ifneq ($(KERNELRELEASE),)
 		core/rtw_cmd.o		\
 		core/rtw_efuse.o	\
 		core/rtw_ieee80211.o	\
+		core/rtw_ioctl_set.o	\
 		core/rtw_led.o		\
 		core/rtw_mlme.o		\
 		core/rtw_mlme_ext.o	\

@@ -45,7 +45,7 @@ static int usbctrl_vendorreq(struct rtw_adapter *padapter, u8 request,
 
 	if (len > MAX_VENDOR_REQ_CMD_SIZE) {
 		DBG_8723A("[%s] Buffer len error , vendor request failed\n",
-			  __FUNCTION__);
+			  __func__);
 		status = -EINVAL;
 		goto exit;
 	}
@@ -56,7 +56,7 @@ static int usbctrl_vendorreq(struct rtw_adapter *padapter, u8 request,
 	pIo_buf = pdvobjpriv->usb_vendor_req_buf;
 
 	if (pIo_buf == NULL) {
-		DBG_8723A("[%s] pIo_buf == NULL \n", __FUNCTION__);
+		DBG_8723A("[%s] pIo_buf == NULL \n", __func__);
 		status = -ENOMEM;
 		goto release_mutex;
 	}
@@ -198,7 +198,7 @@ u32 rtl8723au_read32(struct rtw_adapter *padapter, u32 addr)
 	return le32_to_cpu(data);
 }
 
-static int usb_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
+int rtl8723au_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -223,7 +223,7 @@ static int usb_write8(struct rtw_adapter *padapter, u32 addr, u8 val)
 	return ret;
 }
 
-static int usb_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
+int rtl8723au_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -247,7 +247,7 @@ static int usb_write16(struct rtw_adapter *padapter, u32 addr, u16 val)
 	return ret;
 }
 
-static int usb_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
+int rtl8723au_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
 {
 	u8 request;
 	u8 requesttype;
@@ -271,7 +271,7 @@ static int usb_write32(struct rtw_adapter *padapter, u32 addr, u32 val)
 	return ret;
 }
 
-static int usb_writeN(struct rtw_adapter *padapter,
+int rtl8723au_writeN(struct rtw_adapter *padapter,
 		      u32 addr, u32 length, u8 *pdata)
 {
 	u8 request;
@@ -352,7 +352,7 @@ static void usb_read_interrupt_complete(struct urb *purb)
 	    padapter->bReadPortCancel) {
 		DBG_8723A("%s() RX Warning! bDriverStopped(%d) OR "
 			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-			  __FUNCTION__, padapter->bDriverStopped,
+			  __func__, padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved,
 			  padapter->bReadPortCancel);
 		return;
@@ -507,7 +507,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			RT_TRACE(_module_rtl871x_recv_c_, _drv_err_,
 				 ("recvbuf2recvframe: precvframe == NULL\n"));
 			DBG_8723A("%s()-%d: rtw_alloc_recvframe23a() failed! RX "
-				  "Drop!\n", __FUNCTION__, __LINE__);
+				  "Drop!\n", __func__, __LINE__);
 			goto _exit_recvbuf2recvframe;
 		}
 
@@ -519,7 +519,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 
 		if (pattrib->crc_err) {
 			DBG_8723A("%s()-%d: RX Warning! rx CRC ERROR !!\n",
-				  __FUNCTION__, __LINE__);
+				  __func__, __LINE__);
 			rtw_free_recvframe23a(precvframe);
 			goto _exit_recvbuf2recvframe;
 		}
@@ -531,7 +531,7 @@ static int recvbuf2recvframe(struct rtw_adapter *padapter, struct sk_buff *pskb)
 			RT_TRACE(_module_rtl871x_recv_c_, _drv_info_,
 				 ("recvbuf2recvframe: pkt_len<= 0\n"));
 			DBG_8723A("%s()-%d: RX Warning!\n",
-				  __FUNCTION__, __LINE__);
+				  __func__, __LINE__);
 			rtw_free_recvframe23a(precvframe);
 			goto _exit_recvbuf2recvframe;
 		}
@@ -663,7 +663,7 @@ static void usb_read_port_complete(struct urb *purb)
 
 		DBG_8723A("%s()-%d: RX Warning! bDriverStopped(%d) OR "
 			  "bSurpriseRemoved(%d) bReadPortCancel(%d)\n",
-			  __FUNCTION__, __LINE__, padapter->bDriverStopped,
+			  __func__, __LINE__, padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved, padapter->bReadPortCancel);
 		return;
 	}
@@ -678,7 +678,7 @@ static void usb_read_port_complete(struct urb *purb)
 			rtl8723au_read_port(padapter, RECV_BULK_IN_ADDR, 0,
 					    precvbuf);
 			DBG_8723A("%s()-%d: RX Warning!\n",
-				  __FUNCTION__, __LINE__);
+				  __func__, __LINE__);
 		} else {
 			rtw_reset_continual_urb_error(
 				adapter_to_dvobj(padapter));
@@ -830,18 +830,6 @@ void rtl8723au_xmit_tasklet(void *priv)
 		if (!ret)
 			break;
 	}
-}
-
-void rtl8723au_set_intf_ops(struct rtw_adapter *padapter)
-{
-	struct _io_ops *pops = &padapter->io_ops;
-
-	memset((u8 *)pops, 0, sizeof(struct _io_ops));
-
-	pops->_write8 = &usb_write8;
-	pops->_write16 = &usb_write16;
-	pops->_write32 = &usb_write32;
-	pops->_writeN = &usb_writeN;
 }
 
 void rtl8723au_set_hw_type(struct rtw_adapter *padapter)
