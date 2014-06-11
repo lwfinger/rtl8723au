@@ -1727,6 +1727,7 @@ exit:
 	return candidate;
 }
 
+
 int rtw_do_join_adhoc(struct rtw_adapter *adapter)
 {
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
@@ -1761,6 +1762,30 @@ int rtw_do_join_adhoc(struct rtw_adapter *adapter)
 	return ret;
 }
 
+int rtw_do_join_network(struct rtw_adapter *adapter,
+			struct wlan_network *candidate)
+{
+	int ret;
+
+	/*  check for situation of  _FW_LINKED */
+	if (check_fwstate(&adapter->mlmepriv, _FW_LINKED)) {
+		DBG_8723A("%s: _FW_LINKED while ask_for_joinbss!\n", __func__);
+
+		rtw_disassoc_cmd23a(adapter, 0, true);
+		rtw_indicate_disconnect23a(adapter);
+		rtw_free_assoc_resources23a(adapter, 0);
+	}
+	set_fwstate(&adapter->mlmepriv, _FW_UNDER_LINKING);
+
+	ret = rtw_joinbss_cmd23a(adapter, candidate);
+
+	if (ret == _SUCCESS)
+		mod_timer(&adapter->mlmepriv.assoc_timer,
+			  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
+
+	return ret;
+}
+
 int rtw_select_and_join_from_scanned_queue23a(struct mlme_priv *pmlmepriv)
 {
 	struct rtw_adapter *adapter;
@@ -1781,16 +1806,7 @@ int rtw_select_and_join_from_scanned_queue23a(struct mlme_priv *pmlmepriv)
 			  candidate->network.DSConfig);
 	}
 
-	/*  check for situation of  _FW_LINKED */
-	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-		DBG_8723A("%s: _FW_LINKED while ask_for_joinbss!\n", __func__);
-
-		rtw_disassoc_cmd23a(adapter, 0, true);
-		rtw_indicate_disconnect23a(adapter);
-		rtw_free_assoc_resources23a(adapter, 0);
-	}
-	set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
-	ret = rtw_joinbss_cmd23a(adapter, candidate);
+	ret = rtw_do_join_network(adapter, candidate);
 
 exit:
 	return ret;
@@ -2324,7 +2340,7 @@ void rtw_update_ht_cap23a(struct rtw_adapter *padapter, u8 *pie, uint ie_len)
 		/* switch to the 40M Hz mode accoring to the AP */
 		pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_40;
 		switch (pmlmeinfo->HT_info.ht_param &
-			IEEE80211_HT_PARAM_CHAN_WIDTH_ANY) {
+			IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
 		case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 			pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
 			break;
