@@ -633,9 +633,9 @@ void WMMOnAssocRsp23a(struct rtw_adapter *padapter)
 	return;
 }
 
-static void bwmode_update_check(struct rtw_adapter *padapter, u8 *p)
+static void bwmode_update_check(struct rtw_adapter *padapter, const u8 *p)
 {
-	struct HT_info_element *pHT_info;
+	struct ieee80211_ht_operation *pHT_info;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -648,19 +648,20 @@ static void bwmode_update_check(struct rtw_adapter *padapter, u8 *p)
 		return;
 	if (!phtpriv->ht_option)
 		return;
-	if (p[1] > sizeof(struct HT_info_element))
+	if (p[1] != sizeof(struct ieee80211_ht_operation))
 		return;
 
-	pHT_info = (struct HT_info_element *)(p + 2);
+	pHT_info = (struct ieee80211_ht_operation *)(p + 2);
 
-	if ((pHT_info->infos[0] & BIT(2)) && pregistrypriv->cbw40_enable) {
+	if ((pHT_info->ht_param & IEEE80211_HT_PARAM_CHAN_WIDTH_ANY) &&
+	    pregistrypriv->cbw40_enable) {
 		new_bwmode = HT_CHANNEL_WIDTH_40;
 
-		switch (pHT_info->infos[0] & 0x3) {
-		case 1:
+		switch (pHT_info->ht_param & IEEE80211_HT_PARAM_CHA_SEC_OFFSET){
+		case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 			new_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
 			break;
-		case 3:
+		case IEEE80211_HT_PARAM_CHA_SEC_BELOW:
 			new_ch_offset = HAL_PRIME_CHNL_OFFSET_UPPER;
 			break;
 		default:
@@ -720,6 +721,8 @@ void HT_caps_handler23a(struct rtw_adapter *padapter, u8 *p)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct ht_priv *phtpriv = &pmlmepriv->htpriv;
+	struct ieee80211_ht_cap *cap;
+	u8 *dstcap;
 
 	if (!p)
 		return;
@@ -729,51 +732,49 @@ void HT_caps_handler23a(struct rtw_adapter *padapter, u8 *p)
 
 	pmlmeinfo->HT_caps_enable = 1;
 
+	cap = &pmlmeinfo->ht_cap;
+	dstcap = (u8 *)cap;
 	for (i = 0; i < p[1]; i++) {
 		if (i != 2) {
-			/*	Commented by Albert 2010/07/12 */
-			/*	Got the endian issue here. */
-			pmlmeinfo->HT_caps.u.HT_cap[i] &= p[i + 2];
+			dstcap[i] &= p[i + 2];
 		} else {
 			/* modify from  fw by Thomas 2010/11/17 */
-			if ((pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x3) > (p[i + 2] & 0x3))
-				max_AMPDU_len = p[i + 2] & 0x3;
+			if ((cap->ampdu_params_info &
+			     IEEE80211_HT_AMPDU_PARM_FACTOR) >
+			    (p[i + 2] & IEEE80211_HT_AMPDU_PARM_FACTOR))
+				max_AMPDU_len = p[i + 2] &
+					IEEE80211_HT_AMPDU_PARM_FACTOR;
 			else
-				max_AMPDU_len = pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x3;
+				max_AMPDU_len = cap->ampdu_params_info &
+					IEEE80211_HT_AMPDU_PARM_FACTOR;
 
-			if ((pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c) > (p[i + 2] & 0x1c))
-				min_MPDU_spacing = pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c;
+			if ((cap->ampdu_params_info &
+			     IEEE80211_HT_AMPDU_PARM_DENSITY) >
+			    (p[i + 2] & IEEE80211_HT_AMPDU_PARM_DENSITY))
+				min_MPDU_spacing = cap->ampdu_params_info &
+					IEEE80211_HT_AMPDU_PARM_DENSITY;
 			else
-				min_MPDU_spacing = p[i + 2] & 0x1c;
+				min_MPDU_spacing = p[i + 2] &
+					IEEE80211_HT_AMPDU_PARM_DENSITY;
 
-			pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para =
+			cap->ampdu_params_info =
 				max_AMPDU_len | min_MPDU_spacing;
 		}
 	}
 
-	/*	Commented by Albert 2010/07/12 */
-	/*	Have to handle the endian issue after copying. */
-	/*	HT_ext_caps didn't be used yet. */
-	pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info =
-		le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info);
-	pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps =
-		le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps);
-
 	rf_type = rtl8723a_get_rf_type(padapter);
 
 	/* update the MCS rates */
-	for (i = 0; i < 16; i++) {
+	for (i = 0; i < IEEE80211_HT_MCS_MASK_LEN; i++) {
 		if (rf_type == RF_1T1R || rf_type == RF_1T2R)
-			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &=
-				MCS_rate_1R23A[i];
+			cap->mcs.rx_mask[i] &= MCS_rate_1R23A[i];
 		else
-			pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &=
-				MCS_rate_2R23A[i];
+			cap->mcs.rx_mask[i] &= MCS_rate_2R23A[i];
 	}
 	return;
 }
 
-void HT_info_handler23a(struct rtw_adapter *padapter, u8 *p)
+void HT_info_handler23a(struct rtw_adapter *padapter, const u8 *p)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -786,7 +787,7 @@ void HT_info_handler23a(struct rtw_adapter *padapter, u8 *p)
 	if (phtpriv->ht_option == false)
 		return;
 
-	if (p[1] > sizeof(struct HT_info_element))
+	if (p[1] != sizeof(struct ieee80211_ht_operation))
 		return;
 
 	pmlmeinfo->HT_info_enable = 1;
@@ -818,16 +819,18 @@ void HTOnAssocRsp23a(struct rtw_adapter *padapter)
 		AMPDU_para [1:0]:Max AMPDU Len => 0:8k , 1:16k, 2:32k, 3:64k
 		AMPDU_para [4:2]:Min MPDU Start Spacing
 	*/
-	max_AMPDU_len = pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x03;
+	max_AMPDU_len = pmlmeinfo->ht_cap.ampdu_params_info &
+		IEEE80211_HT_AMPDU_PARM_FACTOR;
 
 	min_MPDU_spacing =
-		(pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para & 0x1c) >> 2;
+		(pmlmeinfo->ht_cap.ampdu_params_info &
+		 IEEE80211_HT_AMPDU_PARM_DENSITY) >> 2;
 
 	rtl8723a_set_ampdu_min_space(padapter, min_MPDU_spacing);
 	rtl8723a_set_ampdu_factor(padapter, max_AMPDU_len);
 }
 
-void ERP_IE_handler23a(struct rtw_adapter *padapter, u8 *p)
+void ERP_IE_handler23a(struct rtw_adapter *padapter, const u8 *p)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -881,16 +884,13 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 			  struct ieee80211_mgmt *mgmt, u32 pkt_len)
 {
 	struct wlan_network *cur_network = &Adapter->mlmepriv.cur_network;
-	struct HT_info_element *pht_info;
-	struct ieee80211_ht_cap *pht_cap;
+	struct ieee80211_ht_operation *pht_info;
 	struct wlan_bssid_ex *bssid;
 	unsigned short val16;
 	u16 wpa_len = 0, rsn_len = 0;
 	u8 encryp_protocol;
 	int group_cipher = 0, pairwise_cipher = 0, is_8021x = 0, r;
 	u32 bcn_channel;
-	unsigned short ht_cap_info;
-	unsigned char ht_info_infos_0;
 	int len, pie_len, ie_offset;
 	const u8 *p;
 	u8 *pie;
@@ -938,41 +938,6 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 	pie = bssid->IEs + ie_offset;
 	pie_len = pkt_len - ie_offset;
 
-	p = cfg80211_find_ie(WLAN_EID_HT_CAPABILITY, pie, pie_len);
-	if (p && p[1] > 0) {
-		pht_cap = (struct ieee80211_ht_cap *)(p + 2);
-		ht_cap_info = pht_cap->cap_info;
-	} else {
-		pht_cap = NULL;
-		ht_cap_info = 0;
-	}
-
-	/* parsing HT_INFO_IE */
-	p = cfg80211_find_ie(WLAN_EID_HT_OPERATION, pie, pie_len);
-	if (p && p[1] > 0) {
-		pht_info = (struct HT_info_element *)(p + 2);
-		ht_info_infos_0 = pht_info->infos[0];
-	} else {
-		pht_info = NULL;
-		ht_info_infos_0 = 0;
-	}
-
-	if (ht_cap_info != cur_network->BcnInfo.ht_cap_info ||
-	    ((ht_info_infos_0 & 0x03) !=
-	     (cur_network->BcnInfo.ht_info_infos_0 & 0x03))) {
-		DBG_8723A("%s bcn now: ht_cap_info:%x ht_info_infos_0:%x\n",
-			  __func__, ht_cap_info, ht_info_infos_0);
-		DBG_8723A("%s bcn link: ht_cap_info:%x ht_info_infos_0:%x\n",
-			  __func__, cur_network->BcnInfo.ht_cap_info,
-			  cur_network->BcnInfo.ht_info_infos_0);
-		DBG_8723A("%s bw mode change, disconnect\n", __func__);
-		/* bcn_info_update */
-		cur_network->BcnInfo.ht_cap_info = ht_cap_info;
-		cur_network->BcnInfo.ht_info_infos_0 = ht_info_infos_0;
-		/* to do : need to check that whether modify related
-		   register of BB or not */
-	}
-
 	/* Checking for channel */
 	p = cfg80211_find_ie(WLAN_EID_DS_PARAMS, pie, pie_len);
 	if (p)
@@ -982,9 +947,10 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 		   info for channel */
 		p = cfg80211_find_ie(WLAN_EID_HT_OPERATION, pie, pie_len);
 
-		if (pht_info)
-			bcn_channel = pht_info->primary_channel;
-		else { /* we don't find channel IE, so don't check it */
+		if (p && p[1] > 0) {
+			pht_info = (struct ieee80211_ht_operation *)(p + 2);
+			bcn_channel = pht_info->primary_chan;
+		} else { /* we don't find channel IE, so don't check it */
 			DBG_8723A("Oops: %s we don't find channel IE, so don't "
 				  "check it\n", __func__);
 			bcn_channel = Adapter->mlmeextpriv.cur_channel;
@@ -1029,7 +995,7 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 	/* check encryption info */
 	val16 = rtw_get_capability23a(bssid);
 
-	if (val16 & BIT(4))
+	if (val16 & WLAN_CAPABILITY_PRIVACY)
 		bssid->Privacy = 1;
 	else
 		bssid->Privacy = 0;
@@ -1125,32 +1091,24 @@ _mismatch:
 	return _FAIL;
 }
 
-void update_beacon23a_info(struct rtw_adapter *padapter, u8 *pframe,
+void update_beacon23a_info(struct rtw_adapter *padapter,
+			   struct ieee80211_mgmt *mgmt,
 			   uint pkt_len, struct sta_info *psta)
 {
-	unsigned int i;
 	unsigned int len;
-	u8 *p;
+	const u8 *p;
 
-	len = pkt_len -
-		(_BEACON_IE_OFFSET_ + sizeof(struct ieee80211_hdr_3addr));
+	len = pkt_len - offsetof(struct ieee80211_mgmt, u.beacon.variable);
 
-	for (i = 0; i < len;) {
-		p = (u8 *)(pframe + (_BEACON_IE_OFFSET_ + sizeof(struct ieee80211_hdr_3addr)) + i);
-
-		switch (p[0]) {
-		case WLAN_EID_HT_OPERATION:	/* HT info */
-			/* HT_info_handler23a(padapter, pIE); */
+	p = cfg80211_find_ie(WLAN_EID_HT_OPERATION, mgmt->u.beacon.variable,
+			     len);
+	if (p)
 			bwmode_update_check(padapter, p);
-			break;
-		case WLAN_EID_ERP_INFO:
+
+	p = cfg80211_find_ie(WLAN_EID_ERP_INFO, mgmt->u.beacon.variable, len);
+	if (p) {
 			ERP_IE_handler23a(padapter, p);
 			VCS_update23a(padapter, psta);
-			break;
-		default:
-			break;
-		}
-		i += (p[1] + 2);
 	}
 }
 
@@ -1340,18 +1298,18 @@ unsigned int update_supported_rate23a(unsigned char *ptn, unsigned int ptn_sz)
 	return mask;
 }
 
-unsigned int update_MSC_rate23a(struct HT_caps_element *pHT_caps)
+unsigned int update_MSC_rate23a(struct ieee80211_ht_cap *pHT_caps)
 {
 	unsigned int mask = 0;
 
-	mask = pHT_caps->u.HT_cap_element.MCS_rate[0] << 12 |
-		pHT_caps->u.HT_cap_element.MCS_rate[1] << 20;
+	mask = pHT_caps->mcs.rx_mask[0] << 12 |
+		pHT_caps->mcs.rx_mask[1] << 20;
 
 	return mask;
 }
 
 int support_short_GI23a(struct rtw_adapter *padapter,
-			struct HT_caps_element *pHT_caps)
+			struct ieee80211_ht_cap *pHT_caps)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -1363,7 +1321,7 @@ int support_short_GI23a(struct rtw_adapter *padapter,
 		return _FAIL;
 	bit_offset = (pmlmeext->cur_bwmode & HT_CHANNEL_WIDTH_40)? 6: 5;
 
-	if (pHT_caps->u.HT_cap_element.HT_caps_info & (0x1 << bit_offset))
+	if (pHT_caps->cap_info & cpu_to_le16(0x1 << bit_offset))
 		return _SUCCESS;
 	else
 		return _FAIL;
@@ -1677,29 +1635,4 @@ void process_addba_req23a(struct rtw_adapter *padapter,
 		preorder_ctrl->enable = (pmlmeinfo->bAcceptAddbaReq == true) ?
 			true : false;
 	}
-}
-
-static struct rtw_adapter *pbuddy_padapter;
-
-int rtw_handle_dualmac23a(struct rtw_adapter *adapter, bool init)
-{
-	int status = _SUCCESS;
-
-	if (init) {
-		if (pbuddy_padapter == NULL) {
-			pbuddy_padapter = adapter;
-			DBG_8723A("%s(): pbuddy_padapter == NULL, "
-				  "Set pbuddy_padapter\n", __func__);
-		} else {
-			adapter->pbuddy_adapter = pbuddy_padapter;
-			pbuddy_padapter->pbuddy_adapter = adapter;
-			/*  clear global value */
-			pbuddy_padapter = NULL;
-			DBG_8723A("%s(): pbuddy_padapter exist, "
-				  "Exchange Information\n", __func__);
-		}
-	} else
-		pbuddy_padapter = NULL;
-
-	return status;
 }

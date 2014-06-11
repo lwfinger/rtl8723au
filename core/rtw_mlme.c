@@ -369,11 +369,10 @@ int is_same_network23a(struct wlan_bssid_ex *src, struct wlan_bssid_ex *dst)
 	return ((src->Ssid.ssid_len == dst->Ssid.ssid_len) &&
 		/*	(src->DSConfig == dst->DSConfig) && */
 		ether_addr_equal(src->MacAddress, dst->MacAddress) &&
-		((!memcmp(src->Ssid.ssid, dst->Ssid.ssid, src->Ssid.ssid_len))) &&
-		((s_cap & WLAN_CAPABILITY_IBSS) ==
-		 (d_cap & WLAN_CAPABILITY_IBSS)) &&
-		((s_cap & WLAN_CAPABILITY_ESS) ==
-		 (d_cap & WLAN_CAPABILITY_ESS)));
+		!memcmp(src->Ssid.ssid, dst->Ssid.ssid, src->Ssid.ssid_len) &&
+		(s_cap & WLAN_CAPABILITY_IBSS) ==
+		(d_cap & WLAN_CAPABILITY_IBSS) &&
+		(s_cap & WLAN_CAPABILITY_ESS) == (d_cap & WLAN_CAPABILITY_ESS));
 }
 
 struct wlan_network *
@@ -612,8 +611,7 @@ static int rtw_is_desired_network(struct rtw_adapter *adapter,
 	            bselected = false;
 	}
 
-	if (desired_encmode != Ndis802_11EncryptionDisabled &&
-	    privacy == 0) {
+	if (desired_encmode != Ndis802_11EncryptionDisabled && privacy == 0) {
 		DBG_8723A("desired_encmode: %d, privacy: %d\n",
 			  desired_encmode, privacy);
 		bselected = false;
@@ -2252,7 +2250,7 @@ unsigned int rtw_restructure_ht_ie23a(struct rtw_adapter *padapter, u8 *in_ie,
 
 		p = cfg80211_find_ie(WLAN_EID_HT_OPERATION, in_ie + 12,
 				     in_len -12);
-		if (p && (p[1] == sizeof(struct ieee80211_ht_addt_info))) {
+		if (p && (p[1] == sizeof(struct ieee80211_ht_operation))) {
 			out_len = *pout_len;
 			pframe = rtw_set_ie23a(out_ie + out_len,
 					       WLAN_EID_HT_OPERATION,
@@ -2269,7 +2267,7 @@ void rtw_update_ht_cap23a(struct rtw_adapter *padapter, u8 *pie, uint ie_len)
 	u8 max_ampdu_sz;
 	const u8 *p;
 	struct ieee80211_ht_cap *pht_capie;
-	struct ieee80211_ht_addt_info *pht_addtinfo;
+	struct ieee80211_ht_operation *pht_addtinfo;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct ht_priv *phtpriv = &pmlmepriv->htpriv;
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
@@ -2317,35 +2315,38 @@ void rtw_update_ht_cap23a(struct rtw_adapter *padapter, u8 *pie, uint ie_len)
 
 	p = cfg80211_find_ie(WLAN_EID_HT_OPERATION, pie, ie_len);
 	if (p && p[1] > 0) {
-		pht_addtinfo = (struct ieee80211_ht_addt_info *)(p + 2);
+		pht_addtinfo = (struct ieee80211_ht_operation *)(p + 2);
 		/* todo: */
 	}
 
 	/* update cur_bwmode & cur_ch_offset */
 	if (pregistrypriv->cbw40_enable &&
-	    pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info & BIT(1) &&
-	    pmlmeinfo->HT_info.infos[0] & BIT(2)) {
+	    pmlmeinfo->ht_cap.cap_info &
+	    cpu_to_le16(IEEE80211_HT_CAP_SUP_WIDTH_20_40) &&
+	    pmlmeinfo->HT_info.ht_param & IEEE80211_HT_PARAM_CHAN_WIDTH_ANY) {
 		int i;
 		u8 rf_type;
 
 		rf_type = rtl8723a_get_rf_type(padapter);
 
 		/* update the MCS rates */
-		for (i = 0; i < 16; i++) {
+		for (i = 0; i < IEEE80211_HT_MCS_MASK_LEN; i++) {
 			if (rf_type == RF_1T1R || rf_type == RF_1T2R)
-				pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_1R23A[i];
+				pmlmeinfo->ht_cap.mcs.rx_mask[i] &=
+					MCS_rate_1R23A[i];
 			else
-				pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate[i] &= MCS_rate_2R23A[i];
+				pmlmeinfo->ht_cap.mcs.rx_mask[i] &=
+					MCS_rate_2R23A[i];
 		}
 		/* switch to the 40M Hz mode accoring to the AP */
 		pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_40;
-		switch ((pmlmeinfo->HT_info.infos[0] & 0x3))
-		{
-		case HT_EXTCHNL_OFFSET_UPPER:
+		switch (pmlmeinfo->HT_info.ht_param &
+			IEEE80211_HT_PARAM_CHAN_WIDTH_ANY) {
+		case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 			pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
 			break;
 
-		case HT_EXTCHNL_OFFSET_LOWER:
+		case IEEE80211_HT_PARAM_CHA_SEC_BELOW:
 			pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_UPPER;
 			break;
 
@@ -2359,15 +2360,18 @@ void rtw_update_ht_cap23a(struct rtw_adapter *padapter, u8 *pie, uint ie_len)
 	/*  */
 	/*  Config SM Power Save setting */
 	/*  */
-	pmlmeinfo->SM_PS = (pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info &
-			    0x0C) >> 2;
+	pmlmeinfo->SM_PS =
+		(le16_to_cpu(pmlmeinfo->ht_cap.cap_info) &
+		 IEEE80211_HT_CAP_SM_PS) >> IEEE80211_HT_CAP_SM_PS_SHIFT;
 	if (pmlmeinfo->SM_PS == WLAN_HT_CAP_SM_PS_STATIC)
 		DBG_8723A("%s(): WLAN_HT_CAP_SM_PS_STATIC\n", __func__);
 
 	/*  */
 	/*  Config current HT Protection mode. */
 	/*  */
-	pmlmeinfo->HT_protection = pmlmeinfo->HT_info.infos[1] & 0x3;
+	pmlmeinfo->HT_protection =
+		le16_to_cpu(pmlmeinfo->HT_info.operation_mode) &
+		IEEE80211_HT_OP_MODE_PROTECTION;
 }
 
 void rtw_issue_addbareq_cmd23a(struct rtw_adapter *padapter,

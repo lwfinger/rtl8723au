@@ -366,8 +366,8 @@ struct mlme_ext_info
 
 	struct ADDBA_request		ADDBA_req;
 	struct WMM_para_element	WMM_param;
-	struct HT_caps_element	HT_caps;
-	struct HT_info_element		HT_info;
+	struct ieee80211_ht_cap ht_cap;
+	struct ieee80211_ht_operation HT_info;
 	struct wlan_bssid_ex			network;/* join network or bss_network, if in ap mode, it is the same to cur_network.network */
 	struct FW_Sta_Info		FW_sta_info[NUM_STA];
 };
@@ -514,13 +514,14 @@ int WMM_param_handler23a(struct rtw_adapter *padapter, u8 *p);
 void WMMOnAssocRsp23a(struct rtw_adapter *padapter);
 
 void HT_caps_handler23a(struct rtw_adapter *padapter, u8 *p);
-void HT_info_handler23a(struct rtw_adapter *padapter, u8 *p);
+void HT_info_handler23a(struct rtw_adapter *padapter, const u8 *p);
 void HTOnAssocRsp23a(struct rtw_adapter *padapter);
 
-void ERP_IE_handler23a(struct rtw_adapter *padapter, u8 *p);
+void ERP_IE_handler23a(struct rtw_adapter *padapter, const u8 *p);
 void VCS_update23a(struct rtw_adapter *padapter, struct sta_info *psta);
 
-void update_beacon23a_info(struct rtw_adapter *padapter, u8 *pframe, uint len,
+void update_beacon23a_info(struct rtw_adapter *padapter,
+			   struct ieee80211_mgmt *mgmt, uint len,
 			struct sta_info *psta);
 int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 			  struct ieee80211_mgmt *mgmt, u32 packet_len);
@@ -536,7 +537,7 @@ int update_sta_support_rate23a(struct rtw_adapter *padapter, u8* pvar_ie,
 void update_sta_info23a(struct rtw_adapter *padapter, struct sta_info *psta);
 unsigned int update_basic_rate23a(unsigned char *ptn, unsigned int ptn_sz);
 unsigned int update_supported_rate23a(unsigned char *ptn, unsigned int ptn_sz);
-unsigned int update_MSC_rate23a(struct HT_caps_element *pHT_caps);
+unsigned int update_MSC_rate23a(struct ieee80211_ht_cap *ht_cap);
 void Update_RA_Entry23a(struct rtw_adapter *padapter, struct sta_info *psta);
 void set_sta_rate23a(struct rtw_adapter *padapter, struct sta_info *psta);
 
@@ -545,7 +546,7 @@ int receive_disconnect23a(struct rtw_adapter *padapter,
 
 unsigned char get_highest_rate_idx23a(u32 mask);
 int support_short_GI23a(struct rtw_adapter *padapter,
-		     struct HT_caps_element *pHT_caps);
+			struct ieee80211_ht_cap *ht_cap);
 bool is_ap_in_tkip23a(struct rtw_adapter *padapter);
 bool is_ap_in_wep23a(struct rtw_adapter *padapter);
 bool should_forbid_n_rate23a(struct rtw_adapter *padapter);

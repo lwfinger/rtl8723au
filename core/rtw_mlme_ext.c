@@ -120,46 +120,84 @@ static unsigned char REALTEK_96B_IE[] = {0x00, 0xe0, 0x4c, 0x02, 0x01, 0x20};
 MCS rate definitions
 *********************************************************/
 unsigned char MCS_rate_2R23A[16] = {
-	0xff, 0xff, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+	0xff, 0xff, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 unsigned char MCS_rate_1R23A[16] = {
-	0xff, 0x00, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+	0xff, 0x00, 0x0, 0x0, 0x01, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 
 /********************************************************
 ChannelPlan definitions
 *********************************************************/
 
 static struct rt_channel_plan_2g	RTW_ChannelPlan2G[RT_CHANNEL_DOMAIN_2G_MAX] = {
-	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, 13},		/*  0x00, RT_CHANNEL_DOMAIN_2G_WORLD , Passive scan CH 12, 13 */
-	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, 13},		/*  0x01, RT_CHANNEL_DOMAIN_2G_ETSI1 */
-	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 11},			/*  0x02, RT_CHANNEL_DOMAIN_2G_FCC1 */
-	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 14},	/*  0x03, RT_CHANNEL_DOMAIN_2G_MIKK1 */
-	{{10, 11, 12, 13}, 4},					/*  0x04, RT_CHANNEL_DOMAIN_2G_ETSI2 */
-	{{}, 0},									/*  0x05, RT_CHANNEL_DOMAIN_2G_NULL */
+	/*  0x00, RT_CHANNEL_DOMAIN_2G_WORLD , Passive scan CH 12, 13 */
+	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, 13},
+	/*  0x01, RT_CHANNEL_DOMAIN_2G_ETSI1 */
+	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, 13},
+	/*  0x02, RT_CHANNEL_DOMAIN_2G_FCC1 */
+	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, 11},
+	/*  0x03, RT_CHANNEL_DOMAIN_2G_MIKK1 */
+	{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 14},
+	/*  0x04, RT_CHANNEL_DOMAIN_2G_ETSI2 */
+	{{10, 11, 12, 13}, 4},
+	/*  0x05, RT_CHANNEL_DOMAIN_2G_NULL */
+	{{}, 0},
 };
 
 static struct rt_channel_plan_5g	RTW_ChannelPlan5G[RT_CHANNEL_DOMAIN_5G_MAX] = {
-	{{}, 0},																					/*  0x00, RT_CHANNEL_DOMAIN_5G_NULL */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}, 19},						/*  0x01, RT_CHANNEL_DOMAIN_5G_ETSI1 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165}, 24},	/*  0x02, RT_CHANNEL_DOMAIN_5G_ETSI2 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 149, 153, 157, 161, 165}, 22},			/*  0x03, RT_CHANNEL_DOMAIN_5G_ETSI3 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165}, 24},	/*  0x04, RT_CHANNEL_DOMAIN_5G_FCC1 */
-	{{36, 40, 44, 48, 149, 153, 157, 161, 165}, 9},														/*  0x05, RT_CHANNEL_DOMAIN_5G_FCC2 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161, 165}, 13},											/*  0x06, RT_CHANNEL_DOMAIN_5G_FCC3 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161}, 12},												/*  0x07, RT_CHANNEL_DOMAIN_5G_FCC4 */
-	{{149, 153, 157, 161, 165}, 5},																	/*  0x08, RT_CHANNEL_DOMAIN_5G_FCC5 */
-	{{36, 40, 44, 48, 52, 56, 60, 64}, 8},																/*  0x09, RT_CHANNEL_DOMAIN_5G_FCC6 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 136, 140, 149, 153, 157, 161, 165}, 20},					/*  0x0A, RT_CHANNEL_DOMAIN_5G_FCC7_IC1 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 149, 153, 157, 161, 165}, 20},					/*  0x0B, RT_CHANNEL_DOMAIN_5G_KCC1 */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}, 19},						/*  0x0C, RT_CHANNEL_DOMAIN_5G_MKK1 */
-	{{36, 40, 44, 48, 52, 56, 60, 64}, 8},																/*  0x0D, RT_CHANNEL_DOMAIN_5G_MKK2 */
-	{{100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}, 11},											/*  0x0E, RT_CHANNEL_DOMAIN_5G_MKK3 */
-	{{56, 60, 64, 100, 104, 108, 112, 116, 136, 140, 149, 153, 157, 161, 165}, 15},								/*  0x0F, RT_CHANNEL_DOMAIN_5G_NCC1 */
-	{{56, 60, 64, 149, 153, 157, 161, 165}, 8},															/*  0x10, RT_CHANNEL_DOMAIN_5G_NCC2 */
+	/*  0x00, RT_CHANNEL_DOMAIN_5G_NULL */
+	{{}, 0},
+	/*  0x01, RT_CHANNEL_DOMAIN_5G_ETSI1 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 128, 132, 136, 140}, 19},
+	/*  0x02, RT_CHANNEL_DOMAIN_5G_ETSI2 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165}, 24},
+	/*  0x03, RT_CHANNEL_DOMAIN_5G_ETSI3 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 128, 132, 149, 153, 157, 161, 165}, 22},
+	/*  0x04, RT_CHANNEL_DOMAIN_5G_FCC1 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 128, 132, 136, 140, 149, 153, 157, 161, 165}, 24},
+	/*  0x05, RT_CHANNEL_DOMAIN_5G_FCC2 */
+	{{36, 40, 44, 48, 149, 153, 157, 161, 165}, 9},
+	/*  0x06, RT_CHANNEL_DOMAIN_5G_FCC3 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161, 165}, 13},
+	/*  0x07, RT_CHANNEL_DOMAIN_5G_FCC4 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 149, 153, 157, 161}, 12},
+	/*  0x08, RT_CHANNEL_DOMAIN_5G_FCC5 */
+	{{149, 153, 157, 161, 165}, 5},
+	/*  0x09, RT_CHANNEL_DOMAIN_5G_FCC6 */
+	{{36, 40, 44, 48, 52, 56, 60, 64}, 8},
+	/*  0x0A, RT_CHANNEL_DOMAIN_5G_FCC7_IC1 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 136, 140, 149, 153, 157, 161, 165}, 20},
+	/*  0x0B, RT_CHANNEL_DOMAIN_5G_KCC1 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 149, 153, 157, 161, 165}, 20},
+	/*  0x0C, RT_CHANNEL_DOMAIN_5G_MKK1 */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 120, 124, 128, 132, 136, 140}, 19},
+	/*  0x0D, RT_CHANNEL_DOMAIN_5G_MKK2 */
+	{{36, 40, 44, 48, 52, 56, 60, 64}, 8},
+	/*  0x0E, RT_CHANNEL_DOMAIN_5G_MKK3 */
+	{{100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140}, 11},
+	/*  0x0F, RT_CHANNEL_DOMAIN_5G_NCC1 */
+	{{56, 60, 64, 100, 104, 108, 112, 116, 136, 140, 149,
+	  153, 157, 161, 165}, 15},
+	/*  0x10, RT_CHANNEL_DOMAIN_5G_NCC2 */
+	{{56, 60, 64, 149, 153, 157, 161, 165}, 8},
 
-	/*  Driver self defined for old channel plan Compatible , Remember to modify if have new channel plan definition ===== */
-	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 132, 136, 140, 149, 153, 157, 161, 165}, 21},				/*  0x11, RT_CHANNEL_DOMAIN_5G_FCC */
-	{{36, 40, 44, 48}, 4},																			/*  0x12, RT_CHANNEL_DOMAIN_5G_JAPAN_NO_DFS */
-	{{36, 40, 44, 48, 149, 153, 157, 161}, 8},																/*  0x13, RT_CHANNEL_DOMAIN_5G_FCC4_NO_DFS */
+	/*  Driver self defined for old channel plan Compatible,
+	    Remember to modify if have new channel plan definition ===== */
+	/*  0x11, RT_CHANNEL_DOMAIN_5G_FCC */
+	{{36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112,
+	  116, 132, 136, 140, 149, 153, 157, 161, 165}, 21},
+	/*  0x12, RT_CHANNEL_DOMAIN_5G_JAPAN_NO_DFS */
+	{{36, 40, 44, 48}, 4},
+	/*  0x13, RT_CHANNEL_DOMAIN_5G_FCC4_NO_DFS */
+	{{36, 40, 44, 48, 149, 153, 157, 161}, 8},
 };
 
 static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
@@ -233,7 +271,8 @@ static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
 	{0x03, 0x00},	/* 0x41, RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G */
 };
 
-static struct rt_channel_plan_map	RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03, 0x02}; /* use the conbination for max channel numbers */
+static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE =
+{0x03, 0x02}; /* use the conbination for max channel numbers */
 
 static void dummy_event_callback(struct rtw_adapter *adapter, const u8 *pbuf)
 {
@@ -250,8 +289,7 @@ static struct fwevent wlanevents[] =
 	{0, NULL},
 	{0, NULL},
 	{0, &rtw_survey_event_cb23a},		/*8*/
-	{sizeof (struct surveydone_event), &rtw_surveydone_event_callback23a},	/*9*/
-
+	{sizeof (struct surveydone_event), &rtw_surveydone_event_callback23a},
 	{0, &rtw23a_joinbss_event_cb},		/*10*/
 	{sizeof(struct stassoc_event), &rtw_stassoc_event_callback23a},
 	{sizeof(struct stadel_event), &rtw_stadel_event_callback23a},
@@ -391,8 +429,8 @@ static int has_channel(struct rt_channel_info *channel_set,
 static void init_channel_list(struct rtw_adapter *padapter,
 			      struct rt_channel_info *channel_set,
 			      u8 chanset_size,
-			      struct p2p_channels *channel_list) {
-
+			      struct p2p_channels *channel_list)
+{
 	struct p2p_oper_class_map op_class[] = {
 		{ IEEE80211G,  81,   1,  13,  1, BW20 },
 		{ IEEE80211G,  82,  14,  14,  1, BW20 },
@@ -751,7 +789,6 @@ OnBeacon23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 	struct sta_priv	*pstapriv = &padapter->stapriv;
 	struct sk_buff *skb = precv_frame->pkt;
 	struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *) skb->data;
-	u8 *pframe = skb->data;
 	int pkt_len = skb->len;
 	struct wlan_bssid_ex *pbss;
 	int ret = _SUCCESS;
@@ -831,7 +868,7 @@ OnBeacon23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 			   the number of the beacon received */
 			if ((sta_rx_pkts(psta) & 0xf) == 0) {
 				/* DBG_8723A("update_bcn_info\n"); */
-				update_beacon23a_info(padapter, pframe,
+				update_beacon23a_info(padapter, mgmt,
 						      pkt_len, psta);
 			}
 		}
@@ -843,7 +880,7 @@ OnBeacon23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
 			   number of the beacon received */
 			if ((sta_rx_pkts(psta) & 0xf) == 0) {
 				/* DBG_8723A("update_bcn_info\n"); */
-				update_beacon23a_info(padapter, pframe,
+				update_beacon23a_info(padapter, mgmt,
 						      pkt_len, psta);
 			}
 		} else {
@@ -3432,19 +3469,22 @@ static void issue_assocreq(struct rtw_adapter *padapter)
 		p = cfg80211_find_ie(WLAN_EID_HT_CAPABILITY, pie, pie_len);
 
 		if (p && !is_ap_in_tkip23a(padapter)) {
-			memcpy(&pmlmeinfo->HT_caps, p + 2,
-			       sizeof(struct HT_caps_element));
+			struct ieee80211_ht_cap *cap = &pmlmeinfo->ht_cap;
+
+			memcpy(cap, p + 2, sizeof(struct ieee80211_ht_cap));
 
 			/* to disable 40M Hz support while gd_bw_40MHz_en = 0 */
 			if (pregpriv->cbw40_enable == 0) {
-				pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info &= (~(BIT(6) | BIT(1)));
+				cap->cap_info &= ~cpu_to_le16(
+					IEEE80211_HT_CAP_SGI_40 |
+					IEEE80211_HT_CAP_SUP_WIDTH_20_40);
 			} else {
-				pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= BIT(1);
+				cap->cap_info |= cpu_to_le16(
+					IEEE80211_HT_CAP_SUP_WIDTH_20_40);
 			}
 
 			/* todo: disable SM power save mode */
-			pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |=
-				0x000c;
+			cap->cap_info |= cpu_to_le16(IEEE80211_HT_CAP_SM_PS);
 
 			rf_type = rtl8723a_get_rf_type(padapter);
 			/* switch (pregpriv->rf_config) */
@@ -3452,9 +3492,9 @@ static void issue_assocreq(struct rtw_adapter *padapter)
 			case RF_1T1R:
 				/* RX STBC One spatial stream */
 				if (pregpriv->rx_stbc)
-					pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= cpu_to_le16(0x0100);
+					cap->cap_info |= cpu_to_le16(1 << IEEE80211_HT_CAP_RX_STBC_SHIFT);
 
-				memcpy(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_rate_1R23A, 16);
+				memcpy(&cap->mcs, MCS_rate_1R23A, 16);
 				break;
 
 			case RF_2T2R:
@@ -3473,23 +3513,23 @@ static void issue_assocreq(struct rtw_adapter *padapter)
 				    pregpriv->wifi_spec == 1) {
 					DBG_8723A("declare supporting RX "
 						  "STBC\n");
-					pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info |= cpu_to_le16(0x0200);/* RX STBC two spatial stream */
+					/* RX STBC two spatial stream */
+					cap->cap_info |= cpu_to_le16(2 << IEEE80211_HT_CAP_RX_STBC_SHIFT);
 				}
-				memcpy(pmlmeinfo->HT_caps.u.HT_cap_element.MCS_rate, MCS_rate_2R23A, 16);
+				memcpy(&cap->mcs, MCS_rate_2R23A, 16);
 				break;
 			}
-			pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info =
-				cpu_to_le16(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info);
 
 			if (rtl8723a_BT_coexist(padapter) &&
 			    rtl8723a_BT_using_antenna_1(padapter)) {
 				/*  set to 8K */
-				pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para &= (u8)~IEEE80211_HT_AMPDU_PARM_FACTOR;
-/*				pmlmeinfo->HT_caps.u.HT_cap_element.AMPDU_para |= MAX_AMPDU_FACTOR_8K */
+				cap->ampdu_params_info &=
+					~IEEE80211_HT_AMPDU_PARM_FACTOR;
+/*				cap->ampdu_params_info |= MAX_AMPDU_FACTOR_8K */
 			}
 
 			pframe = rtw_set_ie23a(pframe, WLAN_EID_HT_CAPABILITY,
-					       p[1], (u8 *)&pmlmeinfo->HT_caps,
+					       p[1], (u8 *)&pmlmeinfo->ht_cap,
 					       &pattrib->pktlen);
 		}
 	}
@@ -4377,8 +4417,9 @@ bool IsLegal5GChannel(struct rtw_adapter *Adapter, u8 channel)
 
 	int i = 0;
 	u8 Channel_5G[45] = {36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58,
-		60, 62, 64, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122,
-		124, 126, 128, 130, 132, 134, 136, 138, 140, 149, 151, 153, 155, 157, 159,
+			     60, 62, 64, 100, 102, 104, 106, 108, 110, 112,
+			     114, 116, 118, 120, 122, 124, 126, 128, 130, 132,
+			     134, 136, 138, 140, 149, 151, 153, 155, 157, 159,
 		161, 163, 165};
 	for (i = 0; i < sizeof(Channel_5G); i++)
 		if (channel == Channel_5G[i])
@@ -4499,21 +4540,29 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 	if (ieee80211_is_beacon(mgmt->frame_control)) {
 		bssid->reserved = 1;
 		ie_offset = offsetof(struct ieee80211_mgmt, u.beacon.variable);
-		capab_info = mgmt->u.beacon.capab_info;
+		capab_info = get_unaligned_le16(&mgmt->u.beacon.capab_info);
+		bssid->BeaconPeriod =
+			get_unaligned_le16(&mgmt->u.beacon.beacon_int);
 	} else  if (ieee80211_is_probe_req(mgmt->frame_control)) {
 		ie_offset = offsetof(struct ieee80211_mgmt,
 				     u.probe_req.variable);
 		bssid->reserved = 2;
 		capab_info = 0;
+		bssid->BeaconPeriod =
+			padapter->registrypriv.dev_network.BeaconPeriod;
 	} else if (ieee80211_is_probe_resp(mgmt->frame_control)) {
 		ie_offset = offsetof(struct ieee80211_mgmt,
 				     u.probe_resp.variable);
 		bssid->reserved = 3;
-		capab_info = mgmt->u.probe_resp.capab_info;
+		capab_info = get_unaligned_le16(&mgmt->u.probe_resp.capab_info);
+		bssid->BeaconPeriod =
+			get_unaligned_le16(&mgmt->u.probe_resp.beacon_int);
 	} else {
 		bssid->reserved = 0;
 		ie_offset = offsetof(struct ieee80211_mgmt, u.beacon.variable);
-		capab_info = mgmt->u.beacon.capab_info;
+		capab_info = get_unaligned_le16(&mgmt->u.beacon.capab_info);
+		bssid->BeaconPeriod =
+			padapter->registrypriv.dev_network.BeaconPeriod;
 	}
 	ie_offset -= offsetof(struct ieee80211_mgmt, u);
 
@@ -4592,9 +4641,9 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 				     bssid->IEs + ie_offset,
 				     bssid->IELength - ie_offset);
 		if (p) {
-			struct HT_info_element *HT_info =
-				(struct HT_info_element *)(p + 2);
-			bssid->DSConfig = HT_info->primary_channel;
+			struct ieee80211_ht_operation *HT_info =
+				(struct ieee80211_ht_operation *)(p + 2);
+			bssid->DSConfig = HT_info->primary_chan;
 		} else /*  use current channel */
 			bssid->DSConfig = rtw_get_oper_ch23a(padapter);
 	}
@@ -4607,10 +4656,7 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 		return _SUCCESS;
 	}
 
-	bssid->BeaconPeriod = get_unaligned_le16(
-		rtw_get_beacon_interval23a_from_ie(bssid->IEs));
-
-	if (capab_info & BIT(0)) {
+	if (capab_info & WLAN_CAPABILITY_ESS) {
 		bssid->ifmode = NL80211_IFTYPE_STATION;
 		ether_addr_copy(bssid->MacAddress, mgmt->sa);
 	} else {
@@ -4618,7 +4664,7 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 		ether_addr_copy(bssid->MacAddress, mgmt->bssid);
 	}
 
-	if (capab_info & BIT(4))
+	if (capab_info & WLAN_CAPABILITY_PRIVACY)
 		bssid->Privacy = 1;
 	else
 		bssid->Privacy = 0;
@@ -4634,10 +4680,11 @@ int collect_bss_info23a(struct rtw_adapter *padapter,
 				     bssid->IEs + ie_offset,
 				     bssid->IELength - ie_offset);
 		if (p && p[1] > 0) {
-			struct HT_caps_element *pHT_caps;
-			pHT_caps = (struct HT_caps_element *)(p + 2);
+			struct ieee80211_ht_cap *pHT_caps;
+			pHT_caps = (struct ieee80211_ht_cap *)(p + 2);
 
-			if (pHT_caps->u.HT_cap_element.HT_caps_info & BIT(14))
+			if (pHT_caps->cap_info &
+			    cpu_to_le16(IEEE80211_HT_CAP_40MHZ_INTOLERANT))
 				pmlmepriv->num_FortyMHzIntolerant++;
 		} else
 			pmlmepriv->num_sta_no_ht++;
@@ -4783,8 +4830,10 @@ static void start_clnt_auth(struct rtw_adapter* padapter)
 	/*  AP may: 1)not response auth or 2)deauth us after link is complete */
 	/*  issue deauth before issuing auth to deal with the situation */
 	/*	Commented by Albert 2012/07/21 */
-	/*	For the Win8 P2P connection, it will be hard to have a successful connection if this Wi-Fi doesn't connect to it. */
-	issue_deauth23a(padapter, (&pmlmeinfo->network)->MacAddress, WLAN_REASON_DEAUTH_LEAVING);
+	/*	For the Win8 P2P connection, it will be hard to have a
+		successful connection if this Wi-Fi doesn't connect to it. */
+	issue_deauth23a(padapter, (&pmlmeinfo->network)->MacAddress,
+			WLAN_REASON_DEAUTH_LEAVING);
 
 	DBG_8723A_LEVEL(_drv_always_, "start auth\n");
 	issue_auth(padapter, NULL, 0);
@@ -5068,7 +5117,8 @@ Following are the functions to report events
 
 *****************************************************************************/
 
-void report_survey_event23a(struct rtw_adapter *padapter, struct recv_frame *precv_frame)
+void report_survey_event23a(struct rtw_adapter *padapter,
+			    struct recv_frame *precv_frame)
 {
 	struct cmd_obj *pcmd_obj;
 	u8	*pevtcmd;
@@ -5218,7 +5268,8 @@ void report_join_res23a(struct rtw_adapter *padapter, int res)
 	return;
 }
 
-void report_del_sta_event23a(struct rtw_adapter *padapter, unsigned char* MacAddr, unsigned short reason)
+void report_del_sta_event23a(struct rtw_adapter *padapter,
+			     unsigned char* MacAddr, unsigned short reason)
 {
 	struct cmd_obj *pcmd_obj;
 	u8	*pevtcmd;
@@ -5274,7 +5325,8 @@ void report_del_sta_event23a(struct rtw_adapter *padapter, unsigned char* MacAdd
 	return;
 }
 
-void report_add_sta_event23a(struct rtw_adapter *padapter, unsigned char* MacAddr, int cam_idx)
+void report_add_sta_event23a(struct rtw_adapter *padapter,
+			     unsigned char* MacAddr, int cam_idx)
 {
 	struct cmd_obj *pcmd_obj;
 	u8	*pevtcmd;
@@ -5342,7 +5394,7 @@ void update_sta_info23a(struct rtw_adapter *padapter, struct sta_info *psta)
 
 		psta->htpriv.ampdu_enable = pmlmepriv->htpriv.ampdu_enable;
 
-		if (support_short_GI23a(padapter, &pmlmeinfo->HT_caps))
+		if (support_short_GI23a(padapter, &pmlmeinfo->ht_cap))
 			psta->htpriv.sgi = true;
 
 		psta->qos_option = true;
@@ -5371,7 +5423,8 @@ void update_sta_info23a(struct rtw_adapter *padapter, struct sta_info *psta)
 	psta->state = _FW_LINKED;
 }
 
-void mlmeext_joinbss_event_callback23a(struct rtw_adapter *padapter, int join_res)
+void mlmeext_joinbss_event_callback23a(struct rtw_adapter *padapter,
+				       int join_res)
 {
 	struct sta_info		*psta, *psta_bmc;
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
@@ -5453,7 +5506,8 @@ exit_mlmeext_joinbss_event_callback23a:
 	DBG_8723A("=>%s\n", __func__);
 }
 
-void mlmeext_sta_add_event_callback23a(struct rtw_adapter *padapter, struct sta_info *psta)
+void mlmeext_sta_add_event_callback23a(struct rtw_adapter *padapter,
+				       struct sta_info *psta)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
@@ -5903,7 +5957,7 @@ int join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *pnetwork = &pmlmeinfo->network;
 	const struct wlan_bssid_ex *pparm = (struct wlan_bssid_ex *)pbuf;
-	struct HT_info_element *pht_info;
+	struct ieee80211_ht_operation *pht_info;
 	u32 i;
 	int bcn_fixed_size;
 	u8 *p;
@@ -5972,20 +6026,21 @@ int join_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 
 			/* spec case only for cisco's ap because cisco's ap
 			 * issue assoc rsp using mcs rate @40MHz or @20MHz */
-			pht_info = (struct HT_info_element *)(p + 2);
+			pht_info = (struct ieee80211_ht_operation *)(p + 2);
 
-			if ((pregpriv->cbw40_enable) &&
-			    (pht_info->infos[0] & BIT(2))) {
+			if (pregpriv->cbw40_enable &&
+			    (pht_info->ht_param &
+			     IEEE80211_HT_PARAM_CHAN_WIDTH_ANY)) {
 				/* switch to the 40M Hz mode according to AP */
 				pmlmeext->cur_bwmode = HT_CHANNEL_WIDTH_40;
-				switch (pht_info->infos[0] & 0x3)
-				{
-				case 1:
+				switch (pht_info->ht_param &
+					IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
+				case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 					pmlmeext->cur_ch_offset =
 						HAL_PRIME_CHNL_OFFSET_LOWER;
 					break;
 
-				case 3:
+				case IEEE80211_HT_PARAM_CHA_SEC_BELOW:
 					pmlmeext->cur_ch_offset =
 						HAL_PRIME_CHNL_OFFSET_UPPER;
 					break;
