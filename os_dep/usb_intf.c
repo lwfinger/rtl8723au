@@ -101,31 +101,16 @@ static inline int RT_usb_endpoint_num(const struct usb_endpoint_descriptor *epd)
 
 static int rtw_init_intf_priv(struct dvobj_priv *dvobj)
 {
-	int rst = _SUCCESS;
-
 	mutex_init(&dvobj->usb_vendor_req_mutex);
-	dvobj->usb_alloc_vendor_req_buf = kzalloc(MAX_USB_IO_CTL_SIZE,
-						  GFP_KERNEL);
-	if (dvobj->usb_alloc_vendor_req_buf == NULL) {
-		DBG_8723A("alloc usb_vendor_req_buf failed...\n");
-		rst = _FAIL;
-		goto exit;
-	}
-	dvobj->usb_vendor_req_buf =
-		PTR_ALIGN(dvobj->usb_alloc_vendor_req_buf, ALIGNMENT_UNIT);
-exit:
-	return rst;
+
+	return _SUCCESS;
 }
 
 static int rtw_deinit_intf_priv(struct dvobj_priv *dvobj)
 {
-	int rst = _SUCCESS;
-
-	kfree(dvobj->usb_alloc_vendor_req_buf);
-
 	mutex_destroy(&dvobj->usb_vendor_req_mutex);
 
-	return rst;
+	return _SUCCESS;
 }
 
 static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
@@ -318,7 +303,7 @@ static void rtw_dev_unload(struct rtw_adapter *padapter)
 
 		/* s5. */
 		if (!padapter->bSurpriseRemoved) {
-			rtw_hal_deinit23a(padapter);
+			rtl8723au_hal_deinit(padapter);
 			padapter->bSurpriseRemoved = true;
 		}
 		padapter->bup = false;
@@ -416,7 +401,6 @@ int rtw_hw_resume23a(struct rtw_adapter *padapter)
 			netif_tx_wake_all_queues(pnetdev);
 
 		pwrpriv->bkeepfwalive = false;
-		pwrpriv->brfoffbyhw = false;
 
 		pwrpriv->rf_pwrstate = rf_on;
 		pwrpriv->bips_processing = false;
@@ -504,15 +488,6 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 {
 	struct dvobj_priv *dvobj = usb_get_intfdata(pusb_intf);
 	struct rtw_adapter *padapter = dvobj->if1;
-	int ret;
-
-	ret = rtw_resume_process23a(padapter);
-
-	return ret;
-}
-
-int rtw_resume_process23a(struct rtw_adapter *padapter)
-{
 	struct net_device *pnetdev;
 	struct pwrctrl_priv *pwrpriv = NULL;
 	int ret = -1;
@@ -530,8 +505,10 @@ int rtw_resume_process23a(struct rtw_adapter *padapter)
 	pwrpriv->bkeepfwalive = false;
 
 	DBG_8723A("bkeepfwalive(%x)\n", pwrpriv->bkeepfwalive);
-	if (pm_netdev_open23a(pnetdev, true) != 0)
+	if (pm_netdev_open23a(pnetdev, true) != 0) {
+		up(&pwrpriv->lock);
 		goto exit;
+	}
 
 	netif_device_attach(pnetdev);
 	netif_carrier_on(pnetdev);

@@ -177,10 +177,13 @@ struct dvobj_priv {
 	u8	RtNumOutPipes;
 	int	ep_num[5]; /* endpoint number */
 
-	struct mutex  usb_vendor_req_mutex;
+	struct mutex usb_vendor_req_mutex;
 
-	u8 *usb_alloc_vendor_req_buf;
-	u8 *usb_vendor_req_buf;
+	union {
+		__le32 val32;
+		__le16 val16;
+		u8 val8;
+	} usb_buf;
 
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
@@ -257,8 +260,6 @@ struct rtw_adapter {
 	u8 bFWReady;
 	u8 bReadPortCancel;
 	u8 bWritePortCancel;
-	/* The driver will show the desired chan nor when this flag is 1. */
-	u8 bNotifyChannelChange;
 
 	/* extend to support multi interface */
 	/* IFACE_ID0 is equals to PRIMARY_ADAPTER */

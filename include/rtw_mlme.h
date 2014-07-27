@@ -163,24 +163,6 @@ struct mlme_priv {
 	u32 assoc_req_len;
 	u32 assoc_rsp_len;
 	u8 *assoc_rsp;
-	u32 wps_assoc_resp_ie_len;
-	u8 *wps_assoc_resp_ie;
-	u8 *wps_probe_resp_ie;
-	u32 wps_probe_resp_ie_len;
-	u8 *wps_beacon_ie;
-	u32 wps_beacon_ie_len;
-	u32 p2p_go_probe_resp_ie_len; /* for GO */
-	u32 p2p_assoc_req_ie_len;
-	u8 *p2p_beacon_ie;
-	u8 *p2p_probe_req_ie;
-	u8 *p2p_probe_resp_ie;
-	u8 *p2p_go_probe_resp_ie; /* for GO */
-	u8 *p2p_assoc_req_ie;
-	u32 p2p_beacon_ie_len;
-	u32 p2p_probe_req_ie_len;
-	u32 p2p_probe_resp_ie_len;
-	u8 *wfd_assoc_req_ie;
-	u32 wfd_assoc_req_ie_len;
 
 #ifdef CONFIG_8723AU_AP_MODE
 	/* Number of associated Non-ERP stations (i.e., stations using 802.11b
@@ -213,16 +195,6 @@ struct mlme_priv {
 	u8		update_bcn;
 
 #endif /* ifdef CONFIG_8723AU_AP_MODE */
-
-	u8 *wfd_beacon_ie;
-	u8 *wfd_probe_req_ie;
-	u8 *wfd_probe_resp_ie;
-	u8 *wfd_go_probe_resp_ie; /* for GO */
-
-	u32 wfd_beacon_ie_len;
-	u32 wfd_probe_req_ie_len;
-	u32 wfd_probe_resp_ie_len;
-	u32 wfd_go_probe_resp_ie_len; /* for GO */
 };
 
 void rtw_joinbss_event_prehandle23a(struct rtw_adapter *adapter, u8 *pbuf);
@@ -310,7 +282,6 @@ static inline void clr_fwstate_ex(struct mlme_priv *pmlmepriv, int state)
 	spin_unlock_bh(&pmlmepriv->lock);
 }
 
-u16 rtw_get_capability23a(struct wlan_bssid_ex *bss);
 void rtw_disconnect_hdl23a_under_linked(struct rtw_adapter *adapter,
 				     struct sta_info *psta, u8 free_assoc);
 void rtw_generate_random_ibss23a(u8 *pibss);
@@ -343,15 +314,11 @@ void rtw23a_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv);
 
 void _rtw_free_mlme_priv23a(struct mlme_priv *pmlmepriv);
 
-struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv, int gfp);
+struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv, gfp_t gfp);
 
 int rtw_if_up23a(struct rtw_adapter *padapter);
 
 int rtw_linked_check(struct rtw_adapter *padapter);
-
-__le16 *rtw_get_capability23a_from_ie(u8 *ie);
-__le16 *rtw_get_beacon_interval23a_from_ie(u8 *ie);
-
 
 void rtw_joinbss_reset23a(struct rtw_adapter *padapter);
 

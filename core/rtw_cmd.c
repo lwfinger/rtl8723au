@@ -464,7 +464,6 @@ exit:
 int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 		       struct wlan_network *pnetwork)
 {
-	u8 *auth;
 	int res = _SUCCESS;
 	struct wlan_bssid_ex *psecnetwork;
 	struct cmd_obj *pcmd;
@@ -516,9 +515,7 @@ int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 
 	psecnetwork = &psecuritypriv->sec_bss;
 	if (!psecnetwork) {
-		if (pcmd)
-			kfree(pcmd);
-
+		kfree(pcmd);
 		res = _FAIL;
 
 		RT_TRACE(_module_rtl871x_cmd_c_, _drv_err_,
@@ -531,18 +528,6 @@ int rtw_joinbss_cmd23a(struct rtw_adapter *padapter,
 
 	memcpy(psecnetwork, &pnetwork->network,
 	       get_wlan_bssid_ex_sz(&pnetwork->network));
-
-	auth = &psecuritypriv->authenticator_ie[0];
-	psecuritypriv->authenticator_ie[0] =
-		(unsigned char)psecnetwork->IELength;
-
-	if ((psecnetwork->IELength-12) < (256-1)) {
-		memcpy(&psecuritypriv->authenticator_ie[1],
-		       &psecnetwork->IEs[12], psecnetwork->IELength - 12);
-	} else {
-		memcpy(&psecuritypriv->authenticator_ie[1],
-		       &psecnetwork->IEs[12], 256 - 1);
-	}
 
 	psecnetwork->IELength = 0;
 	/*  Added by Albert 2009/02/18 */
@@ -1126,11 +1111,6 @@ exit:
 	return res;
 }
 
-static void power_saving_wk_hdl(struct rtw_adapter *padapter, u8 *pbuf, int sz)
-{
-	 rtw_ps_processor23a(padapter);
-}
-
 int rtw_ps_cmd23a(struct rtw_adapter*padapter)
 {
 	struct cmd_obj *ppscmd;
@@ -1345,8 +1325,7 @@ int rtw_drvextra_cmd_hdl23a(struct rtw_adapter *padapter, const u8 *pbuf)
 				   pdrvextra_cmd->type_size);
 		break;
 	case POWER_SAVING_CTRL_WK_CID:
-		power_saving_wk_hdl(padapter, pdrvextra_cmd->pbuf,
-				    pdrvextra_cmd->type_size);
+		rtw_ps_processor23a(padapter);
 		break;
 	case LPS_CTRL_WK_CID:
 		lps_ctrl_wk_hdl(padapter, (u8)pdrvextra_cmd->type_size);

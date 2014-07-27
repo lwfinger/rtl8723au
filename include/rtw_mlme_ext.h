@@ -282,16 +282,6 @@ struct	ss_res
 	struct rtw_ieee80211_channel ch[RTW_CHANNEL_SCAN_AMOUNT];
 };
 
-/* define AP_MODE				0x0C */
-/* define STATION_MODE	0x08 */
-/* define AD_HOC_MODE		0x04 */
-/* define NO_LINK_MODE	0x00 */
-
-#define		WIFI_FW_NULL_STATE			_HW_STATE_NOLINK_
-#define	WIFI_FW_STATION_STATE		_HW_STATE_STATION_
-#define	WIFI_FW_AP_STATE				_HW_STATE_AP_
-#define	WIFI_FW_ADHOC_STATE			_HW_STATE_ADHOC_
-
 #define	WIFI_FW_AUTH_NULL			0x00000100
 #define	WIFI_FW_AUTH_STATE			0x00000200
 #define	WIFI_FW_AUTH_SUCCESS			0x00000400
@@ -471,8 +461,6 @@ void get_rate_set23a(struct rtw_adapter *padapter, unsigned char *pbssrate,
 void UpdateBrateTbl23a(struct rtw_adapter *padapter,u8 *mBratesOS);
 void Update23aTblForSoftAP(u8 *bssrateset, u32 bssratelen);
 
-void Set_MSR23a(struct rtw_adapter *padapter, u8 type);
-
 u8 rtw_get_oper_ch23a(struct rtw_adapter *adapter);
 void rtw_set_oper_ch23a(struct rtw_adapter *adapter, u8 ch);
 u8 rtw_get_oper_bw23a(struct rtw_adapter *adapter);
@@ -499,7 +487,6 @@ void update_network23a(struct wlan_bssid_ex *dst, struct wlan_bssid_ex *src,
 		    struct rtw_adapter *padapter, bool update_ie);
 
 u8 *get_my_bssid23a(struct wlan_bssid_ex *pnetwork);
-u16 get_beacon_interval23a(struct wlan_bssid_ex *bss);
 
 bool is_client_associated_to_ap23a(struct rtw_adapter *padapter);
 bool is_client_associated_to_ibss23a(struct rtw_adapter *padapter);

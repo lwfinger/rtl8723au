@@ -18,6 +18,7 @@
 #include <drv_types.h>
 #include <linux/ieee80211.h>
 #include <wifi.h>
+#include <rtl8723a_spec.h>
 
 static unsigned char ARTHEROS_OUI1[] = {0x00, 0x03, 0x7f};
 static unsigned char ARTHEROS_OUI2[] = {0x00, 0x13, 0x74};
@@ -293,11 +294,6 @@ void Update23aTblForSoftAP(u8 *bssrateset, u32 bssratelen)
 	}
 }
 
-void Set_MSR23a(struct rtw_adapter *padapter, u8 type)
-{
-	rtl8723a_set_media_status(padapter, type);
-}
-
 inline u8 rtw_get_oper_ch23a(struct rtw_adapter *adapter)
 {
 	return adapter_to_dvobj(adapter)->oper_channel;
@@ -360,10 +356,6 @@ void set_channel_bwmode23a(struct rtw_adapter *padapter, unsigned char channel,
 {
 	u8 center_ch;
 
-	if (padapter->bNotifyChannelChange)
-		DBG_8723A("[%s] ch = %d, offset = %d, bwmode = %d\n",
-			  __func__, channel, channel_offset, bwmode);
-
 	if (bwmode == HT_CHANNEL_WIDTH_20 ||
 	    channel_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE) {
 		/* SelectChannel23a(padapter, channel); */
@@ -399,14 +391,6 @@ inline u8 *get_my_bssid23a(struct wlan_bssid_ex *pnetwork)
 	return pnetwork->MacAddress;
 }
 
-u16 get_beacon_interval23a(struct wlan_bssid_ex *bss)
-{
-	unsigned short val;
-	memcpy(&val, rtw_get_beacon_interval23a_from_ie(bss->IEs), 2);
-
-	return le16_to_cpu(val);
-}
-
 bool is_client_associated_to_ap23a(struct rtw_adapter *padapter)
 {
 	struct mlme_ext_priv *pmlmeext;
@@ -419,7 +403,7 @@ bool is_client_associated_to_ap23a(struct rtw_adapter *padapter)
 	pmlmeinfo = &pmlmeext->mlmext_info;
 
 	if (pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS &&
-	    (pmlmeinfo->state & 0x03) == WIFI_FW_STATION_STATE)
+	    (pmlmeinfo->state & 0x03) == MSR_INFRA)
 		return true;
 	else
 		return false;
@@ -431,7 +415,7 @@ bool is_client_associated_to_ibss23a(struct rtw_adapter *padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
 	if (pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS &&
-	    (pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)
+	    (pmlmeinfo->state & 0x03) == MSR_ADHOC)
 		return true;
 	else
 		return false;
@@ -459,11 +443,6 @@ unsigned int decide_wait_for_beacon_timeout23a(unsigned int bcn_interval)
 		return WAIT_FOR_BCN_TO_MAX;
 	else
 		return bcn_interval << 2;
-}
-
-void invalidate_cam_all23a(struct rtw_adapter *padapter)
-{
-	rtl8723a_cam_invalid_all(padapter);
 }
 
 void clear_cam_entry23a(struct rtw_adapter *padapter, u8 entry)
@@ -499,7 +478,7 @@ void flush_all_cam_entry23a(struct rtw_adapter *padapter)
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 
-	rtl8723a_cam_invalid_all(padapter);
+	rtl8723a_cam_invalidate_all(padapter);
 
 	memset(pmlmeinfo->FW_sta_info, 0, sizeof(pmlmeinfo->FW_sta_info));
 }
@@ -888,7 +867,7 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 	unsigned short val16;
 	u8 crypto, bcn_channel;
 	int group_cipher = 0, pairwise_cipher = 0, is_8021x = 0, r;
-	int pie_len, ie_offset, ssid_len, privacy;
+	int pie_len, ssid_len, privacy;
 	const u8 *p, *ssid;
 
 	if (is_client_associated_to_ap23a(Adapter) == false)
@@ -909,8 +888,6 @@ int rtw_check_bcn_info23a(struct rtw_adapter *Adapter,
 
 	/* check bw and channel offset */
 	/* parsing HT_CAP_IE */
-	ie_offset = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u);
 	pie_len = pkt_len - offsetof(struct ieee80211_mgmt, u.beacon.variable);
 
 	/* Checking for channel */
@@ -1078,13 +1055,9 @@ bool is_ap_in_tkip23a(struct rtw_adapter *padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *cur_network = &pmlmeinfo->network;
 	const u8 *p;
-	int bcn_fixed_size;
 
-	bcn_fixed_size = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u.beacon);
-
-	if (rtw_get_capability23a(cur_network) & WLAN_CAPABILITY_PRIVACY) {
-		for (i = bcn_fixed_size; i < pmlmeinfo->network.IELength;) {
+	if (cur_network->capability & WLAN_CAPABILITY_PRIVACY) {
+		for (i = 0; i < pmlmeinfo->network.IELength;) {
 			p = pmlmeinfo->network.IEs + i;
 
 			switch (p[0]) {
@@ -1113,13 +1086,9 @@ bool should_forbid_n_rate23a(struct rtw_adapter * padapter)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct wlan_bssid_ex  *cur_network = &pmlmepriv->cur_network.network;
 	const u8 *p;
-	int bcn_fixed_size;
 
-	bcn_fixed_size = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u.beacon);
-
-	if (rtw_get_capability23a(cur_network) & WLAN_CAPABILITY_PRIVACY) {
-		for (i = bcn_fixed_size; i < cur_network->IELength;) {
+	if (cur_network->capability & WLAN_CAPABILITY_PRIVACY) {
+		for (i = 0; i < cur_network->IELength;) {
 			p = cur_network->IEs + i;
 
 			switch (p[0]) {
@@ -1156,13 +1125,9 @@ bool is_ap_in_wep23a(struct rtw_adapter *padapter)
 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
 	struct wlan_bssid_ex *cur_network = &pmlmeinfo->network;
 	const u8 *p;
-	int bcn_fixed_size;
 
-	bcn_fixed_size = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u.beacon);
-
-	if (rtw_get_capability23a(cur_network) & WLAN_CAPABILITY_PRIVACY) {
-		for (i = bcn_fixed_size; i < pmlmeinfo->network.IELength;) {
+	if (cur_network->capability & WLAN_CAPABILITY_PRIVACY) {
+		for (i = 0; i < pmlmeinfo->network.IELength;) {
 			p = pmlmeinfo->network.IEs + i;
 
 			switch (p[0]) {
@@ -1342,17 +1307,14 @@ void update_tx_basic_rate23a(struct rtw_adapter *padapter, u8 wirelessmode)
 
 unsigned char check_assoc_AP23a(u8 *pframe, uint len)
 {
-	int i, bcn_fixed_size;
+	int i;
 	u8 epigram_vendor_flag;
 	u8 ralink_vendor_flag;
 	const u8 *p;
 	epigram_vendor_flag = 0;
 	ralink_vendor_flag = 0;
 
-	bcn_fixed_size = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u.beacon);
-
-	for (i = bcn_fixed_size; i < len;) {
+	for (i = 0; i < len;) {
 		p = pframe + i;
 
 		switch (p[0]) {

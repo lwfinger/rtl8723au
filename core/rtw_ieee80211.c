@@ -33,7 +33,6 @@ u8 WPA_CIPHER_SUITE_WRAP23A[] = { 0x00, 0x50, 0xf2, 3 };
 u8 WPA_CIPHER_SUITE_CCMP23A[] = { 0x00, 0x50, 0xf2, 4 };
 u8 WPA_CIPHER_SUITE_WEP10423A[] = { 0x00, 0x50, 0xf2, 5 };
 
-u16 RSN_VERSION_BSD23A = 1;
 u8 RSN_AUTH_KEY_MGMT_UNSPEC_802_1X23A[] = { 0x00, 0x0f, 0xac, 1 };
 u8 RSN_AUTH_KEY_MGMT_PSK_OVER_802_1X23A[] = { 0x00, 0x0f, 0xac, 2 };
 u8 RSN_CIPHER_SUITE_NONE23A[] = { 0x00, 0x0f, 0xac, 0 };
@@ -351,32 +350,19 @@ int rtw_generate_ie23a(struct registry_priv *pregistrypriv)
 	int	sz = 0, rateLen;
 	struct wlan_bssid_ex*	pdev_network = &pregistrypriv->dev_network;
 	u8*	ie = pdev_network->IEs;
+	u16 cap;
 
+	pdev_network->tsf = 0;
 
-
-	/* timestamp will be inserted by hardware */
-	sz += 8;
-	ie += sz;
-
-	/* beacon interval : 2bytes */
-	/* BCN_INTERVAL; */
-	*(u16*)ie = cpu_to_le16(pdev_network->BeaconPeriod);
-	sz += 2;
-	ie += 2;
-
-	/* capability info */
-	*(u16*)ie = 0;
-
-	*(u16*)ie |= cpu_to_le16(WLAN_CAPABILITY_IBSS);
+	cap = WLAN_CAPABILITY_IBSS;
 
 	if (pregistrypriv->preamble == PREAMBLE_SHORT)
-		*(u16*)ie |= cpu_to_le16(WLAN_CAPABILITY_SHORT_PREAMBLE);
+		cap |= WLAN_CAPABILITY_SHORT_PREAMBLE;
 
 	if (pdev_network->Privacy)
-		*(u16*)ie |= cpu_to_le16(WLAN_CAPABILITY_PRIVACY);
+		cap |= WLAN_CAPABILITY_PRIVACY;
 
-	sz += 2;
-	ie += 2;
+	pdev_network->capability = cap;
 
 	/* SSID */
 	ie = rtw_set_ie23a(ie, WLAN_EID_SSID, pdev_network->Ssid.ssid_len,
@@ -547,7 +533,7 @@ int rtw_parse_wpa2_ie23a(const u8* rsn_ie, int rsn_ie_len, int *group_cipher,
 		return _FAIL;
 	}
 
-	if (*rsn_ie != _WPA2_IE_ID_ || *(rsn_ie+1) != (u8)(rsn_ie_len - 2)) {
+	if (*rsn_ie != WLAN_EID_RSN || *(rsn_ie+1) != (u8)(rsn_ie_len - 2)) {
 		return _FAIL;
 	}
 
@@ -680,14 +666,10 @@ const u8 *rtw_get_wps_attr23a(const u8 *wps_ie, uint wps_ielen,
  * Returns: the address of the specific WPS attribute content found, or NULL
  */
 const u8 *rtw_get_wps_attr_content23a(const u8 *wps_ie, uint wps_ielen,
-				      u16 target_attr_id, u8 *buf_content,
-				      uint *len_content)
+				      u16 target_attr_id, u8 *buf_content)
 {
 	const u8 *attr_ptr;
 	u32 attr_len;
-
-	if (len_content)
-		*len_content = 0;
 
 	attr_ptr = rtw_get_wps_attr23a(wps_ie, wps_ielen, target_attr_id,
 				    NULL, &attr_len);
@@ -695,9 +677,6 @@ const u8 *rtw_get_wps_attr_content23a(const u8 *wps_ie, uint wps_ielen,
 	if (attr_ptr && attr_len) {
 		if (buf_content)
 			memcpy(buf_content, attr_ptr + 4, attr_len - 4);
-
-		if (len_content)
-			*len_content = attr_len - 4;
 
 		return attr_ptr + 4;
 	}
@@ -710,13 +689,11 @@ static int rtw_get_cipher_info(struct wlan_network *pnetwork)
 	const u8 *pbuf;
 	int group_cipher = 0, pairwise_cipher = 0, is8021x = 0;
 	int ret = _FAIL;
-	int r, offset, plen;
+	int r, plen;
 	char *pie;
 
-	offset = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u);
-	pie = &pnetwork->network.IEs[offset];
-	plen = pnetwork->network.IELength - offset;
+	pie = pnetwork->network.IEs;
+	plen = pnetwork->network.IELength;
 
 	pbuf = cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
 				       WLAN_OUI_TYPE_MICROSOFT_WPA, pie, plen);
@@ -770,27 +747,22 @@ static int rtw_get_cipher_info(struct wlan_network *pnetwork)
 
 void rtw_get_bcn_info23a(struct wlan_network *pnetwork)
 {
-	unsigned short cap;
 	u8 bencrypt = 0;
-	int pie_len, ie_offset;
+	int pie_len;
 	u8 *pie;
 	const u8 *p;
 
-	cap = get_unaligned_le16(
-		rtw_get_capability23a_from_ie(pnetwork->network.IEs));
-	if (cap & WLAN_CAPABILITY_PRIVACY) {
+	if (pnetwork->network.capability & WLAN_CAPABILITY_PRIVACY) {
 		bencrypt = 1;
 		pnetwork->network.Privacy = 1;
 	} else
 		pnetwork->BcnInfo.encryp_protocol = ENCRYP_PROTOCOL_OPENSYS;
 
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_,
-		 ("rtw_get_bcn_info23a: ssid =%s\n", pnetwork->network.Ssid.ssid));
+		 ("%s: ssid =%s\n", __func__, pnetwork->network.Ssid.ssid));
 
-	ie_offset = offsetof(struct ieee80211_mgmt, u.beacon.variable) -
-		offsetof(struct ieee80211_mgmt, u);
-	pie = pnetwork->network.IEs + ie_offset;
-	pie_len = pnetwork->network.IELength - ie_offset;
+	pie = pnetwork->network.IEs;
+	pie_len = pnetwork->network.IELength;
 
 	p = cfg80211_find_ie(WLAN_EID_RSN, pie, pie_len);
 	if (p && p[1]) {
@@ -804,10 +776,10 @@ void rtw_get_bcn_info23a(struct wlan_network *pnetwork)
 			pnetwork->BcnInfo.encryp_protocol = ENCRYP_PROTOCOL_WEP;
 	}
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_,
-		 ("rtw_get_bcn_info23a: pnetwork->encryp_protocol is %x\n",
+		 ("%s: pnetwork->encryp_protocol is %x\n", __func__,
 		  pnetwork->BcnInfo.encryp_protocol));
 	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_,
-		 ("rtw_get_bcn_info23a: pnetwork->encryp_protocol is %x\n",
+		 ("%s: pnetwork->encryp_protocol is %x\n", __func__,
 		  pnetwork->BcnInfo.encryp_protocol));
 	rtw_get_cipher_info(pnetwork);
 
