@@ -660,10 +660,10 @@ int rtl8723au_hal_init(struct rtw_adapter *Adapter)
 	}
 
 	/* reducing 80M spur */
-	PHY_SetBBReg(Adapter, RF_T_METER, bMaskDWord, 0x0381808d);
-	PHY_SetBBReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff83);
-	PHY_SetBBReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff82);
-	PHY_SetBBReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff83);
+	PHY_SetRFReg(Adapter, RF_T_METER, bMaskDWord, 0x0381808d);
+	PHY_SetRFReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff83);
+	PHY_SetRFReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff82);
+	PHY_SetRFReg(Adapter, RF_SYN_G4, bMaskDWord, 0xf2ffff83);
 
 	/* RFSW Control */
 	PHY_SetBBReg(Adapter, rFPGA0_TxInfo, bMaskDWord, 0x00000003);	/* 0x804[14]= 0 */
