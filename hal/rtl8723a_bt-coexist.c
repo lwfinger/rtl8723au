@@ -10695,7 +10695,7 @@ static void btdm_2Ant8723APANEDRAction(struct rtw_adapter *padapter)
 	else
 		btdm_2AntDecBtPwr(padapter, _FALSE);
 
-		if(BTDM_IsHT40(padapter))
+	if(BTDM_IsHT40(padapter))
 		{
 			RTPRINT(FBT, BT_TRACE, ("HT40\n"));
 			btRssiState = BTDM_CheckCoexRSSIState(padapter, 2, 37, 0);
@@ -10835,7 +10835,7 @@ static void btdm_2Ant8723APANEDRA2DPAction(struct rtw_adapter *padapter)
 	else
 		btdm_2AntDecBtPwr(padapter, _FALSE);
 
-		if(BTDM_IsHT40(padapter))
+	if(BTDM_IsHT40(padapter))
 		{
 			RTPRINT(FBT, BT_TRACE, ("HT40\n"));
 		btRssiState = BTDM_CheckCoexRSSIState(padapter, 2, 37, 0);
@@ -11021,7 +11021,7 @@ static void btdm_2Ant8723AHIDA2DPPANEDRAction(struct rtw_adapter *padapter)
 	else
 		btdm_2AntDecBtPwr(padapter, _FALSE);
 
-		if (BTDM_IsHT40(padapter))
+	if (BTDM_IsHT40(padapter))
 		{
 			RTPRINT(FBT, BT_TRACE, ("HT40\n"));
 			btRssiState = BTDM_CheckCoexRSSIState(padapter, 2, 37, 0);
@@ -11131,7 +11131,7 @@ static void btdm_2Ant8723AHIDA2DPAction(struct rtw_adapter *padapter)
 	else
 		btdm_2AntDecBtPwr(padapter, _FALSE);
 
-		if (BTDM_IsHT40(padapter))
+	if (BTDM_IsHT40(padapter))
 		{
 			RTPRINT(FBT, BT_TRACE, ("HT40\n"));
 		btRssiState = BTDM_CheckCoexRSSIState(padapter, 2, 37, 0);
