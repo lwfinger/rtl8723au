@@ -79,9 +79,9 @@ int cckrates_included(unsigned char *rate, int ratelen)
 
 	for(i = 0; i < ratelen; i++)
 	{
-		if  (  (((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
-			   (((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
-		return _TRUE;
+		if ((((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
+		    (((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
+			return _TRUE;
 	}
 
 	return _FALSE;
@@ -93,9 +93,9 @@ int cckratesonly_included(unsigned char *rate, int ratelen)
 
 	for(i = 0; i < ratelen; i++)
 	{
-		if  ( (((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
-			   (((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
-		return _FALSE;
+		if ((((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
+		    (((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
+			return _FALSE;
 	}
 
 	return _TRUE;
@@ -501,9 +501,9 @@ void set_channel_bwmode(struct rtw_adapter *padapter, unsigned char channel, uns
 	u8 center_ch;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
-	if ( padapter->bNotifyChannelChange )
+	if (padapter->bNotifyChannelChange )
 	{
-		DBG_8723A( "[%s] ch = %d, offset = %d, bwmode = %d\n", __FUNCTION__, channel, channel_offset, bwmode );
+		DBG_8723A("[%s] ch = %d, offset = %d, bwmode = %d\n", __FUNCTION__, channel, channel_offset, bwmode );
 	}
 
 	if((bwmode == HT_CHANNEL_WIDTH_20)||(channel_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE))
@@ -677,7 +677,7 @@ void write_cam(struct rtw_adapter *padapter, u8 entry, u16 ctrl, u8 *mac, u8 *ke
 				break;
 
 			case 1:
-				val = (mac[2] | ( mac[3] << 8) | (mac[4] << 16) | (mac[5] << 24));
+				val = (mac[2] | (mac[3] << 8) | (mac[4] << 16) | (mac[5] << 24));
 				break;
 
 			default:
@@ -792,26 +792,26 @@ int WFD_info_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE
 	u32	wfd_ielen = 0;
 
 	pwdinfo = &padapter->wdinfo;
-	if ( rtw_get_wfd_ie( ( u8* ) pIE, pIE->Length, wfd_ie, &wfd_ielen ) )
+	if (rtw_get_wfd_ie((u8* ) pIE, pIE->Length, wfd_ie, &wfd_ielen ) )
 	{
 		u8	attr_content[ 10 ] = { 0x00 };
 		u32	attr_contentlen = 0;
 
-		DBG_8723A( "[%s] Found WFD IE\n", __FUNCTION__ );
-		rtw_get_wfd_attr_content( wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, attr_content, &attr_contentlen);
-		if ( attr_contentlen )
+		DBG_8723A("[%s] Found WFD IE\n", __FUNCTION__ );
+		rtw_get_wfd_attr_content(wfd_ie, wfd_ielen, WFD_ATTR_DEVICE_INFO, attr_content, &attr_contentlen);
+		if (attr_contentlen )
 		{
-			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16( attr_content + 2 );
-			DBG_8723A( "[%s] Peer PORT NUM = %d\n", __FUNCTION__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
-			return( _TRUE );
+			pwdinfo->wfd_info->peer_rtsp_ctrlport = RTW_GET_BE16(attr_content + 2 );
+			DBG_8723A("[%s] Peer PORT NUM = %d\n", __FUNCTION__, pwdinfo->wfd_info->peer_rtsp_ctrlport );
+			return(_TRUE );
 		}
 	}
 	else
 	{
-		DBG_8723A( "[%s] NO WFD IE\n", __FUNCTION__ );
+		DBG_8723A("[%s] NO WFD IE\n", __FUNCTION__ );
 
 	}
-	return( _FAIL );
+	return(_FAIL );
 }
 #endif
 
@@ -853,7 +853,7 @@ void WMMOnAssocRsp(struct rtw_adapter *padapter)
 
 	acm_mask = 0;
 
-	if( pmlmeext->cur_wireless_mode == WIRELESS_11B)
+	if(pmlmeext->cur_wireless_mode == WIRELESS_11B)
 		aSifsTime = 10;
 	else
 		aSifsTime = 16;
@@ -1101,8 +1101,8 @@ void HT_caps_handler(struct rtw_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE
 	/*	Commented by Albert 2010/07/12 */
 	/*	Have to handle the endian issue after copying. */
 	/*	HT_ext_caps didn't be used yet. */
-	pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info = le16_to_cpu( pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info );
-	pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps = le16_to_cpu( pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps );
+	pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info = le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info );
+	pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps = le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_ext_caps );
 
 	rtw_hal_get_hwreg(padapter, HW_VAR_RF_TYPE, (u8 *)(&rf_type));
 
@@ -1263,7 +1263,7 @@ int check_ap_tdls_prohibited(u8 *pframe, u8 pkt_len)
 	}
 
 	pframe += 4;
-	if( (*pframe) & tdls_prohibited_bit )
+	if((*pframe) & tdls_prohibited_bit )
 		return _TRUE;
 
 	return _FALSE;
@@ -1511,7 +1511,7 @@ void update_beacon_info(struct rtw_adapter *padapter, u8 *pframe, uint pkt_len, 
 
 #ifdef CONFIG_TDLS
 			case _EXT_CAP_IE_:
-				if( check_ap_tdls_prohibited(pIE->data, pIE->Length) == _TRUE )
+				if(check_ap_tdls_prohibited(pIE->data, pIE->Length) == _TRUE )
 					ptdlsinfo->ap_prohibited = _TRUE;
 				break;
 #endif /* CONFIG_TDLS */
@@ -1620,9 +1620,9 @@ unsigned int should_forbid_n_rate(struct rtw_adapter * padapter)
 					break;
 
 				case _RSN_IE_2_:
-					if  ((!memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
-					       (!memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
-					return _FALSE;
+					if ((!memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
+					    (!memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
+						return _FALSE;
 
 				default:
 					break;
@@ -2017,7 +2017,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 
 	/*  Check preamble mode, 2005.01.06, by rcnjko. */
 	/*  Mark to update preamble value forever, 2008.03.18 by lanhsin */
-	/* if( pMgntInfo->RegPreambleMode == PREAMBLE_AUTO ) */
+	/* if(pMgntInfo->RegPreambleMode == PREAMBLE_AUTO ) */
 	{
 
 		if(updateCap & cShortPreamble)
@@ -2026,7 +2026,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 			{
 				ShortPreamble = _TRUE;
 				pmlmeinfo->preamble_mode = PREAMBLE_SHORT;
-				rtw_hal_set_hwreg( Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
+				rtw_hal_set_hwreg(Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
 			}
 		}
 		else
@@ -2035,21 +2035,21 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 			{
 				ShortPreamble = _FALSE;
 				pmlmeinfo->preamble_mode = PREAMBLE_LONG;
-				rtw_hal_set_hwreg( Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
+				rtw_hal_set_hwreg(Adapter, HW_VAR_ACK_PREAMBLE, (u8 *)&ShortPreamble );
 			}
 		}
 	}
 
-	if ( updateCap & cIBSS ) {
+	if (updateCap & cIBSS ) {
 		/* Filen: See 802.11-2007 p.91 */
 		pmlmeinfo->slotTime = NON_SHORT_SLOT_TIME;
 	}
 	else
 	{
 		/* Filen: See 802.11-2007 p.90 */
-		if( pmlmeext->cur_wireless_mode & (WIRELESS_11G | WIRELESS_11_24N))
+		if(pmlmeext->cur_wireless_mode & (WIRELESS_11G | WIRELESS_11_24N))
 		{
-			if( (updateCap & cShortSlotTime) /* && (!(pMgntInfo->pHTInfo->RT2RT_HT_Mode & RT_HT_CAP_USE_LONG_PREAMBLE)) */)
+			if((updateCap & cShortSlotTime) /* && (!(pMgntInfo->pHTInfo->RT2RT_HT_Mode & RT_HT_CAP_USE_LONG_PREAMBLE)) */)
 			{ /*  Short Slot Time */
 				if(pmlmeinfo->slotTime != SHORT_SLOT_TIME)
 				{
@@ -2064,7 +2064,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 				}
 			}
 		}
-		else if( pmlmeext->cur_wireless_mode & (WIRELESS_11A | WIRELESS_11_5N))
+		else if(pmlmeext->cur_wireless_mode & (WIRELESS_11A | WIRELESS_11_5N))
 		{
 			pmlmeinfo->slotTime = SHORT_SLOT_TIME;
 		}
@@ -2075,7 +2075,7 @@ void update_capinfo(struct rtw_adapter *Adapter, u16 updateCap)
 		}
 	}
 
-	rtw_hal_set_hwreg( Adapter, HW_VAR_SLOT_TIME, &pmlmeinfo->slotTime );
+	rtw_hal_set_hwreg(Adapter, HW_VAR_SLOT_TIME, &pmlmeinfo->slotTime );
 }
 
 void update_wireless_mode(struct rtw_adapter *padapter)
@@ -2129,7 +2129,7 @@ void update_wireless_mode(struct rtw_adapter *padapter)
 	SIFS_Timer = 0x0a0a0808; /* 0x0808 -> for CCK, 0x0a0a -> for OFDM */
                              /* change this value if having IOT issues. */
 
-	padapter->HalFunc.SetHwRegHandler( padapter, HW_VAR_RESP_SIFS,  (u8 *)&SIFS_Timer);
+	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_RESP_SIFS,  (u8 *)&SIFS_Timer);
 
 	if (pmlmeext->cur_wireless_mode & WIRELESS_11B)
 		update_mgnt_tx_rate(padapter, IEEE80211_CCK_RATE_1MB);
@@ -2153,7 +2153,7 @@ void update_bmc_sta_support_rate(struct rtw_adapter *padapter, u32 mac_id)
 	}
 	else
 	{
-		memcpy((pmlmeinfo->FW_sta_info[mac_id].SupportedRates), rtw_basic_rate_ofdm, 4);
+		memcpy((pmlmeinfo->FW_sta_info[mac_id].SupportedRates), rtw_basic_rate_ofdm, 3);
 	}
 }
 
