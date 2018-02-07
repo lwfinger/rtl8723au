@@ -115,8 +115,10 @@ if((BTCoexDbgLevel ==_bt_dbg_on_) ){\
 #define PlatformReleaseSpinLock(padapter, type)
 
 // timer
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 #define PlatformInitializeTimer(padapter, ptimer, pfunc, cntx, szID) \
 	_init_timer(ptimer, padapter->pnetdev, pfunc, padapter)
+#endif
 #define PlatformSetTimer(a, ptimer, delay)	_set_timer(ptimer, delay)
 static u8 PlatformCancelTimer(struct rtw_adapter *a, _timer *ptimer)
 {
@@ -6222,6 +6224,7 @@ static void BTHCI_InitializeAllTimer(struct rtw_adapter *padapter)
 	PBT30Info		pBTinfo = GET_BT_INFO(padapter);
 	PBT_SECURITY		pBtSec = &pBTinfo->BtSec;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 #if (BT_THREAD == 0)
 	PlatformInitializeTimer(padapter, &pBTinfo->BTHCICmdTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackHCICmd, NULL, "BTHCICmdTimer");
 #endif
@@ -6239,6 +6242,25 @@ static void BTHCI_InitializeAllTimer(struct rtw_adapter *padapter)
 	PlatformInitializeTimer(padapter, &pBTinfo->BTPsDisableTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackPsDisable, NULL, "BTPsDisableTimer");
 	PlatformInitializeTimer(padapter, &pBTinfo->BTAuthTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackBTAuthTimeout, NULL, "BTAuthTimeoutTimer");
 	PlatformInitializeTimer(padapter, &pBTinfo->BTAsocTimeoutTimer, (RT_TIMER_CALL_BACK)bthci_TimerCallbackAsocTimeout, NULL, "BTAsocTimeoutTimer");
+#else
+#if (BT_THREAD == 0)
+	timer_setup(&pBTinfo->BTHCICmdTimer, bthci_TimerCallbackHCICmd, 0);
+#endif
+#if (SENDTXMEHTOD == 0)
+	timer_setup(&pBTinfo->BTHCISendAclDataTimer, bthci_TimerCallbackSendAclData, 0);
+#endif
+	timer_setup(&pBTinfo->BTHCIDiscardAclDataTimer, bthci_TimerCallbackDiscardAclData, 0);
+	timer_setup(&pBTinfo->BTHCIJoinTimeoutTimer, bthci_TimerCallbackJoinTimeout, 0);
+	timer_setup(&pBTinfo->BTTestSendPacketTimer, bthci_TimerCallbackSendTestPacket, 0);
+
+	timer_setup(&pBTinfo->BTBeaconTimer, BTPKT_TimerCallbackBeacon, 0);
+	timer_setup(&pBtSec->BTWPAAuthTimer, BTPKT_TimerCallbackWPAAuth, 0);
+	timer_setup(&pBTinfo->BTSupervisionPktTimer, bthci_TimerCallbackBTSupervisionPacket, 0);
+	timer_setup(&pBTinfo->BTDisconnectPhyLinkTimer, bthci_TimerCallbackDisconnectPhysicalLink, 0);
+	timer_setup(&pBTinfo->BTPsDisableTimer, bthci_TimerCallbackPsDisable, 0);
+	timer_setup(&pBTinfo->BTAuthTimeoutTimer, bthci_TimerCallbackBTAuthTimeout, 0);
+	timer_setup(&pBTinfo->BTAsocTimeoutTimer, bthci_TimerCallbackAsocTimeout, 0);
+#endif
 }
 
 static void BTHCI_CancelAllTimer(struct rtw_adapter *padapter)

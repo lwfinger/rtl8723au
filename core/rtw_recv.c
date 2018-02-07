@@ -32,7 +32,11 @@
 #include <circ_buf.h>
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
+#else
+void rtw_signal_stat_timer_hdl(struct timer_list *t);
+#endif
 #endif /* CONFIG_NEW_SIGNAL_STAT_PROCESS */
 
 void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
@@ -111,7 +115,11 @@ _func_enter_;
 	res = rtw_hal_init_recv_priv(padapter);
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&precvpriv->signal_stat_timer, padapter->pnetdev, RTW_TIMER_HDL_NAME(signal_stat), padapter);
+#else
+	timer_setup(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl, 0);
+#endif
 
 	precvpriv->signal_stat_sampling_interval = 1000; /* ms */
 
@@ -3120,10 +3128,18 @@ _func_exit_;
 }
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS)
+#else
+void rtw_signal_stat_timer_hdl(struct timer_list *t)
+#endif
+{
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+#else
+	struct rtw_adapter *adapter = from_timer(adapter, t, recvpriv.signal_stat_timer);
+#endif
 	struct recv_priv *recvpriv = &adapter->recvpriv;
-
 	u32 tmp_s, tmp_q;
 	u8 avg_signal_strength = 0;
 	u8 avg_signal_qual = 0;

@@ -27,34 +27,49 @@
 #include <mlme_osdep.h>
 
 
-/*
-void sitesurvey_ctrl_handler(void *FunctionContext)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void rtw_join_timeout_handler(void *FunctionContext)
+#else
+void rtw_join_timeout_handler(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+#else
+	struct rtw_adapter *adapter = from_timer(adapter, t, mlmepriv.assoc_timer);
+#endif
 
-	_sitesurvey_ctrl_handler(adapter);
-
-	_set_timer(&adapter->mlmepriv.sitesurveyctrl.sitesurvey_ctrl_timer, 3000);
-}
-*/
-
-void rtw_join_timeout_handler (void *FunctionContext)
-{
-	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
 	_rtw_join_timeout_handler(adapter);
 }
 
 
-void _rtw_scan_timeout_handler (void *FunctionContext)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void _rtw_scan_timeout_handler(void *FunctionContext)
+#else
+void _rtw_scan_timeout_handler(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+#else
+	struct rtw_adapter *adapter = from_timer(adapter, t, mlmepriv.scan_to_timer);
+#endif
+
 	rtw_scan_timeout_handler(adapter);
 }
 
 
-static void _dynamic_check_timer_handler (void *FunctionContext)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+static void _dynamic_check_timer_handler(struct timer_list *t)
+#else
+static void _dynamic_check_timer_handler(void *FunctionContext)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct rtw_adapter *adapter = from_timer(adapter, t, mlmepriv.dynamic_chk_timer);
+#else
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+#endif
 
 	rtw_dynamic_check_timer_handler(adapter);
 
@@ -62,9 +77,18 @@ static void _dynamic_check_timer_handler (void *FunctionContext)
 }
 
 #ifdef CONFIG_SET_SCAN_DENY_TIMER
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void _rtw_set_scan_deny_timer_hdl(void *FunctionContext)
+#else
+void _rtw_set_scan_deny_timer_hdl(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	struct rtw_adapter *adapter = (struct rtw_adapter *)FunctionContext;
+#else
+	struct rtw_adapter *adapter = from_timer(adapter, t, mlmepriv.set_scan_deny_timer);
+#endif
+
 	rtw_set_scan_deny_timer_hdl(adapter);
 }
 #endif
@@ -74,6 +98,7 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&(pmlmepriv->assoc_timer), padapter->pnetdev, rtw_join_timeout_handler, padapter);
 	//_init_timer(&(pmlmepriv->sitesurveyctrl.sitesurvey_ctrl_timer), padapter->pnetdev, sitesurvey_ctrl_handler, padapter);
 	_init_timer(&(pmlmepriv->scan_to_timer), padapter->pnetdev, _rtw_scan_timeout_handler, padapter);
@@ -83,6 +108,14 @@ void rtw_init_mlme_timer(struct rtw_adapter *padapter)
 	#ifdef CONFIG_SET_SCAN_DENY_TIMER
 	_init_timer(&(pmlmepriv->set_scan_deny_timer), padapter->pnetdev, _rtw_set_scan_deny_timer_hdl, padapter);
 	#endif
+#else
+	timer_setup(&pmlmepriv->assoc_timer, rtw_join_timeout_handler, 0);
+	timer_setup(&pmlmepriv->scan_to_timer, _rtw_scan_timeout_handler, 0);
+	timer_setup(&pmlmepriv->dynamic_chk_timer, _dynamic_check_timer_handler, 0);
+	#ifdef CONFIG_SET_SCAN_DENY_TIMER
+	timer_setup(&pmlmepriv->set_scan_deny_timer, _rtw_set_scan_deny_timer_hdl, 0);
+	#endif
+#endif
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
 	if (padapter->HalFunc.hal_init_checkbthang_workqueue)
@@ -241,55 +274,72 @@ _func_exit_;
 
 }
 
-void _survey_timer_hdl (void *FunctionContext)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+static void _survey_timer_hdl(struct timer_list *t)
+#else
+static void _survey_timer_hdl (void *FunctionContext)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct rtw_adapter *padapter = from_timer(padapter, t, mlmeextpriv.survey_timer);
+#else
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
+#endif
 
 	survey_timer_hdl(padapter);
 }
 
-void _link_timer_hdl (void *FunctionContext)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+static void _link_timer_hdl(struct timer_list *t)
+#else
+static void _link_timer_hdl (void *FunctionContext)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct rtw_adapter *padapter = from_timer(padapter, t, mlmeextpriv.link_timer);
+#else
 	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
+#endif
+
 	link_timer_hdl(padapter);
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void _addba_timer_hdl(void *FunctionContext)
+#else
+void _addba_timer_hdl(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	struct sta_info *psta = (struct sta_info *)FunctionContext;
+#else
+	struct sta_info *psta = from_timer(psta, t, addba_retry_timer);
+#endif
+
 	addba_timer_hdl(psta);
 }
 
 void init_addba_retry_timer(struct rtw_adapter *padapter, struct sta_info *psta)
 {
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&psta->addba_retry_timer, padapter->pnetdev, _addba_timer_hdl, psta);
+#else
+	timer_setup(&psta->addba_retry_timer, _addba_timer_hdl, 0);
+#endif
 }
-
-/*
-void _reauth_timer_hdl(void *FunctionContext)
-{
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
-	reauth_timer_hdl(padapter);
-}
-
-void _reassoc_timer_hdl(void *FunctionContext)
-{
-	struct rtw_adapter *padapter = (struct rtw_adapter *)FunctionContext;
-	reassoc_timer_hdl(padapter);
-}
-*/
 
 void init_mlme_ext_timer(struct rtw_adapter *padapter)
 {
 	struct	mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&pmlmeext->survey_timer, padapter->pnetdev, _survey_timer_hdl, padapter);
 	_init_timer(&pmlmeext->link_timer, padapter->pnetdev, _link_timer_hdl, padapter);
-	//_init_timer(&pmlmeext->ADDBA_timer, padapter->pnetdev, _addba_timer_hdl, padapter);
-
-	//_init_timer(&pmlmeext->reauth_timer, padapter->pnetdev, _reauth_timer_hdl, padapter);
-	//_init_timer(&pmlmeext->reassoc_timer, padapter->pnetdev, _reassoc_timer_hdl, padapter);
+#else
+	timer_setup(&pmlmeext->survey_timer, _survey_timer_hdl, 0);
+	timer_setup(&pmlmeext->link_timer, _link_timer_hdl, 0);
+#endif
 }
 
 #ifdef CONFIG_AP_MODE

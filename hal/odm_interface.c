@@ -515,16 +515,11 @@ ODM_InitializeTimer(
 	const char*			szID
 	)
 {
-#if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-	pTimer->function = CallBackFunc;
-	pTimer->data = (unsigned long)pDM_Odm;
-	init_timer(pTimer);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(pTimer,Adapter->pnetdev,CallBackFunc,pDM_Odm);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
-	struct rtw_adapter *Adapter = pDM_Odm->Adapter;
-	PlatformInitializeTimer(Adapter, pTimer, CallBackFunc,pContext,szID);
+#else
+	timer_setup(pTimer, CallBackFunc, 0);
 #endif
 }
 

@@ -108,6 +108,7 @@ static inline struct list_head	*get_list_head(_queue	*queue)
 }
 
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 static inline void _init_timer(_timer *ptimer, struct net_device *nic_hdl,
 			       void *pfunc, void* cntx)
 {
@@ -116,6 +117,7 @@ static inline void _init_timer(_timer *ptimer, struct net_device *nic_hdl,
 	ptimer->data = (unsigned long)cntx;
 	init_timer(ptimer);
 }
+#endif
 
 static inline void _set_timer(_timer *ptimer,u32 delay_time)
 {

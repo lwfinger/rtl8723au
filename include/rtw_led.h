@@ -179,7 +179,11 @@ struct led_priv{
 #define rtw_led_control(adapter, LedAction)
 #endif //CONFIG_SW_LED
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void BlinkTimerCallback(struct timer_list *t);
+#else
 void BlinkTimerCallback(void *data);
+#endif
 void BlinkWorkItemCallback(struct work_struct *work);
 
 void ResetLedStatus(PLED_871x pLed);

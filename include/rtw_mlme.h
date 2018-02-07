@@ -572,8 +572,13 @@ extern void rtw_cpwm_event_callback(struct rtw_adapter *adapter, u8 *pbuf);
 
 
 extern int event_thread(void *context);
-extern void rtw_join_timeout_handler(void* FunctionContext);
-extern void _rtw_scan_timeout_handler(void* FunctionContext);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void rtw_join_timeout_handler(void *FunctionContext);
+void _rtw_scan_timeout_handler(void *FunctionContext);
+#else
+void rtw_join_timeout_handler(struct timer_list *t);
+void _rtw_scan_timeout_handler(struct timer_list *t);
+#endif
 
 extern void rtw_free_network_queue(struct rtw_adapter *adapter,u8 isfreeall);
 extern int rtw_init_mlme_priv(struct rtw_adapter *adapter);// (struct mlme_priv *pmlmepriv);

@@ -421,7 +421,11 @@ odm_SwAntDivChkAntSwitchNIC(
 	);
 
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext);
+#else
+void odm_SwAntDivChkAntSwitchCallback(struct timer_list *t);
+#endif
 
 void
 odm_GlobalAdapterCheck(
@@ -1107,55 +1111,6 @@ odm_CmnInfoUpdate_Debug(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("bLinked=%d\n",pDM_Odm->bLinked) );
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("RSSI_Min=%d\n",pDM_Odm->RSSI_Min) );
 }
-
-
-/*
-void
-odm_FindMinimumRSSI(
-		PDM_ODM_T		pDM_Odm
-	)
-{
-	u32	i;
-	u8	RSSI_Min = 0xFF;
-
-	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
-	{
-//		if(pDM_Odm->pODM_StaInfo[i] != NULL)
-		if(IS_STA_VALID(pDM_Odm->pODM_StaInfo[i]) )
-		{
-			if(pDM_Odm->pODM_StaInfo[i]->RSSI_Ave < RSSI_Min)
-			{
-				RSSI_Min = pDM_Odm->pODM_StaInfo[i]->RSSI_Ave;
-			}
-		}
-	}
-
-	pDM_Odm->RSSI_Min = RSSI_Min;
-
-}
-
-void
-odm_IsLinked(
-		PDM_ODM_T		pDM_Odm
-	)
-{
-	u32 i;
-	bool Linked = FALSE;
-
-	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++)
-	{
-			if(IS_STA_VALID(pDM_Odm->pODM_StaInfo[i]) )
-			{
-				Linked = TRUE;
-				break;
-			}
-
-	}
-
-	pDM_Odm->bLinked = Linked;
-}
-*/
-
 
 //3============================================================
 //3 DIG
@@ -2955,57 +2910,7 @@ odm_RSSIMonitorCheckCE(
 					}
 			}
 		}
-		#else
-		_irqL irqL;
-		_list	*plist, *phead;
-		struct sta_info *psta;
-		struct sta_priv *pstapriv = &Adapter->stapriv;
-		u8 bcast_addr[ETH_ALEN]= {0xff,0xff,0xff,0xff,0xff,0xff};
-
-		_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
-
-		for(i=0; i< NUM_STA; i++)
-		{
-			phead = &(pstapriv->sta_hash[i]);
-			plist = phead->next;
-
-			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
-			{
-				psta = container_of(plist, struct sta_info, hash_list);
-
-				plist = plist->next;
-
-				if (!memcmp(psta->hwaddr, bcast_addr, ETH_ALEN) ||
-				    !memcmp(psta->hwaddr, myid(&Adapter->eeprompriv), ETH_ALEN))
-					continue;
-
-				if(psta->state & WIFI_ASOC_STATE)
-				{
-
-					if(psta->rssi_stat.UndecoratedSmoothedPWDB < tmpEntryMinPWDB)
-						tmpEntryMinPWDB = psta->rssi_stat.UndecoratedSmoothedPWDB;
-
-					if(psta->rssi_stat.UndecoratedSmoothedPWDB > tmpEntryMaxPWDB)
-						tmpEntryMaxPWDB = psta->rssi_stat.UndecoratedSmoothedPWDB;
-
-					if(psta->rssi_stat.UndecoratedSmoothedPWDB != (-1)){
-						//printk("%s==> mac_id(%d),rssi(%d)\n",__FUNCTION__,psta->mac_id,psta->rssi_stat.UndecoratedSmoothedPWDB);
-						#if(RTL8192D_SUPPORT==1)
-						PWDB_rssi[sta_cnt++] = (psta->mac_id | (psta->rssi_stat.UndecoratedSmoothedPWDB<<16) | ((Adapter->stapriv.asoc_sta_count+1) << 8));
-						#else
-						PWDB_rssi[sta_cnt++] = (psta->mac_id | (psta->rssi_stat.UndecoratedSmoothedPWDB<<16) );
-						#endif
-					}
-				}
-
-			}
-
-		}
-
-		_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
 		#endif
-
-		//printk("%s==> sta_cnt(%d)\n",__FUNCTION__,sta_cnt);
 
 		for(i=0; i< sta_cnt; i++)
 		{
@@ -3450,7 +3355,6 @@ odm_SwAntDivChkAntSwitchNIC(
 		u8		Step
 	)
 {
-#if ((RTL8192C_SUPPORT==1)||(RTL8723A_SUPPORT==1))
 	//PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
@@ -3812,7 +3716,6 @@ odm_SwAntDivChkAntSwitchNIC(
 			ODM_SetTimer(pDM_Odm,&pDM_SWAT_Table->SwAntennaSwitchTimer, 500 ); //ms
 	}
 	}
-#endif	// #if (RTL8192C_SUPPORT==1)
 }
 
 
@@ -3820,9 +3723,17 @@ odm_SwAntDivChkAntSwitchNIC(
 // 20100514 Luke/Joseph:
 // Callback function for 500ms antenna test trying.
 //
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext)
+#else
+void odm_SwAntDivChkAntSwitchCallback(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	PDM_ODM_T	pDM_Odm= (PDM_ODM_T)FunctionContext;
+#else
+	PDM_ODM_T pDM_Odm = from_timer(pDM_Odm, t, DM_SWAT_Table.SwAntennaSwitchTimer);
+#endif
 	struct rtw_adapter *	padapter = pDM_Odm->Adapter;
 	if(padapter->net_closed == _TRUE)
 	    return;
@@ -3843,7 +3754,11 @@ void odm_SwAntDivChkAntSwitch(
 	) {}
 void ODM_SwAntDivResetBeforeLink(		PDM_ODM_T		pDM_Odm	){}
 void ODM_SwAntDivRestAfterLink(		PDM_ODM_T		pDM_Odm	){}
-void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext){}
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+void odm_SwAntDivChkAntSwitchCallback(void *FunctionContext) {};
+#else
+void odm_SwAntDivChkAntSwitchCallback(struct timer_list *t) {};
+#endif
 
 #endif //#if(defined(CONFIG_SW_ANTENNA_DIVERSITY))
 
