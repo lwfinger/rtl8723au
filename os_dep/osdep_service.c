@@ -335,9 +335,9 @@ static int isFileReadable(char *path)
 {
 	struct file *fp;
 	int ret = 0;
-#if defined(get_fs)
+	#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 	mm_segment_t oldfs;
-#endif
+	#endif
 	char buf;
 
 	fp=filp_open(path, O_RDONLY, 0);
@@ -345,16 +345,16 @@ static int isFileReadable(char *path)
 		ret = PTR_ERR(fp);
 	}
 	else {
-#if defined(get_fs)
+		#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 		oldfs = get_fs(); set_fs(KERNEL_DS);
-#endif
+		#endif
 
 		if(1!=readFile(fp, &buf, 1))
 			ret = PTR_ERR(fp);
 
-#if defined(get_fs)
+		#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 		set_fs(oldfs);
-#endif
+		#endif
 		filp_close(fp,NULL);
 	}
 	return ret;
@@ -370,22 +370,22 @@ static int isFileReadable(char *path)
 static int retriveFromFile(char *path, u8* buf, u32 sz)
 {
 	int ret =-1;
-#if defined(get_fs)
+	#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 	mm_segment_t oldfs;
-#endif
+	#endif
 	struct file *fp;
 
 	if(path && buf) {
 		if( 0 == (ret=openFile(&fp,path, O_RDONLY, 0)) ){
 			DBG_8723A("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
 
-#if defined(get_fs)
+			#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 			oldfs = get_fs(); set_fs(KERNEL_DS);
-#endif
+			#endif
 			ret=readFile(fp, buf, sz);
-#if defined(get_fs)
+			#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 			set_fs(oldfs);
-#endif
+			#endif
 			closeFile(fp);
 
 			DBG_8723A("%s readFile, ret:%d\n",__FUNCTION__, ret);
@@ -410,22 +410,22 @@ static int retriveFromFile(char *path, u8* buf, u32 sz)
 static int storeToFile(char *path, u8* buf, u32 sz)
 {
 	int ret =0;
-#if defined(get_fs)
+	#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 	mm_segment_t oldfs;
-#endif
+	#endif
 	struct file *fp;
 
 	if(path && buf) {
 		if( 0 == (ret=openFile(&fp, path, O_CREAT|O_WRONLY, 0666)) ) {
 			DBG_8723A("%s openFile path:%s fp=%p\n",__FUNCTION__, path ,fp);
 
-#if defined(get_fs)
+			#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 			oldfs = get_fs(); set_fs(KERNEL_DS);
-#endif
+			#endif
 			ret=writeFile(fp, buf, sz);
-#if defined(get_fs)
+			#if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
 			set_fs(oldfs);
-#endif
+			#endif
 			closeFile(fp);
 
 			DBG_8723A("%s writeFile, ret:%d\n",__FUNCTION__, ret);
