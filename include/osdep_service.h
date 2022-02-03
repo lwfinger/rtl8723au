@@ -97,7 +97,11 @@ struct	__queue	{
 
 typedef struct	__queue	_queue;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
 #define thread_exit() complete_and_exit(NULL, 0)
+#else
+#define thread_exit() kthread_complete_and_exit(NULL, 0)
+#endif
 
 typedef void timer_hdl_return;
 typedef void* timer_hdl_context;

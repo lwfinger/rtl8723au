@@ -1874,7 +1874,11 @@ static int _rtw_drv_register_netdev(struct rtw_adapter *padapter, char *name)
 	/* alloc netdev name */
 	rtw_init_netdev_name(pnetdev, name);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
 	memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
+#else
+	dev_addr_set(pnetdev, padapter->eeprompriv.mac_addr);
+#endif
 
 	/* Tell the network stack we exist */
 	if (register_netdev(pnetdev) != 0) {

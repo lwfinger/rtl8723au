@@ -1656,16 +1656,14 @@ odm_DIG(
 		{
 			CurrentIGI = pDM_DigTable->rx_gain_range_min;
 			ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): First DisConnect \n"));
-		}
-		else
-		{
-		//2012.03.30 LukeLee: enable DIG before link but with very high thresholds
-             if(pFalseAlmCnt->Cnt_all > 10000)
-			CurrentIGI = CurrentIGI + 2;//pDM_DigTable->CurIGValue = pDM_DigTable->PreIGValue+2;
-		else if (pFalseAlmCnt->Cnt_all > 8000)
-			CurrentIGI = CurrentIGI + 1;//pDM_DigTable->CurIGValue = pDM_DigTable->PreIGValue+1;
-		else if(pFalseAlmCnt->Cnt_all < 500)
-			CurrentIGI = CurrentIGI - 1;//pDM_DigTable->CurIGValue =pDM_DigTable->PreIGValue-1;
+		} else {
+			//2012.03.30 LukeLee: enable DIG before link but with very high thresholds
+			if(pFalseAlmCnt->Cnt_all > 10000)
+				CurrentIGI = CurrentIGI + 2;//pDM_DigTable->CurIGValue = pDM_DigTable->PreIGValue+2;
+			else if (pFalseAlmCnt->Cnt_all > 8000)
+				CurrentIGI = CurrentIGI + 1;//pDM_DigTable->CurIGValue = pDM_DigTable->PreIGValue+1;
+			else if(pFalseAlmCnt->Cnt_all < 500)
+				CurrentIGI = CurrentIGI - 1;//pDM_DigTable->CurIGValue =pDM_DigTable->PreIGValue-1;
 			ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): England DIG \n"));
 		}
 	}

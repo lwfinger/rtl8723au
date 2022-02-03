@@ -33,7 +33,7 @@ s32	rtl8192cu_init_xmit_priv(struct rtw_adapter *padapter)
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
 	tasklet_init(&pxmitpriv->xmit_tasklet,
-	     (void(*)(unsigned long))rtl8192cu_xmit_tasklet,
+	     (void *)rtl8192cu_xmit_tasklet,
 	     (unsigned long)padapter);
 	return _SUCCESS;
 }
